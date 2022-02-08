@@ -1,17 +1,31 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <main class="flex">
+    <section id="_container">
+      <header>
+        <section>
+          <img />
+          <!-- TODO: Get This Name From Database -->
+          <p>Dan</p>
+          <p>Main Persona</p>
+        </section>
+        <nav class="mt-10">
+          <router-link to="/intakeform"
+            ><span style="position: relative; top: 6px" class="material-icons">
+              people
+            </span>
+            Client Intake Form</router-link
+          >
+        </nav>
+      </header>
+    </section>
+    <section><router-view> </router-view></section>
+  </main>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name: "App",
+};
 </script>
 
 <style>
@@ -22,5 +36,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+#_container {
+  background-color: #7d0d15;
+  color: white;
+  padding: 66px;
 }
 </style>
