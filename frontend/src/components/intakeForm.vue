@@ -20,7 +20,7 @@
               <label class="self-start font-bold" for="firstName"
                 >First Name</label
               >
-              <input name="firstName" type="text" />
+              <input v-model="client.firstName" name="firstName" type="text" />
             </div>
             <div class="flex flex-col">
               <label class="self-start font-bold" for="middleName"
@@ -51,7 +51,7 @@
                 <label class="self-start font-bold" for=""
                   >Alternative Phone Number</label
                 >
-                <input type="text" />
+                <input name="secPhone" type="text" />
               </div>
             </section>
           </section>
@@ -97,14 +97,43 @@
   </main>
 </template>
 <script>
-// import axios from "axios";
+import axios from "axios";
 export default {
   data() {
-    return {};
+    return {
+      client: {
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        phoneNumber: "",
+        secPhone: "",
+        email: "",
+        address1: "",
+        address2: "",
+        city: "",
+        county: "",
+        zipcode: "",
+      },
+    };
   },
   methods: {
     handleSubmitForm() {
-      this.$router.push("/");
+      let apiURL = "http://localhost:3000/primarydata";
+      axios.post(apiURL, this.client).then(() => {
+        this.client = {
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          phoneNumber: "",
+          secPhone: "",
+          email: "",
+          address1: "",
+          address2: "",
+          city: "",
+          county: "",
+          zipcode: "",
+        };
+      });
     },
   },
 };

@@ -24,22 +24,33 @@
           <button @click="handleSubmitForm" type="submit">Search Client</button>
         </section>
       </div>
-      <div>
-        <section class="flex flex-row justify-center mt-10">
-          <h3 class="mr-20">Name</h3>
-          <h3 class="mr-20">City</h3>
-          <h3 class="mr-20">Phone Number</h3>
-        </section>
-        <section
-          class="flex flex-row mt-10"
-          style="margin-left: 23%; margin-right: 34%"
-        >
-          <ul>
-            <li class="mr-20" v-for="client in queryData" :key="client._id">
-              {{ client.firstName }}
-            </li>
-          </ul>
-        </section>
+      <div class="text-center">
+        <div class="grid gap-1 grid-cols-3 mt-10">
+          <h3 class="mr-20">
+            Name
+            <ul>
+              <li v-for="client in queryData" :key="client._id">
+                {{ client.firstName }}
+              </li>
+            </ul>
+          </h3>
+          <h3>
+            City
+            <ul>
+              <li v-for="client in queryData" :key="client._id">
+                {{ client.address[0].currentAddress.city }}
+              </li>
+            </ul>
+          </h3>
+          <h3>
+            Phone Number
+            <ul>
+              <li v-for="client in queryData" :key="client._id">
+                {{ client.phoneNumbers[0].primaryPhone }}
+              </li>
+            </ul>
+          </h3>
+        </div>
       </div>
     </div>
   </main>
