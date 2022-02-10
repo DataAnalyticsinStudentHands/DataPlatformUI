@@ -7,16 +7,19 @@ const Schema = mongoose.Schema;
 let primaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     firstName: {
-      type: String
+        type: String,
+        require: true
     },
     lastName: {
-        type: String
+        type: String,
+        required: true           
     },
     email: {
         type: String
     },
     phoneNumbers: {
-        type: Array
+        type: Array,
+        required: true
     },
     address: {
         type: Array
