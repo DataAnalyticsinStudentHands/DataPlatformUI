@@ -21,15 +21,51 @@
           <input class="mt-4" type="text" />
         </section>
         <section>
-          <button type="submit">Search Client</button>
+          <button @click="handleSubmitForm" type="submit">Search Client</button>
         </section>
       </div>
-      <div></div>
+      <div>
+        <section class="flex flex-row justify-center mt-10">
+          <h3 class="mr-20">Name</h3>
+          <h3 class="mr-20">City</h3>
+          <h3 class="mr-20">Phone Number</h3>
+        </section>
+        <section
+          class="flex flex-row mt-10"
+          style="margin-left: 23%; margin-right: 34%"
+        >
+          <ul>
+            <li class="mr-20" v-for="client in queryData" :key="client._id">
+              {{ client.firstName }}
+            </li>
+          </ul>
+        </section>
+      </div>
     </div>
   </main>
 </template>
 <script>
-export default {};
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      queryData: [],
+    };
+  },
+  methods: {
+    handleSubmitForm() {
+      this.queryData = [];
+      let apiURL = "http://localhost:3000/primarydata";
+      axios.get(apiURL).then((resp) => {
+        let data = resp.data;
+        for (let i = 0; i < data.length; i++) {
+          this.queryData.push(data[i]);
+        }
+      });
+    },
+  },
+};
 </script>
 <style>
 </style>
