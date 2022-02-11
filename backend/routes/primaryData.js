@@ -55,7 +55,6 @@ router.get("/users/", (req, res, next) => { // route method, path followed by a 
             }
         }
     );
-    console.log(req.query);
 });
 
 //POST: host:port/primaryData || this endpoint will use POST method to create document for primaryData collection, +
