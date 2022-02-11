@@ -2,10 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     {
-        path: '/',
-        name: 'Home',
-    },
-    {
         path: '/intakeform',
         name: 'intakeForm',
         component: () => import('../components/intakeForm')
