@@ -82,7 +82,7 @@ export default {
 				email: "",
 				phoneNumbers: [{
 						primaryPhone: "",
-						seondaryPhone: "",
+						secndaryPhone: "",
 				}],
         address: [
           {
@@ -93,14 +93,7 @@ export default {
             county: "",
             zipcode: ""         
           }
-        ],
-        additionalData: [{
-          maritalStatus: "",
-          isSingleParent: "",
-          isPregnant: "",
-          isTeenParent: "",
-          deliveryDate: ""
-        }]
+        ]
 			},
 		};
 		},
@@ -108,7 +101,7 @@ export default {
 			handleSubmitForm() {
 				let apiURL = "http://localhost:3000/primarydata";
 				axios.post(apiURL, this.client).then(() => {
-          this.$router.push('/intakeform')
+          this.$router.push('/')
 					this.client = {
             firstName: "",
             middleName: "",

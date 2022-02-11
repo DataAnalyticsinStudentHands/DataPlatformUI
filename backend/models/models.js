@@ -10,6 +10,10 @@ let primaryDataSchema = new Schema({
         type: String,
         require: true
     },
+    middleName: {
+        type: String,
+        require: true
+    },
     lastName: {
         type: String,
         required: true           
@@ -23,10 +27,6 @@ let primaryDataSchema = new Schema({
     },
     address: {
         type: Array
-    },
-    additionalData: {
-        type: Array
-
     },
 }, {
     collection: 'primaryData'
