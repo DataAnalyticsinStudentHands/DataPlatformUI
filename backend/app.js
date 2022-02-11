@@ -1,7 +1,7 @@
 //require the back end web application framework for node.js
 const express = require("express");
 //require object data model library for mongodb, mongoose library
-const mongoose = require("mongoose");  
+const mongoose = require("mongoose");
 //middleware library to add better logging functionality for api requests
 const morgan = require("morgan");
 const cors = require("cors");
@@ -16,35 +16,36 @@ app.use(cors({
 
 //sets up mongoose for the mongoDB connection
 mongoose
-.connect('mongodb+srv://cluster0.0z4bv.mongodb.net/mockup',
-{
-  auth:
-    {username: 'asengchi', 
-    password: 'NyzuPBGvFUNRPdGA', 
-    }
-})   
+  .connect('mongodb+srv://cluster0.0z4bv.mongodb.net/mockup',
+    {
+      auth:
+      {
+        username: 'asengchi',
+        password: 'NyzuPBGvFUNRPdGA',
+      }
+    })
   .then(() => {
     console.log("Database connection Success!");
   })
   .catch((err) => {
     console.error("Mongo Connection Error", err);
   });
-  
+
 //declare port number for the api
-const PORT = process.env.PORT || 3000; 
+const PORT = process.env.PORT || 3000;
 
 //gives access to the json request body
-app.use(express.json()); 
+app.use(express.json());
 //enable incoming request logging in dev mode
-app.use(morgan("dev"));  
+app.use(morgan("dev"));
 
 //Import Routes
 const primaryDataRoute = require('./routes/primaryData');
-const commonDataRoute  = require('./routes/commonData'); 
+// const commonDataRoute  = require('./routes/commonData'); 
 
 //middle ware for routes
 app.use('/primaryData', primaryDataRoute);
-app.use('/commonData', commonDataRoute);
+// app.use('/commonData', commonDataRoute);
 
 //using the PORT cost to listen 
 app.listen(PORT, '0.0.0.0', () => {
@@ -53,9 +54,9 @@ app.listen(PORT, '0.0.0.0', () => {
 
 //error handler
 app.use(function (err, req, res, next) {
-    // logs error and error code to console
-    console.error(err.message);
-    if (!err.statusCode) 
-        err.statusCode = 500;
-    res.status(err.statusCode).send(err.message);
+  // logs error and error code to console
+  console.error(err.message);
+  if (!err.statusCode)
+    err.statusCode = 500;
+  res.status(err.statusCode).send(err.message);
 });

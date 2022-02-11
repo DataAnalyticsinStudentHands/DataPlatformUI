@@ -79,27 +79,28 @@
           </div>
         </div>
       </div>
+      <hr class="mt-10 border-solid border-1" style="border-color: #7d0d15" />
       <div class="mx-10 whitespace-nowrap">
         <div class="grid gap-1 grid-cols-4 mt-10">
-          <h3 class="mr-20">
+          <h3 class="mr-20 font-bold">
             Name
-            <ul class="mt-5">
+            <ul class="mt-5 font-normal">
               <li v-for="client in queryData" :key="client._id">
                 {{ client.firstName + " " + client.lastName }}
               </li>
             </ul>
           </h3>
-          <h3>
+          <h3 class="font-bold">
             City
-            <ul class="mt-5">
+            <ul class="mt-5 font-normal">
               <li v-for="client in queryData" :key="client._id">
                 {{ client.address[0]["city"] }}
               </li>
             </ul>
           </h3>
-          <h3>
+          <h3 class="font-bold">
             Phone Number
-            <ul class="mt-5">
+            <ul class="mt-5 font-normal">
               <li v-for="client in queryData" :key="client._id">
                 {{ client.phoneNumbers[0].primaryPhone }}
               </li>
@@ -116,6 +117,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      //All the data recieved from the query
       queryData: [],
       //Parameter for search to occur
       searchBy: "",
@@ -129,10 +131,11 @@ export default {
       let apiURL = "";
       //Checks which filters are needed for URL structure
       if (this.searchBy === "Client Name") {
-        apiURL = `http://localhost:3000/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}`;
+        apiURL = `http://localhost:3000/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
       } else if (this.searchBy === "Client Number") {
-        apiURL = `http://localhost:3000/primarydata/users/?phoneNumber=${this.firstName}&lastName=${this.lastName}`;
+        apiURL = `http://localhost:3000/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
       }
+      //Resets the list of queried data
       this.queryData = [];
       axios.get(apiURL).then((resp) => {
         let data = resp.data;
@@ -140,6 +143,7 @@ export default {
           this.queryData.push(data[i]);
         }
       });
+      //Resets all the variables
       this.searchQuery = "";
       this.firstName = "";
       this.lastName = "";

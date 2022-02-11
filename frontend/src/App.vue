@@ -3,13 +3,12 @@
     <div id="_container" class="h-screen w-1/5 p-8">
       <header class="w-full">
         <section class="text-center">
-          <img />
-          <!-- TODO: Get This Name From Database -->
+          <img class="m-auto" src="@\assets\DanPersona.svg" />
           <p>Dan</p>
           <p>Main Persona</p>
         </section>
         <nav class="mt-10">
-          <ul>
+          <ul class="flex flex-col gap-4">
             <li>
               <router-link to="/"
                 ><span
@@ -54,7 +53,7 @@
           background: linear-gradient(257.57deg, #910812 50.6%, #efecec 50.6%);
         "
       >
-        <h1 class="mr-20 text-3xl text-white">Hello World!</h1>
+        <h1 class="mr-20 text-3xl text-white">Non Profit Name</h1>
       </section>
       <section><router-view></router-view></section>
     </div>
