@@ -18,7 +18,7 @@
                     <tr v-for="client in clients" :key="client._id">
                         <td>{{ client.firstName }}</td>
                         <td>{{ client.lastName }}</td>
-                        <td>{{ client.phoneNumber }}</td>
+                        <td>{{ client.phoneNumbers[0].primaryPhone }}</td>
                         <td>{{ client.zipCode }}</td>
                         <td>{{ clients.isVaccinated }}</td>                     
                         <td>
