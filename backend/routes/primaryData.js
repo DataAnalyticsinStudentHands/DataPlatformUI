@@ -6,7 +6,7 @@ const router = express.Router(); //creates an instance of the route handler
 let { primarydata } = require("../models/models"); //imports the primarydata model from models.js}
 
 //GET host:port/primaryData || this endpoint will use GET method to return all entries from primaryData collection, 
-router.get("/users", (req, res, next) => { // route method, path, followed by callback
+router.get("/", (req, res, next) => { // route method, path, followed by callback
     primarydata.find( //model.find({filters}) finds documents, since we have no filters, it returns everything
         (error, data) => { // error handler
             if (error) {

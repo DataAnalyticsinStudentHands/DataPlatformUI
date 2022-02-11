@@ -7,11 +7,6 @@ const routes = [
         component: () => import('../components/intakeForm')
     }, 
     {
-        path: '/clients',
-        name: 'clients',
-        component: () => import('../components/viewClients')
-    },
-    {
         path: '/findclient',
         name: 'findClient',
         component: () => import('../components/findClient')
