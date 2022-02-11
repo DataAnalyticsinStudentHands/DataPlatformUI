@@ -6,7 +6,8 @@
         Client Intake Form
       </h1> </div>
 		<div class="m-5">
-			<form>
+      <!-- @submit.prevent stops the submit event from reloading the page-->
+			<form @submit.prevent="handleSubmitForm">
 				<section>
 					<section>
 						<p class="text-left font-bold">Personal Details</p>
@@ -29,10 +30,10 @@
 								<input v-model="client.email" name="email" type="text" /> </div>
 							<div class="flex flex-col">
 								<label class="self-start font-bold" for="phoneNumber">Phone Number</label>
-								<input v-model="client.primaryPhone" name="phoneNumber" type="text" /> </div>
+								<input v-model="client.phoneNumbers[0].primaryPhone" name="phoneNumber" type="text" /> </div>
 							<div class="flex flex-col">
 								<label class="self-start font-bold" for="">Alternative Phone Number</label>
-								<input v-model="client.secondaryPhone" name="secPhone" type="text" /> </div>
+								<input v-model="client.phoneNumbers[0].secondaryPhone" name="secPhone" type="text" /> </div>
 						</section>
 					</section>
 				</section>
@@ -43,27 +44,27 @@
 					<section class="flex space-x-10 mt-10">
 						<div class="flex flex-col">
 							<label class="self-start font-bold" for="">Address 1</label>
-							<input v-model="client.line1" type="text" /> </div>
+							<input v-model="client.address[0].line1" type="text" /> </div>
 						<div class="flex flex-col">
 							<label class="self-start font-bold" for="">Address 2</label>
-							<input v-model="client.line2" type="text" /> </div>
+							<input v-model="client.address[0].line2" type="text" /> </div>
 						<div class="flex flex-col">
 							<label class="self-start font-bold" for="">City</label>
-							<input v-model="client.city" type="text" /> </div>
+							<input v-model="client.address[0].city" type="text" /> </div>
 					</section>
 					<section class="mt-5">
 						<section class="flex space-x-10">
 							<div class="flex flex-col">
 								<label class="self-start font-bold" for="">County</label>
-								<input v-model="client.county" type="text" /> </div>
+								<input v-model="client.address[0].county" type="text" /> </div>
 							<div class="flex flex-col">
 								<label class="self-start font-bold" for="">Zip Code</label>
-								<input v-model="client.zipcode" type="text" /> </div>
+								<input v-model="client.address[0].zipcode" type="text" /> </div>
 						</section>
 					</section>
 				</section>
 				<div class="flex justify-between mt-10 mr-20">
-					<button @click="handleSubmitForm" type="submit">Add Client</button>
+					<button type="submit">Add Client</button>
 					<button @click.prevent type="reset">Clear Form</button>
 				</div>
 			</form>
@@ -82,7 +83,7 @@ export default {
 				email: "",
 				phoneNumbers: [{
 						primaryPhone: "",
-						secndaryPhone: "",
+						secondaryPhone: "",
 				}],
         address: [
           {
