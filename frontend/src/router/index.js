@@ -21,7 +21,6 @@ const routes = [
         name: 'commonDataForm',
         component: () => import('../components/commonDataForm')
     }
-
 ]
 const router = createRouter({
     history: createWebHistory(), routes

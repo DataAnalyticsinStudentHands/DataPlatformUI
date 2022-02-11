@@ -30,18 +30,7 @@
                 </span>
                 Client Intake Form</router-link
               >
-            </li>
-            <li>
-              <router-link to="/clients"
-                ><span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                >
-                  search
-                </span>
-                View Client</router-link
-              >
-            </li>            
+            </li>      
             <li>
               <router-link to="/findclient"
                 ><span
