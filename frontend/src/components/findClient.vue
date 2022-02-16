@@ -80,34 +80,32 @@
         </div>
       </div>
       <hr class="mt-10 border-solid border-1" style="border-color: #7d0d15" />
-      <div class="mx-10 whitespace-nowrap">
-        <div class="grid gap-1 grid-cols-4 mt-10">
-          <h3 class="mr-20 font-bold">
-            Name
-            <ul class="mt-5 font-normal">
-              <li v-for="client in queryData" :key="client._id">
-                {{ client.firstName + " " + client.lastName }}
-              </li>
-            </ul>
-          </h3>
-          <h3 class="font-bold">
-            City
-            <ul class="mt-5 font-normal">
-              <li v-for="client in queryData" :key="client._id">
-                {{ client.address[0]["city"] }}
-              </li>
-            </ul>
-          </h3>
-          <h3 class="font-bold">
-            Phone Number
-            <ul class="mt-5 font-normal">
-              <li v-for="client in queryData" :key="client._id">
-                {{ client.phoneNumbers[0].primaryPhone }}
-              </li>
-            </ul>
-          </h3>
-        </div>
-      </div>
+      <!-- Display Found Data -->
+      <table class="table-auto mx-auto text-center">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>City</th>
+            <th>Phone number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="client in queryData" :key="client._id">
+            <td>{{ client.firstName + " " + client.lastName }}</td>
+            <td>
+              {{ client.address[0]["city"] }}
+            </td>
+            <td>
+              {{ client.phoneNumbers[0].primaryPhone }}
+            </td>
+            <td>
+              <button @click="editClient(client._id)">
+                View {{ client.firstName + " " + client.lastName }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </main>
 </template>
@@ -149,6 +147,9 @@ export default {
       this.lastName = "";
       this.phoneNumber = "";
     },
+    editClient(clientID) {
+      this.$router.push({ name: "clientdetails", params: { id: clientID } });
+    },
   },
 };
 </script>
@@ -164,5 +165,10 @@ button[type="submit"] {
   border-radius: 4px;
   padding: 5px 10px;
   color: white;
+}
+td,
+th,
+tr {
+  padding: 0 40px;
 }
 </style>
