@@ -15,7 +15,7 @@ let primaryDataSchema = new Schema({
     },
     lastName: {
         type: String,
-        required: true           
+        required: true
     },
     email: {
         type: String
@@ -28,7 +28,8 @@ let primaryDataSchema = new Schema({
         type: Array
     },
 }, {
-    collection: 'primaryData'
+    collection: 'primaryData',
+    timestamps: true
 });
 
 //collection for commonData
@@ -44,7 +45,7 @@ let commonDataSchema = new Schema({
     },
     socialSecurity: {
         type: String,
-        required: true           
+        required: true
     },
     gender: {
         type: String
@@ -62,29 +63,29 @@ let commonDataSchema = new Schema({
     },
     healthInsurance: {
         type: Array
-    }, 
+    },
     foodStamps: {
         type: Array
-    },  
+    },
     income: {
         type: Array
     },
     employement: {
         type: Array
-    }, 
+    },
     priorityPopulation: {
         type: Array
     },
     additionalData: {
         type: Array
-    },    
+    },
 }, {
     collection: 'commonData'
 });
 
 //create models for mongoose schema to use primaryData and commonData data model ('js', schema name)
-const primarydata = mongoose.model('primaryData', primaryDataSchema); 
-const commondata = mongoose.model('commonData', commonDataSchema); 
+const primarydata = mongoose.model('primaryData', primaryDataSchema);
+const commondata = mongoose.model('commonData', commonDataSchema);
 
 // package the models in an object to export 
-module.exports = {primarydata,commondata}
+module.exports = { primarydata, commondata }

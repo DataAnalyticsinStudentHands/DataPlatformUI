@@ -91,15 +91,17 @@
         </thead>
         <tbody>
           <tr v-for="client in queryData" :key="client._id">
-            <td>{{ client.firstName + " " + client.lastName }}</td>
+            <td class="text-left">
+              {{ client.firstName + " " + client.lastName }}
+            </td>
             <td>
               {{ client.address[0]["city"] }}
             </td>
             <td>
               {{ client.phoneNumbers[0].primaryPhone }}
             </td>
-            <td>
-              <button @click="editClient(client._id)">
+            <td class="text-left">
+              <button class="btn" @click="editClient(client._id)">
                 View {{ client.firstName + " " + client.lastName }}
               </button>
             </td>
@@ -123,6 +125,17 @@ export default {
       lastName: "",
       phoneNumber: "",
     };
+  },
+  mounted() {
+    let apiURL = `http://localhost:3000/primarydata/`;
+    //Resets the list of queried data
+    this.queryData = [];
+    axios.get(apiURL).then((resp) => {
+      let data = resp.data;
+      for (let i = 0; i < data.length; i++) {
+        this.queryData.push(data[i]);
+      }
+    });
   },
   methods: {
     handleSubmitForm() {
@@ -166,9 +179,27 @@ button[type="submit"] {
   padding: 5px 10px;
   color: white;
 }
+.btn {
+  border-radius: 4px;
+  background-color: #7d0d15;
+  color: white;
+  padding: 5px 5px;
+  font-size: 0.8em;
+  min-width: 200px;
+  max-width: 200px;
+  border: 1px solid #7d0d15;
+}
+.btn:hover {
+  background-color: white;
+  color: #7d0d15;
+  border: 1px solid #7d0d15;
+}
 td,
 th,
 tr {
   padding: 0 40px;
+}
+tr > td {
+  padding-bottom: 0.5em;
 }
 </style>
