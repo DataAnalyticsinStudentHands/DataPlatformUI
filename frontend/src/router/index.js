@@ -5,7 +5,7 @@ const routes = [
         path: '/intakeform',
         name: 'intakeForm',
         component: () => import('../components/intakeForm')
-    }, 
+    },
     {
         path: '/findclient',
         name: 'findClient',
@@ -15,6 +15,12 @@ const routes = [
         path: '/commondataform',
         name: 'commonDataForm',
         component: () => import('../components/commonDataForm')
+    },
+    {
+        path: '/clientdetails/:id',
+        name: 'clientdetails',
+        props: true,
+        component: () => import('../components/clientDetails')
     }
 ]
 const router = createRouter({
