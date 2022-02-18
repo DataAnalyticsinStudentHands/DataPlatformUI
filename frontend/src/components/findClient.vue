@@ -124,6 +124,17 @@ export default {
       phoneNumber: "",
     };
   },
+  mounted() {
+    let apiURL = `http://localhost:3000/primarydata/`;
+    //Resets the list of queried data
+    this.queryData = [];
+    axios.get(apiURL).then((resp) => {
+      let data = resp.data;
+      for (let i = 0; i < data.length; i++) {
+        this.queryData.push(data[i]);
+      }
+    });
+  },
   methods: {
     handleSubmitForm() {
       let apiURL = "";
