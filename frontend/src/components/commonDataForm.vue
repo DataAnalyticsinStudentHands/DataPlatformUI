@@ -442,6 +442,7 @@ export default {
   },
   methods: {
     handleSubmitForm() {
+      console.log("AAAAAAAAAAAAA");
       let apiURL = "http://localhost:3000/commondata";
       axios.post(apiURL, this.data).then(() => {
         this.data = {

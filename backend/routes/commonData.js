@@ -59,6 +59,7 @@ router.get("/clientdetails/", (req, res, next) => { // route method, path follow
 //POST: host:port/commonData || this endpoint will use POST method to create document for primaryData collection, +
 //Note: when you send the request body, you can exclude _id, since mongodb will automatically handle that.  
 router.post("/", (req, res, next) => { // route method, path, callback 
+    console.log("AAAAAAAAAA")
     commondata.create( //model.create() creates a new document using primarydata model
         req.body, //use the entire request body as the data for our new document: commondata.create (req.body)
         (error, data) => { // error handler 
