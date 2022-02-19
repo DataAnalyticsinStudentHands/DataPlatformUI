@@ -442,70 +442,75 @@ export default {
   },
   methods: {
     handleSubmitForm() {
+      console.log("GOT INTO THE THINGY");
+      console.log(this.data.ethnicity);
       console.log("AAAAAAAAAAAAA");
-      let apiURL = "http://localhost:3000/commondata";
+      let apiURL = "http://localhost:3000/commonData";
       axios.post(apiURL, this.data).then(() => {
+        this.$router.push('/')
         this.data = {
-        client_id: "",
-        birthdate: "",
-        socialSecurity: "",
-        gender: "",
-        sex: "",
-        ethnicity: "",
-        education: [{
-          hasAttendedSchool: "",
-          school: "",
-          lastGrade: "",
-          hasGraduated: "",
-          highestLevel: "",
-          certificates: "",
-        }],
-        healthInsurance: [{
-          hasInsurance: "",
-          insuranceType: "",
-        }],
-        foodStamps: [{
-          hasFoodStamps: "",
-          noStampReason: "",
-          foodStampAmt: ""
-        }],
-        income: [{
-          isHeadOfHousehold: "",
-          monthlyIncome: "",
-          otherIncome: "",
-          spouseSupport: "",
-          wokersComp: "",
-          childSupport: "",
-          TANF: "",
-          supplementalSecInco_: "",
-          unemployment: "",
-          other: ""
-        }],
-        employment: [{
-          isEmployed: "",
-          employmentDuration: "",
-          employer: "",
-          occupation: "",
-          isHomeMaker: "",
-          homeMakerDuration: "",
-          isRetired: "",
-          retiredDuration: ""
-        }],
-        priorityPopulation: [{
-          hasMentalIllness: "",
-          hasADAHandicap: "",
-          isElderlyOver55: "",
-          isVeteran: "",
-          isHarveyImpact: ""
-        }],
-        additionalData: [{
-          maritalStatus: "",
-          isSingleParent: "",
-          isTeenParent: "",
-          isPregnant: "",
-          deliveryDate: ""
-        }]
-      };
+          client_id: "",
+          birthdate: "",
+          socialSecurity: "",
+          gender: "",
+          sex: "",
+          ethnicity: "",
+          education: [{
+            hasAttendedSchool: "",
+            school: "",
+            lastGrade: "",
+            hasGraduated: "",
+            highestLevel: "",
+            certificates: "",
+          }],
+          healthInsurance: [{
+            hasInsurance: "",
+            insuranceType: "",
+          }],
+          foodStamps: [{
+            hasFoodStamps: "",
+            noStampReason: "",
+            foodStampAmt: ""
+          }],
+          income: [{
+            isHeadOfHousehold: "",
+            monthlyIncome: "",
+            otherIncome: "",
+            spouseSupport: "",
+            wokersComp: "",
+            childSupport: "",
+            TANF: "",
+            supplementalSecInco_: "",
+            unemployment: "",
+            other: ""
+          }],
+          employment: [{
+            isEmployed: "",
+            employmentDuration: "",
+            employer: "",
+            occupation: "",
+            isHomeMaker: "",
+            homeMakerDuration: "",
+            isRetired: "",
+            retiredDuration: ""
+          }],
+          priorityPopulation: [{
+            hasMentalIllness: "",
+            hasADAHandicap: "",
+            isElderlyOver55: "",
+            isVeteran: "",
+            isHarveyImpact: ""
+          }],
+          additionalData: [{
+            maritalStatus: "",
+            isSingleParent: "",
+            isTeenParent: "",
+            isPregnant: "",
+            deliveryDate: ""
+          }]
+        }
+      }).catch(error => {
+        console.log(error)
       });
     },
   },
