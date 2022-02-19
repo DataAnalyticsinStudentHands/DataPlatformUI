@@ -15,7 +15,7 @@ router.get("/", (req, res, next) => { // route method, path, followed by callbac
                 res.json(data); // returns the response data as json
             }
         }
-    );
+    ).sort({ 'updatedAt': -1 }).limit(10);
 });
 
 //GET host:port/primaryData/:id || this endpoint will use GET method to return a doucment from primaryData collection, using :id as a parameter 
@@ -71,6 +71,9 @@ router.post("/", (req, res, next) => { // route method, path, callback
             }
         }
     );
+    primarydata.createdAt;
+    primarydata.updatedAt;
+    primarydata.createdAt instanceof Date;
 });
 
 //PUT: host:port/primaryData || this endpoint will use PUT method to update an existing document, using :id as a parameter in primaryData collection,  

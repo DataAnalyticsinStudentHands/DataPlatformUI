@@ -153,7 +153,7 @@ export default {
         this.client.lastName = data.lastName;
         this.client.email = data.email;
         this.client.phoneNumbers[0].primaryPhone =
-          data.phoneNumbers[0].secondaryPhone;
+          data.phoneNumbers[0].primaryPhone;
         this.client.phoneNumbers[0].secondaryPhone =
           data.phoneNumbers[0].secondaryPhone;
         this.client.address[0].line1 = data.address[0].line1;
