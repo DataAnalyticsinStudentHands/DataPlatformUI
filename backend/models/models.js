@@ -70,7 +70,7 @@ let commonDataSchema = new Schema({
     income: {
         type: Array
     },
-    employement: {
+    employment: {
         type: Array
     },
     priorityPopulation: {

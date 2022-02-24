@@ -856,6 +856,7 @@ export default {
   props: ["id"],
   data() {
     return {
+      exists: true,
       data: {
         client_id: this.id,
         birthdate: "",
@@ -942,23 +943,59 @@ export default {
       })
       .then((resp) => {
         let datu = resp.data[0];
-        // this.client.firstName = data.firstName;
-        // this.client.address[0].line1 = data.address[0].line1;
+        if(datu != undefined) {
+          // this.client.firstName = data.firstName;
+          // this.client.address[0].line1 = data.address[0].line1;
 
-        this.data.birthdate = datu.birthdate;
-        this.data.socialSecurity = "";
-        this.data.gender = datu.gender;
-        this.data.sex = datu.sex;
-        this.data.ethnicity = datu.ethnicity;
-        // this.data. = data.;
-        // this.data. = data.;
-        // this.data. = data.;
-        // this.data. = data.;
-        // this.data. = data.;
-        // this.data. = data.;
-        // this.data. = data.;
-        // this.data. = data.;
-        // this.data. = data.;
+          this.data.birthdate = new Date(datu.birthdate);
+          this.data.socialSecurity = datu.socialSecurity;  /*###CHANGE THIS SOMEHOW LATER!!!###*/
+          this.data.gender = datu.gender;
+          this.data.sex = datu.sex;
+          this.data.ethnicity = datu.ethnicity;
+          this.data.education[0].hasAttendedSchool = datu.education[0].hasAttendedSchool;
+          this.data.education[0].school = datu.education[0].school;
+          this.data.education[0].lastGrade = datu.education[0].lastGrade;
+          this.data.education[0].hasGraduated = datu.education[0].hasGraduated;
+          this.data.education[0].highestLevel = datu.education[0].highestLevel;
+          this.data.education[0].certificates = datu.education[0].certificates;
+          this.data.healthInsurance[0].hasInsurance = datu.healthInsurance[0].hasInsurance;
+          this.data.healthInsurance[0].insuranceType = datu.healthInsurance[0].insuranceType;
+          this.data.foodStamps[0].hasFoodStamps = datu.foodStamps[0].hasFoodStamps;
+          this.data.foodStamps[0].noStampReason = datu.foodStamps[0].noStampReason;
+          this.data.foodStamps[0].foodStampAmt = datu.foodStamps[0].foodStampAmt;
+          this.data.income[0].isHeadOfHousehold = datu.income[0].isHeadOfHousehold;
+          this.data.income[0].monthlyIncome = datu.income[0].monthlyIncome;
+          this.data.income[0].otherIncome = datu.income[0].otherIncome;
+          this.data.income[0].spouseSupport = datu.income[0].spouseSupport;
+          this.data.income[0].wokersComp = datu.income[0].wokersComp;
+          this.data.income[0].childSupport = datu.income[0].childSupport;
+          this.data.income[0].TANF = datu.income[0].TANF;
+          this.data.income[0].supplementalSecInco_ = datu.income[0].supplementalSecInco_;
+          this.data.income[0].unemployment = datu.income[0].unemployment;
+          this.data.income[0].other = datu.income[0].other;
+          this.data.employment[0].isEmployed = datu.employment[0].isEmployed;
+          this.data.employment[0].employmentDuration = datu.employment[0].employmentDuration;
+          this.data.employment[0].employer = datu.employment[0].employer;
+          this.data.employment[0].occupation = datu.employment[0].occupation;
+          this.data.employment[0].isHomeMaker = datu.employment[0].isHomeMaker;
+          this.data.employment[0].homeMakerDuration = datu.employment[0].homeMakerDuration;
+          this.data.employment[0].isRetired = datu.employment[0].isRetired;
+          this.data.employment[0].retiredDuration = datu.employment[0].retiredDuration;
+          this.data.priorityPopulation[0].hasMentalIllness = datu.priorityPopulation[0].hasMentalIllness;
+          this.data.priorityPopulation[0].hasADAHandicap = datu.priorityPopulation[0].hasADAHandicap;
+          this.data.priorityPopulation[0].isElderlyOver55 = datu.priorityPopulation[0].isElderlyOver55;
+          this.data.priorityPopulation[0].isVeteran = datu.priorityPopulation[0].isVeteran;
+          this.data.priorityPopulation[0].isHarveyImpact = datu.priorityPopulation[0].isHarveyImpact;
+          this.data.additionalData[0].maritalStatus = datu.additionalData[0].maritalStatus;
+          this.data.additionalData[0].isSingleParent = datu.additionalData[0].isSingleParent;
+          this.data.additionalData[0].isTeenParent = datu.additionalData[0].isTeenParent;
+          this.data.additionalData[0].isPregnant = datu.additionalData[0].isPregnant;
+          this.data.additionalData[0].deliveryDate = datu.additionalData[0].deliveryDate;
+          this.exists = true;
+        }
+        else {
+          this.exists = false;
+        }
 
       });
   },
@@ -966,90 +1003,178 @@ export default {
     
   methods: {
     handleSubmitForm() {
-      let apiURL = "http://localhost:3000/commonData/";
-      axios
-        .post(apiURL, this.data)
-        .then(() => {
-          this.$router.push("/");
-          this.data = {
-            client_id: this.id,
-            birthdate: "",
-            socialSecurity: "",
-            gender: "",
-            sex: "",
-            ethnicity: "",
-            education: [
-              {
-                hasAttendedSchool: "",
-                school: "",
-                lastGrade: "",
-                hasGraduated: "",
-                highestLevel: "",
-                certificates: "",
-              },
-            ],
-            healthInsurance: [
-              {
-                hasInsurance: "",
-                insuranceType: "",
-              },
-            ],
-            foodStamps: [
-              {
-                hasFoodStamps: "",
-                noStampReason: "",
-                foodStampAmt: "",
-              },
-            ],
-            income: [
-              {
-                isHeadOfHousehold: "",
-                monthlyIncome: "",
-                otherIncome: "",
-                spouseSupport: "",
-                wokersComp: "",
-                childSupport: "",
-                TANF: "",
-                supplementalSecInco_: "",
-                unemployment: "",
-                other: "",
-              },
-            ],
-            employment: [
-              {
-                isEmployed: "",
-                employmentDuration: "",
-                employer: "",
-                occupation: "",
-                isHomeMaker: "",
-                homeMakerDuration: "",
-                isRetired: "",
-                retiredDuration: "",
-              },
-            ],
-            priorityPopulation: [
-              {
-                hasMentalIllness: "",
-                hasADAHandicap: "",
-                isElderlyOver55: "",
-                isVeteran: "",
-                isHarveyImpact: "",
-              },
-            ],
-            additionalData: [
-              {
-                maritalStatus: "",
-                isSingleParent: "",
-                isTeenParent: "",
-                isPregnant: "",
-                deliveryDate: "",
-              },
-            ],
-          };
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      if(this.exists != true) {
+        let apiURL = "http://localhost:3000/commonData/";
+        axios
+          .post(apiURL, this.data)
+          .then(() => {
+            this.$router.push("/");
+            this.data = {
+              client_id: this.id,
+              birthdate: "",
+              socialSecurity: "",
+              gender: "",
+              sex: "",
+              ethnicity: "",
+              education: [
+                {
+                  hasAttendedSchool: "",
+                  school: "",
+                  lastGrade: "",
+                  hasGraduated: "",
+                  highestLevel: "",
+                  certificates: "",
+                },
+              ],
+              healthInsurance: [
+                {
+                  hasInsurance: "",
+                  insuranceType: "",
+                },
+              ],
+              foodStamps: [
+                {
+                  hasFoodStamps: "",
+                  noStampReason: "",
+                  foodStampAmt: "",
+                },
+              ],
+              income: [
+                {
+                  isHeadOfHousehold: "",
+                  monthlyIncome: "",
+                  otherIncome: "",
+                  spouseSupport: "",
+                  wokersComp: "",
+                  childSupport: "",
+                  TANF: "",
+                  supplementalSecInco_: "",
+                  unemployment: "",
+                  other: "",
+                },
+              ],
+              employment: [
+                {
+                  isEmployed: "",
+                  employmentDuration: "",
+                  employer: "",
+                  occupation: "",
+                  isHomeMaker: "",
+                  homeMakerDuration: "",
+                  isRetired: "",
+                  retiredDuration: "",
+                },
+              ],
+              priorityPopulation: [
+                {
+                  hasMentalIllness: "",
+                  hasADAHandicap: "",
+                  isElderlyOver55: "",
+                  isVeteran: "",
+                  isHarveyImpact: "",
+                },
+              ],
+              additionalData: [
+                {
+                  maritalStatus: "",
+                  isSingleParent: "",
+                  isTeenParent: "",
+                  isPregnant: "",
+                  deliveryDate: "",
+                },
+              ],
+            };
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+      else {
+        let apiURL = "http://localhost:3000/commonData/update";
+        axios
+          .post(apiURL, this.data)
+          .then(() => {
+            this.$router.push("/");
+            this.data = {
+              client_id: this.id,
+              birthdate: "",
+              socialSecurity: "",
+              gender: "",
+              sex: "",
+              ethnicity: "",
+              education: [
+                {
+                  hasAttendedSchool: "",
+                  school: "",
+                  lastGrade: "",
+                  hasGraduated: "",
+                  highestLevel: "",
+                  certificates: "",
+                },
+              ],
+              healthInsurance: [
+                {
+                  hasInsurance: "",
+                  insuranceType: "",
+                },
+              ],
+              foodStamps: [
+                {
+                  hasFoodStamps: "",
+                  noStampReason: "",
+                  foodStampAmt: "",
+                },
+              ],
+              income: [
+                {
+                  isHeadOfHousehold: "",
+                  monthlyIncome: "",
+                  otherIncome: "",
+                  spouseSupport: "",
+                  wokersComp: "",
+                  childSupport: "",
+                  TANF: "",
+                  supplementalSecInco_: "",
+                  unemployment: "",
+                  other: "",
+                },
+              ],
+              employment: [
+                {
+                  isEmployed: "",
+                  employmentDuration: "",
+                  employer: "",
+                  occupation: "",
+                  isHomeMaker: "",
+                  homeMakerDuration: "",
+                  isRetired: "",
+                  retiredDuration: "",
+                },
+              ],
+              priorityPopulation: [
+                {
+                  hasMentalIllness: "",
+                  hasADAHandicap: "",
+                  isElderlyOver55: "",
+                  isVeteran: "",
+                  isHarveyImpact: "",
+                },
+              ],
+              additionalData: [
+                {
+                  maritalStatus: "",
+                  isSingleParent: "",
+                  isTeenParent: "",
+                  isPregnant: "",
+                  deliveryDate: "",
+                },
+              ],
+            };
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
   },
 };

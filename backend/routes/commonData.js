@@ -59,7 +59,25 @@ router.get("/clientdetails/", (req, res, next) => { // route method, path follow
 //POST: host:port/commonData || this endpoint will use POST method to create document for primaryData collection, +
 //Note: when you send the request body, you can exclude _id, since mongodb will automatically handle that.  
 router.post("/", (req, res, next) => { // route method, path, callback 
+    console.log("Creating New");
     commondata.create( //model.create() creates a new document using primarydata model
+        req.body, //use the entire request body as the data for our new document: commondata.create (req.body)
+        (error, data) => { // error handler 
+            if (error) {
+                return next(error);//
+            } else {
+                res.json(data); // returns the response data as json
+            }
+        }
+    );
+});
+
+//POST: host:port/commonData || this endpoint will use POST method to create document for primaryData collection, +
+//Note: when you send the request body, you can exclude _id, since mongodb will automatically handle that.  
+router.post("/update", (req, res, next) => { // route method, path, callback 
+    console.log("Found Existing");
+    commondata.findOneAndUpdate( //model.create() creates a new document using primarydata model
+    { client_id: req.params.id },
         req.body, //use the entire request body as the data for our new document: commondata.create (req.body)
         (error, data) => { // error handler 
             if (error) {
@@ -91,7 +109,7 @@ router.put("/users/:id", (req, res, next) => { // route method, path followed by
 router.get("/commondataform/", (req, res, next) => { // route method, path followed by a parameter, callback
     console.log("id: " + req.query.id);
     commondata.find( //model.find({filter}) finds documents based on the {filter}, can have many as long as they are seperated by comma.
-        { _id: req.query.id }, // // our first filter is to find document where _id matches the :id from our endpoint. ex: host:port/primaryData/12345 12345 is our req.params.id
+        { client_id: req.query.id }, // // our first filter is to find document where _id matches the :id from our endpoint. ex: host:port/primaryData/12345 12345 is our req.params.id
         (error, data) => { // error handler
             if (error) {
                 return next(error);
