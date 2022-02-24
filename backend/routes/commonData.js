@@ -89,15 +89,16 @@ router.put("/users/:id", (req, res, next) => { // route method, path followed by
 
 //GET host:port/primaryData/:id || this endpoint will use GET method to return a doucment from primaryData collection, using :id as a parameter 
 router.get("/commondataform/", (req, res, next) => { // route method, path followed by a parameter, callback
-    console.log("id " + req.query.id);
+    console.log("id: " + req.query.id);
     commondata.find( //model.find({filter}) finds documents based on the {filter}, can have many as long as they are seperated by comma.
         { _id: req.query.id }, // // our first filter is to find document where _id matches the :id from our endpoint. ex: host:port/primaryData/12345 12345 is our req.params.id
         (error, data) => { // error handler
             if (error) {
                 return next(error);
             } else {
+                console.log("data: "+data)
                 res.json(data); // returns the response data as json
-                console.log(res.json.data)
+                
             }
         }
     );

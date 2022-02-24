@@ -12,8 +12,9 @@ const routes = [
         component: () => import('../components/findClient')
     },
     {
-        path: '/commondataform',
+        path: '/commondataform/:id',
         name: 'commonDataForm',
+        props: true,
         component: () => import('../components/commonDataForm')
     },
     {

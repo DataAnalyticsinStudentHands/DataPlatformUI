@@ -179,6 +179,7 @@ export default {
       });
     },
     moveToCommon(idd) {
+      console.log(idd);
       this.$router.push({ name: "commonDataForm", params: { id: idd } });
     },
   },

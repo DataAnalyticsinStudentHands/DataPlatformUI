@@ -962,10 +962,10 @@ export default {
 
       });
   },
+
+    
   methods: {
     handleSubmitForm() {
-      console.log(this.data.ethnicity);
-      console.log("AAAAAAAAAAAAA");
       let apiURL = "http://localhost:3000/commonData/";
       axios
         .post(apiURL, this.data)
