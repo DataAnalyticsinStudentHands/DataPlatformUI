@@ -853,10 +853,11 @@
 <script>
 import axios from "axios";
 export default {
+  props: ["id"],
   data() {
     return {
       data: {
-        client_id: "18006953666",
+        client_id: this.id,
         birthdate: "",
         socialSecurity: "",
         gender: "",
@@ -932,6 +933,35 @@ export default {
       },
     };
   },
+
+  beforeMount() {
+    //Loads resp data into Vue Data properties
+    axios
+      .get("http://localhost:3000/commondata/commondataform/", {
+        params: { id: this.id },
+      })
+      .then((resp) => {
+        let datu = resp.data[0];
+        // this.client.firstName = data.firstName;
+        // this.client.address[0].line1 = data.address[0].line1;
+
+        this.data.birthdate = datu.birthdate;
+        this.data.socialSecurity = "";
+        this.data.gender = datu.gender;
+        this.data.sex = datu.sex;
+        this.data.ethnicity = datu.ethnicity;
+        // this.data. = data.;
+        // this.data. = data.;
+        // this.data. = data.;
+        // this.data. = data.;
+        // this.data. = data.;
+        // this.data. = data.;
+        // this.data. = data.;
+        // this.data. = data.;
+        // this.data. = data.;
+
+      });
+  },
   methods: {
     handleSubmitForm() {
       console.log(this.data.ethnicity);
@@ -942,7 +972,7 @@ export default {
         .then(() => {
           this.$router.push("/");
           this.data = {
-            client_id: "",
+            client_id: this.id,
             birthdate: "",
             socialSecurity: "",
             gender: "",

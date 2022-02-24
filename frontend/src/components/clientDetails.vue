@@ -104,6 +104,11 @@
             Update Client
           </button>
         </div>
+        <div class="flex justify-between mt-10 mr-20">
+          <button @click="moveToCommon(this.id)" type="submit">
+            Edit Common Information
+          </button>
+        </div>
       </form>
     </div>
   </main>
@@ -173,8 +178,31 @@ export default {
         });
       });
     },
+    moveToCommon(idd) {
+      this.$router.push({ name: "commonDataForm", params: { id: idd } });
+    },
   },
 };
 </script>
 <style>
+input,
+select {
+  border: 1px solid #cfd4d9;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 4px;
+  color: linear-gradient(#e66465, #9198e5);
+}
+button[type="submit"] {
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  background-color: #7d0d15;
+  border-radius: 4px;
+  padding: 10px 16px;
+  color: white;
+}
+button[type="reset"] {
+  border: 1px solid #7d0d15;
+  border-radius: 4px;
+  padding: 10px 16px;
+  color: linear-gradient(#e66465, #9198e5);
+}
 </style>
