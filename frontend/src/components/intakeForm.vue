@@ -19,14 +19,18 @@
           <section class="flex space-x-10 mt-10">
             <div class="flex flex-col">
               <label class="self-start font-bold" for="firstName"
-                >First Name</label
-              >
-              <input
-                v-model="client.firstName"
-                name="firstName"
-                type="text"
-                required
-              />
+                >First Name
+              </label>
+              <input v-model="client.firstName" name="firstName" type="text" />
+              <span class="text-black" v-if="v$.client.firstName.$error">
+                <p
+                  style="color: red"
+                  v-for="error of v$.client.firstName.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}!
+                </p>
+              </span>
             </div>
             <div class="flex flex-col">
               <label class="self-start font-bold" for="middleName"
@@ -43,6 +47,15 @@
                 >Last Name</label
               >
               <input v-model="client.lastName" name="lastName" type="text" />
+              <span class="text-black" v-if="v$.client.lastName.$error">
+                <p
+                  style="color: red"
+                  v-for="error of v$.client.lastName.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}!
+                </p>
+              </span>
             </div>
           </section>
           <section class="mt-5">
@@ -55,6 +68,15 @@
                   type="email"
                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                 />
+                <span class="text-black" v-if="v$.client.email.$error">
+                  <p
+                    style="color: red"
+                    v-for="error of v$.client.email.$errors"
+                    :key="error.$uid"
+                  >
+                    {{ error.$message }}!
+                  </p>
+                </span>
               </div>
               <div class="flex flex-col">
                 <label class="self-start font-bold" for="phoneNumber"
@@ -66,6 +88,19 @@
                   type="text"
                   pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
                 />
+                <span
+                  class="text-black"
+                  v-if="v$.client.phoneNumbers[0].primaryPhone.$error"
+                >
+                  <p
+                    style="color: red"
+                    v-for="error of v$.client.phoneNumbers[0].primaryPhone
+                      .$errors"
+                    :key="error.$uid"
+                  >
+                    {{ error.$message }}!
+                  </p>
+                </span>
               </div>
               <div class="flex flex-col">
                 <label class="self-start font-bold" for=""
@@ -121,8 +156,13 @@
   </main>
 </template>
 <script>
+import useVuelidate from "@vuelidate/core";
+import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
 export default {
+  setup() {
+    return { v$: useVuelidate({ $autoDirty: true }) };
+  },
   data() {
     return {
       client: {
@@ -150,48 +190,68 @@ export default {
     };
   },
   methods: {
-    handleSubmitForm() {
-      let apiURL = "http://localhost:3000/primarydata";
-      axios
-        .post(apiURL, this.client)
-        .then(() => {
-          this.$router.push("/");
-          this.client = {
-            firstName: "",
-            middleName: "",
-            lastName: "",
-            email: "",
-            phoneNumbers: [
-              {
-                primaryPhone: "",
-                seondaryPhone: "",
-              },
-            ],
-            address: [
-              {
-                type: "currentAddress",
-                line1: "",
-                line2: "",
-                city: "",
-                county: "",
-                zipcode: "",
-              },
-            ],
-            additionalData: [
-              {
-                maritalStatus: "",
-                isSingleParent: "",
-                isPregnant: "",
-                isTeenParent: "",
-                deliveryDate: "",
-              },
-            ],
-          };
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    async handleSubmitForm() {
+      // Checks to see if there are any errors in validation
+      const isFormCorrect = await this.v$.$validate();
+      // If no errors found. isFormCorrect = True then the form is submitted
+      if (isFormCorrect) {
+        let apiURL = "http://localhost:3000/primarydata";
+        axios
+          .post(apiURL, this.client)
+          .then(() => {
+            this.$router.push("/");
+            this.client = {
+              firstName: "",
+              middleName: "",
+              lastName: "",
+              email: "",
+              phoneNumbers: [
+                {
+                  primaryPhone: "",
+                  seondaryPhone: "",
+                },
+              ],
+              address: [
+                {
+                  type: "currentAddress",
+                  line1: "",
+                  line2: "",
+                  city: "",
+                  county: "",
+                  zipcode: "",
+                },
+              ],
+              additionalData: [
+                {
+                  maritalStatus: "",
+                  isSingleParent: "",
+                  isPregnant: "",
+                  isTeenParent: "",
+                  deliveryDate: "",
+                },
+              ],
+            };
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
+  },
+  // sets validations for the various data properties
+  validations() {
+    return {
+      client: {
+        firstName: { required, alpha },
+        lastName: { required, alpha },
+        email: { email },
+        phoneNumbers: [
+          {
+            primaryPhone: { required, numeric },
+          },
+        ],
+      },
+    };
   },
 };
 </script>
