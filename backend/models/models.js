@@ -11,7 +11,8 @@ let primaryDataSchema = new Schema({
     },
     middleName: {
         type: String,
-        require: true
+        // Remove requirement for middlename??
+        //// require: true
     },
     lastName: {
         type: String,
