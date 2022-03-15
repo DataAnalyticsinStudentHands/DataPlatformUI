@@ -22,6 +22,12 @@ const routes = [
         name: 'clientdetails',
         props: true,
         component: () => import('../components/clientDetails')
+    },
+    {
+        path: '/userCreation',
+        name: 'userCreation',
+        props: true,
+        component: () => import('../components/userCreation')
     }
 ]
 const router = createRouter({

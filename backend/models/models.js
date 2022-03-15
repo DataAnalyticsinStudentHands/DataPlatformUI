@@ -84,9 +84,66 @@ let commonDataSchema = new Schema({
     collection: 'commonData'
 });
 
+//collection for users
+let userSchema = new Schema({
+    _id: { type: String, default: uuid.v1 },
+    firstName: {
+        type: String,
+        require: true
+    },
+    lastName: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String
+    },
+    phoneNumbers: {
+        type: Array,
+        required: true
+    },
+    username: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    association: {
+        type: String,
+        required: true
+    },
+    genericAccessLevel: {
+        type: Number,
+        min:0,  //0=only view self, 1=view nonsensitive data, 2=view, write nonsensitive data, 3=view nonprofit sensitive data (nonprofit admin), 4= view everything (overadmin)
+        max:4,
+        required: true
+    },
+    viewOverride: {
+        type: Number,
+        min:0,
+        max:4,
+    },
+    editOverride: {
+        type: Number,
+        min:0,
+        max:4
+    },
+    createUserOverride: {
+        type: Number,
+        min:0,
+        max:4
+    },
+}, {
+    collection: 'user',
+    timestamps: true
+});
+
 //create models for mongoose schema to use primaryData and commonData data model ('js', schema name)
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const commondata = mongoose.model('commonData', commonDataSchema);
+const users = mongoose.model('users', userSchema);
 
 // package the models in an object to export 
-module.exports = { primarydata, commondata }
+module.exports = { primarydata, commondata, users }
