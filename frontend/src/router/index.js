@@ -4,6 +4,7 @@ const routes = [
     {
         path: '/intakeform',
         name: 'intakeForm',
+        props: true,
         component: () => import('../components/intakeForm')
     },
     {
