@@ -16,12 +16,23 @@
           <section>
             <p class="text-left font-bold">Personal Details</p>
           </section>
-          <section class="flex space-x-10 mt-10">
+          <section
+            class="flex mt-10"
+            :class="{
+              responsive: $store.state.isResponsive,
+              'space-x-10': !$store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="self-start font-bold" for="firstName"
                 >First Name
               </label>
-              <input v-model="client.firstName" name="firstName" type="text" />
+              <input
+                v-model="client.firstName"
+                name="firstName"
+                :class="{ 'w-2/5': $store.state.isResponsive }"
+                type="text"
+              />
               <span class="text-black" v-if="v$.client.firstName.$error">
                 <p
                   style="color: red"
@@ -40,13 +51,19 @@
                 v-model="client.middleName"
                 name="middleName"
                 type="text"
+                :class="{ 'w-2/5': $store.state.isResponsive }"
               />
             </div>
             <div class="flex flex-col">
               <label class="self-start font-bold" for="lastName"
                 >Last Name</label
               >
-              <input v-model="client.lastName" name="lastName" type="text" />
+              <input
+                v-model="client.lastName"
+                name="lastName"
+                type="text"
+                :class="{ 'w-2/5': $store.state.isResponsive }"
+              />
               <span class="text-black" v-if="v$.client.lastName.$error">
                 <p
                   style="color: red"
@@ -58,8 +75,14 @@
               </span>
             </div>
           </section>
-          <section class="mt-5">
-            <section class="flex space-x-10">
+          <section>
+            <section
+              class="flex"
+              :class="{
+                responsive: $store.state.isResponsive,
+                'space-x-10 mt-5': !$store.state.isResponsive,
+              }"
+            >
               <div class="flex flex-col">
                 <label class="self-start font-bold" for="email">Email</label>
                 <input
@@ -67,6 +90,7 @@
                   name="email"
                   type="email"
                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  :class="{ 'w-2/5': $store.state.isResponsive }"
                 />
                 <span class="text-black" v-if="v$.client.email.$error">
                   <p
@@ -87,6 +111,7 @@
                   name="phoneNumber"
                   type="text"
                   pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
+                  :class="{ 'w-2/5': $store.state.isResponsive }"
                 />
                 <span
                   class="text-black"
@@ -111,6 +136,7 @@
                   name="secPhone"
                   type="text"
                   pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
+                  :class="{ 'w-2/5': $store.state.isResponsive }"
                 />
               </div>
             </section>
@@ -120,29 +146,61 @@
           <section>
             <p class="text-left font-bold mt-10">Address Details</p>
           </section>
-          <section class="flex space-x-10 mt-10">
+          <section
+            class="flex mt-10"
+            :class="{
+              responsive: $store.state.isResponsive,
+              'space-x-10': !$store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="self-start font-bold" for="">Address 1</label>
-              <input v-model="client.address[0].line1" type="text" />
+              <input
+                v-model="client.address[0].line1"
+                type="text"
+                :class="{ 'w-3/5': $store.state.isResponsive }"
+              />
             </div>
             <div class="flex flex-col">
               <label class="self-start font-bold" for="">Address 2</label>
-              <input v-model="client.address[0].line2" type="text" />
+              <input
+                v-model="client.address[0].line2"
+                type="text"
+                :class="{ 'w-2/5': $store.state.isResponsive }"
+              />
             </div>
             <div class="flex flex-col">
               <label class="self-start font-bold" for="">City</label>
-              <input v-model="client.address[0].city" type="text" />
+              <input
+                v-model="client.address[0].city"
+                type="text"
+                :class="{ 'w-1/5': $store.state.isResponsive }"
+              />
             </div>
           </section>
           <section class="mt-5">
-            <section class="flex space-x-10">
+            <section
+              class="flex"
+              :class="{
+                responsive: $store.state.isResponsive,
+                'space-x-10': !$store.state.isResponsive,
+              }"
+            >
               <div class="flex flex-col">
                 <label class="self-start font-bold" for="">County</label>
-                <input v-model="client.address[0].county" type="text" />
+                <input
+                  v-model="client.address[0].county"
+                  type="text"
+                  :class="{ 'w-2/5': $store.state.isResponsive }"
+                />
               </div>
               <div class="flex flex-col">
                 <label class="self-start font-bold" for="">Zip Code</label>
-                <input v-model="client.address[0].zipcode" type="text" />
+                <input
+                  v-model="client.address[0].zipcode"
+                  type="text"
+                  :class="{ 'w-1/5': $store.state.isResponsive }"
+                />
               </div>
             </section>
           </section>
@@ -237,6 +295,7 @@ export default {
           });
       }
     },
+    //Is called whenever the screen is resized
   },
   // sets validations for the various data properties
   validations() {
@@ -259,7 +318,6 @@ export default {
 input,
 select {
   border: 1px solid #cfd4d9;
-  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
   border-radius: 4px;
 }
 
@@ -275,5 +333,9 @@ button[type="reset"] {
   border-radius: 4px;
   padding: 10px 16px;
   color: #7d0d15;
+}
+.responsive {
+  flex-direction: column;
+  margin-left: 0;
 }
 </style>

@@ -85,23 +85,27 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>City</th>
+            <th id="cityName">City</th>
             <th>Phone number</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client in queryData" :key="client._id">
+          <tr
+            @click="editClient(client._id)"
+            v-for="client in queryData"
+            :key="client._id"
+          >
             <td class="text-left">
               {{ client.firstName + " " + client.lastName }}
             </td>
-            <td>
+            <td id="cityList">
               {{ client.address[0]["city"] }}
             </td>
             <td>
               {{ client.phoneNumbers[0].primaryPhone }}
             </td>
-            <td class="text-left">
-              <button class="btn" @click="editClient(client._id)">
+            <td class="text-left" id="viewClient">
+              <button class="btn">
                 View {{ client.firstName + " " + client.lastName }}
               </button>
             </td>
@@ -170,7 +174,6 @@ export default {
 input,
 select {
   border: 1px solid #cfd4d9;
-  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
   border-radius: 2px;
 }
 button[type="submit"] {
@@ -201,5 +204,12 @@ tr {
 }
 tr > td {
   padding-bottom: 0.5em;
+}
+@media only screen and (max-width: 900px) {
+  #viewClient,
+  #cityList,
+  #cityName {
+    display: none;
+  }
 }
 </style>
