@@ -12,12 +12,6 @@ Change ip address in vuex store and backend to your personal ip address
 ```
 ipAddress: 'YOURIPADDRESS'
 ```
-2) Go to backend folder, open app.js and change ipAddress constant.
-```
-const ipAddress = 'YOURIPADDRESS'
-```
-
-
 ### Compiles and hot-reloads for development
 ```
 npm run serve
