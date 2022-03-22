@@ -16,10 +16,20 @@
           <div>
             <h2 class="text-left text-lg font-bold">Personal Details</h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="birthDate">Birth Date</label>
-              <input v-model="data.birthdate" name="birthDate" type="date" />
+              <input
+                v-model="data.birthdate"
+                name="birthDate"
+                type="date"
+                :class="{ 'w-2/5': $store.state.isResponsive }"
+              />
             </div>
             <div>
               <label class="flex flex-col font-bold" for="ssNum"
@@ -90,7 +100,7 @@
 
             <div class="flex flex-col">
               <label class="font-bold" for="ethnicity">Ethnicity</label>
-              <div class="flex gap-x-2 items-center">
+              <div class="flex gap-x-2 items-center flex-wrap">
                 <input
                   type="radio"
                   name="ethnicity"
@@ -141,7 +151,12 @@
           <div>
             <h2 class="text-lg text-left font-bold mt-10">Education Details</h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="educated"
                 >Have you attended school?</label
@@ -168,6 +183,7 @@
             <div class="flex flex-col">
               <label class="font-bold" for="school">School</label>
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="school"
                 v-model="data.education[0].school"
@@ -176,6 +192,7 @@
             <div class="flex flex-col">
               <label class="font-bold" for="lastGrade">Last Grade</label>
               <input
+                :class="{ 'w-1/5': $store.state.isResponsive }"
                 type="text"
                 name="lastGrade"
                 v-model="data.education[0].lastGrade"
@@ -209,7 +226,7 @@
               <label class="font-bold" for="highestLevel"
                 >Highest Education Level</label
               >
-              <div class="flex gap-x-2 items-center">
+              <div class="flex gap-x-2 items-center flex-wrap">
                 <input
                   type="radio"
                   name="highestLevel"
@@ -279,6 +296,7 @@
             <div class="flex flex-col">
               <label class="font-bold" for="certificates">Certifications</label>
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="certificates"
                 v-model="data.education[0].certificates"
@@ -294,7 +312,12 @@
               Health Insurance Details
             </h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="hasInsurance"
                 >Do you have insurance?</label
@@ -323,6 +346,7 @@
                 >Insurance Type</label
               >
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="insuranceType"
                 v-model="data.healthInsurance[0].insuranceType"
@@ -338,7 +362,12 @@
               Food Stamp Details
             </h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="hasInsurance"
                 >Do you receive food stamps?</label
@@ -394,7 +423,12 @@
           <div>
             <h2 class="text-left text-lg font-bold mt-10">Income Details</h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="houseHead"
                 >Are you the head of your household?</label
@@ -524,7 +558,12 @@
               Employment Details
             </h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="houseHead">Are you employed?</label>
               <div class="flex gap-x-2 items-center">
@@ -551,6 +590,7 @@
                 >Employment Duration (months)</label
               >
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="number"
                 name="employmentDuration"
                 v-model="data.employment[0].employmentDuration"
@@ -559,6 +599,7 @@
             <div class="flex flex-col">
               <label class="font-bold" for="employer">Employer</label>
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="employer"
                 v-model="data.employment[0].employer"
@@ -567,6 +608,7 @@
             <div class="flex flex-col">
               <label class="font-bold" for="occupation">Occupation</label>
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="occupation"
                 v-model="data.employment[0].occupation"
@@ -600,6 +642,7 @@
                 >Homemaker Duration (months)</label
               >
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="number"
                 name="homeMakerDuration"
                 v-model="data.employment[0].homeMakerDuration"
@@ -631,6 +674,7 @@
                 >Retired Duration (months)</label
               >
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="number"
                 name="retiredDuration"
                 v-model="data.employment[0].retiredDuration"
@@ -646,7 +690,12 @@
               Priority Population Details
             </h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="hasMentalIllness"
                 >Do you have a diagnosed mental illness?</label
@@ -770,12 +819,17 @@
           <div>
             <h2 class="text-left font-bold mt-10">Additional Details</h2>
           </div>
-          <section class="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <section
+            class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
+            :class="{
+              responsive: $store.state.isResponsive,
+            }"
+          >
             <div class="flex flex-col">
               <label class="font-bold" for="houseHead"
                 >What is your marital status?</label
               >
-              <div class="flex gap-x-2 items-center">
+              <div class="flex gap-x-2 items-center flex-wrap">
                 <input
                   type="radio"
                   name="maritalStatus"
@@ -898,6 +952,7 @@
             <div class="flex flex-col">
               <label class="font-bold" for="deliveryDate">Delivery Date</label>
               <input
+                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="date"
                 name="deliveryDate"
                 v-model="data.additionalData[0].deliveryDate"
@@ -1287,5 +1342,8 @@ button[type="reset"] {
 }
 h2 {
   color: #bb2b35;
+}
+.responsive {
+  flex-direction: column;
 }
 </style>
