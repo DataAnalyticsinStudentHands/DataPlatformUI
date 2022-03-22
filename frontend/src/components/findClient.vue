@@ -131,7 +131,7 @@
             <td
               :style="[
                 $store.state.isResponsive
-                  ? 'padding: 0 1em 0.5em 0'
+                  ? 'padding: 0 1em 1em 0'
                   : 'padding: 0 40px',
               ]"
               class="text-left whitespace-nowrap"
