@@ -9,7 +9,8 @@ const store = createStore({
     state() {
         return {
             windowWidth: 9999,
-            isResponsive: false
+            isResponsive: false,
+            ipAddress: '192.168.4.100'
         }
     },
     mutations: {
