@@ -43,7 +43,7 @@
             </div>
             <div class="flex flex-col">
               <label class="font-bold" for="gender">Gender</label>
-              <div class="flex gap-x-2 items-center">
+              <div class="flex gap-x-2 items-center flex-wrap">
                 <input
                   type="radio"
                   name="gender"
