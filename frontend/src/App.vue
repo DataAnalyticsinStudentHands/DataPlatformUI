@@ -22,13 +22,16 @@ export default {
     checkScreenSize() {
       let windowWidth = window.innerWidth;
       this.$store.commit("updateWindowWidth", windowWidth);
-      console.log(this.$store.state.windowWidth);
     },
   },
 };
 </script>
 
 <style>
+html,
+body {
+  overflow-x: hidden;
+}
 #_container {
   background-color: #7d0d15;
   color: white;
