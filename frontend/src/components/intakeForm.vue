@@ -260,6 +260,7 @@ export default {
         axios
           .post(apiURL, this.client)
           .then(() => {
+            alert("Client has been succesfully added. Returning to homescreen");
             this.$router.push("/");
             this.client = {
               firstName: "",

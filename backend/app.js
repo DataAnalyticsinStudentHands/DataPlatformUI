@@ -33,8 +33,6 @@ mongoose
 
 //declare port number for the api
 const PORT = process.env.PORT || 3000;
-//Set this to your ipAddress
-const ipAddress = "192.168.4.100"
 
 //gives access to the json request body
 app.use(express.json());
@@ -52,7 +50,7 @@ app.use('/commonData', commonDataRoute)
 // app.use('/commonData', commonDataRoute);
 
 //using the PORT cost to listen 
-app.listen(PORT, ipAddress, () => {
+app.listen(PORT, () => {
   console.log("Server started listening on port : ", PORT);
 });
 
