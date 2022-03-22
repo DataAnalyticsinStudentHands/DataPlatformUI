@@ -174,7 +174,7 @@
               <input
                 v-model="client.address[0].city"
                 type="text"
-                :class="{ 'w-1/5': $store.state.isResponsive }"
+                :class="{ 'w-3/5': $store.state.isResponsive }"
               />
             </div>
           </section>
@@ -255,13 +255,19 @@ export default {
       },
     };
   },
+  mounted() {
+    window.scrollTo(0, 0);
+  },
   // Store Client ID in a prop
   beforeMount() {
     //Loads resp data into Vue Data properties
     axios
-      .get("http://localhost:3000/primarydata/clientdetails/", {
-        params: { id: this.id },
-      })
+      .get(
+        `http://${this.$store.state.ipAddress}:3000/primarydata/clientdetails/`,
+        {
+          params: { id: this.id },
+        }
+      )
       .then((resp) => {
         let data = resp.data[0];
         this.client.firstName = data.firstName;
@@ -281,7 +287,7 @@ export default {
   },
   methods: {
     handleClientUpdate() {
-      let apiURL = `http://localhost:3000/primarydata/users/${this.id}`;
+      let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/${this.id}`;
       axios.put(apiURL, this.client).then(() => {
         alert("Update has been saved.");
         this.$router.back().catch((error) => {

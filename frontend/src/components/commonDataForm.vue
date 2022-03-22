@@ -917,6 +917,9 @@
 <script>
 import axios from "axios";
 export default {
+  mounted() {
+    window.scrollTo(0, 0);
+  },
   props: ["id"],
   data() {
     return {
@@ -1002,9 +1005,12 @@ export default {
   beforeMount() {
     //Loads resp data into Vue Data properties
     axios
-      .get("http://localhost:3000/commondata/commondataform/", {
-        params: { id: this.id },
-      })
+      .get(
+        `http://${this.$store.state.ipAddress}:3000/commondata/commondataform/`,
+        {
+          params: { id: this.id },
+        }
+      )
       .then((resp) => {
         let datu = resp.data[0];
         if (datu != undefined) {
@@ -1087,7 +1093,7 @@ export default {
   methods: {
     handleSubmitForm() {
       if (this.exists != true) {
-        let apiURL = "http://localhost:3000/commonData/";
+        let apiURL = `http://${this.$store.state.ipAddress}:3000/commonData/`;
         axios
           .post(apiURL, this.data)
           .then(() => {
@@ -1172,7 +1178,7 @@ export default {
             console.log(error);
           });
       } else {
-        let apiURL = "http://localhost:3000/commonData/update";
+        let apiURL = `http://${this.$store.state.ipAddress}:3000/commonData/update`;
         axios
           .post(apiURL, this.data)
           .then(() => {

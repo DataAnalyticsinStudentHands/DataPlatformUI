@@ -131,7 +131,8 @@ export default {
     };
   },
   mounted() {
-    let apiURL = `http://localhost:3000/primarydata/`;
+    let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/`;
+    console.log(apiURL);
     //Resets the list of queried data
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
@@ -140,15 +141,16 @@ export default {
         this.queryData.push(data[i]);
       }
     });
+    window.scrollTo(0, 0);
   },
   methods: {
     handleSubmitForm() {
       let apiURL = "";
       //Checks which filters are needed for URL structure
       if (this.searchBy === "Client Name") {
-        apiURL = `http://localhost:3000/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
+        apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
       } else if (this.searchBy === "Client Number") {
-        apiURL = `http://localhost:3000/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
+        apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
       }
       //Resets the list of queried data
       this.queryData = [];

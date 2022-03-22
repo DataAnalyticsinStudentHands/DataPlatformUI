@@ -174,7 +174,7 @@
               <input
                 v-model="client.address[0].city"
                 type="text"
-                :class="{ 'w-1/5': $store.state.isResponsive }"
+                :class="{ 'w-3/5': $store.state.isResponsive }"
               />
             </div>
           </section>
@@ -221,6 +221,9 @@ export default {
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
+  mounted() {
+    window.scrollTo(0, 0);
+  },
   data() {
     return {
       client: {
@@ -253,7 +256,7 @@ export default {
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        let apiURL = "http://localhost:3000/primarydata";
+        let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata`;
         axios
           .post(apiURL, this.client)
           .then(() => {
