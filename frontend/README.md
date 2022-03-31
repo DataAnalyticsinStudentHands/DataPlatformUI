@@ -5,20 +5,14 @@
 npm install
 ```
 
+### Before Server Startup 
+Change ip address in vuex store and backend to your personal ip address
+
+1) Go to frontend folder, open main.js and change ipAddress variable.
+```
+ipAddress: 'YOURIPADDRESS'
+```
 ### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

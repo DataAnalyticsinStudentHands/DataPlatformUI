@@ -41,7 +41,7 @@ app.use(morgan("dev"));
 
 //Import Routes
 const primaryDataRoute = require('./routes/primaryData');
-const commonDataRoute  = require('./routes/commonData');
+const commonDataRoute = require('./routes/commonData');
 // const commonDataRoute  = require('./routes/commonData'); 
 
 //middle ware for routes
@@ -50,7 +50,7 @@ app.use('/commonData', commonDataRoute)
 // app.use('/commonData', commonDataRoute);
 
 //using the PORT cost to listen 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log("Server started listening on port : ", PORT);
 });
 

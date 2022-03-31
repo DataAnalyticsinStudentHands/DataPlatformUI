@@ -11,37 +11,45 @@
     <div class="m-5">
       <div class="flex flex-col">
         <!-- Displays Client Name search field -->
-        <div class="flex justify-between" style="width: 42%">
+        <div
+          class="flex gap-x-2"
+          :style="[!$store.state.isResponsive ? 'width:42%' : 'width: 100%']"
+          :class="{ 'flex-col': $store.state.isResponsive }"
+        >
           <h3 class="inline font-bold">Search Client By:</h3>
-          <select v-model="searchBy">
+          <select
+            v-model="searchBy"
+            :class="{ 'w-2/5': $store.state.isResponsive }"
+          >
             <option value="Client Name">Client Name</option>
             <option value="Client Number">Client Number</option>
           </select>
         </div>
         <div
+          :class="{ 'flex flex-col': $store.state.isResponsive }"
+          :style="[!$store.state.isResponsive ? 'width:42%' : 'width:100%']"
           v-if="searchBy === 'Client Name'"
           class="flex justify-between gap-5 mt-5"
-          style="width: 42%"
         >
           <section class="flex flex-col">
             <label> Please Enter <b>First</b> Name</label>
             <input
-              class=""
+              :class="{ 'w-2/5': $store.state.isResponsive }"
               type="text"
               v-model="firstName"
               v-on:keyup.enter="handleSubmitForm"
             />
           </section>
-          <section>
+          <section class="flex flex-col">
             <label>Please Enter <b>Last</b> Name</label>
             <input
-              class=""
+              :class="{ 'w-2/5': $store.state.isResponsive }"
               type="text"
               v-model="lastName"
               v-on:keyup.enter="handleSubmitForm"
             />
           </section>
-          <div class="self-end">
+          <div :class="{ 'self-end': !$store.state.isResponsive }">
             <button
               style="width: 10em"
               class="self-end"
@@ -54,23 +62,24 @@
         </div>
         <!-- Displays Client Number search field -->
         <div
+          :class="{ 'flex flex-col': $store.state.isResponsive }"
           v-if="searchBy === 'Client Number'"
           class="flex justify-between gap-5 mt-5"
-          style="width: 42%"
+          :style="[!$store.state.isResponsive ? 'width:42%' : 'width:100%']"
         >
           <section class="flex flex-col">
             <label> Please Enter Client Phone Number</label>
             <input
-              class=""
+              :class="{ 'w-2/5': $store.state.isResponsive }"
               type="text"
               v-model="phoneNumber"
               v-on:keyup.enter="handleSubmitForm"
             />
           </section>
-          <div class="self-end">
+          <div :class="{ 'self-end': !$store.state.isResponsive }">
             <button
               style="width: 10em"
-              class="self-end"
+              :class="{ 'self-end': !$store.state.isResponsive }"
               @click="handleSubmitForm"
               type="submit"
             >
@@ -83,25 +92,61 @@
       <!-- Display Found Data -->
       <table class="table-auto mx-auto text-center">
         <thead>
-          <tr>
-            <th>Name</th>
-            <th>City</th>
-            <th>Phone number</th>
+          <tr
+            :style="[
+              $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
+            ]"
+          >
+            <th
+              class="text-left"
+              :style="[
+                $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
+              ]"
+            >
+              Name
+            </th>
+            <th
+              :style="[
+                $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
+              ]"
+              id="cityName"
+            >
+              City
+            </th>
+            <th
+              :style="[
+                $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
+              ]"
+            >
+              Phone number
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client in queryData" :key="client._id">
-            <td class="text-left">
+          <tr
+            @click="editClient(client._id)"
+            v-for="client in queryData"
+            :key="client._id"
+          >
+            <td
+              :style="[
+                $store.state.isResponsive
+                  ? 'padding: 0 1em 1em 0'
+                  : 'padding: 0 40px',
+              ]"
+              class="text-left whitespace-nowrap"
+              style
+            >
               {{ client.firstName + " " + client.lastName }}
             </td>
-            <td>
+            <td id="cityList">
               {{ client.address[0]["city"] }}
             </td>
             <td>
               {{ client.phoneNumbers[0].primaryPhone }}
             </td>
-            <td class="text-left">
-              <button class="btn" @click="editClient(client._id)">
+            <td class="text-left" id="viewClient">
+              <button class="btn">
                 View {{ client.firstName + " " + client.lastName }}
               </button>
             </td>
@@ -127,7 +172,8 @@ export default {
     };
   },
   mounted() {
-    let apiURL = `http://localhost:3000/primarydata/`;
+    let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/`;
+    console.log(apiURL);
     //Resets the list of queried data
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
@@ -136,15 +182,16 @@ export default {
         this.queryData.push(data[i]);
       }
     });
+    window.scrollTo(0, 0);
   },
   methods: {
     handleSubmitForm() {
       let apiURL = "";
       //Checks which filters are needed for URL structure
       if (this.searchBy === "Client Name") {
-        apiURL = `http://localhost:3000/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
+        apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
       } else if (this.searchBy === "Client Number") {
-        apiURL = `http://localhost:3000/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
+        apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
       }
       //Resets the list of queried data
       this.queryData = [];
@@ -170,7 +217,6 @@ export default {
 input,
 select {
   border: 1px solid #cfd4d9;
-  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
   border-radius: 2px;
 }
 button[type="submit"] {
@@ -194,12 +240,12 @@ button[type="submit"] {
   color: #7d0d15;
   border: 1px solid #7d0d15;
 }
-td,
-th,
-tr {
-  padding: 0 40px;
-}
-tr > td {
-  padding-bottom: 0.5em;
+
+@media only screen and (max-width: 900px) {
+  #viewClient,
+  #cityList,
+  #cityName {
+    display: none;
+  }
 }
 </style>
