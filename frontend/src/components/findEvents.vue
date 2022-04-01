@@ -1,0 +1,94 @@
+<template>
+  <main>
+    <div>
+      <h1
+        class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
+        style="color: #7d0d15"
+      >
+        List of Events
+      </h1>
+    </div>
+    <router-link to="/eventform"><button>Add New Event</button></router-link>
+    <hr class="mt-10 border-solid border-1" style="border-color: #7d0d15" />
+    <div>
+      <table class="table-auto mx-auto text-center">
+        <thead>
+          <tr>
+            <th>Event Name</th>
+            <th>Event Date</th>
+            <th>Event Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            @click="editEvent(event._id)"
+            v-for="event in queryData"
+            :key="event._id"
+          >
+            <td>{{ event.eventName }}</td>
+            <td>{{ event.date }}</td>
+            <td>{{ event.address[0].line1 }}</td>
+            <td>
+              <button>View {{ event.eventName }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</template>
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      queryData: [],
+    };
+  },
+  mounted() {
+    let apiURL = `http://${this.$store.state.ipAddress}:3000/eventdata/`;
+    this.queryData = [];
+    axios.get(apiURL).then((resp) => {
+      let data = resp.data;
+      for (let i = 0; i < data.length; i++) {
+        this.queryData.push(data[i]);
+      }
+      for (let i = 0; i < data.length; i++) {
+        let formattedDate = new Date(this.queryData[i].date);
+        let month = formattedDate.getMonth() + 1;
+        let day = formattedDate.getDate() + 1;
+        let year = formattedDate.getFullYear();
+        this.queryData[i].date = month + "/" + day + "/" + year;
+      }
+    });
+    window.scrollTo(0, 0);
+  },
+  methods: {
+    editEvent(eventID) {
+      this.$router.push({ name: "eventdetails", params: { id: eventID } });
+    },
+  },
+};
+</script>
+<style>
+input,
+select {
+  border: 1px solid #cfd4d9;
+  border-radius: 4px;
+}
+
+button[type="submit"] {
+  background-color: #7d0d15;
+  border-radius: 4px;
+  padding: 10px 16px;
+  color: white;
+}
+
+button[type="reset"],
+button {
+  border: 1px solid #7d0d15;
+  border-radius: 4px;
+  padding: 10px 16px;
+  color: #7d0d15;
+}
+</style>
