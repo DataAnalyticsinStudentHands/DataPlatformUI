@@ -1,4 +1,3 @@
-// TODO MAKE RESPONSIVE
 <template>
   <main>
     <div>
