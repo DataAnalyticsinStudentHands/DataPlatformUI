@@ -210,12 +210,26 @@
             Update Client
           </button>
         </div>
+        <div>
+          <h3 class="mt-5 font-bold">Add Client To an event</h3>
+          <select class="mr-2" v-model="eventChosen">
+            <option
+              v-for="event in eventData"
+              :key="event._id"
+              :value="event._id"
+            >
+              {{ event.eventName }}
+            </option>
+          </select>
+          <button @click="addToEvent" class="btn">Add Client to event</button>
+        </div>
         <div class="flex justify-between mt-10 mr-20">
           <button @click="moveToCommon(this.id)" type="submit">
             Edit Common Information
           </button>
         </div>
       </form>
+      {{ this.eventData }}
     </div>
   </main>
 </template>
@@ -230,6 +244,9 @@ export default {
   },
   data() {
     return {
+      eventChosen: "",
+      //Event Data
+      eventData: [],
       // Client Data
       client: {
         firstName: "",
@@ -283,6 +300,18 @@ export default {
         this.client.address[0].city = data.address[0].city;
         this.client.address[0].county = data.address[0].county;
         this.client.address[0].zipcode = data.address[0].zipcode;
+        axios
+          .get(`http://${this.$store.state.ipAddress}:3000/eventdata/`)
+          .then((resp) => {
+            let data = resp.data;
+            for (let i = 0; i < data.length; i++) {
+              this.eventData.push({
+                eventName: data[i].eventName,
+                _id: data[i]._id,
+                attendees: data[i].attendees,
+              });
+            }
+          });
       });
   },
   methods: {
@@ -298,6 +327,19 @@ export default {
     moveToCommon(idd) {
       console.log(idd);
       this.$router.push({ name: "commonDataForm", params: { id: idd } });
+    },
+    addToEvent() {
+      let apiURL = `http://${this.$store.state.ipAddress}:3000/eventdata/${this.eventChosen}`;
+      for (let i = 0; i < this.eventData.length; i++) {
+        if (this.eventData[i]._id === this.eventChosen) {
+          this.eventData[i].attendees.push(this.id);
+          axios
+            .put(apiURL, { attendees: this.eventData[i].attendees })
+            .then(() => {
+              alert("User added to event.");
+            });
+        }
+      }
     },
   },
   validations() {
@@ -323,7 +365,8 @@ select {
   border-radius: 4px;
   color: linear-gradient(#e66465, #9198e5);
 }
-button[type="submit"] {
+button[type="submit"],
+.btn {
   background-color: #7d0d15;
   border-radius: 4px;
   padding: 10px 16px;
