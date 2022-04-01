@@ -299,7 +299,6 @@ export default {
           });
       }
     },
-    //Is called whenever the screen is resized
   },
   // sets validations for the various data properties
   validations() {
