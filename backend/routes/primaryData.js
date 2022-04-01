@@ -26,9 +26,9 @@ router.get("/clientdetails/", (req, res, next) => { // route method, path follow
             if (error) {
                 return next(error);
             } else {
-                console.log("data: "+ data)
+                console.log("data: " + data)
                 res.json(data); // returns the response data as json
-                
+
             }
         }
     );
