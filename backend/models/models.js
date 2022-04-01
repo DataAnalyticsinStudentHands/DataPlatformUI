@@ -84,9 +84,63 @@ let commonDataSchema = new Schema({
     collection: 'commonData'
 });
 
+//collection for organizationData
+let organizationDataSchema = new Schema({
+    _id: { type: String, default: uuid.v1 },
+    orgName: {
+        type: String,
+        require: true
+    },
+    orgDescription: {
+        type: String,
+        required: true
+    },
+    services: {
+        type: Array
+    },
+    events: {
+        type: Array
+    },    
+}, {
+    collection: 'organizationData'
+});
+
+//collection for organizationData
+let eventDataSchema = new Schema({
+    _id: { type: String, default: uuid.v1 },
+    eventName: {
+        type: String,
+        require: true
+    },
+    associatedOrgID: {
+        type: String,
+        required: true
+    },
+    services: {
+        type: Array
+    },
+    date: {
+        type: Date,
+        required: true
+    },
+    address: {
+        type: Array
+    },
+    description: {
+        type: String,
+    },
+    attendees: {
+        type: Array
+    }    
+}, {
+    collection: 'eventData'
+});
+
 //create models for mongoose schema to use primaryData and commonData data model ('js', schema name)
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const commondata = mongoose.model('commonData', commonDataSchema);
+const orgdata = mongoose.model('organzationData', organizationDataSchema);
+const eventdata = mongoose.model('eventData', eventDataSchema);
 
 // package the models in an object to export 
-module.exports = { primarydata, commondata }
+module.exports = { primarydata, commondata, orgdata, eventdata }
