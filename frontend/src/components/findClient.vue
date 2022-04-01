@@ -173,7 +173,6 @@ export default {
   },
   mounted() {
     let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/`;
-    console.log(apiURL);
     //Resets the list of queried data
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
