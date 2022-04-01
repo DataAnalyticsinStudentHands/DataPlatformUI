@@ -28,6 +28,9 @@ let primaryDataSchema = new Schema({
     address: {
         type: Array
     },
+    events: {
+        type: Array
+    },    
 }, {
     collection: 'primaryData',
     timestamps: true
