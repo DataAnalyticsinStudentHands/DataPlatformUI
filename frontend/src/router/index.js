@@ -28,7 +28,23 @@ const routes = [
         name: 'clientdetails',
         props: true,
         component: () => import('../components/clientDetails')
-    }
+    },
+    {
+        path: '/eventform',
+        name: 'eventform',
+        component: () => import('../components/eventForm')
+    },
+    {
+        path: '/findEvents',
+        name: 'findEvents',
+        component: () => import('../components/findEvents')
+    },
+    {
+        path: '/eventDetails/:id',
+        name: 'eventdetails',
+        props: true,
+        component: () => import('../components/eventDetails')
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes
