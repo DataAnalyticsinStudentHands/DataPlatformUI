@@ -53,6 +53,17 @@
                 Find Client</router-link
               >
             </li>
+            <li>
+              <router-link to="/findEvents"
+                ><span
+                  style="position: relative; top: 6px"
+                  class="material-icons"
+                >
+                  event_seat
+                </span>
+                Events</router-link
+              >
+            </li>
           </ul>
         </nav>
       </article>
