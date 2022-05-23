@@ -61,12 +61,19 @@ export default {
   // Store Client ID in a prop
   methods: {
     handleLogin() {
-      let apiURL = `http://localhost:3000/primarydata/users/${this.id}`;
-      axios.put(apiURL, this.client).then(() => {
-        alert("Update has been saved.");
-        this.$router.back().catch((error) => {
-          console.log(error);
-        });
+      let apiURL = `http://localhost:3000/userData/login`;
+      axios.get(apiURL, {
+        params: {username: this.userData.username, password: this.userData.password},
+      }).then((resp) => {
+        let data = resp.data[0];
+        alert(data)
+        if(!data) {
+          alert("Incorrect Login!");
+        } else {
+          alert("Successfully Logged in.");
+          window.localStorage.setItem('username', data._id)
+
+        }
       });
     },
     moveToCommon(idd) {
