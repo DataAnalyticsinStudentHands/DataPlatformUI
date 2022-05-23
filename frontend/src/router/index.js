@@ -28,6 +28,12 @@ const routes = [
         name: 'userCreation',
         props: true,
         component: () => import('../components/userCreation')
+    },
+    {
+        path: '/userLogin',
+        name: 'userLogin',
+        props: true,
+        component: () => import('../components/userLoginNoGoogle')
     }
 ]
 const router = createRouter({
