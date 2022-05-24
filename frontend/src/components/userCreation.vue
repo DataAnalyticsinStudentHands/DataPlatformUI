@@ -18,9 +18,7 @@
           </section>
           <section class="flex space-x-10 mt-10">
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="firstName"
-                >First Name
-              </label>
+              <label class="self-start font-bold" for="firstName">First Name</label>
               <input v-model="user.firstName" name="firstName" type="text" />
               <span class="text-black" v-if="v$.user.firstName.$error">
                 <p
@@ -116,6 +114,42 @@
             <label class="self-start font-bold" for="password">Password</label>
             <input v-model="user.password" name="password" type="password"/>
           </div>
+        </section>
+
+        <section class="mt-5">
+          <section>
+            <p class="text-left font-bold">Access Details</p>
+          </section>
+          <section class="flex space-x-10 mt-10">
+            <div class="flex flex-col">
+              <label class="self-start font-bold" for="genericAccess">Generic Access Level</label>
+              <select v-model="user.genericAccessLevel" name="genericAccess">
+                <option value="1">Nonsensitive View</option>
+                <option value="2">Nonsensitive Write</option>
+                <option value="3">Organization Access</option>
+                <option value="4">Complete Access</option>
+              </select>
+
+              <label class="self-start font-bold" for="genericAccess">Write Override Access Level</label>
+              <select v-model="user.editOverride" name="writeAccess">
+                <option value="-1">No Override</option>
+                <option value="1">No Write</option>
+                <option value="2">Nonsensitive Write</option>
+                <option value="3">Organization Write</option>
+                <option value="4">Complete Access</option>
+              </select>
+
+              <label class="self-start font-bold" for="genericAccess">Write Override Access Level</label>
+              <select v-model="user.viewOverride" name="readAccess">
+                <option value="-1">No Override</option>
+                <option value="1">Nonsensitive Read</option>
+                <option value="3">Organization Read</option>
+                <option value="4">Complete Access</option>
+              </select>
+
+            </div>
+          </section>
+
         </section>
 
         <div class="flex justify-between mt-10 mr-20">
