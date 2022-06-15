@@ -34,6 +34,12 @@ const routes = [
         name: 'userLogin',
         props: true,
         component: () => import('../components/userLoginNoGoogle')
+    },
+    {
+        path: '/',
+        name: 'dashboard',
+        props: true,
+        component: () => import('../components/dashboard')
     }
 ]
 const router = createRouter({

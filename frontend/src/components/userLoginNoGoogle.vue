@@ -66,13 +66,11 @@ export default {
         params: {username: this.userData.username, password: this.userData.password},
       }).then((resp) => {
         let data = resp.data[0];
-        alert(data)
         if(!data) {
           alert("Incorrect Login!");
         } else {
           alert("Successfully Logged in.");
-          window.localStorage.setItem('username', data._id)
-
+          window.localStorage.setItem('username', data._id);
         }
       });
     },
