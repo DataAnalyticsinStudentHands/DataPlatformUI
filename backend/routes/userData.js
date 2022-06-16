@@ -94,6 +94,25 @@ router.get("/login", (req, res, next) => { // route method, path followed by a p
     );
 });
 
+router.get("/", (req, res, next) => {
+    users.find(
+        {
+            _id: req.query._id
+        },
+        {
+            genericAccessLevel:1
+        },
+        (error, data) => {
+            if(error) {
+                return next(error);
+            } else {
+                console.log("data: "+data)
+                res.json(data);
+            }
+        }
+    )
+})
+
 // //PUT: host:port/primaryData || this endpoint will use PUT method to update an existing document, using :id as a parameter in primaryData collection,  
 // //you can pass the existing document as your req.data, just be sure to exclude the _id field and _id value.
 // router.put("/users/:id", (req, res, next) => { // route method, path followed by parameter, callback 

@@ -123,29 +123,32 @@
           <section class="flex space-x-10 mt-10">
             <div class="flex flex-col">
               <label class="self-start font-bold" for="genericAccess">Generic Access Level</label>
-              <select v-model="user.genericAccessLevel" name="genericAccess">
-                <option value="1">Nonsensitive View</option>
+              <!-- <select v-model="user.genericAccessLevel" name="genericAccess"> -->
+                <!-- <option value="1">Nonsensitive View</option>
                 <option value="2">Nonsensitive Write</option>
                 <option value="3">Organization Access</option>
-                <option value="4">Complete Access</option>
-              </select>
+                <option value="4">Complete Access</option> -->
+                  <span v-html="genContent"></span>
+              <!-- </select> -->
 
               <label class="self-start font-bold" for="genericAccess">Write Override Access Level</label>
-              <select v-model="user.editOverride" name="writeAccess">
-                <option value="-1">No Override</option>
+              <!-- <select v-model="user.editOverride" name="writeAccess"> -->
+                <!-- <option value="-1">No Override</option>
                 <option value="1">No Write</option>
                 <option value="2">Nonsensitive Write</option>
                 <option value="3">Organization Write</option>
-                <option value="4">Complete Access</option>
-              </select>
+                <option value="4">Complete Access</option> -->
+                  <span v-html="woContent"></span>
+              <!-- </select> -->
 
-              <label class="self-start font-bold" for="genericAccess">Write Override Access Level</label>
-              <select v-model="user.viewOverride" name="readAccess">
-                <option value="-1">No Override</option>
+              <label class="self-start font-bold" for="genericAccess">Read Override Access Level</label>
+              <!-- <select v-model="user.viewOverride" name="readAccess"> -->
+                <!-- <option value="-1">No Override</option>
                 <option value="1">Nonsensitive Read</option>
                 <option value="3">Organization Read</option>
-                <option value="4">Complete Access</option>
-              </select>
+                <option value="4">Complete Access</option> -->
+                  <span v-html="roContent"></span>
+              <!-- </select> -->
 
             </div>
           </section>
@@ -165,6 +168,7 @@ import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
 export default {
+
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
@@ -183,13 +187,68 @@ export default {
         username: "",
         password: "",
         association: "Kentucky Fried Chicken",
-        genericAccessLevel: 4
+        genericAccessLevel: "",
+        editOverride: "",
+        viewOverride: ""
+
       },
     };
+  },
+  created() {
+    let apiURL = `http://localhost:3000/userData/`;
+    //Resets the list of queried data
+    this.queryData = [];
+    axios.get(apiURL, {
+      params: {
+        _id: localStorage.getItem("username")
+      }
+    }).then((resp) => {
+      let data = resp.data;
+      for (let i = 0; i < data.length; i++) {
+        this.queryData.push(data[i]);
+      }
+      let accessLevel = this.queryData[0].genericAccessLevel;
+
+    let genericOptionsHTML = `<select v-model="user.genericAccessLevel" name="genericAccess", id="genericAccess">\n`;
+    let writeOptionsHTML = `<select v-model="user.editOverride" name="writeAccess", id="writeAccess">\n`;
+    let readOptionsHTML = `<select v-model="user.viewOverride" name="readAccess". id="readAccess">\n`;
+    if(accessLevel >= 1) {
+      genericOptionsHTML += `<option value="1">Nonsensitive View</option>\n`;
+      writeOptionsHTML  += `<option value="0">No Override</option>\n`;
+      writeOptionsHTML  += `<option value="1">No Write</option>\n`;
+      readOptionsHTML   += `<option value="0">No Override</option>\n`;
+      readOptionsHTML   += `<option value="1">Nonsensitive Read</option>\n`;
+    }
+    if(accessLevel >= 2) {
+      genericOptionsHTML += `<option value="2">Nonsensitive Write</option>\n`;
+      writeOptionsHTML  += `<option value="2">Nonsensitive Write</option>\n`;
+    }
+    if(accessLevel >=3) {
+      genericOptionsHTML += `<option value="3">Organization Access</option>\n`;
+      writeOptionsHTML  += `<option value="3">Organization Write</option>\n`;
+      readOptionsHTML   += `<option value="3">Organization Read</option>\n`;
+    }
+    if(accessLevel == 4) {
+      genericOptionsHTML += `<option value="4">Complete Access</option>\n`;
+      writeOptionsHTML  += `<option value="4">Complete Access</option>\n`;
+      readOptionsHTML   += `<option value="4">Complete Access</option>\n`;
+    }
+    genericOptionsHTML +=  `</select>\n`
+    writeOptionsHTML += `</select>\n`
+    readOptionsHTML +=  `</select>\n`
+    alert(genericOptionsHTML);
+    this.genContent = genericOptionsHTML
+    this.woContent = writeOptionsHTML
+    this.roContent = readOptionsHTML
+    });
+    
   },
   methods: {
     async handleSubmitForm() {
       // Checks to see if there are any errors in validation
+      this.user.genericAccessLevel = document.getElementById('genericAccess').value;
+      this.user.editOverride = document.getElementById('writeAccess').value;
+      this.user.readOverride = document.getElementById('readAccess').value;
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
@@ -211,7 +270,9 @@ export default {
               username: "",
               password: "",
               association: "Kentucky Fried Chicken",
-              genericAccessLevel: 4
+              genericAccessLevel: "",
+              editOverride: "",
+              viewOverride: ""
              };
           })
           .catch((error) => {
