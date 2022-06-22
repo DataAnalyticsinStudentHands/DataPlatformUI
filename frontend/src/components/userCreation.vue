@@ -152,6 +152,10 @@
 
             </div>
           </section>
+          <section>
+            <label class="self-start font-bold" for="userCreation">Can Create Users</label>
+            <input v-model="user.canCreateUser" name="canCreateUser" type="checkbox">
+          </section>
 
         </section>
 
@@ -189,9 +193,12 @@ export default {
         association: "Kentucky Fried Chicken",
         genericAccessLevel: "",
         editOverride: "",
-        viewOverride: ""
-
+        viewOverride: "",
+        canCreateUser:""
       },
+      genContent:null,
+      roContent:null,
+      woContent:null
     };
   },
   created() {
@@ -236,7 +243,6 @@ export default {
     genericOptionsHTML +=  `</select>\n`
     writeOptionsHTML += `</select>\n`
     readOptionsHTML +=  `</select>\n`
-    alert(genericOptionsHTML);
     this.genContent = genericOptionsHTML
     this.woContent = writeOptionsHTML
     this.roContent = readOptionsHTML
@@ -272,7 +278,8 @@ export default {
               association: "Kentucky Fried Chicken",
               genericAccessLevel: "",
               editOverride: "",
-              viewOverride: ""
+              viewOverride: "",
+              canCreateUser:""
              };
           })
           .catch((error) => {
