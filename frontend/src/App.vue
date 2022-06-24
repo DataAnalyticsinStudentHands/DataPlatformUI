@@ -4,7 +4,7 @@
       <header class="w-full">
         <section class="text-center">
           <img class="m-auto" src="@\assets\DanPersona.svg" />
-          <p>Dan</p>
+          <p>{{name}}</p>
           <p>Main Persona</p>
         </section>
         <nav class="mt-10">
@@ -61,8 +61,34 @@
 </template>
 
 <script>
+import axios from "axios"
 export default {
   name: "App",
+  data() {
+    return {
+      name: ''
+    }
+  },
+
+  async created() {
+    if(localStorage.getItem("username")) {
+      let apiURL = `http://localhost:3000/userData/basic`;
+      this.queryData=[];
+      const {data} = await axios.get(apiURL, {
+        params: {
+          _id:localStorage.getItem("username")
+        }
+      })
+        
+        let fname = data[0].firstName;
+        let lname = data[0].lastName;
+
+        this.name = fname + ` ` + lname;
+    }
+    else {
+      this.name = "Unlogged"
+    }
+  },
 };
 </script>
 
