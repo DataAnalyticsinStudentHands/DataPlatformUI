@@ -2,10 +2,7 @@
 <template>
   <main>
     <div>
-      <h1
-        class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
-        style="color: #7d0d15"
-      >
+      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
         Client Intake Form
       </h1>
     </div>
@@ -206,8 +203,8 @@
           </section>
         </section>
         <div class="flex justify-between mt-10 mr-20">
-          <button type="submit">Add Client</button>
-          <button @click.prevent type="reset">Clear Form</button>
+          <button class="bg-brick text-white rounded" type="submit">Add Client</button>
+          <button @click.prevent class="bg-white text-brick border-brick border rounded" type="reset">Clear Form</button>
         </div>
       </form>
     </div>
@@ -324,19 +321,10 @@ select {
   border-radius: 4px;
 }
 
-button[type="submit"] {
-  background-color: #7d0d15;
-  border-radius: 4px;
+button{
   padding: 10px 16px;
-  color: white;
 }
 
-button[type="reset"] {
-  border: 1px solid #7d0d15;
-  border-radius: 4px;
-  padding: 10px 16px;
-  color: #7d0d15;
-}
 .responsive {
   flex-direction: column;
   margin-left: 0;

@@ -1,10 +1,7 @@
 <template>
   <main>
     <div>
-      <h1
-        class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
-        style="color: #7d0d15"
-      >
+      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
         Event Details
       </h1>
     </div>
@@ -120,8 +117,8 @@
             <input v-model="event.description" type="text" />
           </div>
           <div class="flex justify-between mt-10 mr-20">
-            <button type="submit">Update Event</button>
-            <button type="reset" @click="$router.go(-1)">Go back</button>
+            <button type="submit" class="bg-brick text-white rounded">Update Event</button>
+            <button type="reset" class="bg-white text-brick border-brick border rounded" @click="$router.go(-1)">Go back</button>
           </div>
         </section>
       </form>
@@ -245,17 +242,8 @@ select {
   border-radius: 4px;
 }
 
-button[type="submit"] {
-  background-color: #7d0d15;
-  border-radius: 4px;
+button{
   padding: 10px 16px;
-  color: white;
 }
 
-button[type="reset"] {
-  border: 1px solid #7d0d15;
-  border-radius: 4px;
-  padding: 10px 16px;
-  color: #7d0d15;
-}
 </style>

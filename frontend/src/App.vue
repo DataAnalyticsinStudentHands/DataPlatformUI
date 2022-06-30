@@ -33,7 +33,7 @@ body {
   overflow-x: hidden;
 }
 #_container {
-  background-color: #7d0d15;
+  background-color: #C8102E;
   color: white;
   padding: 18px;
 }

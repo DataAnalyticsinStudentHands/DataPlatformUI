@@ -1,10 +1,7 @@
 <template>
   <main>
     <div>
-      <h1
-        class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
-        style="color: #7d0d15"
-      >
+      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
         Common Data Form
       </h1>
     </div>
@@ -961,8 +958,8 @@
           <section class="space-x-10 mt-10"></section>
         </section>
         <div class="flex justify-between mt-10 mr-20">
-          <button type="submit">Update Client</button>
-          <button type="reset" @click="$router.go(-1)">Go back</button>
+          <button type="submit" class="bg-brick text-white rounded" >Update Client</button>
+          <button type="reset" class="bg-white text-brick border-brick border rounded" @click="$router.go(-1)">Go back</button>
         </div>
       </form>
     </div>
@@ -1327,17 +1324,8 @@ select {
   border: 1px solid #cfd4d9;
   border-radius: 4px;
 }
-button[type="submit"] {
-  background-color: #7d0d15;
-  border-radius: 4px;
+button{
   padding: 10px 16px;
-  color: white;
-}
-button[type="reset"] {
-  border: 1px solid #7d0d15;
-  border-radius: 4px;
-  padding: 10px 16px;
-  color: #7d0d15;
 }
 h2 {
   color: #bb2b35;

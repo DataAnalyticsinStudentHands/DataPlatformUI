@@ -1,7 +1,7 @@
 <template>
   <main class="flex">
     <div
-      class="text-white"
+      class="bg-red text-white"
       :class="{
         sidebar: !$store.state.isResponsive,
         sidebarRes: $store.state.isResponsive,
@@ -112,14 +112,14 @@ export default {
   position: fixed;
   height: 100%;
   width: var(--sidebar-width);
-  background-color: #7d0d15;
+  /* background-color: #C8102E; */
   opacity: 1;
   visibility: visible;
 }
 header {
   width: 100%;
   min-height: 7em;
-  background: linear-gradient(257.57deg, #910812 50.6%, #efecec 50.6%);
+  background: linear-gradient(257.57deg, #C8102E 50.6%, #efecec 50.6%);
 }
 #content {
   margin-left: var(--sidebar-width);
@@ -146,7 +146,7 @@ header {
     opacity: 1;
   }
   .navbar {
-    background-color: #7d0d15;
+    background-color: #C8102E;
     height: 100%;
     width: 50%;
   }

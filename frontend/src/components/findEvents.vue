@@ -1,15 +1,12 @@
 <template>
   <main>
     <div>
-      <h1
-        class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
-        style="color: #7d0d15"
-      >
+      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
         List of Events
       </h1>
     </div>
-    <router-link to="/eventform"><button>Add New Event</button></router-link>
-    <hr class="mt-10 border-solid border-1" style="border-color: #7d0d15" />
+    <router-link to="/eventform"><button class="bg-white text-brick border-brick border rounded">Add New Event</button></router-link>
+    <hr class="mt-10 border-solid border border-brick" />
     <div>
       <table class="table-auto mx-auto text-center">
         <thead>
@@ -77,18 +74,7 @@ select {
   border-radius: 4px;
 }
 
-button[type="submit"] {
-  background-color: #7d0d15;
-  border-radius: 4px;
-  padding: 10px 16px;
-  color: white;
-}
-
-button[type="reset"],
 button {
-  border: 1px solid #7d0d15;
-  border-radius: 4px;
   padding: 10px 16px;
-  color: #7d0d15;
 }
 </style>

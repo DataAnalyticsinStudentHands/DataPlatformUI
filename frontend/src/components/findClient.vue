@@ -1,10 +1,7 @@
 <template>
   <main>
     <div>
-      <h1
-        class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
-        style="color: #7d0d15"
-      >
+      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
         Find Client
       </h1>
     </div>
@@ -52,7 +49,7 @@
           <div :class="{ 'self-end': !$store.state.isResponsive }">
             <button
               style="width: 10em"
-              class="self-end"
+              class="self-end bg-brick text-white rounded"
               @click="handleSubmitForm"
               type="submit"
             >
@@ -88,7 +85,7 @@
           </div>
         </div>
       </div>
-      <hr class="mt-10 border-solid border-1" style="border-color: #7d0d15" />
+      <hr class="mt-10 border-solid border-1" style="border-color: #960C22" />
       <!-- Display Found Data -->
       <table class="table-auto mx-auto text-center">
         <thead>
@@ -218,26 +215,23 @@ select {
   border: 1px solid #cfd4d9;
   border-radius: 2px;
 }
-button[type="submit"] {
-  background-color: #7d0d15;
-  border-radius: 4px;
+button {
   padding: 5px 10px;
-  color: white;
 }
 .btn {
   border-radius: 4px;
-  background-color: #7d0d15;
+  background-color: #960C22;
   color: white;
   padding: 5px 5px;
   font-size: 0.8em;
   min-width: 200px;
   max-width: 200px;
-  border: 1px solid #7d0d15;
+  border: 1px solid #960C22;
 }
 .btn:hover {
   background-color: white;
-  color: #7d0d15;
-  border: 1px solid #7d0d15;
+  color: #960C22;
+  border: 1px solid #960C22;
 }
 
 @media only screen and (max-width: 900px) {

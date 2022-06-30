@@ -1,9 +1,6 @@
 <template>
   <main>
-    <h1
-      class="m-5 mt-11"
-      style="font-size: 1.8em; color: #7d0d15; font-weight: bold"
-    >
+    <h1 class="m-5 mt-11 text-brick font-bold text-3xl">
       Welcome back Dan!
     </h1>
   </main>

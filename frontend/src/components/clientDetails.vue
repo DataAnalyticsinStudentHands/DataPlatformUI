@@ -2,10 +2,7 @@
 <template>
   <main>
     <div>
-      <h1
-        class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
-        style="color: #7d0d15"
-      >
+      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
         Client Intake Form
       </h1>
     </div>
@@ -206,7 +203,7 @@
           </section>
         </section>
         <div class="flex justify-between mt-10 mr-20">
-          <button @click="handleClientUpdate" type="submit">
+          <button @click="handleClientUpdate" type="submit" class="bg-brick text-white rounded">
             Update Client
           </button>
         </div>
@@ -224,7 +221,7 @@
           <button @click="addToEvent" class="btn">Add Client to event</button>
         </div>
         <div class="flex justify-between mt-10 mr-20">
-          <button @click="moveToCommon(this.id)" type="submit">
+          <button @click="moveToCommon(this.id)" type="submit" class="bg-brick text-white rounded">
             Edit Common Information
           </button>
         </div>
@@ -365,18 +362,8 @@ select {
   border-radius: 4px;
   color: linear-gradient(#e66465, #9198e5);
 }
-button[type="submit"],
-.btn {
-  background-color: #7d0d15;
-  border-radius: 4px;
+button .btn{
   padding: 10px 16px;
-  color: white;
-}
-button[type="reset"] {
-  border: 1px solid #7d0d15;
-  border-radius: 4px;
-  padding: 10px 16px;
-  color: linear-gradient(#e66465, #9198e5);
 }
 .responsive {
   flex-direction: column;
