@@ -122,39 +122,20 @@
           </section>
           <section class="flex space-x-10 mt-10">
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="genericAccess">Generic Access Level</label>
-              <!-- <select v-model="user.genericAccessLevel" name="genericAccess"> -->
-                <!-- <option value="1">Nonsensitive View</option>
-                <option value="2">Nonsensitive Write</option>
-                <option value="3">Organization Access</option>
-                <option value="4">Complete Access</option> -->
-                  <span v-html="genContent"></span>
-              <!-- </select> -->
-
-              <label class="self-start font-bold" for="genericAccess">Write Override Access Level</label>
-              <!-- <select v-model="user.editOverride" name="writeAccess"> -->
-                <!-- <option value="-1">No Override</option>
-                <option value="1">No Write</option>
-                <option value="2">Nonsensitive Write</option>
-                <option value="3">Organization Write</option>
-                <option value="4">Complete Access</option> -->
-                  <span v-html="woContent"></span>
-              <!-- </select> -->
-
-              <label class="self-start font-bold" for="genericAccess">Read Override Access Level</label>
-              <!-- <select v-model="user.viewOverride" name="readAccess"> -->
-                <!-- <option value="-1">No Override</option>
-                <option value="1">Nonsensitive Read</option>
-                <option value="3">Organization Read</option>
-                <option value="4">Complete Access</option> -->
-                  <span v-html="roContent"></span>
-              <!-- </select> -->
+              <label class="self-start font-bold" for="genericAccess">Organization Read Access Level</label>
+                  <span v-html="orlContent"></span>
+              <label class="self-start font-bold" for="genericAccess">Organization Write Access Level</label>
+                  <span v-html="owlContent"></span>
+              <label class="self-start font-bold" for="genericAccess">Other Organization Read Access Level</label>
+                  <span v-html="arlContent"></span>
+              <label class="self-start font-bold" for="genericAccess">Other Organization Write Access Level</label>
+                  <span v-html="awlContent"></span>
 
             </div>
           </section>
           <section>
             <label class="self-start font-bold" for="userCreation">Can Create Users</label>
-            <input v-model="user.canCreateUser" name="canCreateUser" type="checkbox">
+            <input v-model="user.perms.canCreateUser" name="canCreateUser" type="checkbox">
           </section>
 
         </section>
@@ -191,14 +172,18 @@ export default {
         username: "",
         password: "",
         association: "Kentucky Fried Chicken",
-        genericAccessLevel: "",
-        editOverride: "",
-        viewOverride: "",
-        canCreateUser:""
+        perms: {
+            orgReadAccess: "",
+            orgWriteAccess: "",
+            allReadAccess: "",
+            allWriteAccess: "",
+            canCreateUser: ""
+          },
       },
-      genContent:null,
-      roContent:null,
-      woContent:null
+      owrContent:null,
+      owlContent:null,
+      awrContent:null,
+      awlContent:null
     };
   },
   created() {
@@ -214,47 +199,86 @@ export default {
       for (let i = 0; i < data.length; i++) {
         this.queryData.push(data[i]);
       }
-      let accessLevel = this.queryData[0].genericAccessLevel;
+      // let orl = this.queryData[0].perms.orgReadAccess;
+      // let owl = this.queryData[0].perms.orgWriteAccess;
+      // let arl = this.queryData[0].perms.allReadAccess;
+      // let awl = this.queryData[0].perms.allWriteAccess;
+      let orl = 3
+      let owl = 3
+      let arl = 3
+      let awl = 3
 
-    let genericOptionsHTML = `<select v-model="user.genericAccessLevel" name="genericAccess", id="genericAccess">\n`;
-    let writeOptionsHTML = `<select v-model="user.editOverride" name="writeAccess", id="writeAccess">\n`;
-    let readOptionsHTML = `<select v-model="user.viewOverride" name="readAccess". id="readAccess">\n`;
-    if(accessLevel >= 1) {
-      genericOptionsHTML += `<option value="1">Nonsensitive View</option>\n`;
-      writeOptionsHTML  += `<option value="0">No Override</option>\n`;
-      writeOptionsHTML  += `<option value="1">No Write</option>\n`;
-      readOptionsHTML   += `<option value="0">No Override</option>\n`;
-      readOptionsHTML   += `<option value="1">Nonsensitive Read</option>\n`;
+    let orgReadAccess = `<select v-model="user.perms.orgReadAccess" name="orgReadAccess", id="orgReadAccess">\n`;
+    let orgWriteAccess = `<select v-model="user.perms.orgWriteAccess" name="orgWriteAccess", id="orgWriteAccess">\n`;
+    let allReadAccess = `<select v-model="user.perms.allReadAccess" name="allReadAccess", id="allReadAccess">\n`;
+    let allWriteAccess = `<select v-model="user.perms.allWriteAccess" name="allWriteAccess", id="allWriteAccess">\n`;
+
+    //Organization Read Access
+    if(orl >= 1) {
+      orgReadAccess += `<option value="1">Nonsensitive</option>\n`
+      orgWriteAccess+= `<option value="0">No Access</option>\n`
     }
-    if(accessLevel >= 2) {
-      genericOptionsHTML += `<option value="2">Nonsensitive Write</option>\n`;
-      writeOptionsHTML  += `<option value="2">Nonsensitive Write</option>\n`;
+    if(orl >= 2) {
+      orgReadAccess += `<option value="1">Privileged</options>\n`
     }
-    if(accessLevel >=3) {
-      genericOptionsHTML += `<option value="3">Organization Access</option>\n`;
-      writeOptionsHTML  += `<option value="3">Organization Write</option>\n`;
-      readOptionsHTML   += `<option value="3">Organization Read</option>\n`;
+    if(orl ==3) {
+      orgReadAccess += `<option value="2">Sensitive</options>\n`
     }
-    if(accessLevel == 4) {
-      genericOptionsHTML += `<option value="4">Complete Access</option>\n`;
-      writeOptionsHTML  += `<option value="4">Complete Access</option>\n`;
-      readOptionsHTML   += `<option value="4">Complete Access</option>\n`;
+
+    //Organization Write Access
+    if(owl >= 1) {
+      orgWriteAccess+= `<option value="1">Nonsensitive</option>`
     }
-    genericOptionsHTML +=  `</select>\n`
-    writeOptionsHTML += `</select>\n`
-    readOptionsHTML +=  `</select>\n`
-    this.genContent = genericOptionsHTML
-    this.woContent = writeOptionsHTML
-    this.roContent = readOptionsHTML
+    if(owl >= 2) {
+      orgWriteAccess += `<option value="1">Privileged</options>\n`
+    }
+    if(owl ==3) {
+      orgWriteAccess += `<option value="2">Sensitive</options>\n`
+    }
+
+    //All Read Access
+    if(arl >= 1) {
+      allReadAccess+= `<option value="0">No Access</option>\n`
+      allReadAccess += `<option value="1">Nonsensitive</option>\n`
+      allWriteAccess+= `<option value="0">No Access</option>\n`
+    }
+    if(arl >= 2) {
+      allReadAccess += `<option value="1">Privileged</options>\n`
+    }
+    if(arl ==3) {
+      allReadAccess += `<option value="2">Sensitive</options>\n`
+    }
+
+    //All Write Access
+    if(awl >= 1) {
+      allWriteAccess+= `<option value="1">Nonsensitive</option>`
+    }
+    if(awl >= 2) {
+      allWriteAccess += `<option value="1">Privileged</options>\n`
+    }
+    if(awl ==3) {
+      allWriteAccess += `<option value="2">Sensitive</options>\n`
+    }
+
+
+    allReadAccess +=  `</select>\n`
+    allWriteAccess += `</select>\n`
+    orgReadAccess +=  `</select>\n`
+    orgWriteAccess += `</select>\n`
+    this.orlContent = orgReadAccess
+    this.owlContent = orgWriteAccess
+    this.arlContent = allReadAccess
+    this.awlContent = allWriteAccess
     });
     
   },
   methods: {
     async handleSubmitForm() {
       // Checks to see if there are any errors in validation
-      this.user.genericAccessLevel = document.getElementById('genericAccess').value;
-      this.user.editOverride = document.getElementById('writeAccess').value;
-      this.user.readOverride = document.getElementById('readAccess').value;
+      this.user.perms.orgReadAccess = document.getElementById('orgReadAccess').value;
+      this.user.perms.orgWriteAccess = document.getElementById('orgWriteAccess').value;
+      this.user.perms.allReadAccess = document.getElementById('allReadAccess').value;
+      this.user.perms.allWriteAccess = document.getElementById('allWriteAccess').value;
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {

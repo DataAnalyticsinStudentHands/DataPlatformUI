@@ -58,39 +58,6 @@ export default {
       buttons: []
     };
   },
-  // async created() {
-  //   if(localStorage.getItem("username")) {
-  //     let apiURL = `http://localhost:3000/userData/dash`;
-  //     this.queryData=[];
-  //     await axios.get(apiURL, {
-  //       params: {
-  //         _id:localStorage.getItem("username")
-  //       }
-  //     }).then((resp) => {
-  //       let data = resp.data;
-  //       for(let i=0; i<data.length; i++) {
-  //         this.queryData.push(data[i]);
-  //       }
-
-  //       let buttons= [{id: 1, name: "Login", routeName:"userLogin"}]
-        
-  //       let genAccessLevel = this.queryData[0].genericAccessLevel;
-  //       let editOverride = this.queryData[0].editOverride;
-  //       let canCreateUser = this.queryData[0].canCreateUser;
-
-  //       if(!genAccessLevel) {
-  //         buttons.push(JSON.parse(`id:2, name:"Find a Client", routeName:"findClient"`))
-  //       }
-  //       if(genAccessLevel >= 2 || editOverride >= 2) {
-  //         buttons.push(JSON.parse(`id:3, name: "Client Intake Form", routeName:"intakeForm"`))
-  //       } 
-  //       if(canCreateUser == 1) {
-  //         buttons.push(JSON.parse(`id:4, name: "Register a User", routeName:"userCreation"`))
-  //       }
-  //       this.buttons = buttons;
-  //     }) 
-  //   }
-  // },
   async created() {
     if(localStorage.getItem("username")) {
       let apiURL = `http://localhost:3000/userData/dash`;
@@ -102,15 +69,13 @@ export default {
       })
 
         let buttons= [{id: 1, name: "Login", routeName:"userLogin"}]
+        buttons.push({id:2, name:"Find a Client", routeName:"findClient"})
         
-        let genAccessLevel = data[0].genericAccessLevel;
-        let editOverride = data[0].editOverride;
-        let canCreateUser = data[0].canCreateUser;
+        let writer = data[0].perms.orgWriteAccess > 0;
+        let canCreateUser = data[0].perms.canCreateUser;
 
-        if(!genAccessLevel) {
-          buttons.push({id:2, name:"Find a Client", routeName:"findClient"})
-        }
-        if(genAccessLevel >= 2 || editOverride >= 2) {
+
+        if(writer > 0) {
           buttons.push({id:3, name: "Client Intake Form", routeName:"intakeForm"})
         } 
         if(canCreateUser == 1) {

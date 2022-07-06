@@ -84,6 +84,39 @@ let commonDataSchema = new Schema({
     collection: 'commonData'
 });
 
+let permsSchema = new Schema({
+    orgReadAccess: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 3
+    },
+    orgWriteAccess: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 4
+    },
+    allReadAccess: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 4
+    },
+    allWriteAccess: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 4
+    },
+    canCreateUser: {
+        type: Number,
+        required: true,
+        min:0,
+        max:1
+    },
+});
+
 //collection for users
 let userSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
@@ -114,36 +147,22 @@ let userSchema = new Schema({
         type: String,
         required: true
     },
-    genericAccessLevel: {
-        type: Number,
-        min:0,  //0=only view self, 1=view nonsensitive data, 2=view, write nonsensitive data, 3=view nonprofit sensitive data (nonprofit admin), 4= view everything (overadmin)
-        max:4,
+    perms: {
+        type: permsSchema,
         required: true
-    },
-    viewOverride: {
-        type: Number,
-        min:0,
-        max:4,
-    },
-    editOverride: {
-        type: Number,
-        min:0,
-        max:4
-    },
-    createUserOverride: {
-        type: Number,
-        min:0,
-        max:4
-    },
+    }
 }, {
     collection: 'user',
     timestamps: true
 });
 
+
+
 //create models for mongoose schema to use primaryData and commonData data model ('js', schema name)
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const commondata = mongoose.model('commonData', commonDataSchema);
+const perms = mongoose.model('pernsSchema', permsSchema);
 const users = mongoose.model('users', userSchema);
 
 // package the models in an object to export 
-module.exports = { primarydata, commondata, users }
+module.exports = { primarydata, commondata, users, perms }

@@ -71,6 +71,7 @@ export default {
         } else {
           alert("Successfully Logged in.");
           window.localStorage.setItem('username', data._id);
+          this.$router.push({ name: "dashboard"});
         }
       });
     },

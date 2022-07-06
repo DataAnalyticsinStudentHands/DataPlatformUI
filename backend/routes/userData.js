@@ -100,7 +100,7 @@ router.get("/", (req, res, next) => {
             _id: req.query._id
         },
         {
-            genericAccessLevel:1
+            perms: 1
         },
         (error, data) => {
             if(error) {
@@ -119,16 +119,15 @@ router.get("/dash", (req, res, next) => {
             _id: req.query._id
         },
         {
-            genericAccessLevel:1,
-            canCreateUser:1,
-            viewOverride:1,
-            editOverride:1
+            perms:1
         },
         (error, data) => {
             if(error) {
+                console.log(error)
                 return next(error);
             } else {
                 console.log("data: "+data)
+               
                 res.json(data);
             }
         }
@@ -143,8 +142,7 @@ router.get("/basic", (req, res, next) => {
         {
             firstName:1,
             lastName:1,
-            viewOverride:1,
-            editOverride:1
+            perms:1
         },
         (error, data) => {
             if(error) {
