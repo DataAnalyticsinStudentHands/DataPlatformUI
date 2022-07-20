@@ -10,7 +10,7 @@ const store = createStore({
         return {
             windowWidth: 9999,
             isResponsive: false,
-            ipAddress: '172.20.10.4'
+            ipAddress: '192.168.0.69'
         }
     },
     mutations: {

@@ -45,6 +45,12 @@ const routes = [
         props: true,
         component: () => import('../components/eventDetails')
     },
+    {
+        path: '/bio-psycho-social',
+        name: 'bioPsycoSocial',
+        props: true,
+        component: () => import('../components/bioPsychoSocial')
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes

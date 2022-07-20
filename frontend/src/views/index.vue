@@ -64,6 +64,17 @@
                 Events</router-link
               >
             </li>
+            <li>
+              <router-link to="/bio-psycho-social"
+                ><span
+                  style="position: relative; top: 6px"
+                  class="material-icons"
+                >
+                  insert_emoticon
+                </span>
+                BPS Folow-up</router-link
+              >
+            </li>
           </ul>
         </nav>
       </article>
@@ -146,7 +157,6 @@ header {
     opacity: 1;
   }
   .navbar {
-    background-color: #C8102E;
     height: 100%;
     width: 50%;
   }
