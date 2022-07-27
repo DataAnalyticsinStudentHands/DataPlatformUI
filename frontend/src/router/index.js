@@ -45,6 +45,24 @@ const routes = [
         props: true,
         component: () => import('../components/eventDetails')
     },
+    {
+        path: '/userCreation',
+        name: 'userCreation',
+        props: true,
+        component: () => import('../components/userCreation')
+    },
+    {
+        path: '/userLogin',
+        name: 'userLogin',
+        props: true,
+        component: () => import('../components/userLoginNoGoogle')
+    },
+    {
+        path: '/',
+        name: 'dashboard',
+        props: true,
+        component: () => import('../components/dashboard')
+    }
 ]
 const router = createRouter({
     history: createWebHistory(), routes

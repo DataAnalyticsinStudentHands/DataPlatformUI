@@ -29,6 +29,17 @@ router.get("/eventdetails/", (req, res, next) => { // route method, path followe
     })
 });
 
+
+router.get("/:id", (req, res, next) => { // route method, path followed by a parameter, callback
+    eventdata.findOne({_id: req.params.id},(error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+          res.json(data)
+        }
+    })
+});
+
 //POST: host:port/commonData || this endpoint will use POST method to create document for primaryData collection, +
 //Note: when you send the request body, you can exclude _id, since mongodb will automatically handle that.  
 router.post("/", (req, res, next) => { // route method, path, callback 
