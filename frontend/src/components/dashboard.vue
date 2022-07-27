@@ -88,19 +88,6 @@ export default {
     routePush(routeName) {
       this.$router.push({name: routeName})
     }
-    // routeFindClient() {
-    //   this.$router.push({ name: "findClient"});
-    // },
-    // routeIntakeForm() {
-    //   this.$router.push({ name: "intakeForm"});
-    // },
-    // routeUserCreation() {
-    //   this.$router.push({ name: "userCreation"});
-    // },
-    // routeUserLogin() {
-    //   alert("AAAAAAAAA")
-    //   this.$router.push({ name: "userLogin"});
-    // },
   },
 };
 </script>

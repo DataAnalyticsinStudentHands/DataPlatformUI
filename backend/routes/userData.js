@@ -155,6 +155,10 @@ router.get("/basic", (req, res, next) => {
     )
 })
 
+// router.post("/loginGoogle", (req, res, next) => {
+
+// })
+
 // //PUT: host:port/primaryData || this endpoint will use PUT method to update an existing document, using :id as a parameter in primaryData collection,  
 // //you can pass the existing document as your req.data, just be sure to exclude the _id field and _id value.
 // router.put("/users/:id", (req, res, next) => { // route method, path followed by parameter, callback 

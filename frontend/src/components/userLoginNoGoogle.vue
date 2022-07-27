@@ -1,5 +1,6 @@
 <template>
   <main>
+    <meta name="google-signin-client_id" content="803398262296-kd6rp2d50ttv3m68708fnk4jbkaopp4j.apps.googleusercontent.com">
     <div>
       <h1
         class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
@@ -35,6 +36,7 @@
                 type="password"/>
             </div>
           </section>
+          <div class="g-signin2" data-onsuccess="onSignIn"></div>
         </section>
         <div class="flex justify-between mt-10 mr-20">
           <button @click="handleLogin" type="submit">
@@ -46,6 +48,7 @@
   </main>
 </template>
 <script>
+
 import axios from "axios";
 export default {
   props: ["id"],
@@ -58,6 +61,11 @@ export default {
       },
     };
   },
+  mounted() {
+      let loginScript = document.createElement('script')
+      loginScript.setAttribute('src', 'https://apis.google.com/js/platform.js')
+      document.head.appendChild(loginScript)
+    },
   // Store Client ID in a prop
   methods: {
     handleLogin() {
@@ -79,6 +87,17 @@ export default {
       console.log(idd);
       this.$router.push({ name: "commonDataForm", params: { id: idd } });
     },
+    onSignIn(googleUser) {
+      var profile =- googleUser.getBasicProfile();
+      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+      console.log('Name: ' + profile.getName());
+      console.log('Image URL: ' + profile.getImageUrl());
+      console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+      var id_token = googleUser.getAuthResponse().id_token;
+      axios.post(`http://localhost:3000/userData/loginGoogle`, {
+        params: {id: id_token}
+      })
+    }
   },
 };
 </script>
