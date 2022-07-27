@@ -1,16 +1,5 @@
 <template>
   <main>
-<<<<<<< HEAD
-    <h1 class="m-5 mt-11 text-brick font-bold text-3xl">
-      Welcome back Dan!
-    </h1>
-  </main>
-</template>
-<script>
-</script>
-<style>
-</style>
-=======
     <div>
       <h1
         class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
@@ -124,4 +113,3 @@ button[type="reset"] {
   color: linear-gradient(#e66465, #9198e5);
 }
 </style>
->>>>>>> userImplementation

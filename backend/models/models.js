@@ -161,7 +161,7 @@ let userSchema = new Schema({
 });
 
 // package the models in an object to export 
-module.exports = { primarydata, commondata, users, perms }
+
 //collection for organizationData
 let organizationDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
@@ -224,4 +224,4 @@ const perms = mongoose.model('pernsSchema', permsSchema);
 const users = mongoose.model('users', userSchema);
 
 // package the models in an object to export 
-module.exports = { primarydata, commondata, orgdata, eventdata }
+module.exports = { primarydata, commondata, orgdata, eventdata, users, perms }

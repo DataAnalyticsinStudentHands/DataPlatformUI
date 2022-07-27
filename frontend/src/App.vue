@@ -61,11 +61,12 @@
 </template>
 
 <script>
-import index from "./views/index.vue";
+//import index from "./views/index.vue";
+import axios from "axios";
 export default {
   name: "App",
   components: {
-    index,
+    //index,
   },
   data() {
     return {

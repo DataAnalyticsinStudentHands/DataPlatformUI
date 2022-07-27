@@ -43,8 +43,6 @@ app.use(morgan("dev"));
 const primaryDataRoute  = require('./routes/primaryData');
 const commonDataRoute   = require('./routes/commonData');
 const userDataRoute = require('./routes/userData');
-const primaryDataRoute = require('./routes/primaryData');
-const commonDataRoute  = require('./routes/commonData');
 const organizationDataRoute  = require('./routes/organizationData');
 const eventsDataRoute  = require('./routes/eventsData');
 // const commonDataRoute  = require('./routes/commonData'); 
