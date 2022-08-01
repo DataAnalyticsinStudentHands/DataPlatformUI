@@ -65,6 +65,17 @@
               >
             </li>
             <li>
+              <router-link to="/social-intake"
+                ><span
+                  style="position: relative; top: 6px"
+                  class="material-icons"
+                >
+                  insert_emoticon
+                </span>
+                Social Intake Form</router-link
+              >
+            </li>
+            <li>
               <router-link to="/bio-psycho-social"
                 ><span
                   style="position: relative; top: 6px"

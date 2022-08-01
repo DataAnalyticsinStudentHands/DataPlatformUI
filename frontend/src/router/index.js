@@ -46,6 +46,12 @@ const routes = [
         component: () => import('../components/eventDetails')
     },
     {
+        path: '/social-intake',
+        name: 'socialIntake',
+        props: true,
+        component: () => import('../components/socialIntakeForm')
+    },
+    {
         path: '/bio-psycho-social',
         name: 'bioPsycoSocial',
         props: true,
