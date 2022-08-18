@@ -83,7 +83,7 @@
                 >
                   insert_emoticon
                 </span>
-                BPS Folow-up</router-link
+                BPS Follow-up</router-link
               >
             </li>
           </ul>
