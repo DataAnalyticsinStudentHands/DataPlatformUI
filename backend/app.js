@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 //middleware library to add better logging functionality for api requests
 const morgan = require("morgan");
 const cors = require("cors");
+//allow using a .env file
+require("dotenv").config();   
 
 //creates a new instance of express application
 const app = express();
@@ -16,14 +18,7 @@ app.use(cors({
 
 //sets up mongoose for the mongoDB connection
 mongoose
-  .connect('mongodb+srv://cluster0.0z4bv.mongodb.net/mockup',
-    {
-      auth:
-      {
-        username: 'asengchi',
-        password: 'NyzuPBGvFUNRPdGA',
-      }
-    })
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Database connection Success!");
   })
