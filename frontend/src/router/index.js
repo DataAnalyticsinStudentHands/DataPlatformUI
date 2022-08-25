@@ -24,10 +24,10 @@ const routes = [
         component: () => import('../components/commonDataForm')
     },
     {
-        path: '/clientdetails/:id',
-        name: 'clientdetails',
+        path: '/updateclient/:id',
+        name: 'updateclient',
         props: true,
-        component: () => import('../components/clientDetails')
+        component: () => import('../components/updateClient')
     },
     {
         path: '/eventform',
@@ -44,18 +44,6 @@ const routes = [
         name: 'eventdetails',
         props: true,
         component: () => import('../components/eventDetails')
-    },
-    {
-        path: '/userCreation',
-        name: 'userCreation',
-        props: true,
-        component: () => import('../components/userCreation')
-    },
-    {
-        path: '/userLogin',
-        name: 'userLogin',
-        props: true,
-        component: () => import('../components/userLoginNoGoogle')
     },
     {
         path: '/',

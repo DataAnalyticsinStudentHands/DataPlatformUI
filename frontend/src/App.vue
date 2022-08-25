@@ -4,8 +4,6 @@
       <header class="w-full">
         <section class="text-center">
           <img class="m-auto" src="@\assets\DanPersona.svg" />
-          <p>{{name}}</p>
-          <p>Main Persona</p>
         </section>
         <nav class="mt-10">
           <ul class="flex flex-col gap-4">
@@ -30,7 +28,18 @@
                 </span>
                 Client Intake Form</router-link
               >
-            </li>      
+            </li> 
+            <li>
+              <router-link to="/eventform"
+                ><span
+                  style="position: relative; top: 6px"
+                  class="material-icons"
+                >
+                  event
+                </span>
+                Create Event</router-link
+              >
+            </li>     
             <li>
               <router-link to="/findclient"
                 ><span
@@ -42,6 +51,18 @@
                 Find Client</router-link
               >
             </li>
+            <li>
+              <router-link to="/findEvents"
+                ><span
+                  style="position: relative; top: 6px"
+                  class="material-icons"
+                >
+                  search
+                </span>
+                Find Event</router-link
+              >
+            </li>
+            
           </ul>
         </nav>
       </header>
@@ -53,7 +74,7 @@
           background: linear-gradient(257.57deg, #910812 50.6%, #efecec 50.6%);
         "
       >
-        <h1 class="mr-20 text-3xl text-white">Non Profit Name</h1>
+        <h1 class="mr-20 text-3xl text-white">Dataplatform</h1>
       </section>
       <section><router-view></router-view></section>
     </div>
@@ -61,36 +82,11 @@
 </template>
 
 <script>
-//import index from "./views/index.vue";
-import axios from "axios";
+
 export default {
   name: "App",
   components: {
-    //index,
-  },
-  data() {
-    return {
-      name: ''
-    }
-  },
-  async created() {
-    if(localStorage.getItem("username")) {
-      let apiURL = `http://localhost:3000/userData/basic`;
-      this.queryData=[];
-      const {data} = await axios.get(apiURL, {
-        params: {
-          _id:localStorage.getItem("username")
-        }
-      })
-        
-        let fname = data[0].firstName;
-        let lname = data[0].lastName;
 
-        this.name = fname + ` ` + lname;
-    }
-    else {
-      this.name = "Unlogged"
-    }
   },
   mounted() {
     window.addEventListener("resize", this.checkScreenSize);

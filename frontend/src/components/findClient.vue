@@ -186,8 +186,10 @@ export default {
       //Checks which filters are needed for URL structure
       if (this.searchBy === "Client Name") {
         apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
+        console.log(apiURL)
       } else if (this.searchBy === "Client Number") {
         apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
+        console.log(apiURL)
       }
       //Resets the list of queried data
       this.queryData = [];
@@ -204,7 +206,7 @@ export default {
       this.phoneNumber = "";
     },
     editClient(clientID) {
-      this.$router.push({ name: "clientdetails", params: { id: clientID } });
+      this.$router.push({ name: "updateclient", params: { id: clientID } });
     },
   },
 };

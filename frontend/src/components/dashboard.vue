@@ -5,28 +5,8 @@
         class="font-bold text-4xl font-sans tracking-widest text-center mt-10"
         style="color: #7d0d15"
       >
-        Login
+        Welcome
       </h1>
-    </div>
-    <div class="m-5">
-      <!-- @submit.prevent stops the submit event from reloading the page-->
-      <form @submit.prevent="handleSubmitForm">
-        <section v-for="b in buttons" :key="b.id">
-          <button @click="routePush(b.routeName)" type="submit">{{b.name}}</button>
-          <!-- <section v-html="htmlContSubmit">
-            <button @click="routeFindClient" type="submit">Find A Client</button>
-          </section>
-          <section v-html="htmlContIntake">
-            <button @click="routeIntakeForm" type="submit">Client Intake Form</button>
-          </section>
-          <section v-html="htmlContCreate">
-            <button @click="routeUserCreation" type="submit">Register A User</button>
-          </section>
-          <section v-html="htmlContLogin">
-            <button @click="routeUserLogin" type="submit">Login</button>
-          </section> -->
-        </section>
-      </form>
     </div>
   </main>
 </template>

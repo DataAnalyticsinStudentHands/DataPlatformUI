@@ -1,9 +1,9 @@
-<!-- TODO: make font sizes appropriate -->
+
 <template>
   <main>
     <div>
       <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
-        Client Intake Form
+        Update Client
       </h1>
     </div>
     <div class="m-5">
