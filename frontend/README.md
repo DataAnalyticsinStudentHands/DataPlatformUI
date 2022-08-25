@@ -6,11 +6,10 @@ npm install
 ```
 
 ### Before Server Startup 
-Change ip address in vuex store and backend to your personal ip address
+Setup a .env file with following varaibles:
 
-1) Go to frontend folder, open main.js and change ipAddress variable.
 ```
-ipAddress: 'YOURIPADDRESS'
+VUE_APP_ROOT_API=http://localhost/api
 ```
 ### Compiles and hot-reloads for development
 ```

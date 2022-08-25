@@ -277,7 +277,7 @@ export default {
     //Loads resp data into Vue Data properties
     axios
       .get(
-        `http://${this.$store.state.ipAddress}:3000/primarydata/clientdetails/`,
+        process.env.VUE_APP_ROOT_API + `/primarydata/clientdetails/`,
         {
           params: { id: this.id },
         }
@@ -298,7 +298,7 @@ export default {
         this.client.address[0].county = data.address[0].county;
         this.client.address[0].zipcode = data.address[0].zipcode;
         axios
-          .get(`http://${this.$store.state.ipAddress}:3000/eventdata/`)
+          .get(process.env.VUE_APP_ROOT_API + `/eventdata/`)
           .then((resp) => {
             let data = resp.data;
             for (let i = 0; i < data.length; i++) {
@@ -313,7 +313,7 @@ export default {
   },
   methods: {
     handleClientUpdate() {
-      let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/${this.id}`;
+      let apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/users/${this.id}`;
       axios.put(apiURL, this.client).then(() => {
         alert("Update has been saved.");
         this.$router.back().catch((error) => {
@@ -326,7 +326,7 @@ export default {
       this.$router.push({ name: "commonDataForm", params: { id: idd } });
     },
     addToEvent() {
-      let apiURL = `http://${this.$store.state.ipAddress}:3000/eventdata/${this.eventChosen}`;
+      let apiURL = process.env.VUE_APP_ROOT_API + `/eventdata/${this.eventChosen}`;
       for (let i = 0; i < this.eventData.length; i++) {
         if (this.eventData[i]._id === this.eventChosen) {
           this.eventData[i].attendees.push(this.id);

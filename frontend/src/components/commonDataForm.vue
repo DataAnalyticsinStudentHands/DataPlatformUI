@@ -1056,8 +1056,7 @@ export default {
   beforeMount() {
     //Loads resp data into Vue Data properties
     axios
-      .get(
-        `http://${this.$store.state.ipAddress}:3000/commondata/commondataform/`,
+      .get(process.env.VUE_APP_ROOT_API + `/commondata/commondataform/`,
         {
           params: { id: this.id },
         }
@@ -1144,7 +1143,7 @@ export default {
   methods: {
     handleSubmitForm() {
       if (this.exists != true) {
-        let apiURL = `http://${this.$store.state.ipAddress}:3000/commonData/`;
+        let apiURL = process.env.VUE_APP_ROOT_API + `/commonData/`;
         axios
           .post(apiURL, this.data)
           .then(() => {
@@ -1229,7 +1228,7 @@ export default {
             console.log(error);
           });
       } else {
-        let apiURL = `http://${this.$store.state.ipAddress}:3000/commonData/update`;
+        let apiURL = process.env.VUE_APP_ROOT_API + `/commonData/update`;
         axios
           .post(apiURL, this.data)
           .then(() => {

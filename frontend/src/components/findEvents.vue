@@ -43,7 +43,7 @@ export default {
     };
   },
   mounted() {
-    let apiURL = `http://${this.$store.state.ipAddress}:3000/eventdata/`;
+    let apiURL = process.env.VUE_APP_ROOT_API + `/eventdata/`;
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
       let data = resp.data;

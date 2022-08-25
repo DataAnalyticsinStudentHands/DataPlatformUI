@@ -150,7 +150,7 @@ export default {
   },
   methods: {
     async handleSubmitForm() {
-      let apiURL = `http://${this.$store.state.ipAddress}:3000/eventdata`;
+      let apiURL = process.env.VUE_APP_ROOT_API + `/eventdata`;
       axios
         .post(apiURL, this.event)
         .then(() => {

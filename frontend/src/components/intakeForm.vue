@@ -253,7 +253,7 @@ export default {
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata`;
+        let apiURL = process.env.VUE_APP_ROOT_API + `/primarydata`;
         axios
           .post(apiURL, this.client)
           .then(() => {

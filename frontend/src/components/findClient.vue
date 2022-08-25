@@ -169,7 +169,7 @@ export default {
     };
   },
   mounted() {
-    let apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/`;
+    let apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/`;
     //Resets the list of queried data
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
@@ -185,9 +185,9 @@ export default {
       let apiURL = "";
       //Checks which filters are needed for URL structure
       if (this.searchBy === "Client Name") {
-        apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
+        apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
       } else if (this.searchBy === "Client Number") {
-        apiURL = `http://${this.$store.state.ipAddress}:3000/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
+        apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
       }
       //Resets the list of queried data
       this.queryData = [];
