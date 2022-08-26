@@ -21,7 +21,7 @@
             }"
           >
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="firstName"
+              <label class="self-start" for="firstName"
                 >First Name
               </label>
               <input
@@ -41,7 +41,7 @@
               </span>
             </div>
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="middleName"
+              <label class="self-start" for="middleName"
                 >Middle Name</label
               >
               <input
@@ -52,7 +52,7 @@
               />
             </div>
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="lastName"
+              <label class="self-start" for="lastName"
                 >Last Name</label
               >
               <input
@@ -81,7 +81,7 @@
               }"
             >
               <div class="flex flex-col">
-                <label class="self-start font-bold" for="email">Email</label>
+                <label class="self-start" for="email">Email</label>
                 <input
                   v-model="client.email"
                   name="email"
@@ -100,7 +100,7 @@
                 </span>
               </div>
               <div class="flex flex-col">
-                <label class="self-start font-bold" for="phoneNumber"
+                <label class="self-start" for="phoneNumber"
                   >Phone Number</label
                 >
                 <input
@@ -125,7 +125,7 @@
                 </span>
               </div>
               <div class="flex flex-col">
-                <label class="self-start font-bold" for=""
+                <label class="self-start" for=""
                   >Alternative Phone Number</label
                 >
                 <input
@@ -151,7 +151,7 @@
             }"
           >
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="">Address 1</label>
+              <label class="self-start" for="">Address 1</label>
               <input
                 v-model="client.address[0].line1"
                 type="text"
@@ -159,7 +159,7 @@
               />
             </div>
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="">Address 2</label>
+              <label class="self-start" for="">Address 2</label>
               <input
                 v-model="client.address[0].line2"
                 type="text"
@@ -167,7 +167,7 @@
               />
             </div>
             <div class="flex flex-col">
-              <label class="self-start font-bold" for="">City</label>
+              <label class="self-start" for="">City</label>
               <input
                 v-model="client.address[0].city"
                 type="text"
@@ -184,7 +184,7 @@
               }"
             >
               <div class="flex flex-col">
-                <label class="self-start font-bold" for="">County</label>
+                <label class="self-start" for="">County</label>
                 <input
                   v-model="client.address[0].county"
                   type="text"
@@ -192,7 +192,7 @@
                 />
               </div>
               <div class="flex flex-col">
-                <label class="self-start font-bold" for="">Zip Code</label>
+                <label class="self-start" for="">Zip Code</label>
                 <input
                   v-model="client.address[0].zipcode"
                   type="text"
@@ -204,7 +204,6 @@
         </section>
         <div class="flex justify-between mt-10 mr-20">
           <button class="bg-brick text-white rounded" type="submit">Add Client</button>
-          <button @click.prevent class="bg-white text-brick border-brick border rounded" type="reset">Clear Form</button>
         </div>
       </form>
     </div>
