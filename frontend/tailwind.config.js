@@ -1,0 +1,27 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+    colors: {
+      'red': '#C8102E',
+      'brick': '#C8102E',
+      'chocolate': '#640817',
+      'teal': '#640817',
+      'green': '#00866C',
+      'forest': '#005950',
+      'gold': '#F6BE00',
+      'mustard': '#D89B00',
+      'ocher': '#B97800',
+      'gray': '#888B8D',
+      'slate': '#54585A',
+      'black': '#000000',
+      'cream': '#FFF9D9',
+      'white': '#FFFFFF',
+    },
+  },
+  plugins: [],
+}

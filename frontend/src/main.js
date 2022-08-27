@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createStore } from 'vuex'
 import router from './router'
 import App from './App.vue'
-import './assets/tailwind.css'
+import './index.css'
 
 //Vuex store
 const store = createStore({

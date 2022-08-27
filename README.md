@@ -1,13 +1,18 @@
-# DataPlatform Project Setup
+# Data Platform Project Setup
 
-## Run Frontend Vue Application
-```
-cd frontend
-```
-Follow instructions from frontend folder readme
+Requirements:
 
-## Run Backend Node Application
+This project uses NodeJS and MongoDB.
+
+## Backend Node Application
 ```
 cd backend
 ```
-Follow instructions from backend folder readme
+Follow instructions in backend README
+
+## Frontend Vue 3 Application
+```
+cd frontend
+```
+Follow instructions in frontend README
+
