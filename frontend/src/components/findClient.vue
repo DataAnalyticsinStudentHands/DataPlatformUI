@@ -1,155 +1,93 @@
 <template>
   <main>
     <div>
-      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
-        Find Client
-      </h1>
+      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Find Client</h1>
     </div>
-    <div class="m-5">
-      <div class="flex flex-col">
+    <div class="px-10 py-20">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <h2 class="text-2xl font-bold">Search Client By</h2>
         <!-- Displays Client Name search field -->
-        <div
-          class="flex gap-x-2"
-          :style="[!$store.state.isResponsive ? 'width:42%' : 'width: 100%']"
-          :class="{ 'flex-col': $store.state.isResponsive }"
-        >
-          <h3 class="inline font-bold">Search Client By:</h3>
+        <div class="flex flex-col">
           <select
+            class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             v-model="searchBy"
-            :class="{ 'w-2/5': $store.state.isResponsive }"
           >
             <option value="Client Name">Client Name</option>
             <option value="Client Number">Client Number</option>
           </select>
         </div>
-        <div
-          :class="{ 'flex flex-col': $store.state.isResponsive }"
-          :style="[!$store.state.isResponsive ? 'width:42%' : 'width:100%']"
-          v-if="searchBy === 'Client Name'"
-          class="flex justify-between gap-5 mt-5"
-        >
-          <section class="flex flex-col">
-            <label> Please Enter <b>First</b> Name</label>
+        <div class="flex flex-col" v-if="searchBy === 'Client Name'">
+          <label class="block">
             <input
-              :class="{ 'w-2/5': $store.state.isResponsive }"
               type="text"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               v-model="firstName"
               v-on:keyup.enter="handleSubmitForm"
             />
-          </section>
-          <section class="flex flex-col">
-            <label>Please Enter <b>Last</b> Name</label>
+
+            <span class="text-gray-700">Please Enter First Name</span>
+          </label>
+        </div>
+        <div>
+          <div class="flex flex-col" v-if="searchBy === 'Client Name'">
             <input
-              :class="{ 'w-2/5': $store.state.isResponsive }"
               type="text"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               v-model="lastName"
               v-on:keyup.enter="handleSubmitForm"
             />
-          </section>
-          <div :class="{ 'self-end': !$store.state.isResponsive }">
-            <button
-              style="width: 10em"
-              class="self-end bg-brick text-white rounded"
-              @click="handleSubmitForm"
-              type="submit"
-            >
-              Search Client
-            </button>
+            <label class="block">
+              <span class="text-gray-700">Please Enter Last Name</span>
+            </label>
           </div>
-        </div>
-        <!-- Displays Client Number search field -->
-        <div
-          :class="{ 'flex flex-col': $store.state.isResponsive }"
-          v-if="searchBy === 'Client Number'"
-          class="flex justify-between gap-5 mt-5"
-          :style="[!$store.state.isResponsive ? 'width:42%' : 'width:100%']"
-        >
-          <section class="flex flex-col">
-            <label> Please Enter Client Phone Number</label>
+          <!-- Displays Client Number search field -->
+          <div class="flex flex-col" v-if="searchBy === 'Client Number'">
             <input
-              :class="{ 'w-2/5': $store.state.isResponsive }"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               type="text"
               v-model="phoneNumber"
               v-on:keyup.enter="handleSubmitForm"
             />
-          </section>
-          <div :class="{ 'self-end': !$store.state.isResponsive }">
+            <label class="block">Please Enter Client Phone Number</label>
+          </div>
+          <div class="flex flex-col">
             <button
               style="width: 10em"
-              :class="{ 'self-end': !$store.state.isResponsive }"
+              class="self-end bg-red-700 text-white rounded"
               @click="handleSubmitForm"
               type="submit"
-            >
-              Search Client
-            </button>
+            >Search Client</button>
           </div>
         </div>
       </div>
-      <hr class="mt-10 border-solid border-1" style="border-color: #960C22" />
+      <hr class="mt-10 mb-10" />
       <!-- Display Found Data -->
-      <table class="table-auto mx-auto text-center">
-        <thead>
-          <tr
-            :style="[
-              $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
-            ]"
-          >
-            <th
-              class="text-left"
-              :style="[
-                $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
-              ]"
-            >
-              Name
-            </th>
-            <th
-              :style="[
-                $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
-              ]"
-              id="cityName"
-            >
-              City
-            </th>
-            <th
-              :style="[
-                $store.state.isResponsive ? 'padding: 0' : 'padding: 0 40px',
-              ]"
-            >
-              Phone number
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            @click="editClient(client._id)"
-            v-for="client in queryData"
-            :key="client._id"
-          >
-            <td
-              :style="[
-                $store.state.isResponsive
-                  ? 'padding: 0 1em 1em 0'
-                  : 'padding: 0 40px',
-              ]"
-              class="text-left whitespace-nowrap"
-              style
-            >
-              {{ client.firstName + " " + client.lastName }}
-            </td>
-            <td id="cityList">
-              {{ client.address[0]["city"] }}
-            </td>
-            <td>
-              {{ client.phoneNumbers[0].primaryPhone }}
-            </td>
-            <td class="text-left" id="viewClient">
-              <button class="btn">
-                View {{ client.firstName + " " + client.lastName }}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <h2 class="text-2xl font-bold">List of Clients</h2>
+        <div class="flex flex-col col-span-3">
+          
+        <table class="min-w-full shadow-md rounded">
+          <thead class="bg-gray-50 text-xl">
+            <tr>
+              <th class="p-4 text-left">Name</th>
+              <th class="p-4 text-left">City</th>
+              <th class="p-4 text-left">Phone number</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-300">
+            <tr @click="editClient(client._id)" v-for="client in queryData" :key="client._id">
+              <td class="p-2 text-left">{{ client.firstName + " " + client.lastName }}</td>
+              <td class="p-2 text-left">{{ client.address[0]["city"] }}</td>
+              <td class="p-2 text-left">{{ client.phoneNumbers[0].primaryPhone }}</td>
+              <td class="p-2 text-left">
+                <button class="bg-red-700 text-white rounded">Details/Edit</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
     </div>
   </main>
 </template>
@@ -169,7 +107,7 @@ export default {
     };
   },
   mounted() {
-    let apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/`;
+    let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
     //Resets the list of queried data
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
@@ -185,11 +123,13 @@ export default {
       let apiURL = "";
       //Checks which filters are needed for URL structure
       if (this.searchBy === "Client Name") {
-        apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
-        console.log(apiURL)
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/primarydata/users/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
       } else if (this.searchBy === "Client Number") {
-        apiURL = process.env.VUE_APP_ROOT_API + `/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
-        console.log(apiURL)
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/primarydata/users/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
       }
       //Resets the list of queried data
       this.queryData = [];
@@ -212,35 +152,7 @@ export default {
 };
 </script>
 <style>
-input,
-select {
-  border: 1px solid #cfd4d9;
-  border-radius: 2px;
-}
 button {
-  padding: 5px 10px;
-}
-.btn {
-  border-radius: 4px;
-  background-color: #960C22;
-  color: white;
-  padding: 5px 5px;
-  font-size: 0.8em;
-  min-width: 200px;
-  max-width: 200px;
-  border: 1px solid #960C22;
-}
-.btn:hover {
-  background-color: white;
-  color: #960C22;
-  border: 1px solid #960C22;
-}
-
-@media only screen and (max-width: 900px) {
-  #viewClient,
-  #cityList,
-  #cityName {
-    display: none;
-  }
+  padding: 10px 10px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <main>
     <div>
-      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
+      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">
         Common Data Form
       </h1>
     </div>
@@ -14,9 +14,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="birthDate">Birth Date</label>
@@ -24,7 +21,6 @@
                 v-model="data.birthdate"
                 name="birthDate"
                 type="date"
-                :class="{ 'w-2/5': $store.state.isResponsive }"
               />
             </div>
             <div>
@@ -149,9 +145,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="educated"
@@ -179,7 +172,6 @@
             <div class="flex flex-col">
               <label class="font-bold" for="school">School</label>
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="school"
                 v-model="data.education[0].school"
@@ -188,7 +180,6 @@
             <div class="flex flex-col">
               <label class="font-bold" for="lastGrade">Last Grade</label>
               <input
-                :class="{ 'w-1/5': $store.state.isResponsive }"
                 type="text"
                 name="lastGrade"
                 v-model="data.education[0].lastGrade"
@@ -292,7 +283,6 @@
             <div class="flex flex-col">
               <label class="font-bold" for="certificates">Certifications</label>
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="certificates"
                 v-model="data.education[0].certificates"
@@ -310,9 +300,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="hasInsurance"
@@ -342,7 +329,6 @@
                 >Insurance Type</label
               >
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="insuranceType"
                 v-model="data.healthInsurance[0].insuranceType"
@@ -360,9 +346,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="hasInsurance"
@@ -421,9 +404,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="houseHead"
@@ -556,9 +536,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="houseHead">Are you employed?</label>
@@ -586,7 +563,6 @@
                 >Employment Duration (months)</label
               >
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="number"
                 name="employmentDuration"
                 v-model="data.employment[0].employmentDuration"
@@ -595,7 +571,6 @@
             <div class="flex flex-col">
               <label class="font-bold" for="employer">Employer</label>
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="employer"
                 v-model="data.employment[0].employer"
@@ -604,7 +579,6 @@
             <div class="flex flex-col">
               <label class="font-bold" for="occupation">Occupation</label>
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="text"
                 name="occupation"
                 v-model="data.employment[0].occupation"
@@ -638,7 +612,6 @@
                 >Homemaker Duration (months)</label
               >
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="number"
                 name="homeMakerDuration"
                 v-model="data.employment[0].homeMakerDuration"
@@ -670,7 +643,6 @@
                 >Retired Duration (months)</label
               >
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="number"
                 name="retiredDuration"
                 v-model="data.employment[0].retiredDuration"
@@ -688,9 +660,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="hasMentalIllness"
@@ -817,9 +786,6 @@
           </div>
           <section
             class="flex gap-x-8 gap-y-4 flex-wrap mt-2"
-            :class="{
-              responsive: $store.state.isResponsive,
-            }"
           >
             <div class="flex flex-col">
               <label class="font-bold" for="houseHead"
@@ -948,7 +914,6 @@
             <div class="flex flex-col">
               <label class="font-bold" for="deliveryDate">Delivery Date</label>
               <input
-                :class="{ 'w-2/5': $store.state.isResponsive }"
                 type="date"
                 name="deliveryDate"
                 v-model="data.additionalData[0].deliveryDate"
@@ -1056,7 +1021,7 @@ export default {
   beforeMount() {
     //Loads resp data into Vue Data properties
     axios
-      .get(process.env.VUE_APP_ROOT_API + `/commondata/commondataform/`,
+      .get(import.meta.env.VITE_ROOT_API + `/commondata/commondataform/`,
         {
           params: { id: this.id },
         }
@@ -1143,7 +1108,7 @@ export default {
   methods: {
     handleSubmitForm() {
       if (this.exists != true) {
-        let apiURL = process.env.VUE_APP_ROOT_API + `/commonData/`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/commonData/`;
         axios
           .post(apiURL, this.data)
           .then(() => {
@@ -1228,7 +1193,7 @@ export default {
             console.log(error);
           });
       } else {
-        let apiURL = process.env.VUE_APP_ROOT_API + `/commonData/update`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/commonData/update`;
         axios
           .post(apiURL, this.data)
           .then(() => {
@@ -1317,19 +1282,3 @@ export default {
   },
 };
 </script>
-<style>
-input,
-select {
-  border: 1px solid #cfd4d9;
-  border-radius: 4px;
-}
-button{
-  padding: 10px 16px;
-}
-h2 {
-  color: #bb2b35;
-}
-.responsive {
-  flex-direction: column;
-}
-</style>

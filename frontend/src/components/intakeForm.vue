@@ -1,214 +1,3 @@
-<!-- TODO: make font sizes appropriate -->
-<template>
-  <main>
-    <div>
-      <h1 class="font-bold text-4xl font-sans tracking-widest text-center mt-10 text-brick">
-        Client Intake Form
-      </h1>
-    </div>
-    <div class="m-5">
-      <!-- @submit.prevent stops the submit event from reloading the page-->
-      <form @submit.prevent="handleSubmitForm">
-        <section>
-          <section>
-            <p class="text-left font-bold">Personal Details</p>
-          </section>
-          <section
-            class="flex mt-10"
-            :class="{
-              responsive: $store.state.isResponsive,
-              'space-x-10': !$store.state.isResponsive,
-            }"
-          >
-            <div class="flex flex-col">
-              <label class="self-start" for="firstName"
-                >First Name
-              </label>
-              <input
-                v-model="client.firstName"
-                name="firstName"
-                :class="{ 'w-2/5': $store.state.isResponsive }"
-                type="text"
-              />
-              <span class="text-black" v-if="v$.client.firstName.$error">
-                <p
-                  style="color: red"
-                  v-for="error of v$.client.firstName.$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </div>
-            <div class="flex flex-col">
-              <label class="self-start" for="middleName"
-                >Middle Name</label
-              >
-              <input
-                v-model="client.middleName"
-                name="middleName"
-                type="text"
-                :class="{ 'w-2/5': $store.state.isResponsive }"
-              />
-            </div>
-            <div class="flex flex-col">
-              <label class="self-start" for="lastName"
-                >Last Name</label
-              >
-              <input
-                v-model="client.lastName"
-                name="lastName"
-                type="text"
-                :class="{ 'w-2/5': $store.state.isResponsive }"
-              />
-              <span class="text-black" v-if="v$.client.lastName.$error">
-                <p
-                  style="color: red"
-                  v-for="error of v$.client.lastName.$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </div>
-          </section>
-          <section>
-            <section
-              class="flex"
-              :class="{
-                responsive: $store.state.isResponsive,
-                'space-x-10 mt-5': !$store.state.isResponsive,
-              }"
-            >
-              <div class="flex flex-col">
-                <label class="self-start" for="email">Email</label>
-                <input
-                  v-model="client.email"
-                  name="email"
-                  type="email"
-                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                  :class="{ 'w-2/5': $store.state.isResponsive }"
-                />
-                <span class="text-black" v-if="v$.client.email.$error">
-                  <p
-                    style="color: red"
-                    v-for="error of v$.client.email.$errors"
-                    :key="error.$uid"
-                  >
-                    {{ error.$message }}!
-                  </p>
-                </span>
-              </div>
-              <div class="flex flex-col">
-                <label class="self-start" for="phoneNumber"
-                  >Phone Number</label
-                >
-                <input
-                  v-model="client.phoneNumbers[0].primaryPhone"
-                  name="phoneNumber"
-                  type="text"
-                  pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                  :class="{ 'w-2/5': $store.state.isResponsive }"
-                />
-                <span
-                  class="text-black"
-                  v-if="v$.client.phoneNumbers[0].primaryPhone.$error"
-                >
-                  <p
-                    style="color: red"
-                    v-for="error of v$.client.phoneNumbers[0].primaryPhone
-                      .$errors"
-                    :key="error.$uid"
-                  >
-                    {{ error.$message }}!
-                  </p>
-                </span>
-              </div>
-              <div class="flex flex-col">
-                <label class="self-start" for=""
-                  >Alternative Phone Number</label
-                >
-                <input
-                  v-model="client.phoneNumbers[0].secondaryPhone"
-                  name="secPhone"
-                  type="text"
-                  pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                  :class="{ 'w-2/5': $store.state.isResponsive }"
-                />
-              </div>
-            </section>
-          </section>
-        </section>
-        <section>
-          <section>
-            <p class="text-left font-bold mt-10">Address Details</p>
-          </section>
-          <section
-            class="flex mt-10"
-            :class="{
-              responsive: $store.state.isResponsive,
-              'space-x-10': !$store.state.isResponsive,
-            }"
-          >
-            <div class="flex flex-col">
-              <label class="self-start" for="">Address 1</label>
-              <input
-                v-model="client.address[0].line1"
-                type="text"
-                :class="{ 'w-3/5': $store.state.isResponsive }"
-              />
-            </div>
-            <div class="flex flex-col">
-              <label class="self-start" for="">Address 2</label>
-              <input
-                v-model="client.address[0].line2"
-                type="text"
-                :class="{ 'w-2/5': $store.state.isResponsive }"
-              />
-            </div>
-            <div class="flex flex-col">
-              <label class="self-start" for="">City</label>
-              <input
-                v-model="client.address[0].city"
-                type="text"
-                :class="{ 'w-3/5': $store.state.isResponsive }"
-              />
-            </div>
-          </section>
-          <section class="mt-5">
-            <section
-              class="flex"
-              :class="{
-                responsive: $store.state.isResponsive,
-                'space-x-10': !$store.state.isResponsive,
-              }"
-            >
-              <div class="flex flex-col">
-                <label class="self-start" for="">County</label>
-                <input
-                  v-model="client.address[0].county"
-                  type="text"
-                  :class="{ 'w-2/5': $store.state.isResponsive }"
-                />
-              </div>
-              <div class="flex flex-col">
-                <label class="self-start" for="">Zip Code</label>
-                <input
-                  v-model="client.address[0].zipcode"
-                  type="text"
-                  :class="{ 'w-1/5': $store.state.isResponsive }"
-                />
-              </div>
-            </section>
-          </section>
-        </section>
-        <div class="flex justify-between mt-10 mr-20">
-          <button class="bg-brick text-white rounded" type="submit">Add Client</button>
-        </div>
-      </form>
-    </div>
-  </main>
-</template>
 <script>
 import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
@@ -252,7 +41,7 @@ export default {
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        let apiURL = process.env.VUE_APP_ROOT_API + `/primarydata`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata`;
         axios
           .post(apiURL, this.client)
           .then(() => {
@@ -313,19 +102,187 @@ export default {
   },
 };
 </script>
-<style>
-input,
-select {
-  border: 1px solid #cfd4d9;
-  border-radius: 4px;
-}
+<template>
+  <main>
+    <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Client Intake Form</h1>
+    <div class="px-10 py-20">
+      <!-- @submit.prevent stops the submit event from reloading the page-->
+      <form @submit.prevent="handleSubmitForm">
+        <!-- grid container -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+          <h2 class="text-2xl font-bold">Personal Details</h2>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">First Name</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                placeholder
+                v-model="client.firstName"
+              />
+              <span class="text-black" v-if="v$.client.firstName.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.client.firstName.$errors"
+                  :key="error.$uid"
+                >{{ error.$message }}!</p>
+              </span>
+            </label>
+          </div>
 
-button{
-  padding: 10px 16px;
-}
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Middle Name</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                placeholder
+                v-model="client.middleName"
+              />
+            </label>
+          </div>
 
-.responsive {
-  flex-direction: column;
-  margin-left: 0;
-}
-</style>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Last Name</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                placeholder
+                v-model="client.lastName"
+              />
+              <span class="text-black" v-if="v$.client.lastName.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.client.lastName.$errors"
+                  :key="error.$uid"
+                >{{ error.$message }}!</p>
+              </span>
+            </label>
+          </div>
+
+          <div></div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Email</span>
+              <input
+                type="email"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                v-model="client.email"
+              />
+              <span class="text-black" v-if="v$.client.email.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.client.email.$errors"
+                  :key="error.$uid"
+                >{{ error.$message }}!</p>
+              </span>
+            </label>
+          </div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Phone Number</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
+                v-model="client.phoneNumbers[0].primaryPhone"
+              />
+              <span class="text-black" v-if="v$.client.phoneNumbers[0].primaryPhone.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.client.phoneNumbers[0].primaryPhone.$errors"
+                  :key="error.$uid"
+                >{{ error.$message }}!</p>
+              </span>
+            </label>
+          </div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Alternative Phone Number</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
+                v-model="client.phoneNumbers[0].secondaryPhone"
+              />
+            </label>
+          </div>
+        </div>
+
+        <!-- grid container -->
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+          <h2 class="text-2xl font-bold">Address Details</h2>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Address Line 1</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="client.address[0].line1"
+              />
+            </label>
+          </div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Address Line 2</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="client.address[0].line2"
+              />
+            </label>
+          </div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">City</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="client.address[0].city"
+              />
+            </label>
+          </div>
+          <div></div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">County</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="client.address[0].county"
+              />
+            </label>
+          </div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Zip Code</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="client.address[0].zipcode"
+              />
+            </label>
+          </div>
+          <div></div>
+          <!-- submit button -->
+          <div class="flex justify-between mt-10 mr-20">
+            <button class="bg-red-700 text-white rounded" type="submit">Add Client</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</template>

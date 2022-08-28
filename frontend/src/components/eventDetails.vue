@@ -181,7 +181,7 @@ export default {
   },
   beforeMount() {
     axios
-      .get(process.env.VUE_APP_ROOT_API + `/eventdata/eventdetails/`,
+      .get(import.meta.env.VITE_ROOT_API + `/eventdata/eventdetails/`,
         { params: { id: this.id } }
       )
       .then((resp) => {
@@ -202,7 +202,7 @@ export default {
         this.attendeeIDs = data.attendees;
         for (let i = 0; i < this.attendeeIDs.length; i++) {
           axios
-            .get(process.env.VUE_APP_ROOT_API + `/primarydata/clientdetails/`,
+            .get(import.meta.env.VITE_ROOT_API + `/primarydata/clientdetails/`,
               {
                 params: { id: this.attendeeIDs[i] },
               }
@@ -222,7 +222,7 @@ export default {
   },
   methods: {
     handleEventUpdate() {
-      let apiURL = process.env.VUE_APP_ROOT_API + `/eventdata/${this.id}`;
+      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/${this.id}`;
       axios.put(apiURL, this.event).then(() => {
         alert("Update has been saved.");
         this.$router.back().catch((error) => {
