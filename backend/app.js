@@ -37,18 +37,12 @@ app.use(morgan("dev"));
 //Import Routes
 const primaryDataRoute  = require('./routes/primaryData');
 const commonDataRoute   = require('./routes/commonData');
-const userDataRoute = require('./routes/userData');
-const organizationDataRoute  = require('./routes/organizationData');
 const eventsDataRoute  = require('./routes/eventsData');
-// const commonDataRoute  = require('./routes/commonData'); 
 
 //middle ware for routes
 app.use('/primaryData', primaryDataRoute);
 app.use('/commonData', commonDataRoute);
-app.use('/userData', userDataRoute);
-app.use('/organizationData', organizationDataRoute)
 app.use('/eventData', eventsDataRoute)
-// app.use('/commonData', commonDataRoute);
 
 //using the PORT cost to listen 
 app.listen(PORT, () => {

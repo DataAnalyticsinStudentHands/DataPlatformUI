@@ -1,5 +1,4 @@
 const express = require("express"); //import express
-const { validate } = require("uuid"); // uuid lets us use the _id as a string
 const router = express.Router(); //creates an instance of the route handler
 
 //importing data model schemas

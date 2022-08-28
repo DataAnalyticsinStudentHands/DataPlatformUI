@@ -2,7 +2,7 @@ const uuid = require('uuid'); //uuid will allow us to store the _id as a string
 const mongoose = require('mongoose'); //mongoose will be our ODM
 const Schema = mongoose.Schema;
 
-//collection for applicants
+//collection for intakeData
 let primaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     firstName: {
@@ -30,7 +30,7 @@ let primaryDataSchema = new Schema({
     },
     events: {
         type: Array
-    },    
+    },
 }, {
     collection: 'primaryData',
     timestamps: true
@@ -87,112 +87,12 @@ let commonDataSchema = new Schema({
     collection: 'commonData'
 });
 
-
-let permsSchema = new Schema({
-    orgReadAccess: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 3
-    },
-    orgWriteAccess: {
-        type: Number,
-        required: true,
-        min: 0,
-        max: 4
-    },
-    allReadAccess: {
-        type: Number,
-        required: true,
-        min: 0,
-        max: 4
-    },
-    allWriteAccess: {
-        type: Number,
-        required: true,
-        min: 0,
-        max: 4
-    },
-    canCreateUser: {
-        type: Number,
-        required: true,
-        min:0,
-        max:1
-    },
-});
-
-//collection for users
-let userSchema = new Schema({
-    _id: { type: String, default: uuid.v1 },
-    firstName: {
-        type: String,
-        require: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String
-    },
-    phoneNumbers: {
-        type: Array,
-        required: true
-    },
-    username: {
-        type: String,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    association: {
-        type: String,
-        required: true
-    },
-    perms: {
-        type: permsSchema,
-        required: true
-    }
-}, {
-    collection: 'user',
-    timestamps: true
-});
-
-// package the models in an object to export 
-
-//collection for organizationData
-let organizationDataSchema = new Schema({
-    _id: { type: String, default: uuid.v1 },
-    orgName: {
-        type: String,
-        require: true
-    },
-    orgDescription: {
-        type: String,
-        required: true
-    },
-    services: {
-        type: Array
-    },
-    events: {
-        type: Array
-    },    
-}, {
-    collection: 'organizationData'
-});
-
-//collection for organizationData
+//collection for eventData
 let eventDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     eventName: {
         type: String,
         require: true
-    },
-    associatedOrgID: {
-        type: String,
-        required: true
     },
     services: {
         type: Array
@@ -202,26 +102,36 @@ let eventDataSchema = new Schema({
         required: true
     },
     address: {
-        type: Array
+        line1: {
+            type: String
+        },
+        line2: {
+            type: String,
+        },
+        city: {
+            type: String,
+        },
+        county: {
+            type: String,
+        },
+        zip: {
+            type: String,
+        }
     },
     description: {
         type: String,
     },
     attendees: {
         type: Array
-    }    
+    }
 }, {
     collection: 'eventData'
 });
 
-
-//create models for mongoose schema to use primaryData and commonData data model ('js', schema name)
+//create models for mongoose schema 
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const commondata = mongoose.model('commonData', commonDataSchema);
-const orgdata = mongoose.model('organzationData', organizationDataSchema);
 const eventdata = mongoose.model('eventData', eventDataSchema);
-const perms = mongoose.model('pernsSchema', permsSchema);
-const users = mongoose.model('users', userSchema);
 
 // package the models in an object to export 
-module.exports = { primarydata, commondata, orgdata, eventdata, users, perms }
+module.exports = { primarydata, commondata, eventdata }
