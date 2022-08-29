@@ -3,7 +3,7 @@
     <div>
       <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">List of Events</h1>
     </div>
-    <div class="px-10 py-20">
+    <div class="px-10 pt-20">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
         <h2 class="text-2xl font-bold">Search Event By</h2>
         <!-- Displays Client Name search field -->
@@ -23,39 +23,69 @@
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               v-model="eventName"
               v-on:keyup.enter="handleSubmitForm"
+              placeholder="Enter event name"
             />
-
-            <span class="text-gray-700">Please Event Name</span>
           </label>
         </div>
+        <!-- Displays event date search field -->
+        <div class="flex flex-col" v-if="searchBy === 'Event Date'">
+          <input
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            type="date"
+            v-model="eventDate"
+            v-on:keyup.enter="handleSubmitForm"
+          />
+        </div>
       </div>
-      <hr class="mt-10 mb-10" />
-      <!-- Display Found Data -->
-      <table class="min-w-full shadow-md rounded">
-        <thead class="bg-gray-50 text-xl">
-          <tr>
-            <th class="p-4 text-left">Event Name</th>
-            <th class="p-4 text-left">Event Date</th>
-            <th class="p-4 text-left">Event Address</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-300">
-          <tr @click="editEvent(event._id)" v-for="event in queryData" :key="event._id">
-            <td class="p-2 text-left">{{ event.eventName }}</td>
-            <td class="p-2 text-left">{{ event.date }}</td>
-            <td class="p-2 text-left">{{ event.address.line1 }}</td>
-            <td class="p-2 text-left">
-              <button class="bg-red-700 text-white rounded">Details/Edit</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div></div>
+        <div></div>
+        <div class="mt-5 grid-cols-2">
+          <button
+            class="mr-10 border border-red-700 bg-white text-red-700 rounded"
+            @click="clearSearch"
+            type="submit"
+          >Clear Search</button>
+          <button
+            class="bg-red-700 text-white rounded"
+            @click="handleSubmitForm"
+            type="submit"
+          >Search Event</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="mt-10 mb-10" />
+    <!-- Display Found Data -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+      <div class="ml-10">
+        <h2 class="text-2xl font-bold">List of Events</h2>
+        <h3 class="italic">Click table row to edit/display an entry</h3>
+      </div>
+      <div class="flex flex-col col-span-2">
+        <table class="min-w-full shadow-md rounded">
+          <thead class="bg-gray-50 text-xl">
+            <tr>
+              <th class="p-4 text-left">Event Name</th>
+              <th class="p-4 text-left">Event Date</th>
+              <th class="p-4 text-left">Event Address</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-300">
+            <tr @click="editEvent(event._id)" v-for="event in queryData" :key="event._id">
+              <td class="p-2 text-left">{{ event.eventName }}</td>
+              <td class="p-2 text-left">{{ event.date }}</td>
+              <td class="p-2 text-left">{{ event.address.line1 }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 </template>
 <script>
 import axios from "axios";
+
 export default {
   data() {
     return {
@@ -70,11 +100,8 @@ export default {
     let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
-      let data = resp.data;
-      for (let i = 0; i < data.length; i++) {
-        this.queryData.push(data[i]);
-      }
-      for (let i = 0; i < data.length; i++) {
+      this.queryData = resp.data;
+      for (let i = 0; i < resp.data.length; i++) {
         let formattedDate = new Date(this.queryData[i].date);
         let month = formattedDate.getMonth() + 1;
         let day = formattedDate.getDate() + 1;
@@ -87,29 +114,45 @@ export default {
   methods: {
     handleSubmitForm() {
       let apiURL = "";
-      //Checks which filters are needed for URL structure
       if (this.searchBy === "Event Name") {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/events/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
+          `/eventdata/search/?eventName=${this.eventName}&searchBy=name`;
       } else if (this.searchBy === "Event Date") {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/events/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
+          `/eventdata/search/?eventDate=${this.eventDate}&searchBy=date`;
       }
-      //Resets the list of queried data
-      this.queryData = [];
       axios.get(apiURL).then((resp) => {
-        let data = resp.data;
-        for (let i = 0; i < data.length; i++) {
-          this.queryData.push(data[i]);
+        this.queryData = resp.data;
+        for (let i = 0; i < resp.data.length; i++) {
+          let formattedDate = new Date(this.queryData[i].date);
+          let month = formattedDate.getMonth() + 1;
+          let day = formattedDate.getDate() + 1;
+          let year = formattedDate.getFullYear();
+          this.queryData[i].date = month + "/" + day + "/" + year;
         }
       });
+    },
+    clearSearch() {
       //Resets all the variables
-      this.searchQuery = "";
-      this.firstName = "";
-      this.lastName = "";
-      this.phoneNumber = "";
+      this.searchBy = "";
+      this.eventName = "";
+      this.eventDate = "";
+
+      //get all entries
+      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
+      this.queryData = [];
+      axios.get(apiURL).then((resp) => {
+        this.queryData = resp.data;
+        for (let i = 0; i < resp.data.length; i++) {
+          let formattedDate = new Date(this.queryData[i].date);
+          let month = formattedDate.getMonth() + 1;
+          let day = formattedDate.getDate() + 1;
+          let year = formattedDate.getFullYear();
+          this.queryData[i].date = month + "/" + day + "/" + year;
+        }
+      });
     },
     editEvent(eventID) {
       this.$router.push({ name: "eventdetails", params: { id: eventID } });

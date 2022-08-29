@@ -22,16 +22,13 @@ export default {
             secondaryPhone: "",
           },
         ],
-        address: [
-          {
-            type: "currentAddress",
-            line1: "",
-            line2: "",
-            city: "",
-            county: "",
-            zipcode: "",
-          },
-        ],
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
       },
     };
   },
@@ -45,8 +42,8 @@ export default {
         axios
           .post(apiURL, this.client)
           .then(() => {
-            alert("Client has been succesfully added. Returning to homescreen");
-            this.$router.push("/");
+            alert("Client has been succesfully added.");
+            this.$router.push("/findclient");
             this.client = {
               firstName: "",
               middleName: "",
@@ -58,25 +55,13 @@ export default {
                   seondaryPhone: "",
                 },
               ],
-              address: [
-                {
-                  type: "currentAddress",
-                  line1: "",
-                  line2: "",
-                  city: "",
-                  county: "",
-                  zipcode: "",
-                },
-              ],
-              additionalData: [
-                {
-                  maritalStatus: "",
-                  isSingleParent: "",
-                  isPregnant: "",
-                  isTeenParent: "",
-                  deliveryDate: "",
-                },
-              ],
+              address: {
+                line1: "",
+                line2: "",
+                city: "",
+                county: "",
+                zip: "",
+              },
             };
           })
           .catch((error) => {
@@ -92,6 +77,9 @@ export default {
         firstName: { required, alpha },
         lastName: { required, alpha },
         email: { email },
+        address: {
+          city: { required },
+        },
         phoneNumbers: [
           {
             primaryPhone: { required, numeric },
@@ -115,10 +103,10 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">First Name</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder
                 v-model="client.firstName"
               />
               <span class="text-black" v-if="v$.client.firstName.$error">
@@ -148,6 +136,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Last Name</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -188,6 +177,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Phone Number</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -227,7 +217,7 @@ export default {
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].line1"
+                v-model="client.address.line1"
               />
             </label>
           </div>
@@ -238,7 +228,7 @@ export default {
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].line2"
+                v-model="client.address.line2"
               />
             </label>
           </div>
@@ -246,11 +236,19 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">City</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].city"
+                v-model="client.address.city"
               />
+              <span class="text-black" v-if="v$.client.address.city.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.client.address.$errors"
+                  :key="error.$uid"
+                >{{ error.$message }}!</p>
+              </span>
             </label>
           </div>
           <div></div>
@@ -261,7 +259,7 @@ export default {
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].county"
+                v-model="client.address.county"
               />
             </label>
           </div>
@@ -272,7 +270,7 @@ export default {
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].zipcode"
+                v-model="client.address.zip"
               />
             </label>
           </div>

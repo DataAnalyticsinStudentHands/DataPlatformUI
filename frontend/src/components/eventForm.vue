@@ -14,10 +14,10 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Event Name</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder
                 v-model="event.eventName"
               />
               <span class="text-black" v-if="v$.event.eventName.$error">
@@ -34,11 +34,19 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Date</span>
+              <span style="color:#ff0000">*</span>
               <input
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 v-model="event.date"
                 type="date"
               />
+              <span class="text-black" v-if="v$.event.date.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.event.date.$errors"
+                  :key="error.$uid"
+                >{{ error.$message }}!</p>
+              </span>
             </label>
           </div>
 
@@ -176,7 +184,7 @@
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 placeholder
-                v-model="event.address.zipcode"
+                v-model="event.address.zip"
               />
             </label>
           </div>
@@ -204,14 +212,13 @@ export default {
         eventName: "",
         services: [],
         date: "",
-        address:
-          {
-            line1: "",
-            line2: "",
-            city: "",
-            county: "",
-            zip: "",
-          },
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
         description: "",
       },
     };
@@ -222,32 +229,31 @@ export default {
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-      this.event.services = this.checkedServices;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata`;
-      axios
-        .post(apiURL, this.event)
-        .then(() => {
-          alert("Event has been added. Returning to homescreen");
-          this.$router.push("/");
-          this.client = {
-            eventName: "",
-            services: [],
-            date: "",
-            address: 
-              {
+        this.event.services = this.checkedServices;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata`;
+        axios
+          .post(apiURL, this.event)
+          .then(() => {
+            alert("Event has been added.");
+            this.$router.push("/findEvents");
+            this.client = {
+              eventName: "",
+              services: [],
+              date: "",
+              address: {
                 line1: "",
                 line2: "",
                 city: "",
                 county: "",
                 zip: "",
               },
-            description: "",
-          };
-          this.checkedServices = [];
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+              description: "",
+            };
+            this.checkedServices = [];
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
     },
   },

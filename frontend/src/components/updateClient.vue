@@ -1,4 +1,3 @@
-
 <template>
   <main>
     <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Update Client</h1>
@@ -12,6 +11,7 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">First Name</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -45,6 +45,7 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Last Name</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -84,6 +85,7 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Phone Number</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -123,7 +125,7 @@
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].line1"
+                v-model="client.address.line1"
               />
             </label>
           </div>
@@ -134,7 +136,7 @@
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].line2"
+                v-model="client.address.line2"
               />
             </label>
           </div>
@@ -142,10 +144,11 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">City</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].city"
+                v-model="client.address.city"
               />
             </label>
           </div>
@@ -157,7 +160,7 @@
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].county"
+                v-model="client.address.county"
               />
             </label>
           </div>
@@ -168,25 +171,28 @@
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.address[0].zipcode"
+                v-model="client.address.zip"
               />
             </label>
           </div>
           <div></div>
         </div>
 
-         <!-- grid container -->
+        <!-- grid container -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <div class="flex justify-between mt-10 mr-20">
-            <button type="submit" class="bg-red-700 text-white rounded">Update Client</button>
-          </div>
-
-          <div class="flex justify-between mt-10">
             <button
-              @click="moveToCommon(this.id)"
+              @click="handleClientUpdate"
               type="submit"
               class="bg-red-700 text-white rounded"
-            >Edit Common Information</button>
+            >Update Client</button>
+          </div>
+          <div class="flex justify-between mt-10 mr-20">
+            <button
+              type="reset"
+              class="border border-red-700 bg-white text-red-700 rounded"
+              @click="$router.go(-1)"
+            >Go back</button>
           </div>
         </div>
 
@@ -195,6 +201,26 @@
         <!-- Client Event Information -->
         <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <h2 class="text-2xl font-bold">Events</h2>
+
+          <div class="flex flex-col col-span-2">
+            <table class="min-w-full shadow-md rounded">
+              <thead class="bg-gray-50 text-xl">
+                <tr>
+                  <th class="p-4 text-left">Event Name</th>
+                  <th class="p-4 text-left">Date</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-300">
+                <tr
+                  v-for="event in eventData"
+                  :key="event._id"
+                >
+                  <td class="p-2 text-left">{{ event.eventName }}</td>
+                  <td class="p-2 text-left">{{ event.eventDate }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <div class="flex flex-col">
             <select
@@ -247,16 +273,13 @@ export default {
             secondaryPhone: "",
           },
         ],
-        address: [
-          {
-            type: "currentAddress",
-            line1: "",
-            line2: "",
-            city: "",
-            county: "",
-            zipcode: "",
-          },
-        ],
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
       },
     };
   },
@@ -265,9 +288,10 @@ export default {
   },
   beforeMount() {
     axios
-      .get(import.meta.env.VITE_ROOT_API + `/primarydata/clientdetails/`, {
-        params: { id: this.id },
-      })
+      .get(
+        import.meta.env.VITE_ROOT_API +
+          `/primarydata/id/${this.$route.params.id}`
+      )
       .then((resp) => {
         let data = resp.data[0];
         this.client.firstName = data.firstName;
@@ -278,11 +302,11 @@ export default {
           data.phoneNumbers[0].primaryPhone;
         this.client.phoneNumbers[0].secondaryPhone =
           data.phoneNumbers[0].secondaryPhone;
-        this.client.address[0].line1 = data.address[0].line1;
-        this.client.address[0].line2 = data.address[0].line2;
-        this.client.address[0].city = data.address[0].city;
-        this.client.address[0].county = data.address[0].county;
-        this.client.address[0].zipcode = data.address[0].zipcode;
+        this.client.address.line1 = data.address.line1;
+        this.client.address.line2 = data.address.line2;
+        this.client.address.city = data.address.city;
+        this.client.address.county = data.address.county;
+        this.client.address.zip = data.address.zip;
         axios
           .get(import.meta.env.VITE_ROOT_API + `/eventdata/`)
           .then((resp) => {
@@ -299,17 +323,13 @@ export default {
   },
   methods: {
     handleClientUpdate() {
-      let apiURL =
-        import.meta.env.VITE_ROOT_API + `/primarydata/users/${this.id}`;
+      let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/${this.id}`;
       axios.put(apiURL, this.client).then(() => {
         alert("Update has been saved.");
         this.$router.back().catch((error) => {
           console.log(error);
         });
       });
-    },
-    moveToCommon(client_id) {
-      this.$router.push({ name: "commonDataForm", params: { id: client_id } });
     },
     addToEvent() {
       let apiURL =
@@ -320,7 +340,7 @@ export default {
           axios
             .put(apiURL, { attendees: this.eventData[i].attendees })
             .then(() => {
-              alert("User added to event.");
+              alert("Client added to event.");
             });
         }
       }
