@@ -19,12 +19,6 @@ const routes = [
         component: () => import('../components/findClient.vue')
     },
     {
-        path: '/commondataform/:id',
-        name: 'commonDataForm',
-        props: true,
-        component: () => import('../components/commonDataForm.vue')
-    },
-    {
         path: '/updateclient/:id',
         name: 'updateclient',
         props: true,
