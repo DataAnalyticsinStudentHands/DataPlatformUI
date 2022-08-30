@@ -1,3 +1,148 @@
+<script>
+import useVuelidate from "@vuelidate/core";
+import { required, email, alpha, numeric } from "@vuelidate/validators";
+import VueMultiselect from "vue-multiselect";
+import axios from "axios";
+import { DateTime } from "luxon";
+
+export default {
+  props: ["id"],
+  components: { VueMultiselect },
+  setup() {
+    return { v$: useVuelidate({ $autoDirty: true }) };
+  },
+  data() {
+    return {
+      //for multi select
+      eventsChosen: [],
+      //for multi select event Data
+      eventData: [],
+      // Client Data
+      client: {
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        email: "",
+        phoneNumbers: [
+          {
+            primaryPhone: "",
+            secondaryPhone: "",
+          },
+        ],
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
+      },
+      // list of events shown in table
+      clientEvents: [],
+    };
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+  },
+  beforeMount() {
+    axios
+      .get(
+        import.meta.env.VITE_ROOT_API +
+          `/primarydata/id/${this.$route.params.id}`
+      )
+      .then((resp) => {
+        let data = resp.data[0];
+        this.client.firstName = data.firstName;
+        this.client.middleName = data.middleName;
+        this.client.lastName = data.lastName;
+        this.client.email = data.email;
+        this.client.phoneNumbers[0].primaryPhone =
+          data.phoneNumbers[0].primaryPhone;
+        this.client.phoneNumbers[0].secondaryPhone =
+          data.phoneNumbers[0].secondaryPhone;
+        this.client.address.line1 = data.address.line1;
+        this.client.address.line2 = data.address.line2;
+        this.client.address.city = data.address.city;
+        this.client.address.county = data.address.county;
+        this.client.address.zip = data.address.zip;
+      });
+    axios
+      .get(
+        import.meta.env.VITE_ROOT_API +
+          `/eventdata/client/${this.$route.params.id}`
+      )
+      .then((resp) => {
+        let data = resp.data;
+        resp.data.forEach((event) => {
+          this.clientEvents.push({
+            eventName: event.eventName,
+            eventDate: event.date,
+          });
+        });
+      });
+    axios.get(import.meta.env.VITE_ROOT_API + `/eventdata`).then((resp) => {
+      let data = resp.data;
+      for (let i = 0; i < data.length; i++) {
+        this.eventData.push({
+          eventName: data[i].eventName,
+          _id: data[i]._id,
+          attendees: data[i].attendees,
+        });
+      }
+    });
+  },
+  methods: {
+    formattedDate(datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    },
+    handleClientUpdate() {
+      let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/${this.id}`;
+      axios.put(apiURL, this.client).then(() => {
+        alert("Update has been saved.");
+        this.$router.back().catch((error) => {
+          console.log(error);
+        });
+      });
+    },
+    addToEvent() {
+      this.eventsChosen.forEach((event) => {
+        let apiURL =
+          import.meta.env.VITE_ROOT_API + `/eventdata/addAttendee/` + event._id;
+        axios.put(apiURL, { attendee: this.$route.params.id }).then(() => {
+          this.clientEvents = [];
+          axios
+            .get(
+              import.meta.env.VITE_ROOT_API +
+                `/eventdata/client/${this.$route.params.id}`
+            )
+            .then((resp) => {
+              let data = resp.data;
+              for (let i = 0; i < data.length; i++) {
+                this.clientEvents.push({
+                  eventName: data[i].eventName,
+                });
+              }
+            });
+        });
+      });
+    },
+  },
+  validations() {
+    return {
+      client: {
+        firstName: { required, alpha },
+        lastName: { required, alpha },
+        email: { email },
+        phoneNumbers: [
+          {
+            primaryPhone: { required, numeric },
+          },
+        ],
+      },
+    };
+  },
+};
+</script>
 <template>
   <main>
     <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Update Client</h1>
@@ -200,7 +345,7 @@
 
         <!-- Client Event Information -->
         <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-          <h2 class="text-2xl font-bold">Events</h2>
+          <h2 class="text-2xl font-bold">Events for Client</h2>
 
           <div class="flex flex-col col-span-2">
             <table class="min-w-full shadow-md rounded">
@@ -211,154 +356,34 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-300">
-                <tr
-                  v-for="event in eventData"
-                  :key="event._id"
-                >
+                <tr v-for="event in clientEvents" :key="event._id">
                   <td class="p-2 text-left">{{ event.eventName }}</td>
-                  <td class="p-2 text-left">{{ event.eventDate }}</td>
+                  <td class="p-2 text-left">{{ formattedDate(event.eventDate) }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           <div class="flex flex-col">
-            <select
+            <label class="typo__label">Select Events to be added</label>
+            <VueMultiselect
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="eventChosen"
-            >
-              <option
-                v-for="event in eventData"
-                :key="event._id"
-                :value="event._id"
-              >{{ event.eventName }}</option>
-            </select>
-          </div>
-
-          <div class="flex justify-between">
-            <button
-              @click="addToEvent"
-              type="submit"
-              class="bg-red-700 text-white rounded"
-            >Add Client to an Event</button>
+              v-model="eventsChosen"
+              :options="eventData"
+              :multiple="true"
+              label="eventName"
+            ></VueMultiselect>
+            <div class="flex justify-between">
+              <button
+                @click="addToEvent"
+                type="submit"
+                class="mt-5 bg-red-700 text-white rounded"
+              >Add Client to Events</button>
+            </div>
           </div>
         </div>
       </form>
     </div>
   </main>
 </template>
-<script>
-import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
-import axios from "axios";
-export default {
-  props: ["id"],
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
-  },
-  data() {
-    return {
-      eventChosen: "",
-      //Event Data
-      eventData: [],
-      // Client Data
-      client: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        email: "",
-        phoneNumbers: [
-          {
-            primaryPhone: "",
-            secondaryPhone: "",
-          },
-        ],
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
-        },
-      },
-    };
-  },
-  mounted() {
-    window.scrollTo(0, 0);
-  },
-  beforeMount() {
-    axios
-      .get(
-        import.meta.env.VITE_ROOT_API +
-          `/primarydata/id/${this.$route.params.id}`
-      )
-      .then((resp) => {
-        let data = resp.data[0];
-        this.client.firstName = data.firstName;
-        this.client.middleName = data.middleName;
-        this.client.lastName = data.lastName;
-        this.client.email = data.email;
-        this.client.phoneNumbers[0].primaryPhone =
-          data.phoneNumbers[0].primaryPhone;
-        this.client.phoneNumbers[0].secondaryPhone =
-          data.phoneNumbers[0].secondaryPhone;
-        this.client.address.line1 = data.address.line1;
-        this.client.address.line2 = data.address.line2;
-        this.client.address.city = data.address.city;
-        this.client.address.county = data.address.county;
-        this.client.address.zip = data.address.zip;
-        axios
-          .get(import.meta.env.VITE_ROOT_API + `/eventdata/`)
-          .then((resp) => {
-            let data = resp.data;
-            for (let i = 0; i < data.length; i++) {
-              this.eventData.push({
-                eventName: data[i].eventName,
-                _id: data[i]._id,
-                attendees: data[i].attendees,
-              });
-            }
-          });
-      });
-  },
-  methods: {
-    handleClientUpdate() {
-      let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/${this.id}`;
-      axios.put(apiURL, this.client).then(() => {
-        alert("Update has been saved.");
-        this.$router.back().catch((error) => {
-          console.log(error);
-        });
-      });
-    },
-    addToEvent() {
-      let apiURL =
-        import.meta.env.VITE_ROOT_API + `/eventdata/${this.eventChosen}`;
-      for (let i = 0; i < this.eventData.length; i++) {
-        if (this.eventData[i]._id === this.eventChosen) {
-          this.eventData[i].attendees.push(this.id);
-          axios
-            .put(apiURL, { attendees: this.eventData[i].attendees })
-            .then(() => {
-              alert("Client added to event.");
-            });
-        }
-      }
-    },
-  },
-  validations() {
-    return {
-      client: {
-        firstName: { required, alpha },
-        lastName: { required, alpha },
-        email: { email },
-        phoneNumbers: [
-          {
-            primaryPhone: { required, numeric },
-          },
-        ],
-      },
-    };
-  },
-};
-</script>
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>

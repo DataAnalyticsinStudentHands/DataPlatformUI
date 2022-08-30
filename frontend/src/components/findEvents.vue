@@ -74,7 +74,7 @@
           <tbody class="divide-y divide-gray-300">
             <tr @click="editEvent(event._id)" v-for="event in queryData" :key="event._id">
               <td class="p-2 text-left">{{ event.eventName }}</td>
-              <td class="p-2 text-left">{{ event.date }}</td>
+              <td class="p-2 text-left">{{ formattedDate(event.date) }}</td>
               <td class="p-2 text-left">{{ event.address.line1 }}</td>
             </tr>
           </tbody>
@@ -84,6 +84,7 @@
   </main>
 </template>
 <script>
+import { DateTime } from "luxon";
 import axios from "axios";
 
 export default {
@@ -101,17 +102,13 @@ export default {
     this.queryData = [];
     axios.get(apiURL).then((resp) => {
       this.queryData = resp.data;
-      for (let i = 0; i < resp.data.length; i++) {
-        let formattedDate = new Date(this.queryData[i].date);
-        let month = formattedDate.getMonth() + 1;
-        let day = formattedDate.getDate() + 1;
-        let year = formattedDate.getFullYear();
-        this.queryData[i].date = month + "/" + day + "/" + year;
-      }
     });
     window.scrollTo(0, 0);
   },
   methods: {
+    formattedDate(datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    },
     handleSubmitForm() {
       let apiURL = "";
       if (this.searchBy === "Event Name") {
@@ -125,13 +122,6 @@ export default {
       }
       axios.get(apiURL).then((resp) => {
         this.queryData = resp.data;
-        for (let i = 0; i < resp.data.length; i++) {
-          let formattedDate = new Date(this.queryData[i].date);
-          let month = formattedDate.getMonth() + 1;
-          let day = formattedDate.getDate() + 1;
-          let year = formattedDate.getFullYear();
-          this.queryData[i].date = month + "/" + day + "/" + year;
-        }
       });
     },
     clearSearch() {
@@ -145,13 +135,6 @@ export default {
       this.queryData = [];
       axios.get(apiURL).then((resp) => {
         this.queryData = resp.data;
-        for (let i = 0; i < resp.data.length; i++) {
-          let formattedDate = new Date(this.queryData[i].date);
-          let month = formattedDate.getMonth() + 1;
-          let day = formattedDate.getDate() + 1;
-          let year = formattedDate.getFullYear();
-          this.queryData[i].date = month + "/" + day + "/" + year;
-        }
       });
     },
     editEvent(eventID) {

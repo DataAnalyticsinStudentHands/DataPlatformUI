@@ -246,6 +246,8 @@
 import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
+import { DateTime } from "luxon";
+
 export default {
   props: ["id"],
   setup() {
@@ -279,14 +281,7 @@ export default {
       .then((resp) => {
         let data = resp.data[0];
         this.event.eventName = data.eventName;
-        let formattedDate = new Date(data.date);
-        let month = formattedDate.getMonth() + 1;
-        if (month < 10) {
-          month = "0" + month;
-        }
-        let day = formattedDate.getDate() + 1;
-        let year = formattedDate.getFullYear();
-        this.event.date = year + "-" + month + "-" + day;
+        this.event.date = formattedDate(data.date);
         this.event.description = data.description;
         this.checkedServices = data.services;
         this.event.address = data.address;
@@ -311,6 +306,9 @@ export default {
       });
   },
   methods: {
+    formattedDate(datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    },
     handleEventUpdate() {
       this.event.services = this.checkedServices;
       let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/${this.id}`;

@@ -80,14 +80,14 @@ let eventDataSchema = new Schema({
     description: {
         type: String,
     },
-    attendees: {
-        type: Array
-    }
+    attendees: [{
+        type: String
+    }]
 }, {
     collection: 'eventData'
 });
 
-//create models for mongoose schema 
+// create models from mongoose schemas
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const eventdata = mongoose.model('eventData', eventDataSchema);
 

@@ -39,9 +39,22 @@ router.get("/search/", (req, res, next) => {
             date:  req.query["eventDate"]
         }
     };
-    console.log(dbQuery)
     eventdata.find( 
         dbQuery, 
+        (error, data) => { 
+            if (error) {
+                return next(error);
+            } else {
+                res.json(data);
+            }
+        }
+    );
+});
+
+//GET events for which a client is signed up
+router.get("/client/:id", (req, res, next) => { 
+    eventdata.find( 
+        { attendees: req.params.id }, 
         (error, data) => { 
             if (error) {
                 return next(error);
@@ -79,6 +92,36 @@ router.put("/:id", (req, res, next) => {
             }
         }
     );
+});
+
+//PUT add attendee to event
+router.put("/addAttendee/:id", (req, res, next) => {
+    //only add attendee if not yet signed uo
+    eventdata.find( 
+        { _id: req.params.id, attendees: req.body.attendee }, 
+        (error, data) => { 
+            if (error) {
+                return next(error);
+            } else {
+                if (data.length == 0) {
+                    eventdata.updateOne(
+                        { _id: req.params.id }, 
+                        { $push: { attendees: req.body.attendee } },
+                        (error, data) => {
+                            if (error) {
+                                consol
+                                return next(error);
+                            } else {
+                                res.json(data);
+                            }
+                        }
+                    );
+                }
+                
+            }
+        }
+    );
+    
 });
 
 module.exports = router;
