@@ -1,9 +1,6 @@
-//require the back end web application framework for node.js
 const express = require("express");
-//require object data model library for mongodb, mongoose library
 const mongoose = require("mongoose");
-//middleware library to add better logging functionality for api requests
-const morgan = require("morgan");
+const morgan = require("morgan"); //better debugging
 const cors = require("cors");
 //allow using a .env file
 require("dotenv").config();   
@@ -11,7 +8,7 @@ require("dotenv").config();
 //creates a new instance of express application
 const app = express();
 
-// add cors header to the server and give our frontend access to the server response
+// add cors header to the server
 app.use(cors({
   origin: '*'
 }));
@@ -29,28 +26,18 @@ mongoose
 //declare port number for the api
 const PORT = process.env.PORT || 3000;
 
-//gives access to the json request body
+//setup
 app.use(express.json());
-//enable incoming request logging in dev mode
 app.use(morgan("dev"));
 
-//Import Routes
+//import routes
 const primaryDataRoute  = require('./routes/primaryData');
-const commonDataRoute   = require('./routes/commonData');
-const userDataRoute = require('./routes/userData');
-const organizationDataRoute  = require('./routes/organizationData');
 const eventsDataRoute  = require('./routes/eventsData');
-// const commonDataRoute  = require('./routes/commonData'); 
 
-//middle ware for routes
+//setup middle ware for routes
 app.use('/primaryData', primaryDataRoute);
-app.use('/commonData', commonDataRoute);
-app.use('/userData', userDataRoute);
-app.use('/organizationData', organizationDataRoute)
 app.use('/eventData', eventsDataRoute)
-// app.use('/commonData', commonDataRoute);
 
-//using the PORT cost to listen 
 app.listen(PORT, () => {
   console.log("Server started listening on port : ", PORT);
 });
@@ -58,7 +45,7 @@ app.listen(PORT, () => {
 //error handler
 app.use(function (err, req, res, next) {
   // logs error and error code to console
-  console.error(err.message);
+  console.error(err.message, req);
   if (!err.statusCode)
     err.statusCode = 500;
   res.status(err.statusCode).send(err.message);
