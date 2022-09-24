@@ -39,7 +39,13 @@ const routes = [
         name: 'eventdetails',
         props: true,
         component: () => import('../components/eventDetails.vue')
-    }
+    },
+    {
+        path: '/social-intake',
+        name: 'socialIntake',
+        props: true,
+        component: () => import('../components/socialIntakeForm')
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes
