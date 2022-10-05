@@ -7,7 +7,7 @@ let { orgdata } = require("../models/models");
 
 //GET instance name
 router.get("/", (req, res, next) => { 
-    orgdata.find({ _id: process.env.ORG_ID }, (error, data) => {
+    orgdata.findOne({ _id: process.env.ORG_ID }, (error, data) => {
         if (error) {
             return next(error)
         } else {
