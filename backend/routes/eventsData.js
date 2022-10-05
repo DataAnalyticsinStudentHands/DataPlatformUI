@@ -67,6 +67,9 @@ router.get("/client/:id", (req, res, next) => {
 
 //POST
 router.post("/", (req, res, next) => { 
+    // add orgID from instance
+    req.body.organizationID = process.env.ORG_ID;
+    
     eventdata.create( 
         req.body, 
         (error, data) => { 

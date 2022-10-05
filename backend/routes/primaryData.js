@@ -62,6 +62,9 @@ router.get("/events/:id", (req, res, next) => {
 
 //POST
 router.post("/", (req, res, next) => { 
+    // add orgID from instance
+    req.body.organizationID = process.env.ORG_ID;
+
     primarydata.create( 
         req.body,
         (error, data) => { 
@@ -72,9 +75,6 @@ router.post("/", (req, res, next) => {
             }
         }
     );
-    primarydata.createdAt;
-    primarydata.updatedAt;
-    primarydata.createdAt instanceof Date;
 });
 
 //PUT update (make sure req body doesn't have the id)
