@@ -1,13 +1,13 @@
 const express = require("express"); 
 const router = express.Router(); 
+require("dotenv").config();
 
 //importing data model schemas
 let { primarydata } = require("../models/models"); 
-let { eventdata } = require("../models/models"); 
 
-//GET all entries
+//GET all entries per instance
 router.get("/", (req, res, next) => { 
-    primarydata.find( 
+    primarydata.find( {organizationID: process.env.ORG_ID}, 
         (error, data) => {
             if (error) {
                 return next(error);
@@ -21,7 +21,7 @@ router.get("/", (req, res, next) => {
 //GET single entry by ID
 router.get("/id/:id", (req, res, next) => {
     primarydata.find( 
-        { _id: req.params.id }, 
+        { _id: req.params.id, organizationID: process.env.ORG_ID}, 
         (error, data) => {
             if (error) {
                 return next(error);
@@ -55,11 +55,6 @@ router.get("/search/", (req, res, next) => {
     );
 });
 
-//GET events for a single client
-router.get("/events/:id", (req, res, next) => { 
-    
-});
-
 //POST
 router.post("/", (req, res, next) => { 
     // add orgID from instance
@@ -79,6 +74,9 @@ router.post("/", (req, res, next) => {
 
 //PUT update (make sure req body doesn't have the id)
 router.put("/:id", (req, res, next) => { 
+    // always use orgID from instance
+    req.body.organizationID = process.env.ORG_ID;
+
     primarydata.findOneAndUpdate( 
         { _id: req.params.id }, 
         req.body,
