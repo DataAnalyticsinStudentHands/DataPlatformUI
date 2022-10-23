@@ -44,7 +44,7 @@ const routes = [
         path: '/social-intake',
         name: 'socialIntake',
         props: true,
-        component: () => import('../components/socialIntakeForm')
+        component: () => import('../components/socialIntakeForm.vue')
     },
 ]
 const router = createRouter({
