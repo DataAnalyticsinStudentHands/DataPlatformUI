@@ -106,6 +106,7 @@ export default {
     window.scrollTo(0, 0);
   },
   methods: {
+    
     formattedDate(datetimeDB) {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
     },

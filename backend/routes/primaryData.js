@@ -5,6 +5,8 @@ const router = express.Router();
 let { primarydata } = require("../models/models"); 
 let { eventdata } = require("../models/models"); 
 
+
+
 //GET all entries
 router.get("/", (req, res, next) => { 
     primarydata.find( 

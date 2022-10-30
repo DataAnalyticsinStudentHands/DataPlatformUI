@@ -3,15 +3,21 @@ const mongoose = require("mongoose");
 const morgan = require("morgan"); //better debugging
 const cors = require("cors");
 //allow using a .env file
-require("dotenv").config();   
-
+require("dotenv").config();
+//importing data model schemas
+let { eventdata } = require("./models/models"); 
 //creates a new instance of express application
 const app = express();
+app.use(express.json());
+
+//calling setUser function
+app.use(setUser)
 
 // add cors header to the server
 app.use(cors({
   origin: '*'
 }));
+
 
 //sets up mongoose for the mongoDB connection
 mongoose
@@ -33,10 +39,21 @@ app.use(morgan("dev"));
 //import routes
 const primaryDataRoute  = require('./routes/primaryData');
 const eventsDataRoute  = require('./routes/eventsData');
-
+const usersDataRoute  = require('./routes/userData');
 //setup middle ware for routes
 app.use('/primaryData', primaryDataRoute);
 app.use('/eventData', eventsDataRoute)
+app.use('/userData', usersDataRoute)
+//sets user
+function setUser(req, res, next) {
+  const userId = 1
+  //req.body.userId
+  if (userId) {
+    req.user = 1
+    //users.find(user => user.id === userId)
+  }
+  next()
+}
 
 app.listen(PORT, () => {
   console.log("Server started listening on port : ", PORT);

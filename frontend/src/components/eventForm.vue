@@ -257,7 +257,7 @@ export default {
       }
     },
   },
-  // sets validations for the various data properties
+  //sets validations for the various data properties
   validations() {
     return {
       event: {
