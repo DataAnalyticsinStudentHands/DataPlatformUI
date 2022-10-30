@@ -116,7 +116,8 @@ let userDataSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        length: 256,
     },
     role: {
         type: String,

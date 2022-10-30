@@ -178,8 +178,7 @@
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import axios from "axios";
-// import bcrypt from "bcrypt";
-// var passwordToHash = document.getElementById("password")
+import { sha256 } from "crypto-hash";
 
 export default {
   setup() {
@@ -219,9 +218,7 @@ export default {
       this.chechConfirmPassword();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect && this.isConfirmPasswordValid) {
-        // const password = await bcrypt.hashSync(this.user.password, 10);
-        // console.log(password);
-
+        this.user.password = await sha256(this.user.password);
         // this.services = this.checkedServices;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata`;
         axios
@@ -240,7 +237,6 @@ export default {
               password: "",
               role: "",
             };
-            // this.checkedServices = [];
           })
           .catch((error) => {
             console.log(error);
