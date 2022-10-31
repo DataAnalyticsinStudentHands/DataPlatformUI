@@ -43,6 +43,12 @@
                 Social Intake
               </router-link>
             </li>
+            <li>
+              <router-link to="/pre-social-intake">
+                <span style="position: relative; top: 6px" class="material-icons">developer_board_off</span>
+                Pre Social Intake
+              </router-link>
+            </li>
           </ul>
         </nav>
       </header>

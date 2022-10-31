@@ -46,6 +46,12 @@ const routes = [
         props: true,
         component: () => import('../components/socialIntakeForm.vue')
     },
+    {
+        path: '/pre-social-intake',
+        name: 'presocialIntake',
+        props: true,
+        component: () => import('../components/selectSocialIntake.vue')
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes

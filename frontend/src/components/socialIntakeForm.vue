@@ -92,11 +92,11 @@
               </div>
             </section>
   
-            <section class="flex mt-5">
+            <section class="mt-5">
               <div class="flex flex-col">
                 <label class="self-start font-bold" for="needs">
                   Please describe the client's goals and their immediate needs</label>
-                <input name="needs" type="text">
+                  <textarea name="needs" style="resize: none;" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
   
               </div>
             </section>
@@ -218,23 +218,23 @@
                 </div>
             </section>
   
-            <section>
+            <section class="mt-5">
                 <div class="flex flex-col">
-                  <label class="self-start font-bold" for="counselorComms">
+                  <label class="self-start font-bold" for="summary">
                     Summary of Encounter
                   </label>
-                  <input name="sumEncounter" type="text">
+                  <textarea name="summary" style="resize: none;" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
                 </div>
             </section>
   
-            <section class="flex">
+            <!-- <section class="mt-5">
               <div class="flex flex-col">
-                <label class="self-start font-bold" for="services">
+                <label class="self-start font-bold" for="followups">
                   Social Services Follow-up Items
                 </label>
                 <input name="followups"/>
               </div>
-            </section>
+            </section> -->
   
           </section>
           <div class="flex justify-between mt-10 mr-20">
