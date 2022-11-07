@@ -21,14 +21,13 @@
             <section class="flex mt-5">
               <div class="flex gap-x-2">
                 <label class="inline font-bold" for="interactionTypes">Type of Interaction:</label>
-                <input type="text" list="interactionTypes">
-                <datalist id="interactionTypes">
+                <select id="interactionTypes">
                       <option value="In Office">In Office</option>
                       <option value="Correctional Facility">Correctional Facility</option>
                       <option value="In Field">In Field</option>
                       <option value="Phone">Phone</option>
                       <option value="Email">Email</option>
-                </datalist>
+                </select>
               </div>
             </section>
   
