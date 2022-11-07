@@ -49,6 +49,12 @@
                 Pre Social Intake
               </router-link>
             </li>
+            <li>
+              <router-link to="/BPSintake">
+                <span style="position: relative; top: 6px" class="material-icons">developer_board_off</span>
+                BPS intake
+              </router-link>
+            </li>
           </ul>
         </nav>
       </header>

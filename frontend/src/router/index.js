@@ -52,6 +52,12 @@ const routes = [
         props: true,
         component: () => import('../components/selectSocialIntake.vue')
     },
+    {
+        path: '/BPSintake',
+        name: 'BPSintake',
+        props: true,
+        component: () => import('../components/BPSintake.vue')
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes
