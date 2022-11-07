@@ -55,6 +55,12 @@
                 BPS intake
               </router-link>
             </li>
+            <li>
+              <router-link to="/attorney-closed-case">
+                <span style="position: relative; top: 6px" class="material-icons">developer_board_off</span>
+                Attorney Closed
+              </router-link>
+            </li>
           </ul>
         </nav>
       </header>

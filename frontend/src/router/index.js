@@ -58,6 +58,12 @@ const routes = [
         props: true,
         component: () => import('../components/BPSintake.vue')
     },
+    {
+        path: '/attorney-closed-case',
+        name: 'attorneyClosedCase',
+        props: true,
+        component: () => import('../components/attorneyClosedCase.vue')
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes
