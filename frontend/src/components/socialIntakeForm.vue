@@ -13,6 +13,12 @@
           <section>
             <section class="flex mt-5">
               <div class="flex gap-x-2">
+                <label for="client" class="inline font-bold">Client ID:</label>
+                <input type="text" name="client">
+              </div>
+            </section>
+            <section class="flex mt-5">
+              <div class="flex gap-x-2">
                 <label for="interactionDate" class="inline font-bold">Date of Interaction:</label>
                 <input type="date" name="interactionDate">
               </div>
@@ -244,7 +250,55 @@
       </div>
     </main>
   </template>
-  
+<script>
+import useVuelidate from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+import axios from "axios";
+export default {
+  setup() {
+    return { v$: useVuelidate({ $autoDirty: true }) };
+  },
+  data() {
+    return {
+      date: "",
+      interactionType: "",
+      goals: [],
+      goalNotes: "",
+      attorneyCommunication: [],
+      orgRef: [],
+      summary: "",
+    };
+  },
+  methods: {
+    async handleSubmitForm() {
+      // Checks to see if there are any errors in validation
+      const isFormCorrect = await this.v$.$validate();
+      // If no errors found. isFormCorrect = True then the form is submitted
+      if (isFormCorrect) {
+        this.event.services = this.checkedServices;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/socialData`;
+        axios
+          .post(apiURL, this.event)
+          .then(() => {
+            
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+  },
+  // sets validations for the various data properties
+  validations() {
+    return {
+      event: {
+        date: { required },
+        interactionType: { required },
+      },
+    };
+  },
+};
+</script>
   <style>
   input,
   select {

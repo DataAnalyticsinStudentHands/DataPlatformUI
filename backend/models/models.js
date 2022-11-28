@@ -2,6 +2,34 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+//collection for socialData
+let socialDataSchema = new Schema({
+    _id: { type: String, default: uuid.v1 },
+    date: {
+        type: Date,
+        required: true
+    },
+    interactionType: {
+        type: String,
+        require: true
+    },
+    goals: {
+        type: Array
+    },
+    goalNotes: {
+        type: String
+    },
+    attorneyCommunication: {
+        type: Array
+    },
+    orgRef: {
+        type: Array
+    },
+    summary: {
+        type: String
+    }
+});
+
 //collection for intakeData
 let primaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
@@ -40,7 +68,8 @@ let primaryDataSchema = new Schema({
         zip: {
             type: String,
         }
-    }
+    },
+    socialIntakeForms: [socialDataSchema],
 }, {
     collection: 'primaryData',
     timestamps: true
@@ -90,6 +119,7 @@ let eventDataSchema = new Schema({
 // create models from mongoose schemas
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const eventdata = mongoose.model('eventData', eventDataSchema);
+const socialdata = mongoose.model('socialData', socialDataSchema);
 
 // package the models in an object to export 
-module.exports = { primarydata, eventdata }
+module.exports = { primarydata, eventdata, socialdata }
