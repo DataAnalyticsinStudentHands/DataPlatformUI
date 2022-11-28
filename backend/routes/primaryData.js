@@ -4,11 +4,11 @@ require("dotenv").config();
 
 //importing data model schemas
 let { primarydata } = require("../models/models"); 
-const organizationcalling = process.env.ORG_ID;
+const orgID = process.env.ORG_ID;
 
 //GET all entries per instance
 router.get("/", (req, res, next) => { 
-    primarydata.find( {organizationID: organizationcalling}, 
+    primarydata.find( {organizationID: orgID }, 
         (error, data) => {
             if (error) {
                 return next(error);
@@ -22,7 +22,7 @@ router.get("/", (req, res, next) => {
 //GET single entry by ID
 router.get("/id/:id", (req, res, next) => {
     primarydata.find( 
-        { _id: req.params.id, organizationID: organizationcalling}, 
+        { _id: req.params.id, organizationID: orgID }, 
         (error, data) => {
             if (error) {
                 return next(error);
@@ -38,10 +38,10 @@ router.get("/id/:id", (req, res, next) => {
 router.get("/search/", (req, res, next) => { 
     let dbQuery = "";
     if (req.query["searchBy"] === 'name') {
-        dbQuery = { firstName: { $regex: `^${req.query["firstName"]}`, $options: "i" }, lastName: { $regex: `^${req.query["lastName"]}`, $options: "i" },organizationID: organizationcalling }
+        dbQuery = { firstName: { $regex: `^${req.query["firstName"]}`, $options: "i" }, lastName: { $regex: `^${req.query["lastName"]}`, $options: "i" },organizationID: orgID }
     } else if (req.query["searchBy"] === 'number') {
         dbQuery = {
-            "phoneNumbers.primaryPhone": { $regex: `^${req.query["phoneNumbers.primaryPhone"]}`, $options: "i" },organizationID: organizationcalling
+            "phoneNumbers.primaryPhone": { $regex: `^${req.query["phoneNumbers.primaryPhone"]}`, $options: "i" },organizationID: orgID
         }
     };
     primarydata.find( 
@@ -59,7 +59,7 @@ router.get("/search/", (req, res, next) => {
 //POST
 router.post("/", (req, res, next) => { 
     // add orgID from instance
-    req.body.organizationID = organizationcalling;
+    req.body.organizationID = orgID;
 
     primarydata.create( 
         req.body,
@@ -76,7 +76,7 @@ router.post("/", (req, res, next) => {
 //PUT update (make sure req body doesn't have the id)
 router.put("/:id", (req, res, next) => { 
     // always use orgID from instance
-    req.body.organizationID = organizationcalling;
+    req.body.organizationID = orgID;
 
     primarydata.findOneAndUpdate( 
         { _id: req.params.id }, 
