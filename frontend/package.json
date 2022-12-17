@@ -14,6 +14,7 @@
     "axios": "^0.25.0",
     "crypto-hash": "^2.0.1",
     "luxon": "^3.0.3",
+    "sweetalert": "^2.1.2",
     "vite": "^3.0.9",
     "vue": "^3.2.41",
     "vue-multiselect": "^3.0.0-alpha.2",

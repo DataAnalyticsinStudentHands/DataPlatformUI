@@ -92,25 +92,18 @@ let userDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     firstName: {
         type: String,
-        require: true
+        required: [true, 'A name is required.'],
     },
     lastName: {
-        type: Array
+        type: String
     },
     email: {
+        unique: true,
         type: String,
         required: true,
         lowercase: true,
-        unique: true,
     },
     phoneNumber: {
-        type: String,
-        required: true
-    },
-    association: {
-        type: String,
-    },
-    username: {
         type: String,
         required: true
     },
@@ -127,6 +120,12 @@ let userDataSchema = new Schema({
     collection: 'userData',
     timestamps: true
 });
+
+userDataSchema.path('email').validate(async (email) => {
+   const emailCount =  await mongoose.models.userData.countDocuments({ email })
+    return !emailCount
+}, title= 'EMAIL ALREADY EXISTS')
+
 
 // create models from mongoose schemas
 const primarydata = mongoose.model('primaryData', primaryDataSchema);

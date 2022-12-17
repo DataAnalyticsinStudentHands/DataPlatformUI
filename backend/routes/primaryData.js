@@ -1,6 +1,6 @@
 const express = require("express"); 
 const router = express.Router(); 
-
+const jwt = require('jsonwebtoken');
 //importing data model schemas
 let { primarydata } = require("../models/models"); 
 let { eventdata } = require("../models/models"); 
@@ -8,7 +8,15 @@ let { eventdata } = require("../models/models");
 
 
 //GET all entries
-router.get("/", (req, res, next) => { 
+router.get("/", (req, res, next) => {
+    let token = req.headers.token;
+    jwt.verify(token, 'secretkey', (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+            title: 'unauthorized'
+        })
+        }
+   //token is valid
     primarydata.find( 
         (error, data) => {
             if (error) {
@@ -18,6 +26,7 @@ router.get("/", (req, res, next) => {
             }
         }
     ).sort({ 'updatedAt': -1 }).limit(10);
+})
 });
 
 //GET single entry by ID

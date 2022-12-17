@@ -1,7 +1,7 @@
 const express = require("express");
-//8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
-const { authUser, authRole } = require("../services/basicAuth");
-//8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+//
+// const { authUser, authRole } = require("../services/basicAuth");
+//
 const router = express.Router();
 
 //importing data model schemas
@@ -9,7 +9,7 @@ let { eventdata } = require("../models/models");
 
 
 //GET all entries
-router.get("/", authUser, (req, res, next) => { ///<--88888888888888888888888888888888888888888888888888888888888888 authUser
+router.get("/", (req, res, next) => { ///<-- authUser
     eventdata.find( 
         (error, data) => {
             if (error) {

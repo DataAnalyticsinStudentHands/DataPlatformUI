@@ -8,6 +8,6 @@ button {
 .primaryBg{
     background-color: #C8102E;
 }
-.invalid{
-    background-color: #4f14da!important;
+.errorMessage:empty {
+    display: none;
 }

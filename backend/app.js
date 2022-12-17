@@ -2,16 +2,24 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan"); //better debugging
 const cors = require("cors");
+// const session = require('express-session');
+// const mongoDBSession = require('connect-mongodb-session')(session);
+const bodyParser = require('body-parser');
 //allow using a .env file
 require("dotenv").config();
 //importing data model schemas
-let { eventdata } = require("./models/models"); 
+let { models } = require("./models/models"); 
 //creates a new instance of express application
 const app = express();
 app.use(express.json());
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false}));
+
+
+
 //calling setUser function
-app.use(setUser)
+// app.use(setUser)
 
 // add cors header to the server
 app.use(cors({
@@ -45,15 +53,18 @@ app.use('/primaryData', primaryDataRoute);
 app.use('/eventData', eventsDataRoute)
 app.use('/userData', usersDataRoute)
 //sets user
-function setUser(req, res, next) {
-  const userId = 1
-  //req.body.userId
-  if (userId) {
-    req.user = 1
-    //users.find(user => user.id === userId)
-  }
-  next()
-}
+// function setUser(req, res, next) {
+//   const userId = 1
+//   //req.body.userId
+//   if (userId) {
+//     req.user = 1
+//     //users.find(user => user.id === userId)
+//   }
+//   next()
+// }
+
+
+
 
 app.listen(PORT, () => {
   console.log("Server started listening on port : ", PORT);

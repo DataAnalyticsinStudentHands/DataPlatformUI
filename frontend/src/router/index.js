@@ -45,7 +45,14 @@ const routes = [
         name: 'Register',
         props: true,
         component: () => import('../components/registerForm.vue')
-    }
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        props: true,
+        component: () => import('../components/login.vue')
+    },
+    
 ]
 const router = createRouter({
     history: createWebHistory(), routes

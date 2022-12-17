@@ -1,138 +1,117 @@
 <template>
-  <section class="bg-red-50 dark:bg-red-000">
-    <div
+  <section class="">
+    <!-- <div
       class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
-    >
-      <div
-        class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 primaryBg dark:border-gray-00"
-      >
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1
-            class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
-          >
-            Create account
-          </h1>
-          <form
-            @submit.prevent="userSubmitForm"
-            class="space-y-4 md:space-y-6"
-            action="#"
+    > -->
+    <div class="px-10 py-20">
+      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <h1 class="font-bold text-4xl text-red-700 tracking-widest mt-10">
+          Create account
+        </h1>
+        <form
+          @submit.prevent="userSubmitForm"
+          class="space-y-4 md:space-y-6"
+          action="#"
+        >
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label
-                for="firstName"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >First Name</label
-              >
+              <label for="firstName" class="block">First Name</label>
               <input
                 v-model="user.firstName"
                 type="text"
                 name="firstName"
                 id="firstName"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 placeholder="First name"
                 required=""
               />
             </div>
             <div>
-              <label
-                for="lastName"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Last Name</label
-              >
+              <label for="lastName" class="block">Last Name</label>
               <input
                 v-model="user.lastName"
                 type="text"
                 name="lastName"
                 id="lastName"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 placeholder="Last name"
                 required=""
               />
             </div>
+          </div>
+
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+          >
             <div>
-              <label
-                for="email"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Your email</label
-              >
+              <label for="email" class="block">Your email</label>
               <input
                 v-model="user.email"
                 type="email"
                 name="email"
                 id="email"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 placeholder="name@company.com"
                 required=""
               />
             </div>
             <div>
-              <label
-                for="phoneNumber"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Phone Number</label
-              >
+              <label for="phoneNumber" class="block">Phone Number</label>
               <input
                 v-model="user.phoneNumber"
                 type="text"
                 name="phoneNumber"
                 id="phoneNumber"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 placeholder="832-132-1234"
                 required=""
               />
             </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+          >
             <div>
-              <label
-                for="association"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Association</label
-              >
+              <label for="confirn_email" class="block">Confirm Email</label>
               <input
-                v-model="user.association"
-                type="text"
-                name="association"
-                id="association"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Association"
+                v-model="user.confirm_email"
+                type="email"
+                name="confirn_email"
+                id="confirn_email"
+                placeholder="name@company.com"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required=""
               />
             </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+          >
             <div>
-              <label
-                for="username"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Username</label
-              >
-              <input
-                v-model="user.username"
-                type="text"
-                name="username"
-                id="username"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="username"
-                required=""
-              />
-            </div>
-            <div>
-              <label
-                for="password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Password</label
-              >
+              <label for="password" class="block">Password</label>
               <input
                 v-model="user.password"
                 type="password"
                 name="password"
                 id="password"
                 placeholder="••••••••"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required=""
               />
+              <span class="text-black" v-if="v$.user.password.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.user.password.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}!
+                </p>
+              </span>
             </div>
             <div>
-              <label
-                for="confirm-password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              <label for="confirm-password" class="block"
                 >Confirm password</label
               >
               <input
@@ -141,44 +120,44 @@
                 name="confirm-password"
                 id="confirm-password"
                 placeholder="••••••••"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-red-100 dark:border-red-800 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required=""
               />
             </div>
-            <!-- <div class="flex items-start">
-                      <div class="flex items-center h-5">
-                        <input id="terms" aria-describedby="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="">
-                      </div>
-                      <div class="ml-3 text-sm">
-                        <label for="terms" class="font-light text-gray-500 dark:text-gray-300">I accept the <a class="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">Terms and Conditions</a></label>
-                      </div>
-                  </div> -->
-            <button
-              type="submit"
-              class="w-full text-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center border primaryBg dark:hover:bg-red-100 dark:hover:text-black dark:focus:ring-primary-800 dark:text-white"
+          </div>
+          <div
+            class="grid grid-cols- sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+          >
+            <div
+              class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+              role="alert"
             >
-              Create an account
-            </button>
-            <p class="text-sm font-medium text-black-500 dark:text-black-400">
-              Already have an account?
-              <a
-                href="#"
-                class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-                >Login here</a
-              >
-            </p>
-          </form>
-        </div>
+              {{ errorr }}
+            </div>
+          </div>
+          <button type="submit" class="bg-red-700 text-white rounded">
+            Create an account
+          </button>
+          <p class="text-sm font-medium text-black-500 dark:text-black-400">
+            Already have an account?
+            <a
+              href="./login"
+              class="font-medium text-primary-600 hover:underline dark:text-blue-500"
+              >Login here</a
+            >
+          </p>
+        </form>
       </div>
     </div>
+    <!-- </div> -->
   </section>
 </template>
 
 <script>
 import useVuelidate from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
+import { minLength, required } from "@vuelidate/validators";
 import axios from "axios";
-import { sha256 } from "crypto-hash";
+import swal from "sweetalert";
 
 export default {
   setup() {
@@ -188,58 +167,69 @@ export default {
   data() {
     return {
       isConfirmPasswordValid: false,
-      //   checkedServices: [],
+      isConfirmEmailValid: false,
       user: {
         firstName: "",
         lastName: "",
         email: "",
         phoneNumber: "",
-        association: "",
-        username: "",
         password: "",
         role: "Basic",
-        confirm_pasword: "",
       },
+      errorr: "",
     };
   },
   methods: {
     chechConfirmPassword() {
-      console.log(this.password === this.confirm_pasword);
-      console.log(this.confirm_pasword);
       this.isConfirmPasswordValid = true;
+      this.isConfirmEmailValid = true;
       if (this.user.password !== this.user.confirm_pasword) {
-        alert("Incorrect confirm password!");
+        this.errorr = "Passwords do not match.";
         this.isConfirmPasswordValid = false;
+      } else if (this.user.email !== this.user.confirm_email) {
+        this.errorr = "Emails do not match.";
+        this.isConfirmEmailValid = false;
       }
     },
     async userSubmitForm() {
       // Checks to see if there are any errors in validation
-      let isFormCorrect = await this.v$.$validate();
+      const isFormCorrect = await this.v$.$validate();
       this.chechConfirmPassword();
       // If no errors found. isFormCorrect = True then the form is submitted
-      if (isFormCorrect && this.isConfirmPasswordValid) {
-        this.user.password = await sha256(this.user.password);
-        // this.services = this.checkedServices;
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata`;
+      if (
+        isFormCorrect &&
+        this.isConfirmPasswordValid &&
+        this.isConfirmEmailValid
+      ) {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/register`;
         axios
-          // const doesExist = await
           .post(apiURL, this.user)
           .then(() => {
-            alert("You have registered successfully.");
-            // this.$router.push("/findEvents"+);
-            this.client = {
+            //using swal from sweetalert.js for customizeble alerts
+            swal(
+              "Congratulations!",
+              "You have registered successfully.",
+              "success"
+            );
+            // alert("You have registered successfully.");
+            this.$router.push("./login");
+            this.user = {
               firstName: "",
               lastName: "",
               email: "",
               phoneNumber: "",
-              association: "",
-              username: "",
               password: "",
               role: "",
+              error: "",
             };
           })
           .catch((error) => {
-            console.log(error);
+            var err = error.response.data;
+            if (
+              err == "userData validation failed: email: EMAIL ALREADY EXISTS"
+            ) {
+              this.errorr = "An account with this email alredy exists.";
+            }
           });
       }
     },
@@ -249,7 +239,11 @@ export default {
       user: {
         firstName: { required },
         lastName: { required },
-        password: { required },
+        password: {
+          required,
+          minLengthValue: minLength(8),
+        },
+        email: { required },
       },
     };
   },

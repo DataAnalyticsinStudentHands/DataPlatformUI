@@ -4,6 +4,11 @@ import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
 export default {
+  created() {
+    if (localStorage.getItem("token") === null) {
+      this.$router.push("/login");
+    }
+  },
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
