@@ -5,18 +5,22 @@ const router = express.Router();
 // const session = require('express-session');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require("dotenv").config();
 //importing data model schemas
 let { userdata } = require("../models/models"); 
 
+const orgID = process.env.ORG_ID;
 
-//POST
+//POST to create login
 router.post('/register', (req, res, next) => {
+
     const newUser = new userdata({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         password: bcrypt.hashSync(req.body.password, 10),
+        organizationID: orgID,
         role: "Basic",
     })
     userdata.create( 
@@ -30,8 +34,11 @@ router.post('/register', (req, res, next) => {
         }
     );
 });
+
+//login page
 router.post('/login', (req, res, next) => {
-    userdata.findOne({email: req.body.email}, (err, userdata) => {
+
+    userdata.findOne({email: req.body.email,organizationID: orgID }, (err, userdata) => {
         console.log(userdata);
         if(err) return res.status(500).json({
             title: 'server error',
@@ -60,6 +67,7 @@ router.post('/login', (req, res, next) => {
     })
 });
 
+//gets generated token from login and uses it to output the user's name for welcome message
 router.get('/user', (req, res, next) => {
     let token = req.headers.token;
     jwt.verify(token, 'secretkey', (err, decoded) => {

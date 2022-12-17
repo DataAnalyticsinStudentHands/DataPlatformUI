@@ -15,6 +15,11 @@ const orgDataSchema = new Schema ({
 //collection for intakeData
 let primaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
+    organizationID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orgData',
+        required: true
+    },
     firstName: {
         type: String,
         require: true
@@ -59,6 +64,11 @@ let primaryDataSchema = new Schema({
 //collection for eventData
 let eventDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
+    organizationID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orgData',
+        required: true
+    },
     eventName: {
         type: String,
         require: true
@@ -99,7 +109,12 @@ let eventDataSchema = new Schema({
 
 //collection for userData
 let userDataSchema = new Schema({
-    _id: { type: String, default: uuid.v1 },
+    _id: { type: String, default: uuid.v1 },    
+    organizationID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orgData',
+        required: true
+    },
     firstName: {
         type: String,
         required: [true, 'A name is required.'],
