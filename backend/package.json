@@ -1,19 +1,23 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Saving The Community prototype backend API",
+  "description": "Dataplatform backend API",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maxerature/SavingTheCommunity.git"
-  },
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "connect-mongodb-session": "^3.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
     "express": "^4.17.2",
+    "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.15",

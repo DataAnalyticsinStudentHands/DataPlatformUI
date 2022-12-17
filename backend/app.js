@@ -1,29 +1,35 @@
-//require the back end web application framework for node.js
 const express = require("express");
-//require object data model library for mongodb, mongoose library
 const mongoose = require("mongoose");
-//middleware library to add better logging functionality for api requests
-const morgan = require("morgan");
+const morgan = require("morgan"); //better debugging
 const cors = require("cors");
-
+// const session = require('express-session');
+// const mongoDBSession = require('connect-mongodb-session')(session);
+const bodyParser = require('body-parser');
+//allow using a .env file
+require("dotenv").config();
+//importing data model schemas
+let { models } = require("./models/models"); 
 //creates a new instance of express application
 const app = express();
+app.use(express.json());
 
-// add cors header to the server and give our frontend access to the server response
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false}));
+
+
+
+//calling setUser function
+// app.use(setUser)
+
+// add cors header to the server
 app.use(cors({
   origin: '*'
 }));
 
+
 //sets up mongoose for the mongoDB connection
 mongoose
-  .connect('mongodb+srv://cluster0.0z4bv.mongodb.net/mockup',
-    {
-      auth:
-      {
-        username: 'asengchi',
-        password: 'NyzuPBGvFUNRPdGA',
-      }
-    })
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Database connection Success!");
   })
@@ -34,28 +40,32 @@ mongoose
 //declare port number for the api
 const PORT = process.env.PORT || 3000;
 
-//gives access to the json request body
+//setup
 app.use(express.json());
-//enable incoming request logging in dev mode
 app.use(morgan("dev"));
 
-//Import Routes
+//import routes
 const primaryDataRoute  = require('./routes/primaryData');
-const commonDataRoute   = require('./routes/commonData');
-const userDataRoute = require('./routes/userData');
-const organizationDataRoute  = require('./routes/organizationData');
 const eventsDataRoute  = require('./routes/eventsData');
-// const commonDataRoute  = require('./routes/commonData'); 
-
-//middle ware for routes
+const usersDataRoute  = require('./routes/userData');
+//setup middle ware for routes
 app.use('/primaryData', primaryDataRoute);
-app.use('/commonData', commonDataRoute);
-app.use('/userData', userDataRoute);
-app.use('/organizationData', organizationDataRoute)
 app.use('/eventData', eventsDataRoute)
-// app.use('/commonData', commonDataRoute);
+app.use('/userData', usersDataRoute)
+//sets user
+// function setUser(req, res, next) {
+//   const userId = 1
+//   //req.body.userId
+//   if (userId) {
+//     req.user = 1
+//     //users.find(user => user.id === userId)
+//   }
+//   next()
+// }
 
-//using the PORT cost to listen 
+
+
+
 app.listen(PORT, () => {
   console.log("Server started listening on port : ", PORT);
 });
@@ -63,7 +73,7 @@ app.listen(PORT, () => {
 //error handler
 app.use(function (err, req, res, next) {
   // logs error and error code to console
-  console.error(err.message);
+  console.error(err.message, req);
   if (!err.statusCode)
     err.statusCode = 500;
   res.status(err.statusCode).send(err.message);

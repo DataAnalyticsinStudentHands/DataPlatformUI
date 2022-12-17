@@ -4,65 +4,55 @@ const routes = [
     {
         path: '/',
         name: 'dashboard',
-        component: () => import('../components/dashboard')
+        props: true,
+        component: () => import('../components/dashboard.vue')
     },
     {
         path: '/intakeform',
         name: 'intakeForm',
         props: true,
-        component: () => import('../components/intakeForm')
+        component: () => import('../components/intakeForm.vue')
     },
     {
         path: '/findclient',
         name: 'findClient',
-        component: () => import('../components/findClient')
+        component: () => import('../components/findClient.vue')
     },
     {
-        path: '/commondataform/:id',
-        name: 'commonDataForm',
+        path: '/updateclient/:id',
+        name: 'updateclient',
         props: true,
-        component: () => import('../components/commonDataForm')
-    },
-    {
-        path: '/clientdetails/:id',
-        name: 'clientdetails',
-        props: true,
-        component: () => import('../components/clientDetails')
+        component: () => import('../components/updateClient.vue')
     },
     {
         path: '/eventform',
         name: 'eventform',
-        component: () => import('../components/eventForm')
+        component: () => import('../components/eventForm.vue')
     },
     {
         path: '/findEvents',
         name: 'findEvents',
-        component: () => import('../components/findEvents')
+        component: () => import('../components/findEvents.vue')
     },
     {
         path: '/eventDetails/:id',
         name: 'eventdetails',
         props: true,
-        component: () => import('../components/eventDetails')
+        component: () => import('../components/eventDetails.vue')
     },
     {
-        path: '/userCreation',
-        name: 'userCreation',
+        path: '/registerForm',
+        name: 'Register',
         props: true,
-        component: () => import('../components/userCreation')
+        component: () => import('../components/registerForm.vue')
     },
     {
-        path: '/userLogin',
-        name: 'userLogin',
+        path: '/login',
+        name: 'Login',
         props: true,
-        component: () => import('../components/userLoginNoGoogle')
+        component: () => import('../components/login.vue')
     },
-    {
-        path: '/',
-        name: 'dashboard',
-        props: true,
-        component: () => import('../components/dashboard')
-    }
+    
 ]
 const router = createRouter({
     history: createWebHistory(), routes
