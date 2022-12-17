@@ -55,6 +55,16 @@ let primaryDataSchema = new Schema({
         zip: {
             type: String,
         }
+    },
+    primaryStatus:{
+        activeStatus: {
+            type:Boolean,
+            default:true,
+            required:true
+        },
+        statusChangeDate:{
+            type:Date
+        }
     }
 }, {
     collection: 'primaryData',
