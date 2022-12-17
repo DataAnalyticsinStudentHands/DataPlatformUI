@@ -2,6 +2,16 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const orgDataSchema = new Schema ({
+    organizationName: {
+        type: String,
+        required: true
+    }
+}, {
+    collection: 'orgData',
+    timestamps: true
+});
+
 //collection for intakeData
 let primaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
@@ -128,6 +138,7 @@ userDataSchema.path('email').validate(async (email) => {
 
 
 // create models from mongoose schemas
+const orgdata = mongoose.model('orgData', orgDataSchema);
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const eventdata = mongoose.model('eventData', eventDataSchema);
 const userdata = mongoose.model('userData', userDataSchema);
