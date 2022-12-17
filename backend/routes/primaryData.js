@@ -97,7 +97,7 @@ router.put("/delete/:id", (req, res, next) => {
     req.body.organizationID = orgID;
     primarydata.findOneAndUpdate( 
         { _id: req.params.id }, 
-        [{$set: {"primaryStatus.activeStatus": req.body.status, "primaryStatus.inactiveDate": date}}],
+        [{$set: {"primaryStatus.activeStatus": req.body.status, "primaryStatus.statusChangeDate": date}}],
         (error, data) => {
             res.json(data);
         }

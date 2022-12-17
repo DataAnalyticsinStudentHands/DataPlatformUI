@@ -62,7 +62,7 @@ let primaryDataSchema = new Schema({
             default:true,
             required:true
         },
-        inactiveDate:{
+        statusChangeDate:{
             type:Date
         }
     }
