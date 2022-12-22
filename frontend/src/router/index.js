@@ -51,6 +51,7 @@ const routes = [
         name: 'Login',
         props: true,
         component: () => import('../components/login.vue')
+        
     },
     
 ]

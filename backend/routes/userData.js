@@ -32,7 +32,7 @@ router.post('/register', (req, res, next) => {
 });
 router.post('/login', (req, res, next) => {
     userdata.findOne({email: req.body.email}, (err, userdata) => {
-        console.log(userdata);
+        // console.log(userdata);
         if(err) return res.status(500).json({
             title: 'server error',
             error: err

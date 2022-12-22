@@ -74,7 +74,7 @@
         <h1 class="mr-20 text-3xl text-white">Dataplatform</h1>
       </section>
       <div>
-        <router-view></router-view>
+        <router-view @showDashboard="showDashboard"></router-view>
       </div>
     </div>
   </main>
@@ -85,17 +85,20 @@ export default {
   name: "App",
   data() {
     return {
-      showElement: true,
+      showElement: false,
     };
   },
   methods: {
-    isUserLoggedIn() {
-      this.showElement = true;
-    },
+    // isUserLoggedIn() {
+    //   this.showElement = true;
+    // },
     logout() {
       localStorage.clear();
-      // this.showElement = false;
+      this.showElement = false;
       this.$router.push("/login");
+    },
+    showDashboard() {
+      this.showElement = true;
     },
   },
 };
