@@ -7,10 +7,17 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 //importing data model schemas
 let { userdata } = require("../models/models"); 
-
+const nodemailer = require("../services/nodemailer.config");
+const randomString = require('randomstring');
 
 //POST
 router.post('/register', (req, res, next) => {
+    //generate secret key
+    const key = randomString.generate({
+        length: 6,
+        charset: 'numeric'
+    });
+
     const newUser = new userdata({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -18,6 +25,7 @@ router.post('/register', (req, res, next) => {
         phoneNumber: req.body.phoneNumber,
         password: bcrypt.hashSync(req.body.password, 10),
         role: "Basic",
+        confirmationCode: key,
     })
     userdata.create( 
         newUser, 
@@ -29,6 +37,11 @@ router.post('/register', (req, res, next) => {
             }
         }
     );
+    nodemailer.sendConfirmationEmail(
+        newUser.firstName,
+        newUser.email,
+        newUser.confirmationCode
+    );
 });
 router.post('/login', (req, res, next) => {
     userdata.findOne({email: req.body.email}, (err, userdata) => {
@@ -37,6 +50,7 @@ router.post('/login', (req, res, next) => {
             title: 'server error',
             error: err
         })
+        //existing user check
         if (!userdata) {
             return res.status(401).json({
                 title: 'User not found.',
@@ -48,6 +62,13 @@ router.post('/login', (req, res, next) => {
             return res.status(401).json({
                 title: 'Login Failed.',
                 error: 'Invalid Password.',
+            })
+        }
+        //active user check
+        if (userdata.status != "Active") {
+            return res.status(401).json({
+                title: 'Pending user account',
+                error: 'Pending Account. Please Verify Your Email!.'
             })
         }
         //If all is good create a token and sent to frontend
@@ -78,5 +99,26 @@ router.get('/user', (req, res, next) => {
             })
         })
     })
+})
+//user email confiramtion route
+router.put('/verify', async (req, res, next) => {
+    const filter = {confirmationCode: req.body.code};
+    const update = {status: 'Active', 
+                    confirmationCode: '',
+                };
+    const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
+        returnOriginal: false
+    });
+    if (!updateSuccsses) {
+        return res.status(401).json({
+            title: 'User not found.',
+            error: 'Invalid code.'
+        })
+    }
+    return res.status(200).json({
+        title: ' seccess',
+        error: 'The account has been successfully activated.'
+    })
+    
 })
 module.exports = router;

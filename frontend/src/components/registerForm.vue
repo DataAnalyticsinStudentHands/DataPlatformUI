@@ -207,8 +207,8 @@ export default {
           .then(() => {
             //using swal from sweetalert.js for customizeble alerts
             swal(
-              "Congratulations!",
-              "You have registered successfully.",
+              "You have registered successfully!",
+              "Please check your email and follow the steps to verify tour account.",
               "success"
             );
             // alert("You have registered successfully.");

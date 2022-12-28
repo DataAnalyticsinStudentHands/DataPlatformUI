@@ -115,6 +115,15 @@ let userDataSchema = new Schema({
     role: {
         type: String,
         required: true
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Active'],
+        default: 'Pending',
+    },
+    confirmationCode: {
+        type: String,
+        unique: true
     }
 }, {
     collection: 'userData',

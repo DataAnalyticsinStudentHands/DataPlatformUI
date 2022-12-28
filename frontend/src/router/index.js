@@ -53,6 +53,13 @@ const routes = [
         component: () => import('../components/login.vue')
         
     },
+    {
+        path: '/verify',
+        name: 'Account Confirmation',
+        props: true,
+        component: () => import('../components/accountConfirmed.vue')
+        
+    },
     
 ]
 const router = createRouter({
