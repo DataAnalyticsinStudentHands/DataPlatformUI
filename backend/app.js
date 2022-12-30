@@ -15,7 +15,7 @@ app.use(cors({
 
 //sets up mongoose for the mongoDB connection
 mongoose
-  .connect(process.env.MONGO_URL)
+  .connect(process.env.VITE_ROOT_API)
   .then(() => {
     console.log("Database connection Success!");
   })
