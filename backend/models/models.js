@@ -117,7 +117,6 @@ let userDataSchema = new Schema({
     },
     firstName: {
         type: String,
-        required: [true, 'A name is required.'],
     },
     lastName: {
         type: String
@@ -140,16 +139,25 @@ let userDataSchema = new Schema({
     role: {
         type: String,
         required: true
-    }
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Active'],
+        default: 'Pending',
+    },
+    confirmationCode: {
+        type: String,
+        unique: true
+    },
 }, {
     collection: 'userData',
     timestamps: true
 });
 
-userDataSchema.path('email').validate(async (email) => {
-   const emailCount =  await mongoose.models.userData.countDocuments({ email })
-    return !emailCount
-}, title= 'EMAIL ALREADY EXISTS')
+// userDataSchema.path('email').validate(async (email) => {
+//    const emailCount =  await mongoose.models.userData.countDocuments({ email })
+//     return !emailCount
+// }, title= 'EMAIL ALREADY EXISTS')
 
 
 // create models from mongoose schemas

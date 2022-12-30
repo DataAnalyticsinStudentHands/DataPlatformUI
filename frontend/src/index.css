@@ -5,9 +5,9 @@
 button {
     padding: 10px;
 }
-.primaryBg{
-    background-color: #C8102E;
-}
 .errorMessage:empty {
+    display: none;
+}
+.hide {
     display: none;
 }

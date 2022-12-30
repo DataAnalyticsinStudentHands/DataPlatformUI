@@ -1,7 +1,5 @@
 const express = require("express");
-//
-// const { authUser, authRole } = require("../services/basicAuth");
-//
+
 const router = express.Router();
 require("dotenv").config();
 

@@ -1,4 +1,9 @@
+//nothing in this file is currently in use
+
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+
 
 function authUser(req, res, next){
     if (req.user == null) {
@@ -27,8 +32,6 @@ async function hashPassword(password) {
 module.exports = {
     authUser,
     authRole,
-    hashPassword
+    hashPassword,
+    
 }
-
-
- 

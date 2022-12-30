@@ -64,6 +64,12 @@
               >Register here</a
             >
           </p>
+
+          <a
+            href="./resetPassword"
+            class="text-sm font-medium text-primary-600 hover:underline dark:text-blue-500"
+            >Forgot Password?
+          </a>
         </form>
       </div>
     </div>
@@ -75,6 +81,7 @@
 import axios from "axios";
 export default {
   name: "Login",
+  emits: ["showDashboard"],
   data() {
     return {
       email: "",
@@ -93,8 +100,9 @@ export default {
         (res) => {
           if (res.status == 200) {
             localStorage.setItem("token", res.data.token);
-            this.$root.$emit("isuserLoggedInEvent");
+            // this.$root.$emit("isuserLoggedInEvent");
             this.$router.push("/");
+            this.$emit("showDashboard");
           }
         },
         (err) => {

@@ -138,14 +138,6 @@ export default {
   },
   mounted() {
     let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
-    // axios
-    //   .get(apiURL, {
-    //     headers: { token: localStorage.getItem("token") },
-    //   })
-    //   .then((res) => {
-    //     console.log(res);
-    //   });
-    // let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
     axios
       .get(apiURL, {
         headers: { token: localStorage.getItem("token") },

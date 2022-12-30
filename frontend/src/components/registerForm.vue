@@ -163,7 +163,6 @@ export default {
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
-
   data() {
     return {
       isConfirmPasswordValid: false,
@@ -204,33 +203,39 @@ export default {
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/register`;
         axios
           .post(apiURL, this.user)
-          .then(() => {
-            //using swal from sweetalert.js for customizeble alerts
-            swal(
-              "Congratulations!",
-              "You have registered successfully.",
-              "success"
-            );
-            // alert("You have registered successfully.");
-            this.$router.push("./login");
-            this.user = {
-              firstName: "",
-              lastName: "",
-              email: "",
-              phoneNumber: "",
-              password: "",
-              role: "",
-              error: "",
-            };
-          })
-          .catch((error) => {
-            var err = error.response.data;
-            if (
-              err == "userData validation failed: email: EMAIL ALREADY EXISTS"
-            ) {
-              this.errorr = "An account with this email alredy exists.";
+          .then(
+            () => {
+              //using swal from sweetalert.js for customizeble alerts
+              swal(
+                "You have registered successfully!",
+                "Please check your email and follow the steps to verify tour account.",
+                "success"
+              );
+              // alert("You have registered successfully.");
+              this.$router.push("./login");
+              this.user = {
+                firstName: "",
+                lastName: "",
+                email: "",
+                phoneNumber: "",
+                password: "",
+                role: "",
+                error: "",
+              };
+            },
+            (err) => {
+              this.errorr = err.response.data.error;
             }
-          });
+          )
+          // .catch((error) => {
+          //   var err = error.response.data;
+          //   if (
+          //     err == "userData validation failed: email: EMAIL ALREADY EXISTS"
+          //   ) {
+          //     this.errorr = error;
+          //     // this.errorr = error;
+          //   }
+          // });
       }
     },
   },

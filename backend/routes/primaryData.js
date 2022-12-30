@@ -11,6 +11,8 @@ const orgID = process.env.ORG_ID;
 //GET all entries
 router.get("/", (req, res, next) => {
     let token = req.headers.token;
+// let result = verifyToken(roken,data);
+
     jwt.verify(token, 'secretkey', (err, decoded) => {
         if (err) {
             return res.status(401).json({
