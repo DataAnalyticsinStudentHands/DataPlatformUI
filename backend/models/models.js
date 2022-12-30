@@ -123,7 +123,7 @@ let userDataSchema = new Schema({
     confirmationCode: {
         type: String,
         unique: true
-    }
+    },
 }, {
     collection: 'userData',
     timestamps: true

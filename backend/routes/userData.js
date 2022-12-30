@@ -39,6 +39,7 @@ router.post('/register',  (req, res, next) => {
         password: bcrypt.hashSync(req.body.password, 10),
         role: "Basic",
         confirmationCode: key,
+        organizationID: "orgID",
     })
     userdata.create( 
         newUser, 
