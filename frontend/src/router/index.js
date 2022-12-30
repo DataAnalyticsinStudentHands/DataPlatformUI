@@ -60,6 +60,20 @@ const routes = [
         component: () => import('../components/accountConfirmed.vue')
         
     },
+    {
+        path: '/resetPassword',
+        name: 'Password Reset',
+        props: true,
+        component: () => import('../components/resetPassword.vue')
+        
+    },
+    {
+        path: '/resetPasswordForm',
+        name: 'Password Reset Form',
+        props: true,
+        component: () => import('../components/resetPasswordForm.vue')
+        
+    },
     
 ]
 const router = createRouter({

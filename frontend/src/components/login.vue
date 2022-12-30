@@ -64,6 +64,12 @@
               >Register here</a
             >
           </p>
+
+          <a
+            href="./resetPassword"
+            class="text-sm font-medium text-primary-600 hover:underline dark:text-blue-500"
+            >Forgot Password?
+          </a>
         </form>
       </div>
     </div>

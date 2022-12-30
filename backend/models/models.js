@@ -92,7 +92,6 @@ let userDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     firstName: {
         type: String,
-        required: [true, 'A name is required.'],
     },
     lastName: {
         type: String
@@ -130,10 +129,10 @@ let userDataSchema = new Schema({
     timestamps: true
 });
 
-userDataSchema.path('email').validate(async (email) => {
-   const emailCount =  await mongoose.models.userData.countDocuments({ email })
-    return !emailCount
-}, title= 'EMAIL ALREADY EXISTS')
+// userDataSchema.path('email').validate(async (email) => {
+//    const emailCount =  await mongoose.models.userData.countDocuments({ email })
+//     return !emailCount
+// }, title= 'EMAIL ALREADY EXISTS')
 
 
 // create models from mongoose schemas
