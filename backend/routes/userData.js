@@ -5,7 +5,7 @@ const router = express.Router();
 // const session = require('express-session');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-require("dotenv").config();
+// require("dotenv").config();
 //importing data model schemas
 let { userdata } = require("../models/models"); 
 const nodemailer = require("../services/nodemailer.config");
@@ -38,7 +38,7 @@ router.post('/register',  (req, res, next) => {
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         password: bcrypt.hashSync(req.body.password, 10),
-        organizationID: orgID,
+        // organizationID: orgID,
         role: "Basic",
         confirmationCode: key,
     })
