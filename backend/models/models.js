@@ -110,11 +110,11 @@ let eventDataSchema = new Schema({
 //collection for userData
 let userDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },    
-    organizationID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'orgData',
-        required: true
-    },
+    // organizationID: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'orgData',
+    //     required: true
+    // },
     firstName: {
         type: String,
     },
