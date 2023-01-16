@@ -39,7 +39,7 @@ router.post('/register',   (req, res, next) => {
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         password: bcrypt.hashSync(req.body.password, 10),
-        // organizationID: orgID, 
+        organizationID: orgID, 
         //test
         role: "Basic",
         confirmationCode: key,
