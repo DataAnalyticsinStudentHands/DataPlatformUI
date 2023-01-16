@@ -17,19 +17,19 @@ router.get("/", (req, res, next) => {
         if (err) {
             return res.status(401).json({
             title: 'unauthorized'
-        })
+            })
         }
-   //token is valid
-    primarydata.find( {organizationID: orgID }, 
-        (error, data) => {
-            if (error) {
-                return next(error);
-            } else {
-                res.json(data);
+         //token is valid
+        primarydata.find( {organizationID: orgID }, 
+            (error, data) => {
+                if (error) {
+                    return next(error);
+                } else {
+                    res.json(data);
+                }
             }
-        }
-    ).sort({ 'updatedAt': -1 }).limit(10);
-})
+        ).sort({ 'updatedAt': -1 }).limit(10);
+    })
 });
 
 //GET single entry by ID

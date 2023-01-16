@@ -12,10 +12,10 @@ const nodemailer = require("../services/nodemailer.config");
 const randomString = require('randomstring');
 
 //POST
-router.post('/register',  (req, res, next) => {
+router.post('/register',   (req, res, next) => {
     const filter = req.body.email;
     //existing user check
-    userdata.findOne({email: filter}, (err, userdata) => {
+     userdata.findOne({email: filter}, (err, userdata) => {
         if(err) return res.status(500).json({
             title: 'server error',
             error: err
@@ -97,7 +97,7 @@ router.post('/login', (req, res, next) => {
         if (userdata.status != "Active") {
             return res.status(401).json({
                 title: 'Pending user account',
-                error: 'Pending Account. Please Verify Your Email!.'
+                error: 'Pending Account. Please Verify Your Email.'
             })
         }
         //If all is good create a token and sent to frontend
