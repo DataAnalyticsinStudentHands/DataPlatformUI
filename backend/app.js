@@ -2,16 +2,30 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan"); //better debugging
 const cors = require("cors");
+// const session = require('express-session');
+// const mongoDBSession = require('connect-mongodb-session')(session);
+const bodyParser = require('body-parser');
 //allow using a .env file
-require("dotenv").config();   
-
+require("dotenv").config();
+//importing data model schemas
+let { models } = require("./models/models"); 
 //creates a new instance of express application
 const app = express();
+app.use(express.json());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false}));
+
+
+
+//calling setUser function
+// app.use(setUser)
 
 // add cors header to the server
 app.use(cors({
   origin: '*'
 }));
+
 
 //sets up mongoose for the mongoDB connection
 mongoose
@@ -34,11 +48,27 @@ app.use(morgan("dev"));
 const orgDataRoute  = require('./routes/orgData');
 const primaryDataRoute  = require('./routes/primaryData');
 const eventsDataRoute  = require('./routes/eventsData');
-
+const usersDataRoute  = require('./routes/userData');
+const dashboardDataRoute  = require('./routes/dashboardData');
 //setup middle ware for routes
 app.use('/orgData', orgDataRoute);
 app.use('/primaryData', primaryDataRoute);
 app.use('/eventData', eventsDataRoute)
+app.use('/userData', usersDataRoute)
+app.use('/dashboardData', dashboardDataRoute)
+//sets user
+// function setUser(req, res, next) {
+//   const userId = 1
+//   //req.body.userId
+//   if (userId) {
+//     req.user = 1
+//     //users.find(user => user.id === userId)
+//   }
+//   next()
+// }
+
+
+
 
 app.listen(PORT, () => {
   console.log("Server started listening on port : ", PORT);

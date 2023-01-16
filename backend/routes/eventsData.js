@@ -1,4 +1,5 @@
 const express = require("express");
+
 const router = express.Router();
 require("dotenv").config();
 
@@ -7,8 +8,8 @@ let { eventdata } = require("../models/models");
 
 const orgID = process.env.ORG_ID;
 
-//GET all entries per instance
-router.get("/", (req, res, next) => { 
+//GET all entries
+router.get("/", (req, res, next) => { ///<-- authUser
     eventdata.find( {organizationID: orgID},
         (error, data) => {
             if (error) {
@@ -22,7 +23,7 @@ router.get("/", (req, res, next) => {
 
 //GET single entry by ID
 router.get("/id/:id", (req, res, next) => { 
-    eventdata.find({ _id: req.params.id, organizationID: orgID}, (error, data) => {
+    eventdata.find({ _id: req.params.id, organizationID: orgID }, (error, data) => {
         if (error) {
             return next(error)
         } else {
@@ -38,7 +39,9 @@ router.get("/search/", (req, res, next) => {
     if (req.query["searchBy"] === 'name') {
         dbQuery = { eventName: { $regex: `^${req.query["eventName"]}`, $options: "i" }, organizationID: orgID }
     } else if (req.query["searchBy"] === 'date') {
-        dbQuery = { date:  req.query["eventDate"], organizationID: orgID }
+        dbQuery = {
+            date:  req.query["eventDate"], organizationID: orgID
+        }
     };
     eventdata.find( 
         dbQuery, 
@@ -55,7 +58,7 @@ router.get("/search/", (req, res, next) => {
 //GET events for which a client is signed up
 router.get("/client/:id", (req, res, next) => { 
     eventdata.find( 
-        { organizationID: orgID, attendees: req.params.id }, 
+        {organizationID: orgID, attendees: req.params.id }, 
         (error, data) => { 
             if (error) {
                 return next(error);
@@ -105,7 +108,7 @@ router.put("/:id", (req, res, next) => {
 router.put("/addAttendee/:id", (req, res, next) => {
     //only add attendee if not yet signed up
     eventdata.find( 
-        { _id: req.params.id, attendees: req.body.attendee, organizationID: orgID }, 
+        { _id: req.params.id, attendees: req.body.attendee, organizationID: orgID  }, 
         (error, data) => { 
             if (error) {
                 return next(error);
@@ -129,5 +132,4 @@ router.put("/addAttendee/:id", (req, res, next) => {
     );
     
 });
-
 module.exports = router;

@@ -249,6 +249,11 @@ import axios from "axios";
 import { DateTime } from "luxon";
 
 export default {
+  created() {
+    if (localStorage.getItem("token") === null) {
+      this.$router.push("/login");
+    }
+  },
   props: ["id"],
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
@@ -330,4 +335,5 @@ export default {
     };
   },
 };
+
 </script>

@@ -5,3 +5,9 @@
 button {
     padding: 10px;
 }
+.errorMessage:empty {
+    display: none;
+}
+.hide {
+    display: none;
+}

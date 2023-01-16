@@ -88,6 +88,11 @@ import { DateTime } from "luxon";
 import axios from "axios";
 
 export default {
+  created() {
+    if (localStorage.getItem("token") === null) {
+      this.$router.push("/login");
+    }
+  },
   data() {
     return {
       queryData: [],
@@ -106,6 +111,7 @@ export default {
     window.scrollTo(0, 0);
   },
   methods: {
+    
     formattedDate(datetimeDB) {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
     },
