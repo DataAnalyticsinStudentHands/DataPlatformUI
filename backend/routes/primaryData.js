@@ -18,6 +18,7 @@ router.get("/", (req, res, next) => {
             return res.status(401).json({
             title: 'unauthorized'
             })
+
         }
          //token is valid
         primarydata.find( {organizationID: orgID }, 
@@ -127,6 +128,20 @@ router.put("/:id", (req, res, next) => {
             } else {
                 res.json(data);
             }
+        }
+    );
+});
+
+//PUT soft delete  (make sure req body doesn't have the id)
+router.put("/delete/:id", (req, res, next) => { 
+    // always use orgID from instance
+    let date = new Date();
+    req.body.organizationID = orgID;
+    primarydata.findOneAndUpdate( 
+        { _id: req.params.id }, 
+        [{$set: {"primaryStatus.activeStatus": req.body.status, "primaryStatus.statusChangeDate": date}}],
+        (error, data) => {
+            res.json(data);
         }
     );
 });

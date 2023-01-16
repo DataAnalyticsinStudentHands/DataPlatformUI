@@ -45,11 +45,13 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 //import routes
+const orgDataRoute  = require('./routes/orgData');
 const primaryDataRoute  = require('./routes/primaryData');
 const eventsDataRoute  = require('./routes/eventsData');
 const usersDataRoute  = require('./routes/userData');
 const dashboardDataRoute  = require('./routes/dashboardData');
 //setup middle ware for routes
+app.use('/orgData', orgDataRoute);
 app.use('/primaryData', primaryDataRoute);
 app.use('/eventData', eventsDataRoute)
 app.use('/userData', usersDataRoute)

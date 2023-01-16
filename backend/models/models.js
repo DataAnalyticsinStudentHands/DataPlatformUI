@@ -61,6 +61,16 @@ let primaryDataSchema = new Schema({
         zip: {
             type: String,
         }
+    },
+    primaryStatus:{
+        activeStatus: {
+            type:Boolean,
+            default:true,
+            required:true
+        },
+        statusChangeDate:{
+            type:Date
+        }
     }
 }, {
     collection: 'primaryData',
@@ -185,4 +195,5 @@ const primarydata = mongoose.model('primaryData', primaryDataSchema);
 const eventdata = mongoose.model('eventData', eventDataSchema);
 const userdata = mongoose.model('userData', userDataSchema);
 // package the models in an object to export 
-module.exports = { primarydata, eventdata, userdata }
+module.exports = { orgdata, primarydata, eventdata, userdata }
+

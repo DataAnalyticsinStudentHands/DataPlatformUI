@@ -119,7 +119,6 @@ router.put("/addAttendee/:id", (req, res, next) => {
                         { $push: { attendees: req.body.attendee } },
                         (error, data) => {
                             if (error) {
-                                consol
                                 return next(error);
                             } else {
                                 res.json(data);
