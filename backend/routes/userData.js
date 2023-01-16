@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 let { userdata } = require("../models/models"); 
 const nodemailer = require("../services/nodemailer.config");
 const randomString = require('randomstring');
+const orgID = process.env.ORG_ID;
 
 //POST
 router.post('/register',   (req, res, next) => {
@@ -73,7 +74,7 @@ router.post('/register',   (req, res, next) => {
 
 //login page
 router.post('/login', (req, res, next) => {
-    userdata.findOne({email: req.body.email}, (err, userdata) => {
+    userdata.findOne({email: req.body.email, organizationID: orgID }, (err, userdata) => {
         // console.log(userdata);
         if(err) return res.status(500).json({
             title: 'server error',

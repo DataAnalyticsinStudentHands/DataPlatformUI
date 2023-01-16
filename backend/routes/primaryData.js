@@ -68,29 +68,50 @@ router.get("/search/", (req, res, next) => {
     );
 });
 
-//GET events for a single client
-router.get("/events/:id", (req, res, next) => { 
-    
-});
-
 //POST
-router.post("/", (req, res, next) => { 
-    // add orgID from instance
+router.post("/", (req, res, next) => {
+    // always use orgID from instance
     req.body.organizationID = orgID;
-
-    primarydata.create( 
-        req.body,
-        (error, data) => { 
-            if (error) {
-                return next(error);
-            } else {
-                res.json(data); 
-            }
+    //only add primarydata if primaryPhone is not in system
+    primarydata.findOne({ "phoneNumbers.primaryNumber": req.body.phoneNumbers.primaryNumber }, (err, returndata) => {
+        if(err) {
+            return res.status(500).json({
+            title: 'server error',
+            error: err})
         }
-    );
-    primarydata.createdAt;
-    primarydata.updatedAt;
-    primarydata.createdAt instanceof Date;
+        if (returndata) {
+            primarydata.findOne({ "phoneNumbers.primaryNumber": req.body.phoneNumbers.primaryNumber, organizationID: orgID }, (err, returndata2) => {
+                console.log(returndata)
+                if(returndata2) {
+                    return res.status(401).json({
+                        title: 'Existing Primary Phone Number',
+                        error: 'Primary Phone Number already exists in this organization.'
+                    })
+                }
+                else {
+                    return res.status(401).json({
+                        title: 'Non-Existing within this organization',
+                        error: 'Primary Phone Number already exists in a different organization. Needs to be added.'
+                    })
+                }
+            })
+        }
+        else if (returndata == null) {
+            primarydata.create( 
+                req.body,
+                (error, data) => { 
+                    if (error) {
+                        return next(error);
+                    } else {
+                        res.json(data); 
+                    }
+                }
+            );
+            primarydata.createdAt;
+            primarydata.updatedAt;
+            primarydata.createdAt instanceof Date;
+        }
+    });
 });
 
 //PUT update (make sure req body doesn't have the id)

@@ -16,7 +16,7 @@ const orgDataSchema = new Schema ({
 let primaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     organizationID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Array,
         ref: 'orgData',
         required: true
     },
@@ -35,8 +35,14 @@ let primaryDataSchema = new Schema({
         type: String
     },
     phoneNumbers: {
-        type: Array,
-        required: true
+        primaryNumber:{
+            unique: true,
+            type: String,
+            reqired: true
+        },
+        secondaryNumber:{
+            type: String
+        }
     },
     address: {
         line1: {
@@ -65,7 +71,7 @@ let primaryDataSchema = new Schema({
 let eventDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     organizationID: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Array,
         ref: 'orgData',
         required: true
     },
@@ -105,6 +111,19 @@ let eventDataSchema = new Schema({
     }]
 }, {
     collection: 'eventData'
+});
+
+//collection for projectSchema
+let projectSchema = new Schema({
+    _id: { type: String, default: uuid.v1 },
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    }
 });
 
 //collection for userData
