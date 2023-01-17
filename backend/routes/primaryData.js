@@ -73,26 +73,35 @@ router.get("/search/", (req, res, next) => {
 router.post("/", (req, res, next) => {
     // always use orgID from instance
     req.body.organizationID = orgID;
-    //only add primarydata if primaryPhone is not in system
-    primarydata.findOne({ "phoneNumbers.primaryNumber": req.body.phoneNumbers.primaryNumber }, (err, returndata) => {
+
+    const searchParam = {
+        "firstName": req.body.firstName, 
+        "lastName": req.body.lastName,
+        "birthday.month": req.body.birthday.month,
+        "birthday.day": req.body.birthday.day
+    };
+    
+    //only add primarydata if searchParam is not in system
+    primarydata.findOne(searchParam, (err, returndata) => {
+        console.log(searchParam);
         if(err) {
             return res.status(500).json({
             title: 'server error',
             error: err})
         }
         if (returndata) {
-            primarydata.findOne({ "phoneNumbers.primaryNumber": req.body.phoneNumbers.primaryNumber, organizationID: orgID }, (err, returndata2) => {
+            primarydata.findOne({ "firstName": req.body.firstName, "lastName": req.body.lastName, "birthday.month": req.body.birthday.month,"birthday.day": req.body.birthday.day, organizationID: orgID }, (err, returndata2) => {
                 console.log(returndata)
                 if(returndata2) {
                     return res.status(401).json({
-                        title: 'Existing Primary Phone Number',
-                        error: 'Primary Phone Number already exists in this organization.'
+                        title: 'Existing Client',
+                        error: 'Client already exists in this organization.'
                     })
                 }
                 else {
                     return res.status(401).json({
                         title: 'Non-Existing within this organization',
-                        error: 'Primary Phone Number already exists in a different organization. Needs to be added.'
+                        error: 'Client already exists in a different organization. Needs to be added.'
                     })
                 }
             })
@@ -113,6 +122,34 @@ router.post("/", (req, res, next) => {
             primarydata.createdAt instanceof Date;
         }
     });
+});
+
+//PUT add Organization to Client
+router.put("/addOrganization/:id", (req, res, next) => {
+    //only add Organization if not yet in the array
+    primarydata.find( 
+        { _id: req.params.id }, 
+        (error, data) => { 
+            if (error) {
+                return next(error);
+            } else {
+                if (data.length == 0) {
+                    primarydata.updateOne(
+                        { _id: req.params.id }, 
+                        { $push: { organizationID: orgID } },
+                        (error, data) => {
+                            if (error) {
+                                return next(error);
+                            } else {
+                                res.json(data);
+                            }
+                        }
+                    );
+                }
+                
+            }
+        }
+    );
 });
 
 //PUT update (make sure req body doesn't have the id)
