@@ -12,7 +12,7 @@ const orgDataSchema = new Schema ({
     timestamps: true
 });
 
-//collection for intakeData
+//collection for primaryDataSchema
 let primaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     organizationID: {
@@ -35,14 +35,46 @@ let primaryDataSchema = new Schema({
         type: String
     },
     phoneNumbers: {
-        primaryNumber:{
-            unique: true,
-            type: String,
-            reqired: true
+        type: Array,
+        required: true
+    },
+    primaryStatus:{
+        activeStatus: {
+            type:Boolean,
+            default:true,
+            required:true
         },
-        secondaryNumber:{
-            type: String
+        statusChangeDate:{
+            type:Date
         }
+    },
+    birthday: {
+        month: {
+            type: Number,
+            required: true            
+        },
+        day: {
+            type: Number,
+            required: true
+        }
+    }
+}, {
+    collection: 'primaryData',
+    timestamps: true
+});
+
+//collection for secordaryDataSchema
+let secordaryDataSchema = new Schema({
+    _id: { type: String, default: uuid.v1 },
+    clientID: { 
+        type: String, 
+        ref: 'primaryData', // connecting clientid to primaryData
+        required: true
+    },
+    organizationID: {
+        type: String,
+        ref: 'orgData',
+        required: true
     },
     address: {
         line1: {
@@ -62,22 +94,12 @@ let primaryDataSchema = new Schema({
             type: String,
         }
     },
-    primaryStatus:{
-        activeStatus: {
-            type:Boolean,
-            default:true,
-            required:true
-        },
-        statusChangeDate:{
-            type:Date
-        }
-    }
 }, {
-    collection: 'primaryData',
+    collection: 'secordaryData',
     timestamps: true
 });
 
-//collection for eventData
+//collection for eventDataSchema
 let eventDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     organizationID: {
@@ -120,11 +142,12 @@ let eventDataSchema = new Schema({
         type: String
     }]
 }, {
-    collection: 'eventData'
+    collection: 'eventData',
+    timestamps: true
 });
 
-//collection for projectSchema
-let projectSchema = new Schema({
+//collection for projectDataSchema
+let projectDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     title: {
         type: String,
@@ -134,9 +157,12 @@ let projectSchema = new Schema({
         type: String,
         required: true
     }
+}, {
+    collection: 'projectData',
+    timestamps: true
 });
 
-//collection for userData
+//collection for userDataSchema
 let userDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },    
     organizationID: {
@@ -183,17 +209,20 @@ let userDataSchema = new Schema({
     timestamps: true
 });
 
+
+
 // userDataSchema.path('email').validate(async (email) => {
 //    const emailCount =  await mongoose.models.userData.countDocuments({ email })
 //     return !emailCount
-// }, title= 'EMAIL ALREADY EXISTS')
-
+// }, title= 'EMAIL ALREADY EXISTS') 
 
 // create models from mongoose schemas
 const orgdata = mongoose.model('orgData', orgDataSchema);
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
+const secordarydata = mongoose.model('secordaryData', secordaryDataSchema);
 const eventdata = mongoose.model('eventData', eventDataSchema);
+const projectdata = mongoose.model('projectData', eventDataSchema);
 const userdata = mongoose.model('userData', userDataSchema);
-// package the models in an object to export 
-module.exports = { orgdata, primarydata, eventdata, userdata }
 
+// package the models in an object to export 
+module.exports = { orgdata, primarydata, secordarydata, eventdata, projectdata, userdata }
