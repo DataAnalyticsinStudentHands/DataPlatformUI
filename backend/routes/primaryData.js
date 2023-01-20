@@ -91,17 +91,18 @@ router.post("/", (req, res, next) => {
         }
         if (returndata) {
             primarydata.findOne({ "firstName": req.body.firstName, "lastName": req.body.lastName, "birthday.month": req.body.birthday.month,"birthday.day": req.body.birthday.day, organizationID: orgID }, (err, returndata2) => {
-                console.log(returndata)
                 if(returndata2) {
                     return res.status(401).json({
                         title: 'Existing Client',
-                        error: 'Client already exists in this organization.'
+                        error: 'Client already exists in this organization.',
+                        data: returndata2
                     })
                 }
                 else {
                     return res.status(401).json({
                         title: 'Non-Existing within this organization',
-                        error: 'Client already exists in a different organization. Needs to be added.'
+                        error: 'Client already exists in a different organization. Needs to be added. Confirm information.',
+                        data: returndata
                     })
                 }
             })
@@ -133,10 +134,10 @@ router.put("/addOrganization/:id", (req, res, next) => {
             if (error) {
                 return next(error);
             } else {
-                if (data.length == 0) {
+                if (data) {
                     primarydata.updateOne(
                         { _id: req.params.id }, 
-                        { $push: { organizationID: orgID } },
+                        { $addToSet: { organizationID: orgID } },
                         (error, data) => {
                             if (error) {
                                 return next(error);
@@ -146,7 +147,6 @@ router.put("/addOrganization/:id", (req, res, next) => {
                         }
                     );
                 }
-                
             }
         }
     );
