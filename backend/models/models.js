@@ -51,11 +51,15 @@ let primaryDataSchema = new Schema({
     birthday: {
         month: {
             type: Number,
-            required: true            
+            required: true,
+            min: 1,
+            max: 12           
         },
         day: {
             type: Number,
-            required: true
+            required: true,
+            min: 1,
+            max: 31
         }
     }
 }, {

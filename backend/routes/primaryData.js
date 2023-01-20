@@ -83,7 +83,6 @@ router.post("/", (req, res, next) => {
     
     //only add primarydata if searchParam is not in system
     primarydata.findOne(searchParam, (err, returndata) => {
-        console.log(searchParam);
         if(err) {
             return res.status(500).json({
             title: 'server error',
