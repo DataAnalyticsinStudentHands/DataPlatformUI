@@ -81,48 +81,35 @@
 </template>
 
 <script>
-import axios from "axios";
-export default {
+  import axios from "axios"; 
+  export default {
   name: "App",
-
   data() {
     return {
-      organizationName: "",
-
+      organizationName: '',
       showElement: false,
     };
   },
-
   methods: {
     // isUserLoggedIn() {
-
     //   this.showElement = true;
-
     // },
-
     logout() {
       localStorage.clear();
-
       this.showElement = false;
-
       this.$router.push("/login");
     },
-
     showDashboard() {
       this.showElement = true;
     },
   },
-
   created() {
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-
     axios.get(apiURL).then((resp) => {
       this.organizationName = resp.data;
     });
-  },
-};
+}};
 </script>
-
 <style>
 #_container {
   background-color: #c8102e;
@@ -130,3 +117,5 @@ export default {
   padding: 18px;
 }
 </style>
+
+

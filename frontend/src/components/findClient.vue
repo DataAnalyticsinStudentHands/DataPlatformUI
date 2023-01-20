@@ -107,9 +107,8 @@
                 {{ client.firstName + " " + client.lastName }}
               </td>
               <td class="p-2 text-left">
-                {{ client.phoneNumbers[0].primaryPhone }}
+                {{ client.phoneNumbers[0] }}
               </td>
-              <td class="p-2 text-left">{{ client.address.city }}</td>
             </tr>
           </tbody>
         </table>
