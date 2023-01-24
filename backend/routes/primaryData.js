@@ -109,11 +109,11 @@ router.post("/", (req, res, next) => {
         else if (returndata == null) {
             primarydata.create( 
                 req.body,
-                (error, data) => { 
+                (error, returndata) => { 
                     if (error) {
                         return next(error);
                     } else {
-                        res.json(data); 
+                        return res.status(401).json({data: returndata}); 
                     }
                 }
             );
