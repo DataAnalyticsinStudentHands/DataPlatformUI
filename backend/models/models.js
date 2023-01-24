@@ -67,8 +67,8 @@ let primaryDataSchema = new Schema({
     timestamps: true
 });
 
-//collection for secordaryDataSchema
-let secordaryDataSchema = new Schema({
+//collection for secondaryDataSchema
+let secondaryDataSchema = new Schema({
     _id: { type: String, default: uuid.v1 },
     clientID: { 
         type: String, 
@@ -99,7 +99,7 @@ let secordaryDataSchema = new Schema({
         }
     },
 }, {
-    collection: 'secordaryData',
+    collection: 'secondaryData',
     timestamps: true
 });
 
@@ -223,10 +223,10 @@ let userDataSchema = new Schema({
 // create models from mongoose schemas
 const orgdata = mongoose.model('orgData', orgDataSchema);
 const primarydata = mongoose.model('primaryData', primaryDataSchema);
-const secordarydata = mongoose.model('secordaryData', secordaryDataSchema);
+const secondarydata = mongoose.model('secondaryData', secondaryDataSchema);
 const eventdata = mongoose.model('eventData', eventDataSchema);
 const projectdata = mongoose.model('projectData', eventDataSchema);
 const userdata = mongoose.model('userData', userDataSchema);
 
 // package the models in an object to export 
-module.exports = { orgdata, primarydata, secordarydata, eventdata, projectdata, userdata }
+module.exports = { orgdata, primarydata, secondarydata, eventdata, projectdata, userdata }

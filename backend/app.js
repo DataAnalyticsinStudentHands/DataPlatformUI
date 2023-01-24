@@ -47,7 +47,7 @@ app.use(morgan("dev"));
 //import routes
 const orgDataRoute  = require('./routes/orgData');
 const primaryDataRoute  = require('./routes/primaryData');
-const secondaryDataRoute  = require('./routes/secondarydData');
+const secondaryDataRoute  = require('./routes/secondaryData');
 const eventsDataRoute  = require('./routes/eventsData');
 const usersDataRoute  = require('./routes/userData');
 const dashboardDataRoute  = require('./routes/dashboardData');

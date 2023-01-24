@@ -17,3 +17,5 @@ router.get("/id/:id", (req, res, next) => {
         }
     );
 });
+
+module.exports = router;
