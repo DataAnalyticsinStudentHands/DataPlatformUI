@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 require("dotenv").config();
 //importing data model schemas
 let { primarydata } = require("../models/models"); 
-let { eventdata } = require("../models/models"); 
 const orgID = process.env.ORG_ID;
 
 
