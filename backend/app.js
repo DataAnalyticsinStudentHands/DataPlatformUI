@@ -47,12 +47,14 @@ app.use(morgan("dev"));
 //import routes
 const orgDataRoute  = require('./routes/orgData');
 const primaryDataRoute  = require('./routes/primaryData');
+const secondaryDataRoute  = require('./routes/secondarydData');
 const eventsDataRoute  = require('./routes/eventsData');
 const usersDataRoute  = require('./routes/userData');
 const dashboardDataRoute  = require('./routes/dashboardData');
 //setup middle ware for routes
 app.use('/orgData', orgDataRoute);
 app.use('/primaryData', primaryDataRoute);
+app.use('/secondaryData', secondaryDataRoute);
 app.use('/eventData', eventsDataRoute)
 app.use('/userData', usersDataRoute)
 app.use('/dashboardData', dashboardDataRoute)
