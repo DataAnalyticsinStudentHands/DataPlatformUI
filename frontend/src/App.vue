@@ -71,7 +71,7 @@
         class="justify-end items-center h-24 flex"
         style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
       >
-        <h1 class="mr-20 text-3xl text-white">{{organizationName}}</h1>
+        <h1 class="mr-20 text-3xl text-white">Dataplatform</h1>
       </section>
       <div>
         <router-view @showDashboard="showDashboard"></router-view>
@@ -81,14 +81,11 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "App",
   data() {
     return {
-      organizationName: '',
-      showElement: false,
+      showElement: localStorage.getItem("token") !== null,
     };
   },
   methods: {
@@ -104,11 +101,6 @@ export default {
       this.showElement = true;
     },
   },
-  created() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-    axios.get(apiURL).then((resp) => {
-      this.organizationName = resp.data;
-    });
 };
 </script>
 

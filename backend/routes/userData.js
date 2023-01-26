@@ -13,8 +13,9 @@ const randomString = require('randomstring');
 const orgID = process.env.ORG_ID;
 
 //POST
-router.post('/register',   (req, res, next) => {
+router.post('/register',(req, res, next) => {
     const filter = req.body.email;
+    let userExists = false;
     //existing user check
      userdata.findOne({email: filter}, (err, userdata) => {
         if(err) return res.status(500).json({
@@ -22,6 +23,7 @@ router.post('/register',   (req, res, next) => {
             error: err
         })
         if (userdata) {
+            userExists = true;
             return res.status(401).json({
                 title: 'Existing Email',
                 error: 'Email already exists.'
@@ -102,7 +104,7 @@ router.post('/login', (req, res, next) => {
             })
         }
         //If all is good create a token and sent to frontend
-        let token = jwt.sign({userId: userdata._id, userRole: userdata.role}, 'secretkey', {expiresIn: "10min"});
+        let token = jwt.sign({userId: userdata._id, userRole: userdata.role}, 'secretkey', {expiresIn: "60sec"});
         return res.status(200).json({
             title: 'Login seccess',
             token: token,
