@@ -18,4 +18,21 @@ router.get("/id/:id", (req, res, next) => {
     );
 });
 
+//PUT update (make sure req body doesn't have the id)
+router.put("/:id", (req, res, next) => { 
+    // always use orgID from instance
+    req.body.organizationID = orgID;
+    secondarydata.findOneAndUpdate( 
+        { _id: req.params.id }, 
+        req.body,
+        (error, data) => {
+            if (error) {
+                return next(error);
+            } else {
+                res.json(data);
+            }
+        }
+    );
+});
+
 module.exports = router;
