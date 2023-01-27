@@ -1,28 +1,49 @@
 const express = require("express");
-
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 require("dotenv").config();
-
 //importing data model schemas
 let { eventdata } = require("../models/models"); 
-
 const orgID = process.env.ORG_ID;
+//importing authUser function to secure routes
+const userAuthentication = require('../services/basicAuth');
+let authUser = userAuthentication.authUser;
 
 //GET all entries
-router.get("/", (req, res, next) => { ///<-- authUser
-    eventdata.find( {organizationID: orgID},
-        (error, data) => {
-            if (error) {
-                return next(error);
-            } else {
-                res.json(data);
+router.get("/", authUser,(req, res, next) => { 
+        eventdata.find( {organizationID: orgID},
+            (error, data) => {
+                if (error) {
+                    return next(error);
+                } else {
+                    res.json(data);
+                }
             }
-        }
-    ).sort({ 'updatedAt': -1 }).limit(10);
+        ).sort({ 'updatedAt': -1 }).limit(10);
 });
-
+// //GET all entries
+// router.get("/", (req, res, next) => { 
+//     let token = req.headers.token;
+//     jwt.verify(token, 'secretkey', (err, decoded) => {
+//         if (err) {
+//             return res.status(401).json({
+//             title: 'unauthorized'
+//             })
+//         }
+//         //token is valid
+//         eventdata.find( {organizationID: orgID},
+//             (error, data) => {
+//                 if (error) {
+//                     return next(error);
+//                 } else {
+//                     res.json(data);
+//                 }
+//             }
+//         ).sort({ 'updatedAt': -1 }).limit(10);
+//     })
+// });
 //GET single entry by ID
-router.get("/id/:id", (req, res, next) => { 
+router.get("/id/:id", authUser,(req, res, next) => { 
     eventdata.find({ _id: req.params.id, organizationID: orgID }, (error, data) => {
         if (error) {
             return next(error)
@@ -34,7 +55,7 @@ router.get("/id/:id", (req, res, next) => {
 
 //GET entries based on search query
 //Ex: '...?eventName=Food&searchBy=name' 
-router.get("/search/", (req, res, next) => { 
+router.get("/search/", authUser,(req, res, next) => { 
     let dbQuery = "";
     if (req.query["searchBy"] === 'name') {
         dbQuery = { eventName: { $regex: `^${req.query["eventName"]}`, $options: "i" }, organizationID: orgID }
@@ -56,7 +77,7 @@ router.get("/search/", (req, res, next) => {
 });
 
 //GET events for which a client is signed up
-router.get("/client/:id", (req, res, next) => { 
+router.get("/client/:id", authUser,(req, res, next) => { 
     eventdata.find( 
         {organizationID: orgID, attendees: req.params.id }, 
         (error, data) => { 
@@ -70,7 +91,7 @@ router.get("/client/:id", (req, res, next) => {
 });
 
 //POST
-router.post("/", (req, res, next) => { 
+router.post("/", authUser,(req, res, next) => { 
     // add orgID from instance
     req.body.organizationID = orgID;
 
@@ -87,7 +108,7 @@ router.post("/", (req, res, next) => {
 });
 
 //PUT
-router.put("/:id", (req, res, next) => {
+router.put("/:id", authUser,(req, res, next) => {
     // always use orgID from instance
     req.body.organizationID = orgID;
 
@@ -105,7 +126,7 @@ router.put("/:id", (req, res, next) => {
 });
 
 //PUT add attendee to event
-router.put("/addAttendee/:id", (req, res, next) => {
+router.put("/addAttendee/:id", authUser,(req, res, next) => {
     //only add attendee if not yet signed up
     eventdata.find( 
         { _id: req.params.id, attendees: req.body.attendee, organizationID: orgID  }, 

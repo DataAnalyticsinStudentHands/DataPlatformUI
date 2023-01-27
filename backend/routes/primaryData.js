@@ -4,22 +4,12 @@ const jwt = require('jsonwebtoken');
 require("dotenv").config();
 //importing data model schemas
 let { primarydata } = require("../models/models"); 
-let { eventdata } = require("../models/models"); 
 const orgID = process.env.ORG_ID;
-
-
+//importing authUser function to secure routes
+const userAuthentication = require('../services/basicAuth');
+let authUser = userAuthentication.authUser;
 //GET all entries
-router.get("/", (req, res, next) => {
-    let token = req.headers.token;
-// let result = verifyToken(roken,data);
-
-    jwt.verify(token, 'secretkey', (err, decoded) => {
-        if (err) {
-            return res.status(401).json({
-            title: 'unauthorized'
-            })
-
-        }
+router.get("/",authUser,(req, res, next) => {
          //token is valid
         primarydata.find( {organizationID: orgID }, 
             (error, data) => {
@@ -30,11 +20,11 @@ router.get("/", (req, res, next) => {
                 }
             }
         ).sort({ 'updatedAt': -1 }).limit(10);
-    })
+    // })
 });
 
 //GET single entry by ID
-router.get("/id/:id", (req, res, next) => {
+router.get("/id/:id", authUser,(req, res, next) => {
     primarydata.find( { _id: req.params.id, organizationID: orgID}, 
         (error, data) => {
             if (error) {
@@ -48,7 +38,7 @@ router.get("/id/:id", (req, res, next) => {
 
 //GET entries based on search query
 //Ex: '...?firstName=Bob&lastName=&searchBy=name' 
-router.get("/search/", (req, res, next) => { 
+router.get("/search/", authUser,(req, res, next) => { 
     let dbQuery = "";
     if (req.query["searchBy"] === 'name') {
         dbQuery = { firstName: { $regex: `^${req.query["firstName"]}`, $options: "i" }, lastName: { $regex: `^${req.query["lastName"]}`, $options: "i" },organizationID: orgID}
@@ -70,7 +60,7 @@ router.get("/search/", (req, res, next) => {
 });
 
 //POST
-router.post("/", (req, res, next) => {
+router.post("/", authUser,(req, res, next) => {
     // always use orgID from instance
     req.body.organizationID = orgID;
     //only add primarydata if primaryPhone is not in system
@@ -116,7 +106,7 @@ router.post("/", (req, res, next) => {
 });
 
 //PUT update (make sure req body doesn't have the id)
-router.put("/:id", (req, res, next) => { 
+router.put("/:id", authUser,(req, res, next) => { 
     // always use orgID from instance
     req.body.organizationID = orgID;
     primarydata.findOneAndUpdate( 
@@ -133,7 +123,7 @@ router.put("/:id", (req, res, next) => {
 });
 
 //PUT soft delete  (make sure req body doesn't have the id)
-router.put("/delete/:id", (req, res, next) => { 
+router.put("/delete/:id", authUser,(req, res, next) => { 
     // always use orgID from instance
     let date = new Date();
     req.body.organizationID = orgID;

@@ -87,9 +87,7 @@ export default {
 
   data() {
     return {
-      organizationName: "",
-
-      showElement: false,
+      showElement: localStorage.getItem("token") !== null,
     };
   },
 
@@ -112,7 +110,6 @@ export default {
       this.showElement = true;
     },
   },
-
   created() {
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
 
