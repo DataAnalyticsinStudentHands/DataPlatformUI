@@ -11,6 +11,9 @@ let { userdata } = require("../models/models");
 const nodemailer = require("../services/nodemailer.config");
 const randomString = require('randomstring');
 const orgID = process.env.ORG_ID;
+//importing authUser function to secure routes
+const userAuthentication = require('../services/basicAuth');
+let authUser = userAuthentication.authUser;
 
 //POST
 router.post('/register',(req, res, next) => {
