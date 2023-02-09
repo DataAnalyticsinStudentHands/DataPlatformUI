@@ -154,9 +154,13 @@ export default {
           import.meta.env.VITE_ROOT_API +
           `/eventdata/search/?eventDate=${this.eventDate}&searchBy=date`;
       }
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
+      axios
+        .get(apiURL, {
+          headers: { token: localStorage.getItem("token") },
+        })
+        .then((resp) => {
+          this.queryData = resp.data;
+        });
     },
     clearSearch() {
       //Resets all the variables

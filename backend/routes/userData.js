@@ -107,7 +107,7 @@ router.post('/login', (req, res, next) => {
             })
         }
         //If all is good create a token and sent to frontend
-        let token = jwt.sign({userId: userdata._id, userRole: userdata.role}, 'secretkey', {expiresIn: "60sec"});
+        let token = jwt.sign({userId: userdata._id, userRole: userdata.role}, 'secretkey', {expiresIn: "10min"});
         return res.status(200).json({
             title: 'Login seccess',
             token: token,
@@ -165,9 +165,6 @@ router.put('/resetPassword', async (req, res, next) => {
     });
     const filter = {email: req.body.email};
     const update = {confirmationCode: key};
-    console.log(key)
-    console.log(filter)
-    console.log(update)
     const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
         returnOriginal: false
     });
@@ -194,10 +191,6 @@ router.put('/resetPasswordForm', async (req, res, next) => {
     const update = {password: newHashedPassword, 
                     confirmationCode: '',
                 };
-    console.log(req.body.newPassword)            
-    console.log(newHashedPassword)
-    console.log(filter)
-    console.log(update)
     const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
         returnOriginal: false
     });
@@ -211,7 +204,40 @@ router.put('/resetPasswordForm', async (req, res, next) => {
         title: ' seccess',
         error: 'Your password has been successfully reset.'
     })
-
-
+})
+//update password form route
+router.put('/updatePasswordForm', async (req, res, next) => {
+    const newHashedPassword = bcrypt.hashSync(req.body.newPassword, 10);
+    const oldPassword = req.body.code;
+    const token = req.headers.token;
+    console.log(token)
+    jwt.verify(token, 'secretkey', async (err, decoded) => {
+        if (err) return res.status(401).json({
+            title: 'unauthorized',
+            error: 'unauthorized'
+        })
+        //token is valid
+        const filter = {_id: decoded.userId};
+        userdata.findOne({_id: decoded.userId }, async (err, user) => {
+            if(err) return console.log(err)
+            if(!bcrypt.compareSync(oldPassword, user.password)){
+                return res.status(401).json({
+                    title: 'Old password false',
+                    error: 'The current passwrod does not match our records.'
+            })
+            }else{
+                let isPasswordUpdated = await userdata.updateOne(filter,{password: newHashedPassword})
+                if (isPasswordUpdated) {
+                    return res.status(200).json({
+                        title: ' seccess',
+                        error: 'Your password has been successfully updated.'
+                    })
+                }
+            }
+        })
+    })
 })
 module.exports = router;
+
+
+
