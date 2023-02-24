@@ -70,7 +70,12 @@
               class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
               role="alert"
             >
-              {{ error }}
+              {{ error
+              }}<a
+                class="font-medium text-primary-600 hover:underline dark:text-blue-500"
+                href="./login"
+                >{{ sendNewCodeLink }}</a
+              >
             </div>
           </div>
           <div
@@ -120,6 +125,7 @@ export default {
       error: "",
       success: "",
       loginLink: "",
+      sendNewCodeLink: "",
       toggle: "hide",
     };
   },
@@ -158,6 +164,7 @@ export default {
           (err) => {
             this.error = err.response.data.error;
             this.success = "";
+            this.sendNewCodeLink = " Send new Code?";
           }
         );
       }

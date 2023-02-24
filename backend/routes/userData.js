@@ -38,6 +38,7 @@ router.post('/register',(req, res, next) => {
         length: 6,
         charset: 'numeric'
     });
+    let date = new Date();
     const newUser = new userdata({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -48,6 +49,7 @@ router.post('/register',(req, res, next) => {
         //test
         role: "Basic",
         confirmationCode: key,
+        expiresAt: date.setMinutes(date.getMinutes() + 1),
     })
     userdata.create( 
         newUser, 
@@ -142,19 +144,41 @@ router.put('/verify', async (req, res, next) => {
     const update = {status: 'Active', 
                     confirmationCode: '',
                 };
-    const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
-        returnOriginal: false
-    });
-    if (!updateSuccsses) {
-        return res.status(401).json({
-            title: 'User not found.',
-            error: 'Invalid code.'
-        })
-    }
-    return res.status(200).json({
-        title: ' seccess',
-        error: 'The account has been successfully activated.'
+    userdata.findOne({confirmationCode: req.body.code }, async (err, user) => {
+            if (user.expiresAt <= new Date()) {
+                return res.status(401).json({
+                    title: 'Expired code',
+                    error: 'The code you entered has expired.'
+                })
+            }else{
+                const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
+                    returnOriginal: false
+                });
+                if (!updateSuccsses) {
+                    return res.status(401).json({
+                        title: 'User not found.',
+                        error: 'Invalid code.'
+                    })
+                }
+                return res.status(200).json({
+                    title: ' seccess',
+                    error: 'The account has been successfully activated.'
+                })
+            }
     })
+    // const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
+    //     returnOriginal: false
+    // });
+    // if (!updateSuccsses) {
+    //     return res.status(401).json({
+    //         title: 'User not found.',
+    //         error: 'Invalid code.'
+    //     })
+    // }
+    // return res.status(200).json({
+    //     title: ' seccess',
+    //     error: 'The account has been successfully activated.'
+    // })
     
 })
 //reset password route
@@ -163,8 +187,9 @@ router.put('/resetPassword', async (req, res, next) => {
         length: 6,
         charset: 'numeric'
     });
+    let date = new Date();
     const filter = {email: req.body.email};
-    const update = {confirmationCode: key};
+    const update = {confirmationCode: key, expiresAt: date.setMinutes(date.getMinutes() + 1)};
     const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
         returnOriginal: false
     });
@@ -191,18 +216,27 @@ router.put('/resetPasswordForm', async (req, res, next) => {
     const update = {password: newHashedPassword, 
                     confirmationCode: '',
                 };
-    const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
-        returnOriginal: false
-    });
-    if (!updateSuccsses) {
-        return res.status(401).json({
-            title: 'User not found.',
-            error: 'Invalid code.'
-        })
-    }
-    return res.status(200).json({
-        title: ' seccess',
-        error: 'Your password has been successfully reset.'
+    userdata.findOne({confirmationCode: req.body.code }, async (err, user) => {
+        if (!user) {
+            return res.status(401).json({
+                title: 'User not found.',
+                error: 'Invalid code.'
+            })
+        }else if (user.expiresAt <= new Date()) {
+            return res.status(401).json({
+                    title: 'Expired code',
+                    error: 'The code you entered has expired.'
+                    })
+        }
+        else{
+            const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
+                returnOriginal: false
+            });
+            return res.status(200).json({
+                title: ' seccess',
+                error: 'Your password has been successfully reset.'
+            })
+        }
     })
 })
 //update password form route
