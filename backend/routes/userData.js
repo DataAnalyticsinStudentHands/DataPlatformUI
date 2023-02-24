@@ -145,7 +145,13 @@ router.put('/verify', async (req, res, next) => {
                     confirmationCode: '',
                 };
     userdata.findOne({confirmationCode: req.body.code }, async (err, user) => {
-            if (user.expiresAt <= new Date()) {
+            if (!user) {
+                return res.status(401).json({
+                    title: 'User not found.',
+                    error: 'Invalid code.'
+                })
+            }
+            else if (user.expiresAt <= new Date()) {
                 return res.status(401).json({
                     title: 'Expired code',
                     error: 'The code you entered has expired.'
@@ -154,12 +160,6 @@ router.put('/verify', async (req, res, next) => {
                 const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
                     returnOriginal: false
                 });
-                if (!updateSuccsses) {
-                    return res.status(401).json({
-                        title: 'User not found.',
-                        error: 'Invalid code.'
-                    })
-                }
                 return res.status(200).json({
                     title: ' seccess',
                     error: 'The account has been successfully activated.'

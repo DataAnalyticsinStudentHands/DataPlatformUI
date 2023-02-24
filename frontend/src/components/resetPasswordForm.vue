@@ -64,7 +64,8 @@
           </div>
 
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+            id="errorDIV"
+            class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div
               class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
@@ -73,13 +74,13 @@
               {{ error
               }}<a
                 class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-                href="./login"
+                href="./resetPassword"
                 >{{ sendNewCodeLink }}</a
               >
             </div>
           </div>
           <div
-            id="myDIV"
+            id="successDIV"
             class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div
@@ -153,15 +154,20 @@ export default {
             if (res.status == 200) {
               // this.$router.push("/login");
               //removing the hide class from the success message div
-              var element = document.getElementById("myDIV");
+              var element = document.getElementById("successDIV");
               element.classList.remove("hide");
+              var selement = document.getElementById("errorDIV");
+              selement.classList.add("hide");
               //populating the success variables
               this.success = res.data.error;
               this.loginLink = " Login";
               this.error = "";
+              this.sendNewCodeLink = "";
             }
           },
           (err) => {
+            var element = document.getElementById("errorDIV");
+            element.classList.remove("hide");
             this.error = err.response.data.error;
             this.success = "";
             this.sendNewCodeLink = " Send new Code?";
