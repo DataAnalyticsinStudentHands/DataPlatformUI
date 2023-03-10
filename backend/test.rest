@@ -1,6 +1,0 @@
-GET http://localhost:3000/eventdata
-Content-Type: application/json
-
-{
-    "id": 1567
-}
