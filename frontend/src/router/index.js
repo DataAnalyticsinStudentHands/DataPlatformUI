@@ -81,6 +81,13 @@ const routes = [
         component: () => import('../components/updatePassword.vue')
         
     },
+    {
+        path: '/sendNewCode',
+        name: 'Send New Code',
+        props: true,
+        component: () => import('../components/sendNewCode.vue')
+        
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes

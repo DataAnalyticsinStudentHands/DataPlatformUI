@@ -34,7 +34,7 @@
               {{ error
               }}<a
                 class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-                href="./login"
+                href="./sendNewCode"
                 >{{ sendNewCodeLink }}</a
               >
             </div>

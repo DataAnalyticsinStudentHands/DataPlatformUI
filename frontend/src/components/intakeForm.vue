@@ -1,116 +1,3 @@
-<script>
-import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
-import axios from "axios";
-export default {
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
-  },
-  mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
-    this.queryData = [];
-    axios
-      .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
-      })
-      .then(
-        (resp) => {
-          this.queryData = resp.data;
-        },
-        (err) => {
-          if (err) {
-            this.$router.push("/login");
-          }
-        }
-      );
-    window.scrollTo(0, 0);
-  },
-  data() {
-    return {
-      client: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        email: "",
-        phoneNumbers: [
-          {
-            primaryPhone: "",
-            secondaryPhone: "",
-          },
-        ],
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
-        },
-      },
-    };
-  },
-  methods: {
-    async handleSubmitForm() {
-      // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate();
-      // If no errors found. isFormCorrect = True then the form is submitted
-      if (isFormCorrect) {
-        let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata`;
-        axios
-          .post(apiURL, this.client)
-          .then(() => {
-            alert("Client has been succesfully added.");
-            this.$router.push("/findclient");
-            this.client = {
-              firstName: "",
-              middleName: "",
-              lastName: "",
-              email: "",
-              phoneNumbers: [
-                {
-                  primaryPhone: "",
-                  seondaryPhone: "",
-                },
-              ],
-              address: {
-                line1: "",
-                line2: "",
-                city: "",
-                county: "",
-                zip: "",
-              },
-            };
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    },
-  },
-  // sets validations for the various data properties
-  validations() {
-    return {
-      client: {
-        firstName: { required, alpha },
-        lastName: { required, alpha },
-        email: { email },
-        address: {
-          city: { required },
-        },
-        phoneNumbers: [
-          {
-            primaryPhone: { required, numeric },
-          },
-        ],
-      },
-    };
-  },
-};
-</script>
 <template>
   <main>
     <h1
@@ -327,5 +214,133 @@ export default {
         </div>
       </form>
     </div>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+    >
+      <div
+        class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+        role="alert"
+      >
+        {{ error }}
+      </div>
+    </div>
   </main>
 </template>
+
+<script>
+import useVuelidate from "@vuelidate/core";
+import { required, email, alpha, numeric } from "@vuelidate/validators";
+import axios from "axios";
+export default {
+  created() {
+    if (localStorage.getItem("token") === null) {
+      this.$router.push("/login");
+    }
+  },
+  setup() {
+    return { v$: useVuelidate({ $autoDirty: true }) };
+  },
+  mounted() {
+    let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
+    this.queryData = [];
+    axios
+      .get(apiURL, {
+        headers: { token: localStorage.getItem("token") },
+      })
+      .then(
+        (resp) => {
+          this.queryData = resp.data;
+        },
+        (err) => {
+          if (err) {
+            this.$router.push("/login");
+          }
+        }
+      );
+    window.scrollTo(0, 0);
+  },
+  data() {
+    return {
+      client: {
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        email: "",
+        phoneNumbers: [
+          {
+            primaryPhone: "",
+            secondaryPhone: "",
+          },
+        ],
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
+      },
+      error: "",
+    };
+  },
+  methods: {
+    async handleSubmitForm() {
+      // Checks to see if there are any errors in validation
+      const isFormCorrect = await this.v$.$validate();
+      // If no errors found. isFormCorrect = True then the form is submitted
+      if (isFormCorrect) {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
+        axios
+          .post(apiURL, this.client, {
+            headers: { token: localStorage.getItem("token") },
+          })
+          .then(() => {
+            alert("Client has been succesfully added.");
+            this.$router.push("/findclient");
+            this.client = {
+              firstName: "",
+              middleName: "",
+              lastName: "",
+              email: "",
+              phoneNumbers: [
+                {
+                  primaryPhone: "",
+                  seondaryPhone: "",
+                },
+              ],
+              address: {
+                line1: "",
+                line2: "",
+                city: "",
+                county: "",
+                zip: "",
+              },
+            };
+          })
+          .catch((error) => {
+            this.error = error.response.data.error;
+            console.log(error);
+          });
+      }
+    },
+  },
+  // sets validations for the various data properties
+  validations() {
+    return {
+      client: {
+        firstName: { required, alpha },
+        lastName: { required, alpha },
+        email: { email },
+        address: {
+          city: { required },
+        },
+        phoneNumbers: [
+          {
+            primaryPhone: { required, numeric },
+          },
+        ],
+      },
+    };
+  },
+};
+</script>
