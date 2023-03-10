@@ -178,6 +178,9 @@ let userDataSchema = new Schema({
         type: String,
         unique: true
     },
+    expiresAt: { 
+        type: Date, 
+        required: true }
 }, {
     collection: 'userData',
     timestamps: true

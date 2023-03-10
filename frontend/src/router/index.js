@@ -74,7 +74,13 @@ const routes = [
         component: () => import('../components/resetPasswordForm.vue')
         
     },
-    
+    {
+        path: '/updatePasswordForm',
+        name: 'Password Update Form',
+        props: true,
+        component: () => import('../components/updatePassword.vue')
+        
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes

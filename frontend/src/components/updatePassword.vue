@@ -12,14 +12,14 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">Code</label>
+              <label for="email" class="block">Current Password</label>
               <input
                 v-model="code"
-                type="text"
+                type="password"
                 name="secretToken"
                 id="secretToken"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="Code"
+                placeholder="••••••••"
               />
             </div>
           </div>
@@ -64,35 +64,24 @@
           </div>
 
           <div
-            id="errorDIV"
-            class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div
               class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
               role="alert"
             >
-              {{ error
-              }}<a
-                class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-                href="./resetPassword"
-                >{{ sendNewCodeLink }}</a
-              >
+              {{ error }}
             </div>
           </div>
           <div
-            id="successDIV"
+            id="myDIV"
             class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div
               class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4"
               role="alert"
             >
-              {{ success
-              }}<a
-                class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-                href="./login"
-                >{{ loginLink }}</a
-              >
+              {{ success }}
             </div>
           </div>
           <button
@@ -126,7 +115,6 @@ export default {
       error: "",
       success: "",
       loginLink: "",
-      sendNewCodeLink: "",
       toggle: "hide",
     };
   },
@@ -148,31 +136,29 @@ export default {
           error: this.error,
         };
         let apiURL =
-          import.meta.env.VITE_ROOT_API + `/userdata/resetPasswordForm`;
-        axios.put(apiURL, user).then(
-          (res) => {
-            if (res.status == 200) {
-              // this.$router.push("/login");
-              //removing the hide class from the success message div
-              var element = document.getElementById("successDIV");
-              element.classList.remove("hide");
-              var selement = document.getElementById("errorDIV");
-              selement.classList.add("hide");
-              //populating the success variables
-              this.success = res.data.error;
-              this.loginLink = " Login";
-              this.error = "";
-              this.sendNewCodeLink = "";
+          import.meta.env.VITE_ROOT_API + `/userdata/updatePasswordForm`;
+        axios
+          .put(apiURL, user, {
+            headers: { token: localStorage.getItem("token") },
+          })
+          .then(
+            (res) => {
+              if (res.status == 200) {
+                // this.$router.push("/login");
+                //removing the hide class from the success message div
+                var element = document.getElementById("myDIV");
+                element.classList.remove("hide");
+                //populating the success variables
+                this.success = res.data.error;
+                this.loginLink = " Login";
+                this.error = "";
+              }
+            },
+            (err) => {
+              this.error = err.response.data.error;
+              this.success = "";
             }
-          },
-          (err) => {
-            var element = document.getElementById("errorDIV");
-            element.classList.remove("hide");
-            this.error = err.response.data.error;
-            this.success = "";
-            this.sendNewCodeLink = " Send new Code?";
-          }
-        );
+          );
       }
     },
   },

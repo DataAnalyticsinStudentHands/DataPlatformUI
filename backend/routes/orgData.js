@@ -10,7 +10,7 @@ let authUser = userAuthentication.authUser;
 
 
 //GET instance name
-router.get("/", authUser,(req, res, next) => { 
+router.get("/",(req, res, next) => { 
     orgdata.findOne({ _id: process.env.ORG_ID }, (error, data) => {
         if (error) {
             return next(error)

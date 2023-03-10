@@ -58,6 +58,11 @@
               </router-link>
             </li>
             <li>
+              <router-link to="/updatePasswordForm">
+                Update Password
+              </router-link>
+            </li>
+            <li>
               <span style="position: relative; top: 6px" class="material-icons"
                 >logout</span
               ><button @click="logout">Logout</button>
@@ -84,42 +89,34 @@
 import axios from "axios";
 export default {
   name: "App",
-
   data() {
     return {
       showElement: localStorage.getItem("token") !== null,
+      organizationName: "",
     };
   },
-
   methods: {
-    // isUserLoggedIn() {
-
-    //   this.showElement = true;
-
-    // },
-
     logout() {
       localStorage.clear();
-
       this.showElement = false;
-
       this.$router.push("/login");
     },
-
     showDashboard() {
       this.showElement = true;
     },
   },
   created() {
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-
-    axios.get(apiURL).then((resp) => {
-      this.organizationName = resp.data;
-    });
+    axios
+      .get(apiURL, {
+        headers: { token: localStorage.getItem("token") },
+      })
+      .then((resp) => {
+        this.organizationName = resp.data;
+      });
   },
 };
 </script>
-
 <style>
 #_container {
   background-color: #c8102e;

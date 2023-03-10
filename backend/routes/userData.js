@@ -11,6 +11,9 @@ let { userdata } = require("../models/models");
 const nodemailer = require("../services/nodemailer.config");
 const randomString = require('randomstring');
 const orgID = process.env.ORG_ID;
+//importing authUser function to secure routes
+const userAuthentication = require('../services/basicAuth');
+let authUser = userAuthentication.authUser;
 
 //POST
 router.post('/register',(req, res, next) => {
@@ -35,6 +38,7 @@ router.post('/register',(req, res, next) => {
         length: 6,
         charset: 'numeric'
     });
+    let date = new Date();
     const newUser = new userdata({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -45,6 +49,7 @@ router.post('/register',(req, res, next) => {
         //test
         role: "Basic",
         confirmationCode: key,
+        expiresAt: date.setMinutes(date.getMinutes() + 1),
     })
     userdata.create( 
         newUser, 
@@ -104,7 +109,7 @@ router.post('/login', (req, res, next) => {
             })
         }
         //If all is good create a token and sent to frontend
-        let token = jwt.sign({userId: userdata._id, userRole: userdata.role}, 'secretkey', {expiresIn: "60sec"});
+        let token = jwt.sign({userId: userdata._id, userRole: userdata.role}, 'secretkey', {expiresIn: "10min"});
         return res.status(200).json({
             title: 'Login seccess',
             token: token,
@@ -139,19 +144,41 @@ router.put('/verify', async (req, res, next) => {
     const update = {status: 'Active', 
                     confirmationCode: '',
                 };
-    const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
-        returnOriginal: false
-    });
-    if (!updateSuccsses) {
-        return res.status(401).json({
-            title: 'User not found.',
-            error: 'Invalid code.'
-        })
-    }
-    return res.status(200).json({
-        title: ' seccess',
-        error: 'The account has been successfully activated.'
+    userdata.findOne({confirmationCode: req.body.code }, async (err, user) => {
+            if (!user) {
+                return res.status(401).json({
+                    title: 'User not found.',
+                    error: 'Invalid code.'
+                })
+            }
+            else if (user.expiresAt <= new Date()) {
+                return res.status(401).json({
+                    title: 'Expired code',
+                    error: 'The code you entered has expired.'
+                })
+            }else{
+                const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
+                    returnOriginal: false
+                });
+                return res.status(200).json({
+                    title: ' seccess',
+                    error: 'The account has been successfully activated.'
+                })
+            }
     })
+    // const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
+    //     returnOriginal: false
+    // });
+    // if (!updateSuccsses) {
+    //     return res.status(401).json({
+    //         title: 'User not found.',
+    //         error: 'Invalid code.'
+    //     })
+    // }
+    // return res.status(200).json({
+    //     title: ' seccess',
+    //     error: 'The account has been successfully activated.'
+    // })
     
 })
 //reset password route
@@ -160,11 +187,9 @@ router.put('/resetPassword', async (req, res, next) => {
         length: 6,
         charset: 'numeric'
     });
+    let date = new Date();
     const filter = {email: req.body.email};
-    const update = {confirmationCode: key};
-    console.log(key)
-    console.log(filter)
-    console.log(update)
+    const update = {confirmationCode: key, expiresAt: date.setMinutes(date.getMinutes() + 1)};
     const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
         returnOriginal: false
     });
@@ -191,24 +216,62 @@ router.put('/resetPasswordForm', async (req, res, next) => {
     const update = {password: newHashedPassword, 
                     confirmationCode: '',
                 };
-    console.log(req.body.newPassword)            
-    console.log(newHashedPassword)
-    console.log(filter)
-    console.log(update)
-    const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
-        returnOriginal: false
-    });
-    if (!updateSuccsses) {
-        return res.status(401).json({
-            title: 'User not found.',
-            error: 'Invalid code.'
-        })
-    }
-    return res.status(200).json({
-        title: ' seccess',
-        error: 'Your password has been successfully reset.'
+    userdata.findOne({confirmationCode: req.body.code }, async (err, user) => {
+        if (!user) {
+            return res.status(401).json({
+                title: 'User not found.',
+                error: 'Invalid code.'
+            })
+        }else if (user.expiresAt <= new Date()) {
+            return res.status(401).json({
+                    title: 'Expired code',
+                    error: 'The code you entered has expired.'
+                    })
+        }
+        else{
+            const updateSuccsses = await userdata.findOneAndUpdate(filter, update, {
+                returnOriginal: false
+            });
+            return res.status(200).json({
+                title: ' seccess',
+                error: 'Your password has been successfully reset.'
+            })
+        }
     })
-
-
+})
+//update password form route
+router.put('/updatePasswordForm', async (req, res, next) => {
+    const newHashedPassword = bcrypt.hashSync(req.body.newPassword, 10);
+    const oldPassword = req.body.code;
+    const token = req.headers.token;
+    console.log(token)
+    jwt.verify(token, 'secretkey', async (err, decoded) => {
+        if (err) return res.status(401).json({
+            title: 'unauthorized',
+            error: 'unauthorized'
+        })
+        //token is valid
+        const filter = {_id: decoded.userId};
+        userdata.findOne({_id: decoded.userId }, async (err, user) => {
+            if(err) return console.log(err)
+            if(!bcrypt.compareSync(oldPassword, user.password)){
+                return res.status(401).json({
+                    title: 'Old password false',
+                    error: 'The current passwrod does not match our records.'
+            })
+            }else{
+                let isPasswordUpdated = await userdata.updateOne(filter,{password: newHashedPassword})
+                if (isPasswordUpdated) {
+                    return res.status(200).json({
+                        title: ' seccess',
+                        error: 'Your password has been successfully updated.'
+                    })
+                }
+            }
+        })
+    })
 })
 module.exports = router;
+
+
+

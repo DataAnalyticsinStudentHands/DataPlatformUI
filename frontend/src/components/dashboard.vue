@@ -34,7 +34,6 @@ export default {
         (res) => {
           this.firstName = res.data.user.firstName;
           this.lastName = res.data.user.lastName;
-          console.log(res);
         },
         (err) => {
           if (err) {
