@@ -102,16 +102,15 @@
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers[0].primaryPhone"
+                v-model="client.phoneNumbers.primaryPhone"
               />
               <span
                 class="text-black"
-                v-if="v$.client.phoneNumbers[0].primaryPhone.$error"
+                v-if="v$.client.phoneNumbers.primaryPhone.$error"
               >
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumbers[0].primaryPhone
-                    .$errors"
+                  v-for="error of v$.client.phoneNumbers.primaryPhone.$errors"
                   :key="error.$uid"
                 >
                   {{ error.$message }}!
@@ -127,7 +126,7 @@
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers[0].secondaryPhone"
+                v-model="client.phoneNumbers.secondaryPhone"
               />
             </label>
           </div>
@@ -214,9 +213,7 @@
         </div>
       </form>
     </div>
-    <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-    >
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-x-6 gap-y-10 px-10">
       <div
         class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
         role="alert"
@@ -266,12 +263,10 @@ export default {
         middleName: "",
         lastName: "",
         email: "",
-        phoneNumbers: [
-          {
-            primaryPhone: "",
-            secondaryPhone: "",
-          },
-        ],
+        phoneNumbers: {
+          primaryPhone: "",
+          secondaryPhone: "",
+        },
         address: {
           line1: "",
           line2: "",
@@ -302,12 +297,10 @@ export default {
               middleName: "",
               lastName: "",
               email: "",
-              phoneNumbers: [
-                {
-                  primaryPhone: "",
-                  seondaryPhone: "",
-                },
-              ],
+              phoneNumbers: {
+                primaryPhone: "",
+                secondaryPhone: "",
+              },
               address: {
                 line1: "",
                 line2: "",
@@ -334,11 +327,9 @@ export default {
         address: {
           city: { required },
         },
-        phoneNumbers: [
-          {
-            primaryPhone: { required, numeric },
-          },
-        ],
+        phoneNumbers: {
+          primaryPhone: { required, numeric },
+        },
       },
     };
   },

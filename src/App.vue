@@ -59,6 +59,11 @@
             </li>
             <li>
               <router-link to="/updatePasswordForm">
+                <span
+                  style="position: relative; top: 6px"
+                  class="material-icons"
+                  >settings</span
+                >
                 Update Password
               </router-link>
             </li>

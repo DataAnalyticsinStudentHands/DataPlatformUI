@@ -53,7 +53,10 @@ export default {
     axios
       .get(
         import.meta.env.VITE_ROOT_API +
-          `/primarydata/id/${this.$route.params.id}`
+          `/primarydata/id/${this.$route.params.id}`,
+        {
+          headers: { token: localStorage.getItem("token") },
+        }
       )
       .then((resp) => {
         let data = resp.data[0];
@@ -74,7 +77,10 @@ export default {
     axios
       .get(
         import.meta.env.VITE_ROOT_API +
-          `/eventdata/client/${this.$route.params.id}`
+          `/eventdata/client/${this.$route.params.id}`,
+        {
+          headers: { token: localStorage.getItem("token") },
+        }
       )
       .then((resp) => {
         let data = resp.data;
@@ -85,16 +91,20 @@ export default {
           });
         });
       });
-    axios.get(import.meta.env.VITE_ROOT_API + `/eventdata`).then((resp) => {
-      let data = resp.data;
-      for (let i = 0; i < data.length; i++) {
-        this.eventData.push({
-          eventName: data[i].eventName,
-          _id: data[i]._id,
-          attendees: data[i].attendees,
-        });
-      }
-    });
+    axios
+      .get(import.meta.env.VITE_ROOT_API + `/eventdata`, {
+        headers: { token: localStorage.getItem("token") },
+      })
+      .then((resp) => {
+        let data = resp.data;
+        for (let i = 0; i < data.length; i++) {
+          this.eventData.push({
+            eventName: data[i].eventName,
+            _id: data[i]._id,
+            attendees: data[i].attendees,
+          });
+        }
+      });
   },
   methods: {
     formattedDate(datetimeDB) {
@@ -102,34 +112,46 @@ export default {
     },
     handleClientUpdate() {
       let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/${this.id}`;
-      axios.put(apiURL, this.client).then(() => {
-        alert("Update has been saved.");
-        this.$router.back().catch((error) => {
-          console.log(error);
+      axios
+        .put(apiURL, this.client, {
+          headers: { token: localStorage.getItem("token") },
+        })
+        .then(() => {
+          alert("Update has been saved.");
+          this.$router.back().catch((error) => {
+            console.log(error);
+          });
         });
-      });
     },
     addToEvent() {
       this.eventsChosen.forEach((event) => {
         let apiURL =
           import.meta.env.VITE_ROOT_API + `/eventdata/addAttendee/` + event._id;
-        axios.put(apiURL, { attendee: this.$route.params.id }).then(() => {
-          this.clientEvents = [];
-          axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/eventdata/client/${this.$route.params.id}`
-            )
-            .then((resp) => {
-              let data = resp.data;
-              for (let i = 0; i < data.length; i++) {
-                this.clientEvents.push({
-                  eventName: data[i].eventName,
-                  eventDate: data[i].date
-                });
-              }
-            });
-        });
+        axios
+          .put(
+            apiURL,
+            { attendee: this.$route.params.id },
+            {
+              headers: { token: localStorage.getItem("token") },
+            }
+          )
+          .then(() => {
+            this.clientEvents = [];
+            axios
+              .get(
+                import.meta.env.VITE_ROOT_API +
+                  `/eventdata/client/${this.$route.params.id}`
+              )
+              .then((resp) => {
+                let data = resp.data;
+                for (let i = 0; i < data.length; i++) {
+                  this.clientEvents.push({
+                    eventName: data[i].eventName,
+                    eventDate: data[i].date,
+                  });
+                }
+              });
+          });
       });
     },
   },
@@ -151,18 +173,24 @@ export default {
 </script>
 <template>
   <main>
-    <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Update Client</h1>
+    <h1
+      class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+    >
+      Update Client
+    </h1>
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
         <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Personal Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">First Name</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -174,7 +202,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.firstName.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -196,7 +226,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Last Name</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -208,7 +238,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.lastName.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -228,7 +260,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.email.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -236,19 +270,25 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Phone Number</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
                 v-model="client.phoneNumbers[0].primaryPhone"
               />
-              <span class="text-black" v-if="v$.client.phoneNumbers[0].primaryPhone.$error">
+              <span
+                class="text-black"
+                v-if="v$.client.phoneNumbers[0].primaryPhone.$error"
+              >
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumbers[0].primaryPhone.$errors"
+                  v-for="error of v$.client.phoneNumbers[0].primaryPhone
+                    .$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -267,7 +307,9 @@ export default {
         </div>
 
         <!-- grid container -->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Address Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
@@ -295,7 +337,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">City</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -330,27 +372,35 @@ export default {
         </div>
 
         <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <div class="flex justify-between mt-10 mr-20">
             <button
               @click="handleClientUpdate"
               type="submit"
               class="bg-red-700 text-white rounded"
-            >Update Client</button>
+            >
+              Update Client
+            </button>
           </div>
           <div class="flex justify-between mt-10 mr-20">
             <button
               type="reset"
               class="border border-red-700 bg-white text-red-700 rounded"
               @click="$router.go(-1)"
-            >Go back</button>
+            >
+              Go back
+            </button>
           </div>
         </div>
 
         <hr class="mt-10 mb-10" />
 
         <!-- Client Event Information -->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Events for Client</h2>
 
           <div class="flex flex-col col-span-2">
@@ -364,7 +414,9 @@ export default {
               <tbody class="divide-y divide-gray-300">
                 <tr v-for="event in clientEvents" :key="event._id">
                   <td class="p-2 text-left">{{ event.eventName }}</td>
-                  <td class="p-2 text-left">{{ formattedDate(event.eventDate) }}</td>
+                  <td class="p-2 text-left">
+                    {{ formattedDate(event.eventDate) }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -384,7 +436,9 @@ export default {
                 @click="addToEvent"
                 type="submit"
                 class="mt-5 bg-red-700 text-white rounded"
-              >Add Client to Events</button>
+              >
+                Add Client to Events
+              </button>
             </div>
           </div>
         </div>
