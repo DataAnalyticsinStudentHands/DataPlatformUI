@@ -1,18 +1,19 @@
-# Data Platform Project Setup
+# Data Platform Frontend
 
-Requirements:
-
-This project uses NodeJS and MongoDB.
-
-## Backend Node Application
+This project uses [VueJS 3](https://vuejs.org/) with [Vite](https://vitejs.dev/) and [TailwindCSS](https://tailwindcss.com/).
+For form validation [Vuelidate](https://vuelidate-next.netlify.app/) is used.
+## Project setup
 ```
-cd backend
+npm install
 ```
-Follow instructions in backend README
 
-## Frontend Vue 3 Application
-```
-cd frontend
-```
-Follow instructions in frontend README
+### Before Startup 
+Setup a .env file with following variables, e.g.:
 
+```
+VITE_ROOT_API=http://localhost:3000
+```
+### Compiles and hot-reloads for development
+```
+npm run dev
+```
