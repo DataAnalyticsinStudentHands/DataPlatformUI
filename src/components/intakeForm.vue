@@ -1,23 +1,117 @@
+
+<script>
+
+import useVuelidate from "@vuelidate/core";
+import { required, email, alpha, numeric } from "@vuelidate/validators";
+import axios from "axios";
+export default {
+  created() {
+    if (localStorage.getItem("token") === null) {
+      this.$router.push("/login");
+    }
+  },
+  setup() {
+    return { v$: useVuelidate({ $autoDirty: true }) };
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+  },
+  data() {
+    return {
+      client: {
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        email: "",
+        phoneNumbers: [
+          {
+            primaryPhone: "",
+            secondaryPhone: "",
+          },
+        ],
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
+      },
+    };
+  },
+  methods: {
+    async handleSubmitForm() {
+      // Checks to see if there are any errors in validation
+      const isFormCorrect = await this.v$.$validate();
+      // If no errors found. isFormCorrect = True then the form is submitted
+      if (isFormCorrect) {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata`;
+        axios
+          .post(apiURL, this.client)
+          .then(() => {
+            alert("Client has been succesfully added.");
+            this.$router.push("/findclient");
+            this.client = {
+              firstName: "",
+              middleName: "",
+              lastName: "",
+              email: "",
+              phoneNumbers: [
+                {
+                  primaryPhone: "",
+                  seondaryPhone: "",
+                },
+              ],
+              address: {
+                line1: "",
+                line2: "",
+                city: "",
+                county: "",
+                zip: "",
+              },
+            };
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+  },
+  // sets validations for the various data properties
+  validations() {
+    return {
+      client: {
+        firstName: { required, alpha },
+        lastName: { required, alpha },
+        email: { email },
+        address: {
+          city: { required },
+        },
+        phoneNumbers: [
+          {
+            primaryPhone: { required, numeric },
+          },
+        ],
+      },
+    };
+  },
+};
+</script>
 <template>
   <main>
-    <h1
-      class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
-    >
-      Client Intake Form
-    </h1>
+    <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Client Intake Form</h1>
+
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
         <!-- grid container -->
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-        >
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <h2 class="text-2xl font-bold">Personal Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">First Name</span>
-              <span style="color: #ff0000">*</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -28,9 +122,7 @@
                   class="text-red-700"
                   v-for="error of v$.client.firstName.$errors"
                   :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
+                >{{ error.$message }}!</p>
               </span>
             </label>
           </div>
@@ -52,7 +144,7 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Last Name</span>
-              <span style="color: #ff0000">*</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -64,9 +156,7 @@
                   class="text-red-700"
                   v-for="error of v$.client.lastName.$errors"
                   :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
+                >{{ error.$message }}!</p>
               </span>
             </label>
           </div>
@@ -87,9 +177,7 @@
                   class="text-red-700"
                   v-for="error of v$.client.email.$errors"
                   :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
+                >{{ error.$message }}!</p>
               </span>
             </label>
           </div>
@@ -97,24 +185,19 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Phone Number</span>
-              <span style="color: #ff0000">*</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers.primaryPhone"
+                v-model="client.phoneNumbers[0].primaryPhone"
               />
-              <span
-                class="text-black"
-                v-if="v$.client.phoneNumbers.primaryPhone.$error"
-              >
+              <span class="text-black" v-if="v$.client.phoneNumbers[0].primaryPhone.$error">
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumbers.primaryPhone.$errors"
+                  v-for="error of v$.client.phoneNumbers[0].primaryPhone.$errors"
                   :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
+                >{{ error.$message }}!</p>
               </span>
             </label>
           </div>
@@ -126,16 +209,14 @@
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers.secondaryPhone"
+                v-model="client.phoneNumbers[0].secondaryPhone"
               />
             </label>
           </div>
         </div>
 
         <!-- grid container -->
-        <div
-          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-        >
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <h2 class="text-2xl font-bold">Address Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
@@ -163,7 +244,7 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">City</span>
-              <span style="color: #ff0000">*</span>
+              <span style="color:#ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -174,9 +255,7 @@
                   class="text-red-700"
                   v-for="error of v$.client.address.$errors"
                   :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
+                >{{ error.$message }}!</p>
               </span>
             </label>
           </div>
@@ -206,132 +285,11 @@
           <div></div>
           <!-- submit button -->
           <div class="flex justify-between mt-10 mr-20">
-            <button class="bg-red-700 text-white rounded" type="submit">
-              Add Client
-            </button>
+            <button class="bg-red-700 text-white rounded" type="submit">Add Client</button>
           </div>
         </div>
       </form>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-x-6 gap-y-10 px-10">
-      <div
-        class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
-        role="alert"
-      >
-        {{ error }}
-      </div>
-    </div>
   </main>
 </template>
 
-<script>
-import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
-import axios from "axios";
-export default {
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
-  },
-  mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
-    this.queryData = [];
-    axios
-      .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
-      })
-      .then(
-        (resp) => {
-          this.queryData = resp.data;
-        },
-        (err) => {
-          if (err) {
-            this.$router.push("/login");
-          }
-        }
-      );
-    window.scrollTo(0, 0);
-  },
-  data() {
-    return {
-      client: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        email: "",
-        phoneNumbers: {
-          primaryPhone: "",
-          secondaryPhone: "",
-        },
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
-        },
-      },
-      error: "",
-    };
-  },
-  methods: {
-    async handleSubmitForm() {
-      // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate();
-      // If no errors found. isFormCorrect = True then the form is submitted
-      if (isFormCorrect) {
-        let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
-        axios
-          .post(apiURL, this.client, {
-            headers: { token: localStorage.getItem("token") },
-          })
-          .then(() => {
-            alert("Client has been succesfully added.");
-            this.$router.push("/findclient");
-            this.client = {
-              firstName: "",
-              middleName: "",
-              lastName: "",
-              email: "",
-              phoneNumbers: {
-                primaryPhone: "",
-                secondaryPhone: "",
-              },
-              address: {
-                line1: "",
-                line2: "",
-                city: "",
-                county: "",
-                zip: "",
-              },
-            };
-          })
-          .catch((error) => {
-            this.error = error.response.data.error;
-            console.log(error);
-          });
-      }
-    },
-  },
-  // sets validations for the various data properties
-  validations() {
-    return {
-      client: {
-        firstName: { required, alpha },
-        lastName: { required, alpha },
-        email: { email },
-        address: {
-          city: { required },
-        },
-        phoneNumbers: {
-          primaryPhone: { required, numeric },
-        },
-      },
-    };
-  },
-};
-</script>

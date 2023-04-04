@@ -91,6 +91,7 @@
 </template>
 
 <script>
+
 import axios from "axios";
 export default {
   name: "App",
@@ -112,6 +113,7 @@ export default {
   },
   created() {
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
+
     axios
       .get(apiURL, {
         headers: { token: localStorage.getItem("token") },
@@ -129,3 +131,4 @@ export default {
   padding: 18px;
 }
 </style>
+
