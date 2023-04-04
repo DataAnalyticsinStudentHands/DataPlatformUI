@@ -1,3 +1,4 @@
+
 <script>
 
 import useVuelidate from "@vuelidate/core";
@@ -99,6 +100,7 @@ export default {
 <template>
   <main>
     <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Client Intake Form</h1>
+
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
@@ -290,3 +292,4 @@ export default {
     </div>
   </main>
 </template>
+

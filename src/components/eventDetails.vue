@@ -282,7 +282,9 @@ export default {
     axios
       .get(
         import.meta.env.VITE_ROOT_API + `/eventdata/id/${this.$route.params.id}`
-      )
+        , {
+          headers: { token: localStorage.getItem("token") },
+        })
       .then((resp) => {
         let data = resp.data[0];
         this.event.eventName = data.eventName;
@@ -296,7 +298,9 @@ export default {
             .get(
               import.meta.env.VITE_ROOT_API +
                 `/primarydata/id/${this.attendeeIDs[i]}`
-            )
+                , {
+          headers: { token: localStorage.getItem("token") },
+        })
             .then((resp) => {
               let data = resp.data[0];
               this.attendeeData.push({
@@ -314,7 +318,9 @@ export default {
     handleEventUpdate() {
       this.event.services = this.checkedServices;
       let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/${this.id}`;
-      axios.put(apiURL, this.event).then(() => {
+      axios.put(apiURL, this.event, {
+          headers: { token: localStorage.getItem("token") },
+        }).then(() => {
         alert("Update has been saved.");
         this.$router.back().catch((error) => {
           console.log(error);

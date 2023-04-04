@@ -35,7 +35,6 @@
 <script>
 import { DateTime } from "luxon";
 import axios from "axios";
-
 export default {
   data() {
     return {
