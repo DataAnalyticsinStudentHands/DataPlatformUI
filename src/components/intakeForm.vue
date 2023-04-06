@@ -5,6 +5,16 @@
     >
       Client Intake Form
     </h1>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 px-10"
+    >
+      <div
+        class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+        role="alert"
+      >
+        {{ error }}
+      </div>
+    </div>
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
@@ -204,7 +214,56 @@
               />
             </label>
           </div>
+
           <div></div>
+        </div>
+        <div
+          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
+          <h2 class="text-2xl font-bold">Date of Birth</h2>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Month</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="client.birthday.month"
+              />
+              <span class="text-black" v-if="v$.client.firstName.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.client.firstName.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}!
+                </p>
+              </span>
+            </label>
+          </div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Day</span>
+              <input
+                type="text"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="client.birthday.day"
+              />
+              <span class="text-black" v-if="v$.client.firstName.$error">
+                <p
+                  class="text-red-700"
+                  v-for="error of v$.client.firstName.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}!
+                </p>
+              </span>
+            </label>
+          </div>
+
+          <div></div>
+
           <!-- submit button -->
           <div class="flex justify-between mt-10 mr-20">
             <button class="bg-red-700 text-white rounded" type="submit">
@@ -214,21 +273,10 @@
         </div>
       </form>
     </div>
-    <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-    >
-      <div
-        class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
-        role="alert"
-      >
-        {{ error }}
-      </div>
-    </div>
   </main>
 </template>
 
 <script>
-
 import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
@@ -280,6 +328,10 @@ export default {
           county: "",
           zip: "",
         },
+        birthday: {
+          month: "",
+          day: "",
+        },
       },
       error: "",
     };
@@ -292,7 +344,7 @@ export default {
       if (isFormCorrect) {
         let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata`;
         axios
-          .post(apiURL, this.client,{
+          .post(apiURL, this.client, {
             headers: { token: localStorage.getItem("token") },
           })
           .then(() => {
@@ -334,6 +386,10 @@ export default {
         email: { email },
         address: {
           city: { required },
+        },
+        birthday: {
+          month: {required},
+          day: {required}
         },
         phoneNumbers: [
           {
