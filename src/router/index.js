@@ -88,6 +88,13 @@ const routes = [
         component: () => import('../components/sendNewCode.vue')
         
     },
+    {
+        path: '/secondaryData/:id',
+        name: 'Secondary Data',
+        props: true,
+        component: () => import('../components/secondaryData.vue')
+        
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes
