@@ -131,9 +131,9 @@ const routes = [
       component: () => import('../components/adminSpecificSemester.vue')
     },
     {
-      path: '/adminExperiencesActivities',
-      name: 'adminExperiencesActivities',
-      component: () => import('../components/adminExperiencesActivities.vue')
+      path: '/adminExperiences',
+      name: 'adminExperiences',
+      component: () => import('../components/adminExperiences.vue')
     },
     {
       path: '/adminAddExperience',
@@ -166,9 +166,9 @@ const routes = [
       component: () => import('../components/adminInactiveStudents.vue')
     },
     {
-      path: '/adminInactiveExperiencesActivities',
-      name: 'adminInactiveExperiencesActivities',
-      component: () => import('../components/adminInactiveExperiencesActivities.vue')
+      path: '/adminInactiveSemestersExperiencesActivities',
+      name: 'adminInactiveSemestersExperiencesActivities',
+      component: () => import('../components/adminInactiveSemestersExperiencesActivities.vue')
     }
 ]
 const router = createRouter({

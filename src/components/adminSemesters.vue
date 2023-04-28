@@ -14,13 +14,13 @@
                   <router-link class="nav-link text-primary" to="/adminStudentsList">Students</router-link>
                 </th>
                 <th class="nav-item" style="padding: 30px;">
-                  <router-link class="nav-link text-primary" to="/adminExperiencesActivities">Semesters, Experiences, and Activities</router-link>
+                  <router-link class="nav-link text-primary" to="/adminSemesters">Semesters, Experiences, and Activities</router-link>
                 </th>
                 <th class="nav-item" style="padding: 30px;">
                   <router-link class="nav-link text-primary" to="/adminInactiveStudents">Inactive Students</router-link>
                 </th>
                 <th class="nav-item" style="padding: 30px;">
-                  <router-link class="nav-link text-primary" to="/adminInactiveExperiencesActivities">Inactive Semesters, Experiences, and Activities</router-link>
+                  <router-link class="nav-link text-primary" to="/adminInactiveSemestersExperiencesActivities">Inactive Semesters, Experiences, and Activities</router-link>
                 </th>
                 <th class="nav-item" style="padding: 30px;">
                   <router-link class="nav-link" to="" @click="handleLogout">Logout</router-link>
@@ -33,7 +33,7 @@
             <router-view></router-view>
         </div>
         <center>
-          <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"> <router-link class="" to="/adminSemesters">Semesters</router-link> | <router-link class="" to="/adminExperiencesActivities">Experiences</router-link> | <router-link class="" to="/adminActivities">Activities</router-link>         </h2>
+          <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"> <router-link class="" to="/adminSemesters">Semesters</router-link> | <router-link class="" to="/adminExperiences">Experiences</router-link> | <router-link class="" to="/adminActivities">Activities</router-link>         </h2>
               <p class="font-weight-black text-h6">Semesters</p>
               <v-btn style="text-align:center"><router-link class="" to="/adminAddSemester">
               Add New Semester</router-link>
@@ -49,18 +49,18 @@
           </tr>
           <tr><router-link class="nav-link text-primary" to="/adminSpecificExperience">
             <td style="padding: 30px;">
-              HON 3350 MW
-            </td></router-link><router-link class="nav-link text-primary" to="/adminSpecificExperience">
-            <td style="padding: 30px;">
-              Priciple of Data and Society
+              Spring 2023
             </td></router-link>
+            <td style="padding: 30px;"> <router-link class="nav-link text-primary" to="/adminSpecificExperience">
+              January 17, 2023 - May 11, 2023 </router-link>
+            </td>
           </tr>
           <tr>
             <td style="padding: 30px;">
-              HON 3397
+              Fall 2022
             </td>
             <td style="padding: 30px;">
-              American Crime Story
+              August 22, 2022 - December 14, 2022
             </td>
           </tr>
         </table>

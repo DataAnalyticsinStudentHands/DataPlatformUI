@@ -14,13 +14,13 @@
                 <router-link class="nav-link text-primary" to="/adminStudentsList">Students</router-link>
               </th>
               <th class="nav-item" style="padding: 30px;">
-                  <router-link class="nav-link text-primary" to="/adminExperiencesActivities">Semesters, Experiences, and Activities</router-link>
+                  <router-link class="nav-link text-primary" to="/adminSemesters">Semesters, Experiences, and Activities</router-link>
                 </th>
                 <th class="nav-item" style="padding: 30px;">
                   <router-link class="nav-link text-primary" to="/adminInactiveStudents">Inactive Students</router-link>
                 </th>
                 <th class="nav-item" style="padding: 30px;">
-                  <router-link class="nav-link text-primary" to="/adminInactiveExperiencesActivities">Inactive Semesters, Experiences, and Activities</router-link>
+                  <router-link class="nav-link text-primary" to="/adminInactiveSemestersExperiencesActivities">Inactive Semesters, Experiences, and Activities</router-link>
                 </th>
               <th class="nav-item" style="padding: 30px;">
                 <router-link class="nav-link" to="" @click="handleLogout">Logout</router-link>
