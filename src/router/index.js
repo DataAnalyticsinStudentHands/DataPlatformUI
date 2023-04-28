@@ -95,6 +95,81 @@ const routes = [
         component: () => import('../components/secondaryData.vue')
         
     },
+    {
+      path: '/adminDash',
+      name: 'adminDash',
+      component: () => import('../components/adminDash.vue')
+    },
+    {
+      path: '/adminReports',
+      name: 'adminReports',
+      component: () => import('../components/adminReports.vue')
+    },
+    {
+      path: '/adminStudentsList',
+      name: 'adminStudentsList',
+      component: () => import('../components/adminStudentsList.vue')
+    },
+    {
+      path: '/adminSpecificStudent/:studentID',
+      name: 'adminSpecificStudent',
+      component: () => import('../components/adminSpecificStudent.vue')
+    },
+    {
+      path: '/adminSemesters',
+      name: 'adminSemesters',
+      component: () => import('../components/adminSemesters.vue')
+    },
+    {
+      path: '/adminAddSemester',
+      name: 'adminAddSemester',
+      component: () => import('../components/adminAddSemester.vue')
+    },
+    {
+      path: '/adminSpecificSemester',
+      name: 'adminSpecificSemester',
+      component: () => import('../components/adminSpecificSemester.vue')
+    },
+    {
+      path: '/adminExperiencesActivities',
+      name: 'adminExperiencesActivities',
+      component: () => import('../components/adminExperiencesActivities.vue')
+    },
+    {
+      path: '/adminAddExperience',
+      name: 'adminAddExperience',
+      component: () => import('../components/adminAddExperience.vue')
+    },
+    {
+      path: '/adminSpecificExperience',
+      name: 'adminSpecificExperience',
+      component: () => import('../components/adminSpecificExperience.vue')
+    },
+    {
+      path: '/adminActivities',
+      name: 'adminActivities',
+      component: () => import('../components/adminActivities.vue')
+    },
+    {
+      path: '/adminAddActivity',
+      name: 'adminAddActivity',
+      component: () => import('../components/adminAddActivity.vue')
+    },
+    {
+      path: '/adminSpecificActivity',
+      name: 'adminSpecificActivity',
+      component: () => import('../components/adminSpecificActivity.vue')
+    },
+    {
+      path: '/adminInactiveStudents',
+      name: 'adminInactiveStudents',
+      component: () => import('../components/adminInactiveStudents.vue')
+    },
+    {
+      path: '/adminInactiveExperiencesActivities',
+      name: 'adminInactiveExperiencesActivities',
+      component: () => import('../components/adminInactiveExperiencesActivities.vue')
+    }
 ]
 const router = createRouter({
     history: createWebHistory(), routes
