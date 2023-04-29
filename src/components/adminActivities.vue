@@ -1,4 +1,4 @@
-<!--'/adminExperiencesActivities' this page will only show experiences-->
+<!--'/adminsActivities' this page will only show experiences-->
 <template>
     <main class=""><center>
         <table class="d-inline-block text-start ms-3 w-100">
