@@ -169,6 +169,22 @@ const routes = [
       path: '/adminInactiveSemestersExperiencesActivities',
       name: 'adminInactiveSemestersExperiencesActivities',
       component: () => import('../components/adminInactiveSemestersExperiencesActivities.vue')
+    },
+    {
+      path: '/studentEntryForm',
+      name: 'studentEntryForm',
+      props: true,
+      component: () => import('../components/studentEntryForm.vue')
+    },
+    {
+      path: '/goalSettingForm',
+      name: 'goalSettingForm',
+      component: () => import('../components/goalSettingForm.vue')
+    },
+    {
+      path: '/exitForm',
+      name: 'exitForm',
+      component: () => import('../components/exitForm.vue')
     }
 ]
 const router = createRouter({

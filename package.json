@@ -17,9 +17,11 @@
     "sweetalert": "^2.1.2",
     "vite": "^3.0.9",
     "vue": "^3.2.41",
+    "vite-plugin-vuetify": "^1.0.2",
     "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.0.12",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "vuetify": "^3.1.12"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.2",
