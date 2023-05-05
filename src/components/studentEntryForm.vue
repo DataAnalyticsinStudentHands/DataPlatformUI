@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <p class="font-weight-black text-h5 text--primary">Registration</p>
+    <p class="font-weight-black text-h5 text--primary">Student Intake Form</p>
     <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.</p>
   </v-container>
   <v-container>
@@ -215,7 +215,7 @@ export default {
           honorsCollegeStatus: '',
           honorsCollegeAffiliatedStatus: '',
           honorsCollegeAffiliatedHow: '',
-          majorID: '',
+          majorID: '', 
           honorsMinor: [],
           otherMinor: ''
         },
