@@ -44,13 +44,12 @@
     <v-row>
       <v-col cols="11" md="7">
         <p class="font-weight-black text-h8">What are your pronouns? Select all that apply.</p>
-        <v-checkbox v-model="studentInformation.pronouns.she" label="She/her/hers"></v-checkbox>
-        <v-checkbox v-model="studentInformation.pronouns.he" label="He/him/his"></v-checkbox>
-        <v-checkbox v-model="studentInformation.pronouns.they" label="They/them/theirs"></v-checkbox>
-        <v-checkbox v-model="studentInformation.pronouns.ze" label="Ze/Zir/Zirs"></v-checkbox>
-        <v-checkbox v-model="studentInformation.pronouns.other" label="Other"></v-checkbox>
-        <v-text-field v-model="studentInformation.pronouns.otherPronouns" v-if="studentInformation.pronouns.other" label="Please specify"></v-text-field>
-        <v-checkbox v-model="studentInformation.pronouns.preferNotToAnswer" label="Prefer not to answer"></v-checkbox>
+        <div>
+          <div v-for="pronoun in studentInformation.pronouns" :key="pronoun.id">
+            <v-checkbox v-model="pronoun.checked" :label="pronoun.label"></v-checkbox>
+            <v-text-field v-if="pronoun.id === 5 && pronoun.checked" label="Other" v-model="studentInformation.otherPronouns"></v-text-field>
+          </div>
+        </div>
       </v-col>
     </v-row>
     <p class="font-weight-black text-h8">Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?</p>
@@ -166,8 +165,8 @@
             <v-radio-group v-model="studentInformation.communityServiceInfo.serviceStatus">
               <v-radio label="Yes" value="Yes" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
               <v-radio label="No" value="No" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-                <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-                <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'" label="Please specify"></v-textarea>
+                <p class="font-weight-black text-h8" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes') || (studentInformation.communityServiceInfo.serviceStatus == 'No')">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
+                <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes') || (studentInformation.communityServiceInfo.serviceStatus == 'No')" label="Please specify"></v-textarea>
                 <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">Are you a member of any community organizations outside the University? Please list.</p>
                 <v-text-field v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'" label="Please specify"></v-text-field>
             </v-radio-group>
@@ -179,6 +178,42 @@
         <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'No'">
           <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
         </v-row>
+      </v-col>
+    
+    <p class="font-weight-black text-h6">Graduate/Professional School Goals</p>
+      <v-col cols="12" md="7">
+        <p class="font-weight-black text-h8">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</p>
+        <v-radio-group v-model="studentInformation.graduateProfessionalSchool.programGradProStatus">
+          <v-radio label="Yes" value="Yes" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
+          <v-radio label="No" value="No" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="11" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes'">
+        <p class="font-weight-black text-h8">If you are planning to pursue graduate school, what type of program?</p>
+        <div>
+          <div v-for="programType in studentInformation.graduateProfessionalSchool.programGradProType" :key="programType.id">
+            <v-checkbox v-model="programType.checked" :label="programType.label"></v-checkbox>
+            <v-text-field v-if="programType.id === 4 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.phDTextbox"></v-text-field>
+            <v-text-field v-if="programType.id === 7 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.MasterTextbox"></v-text-field>
+            <v-text-field v-if="programType.id === 8 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.OtherTextbox"></v-text-field>
+          </div>
+        </div>
+      </v-col>
+      <v-col cols="12" md="7">
+        <p class="font-weight-black text-h8">Are you planning to pursue any other kind of specialized degree / certificate program?</p>
+        <v-radio-group v-model="studentInformation.specializedDegCert.specializedDegCertStatus">
+          <v-radio label="Yes" value="Yes" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
+          <v-radio label="No" value="No" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="11" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
+        <p class="font-weight-black text-h8">If you are planning to pursue graduate school, what type of program?</p>
+        <div>
+          <div v-for="specializedType in studentInformation.specializedDegCert.specializedDegCertType" :key="specializedType.id">
+            <v-checkbox v-model="specializedType.checked" :label="specializedType.label"></v-checkbox>
+            <v-text-field v-if="specializedType.id === 6 && specializedType.checked" label="Please Specify" v-model="studentInformation.specializedDegCert.professionDesignOther"></v-text-field>
+          </div>
+        </div>
       </v-col>
   </v-container>
 </template>
@@ -195,15 +230,15 @@ export default {
         primaryLanguage: '',
         otherLanguages: '',
         languagePreference: '',
-        pronouns: {
-          she: false,
-          he: false,
-          they: false,
-          ze: false,
-          other: false,
-          otherPronouns: '',
-          preferNotToAnswer: false,
-        },
+        pronouns: [
+          { id: 1, label: "She/her/hers", checked: false },
+          { id: 2, label: "He/him/his", checked: false },
+          { id: 3, label: "They/them/theirs", checked: false },
+          { id: 4, label: "Ze/Zir/Zirs", checked: false },
+          { id: 5, label: "Other", checked: false },
+          { id: 6, label: "Prefer not to answer", checked: false },
+        ],
+        otherPronouns: '',
         commentsByStaff: '',
         issuesConcernsTriggers: '',
         enrolledUHInfo: {
@@ -227,7 +262,35 @@ export default {
           serviceStatus: '',
           serviceHistoryDesc: '',
           serviceOrgsOutsideUH: ''
-        }
+        },
+        graduateProfessionalSchool: {
+          programGradProStatus: '',
+          programGradProType: [
+            { id: 1, label: "MD/DO", checked: false },
+            { id: 2, label: "Physician Assistant: PA", checked: false },
+            { id: 3, label: "Nursing: MSN, DNP", checked: false },
+            { id: 4, label: "PhD", checked: false },
+            { id: 5, label: "DrPH", checked: false },
+            { id: 6, label: "Law: JD", checked: false },
+            { id: 7, label: "Master's: MPH, MBA, MA, MS, MEd, etc", checked: false },
+            { id: 8, label: "Other", checked: false },
+          ],
+          phDTextbox: '',
+          MasterTextbox: '',
+          OtherTextbox: '',
+        },
+        specializedDegCert: {
+          specializedDegCertStatus: '',
+          specializedDegCertType: [
+            { id: 1, label: "Nursing: PRN, RN, CNA, etc", checked: false },
+            { id: 2, label: "Social Work: LSW/LCSW", checked: false },
+            { id: 3, label: "Business: Certified Public Accountant (CPA, Licensed Public Accountant (LPA), Certified Financial Planner (CFP)", checked: false },
+            { id: 4, label: "Engineering/Technology: Professional Engineer (PE), Certified Technology Specialist (CTS), etc", checked: false },
+            { id: 5, label: "Project Management: Certified Associate in Project Management (CAPM), Project Management Professional (PMP)", checked: false },
+            { id: 6, label: "Other Professional Designation", checked: false }
+          ],
+          professionDesignOther: '',
+        },
       }
     }
   },

@@ -59,6 +59,61 @@
         </v-radio-group>
       </v-col>
     </v-row>
+    <p class="font-weight-black text-h6">Growth</p>
+      <v-col cols="12" md="10">
+        <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of problem solving.</p>
+        <v-radio-group v-model="goalForm.growthGoal.problemSolvingGoal">
+          <v-radio label="No growth" value="No growth" v-model="goalForm.growthGoal.problemSolvingGoal"></v-radio>
+          <v-radio label="A little growth" value="A little growth" v-model="goalForm.growthGoal.problemSolvingGoal"></v-radio>
+          <v-radio label="A moderate amount of growth" value="A moderate amount of growth" v-model="goalForm.growthGoal.problemSolvingGoal"></v-radio>
+          <v-radio label="A lot of growth" value="A lot of growth" v-model="goalForm.growthGoal.problemSolvingGoal"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="12" md="10">
+        <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of effective communication.</p>
+        <v-radio-group v-model="goalForm.growthGoal.effectiveCommunicationGoal">
+          <v-radio label="No growth" value="No growth" v-model="goalForm.growthGoal.effectiveCommunicationGoal"></v-radio>
+          <v-radio label="A little growth" value="A little growth" v-model="goalForm.growthGoal.effectiveCommunicationGoal"></v-radio>
+          <v-radio label="A moderate amount of growth" value="A moderate amount of growth" v-model="goalForm.growthGoal.effectiveCommunicationGoal"></v-radio>
+          <v-radio label="A lot of growth" value="A lot of growth" v-model="goalForm.growthGoal.effectiveCommunicationGoal"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="12" md="10">
+        <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of teamwork.</p>
+        <v-radio-group v-model="goalForm.growthGoal.teamworkGoal">
+          <v-radio label="No growth" value="No growth" v-model="goalForm.growthGoal.teamworkGoal"></v-radio>
+          <v-radio label="A little growth" value="A little growth" v-model="goalForm.growthGoal.teamworkGoal"></v-radio>
+          <v-radio label="A moderate amount of growth" value="A moderate amount of growth" v-model="goalForm.growthGoal.teamworkGoal"></v-radio>
+          <v-radio label="A lot of growth" value="A lot of growth" v-model="goalForm.growthGoal.teamworkGoal"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="12" md="10">
+        <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of cultural humility.</p>
+        <v-radio-group v-model="goalForm.growthGoal.culturalHumilityGoal">
+          <v-radio label="No growth" value="No growth" v-model="goalForm.growthGoal.culturalHumilityGoal"></v-radio>
+          <v-radio label="A little growth" value="A little growth" v-model="goalForm.growthGoal.culturalHumilityGoal"></v-radio>
+          <v-radio label="A moderate amount of growth" value="A moderate amount of growth" v-model="goalForm.growthGoal.culturalHumilityGoal"></v-radio>
+          <v-radio label="A lot of growth" value="A lot of growth" v-model="goalForm.growthGoal.culturalHumilityGoal"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="12" md="10">
+        <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of ethical decision making.</p>
+        <v-radio-group v-model="goalForm.growthGoal.ethicalDecisionMakingGoal">
+          <v-radio label="No growth" value="No growth" v-model="goalForm.growthGoal.ethicalDecisionMakingGoal"></v-radio>
+          <v-radio label="A little growth" value="A little growth" v-model="goalForm.growthGoal.ethicalDecisionMakingGoal"></v-radio>
+          <v-radio label="A moderate amount of growth" value="A moderate amount of growth" v-model="goalForm.growthGoal.ethicalDecisionMakingGoal"></v-radio>
+          <v-radio label="A lot of growth" value="A lot of growth" v-model="goalForm.growthGoal.ethicalDecisionMakingGoal"></v-radio>
+        </v-radio-group>
+      </v-col>
+      <v-col cols="12" md="10">
+        <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of professional responsibility.</p>
+        <v-radio-group v-model="goalForm.growthGoal.professionalResponsibilityGoal">
+          <v-radio label="No growth" value="No growth" v-model="goalForm.growthGoal.professionalResponsibilityGoal"></v-radio>
+          <v-radio label="A little growth" value="A little growth" v-model="goalForm.growthGoal.professionalResponsibilityGoal"></v-radio>
+          <v-radio label="A moderate amount of growth" value="A moderate amount of growth" v-model="goalForm.growthGoal.professionalResponsibilityGoal"></v-radio>
+          <v-radio label="A lot of growth" value="A lot of growth" v-model="goalForm.growthGoal.professionalResponsibilityGoal"></v-radio>
+        </v-radio-group>
+      </v-col>
   </v-container>
 </template>
 
@@ -78,7 +133,14 @@ export default {
         semester: '',
         experienceID: '',
         hichOption: '',
-
+        growthGoal: {
+          problemSolvingGoal: '',
+          effectiveCommunicationGoal: '',
+          teamworkGoal: '',
+          culturalHumilityGoal: '',
+          ethicalDecisionMakingGoal: '',
+          professionalResponsibilityGoal: ''
+        }
       }
     }
   },
