@@ -65,7 +65,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" md="7">
+      <v-col cols="12" md="10">
         <p class="font-weight-black text-h8">Are you currently enrolled in a degree program at the University of Houston?</p>
         <v-radio-group v-model="studentInformation.enrolledUHInfo.uhStatus">
           <v-radio label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.uhStatus"></v-radio>
@@ -181,33 +181,33 @@
       </v-col>
     
     <p class="font-weight-black text-h6">Graduate/Professional School Goals</p>
-      <v-col cols="12" md="7">
+      <v-col cols="12" md="10">
         <p class="font-weight-black text-h8">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</p>
         <v-radio-group v-model="studentInformation.graduateProfessionalSchool.programGradProStatus">
           <v-radio label="Yes" value="Yes" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
           <v-radio label="No" value="No" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
         </v-radio-group>
       </v-col>
-      <v-col cols="11" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes'">
+      <v-col cols="12" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes'">
         <p class="font-weight-black text-h8">If you are planning to pursue graduate school, what type of program?</p>
         <div>
           <div v-for="programType in studentInformation.graduateProfessionalSchool.programGradProType" :key="programType.id">
             <v-checkbox v-model="programType.checked" :label="programType.label"></v-checkbox>
             <v-text-field v-if="programType.id === 4 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.phDTextbox"></v-text-field>
-            <v-text-field v-if="programType.id === 7 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.MasterTextbox"></v-text-field>
-            <v-text-field v-if="programType.id === 8 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.OtherTextbox"></v-text-field>
+            <v-text-field v-if="programType.id === 7 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.masterTextbox"></v-text-field>
+            <v-text-field v-if="programType.id === 8 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.otherTextbox"></v-text-field>
           </div>
         </div>
       </v-col>
-      <v-col cols="12" md="7">
+      <v-col cols="12" md="10">
         <p class="font-weight-black text-h8">Are you planning to pursue any other kind of specialized degree / certificate program?</p>
         <v-radio-group v-model="studentInformation.specializedDegCert.specializedDegCertStatus">
           <v-radio label="Yes" value="Yes" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
           <v-radio label="No" value="No" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
         </v-radio-group>
       </v-col>
-      <v-col cols="11" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
-        <p class="font-weight-black text-h8">If you are planning to pursue graduate school, what type of program?</p>
+      <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
+        <p class="font-weight-black text-h8">If you are planning to pursue a specialized degree / certificate program, what type of program?</p>
         <div>
           <div v-for="specializedType in studentInformation.specializedDegCert.specializedDegCertType" :key="specializedType.id">
             <v-checkbox v-model="specializedType.checked" :label="specializedType.label"></v-checkbox>
@@ -276,8 +276,8 @@ export default {
             { id: 8, label: "Other", checked: false },
           ],
           phDTextbox: '',
-          MasterTextbox: '',
-          OtherTextbox: '',
+          masterTextbox: '',
+          otherTextbox: '',
         },
         specializedDegCert: {
           specializedDegCertStatus: '',
