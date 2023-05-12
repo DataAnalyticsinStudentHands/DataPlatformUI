@@ -26,3 +26,4 @@ export default createVuetify({
   })
 
 createApp(App).use(vuetify).use(router).mount('#app')
+
