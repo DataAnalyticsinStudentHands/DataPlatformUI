@@ -4,7 +4,7 @@
       <h1
         class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
       >
-        Welcome {{ firstName }} {{ lastName }}
+        Welcome {{ firstName }} {{ lastName }} {{ res }} asdas
       </h1>
       <br>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
@@ -41,6 +41,7 @@ export default {
       queryData: [],
       firstName: "",
       lastName: "",
+      res:""
     };
   },
   created() {
@@ -58,6 +59,7 @@ export default {
         (res) => {
           this.firstName = res.data.user.firstName;
           this.lastName = res.data.user.lastName;
+          this.res = res.data.user.userID;
           console.log(res);
         },
         (err) => {
