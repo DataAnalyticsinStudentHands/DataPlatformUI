@@ -91,7 +91,7 @@
 </template>
 
 <script>
-
+import { useLoggedInUserStore } from "@/store/loggedInUser";
 import axios from "axios";
 export default {
   name: "App",
@@ -113,7 +113,6 @@ export default {
   },
   created() {
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-
     axios
       .get(apiURL, {
         headers: { token: localStorage.getItem("token") },
@@ -122,6 +121,11 @@ export default {
         this.organizationName = resp.data;
       });
   },
+  setup() {
+    // function that checks if a user is logged in
+    const user = useLoggedInUserStore();
+    return { user };
+  }
 };
 </script>
 <style>
