@@ -4,7 +4,7 @@
       <h1
         class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
       >
-        Welcome {{ firstName }} {{ lastName }} {{ res }} asdas
+        Welcome {{ firstName }} {{ lastName }} {{ this.role }} asdasd {{  res}}
       </h1>
       <br>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
@@ -41,13 +41,11 @@ export default {
     return {
       queryData: [],
       firstName: "",
-      lastName: "",
-      res:""
+      lastName: ""
     };
   },
   mounted() {
     const user = useLoggedInUserStore()
-    console.log(user)
     let token = user.token
     let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
     axios
@@ -58,8 +56,6 @@ export default {
         (res) => {
           this.firstName = res.data.user.firstName;
           this.lastName = res.data.user.lastName;
-          this.res = res.data.user.userID;
-          console.log(res);
         },
         (err) => {
           if (err) {

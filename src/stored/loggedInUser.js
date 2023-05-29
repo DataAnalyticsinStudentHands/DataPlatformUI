@@ -13,18 +13,21 @@ export const useLoggedInUserStore = defineStore({
       isLoggedIn: false
     }
   },
+  getters: {
+    getRole() {
+      return this.role
+    },
+  },
   actions: {
     async login(email, password) {
       try {
         console.log(email, password)
         const response = await axios.post(`${apiURL}/userdata/login`, {email, password});
-        console.log("test")
-        console.log(response)
         if (response) {
           this.$patch({
             isLoggedIn: true,
-            role: response.data.role,
-            userId: response.data.userId,
+            role: response.data.userRole,
+            userId: response.data.userID,
             token: response.data.token
           });
           this.$router.push("/");

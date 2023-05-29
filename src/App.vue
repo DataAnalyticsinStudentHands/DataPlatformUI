@@ -7,70 +7,74 @@
         </section>
         <nav class="mt-10">
           <ul class="flex flex-col gap-4">
-            <li>
-              <router-link to="/">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >dashboard</span
-                >
-                Dashboard
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/intakeform">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >people</span
-                >
-                Client Intake Form
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/eventform">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >event</span
-                >
-                Create Event
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/findclient">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >search</span
-                >
-                Find Client
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/findEvents">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >search</span
-                >
-                Find Event
-              </router-link>
-            </li>
-            <li>
+            <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
+              <li>
+                <router-link to="/">
+                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
+                  Dashboard
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/intakeform">
+                  <span style="position: relative; top: 6px" class="material-icons">people</span>
+                  Client Intake Form
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/">
+                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
+                  Dashboard
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/eventform">
+                  <span style="position: relative; top: 6px" class="material-icons">event</span>
+                  Create Event
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/findclient">
+                  <span
+                    style="position: relative; top: 6px" class="material-icons">search</span>
+                  Find Client
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/findEvents">
+                  <span style="position: relative; top: 6px" class="material-icons">search</span>
+                  Find Event
+                </router-link>
+              </li>
+            </div>
+          <div v-if="user.isLoggedIn && user.getRole === 'Student'">
+              <li>
+                <router-link to="/studentEntryForm">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Student Entry Form
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/goalSettingForm">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Goal Setting Form
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/exitForm">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Exit Form
+                </router-link>
+              </li>
+          </div>
+            <li v-if="user.isLoggedIn">
               <router-link to="/updatePasswordForm">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >settings</span
-                >
+                <span style="position: relative; top: 6px" class="material-icons">settings</span>
                 Update Password
               </router-link>
             </li>
-            <li>
-              <span style="position: relative; top: 6px" class="material-icons"
-                >logout</span
-              ><button @click="store.logout()">Logout</button>
+            <li v-if="user.isLoggedIn">
+              <span style="position: relative; top: 6px" class="material-icons">logout</span>
+              <button @click="store.logout()">Logout</button>
             </li>
           </ul>
         </nav>
@@ -98,9 +102,8 @@ export default {
   name: "App",
   data() {
     return {
-      //showElement: localStorage.getItem("token") !== null,
+      showElement: useLoggedInUserStore().isLoggedIn === false,
       organizationName: "",
-      token: ""
     };
   },
   methods: {
