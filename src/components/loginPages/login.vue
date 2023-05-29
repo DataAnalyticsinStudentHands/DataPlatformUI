@@ -3,7 +3,7 @@
     <div class="px-10 py-20">
       <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
         <form
-          @submit.prevent
+          @submit.prevent="store.login(email, password)"
           class="space-y-4 md:space-y-6"
           action="/login"
           method="POST"
@@ -12,7 +12,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">Email/Username</label>
+              <label for="email" class="block">Email</label>
               <input
                 v-model="email"
                 type="email"
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   name: "Login",
   emits: ["showDashboard"],
@@ -89,27 +89,12 @@ export default {
       error: "",
     };
   },
-  methods: {
-    login() {
-      let user = {
-        email: this.email,
-        password: this.password,
-      };
-      let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/login`;
-      axios.post(apiURL, user).then(
-        (res) => {
-          if (res.status == 200) {
-            localStorage.setItem("token", res.data.token);
-            // this.$root.$emit("isuserLoggedInEvent");
-            this.$router.push("/");
-            this.$emit("showDashboard");
-          }
-        },
-        (err) => {
-          this.error = err.response.data.error;
-        }
-      );
-    },
-  },
+  setup() {
+    const store = useLoggedInUserStore()
+    return {
+      // you can return the whole store instance to use it in the template
+      store,
+    }
+  }
 };
 </script>

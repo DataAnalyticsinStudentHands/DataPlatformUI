@@ -33,6 +33,7 @@
   </main>
 </template>
 <script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { DateTime } from "luxon";
 import axios from "axios";
 export default {
@@ -44,16 +45,14 @@ export default {
       res:""
     };
   },
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
   mounted() {
+    const user = useLoggedInUserStore()
+    console.log(user)
+    let token = user.token
     let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
     axios
       .get(url, {
-        headers: { token: localStorage.getItem("token") },
+        headers: {token},
       })
       .then(
         (res) => {

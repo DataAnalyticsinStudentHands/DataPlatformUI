@@ -70,7 +70,7 @@
             <li>
               <span style="position: relative; top: 6px" class="material-icons"
                 >logout</span
-              ><button @click="logout">Logout</button>
+              ><button @click="store.logout()">Logout</button>
             </li>
           </ul>
         </nav>
@@ -91,41 +91,39 @@
 </template>
 
 <script>
-import { useLoggedInUserStore } from "@/store/loggedInUser";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+
 export default {
   name: "App",
   data() {
     return {
-      showElement: localStorage.getItem("token") !== null,
+      //showElement: localStorage.getItem("token") !== null,
       organizationName: "",
+      token: ""
     };
   },
   methods: {
-    logout() {
-      localStorage.clear();
-      this.showElement = false;
-      this.$router.push("/login");
-    },
     showDashboard() {
       this.showElement = true;
     },
-  },
-  created() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-    axios
-      .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
-      })
-      .then((resp) => {
-        this.organizationName = resp.data;
-      });
   },
   setup() {
     // function that checks if a user is logged in
     const user = useLoggedInUserStore();
     return { user };
-  }
+  },
+  created() {
+    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
+    const user = useLoggedInUserStore();
+    axios
+      .get(apiURL, {
+        headers: { token: user.token },
+      })
+      .then((resp) => {
+        this.organizationName = resp.data;
+      });
+  },
 };
 </script>
 <style>
