@@ -1,11 +1,10 @@
 <!--'/adminSemestersInactiveExperiencesActivities'-->
 <template>
   <main class="">
-      <div>
-          <router-view></router-view>
-      </div>
       <center>
-        <p class="font-weight-black text-h6">Inactive Students</p>
+        <br>
+        <p class="font-weight-black text-h6">Inactive Semesters, Experiences, and Actvities</p>
+        <br>
             <v-btn style="text-align:center"><router-link class="" to="/adminAddExperience">
             Reactivate Experiences/Activities</router-link>
             </v-btn>

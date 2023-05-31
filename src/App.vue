@@ -81,25 +81,25 @@
               </li>
               <li>
                 <router-link to="/adminStudentsList">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  <span style="position: relative; top: 6px" class="material-icons">person</span>
                   Students
                 </router-link>
               </li>
               <li>
                 <router-link to="/adminSemesters">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  <span style="position: relative; top: 6px" class="material-icons">school</span>
                   Semeters, Experiences, Activities
                 </router-link>
               </li>
               <li>
                 <router-link to="/adminInactiveStudents">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  <span style="position: relative; top: 6px" class="material-icons">person</span>
                   Inactive Students
                 </router-link>
               </li>
               <li>
                 <router-link to="/adminInactiveSemestersExperiencesActivities">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  <span style="position: relative; top: 6px" class="material-icons">school</span>
                   Inactive Semesters, Experiences, and Activities
                 </router-link>
               </li>

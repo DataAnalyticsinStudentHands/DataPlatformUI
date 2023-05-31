@@ -2,7 +2,8 @@
 <template>
   <main class="">
       <center>
-        <h1>Students</h1>
+        <br>
+        <p class="font-weight-black text-h6">Students</p>
       <table>
         <tr>
           <th style="padding: 30px; text-align: left;">

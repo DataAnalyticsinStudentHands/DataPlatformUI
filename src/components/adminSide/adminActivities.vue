@@ -1,12 +1,10 @@
 <!--'/adminsActivities' this page will only show experiences-->
 <template>
     <main class="">
-        <div>
-            <router-view></router-view>
-        </div>
         <center>
           <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"><router-link class="" to="/adminSemesters">Semesters</router-link> | <router-link class="" to="/adminExperiences">Experiences</router-link> | <router-link class="" to="/adminActivities">Activities</router-link>         </h2>
             <p class="font-weight-black text-h6">Activities</p>
+            <br>
             <v-btn style="text-align:center"><router-link class="" to="/adminAddActivity">
             Add New Activity</router-link>
             </v-btn>

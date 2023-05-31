@@ -4,6 +4,7 @@
         <center>
           <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"> <router-link class="" to="/adminSemesters">Semesters</router-link> | <router-link class="" to="/adminExperiences">Experiences</router-link> | <router-link class="" to="/adminActivities">Activities</router-link>         </h2>
               <p class="font-weight-black text-h6">Semesters</p>
+              <br>
               <v-btn style="text-align:center"><router-link class="" to="/adminAddSemester">
               Add New Semester</router-link>
               </v-btn>

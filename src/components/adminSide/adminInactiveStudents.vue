@@ -1,12 +1,11 @@
 <!--'/adminInactiveStudents'-->
 <template>
   <main class="">
-      <div>
-          <router-view></router-view>
-      </div>
       <center>
+        <br>
         <p class="font-weight-black text-h6">Inactive Students</p>
-            <v-btn style="text-align:center"><router-link class="" to="/adminAddExperience">
+        <br>
+            <v-btn style="text-align:center"><router-link class="" to="">
             Reactivate Students</router-link>
             </v-btn>
             <v-container fluid>

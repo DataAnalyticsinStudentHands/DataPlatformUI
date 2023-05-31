@@ -1,6 +1,16 @@
 <!--'/adminReports'-->
 <template>
   <main class="">
+    Select a Semester: (drop down menu)
+    Graduation Year
+    On/off campus
+    Honors College Memebership
+    Honors College Affiliation
+    Majors
+    Minors
+    HICH Affiliation
+    Community Service Experience
+    
   </main>
 </template>
 <style>

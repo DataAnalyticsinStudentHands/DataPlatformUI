@@ -1,9 +1,6 @@
 <!--'/adminAddActivity' this page will only show experiences-->
 <template>
     <main class="">
-        <div>
-            <router-view></router-view>
-        </div>
         <center>
             <v-container>
                 <p class="font-weight-black text-h6">New Activity</p>
