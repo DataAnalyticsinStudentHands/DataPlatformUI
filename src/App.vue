@@ -66,6 +66,44 @@
                 </router-link>
               </li>
           </div>
+          <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
+              <li>
+                <router-link to="/adminDash">
+                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
+                  Dashboard
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/adminReports">
+                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
+                  Reports
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/adminStudentsList">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Students
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/adminSemesters">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Semeters, Experiences, Activities
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/adminInactiveStudents">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Inactive Students
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/adminInactiveSemestersExperiencesActivities">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Inactive Semesters, Experiences, and Activities
+                </router-link>
+              </li>
+          </div>
             <li v-if="user.isLoggedIn">
               <router-link to="/updatePasswordForm">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
