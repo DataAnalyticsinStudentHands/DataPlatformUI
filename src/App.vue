@@ -88,7 +88,7 @@
               <li>
                 <router-link to="/adminSemesters">
                   <span style="position: relative; top: 6px" class="material-icons">school</span>
-                  Semeters, Experiences, Activities
+                  Semeters, Experiences, <br> Activities
                 </router-link>
               </li>
               <li>
@@ -100,19 +100,21 @@
               <li>
                 <router-link to="/adminInactiveSemestersExperiencesActivities">
                   <span style="position: relative; top: 6px" class="material-icons">school</span>
-                  Inactive Semesters, Experiences, and Activities
+                  Inactive Semesters, <br>Experiences, and Activities
                 </router-link>
               </li>
           </div>
             <li v-if="user.isLoggedIn">
-              <router-link to="/updatePasswordForm">
+              <router-link to="/resetPassword">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
                 Update Password
               </router-link>
             </li>
             <li v-if="user.isLoggedIn">
+              <router-link to="/login">
               <span style="position: relative; top: 6px" class="material-icons">logout</span>
               <button @click="store.logout()">Logout</button>
+            </router-link>
             </li>
           </ul>
         </nav>

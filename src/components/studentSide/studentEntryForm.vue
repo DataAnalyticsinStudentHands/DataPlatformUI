@@ -122,7 +122,7 @@
               <v-text-field v-model="studentInformation.enrolledUHInfo.otherMinor" label="Other Minor(s)"></v-text-field>
             </v-col>
           </v-row>
-        <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">Other Engagement</p><!-- 
+        <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">Other Engagement</p>
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Are you a member of Honors in Community Health (HICH)?</p>
@@ -131,7 +131,7 @@
                 <v-radio label="No" value=false v-model="studentInformation.hichInfo.hichStatus"></v-radio>
               </v-radio-group>
             </v-col>
-          </v-row>
+          </v-row><!-- 
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?</p>
@@ -245,11 +245,11 @@ export default {
           majorID: '', 
           honorsMinor: [],
           otherMinor: ''
-        },/*
+        },
         hichInfo: {
           hichStatus: '',
           hichHistoryStatus: ''
-        },
+        },/*
         communityServiceInfo: {
           serviceStatus: '',
           serviceHistoryDesc: '',

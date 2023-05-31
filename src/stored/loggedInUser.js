@@ -13,7 +13,7 @@ export const useLoggedInUserStore = defineStore({
       isLoggedIn: false
     }
   },
-  getters: {
+  getters: { //getting the roles
     getRole() {
       return this.role
     },
@@ -46,6 +46,7 @@ export const useLoggedInUserStore = defineStore({
         isLoggedIn: false
       });
       this.$router.push("/login");
+      //location.reload(); attempt on trying to remove navigation bar when logging out
     },
     persist: {
       storage: sessionStorage
