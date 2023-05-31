@@ -8,26 +8,13 @@
       <p class="font-weight-black text-h6">Demographics Information</p>
       <v-row>
         <v-col cols="12" md="6">
-          <v-text-field v-model="studentInformation.firstName" label="First Name"></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field v-model="studentInformation.lastName" label="Last Name"></v-text-field>
-        </v-col>
-      </v-row><!--
-      <v-row>
-        <v-col cols="12" md="7">
-          <v-text-field v-model="studentInformation.preferredEmail" label="Preferred Email"></v-text-field>
+          <v-text-field v-model="studentInformation.cityOrigin" label="City of Origin" :rules="[v => !!v || 'Information is required']" required></v-text-field>
         </v-col>
       </v-row>
+      <p class="font-weight-black">What languages do you speak?</p>
       <v-row>
         <v-col cols="12" md="6">
-          <v-text-field v-model="studentInformation.cityOrigin" label="City of Origin"></v-text-field>
-        </v-col>
-      </v-row>
-      <p class="font-weight-black text-h8">What languages do you speak?</p>
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field v-model="studentInformation.primaryLanguage" label="Primary Language"></v-text-field>
+          <v-text-field v-model="studentInformation.primaryLanguage" label="Primary Language" :rules="[v => !!v || 'Information is required']" required></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
           <v-text-field v-model="studentInformation.otherLanguages" label="Other Languages"></v-text-field>
@@ -35,8 +22,8 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="7">
-          <p class="font-weight-black text-h8">What language do you prefer to receive communication in?</p>
-          <v-radio-group v-model="studentInformation.languagePreference">
+          <p class="font-weight-black">What language do you prefer to receive communication in?</p>
+          <v-radio-group v-model="studentInformation.languagePreference" :rules="[v => !!v || 'Information is required']" required>
             <v-radio label="English" value="English" v-model="studentInformation.languagePreference"></v-radio>
             <v-radio label="Spanish" value="Spanish" v-model="studentInformation.languagePreference"></v-radio>
           </v-radio-group>
@@ -44,7 +31,7 @@
       </v-row>
       <v-row>
         <v-col cols="11" md="7">
-          <p class="font-weight-black text-h8">What are your pronouns? Select all that apply.</p>
+          <p class="font-weight-black">What are your pronouns? Select all that apply.</p>
           <div>
             <div v-for="pronoun in studentInformation.pronouns" :key="pronoun.id">
               <v-checkbox v-model="pronoun.checked" :label="pronoun.label"></v-checkbox>
@@ -68,7 +55,7 @@
       <v-row>
         <v-col cols="12" md="10">
           <p class="font-weight-black text-h8">Are you currently enrolled in a degree program at the University of Houston?</p>
-          <v-radio-group v-model="studentInformation.enrolledUHInfo.uhStatus">
+          <v-radio-group v-model="studentInformation.enrolledUHInfo.uhStatus" :rules="[v => !!v || 'Information is required']" required>
             <v-radio label="Yes" value=true v-model="studentInformation.enrolledUHInfo.uhStatus"></v-radio>
             <v-radio label="No" value=false v-model="studentInformation.enrolledUHInfo.uhStatus"></v-radio>
           </v-radio-group>
@@ -116,7 +103,7 @@
                 <v-radio label="No" value=false v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
               </v-radio-group>
             </v-col>
-          </v-row>
+          </v-row> 
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">What is/are your current major(s)?</p>
@@ -135,7 +122,7 @@
               <v-text-field v-model="studentInformation.enrolledUHInfo.otherMinor" label="Other Minor(s)"></v-text-field>
             </v-col>
           </v-row>
-        <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">Other Engagement</p>
+        <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">Other Engagement</p><!-- 
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Are you a member of Honors in Community Health (HICH)?</p>
@@ -174,7 +161,6 @@
             <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
           </v-row>
         </v-col>
-      
       <p class="font-weight-black text-h6">Graduate/Professional School Goals</p>
         <v-col cols="12" md="10">
           <p class="font-weight-black text-h8">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</p>
@@ -209,8 +195,7 @@
               <v-text-field v-if="specializedType.id === 6 && specializedType.checked" label="Please Specify" v-model="studentInformation.specializedDegCert.professionDesignOther"></v-text-field>
             </div>
           </div>
-        </v-col>
-        -->
+        </v-col> -->
         <v-row>
           <v-col cols="12" md="4">
             <v-btn type="submit" methods="handleSubmitForm">Submit Form</v-btn>
@@ -228,14 +213,12 @@
 
 <script>
 import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
       studentInformation: {
-        firstName: "",
-        lastName: "", /*
-        preferredEmail: '',
-        cityOrigin: '',
+        cityOrigin: '', 
         primaryLanguage: '',
         otherLanguages: '',
         languagePreference: '',
@@ -262,7 +245,7 @@ export default {
           majorID: '', 
           honorsMinor: [],
           otherMinor: ''
-        },
+        },/*
         hichInfo: {
           hichStatus: '',
           hichHistoryStatus: ''
@@ -311,41 +294,37 @@ export default {
   },
   methods: {
     async handleSubmitForm() {
+      const user = useLoggedInUserStore()
+      let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
-      axios.post(apiURL, { studentInformation: this.studentInformation}, {
-            headers: { token: localStorage.getItem("token") },
-          }).then(() => {
+      axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
         alert("Student Information has been successfully added.");
         this.studentInformation = {
-            firstName: '',
-            lastName: '', 
-            // preferredEmail: '',
-            // cityOrigin: '',
-            // primaryLanguage: '',
-            // otherLanguages: '',
-            // languagePreference: '',
-            // pronouns: [],
-            // otherPronouns: '',
-            // commentsByStaff: '',
-            // issuesConcernsTriggers: '',
-            // enrolledUHInfo: {
-            //   uhStatus: '',
-            //   uhEmail: '',
-            //   peopleSoftID: '',
-            //   expectedGraduationYear: '',
-            //   livingOnCampus: '',
-            //   honorsCollegeStatus: '',
-            //   honorsCollegeAffiliatedStatus: '',
-            //   honorsCollegeAffiliatedHow: '',
-            //   majorID: '', 
-            //   honorsMinor: [],
-            //   otherMinor: ''
-            // },
+            cityOrigin: '',
+            primaryLanguage: '',
+            otherLanguages: '',
+            languagePreference: '',
+            pronouns: [],
+            otherPronouns: '',
+            commentsByStaff: '',
+            issuesConcernsTriggers: '',
+            enrolledUHInfo: {
+              uhStatus: '',
+              uhEmail: '',
+              peopleSoftID: '',
+              expectedGraduationYear: '',
+              livingOnCampus: '',
+              honorsCollegeStatus: '',
+              honorsCollegeAffiliatedStatus: '',
+              honorsCollegeAffiliatedHow: '',
+              majorID: '', 
+              honorsMinor: [],
+              otherMinor: ''
+            },
             //hichInfo: {
             //  hichStatus: '',
             //  hichHistoryStatus: ''
             //},
-            
             // communityServiceInfo: {
             //   serviceStatus: '',
             //   serviceHistoryDesc: '',

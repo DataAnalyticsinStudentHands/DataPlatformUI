@@ -66,7 +66,7 @@ export default {
     let apiURL = import.meta.env.VITE_ROOT_API + `/dashboarddata/recentEvent/`;
     this.queryData = [];
     axios.get(apiURL,{
-        headers: { token: localStorage.getItem("token") },
+        headers: { token },
       }).then((resp) => {
       this.queryData = resp.data;
     });
