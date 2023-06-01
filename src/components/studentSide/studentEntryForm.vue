@@ -131,7 +131,7 @@
                 <v-radio label="No" value=false v-model="studentInformation.hichInfo.hichStatus"></v-radio>
               </v-radio-group>
             </v-col>
-          </v-row><!-- 
+          </v-row>
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?</p>
@@ -183,11 +183,11 @@
         <v-col cols="12" md="10">
           <p class="font-weight-black text-h8">Are you planning to pursue any other kind of specialized degree / certificate program?</p>
           <v-radio-group v-model="studentInformation.specializedDegCert.specializedDegCertStatus">
-            <v-radio label="Yes" value="Yes" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
-            <v-radio label="No" value="No" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
+            <v-radio label="Yes" value=true v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
+            <v-radio label="No" value=false v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
           </v-radio-group>
         </v-col>
-        <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
+        <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'true'">
           <p class="font-weight-black text-h8">If you are planning to pursue a specialized degree / certificate program, what type of program?</p>
           <div>
             <div v-for="specializedType in studentInformation.specializedDegCert.specializedDegCertType" :key="specializedType.id">
@@ -195,7 +195,7 @@
               <v-text-field v-if="specializedType.id === 6 && specializedType.checked" label="Please Specify" v-model="studentInformation.specializedDegCert.professionDesignOther"></v-text-field>
             </div>
           </div>
-        </v-col> -->
+        </v-col>
         <v-row>
           <v-col cols="12" md="4">
             <v-btn type="submit" methods="handleSubmitForm">Submit Form</v-btn>
@@ -247,16 +247,16 @@ export default {
           otherMinor: ''
         },
         hichInfo: {
-          hichStatus: '',
-          hichHistoryStatus: ''
-        },/*
+          hichStatus: false,
+          hichHistoryStatus: false
+        },
         communityServiceInfo: {
-          serviceStatus: '',
+          serviceStatus: false,
           serviceHistoryDesc: '',
           serviceOrgsOutsideUH: ''
         },
         graduateProfessionalSchool: {
-          programGradProStatus: '',
+          programGradProStatus: false,
           programGradProType: [
             { id: 1, label: "MD/DO", checked: false },
             { id: 2, label: "Physician Assistant: PA", checked: false },
@@ -272,7 +272,7 @@ export default {
           otherTextbox: '',
         },
         specializedDegCert: {
-          specializedDegCertStatus: '',
+          specializedDegCertStatus: false,
           specializedDegCertType: [
             { id: 1, label: "Nursing: PRN, RN, CNA, etc", checked: false },
             { id: 2, label: "Social Work: LSW/LCSW", checked: false },
@@ -283,7 +283,6 @@ export default {
           ],
           professionDesignOther: '',
         },
-        */
       }
     }
   },
@@ -321,27 +320,27 @@ export default {
               honorsMinor: [],
               otherMinor: ''
             },
-            //hichInfo: {
-            //  hichStatus: '',
-            //  hichHistoryStatus: ''
-            //},
-            // communityServiceInfo: {
-            //   serviceStatus: '',
-            //   serviceHistoryDesc: '',
-            //   serviceOrgsOutsideUH: ''
-            // },
-            // graduateProfessionalSchool: {
-            //   programGradProStatus: '',
-            //   programGradProType: [],
-            //   phDTextbox: '',
-            //   masterTextbox: '',
-            //   otherTextbox: '',
-            // },
-            // specializedDegCert: {
-            //   specializedDegCertStatus: '',
-            //   specializedDegCertType: [],
-            //   professionDesignOther: '',
-            // },
+            hichInfo: {
+             hichStatus: '',
+             hichHistoryStatus: ''
+            },
+            communityServiceInfo: {
+              serviceStatus: '',
+              serviceHistoryDesc: '',
+              serviceOrgsOutsideUH: ''
+            },
+            graduateProfessionalSchool: {
+              programGradProStatus: '',
+              programGradProType: [],
+              phDTextbox: '',
+              masterTextbox: '',
+              otherTextbox: '',
+            },
+            specializedDegCert: {
+              specializedDegCertStatus: '',
+              specializedDegCertType: [],
+              professionDesignOther: '',
+            },
         }
       })
       .catch((error) => {
