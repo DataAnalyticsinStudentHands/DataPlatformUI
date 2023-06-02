@@ -243,17 +243,13 @@
   </main>
 </template>
 <script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import axios from "axios";
 import { DateTime } from "luxon";
 
 export default {
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
   props: ["id"],
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
@@ -279,11 +275,12 @@ export default {
     };
   },
   beforeMount() {
+    const user = useLoggedInUserStore()
+    let token = user.token
+    let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
     axios
-      .get(
-        import.meta.env.VITE_ROOT_API + `/eventdata/id/${this.$route.params.id}`
-        , {
-          headers: { token: localStorage.getItem("token") },
+      .get(url + `/eventdata/id/${this.$route.params.id}`, {
+          headers: { token },
         })
       .then((resp) => {
         let data = resp.data[0];
@@ -295,11 +292,8 @@ export default {
         this.attendeeIDs = data.attendees;
         for (let i = 0; i < this.attendeeIDs.length; i++) {
           axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/primarydata/id/${this.attendeeIDs[i]}`
-                , {
-          headers: { token: localStorage.getItem("token") },
+            .get( url + `/primarydata/id/${this.attendeeIDs[i]}`, {
+          headers: { token },
         })
             .then((resp) => {
               let data = resp.data[0];
@@ -316,10 +310,12 @@ export default {
   },
   methods: {
     handleEventUpdate() {
+      const user = useLoggedInUserStore()
+      let token = user.token
+      let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
       this.event.services = this.checkedServices;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/${this.id}`;
-      axios.put(apiURL, this.event, {
-          headers: { token: localStorage.getItem("token") },
+      axios.put(url + `/eventdata/${this.id}`, this.event, {
+          headers: { token },
         }).then(() => {
         alert("Update has been saved.");
         this.$router.back().catch((error) => {
@@ -341,5 +337,4 @@ export default {
     };
   },
 };
-
 </script>

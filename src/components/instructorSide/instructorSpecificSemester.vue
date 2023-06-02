@@ -1,26 +1,30 @@
-<!--'/adminSpecificActivity' this page will only show experiences-->
+<!--'/instructorSpecificSemester' this page will only show experiences-->
 <template>
     <main class="">
         <center>
             <v-container>
-                <p class="font-weight-black text-h6">Project 1</p>
+                <p class="font-weight-black text-h6">HON 3350 MW - Priciple of Data and Society</p>
                 <br>
                  <v-row>
                      <v-col cols="12" md="6">
-                     <v-text-field v-model="activityName" label="Project 1"></v-text-field>
+                     <v-text-field v-model="experienceCode" label="HON 3350 MW"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <v-select
-                        title="Apprenticeship - Research Assistant"
-                        value = "Apprenticeship - Research Assistant"
-                        label="Related Experience"
-                        :items="['Apprenticeship - Research Assistant', 'HON 3350 MW', 'HON 3397']"
-                        variant="solo"
-                        ></v-select>
+                    <v-text-field v-model="experienceName" label="Priciple of Data and Society"></v-text-field>
                      </v-col>
                     </v-row>
             </v-container>
         </center>
+        <div style="text-align: left;">
+        <v-list lines="one">
+            <v-list-item
+                v-for="item in items"
+                :key="item.title"
+                :title="item.title"
+                subtitle="..."
+            ></v-list-item>
+            </v-list>
+        </div>
         <div style="text-align:right;">
             <v-btn style="text-align:center;">
             Update
@@ -51,6 +55,22 @@
   </style>
   
   <script>
-      export default {
-      }
+export default {
+    data: () => ({
+      items: [
+        {
+          title: 'Activity #1',
+          value: 1,
+        },
+        {
+          title: 'Activity #2',
+          value: 2,
+        },
+        {
+          title: 'Activity #3',
+          value: 3,
+        },
+      ],
+    }),
+  }
   </script>

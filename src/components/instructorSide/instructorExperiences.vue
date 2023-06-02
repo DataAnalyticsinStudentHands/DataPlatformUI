@@ -1,11 +1,11 @@
-<!--'/adminExperiences' this page will only show experiences-->
+<!--'/instructorExperiences' this page will only show experiences-->
 <template>
   <main class="">
       <center>
-        <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"> <router-link class="" to="/adminSemesters">Semesters</router-link> | <router-link class="" to="/adminExperiences">Experiences</router-link> | <router-link class="" to="/adminActivities">Activities</router-link>         </h2>
+        <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"> <router-link class="" to="/instructorSemesters">Semesters</router-link> | <router-link class="" to="/adminExperiences">Experiences</router-link> | <router-link class="" to="/adminActivities">Activities</router-link>         </h2>
             <p class="font-weight-black text-h6">Experiences</p>
             <br>
-            <v-btn style="text-align:center"><router-link class="" to="/adminAddExperience">
+            <v-btn style="text-align:center"><router-link class="" to="/instructorAddExperience">
             Add New Experience</router-link>
             </v-btn>
             <table>
@@ -17,10 +17,10 @@
               Experience Name
             </th>
         </tr>
-        <tr><router-link class="nav-link text-primary" to="/adminSpecificExperience">
+        <tr><router-link class="nav-link text-primary" to="/instructorSpecificExperience">
           <td style="padding: 30px;">
             HON 3350 MW
-          </td></router-link><router-link class="nav-link text-primary" to="/adminSpecificExperience">
+          </td></router-link><router-link class="nav-link text-primary" to="/instructorSpecificExperience">
           <td style="padding: 30px;">
             Priciple of Data and Society
           </td></router-link>

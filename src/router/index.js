@@ -96,79 +96,79 @@ const routes = [
         
     },
     {
-      path: '/adminDash',
-      name: 'adminDash',
-      component: () => import('../components/adminSide/adminDash.vue')
+      path: '/instructorDash',
+      name: 'instructorDash',
+      component: () => import('../components/instructorSide/instructorDash.vue')
     },
     {
-      path: '/adminReports',
-      name: 'adminReports',
-      component: () => import('../components/adminSide/adminReports.vue')
+      path: '/instructorReports',
+      name: 'instructorReports',
+      component: () => import('../components/instructorSide/instructorReports.vue')
     },
     {
-      path: '/adminStudentsList',
-      name: 'adminStudentsList',
-      component: () => import('../components/adminSide/adminStudentsList.vue')
+      path: '/instructorStudentsList',
+      name: 'instructorStudentsList',
+      component: () => import('../components/instructorSide/instructorStudentsList.vue')
     },
     {
-      path: '/adminSpecificStudent/:studentID',
-      name: 'adminSpecificStudent',
-      component: () => import('../components/adminSide/adminSpecificStudent.vue')
+      path: '/instructorSpecificStudent/:studentID',
+      name: 'instructorSpecificStudent',
+      component: () => import('../components/instructorSide/instructorSpecificStudent.vue')
     },
     {
-      path: '/adminSemesters',
-      name: 'adminSemesters',
-      component: () => import('../components/adminSide/adminSemesters.vue')
+      path: '/instructorSemesters',
+      name: 'instructorSemesters',
+      component: () => import('../components/instructorSide/instructorSemesters.vue')
     },
     {
-      path: '/adminAddSemester',
-      name: 'adminAddSemester',
-      component: () => import('../components/adminSide/adminAddSemester.vue')
+      path: '/instructorAddSemester',
+      name: 'instructorAddSemester',
+      component: () => import('../components/instructorSide/instructorAddSemester.vue')
     },
     {
-      path: '/adminSpecificSemester',
-      name: 'adminSpecificSemester',
-      component: () => import('../components/adminSide/adminSpecificSemester.vue')
+      path: '/instructorSpecificSemester',
+      name: 'instructorSpecificSemester',
+      component: () => import('../components/instructorSide/instructorSpecificSemester.vue')
     },
     {
-      path: '/adminExperiences',
-      name: 'adminExperiences',
-      component: () => import('../components/adminSide/adminExperiences.vue')
+      path: '/instructorExperiences',
+      name: 'instructornExperiences',
+      component: () => import('../components/instructorSide/instructorExperiences.vue')
     },
     {
-      path: '/adminAddExperience',
-      name: 'adminAddExperience',
-      component: () => import('../components/adminSide/adminAddExperience.vue')
+      path: '/instructorAddExperience',
+      name: 'instructorAddExperience',
+      component: () => import('../components/instructorSide/instructorAddExperience.vue')
     },
     {
-      path: '/adminSpecificExperience',
-      name: 'adminSpecificExperience',
-      component: () => import('../components/adminSide/adminSpecificExperience.vue')
+      path: '/instructorSpecificExperience',
+      name: 'instructorSpecificExperience',
+      component: () => import('../components/instructorSide/instructorSpecificExperience.vue')
     },
     {
-      path: '/adminActivities',
-      name: 'adminActivities',
-      component: () => import('../components/adminSide/adminActivities.vue')
+      path: '/instructorActivities',
+      name: 'instructorActivities',
+      component: () => import('../components/instructorSide/instructorActivities.vue')
     },
     {
-      path: '/adminAddActivity',
-      name: 'adminAddActivity',
-      component: () => import('../components/adminSide/adminAddActivity.vue')
+      path: '/instructorAddActivity',
+      name: 'instructorAddActivity',
+      component: () => import('../components/instructorSide/instructorAddActivity.vue')
     },
     {
-      path: '/adminSpecificActivity',
-      name: 'adminSpecificActivity',
-      component: () => import('../components/adminSide/adminSpecificActivity.vue')
+      path: '/instructorSpecificActivity',
+      name: 'instructorSpecificActivity',
+      component: () => import('../components/instructorSide/instructorSpecificActivity.vue')
     },
     {
-      path: '/adminInactiveStudents',
-      name: 'adminInactiveStudents',
-      component: () => import('../components/adminSide/adminInactiveStudents.vue')
+      path: '/instructorInactiveStudents',
+      name: 'instructorInactiveStudents',
+      component: () => import('../components/instructorSide/instructorInactiveStudents.vue')
     },
     {
-      path: '/adminInactiveSemestersExperiencesActivities',
-      name: 'adminInactiveSemestersExperiencesActivities',
-      component: () => import('../components/adminSide/adminInactiveSemestersExperiencesActivities.vue')
+      path: '/instructorInactiveSemestersExperiencesinstructorActivities',
+      name: 'instructorInactiveSemestersExperiencesActivities',
+      component: () => import('../components/instructorSide/instructorInactiveSemestersExperiencesActivities.vue')
     },
     {
       path: '/studentEntryForm',

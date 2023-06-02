@@ -1,4 +1,4 @@
-<!--'/adminInactiveStudents'-->
+<!--'/instructorInactiveStudents'-->
 <template>
   <main class="">
       <center>

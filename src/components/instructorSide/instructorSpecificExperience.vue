@@ -1,23 +1,36 @@
-<!--'/adminAddExperience' this page will only show experiences-->
+<!--'/instructorSpecificExperience' this page will only show experiences-->
 <template>
     <main class="">
         <center>
             <v-container>
-                <p class="font-weight-black text-h6">New Experience</p>
+                <p class="font-weight-black text-h6">HON 3350 MW - Priciple of Data and Society</p>
                 <br>
                  <v-row>
                      <v-col cols="12" md="6">
-                     <v-text-field v-model="experienceCode" label="Experience's Code"></v-text-field>
+                     <v-text-field v-model="experienceCode" label="HON 3350 MW"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                    <v-text-field v-model="experienceName" label="Experiece's Name"></v-text-field>
+                    <v-text-field v-model="experienceName" label="Priciple of Data and Society"></v-text-field>
                      </v-col>
                     </v-row>
             </v-container>
         </center>
+        <div style="text-align: left;">
+        <v-list lines="one">
+            <v-list-item
+                v-for="item in items"
+                :key="item.title"
+                :title="item.title"
+                subtitle="..."
+            ></v-list-item>
+            </v-list>
+        </div>
         <div style="text-align:right;">
             <v-btn style="text-align:center;">
-            Submit
+            Update
+            </v-btn>
+            <v-btn style="text-align:center">
+            Inactivate
             </v-btn>
         </div>
     </main>

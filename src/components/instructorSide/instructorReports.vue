@@ -1,4 +1,4 @@
-<!--'/adminReports'-->
+<!--'/instructorReports'-->
 <template>
   <main class="">
     Select a Semester: (drop down menu)

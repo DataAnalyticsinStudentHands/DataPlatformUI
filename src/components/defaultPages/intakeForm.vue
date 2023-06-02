@@ -19,129 +19,7 @@
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
         <!-- grid container -->
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-        >
-          <h2 class="text-2xl font-bold">Personal Details</h2>
-          <!-- form field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">First Name</span>
-              <span style="color: #ff0000">*</span>
-              <input
-                type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="client.firstName"
-              />
-              <span class="text-black" v-if="v$.client.firstName.$error">
-                <p
-                  class="text-red-700"
-                  v-for="error of v$.client.firstName.$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </label>
-          </div>
-
-          <!-- form field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Middle Name</span>
-              <input
-                type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder
-                v-model="client.middleName"
-              />
-            </label>
-          </div>
-
-          <!-- form field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Last Name</span>
-              <span style="color: #ff0000">*</span>
-              <input
-                type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder
-                v-model="client.lastName"
-              />
-              <span class="text-black" v-if="v$.client.lastName.$error">
-                <p
-                  class="text-red-700"
-                  v-for="error of v$.client.lastName.$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </label>
-          </div>
-
-          <div></div>
-          <!-- form field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Email</span>
-              <input
-                type="email"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                v-model="client.email"
-              />
-              <span class="text-black" v-if="v$.client.email.$error">
-                <p
-                  class="text-red-700"
-                  v-for="error of v$.client.email.$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </label>
-          </div>
-          <!-- form field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Phone Number</span>
-              <span style="color: #ff0000">*</span>
-              <input
-                type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers[0].primaryPhone"
-              />
-              <span
-                class="text-black"
-                v-if="v$.client.phoneNumbers[0].primaryPhone.$error"
-              >
-                <p
-                  class="text-red-700"
-                  v-for="error of v$.client.phoneNumbers[0].primaryPhone
-                    .$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </label>
-          </div>
-          <!-- form field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Alternative Phone Number</span>
-              <input
-                type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers[0].secondaryPhone"
-              />
-            </label>
-          </div>
-        </div>
+        
         <div
           class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
         >
@@ -219,24 +97,22 @@
 </template>
 
 <script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
 export default {
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
   mounted() {
+    const user = useLoggedInUserStore()
+    let token = user.token
     let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
     this.queryData = [];
     axios
       .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
+        headers: { token },
       })
       .then(
         (resp) => {
@@ -254,18 +130,8 @@ export default {
     return {
       el: "#app",
       client: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        email: "",
-        phoneNumbers: [
-          {
-            primaryPhone: "",
-            secondaryPhone: "",
-          },
-        ],
-        selectedMonth: "",
-        selectedDay: "",
+        birthMonth: "",
+        birthDay: "",
         daysInMonth: [],
         selectedYear: "2004",
       },
@@ -312,6 +178,8 @@ export default {
       return Array.from({ length: daysInMonth[month] }, (_, i) => i + 1);
     },
     async handleSubmitForm() {
+      const user = useLoggedInUserStore()
+      let token = user.token
       // Checks to see if there are any errors in validation
       const isFormCorrect = true;
       // If no errors found. isFormCorrect = True then the form is submitted
@@ -319,7 +187,7 @@ export default {
         let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata`;
         axios
           .post(apiURL, this.client, {
-            headers: { token: localStorage.getItem("token") },
+            headers: { token },
           })
           .then((response) => {
             // alert("Client has been succesfully added.");
@@ -336,13 +204,15 @@ export default {
     },
   },
 
-  // sets validations for the various data properties
+  // sets validations for the various data properties, currently this part does not work because the validation requires models we don't have
   validations() {
     return {
       client: {
         firstName: { required, alpha },
         lastName: { required, alpha },
         email: { email },
+        birthMonth: {required},
+        birthDay:{required},
         birthday: {
           month: { required },
           day: { required },

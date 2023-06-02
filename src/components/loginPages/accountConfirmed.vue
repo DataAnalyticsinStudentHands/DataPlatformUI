@@ -12,7 +12,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">Varify your account</label>
+              <label for="email" class="block">Verify your account</label>
               <input
                 v-model="code"
                 type="text"

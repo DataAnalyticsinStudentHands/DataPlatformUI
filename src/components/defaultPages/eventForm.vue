@@ -212,15 +212,11 @@
   </main>
 </template>
 <script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import axios from "axios";
 export default {
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
@@ -243,11 +239,13 @@ export default {
     };
   },
   mounted() {
+    const user = useLoggedInUserStore()
+    let token = user.token
     let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
     this.queryData = [];
     axios
       .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
+        headers: { token },
       })
       .then(
         (resp) => {
@@ -263,6 +261,8 @@ export default {
   },
   methods: {
     async handleSubmitForm() {
+      const user = useLoggedInUserStore()
+      let token = user.token
       // Checks to see if there are any errors in validation
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
@@ -270,7 +270,9 @@ export default {
         this.event.services = this.checkedServices;
         let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata`;
         axios
-          .post(apiURL, this.event)
+          .post(apiURL, this.event, {
+            headers: { token },
+          })
           .then(() => {
             alert("Event has been added.");
             this.$router.push("/findEvents");

@@ -1,0 +1,2834 @@
+[
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Architecture, BARCH",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "World Cities",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Architectural Studies, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Architecture, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Architecture, MARCH",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Architecture",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Environmental Design, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Industrial Design, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Industrial Design, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Architecture, College of",
+   "Department": "Architecture (INTERDEPT)",
+   "Plan Name": "Interior Architecture, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Studio Art",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Dance",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Interdisciplinary Arts",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Art History",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Theatre",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Music",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Arts Leadership, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Music Theory",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Arts (INTERDEPT)",
+   "Plan Name": "Music Literature",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Photography/Digital Media, BFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Sculpture, BFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Painting, BFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Graphic Design, BFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Art History, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Art, MFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Art, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Art, School of",
+   "Plan Name": "Art History, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Music, Moores School of",
+   "Plan Name": "Performance, BM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Music, Moores School of",
+   "Plan Name": "Music Therapy, BMT",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Music, Moores School of",
+   "Plan Name": "Music, MM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Music, Moores School of",
+   "Plan Name": "Music, DMA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Music, Moores School of",
+   "Plan Name": "Music, BM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Music, Moores School of",
+   "Plan Name": "Music, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Theatre and Dance, School of",
+   "Plan Name": "Theatre, MFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Theatre and Dance, School of",
+   "Plan Name": "Theatre, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Theatre and Dance, School of",
+   "Plan Name": "Dance, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Theatre and Dance, School of",
+   "Plan Name": "Dance, BFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Arts, College of the",
+   "Department": "Theatre and Dance, School of",
+   "Plan Name": "Theatre, BFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Personal Financial Planning",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Risk Management and Insurance",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Sales",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Supply Chain Management",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Supply Chain Mgmt UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Entrepreneurship UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Finance",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Finance UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Human Resource Management",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Human Resource Mgmt UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Leadership",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Management and Leadership",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Mgmt and Leadership UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Management",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Management Info Systems",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Management Info Syst UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Marketing",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Marketing UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Accounting",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Accounting UH Extend",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Bus Admn, MBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Bus Admn UH Extend, MBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Bus Admn, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Business Administration, DBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Business Administration",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Business Foundations",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Energy and Sustainability",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Business, Bauer  (INTERDEPT)",
+   "Plan Name": "Entrepreneurship",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Accountancy& Taxation, Dept of",
+   "Plan Name": "Accounting UH Extend, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Accountancy& Taxation, Dept of",
+   "Plan Name": "Accounting, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Accountancy& Taxation, Dept of",
+   "Plan Name": "Accountancy, MSACY",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Accountancy& Taxation, Dept of",
+   "Plan Name": "Accountancy UH Extend, MSACY",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Supply Chain Mgmt UHExtend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Supply Chain Management, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Mgt Info Systems, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Mgt Info Systems UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Mgmt Info Systems UHExtend,BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Mgt Info Systems, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Supply Chain Mgt UHExtend,BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Supply Chain Management, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Business Analytics, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Dec & Information Sci, Dept of",
+   "Plan Name": "Business Analytics UHExtend,MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Finance, Department of",
+   "Plan Name": "Global Energy Leadership, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Finance, Department of",
+   "Plan Name": "Global Energy Ldrs UHExtend,MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Finance, Department of",
+   "Plan Name": "Finance UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Finance, Department of",
+   "Plan Name": "Finance UH Extend, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Finance, Department of",
+   "Plan Name": "Finance, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Finance, Department of",
+   "Plan Name": "Finance, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Mgmt & Leadership, Dept of",
+   "Plan Name": "Management UH Extend, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Mgmt & Leadership, Dept of",
+   "Plan Name": "Mgmt & Leadership UHExtend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Mgmt & Leadership, Dept of",
+   "Plan Name": "Management & Leadership, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Mgmt & Leadership, Dept of",
+   "Plan Name": "Management, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Marketing, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Marketing UH Extend, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Marketing, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Entrepreneurship UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Marketing UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Sales Leadership, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Sales Leadership UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Entrepreneurship, BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Entrepreneurship UH Extend,BBA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Business, Bauer College of",
+   "Department": "Marketing & Entrepen, Dept of",
+   "Plan Name": "Entrepreneurship, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Education (INTERDEPT)",
+   "Plan Name": "Asian American Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Education (INTERDEPT)",
+   "Plan Name": "Asian Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Education (INTERDEPT)",
+   "Plan Name": "Reading & Language Arts Ed",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Education (INTERDEPT)",
+   "Plan Name": "Human Dev & Family Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Education (INTERDEPT)",
+   "Plan Name": "Health",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Education (INTERDEPT)",
+   "Plan Name": "Education",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Education (INTERDEPT)",
+   "Plan Name": "Education Non-Certificate",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Curriculum & Instruction, Dept",
+   "Plan Name": "Curriculum & Instruction, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Curriculum & Instruction, Dept",
+   "Plan Name": "Curr & Instruct, EDD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Curriculum & Instruction, Dept",
+   "Plan Name": "Teaching and Learning, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Curriculum & Instruction, Dept",
+   "Plan Name": "Curr & Instruct, MED",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Educ Leadrshp & Pol Std, Dept.",
+   "Plan Name": "Special Populations, MED",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Educ Leadrshp & Pol Std, Dept.",
+   "Plan Name": "Special Populations",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Educ Leadrshp & Pol Std, Dept.",
+   "Plan Name": "Professional Leadership, EDD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Educ Leadrshp & Pol Std, Dept.",
+   "Plan Name": "Adm & Supervision, MED",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Educ Leadrshp & Pol Std, Dept.",
+   "Plan Name": "Higher Education, MED",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Educ Leadrshp & Pol Std, Dept.",
+   "Plan Name": "Higher Educ Leadrshp & Pol,PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Psyc, Health,Learning Sci Dept",
+   "Plan Name": "Hum Dev & Family Sciences, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Psyc, Health,Learning Sci Dept",
+   "Plan Name": "Hum Dev & Family Sciences, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Psyc, Health,Learning Sci Dept",
+   "Plan Name": "Counseling, MED",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Psyc, Health,Learning Sci Dept",
+   "Plan Name": "Health, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Psyc, Health,Learning Sci Dept",
+   "Plan Name": "Counseling Psych, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Psyc, Health,Learning Sci Dept",
+   "Plan Name": "School Psychology, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Education, College of",
+   "Department": "Psyc, Health,Learning Sci Dept",
+   "Plan Name": "Measure Quant & Learn Sci, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Engineering (INTERDEPT)",
+   "Plan Name": "Mechanical Engineering",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Engineering (INTERDEPT)",
+   "Plan Name": "NanoEngineering",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Engineering (INTERDEPT)",
+   "Plan Name": "Petroleum Engineering",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Engineering (INTERDEPT)",
+   "Plan Name": "Geomatics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Engineering (INTERDEPT)",
+   "Plan Name": "Engineering Data Science, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Engineering (INTERDEPT)",
+   "Plan Name": "EngineeringDataSci UHExtend,MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Biomedical Engineering, Dept",
+   "Plan Name": "Biomedical Engineering, MSBE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Biomedical Engineering, Dept",
+   "Plan Name": "Biomed EngineeringUHExtnd,MSBE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Biomedical Engineering, Dept",
+   "Plan Name": "Biomedical Engineering, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Biomedical Engineering, Dept",
+   "Plan Name": "Biomedical Engineering, BSBE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Chem& Biomolecular Eng, Dpt of",
+   "Plan Name": "Chem Engr, MCHE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Chem& Biomolecular Eng, Dpt of",
+   "Plan Name": "Chem Engr, BSCHE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Chem& Biomolecular Eng, Dpt of",
+   "Plan Name": "Chem Engr UH Extend, MCHE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Chem& Biomolecular Eng, Dpt of",
+   "Plan Name": "Chem Engr, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Chem& Biomolecular Eng, Dpt of",
+   "Plan Name": "Chem Engr, MSCHE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Construction Engr, BSCONE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Civil Engineering, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "CivilEngineering UHExtend,MSCE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Civil Engineering, MSCE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Civil Engineering, BSCE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Environmental Engineering, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Environmental Engineering, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Geosensing Syst Engr & Sci,PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Civil & Env Engineering, Dept",
+   "Plan Name": "Geosensing Syst Engr & Sci, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Computer Engr, BSCPE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Computer Engr Analytics, BSCEA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Cmp & Sys Engr UHExtend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Computer & Systems Engr, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Electrical Engr, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Electrical Engr UHExtend, MSEE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Electrical Engr, MSEE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Electrical Engr, BSEE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Electr & Comp Engineering, Dpt",
+   "Plan Name": "Electrical Engr, MEE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "EngineeringMgmt UHExtnd,MEMGMT",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "Industrial Engr, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "Industrial Engr, MSIE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "Industrial Engr UH Extend, MIE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "Industrial Engr, MIE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "Industrial Engr, BSIE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "Systems Engineering, BSSYSE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Industrial Engineering, Dept",
+   "Plan Name": "Engineering Management, MEMGMT",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Subsea Engineering UHExtend,MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Space Architecture, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Mechanical Engr, MME",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Mechanical Engr UH Extend, MME",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Mechanical Engr, BSME",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Mechanical Engr, MSME",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Mechanical Engr UH Extend,MSME",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Mechanical Engr, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Materials Science & Engr, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Materials Science & Engr, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Aerosp Engineering, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Mechanical Engineering, Dept",
+   "Plan Name": "Subsea Engineering, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Petroleum Engineering, Dept of",
+   "Plan Name": "Petroleum Engr, BSPETE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Petroleum Engineering, Dept of",
+   "Plan Name": "Petroleum Engineering, PhD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Petroleum Engineering, Dept of",
+   "Plan Name": "Petroleum Engineering, MPETE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Petroleum Engineering, Dept of",
+   "Plan Name": "Petroleum Engr, MSPETE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Petroleum Engineering, Dept of",
+   "Plan Name": "Petroleum Engr UHExtend,MSPETE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Engineering, College of",
+   "Department": "Petroleum Engineering, Dept of",
+   "Plan Name": "Petroleum Engr UHExtend,MPETE",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Hobby School of Public Affairs",
+   "Department": "Hobby School of Public Affairs",
+   "Plan Name": "Public Policy, MPP",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Hobby School of Public Affairs",
+   "Department": "Hobby School of Public Affairs",
+   "Plan Name": "Public Administration, MPA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Hobby School of Public Affairs",
+   "Department": "Hobby School of Public Affairs",
+   "Plan Name": "Public Policy, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Hobby School of Public Affairs",
+   "Department": "Hobby School of Public Affairs",
+   "Plan Name": "Public Policy, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Hobby School of Public Affairs",
+   "Department": "Hobby School of Public Affairs",
+   "Plan Name": "Public Leadership",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Global Hospitality Leadership, Col of",
+   "Department": "Global Hosp Ldrshp (INTERDEPT)",
+   "Plan Name": "Beverage Management & Marketin",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Global Hospitality Leadership, Col of",
+   "Department": "Global Hosp Ldrshp (INTERDEPT)",
+   "Plan Name": "Hospitality Administration, PH",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Global Hospitality Leadership, Col of",
+   "Department": "Global Hosp Ldrshp (INTERDEPT)",
+   "Plan Name": "Global Hosp Leadership, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Global Hospitality Leadership, Col of",
+   "Department": "Global Hosp Ldrshp (INTERDEPT)",
+   "Plan Name": "Executive Hospitality Mgt, MHM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Global Hospitality Leadership, Col of",
+   "Department": "Global Hosp Ldrshp (INTERDEPT)",
+   "Plan Name": "Hospitality Management, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Global Hospitality Leadership, Col of",
+   "Department": "Global Hosp Ldrshp (INTERDEPT)",
+   "Plan Name": "Global Hospitality Business,MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Law, College of",
+   "Department": "Law (INTERDEPT)",
+   "Plan Name": "En,Env&Nat Res, LLM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Law, College of",
+   "Department": "Law (INTERDEPT)",
+   "Plan Name": "Law, JD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Law, College of",
+   "Department": "Law (INTERDEPT)",
+   "Plan Name": "U.S. Law, LLM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Law, College of",
+   "Department": "Law (INTERDEPT)",
+   "Plan Name": "Tax Law, LLM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Law, College of",
+   "Department": "Law (INTERDEPT)",
+   "Plan Name": "Health Law, LLM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Law, College of",
+   "Department": "Law (INTERDEPT)",
+   "Plan Name": "International Law, LLM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Law, College of",
+   "Department": "Law (INTERDEPT)",
+   "Plan Name": "Intel Prop & Info, LLM",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Economics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Chinese Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Classical Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Advertising",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Corporate Communication",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Commun Sciences and Disorders",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Health Communication",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Interpersonal Communication",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "African American Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Air Force Leadership",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "American Cultures",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Anthropology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Applied Linguistics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Applied Politics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Arab Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Food and Society",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "French-Bus Related Professions",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "French",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "German Cultur & Prof Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "German",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "German Area Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Global & Intercultural Comm",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Global & International Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Gay,Lesbian,Bisexual, & Trans",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Global Engagement & Research",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Communication",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Media Production",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Media Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Public Relations/Advertising",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Public Relations",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Creative Work",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Creative Writing",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Data and Society",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Latin",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Leadership Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Medicine and Society",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "MexAmer & Latino/a Appl Stu,BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Mexican American Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Military Leadership",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Greek",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Hispanic Journalism & Media",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "History",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Human Nutrition & Foods",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "India Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Integrated Communication",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Italian",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Jewish Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Journalism",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "English",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Film Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Spanish",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Speech Communication",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "U.S. Ethnic Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Law, Values, and Policy",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "World Cultures and Literatures",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Women's, Gender, Sexuality, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Women's Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Political Science",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Psychology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Quantitative Social Science",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Religious Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Sociology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Spanish/Business Professions",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Spanish/Global Professions",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Naval Sciences",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "National Security Studies",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Philosophy",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Phronesis Politics and Ethics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Kinesiology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Lib Arts & Soc Sci (INTERDEPT)",
+   "Plan Name": "Latin Amer Studies & Cultures",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "African American Studies, Dept",
+   "Plan Name": "African American Studies, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Comp Cultural Studies, Dept",
+   "Plan Name": "Anthropology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Comp Cultural Studies, Dept",
+   "Plan Name": "Anthropology, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Comp Cultural Studies, Dept",
+   "Plan Name": "Liberal Studies, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Comp Cultural Studies, Dept",
+   "Plan Name": "Liberal Studies, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Comp Cultural Studies, Dept",
+   "Plan Name": "Religious Studies, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Comp Cultural Studies, Dept",
+   "Plan Name": "Anthropology, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Com Sciences & Disorders, Dept",
+   "Plan Name": "Comm Sciences & Disorders, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Com Sciences & Disorders, Dept",
+   "Plan Name": "Comm Sciences & Disorders, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Com Sciences & Disorders, Dept",
+   "Plan Name": "Comm Sciences & Disorders, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Com Sciences & Disorders, Dept",
+   "Plan Name": "Comm Sciences & Disorders, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Com Sciences & Disorders, Dept",
+   "Plan Name": "Amer Sign Lang Interpreting,BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Advertising, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Health Comm, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Interpersonal Comm, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Journalism, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Mass Comm St, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Media Prod, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Communication, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Communication Studies, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Org/Corp Comm, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Public Relations, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Public Relations Studies, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "MP/Media Stds, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Speech Comm, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Integrated Communication, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Communication, Department of",
+   "Plan Name": "Strategic Communication, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Economics, Department of",
+   "Plan Name": "Applied Economics, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Economics, Department of",
+   "Plan Name": "Economics, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Economics, Department of",
+   "Plan Name": "Economics, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Economics, Department of",
+   "Plan Name": "Economics, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Economics, Department of",
+   "Plan Name": "Economics, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "English, Department of",
+   "Plan Name": "English, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "English, Department of",
+   "Plan Name": "English, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "English, Department of",
+   "Plan Name": "English, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "English, Department of",
+   "Plan Name": "Engl-Creative  Writing&Lit, PH",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "English, Department of",
+   "Plan Name": "English-Creative Writing, BA P",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "English, Department of",
+   "Plan Name": "English-Creative Writing, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "English, Department of",
+   "Plan Name": "Creative Writing, MFA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Athletic Training, MAT",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Human Nutr & Foods, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Exercise Science, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Exercise Science, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Sport & Fitness Admin, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Kinesiology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Fitness & Sports, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Kinesiology, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Sports Administration, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Health & Human Perform, Dept",
+   "Plan Name": "Human Nutrition, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "History, Department of",
+   "Plan Name": "History, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "History, Department of",
+   "Plan Name": "History, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "History, Department of",
+   "Plan Name": "History, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Hispanic Studies, Dept",
+   "Plan Name": "Spanish, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Hispanic Studies, Dept",
+   "Plan Name": "Spanish, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Hispanic Studies, Dept",
+   "Plan Name": "U.S. Hispanic Studies, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Hispanic Studies, Dept",
+   "Plan Name": "Spanish, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Mod & Classical Languages, Dpt",
+   "Plan Name": "French, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Mod & Classical Languages, Dpt",
+   "Plan Name": "Chinese Studies, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Mod & Classical Languages, Dpt",
+   "Plan Name": "World Culture & Literature, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Mod & Classical Languages, Dpt",
+   "Plan Name": "World Culture & Literature, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Mod & Classical Languages, Dpt",
+   "Plan Name": "Italian Studies, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Philosophy, Department of",
+   "Plan Name": "Philosophy, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Philosophy, Department of",
+   "Plan Name": "Philosophy, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Political Science, Dept of",
+   "Plan Name": "Political Science, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Political Science, Dept of",
+   "Plan Name": "Political Science, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Political Science, Dept of",
+   "Plan Name": "Political Science, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Political Science, Dept of",
+   "Plan Name": "Political Science, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Political Science, Dept of",
+   "Plan Name": "Public Administration, MPA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Psychology, Department of",
+   "Plan Name": "Psychology, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Psychology, Department of",
+   "Plan Name": "Psychology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Psychology, Department of",
+   "Plan Name": "Psychology, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Psychology, Department of",
+   "Plan Name": "Ind/Org Psychology, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Psychology, Department of",
+   "Plan Name": "Dev, Cog, & Beh Neurosci, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Psychology, Department of",
+   "Plan Name": "Clin Psych, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Psychology, Department of",
+   "Plan Name": "Social Psychology, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Sociology, Department of",
+   "Plan Name": "Sociology, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Sociology, Department of",
+   "Plan Name": "Sociology, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Lib Arts & Soc Sci, Coll of",
+   "Department": "Sociology, Department of",
+   "Plan Name": "Sociology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Biology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Biochemical/Biophysical Sci",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Geology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Computer Science Systems",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Data Science",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Chemistry",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Computer Science",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Atmospheric Science",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Mathematics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Physics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Mathematical Biology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Nat Sciences & Math (INTERDEPT",
+   "Plan Name": "Geophysics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Honors Biomedical Sciences, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Biology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Biochemistry, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Biochemistry, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Biology, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Biology, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Biology, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Bchs/Bphy Sci, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Biology & Biochemistry, Dpt of",
+   "Plan Name": "Bchs/Bphy Sci, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Chemistry, Department of",
+   "Plan Name": "Chemistry, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Chemistry, Department of",
+   "Plan Name": "Chemistry, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Chemistry, Department of",
+   "Plan Name": "Chemistry, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Chemistry, Department of",
+   "Plan Name": "Chemistry, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Computer Science, Dept of",
+   "Plan Name": "Computer Science, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Computer Science, Dept of",
+   "Plan Name": "Computer Science, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Computer Science, Dept of",
+   "Plan Name": "Computer Science, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Atmospheric Science, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Geophysics, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Environmental Sciences, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Geology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Geology, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Geology, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Geophysics, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Earth Science, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Atmospheric Science, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Atmospheric Sciences, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Earth &Atmospheric Sci,Dept of",
+   "Plan Name": "Geophysics, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Mathematics, Department of",
+   "Plan Name": "Mathematics, MA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Mathematics, Department of",
+   "Plan Name": "Mathematics, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Mathematics, Department of",
+   "Plan Name": "Mathematics, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Mathematics, Department of",
+   "Plan Name": "Statistics & Data Science, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Mathematics, Department of",
+   "Plan Name": "Applied Math, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Mathematics, Department of",
+   "Plan Name": "Mathematics, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Mathematics, Department of",
+   "Plan Name": "Mathematics, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Physics, Department of",
+   "Plan Name": "Physics, BA",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Physics, Department of",
+   "Plan Name": "Physics, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Physics, Department of",
+   "Plan Name": "Physics, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nat Sciences & Math, Col of",
+   "Department": "Physics, Department of",
+   "Plan Name": "Physics, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nurse Admin-Bridge, MSN",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nurse Administration, MSN",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nurse Education, MSN",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Family Nurse Practitioner, MSN",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nursing-Second Degr BSN",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nursing, BSN",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nursing, BSN Traditional",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nursing, BSN Traditional",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Nursing, School of",
+   "Department": "Nursing, College of",
+   "Plan Name": "Nursing Practice, DNP",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Optometry, College of",
+   "Department": "Optometry (INTERDEPT)",
+   "Plan Name": "Optometry, OD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Optometry, College of",
+   "Department": "Optometry (INTERDEPT)",
+   "Plan Name": "Physiological Opt, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Optometry, College of",
+   "Department": "Optometry (INTERDEPT)",
+   "Plan Name": "Physiological Optics, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Pharmacy (INTERDEPT)",
+   "Plan Name": "Doctor of Pharmacy, PHRD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Pharmacy (INTERDEPT)",
+   "Plan Name": "Pharm&Pharmaceut Sciences",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Pharmacy (INTERDEPT)",
+   "Plan Name": "Pharmaceutical Sciences, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Pharm Pract & Trans Rsch, Dept",
+   "Plan Name": "Pharm Leadership & Admin, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Phrm Hlth Outcomes & Pol Dept",
+   "Plan Name": "Pharm Hlth Outcomes & Pol, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Phrm Hlth Outcomes & Pol Dept",
+   "Plan Name": "Pharm Hlth Outcomes & Pol, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Pharmacol & Pharmaceut Sci,Dpt",
+   "Plan Name": "Pharmaceutics, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Pharmacol & Pharmaceut Sci,Dpt",
+   "Plan Name": "Pharmaceutical Sciences, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Pharmacy, College of",
+   "Department": "Pharmacol & Pharmaceut Sci,Dpt",
+   "Plan Name": "Pharmaceutics, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Social Work, College of",
+   "Department": "Social Work",
+   "Plan Name": "Social Work, PHD",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Social Work, College of",
+   "Department": "Social Work",
+   "Plan Name": "Social Work, MSW",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Purchasing",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Technology Entrepreneurship",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Tech Leadership Innovatn Mgmt",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Human Resources Development",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Applied Innovation",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Bioinform in Biotech&Biomed Sc",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Bioproc in Biomed&Biophrm Sci",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Computer Graphics",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Construction Mgt Technology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Drilling Technology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Computer Engineering Tech",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Electrical Power Technology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "E-Tailing",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Fashion Merchandising",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Graphic Comm Technology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Human Dev& Consumer Sciences",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Logistics Technology",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Retailing and Consumer Science",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Tech Motion Media",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Computer Drafting Design",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Manufacturing Systems",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Technology (INTERDEPT)",
+   "Plan Name": "Tech Package Design",
+   "Plan Type": "MIN"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "Supply Chain & Logist T, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "Construction Mgmt UHExtend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "SupplyChain&LogistTechUHExt,MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "Construction Management, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "Tech Pr Mgt UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "Tech Pr Mgt, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "Supply Chain & Logist Tech, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Construction Management, Dept",
+   "Plan Name": "Construction Management, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Engineering Technology, Dept",
+   "Plan Name": "Mechanical Engineer Tech, BS P",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Engineering Technology, Dept",
+   "Plan Name": "Mechanical Engineer Tech, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Engineering Technology, Dept",
+   "Plan Name": "Electrical Power Engr Tech, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Engineering Technology, Dept",
+   "Plan Name": "Engineering Tech UHExtend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Engineering Technology, Dept",
+   "Plan Name": "Engineering Technology, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Engineering Technology, Dept",
+   "Plan Name": "Comp Engr Tech, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Engineering Technology, Dept",
+   "Plan Name": "Biotechnology, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Hum Dev & Consumer Sci, Dept",
+   "Plan Name": "Foresight, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Hum Dev & Consumer Sci, Dept",
+   "Plan Name": "Foresight UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Hum Dev & Consumer Sci, Dept",
+   "Plan Name": "Global Retailing, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Hum Dev & Consumer Sci, Dept",
+   "Plan Name": "Human Resource Development, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Hum Dev & Consumer Sci, Dept",
+   "Plan Name": "Human Resource Development, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Hum Dev & Consumer Sci, Dept",
+   "Plan Name": "Retailing & Consumer Scien, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Hum Dev & Consumer Sci, Dept",
+   "Plan Name": "Global Retailing UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Info Science Tech, Dept",
+   "Plan Name": "Cybersecurity, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Info Science Tech, Dept",
+   "Plan Name": "Tech Leadership Innov Mgmt, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Info Science Tech, Dept",
+   "Plan Name": "Digital Media, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Info Science Tech, Dept",
+   "Plan Name": "Computer Infor Systems, BS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Technology, College of",
+   "Department": "Info Science Tech, Dept",
+   "Plan Name": "Cybersecurity UH Extend, MS",
+   "Plan Type": "MAJ"
+ },
+ {
+   "College": "Medicine, College of",
+   "Department": "Medicine (INTERDEPT)",
+   "Plan Name": "Medicine, MD",
+   "Plan Type": "MAJ"
+ }
+]

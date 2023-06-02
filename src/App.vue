@@ -21,12 +21,6 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/">
-                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
-                  Dashboard
-                </router-link>
-              </li>
-              <li>
                 <router-link to="/eventform">
                   <span style="position: relative; top: 6px" class="material-icons">event</span>
                   Create Event
@@ -68,37 +62,37 @@
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
               <li>
-                <router-link to="/adminDash">
+                <router-link to="/instructorDash">
                   <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
                   Dashboard
                 </router-link>
               </li>
               <li>
-                <router-link to="/adminReports">
+                <router-link to="/instructorReports">
                   <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
                   Reports
                 </router-link>
               </li>
               <li>
-                <router-link to="/adminStudentsList">
+                <router-link to="/instructorStudentsList">
                   <span style="position: relative; top: 6px" class="material-icons">person</span>
                   Students
                 </router-link>
               </li>
               <li>
-                <router-link to="/adminSemesters">
+                <router-link to="/instructorSemesters">
                   <span style="position: relative; top: 6px" class="material-icons">school</span>
                   Semeters, Experiences, <br> Activities
                 </router-link>
               </li>
               <li>
-                <router-link to="/adminInactiveStudents">
+                <router-link to="/instructorInactiveStudents">
                   <span style="position: relative; top: 6px" class="material-icons">person</span>
                   Inactive Students
                 </router-link>
               </li>
               <li>
-                <router-link to="/adminInactiveSemestersExperiencesActivities">
+                <router-link to="/instructorInactiveSemestersExperiencesActivities">
                   <span style="position: relative; top: 6px" class="material-icons">school</span>
                   Inactive Semesters, <br>Experiences, and Activities
                 </router-link>

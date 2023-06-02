@@ -57,18 +57,6 @@
                 required=""
               />
             </div>
-            <div>
-              <label for="phoneNumber" class="block">Phone Number</label>
-              <input
-                v-model="user.phoneNumber"
-                type="text"
-                name="phoneNumber"
-                id="phoneNumber"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="832-132-1234"
-                required=""
-              />
-            </div>
           </div>
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
@@ -171,7 +159,6 @@ export default {
         firstName: "",
         lastName: "",
         email: "",
-        phoneNumber: "",
         password: "",
         role: "Basic",
       },
@@ -215,7 +202,6 @@ export default {
               firstName: "",
               lastName: "",
               email: "",
-              phoneNumber: "",
               password: "",
               role: "",
               error: "",

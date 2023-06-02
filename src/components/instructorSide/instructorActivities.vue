@@ -1,11 +1,11 @@
-<!--'/adminsActivities' this page will only show experiences-->
+<!--'/instructorActivities' this page will only show experiences-->
 <template>
     <main class="">
         <center>
-          <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"><router-link class="" to="/adminSemesters">Semesters</router-link> | <router-link class="" to="/adminExperiences">Experiences</router-link> | <router-link class="" to="/adminActivities">Activities</router-link>         </h2>
+          <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"><router-link class="" to="/instuctorSemesters">Semesters</router-link> | <router-link class="" to="/instuctorExperiences">Experiences</router-link> | <router-link class="" to="/instuctorActivities">Activities</router-link>         </h2>
             <p class="font-weight-black text-h6">Activities</p>
             <br>
-            <v-btn style="text-align:center"><router-link class="" to="/adminAddActivity">
+            <v-btn style="text-align:center"><router-link class="" to="/instuctorAddActivity">
             Add New Activity</router-link>
             </v-btn>
             <table>     
@@ -17,10 +17,10 @@
               Experience Name
             </th>
           </tr>
-          <tr><router-link class="nav-link text-primary" to="/adminSpecificActivity">
+          <tr><router-link class="nav-link text-primary" to="/instuctorSpecificActivity">
             <td style="padding: 30px;">
               Apprenticeship - Research Assistant
-            </td></router-link><router-link class="nav-link text-primary" to="/adminSpecificActivity">
+            </td></router-link><router-link class="nav-link text-primary" to="/instuctorSpecificActivity">
             <td style="padding: 30px;">
                 Project 1
             </td></router-link>

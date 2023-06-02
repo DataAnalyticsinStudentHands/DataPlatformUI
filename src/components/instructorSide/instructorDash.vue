@@ -1,3 +1,4 @@
+<!-- /instructorDash page for instructor's dashboard -->
 <template>
   <main>
     <div>

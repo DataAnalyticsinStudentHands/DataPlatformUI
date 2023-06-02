@@ -104,13 +104,8 @@
 <script>
 import { DateTime } from "luxon";
 import axios from "axios";
-
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
   data() {
     return {
       queryData: [],
@@ -121,11 +116,13 @@ export default {
     };
   },
   mounted() {
+    const user = useLoggedInUserStore()
+    let token = user.token
     let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
     this.queryData = [];
     axios
       .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
+        headers: { token },
       })
       .then(
         (resp) => {
@@ -144,6 +141,8 @@ export default {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
     },
     handleSubmitForm() {
+      const user = useLoggedInUserStore()
+      let token = user.token
       let apiURL = "";
       if (this.searchBy === "Event Name") {
         apiURL =
@@ -156,13 +155,15 @@ export default {
       }
       axios
         .get(apiURL, {
-          headers: { token: localStorage.getItem("token") },
+          headers: { token },
         })
         .then((resp) => {
           this.queryData = resp.data;
         });
     },
     clearSearch() {
+      const user = useLoggedInUserStore()
+      let token = user.token
       //Resets all the variables
       this.searchBy = "";
       this.eventName = "";
@@ -172,7 +173,7 @@ export default {
       let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
       this.queryData = [];
       axios.get(apiURL, {
-          headers: { token: localStorage.getItem("token") },
+          headers: { token },
         }).then((resp) => {
         this.queryData = resp.data;
       });
