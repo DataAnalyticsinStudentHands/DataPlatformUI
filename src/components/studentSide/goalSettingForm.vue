@@ -63,66 +63,92 @@
 
     <v-col cols="12" md="10">
       <p class="font-weight-black text-h8">What kind of community engagement experiences, if any, have you had? Check all that apply.</p>
-        <div>
-          <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id">
-            <v-checkbox v-model="engagementExperience.checked" :label="engagementExperience.label"></v-checkbox>
-            <v-text-field v-if="engagementExperience.id === 6 && engagementExperience.checked" label="Please Specify" v-model="goalForm.communityEngagement.communityEngagementExperiencesOther"></v-text-field>
-          </div>
-        </div>
+          <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id" style="padding: 10px;">
+      <label style="color: #656565;">
+        <input type="checkbox" v-model="engagementExperience.checked" style="outline: 2px solid gray; margin-right: 5px;">
+        {{ engagementExperience.label }}
+      </label>
+      <br>
+      <input v-if="engagementExperience.id === 6 && engagementExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.communityEngagementExperiencesOther" style="margin-top: 5px;">
+    </div>
     </v-col>
     <v-col cols="12" md="10">
       <p class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
-        <div>
-          <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id">
-            <v-checkbox v-model="previousExperience.checked" :label="previousExperience.label"></v-checkbox>
-            <v-text-field v-if="previousExperience.id === 8 && previousExperience.checked" label="Please Specify" v-model="goalForm.communityEngagement.previousEngagementExperiencesOther"></v-text-field>
-          </div>
+            <div style="padding: 10px;">
+        <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id">
+          <label style="display: flex; align-items: center; color: #808080;">
+            <input type="checkbox" v-model="previousExperience.checked" style="outline: 2px solid #808080; margin-right: 10px;">
+            {{ previousExperience.label }}
+          </label>
+          <br>
+          <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.previousEngagementExperiencesOther" style="margin-top: 5px;">
         </div>
+      </div>
     </v-col>
     <v-col cols="12" md="10">
       <p class="font-weight-black text-h8">What, if any, tools have you used for community engagement activities?</p>
-        <div>
-          <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id">
-            <v-checkbox v-model="activitiesTool.checked" :label="activitiesTool.label"></v-checkbox>
-            <v-text-field v-if="activitiesTool.id === 8 && activitiesTool.checked" label="Please Specify" v-model="goalForm.communityEngagement.engagementActivitiesToolOther"></v-text-field>
-          </div>
-        </div>
+          <div style="padding: 10px;">
+      <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id">
+        <label style="display: flex; align-items: center; color: #808080;">
+          <input type="checkbox" v-model="activitiesTool.checked" style="outline: 2px solid #808080; margin-right: 10px;">
+          {{ activitiesTool.label }}
+        </label>
+        <br>
+        <input v-if="activitiesTool.id === 8 && activitiesTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.engagementActivitiesToolOther" style="margin-top: 5px;">
+      </div>
+    </div>
     </v-col>
     <v-col cols="12" md="10">
       <p class="font-weight-black text-h8">What kind of research experiences, if any, have you had? Check all that apply.</p>
-        <div>
-          <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id">
-            <v-checkbox v-model="currentExperience.checked" :label="currentExperience.label"></v-checkbox>
-            <v-text-field v-if="currentExperience.id === 7 && currentExperience.checked" label="Please Specify" v-model="goalForm.researchExperience.currentResearchExperienceOther"></v-text-field>
-          </div>
+            <div style="padding: 10px;">
+        <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id">
+          <label style="display: flex; align-items: center; color: gray;">
+            <input type="checkbox" v-model="currentExperience.checked" style="outline: 2px solid gray; margin-right: 10px;">
+            {{ currentExperience.label }}
+          </label>
+          <br>
+          <input v-if="currentExperience.id === 7 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.currentResearchExperienceOther" style="margin-top: 5px;">
         </div>
+      </div>
     </v-col>
     <v-col cols="12" md="10">
       <p class="font-weight-black text-h8">From your previous research experiences, which of the following activities have you engaged in?</p>
-        <div>
-          <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id">
-            <v-checkbox v-model="previousExperience.checked" :label="previousExperience.label"></v-checkbox>
-            <v-text-field v-if="previousExperience.id === 8 && previousExperience.checked" label="Please Specify" v-model="goalForm.researchExperience.previousResearchExperienceOther"></v-text-field>
-          </div>
+            <div style="padding: 10px;">
+        <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id">
+          <label style="display: flex; align-items: center; color: gray; ;">
+            <input type="checkbox" v-model="previousExperience.checked" style="outline: 2px solid gray; margin-right: 10px">
+            {{ previousExperience.label }}
+          </label>
+          <br>
+          <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.previousResearchExperienceOther" style="margin-top: 5px;">
         </div>
+      </div>
     </v-col>
     <v-col cols="12" md="10">
       <p class="font-weight-black text-h8">What, if any, tools are you familiar with?</p>
-        <div>
-          <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id">
-            <v-checkbox v-model="familiarTool.checked" :label="familiarTool.label"></v-checkbox>
-            <v-text-field v-if="familiarTool.id === 8 && familiarTool.checked" label="Please Specify" v-model="goalForm.researchExperience.familiarToolOther"></v-text-field>
-          </div>
+            <div style="padding: 10px;">
+        <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id">
+          <label style="display: flex; align-items: center; color: gray; margin-right: 10px;">
+            <input type="checkbox" v-model="familiarTool.checked" style="outline: 2px solid gray; margin-right: 10px;">
+            {{ familiarTool.label }}
+          </label>
+          <br>
+          <input v-if="familiarTool.id === 8 && familiarTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.familiarToolOther" style="margin-top: 5px;">
         </div>
+      </div>
     </v-col>
     <v-col cols="12" md="10">
       <p class="font-weight-black text-h8">What, if any, tools are you familiar with?</p>
-        <div>
-          <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id">
-            <v-checkbox v-model="interest.checked" :label="interest.label"></v-checkbox>
-            <v-text-field v-if="interest.id === 8 && interest.checked" label="Please Specify" v-model="goalForm.researchExperience.interestResearchServiceOther"></v-text-field>
-          </div>
+            <div style="padding: 10px;">
+        <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id">
+          <label style="display: flex; align-items: center; color: gray; margin-right: 10px;">
+            <input type="checkbox" v-model="interest.checked" style="outline: 2px solid gray; margin-right: 10px;">
+            {{ interest.label }}
+          </label>
+          <br>
+          <input v-if="interest.id === 8 && interest.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.interestResearchServiceOther" style="margin-top: 5px;">
         </div>
+      </div>
     </v-col>
     <v-col cols="12" md="10">
         <p class="font-weight-black text-h8">Are you interested in potentially holding a leadership position?</p>
