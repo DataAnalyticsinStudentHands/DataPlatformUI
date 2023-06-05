@@ -21,7 +21,6 @@ export const useLoggedInUserStore = defineStore({
   actions: {
     async login(email, password) {
       try {
-        console.log(email, password)
         const response = await axios.post(`${apiURL}/userdata/login`, {email, password});
         if (response) {
           this.$patch({
