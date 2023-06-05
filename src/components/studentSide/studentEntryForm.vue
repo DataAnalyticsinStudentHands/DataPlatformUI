@@ -107,7 +107,7 @@
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">What is/are your current major(s)?</p>
-              <v-text-field v-model="studentInformation.enrolledUHInfo.majorID" label="Major(s)"></v-text-field>
+              <v-select v-model="studentInformation.enrolledUHInfo.majors" :items="filteredMajors.map(major => major['Plan Name'])" label="Select a Major" multiple chips></v-select>
             </v-col>
           </v-row>
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
@@ -119,7 +119,7 @@
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Are you pursuing any other minors? Please list.</p>
-              <v-text-field v-model="studentInformation.enrolledUHInfo.otherMinor" label="Other Minor(s)"></v-text-field>
+              <v-select v-model="studentInformation.enrolledUHInfo.otherMinors" :items="filteredMinors.map(minor => minor['Plan Name'])" label="Select a Minor" multiple chips></v-select>
             </v-col>
           </v-row>
         <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">Other Engagement</p>
@@ -242,9 +242,9 @@ export default {
           honorsCollegeStatus: false,
           honorsCollegeAffiliatedStatus: false,
           honorsCollegeAffiliatedHow: '',
-          majorID: '', 
-          honorsMinor: [],
-          otherMinor: ''
+          majors: [], 
+          honorsMinors: [],
+          otherMinors: []
         },
         hichInfo: {
           hichStatus: false,
@@ -283,12 +283,32 @@ export default {
           ],
           professionDesignOther: '',
         },
-      }
+      },
+      majors: [],
+      minors: []
     }
+  },
+  mounted() {
+    // Fetch the JSON data
+    fetch('../../majorsAndMinors.json')
+      .then(response => response.json())
+      .then(data => {
+        this.majors = data;
+        this.minors = data;
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
   },
   computed: {
     year() {
       return new Date(this.dateInput).getFullYear()
+    },
+    filteredMajors() {
+      return this.majors.filter(major => major['Plan Type'] === 'MAJ');
+    },
+    filteredMinors() {
+      return this.minors.filter(minor => minor['Plan Type'] === 'MIN');
     }
   },
   methods: {
@@ -316,9 +336,9 @@ export default {
               honorsCollegeStatus: '',
               honorsCollegeAffiliatedStatus: '',
               honorsCollegeAffiliatedHow: '',
-              majorID: '', 
-              honorsMinor: [],
-              otherMinor: ''
+              majors: [], 
+              honorsMinors: [],
+              otherMinors: []
             },
             hichInfo: {
              hichStatus: '',
