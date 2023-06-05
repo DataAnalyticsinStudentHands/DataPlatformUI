@@ -4,33 +4,13 @@
     <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.</p>
   </v-container>
   <v-container>
-    <!--
-    <p class="font-weight-black text-h6">Background Information</p>
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-text-field v-model="studentInformation.firstName" label="First Name"></v-text-field>
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-text-field v-model="studentInformation.lastName" label="Last Name"></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="7">
-        <v-text-field v-model="studentInformation.preferredEmail" label="Preferred Email"></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="3">
-        <v-text-field v-model="studentInformation.enrolledUHInfo.peopleSoftID" label="PeopleSoft ID"></v-text-field>
-      </v-col>
-    </v-row>-->
     <row>
       <p class="font-weight-black text-h8">Write the Semester (EX: Fall 2021)</p>
       <v-col cols="12" md="5">
         <v-text-field v-model="goalForm.semester" label="Semester"></v-text-field>
       </v-col>
     </row>
-    <v-row>
+    <!-- <v-row>
       <v-col cols="11" md="10">
         <p class="font-weight-black text-h8">Please indicate which one of the experience(s) you are participating in this semester:</p>
         <v-radio-group v-model="goalForm.experienceID">
@@ -213,111 +193,118 @@
           <v-radio label="A moderate amount of growth" value="A moderate amount of growth" v-model="goalForm.growthGoal.professionalResponsibilityGoal"></v-radio>
           <v-radio label="A lot of growth" value="A lot of growth" v-model="goalForm.growthGoal.professionalResponsibilityGoal"></v-radio>
         </v-radio-group>
-      </v-col>
+      </v-col> -->
+      <v-row>
+          <v-col cols="12" md="4">
+            <v-btn type="submit" methods="handleSubmitForm">Submit Form</v-btn>
+          </v-col>
+        </v-row>
   </v-container>
 </template>
 
 <script>
+import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
       goalForm: {
         semester: '',
-        experienceID: '',
-        hichOption: '',
-        communityEngagement: {
-          communityEngagementExperiences: [
-            { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: false },
-            { id: 2, label: "Political campaigns", checked: false },
-            { id: 3, label: "Faith based organizations", checked: false },
-            { id: 4, label: "Short-term volunteer opportunities (e.g. day of service events)", checked: false },
-            { id: 5, label: "Medical mission trips", checked: false },
-            { id: 6, label: "Other", checked: false }
-          ],
-          communityEngagementExperiencesOther: '',
-          previousEngagementExperiences: [
-            { id: 1, label: "Mentoring someone", checked: false },
-            { id: 2, label: "Volunteering at a community event (e.g. health fair)", checked: false },
-            { id: 3, label: "Recruiting volunteers", checked: false },
-            { id: 4, label: "Organizing a service project", checked: false },
-            { id: 5, label: "Serving as translator", checked: false },
-            { id: 6, label: "Fundraising", checked: false },
-            { id: 7, label: "Emergency response volunteering", checked: false },
-            { id: 8, label: "Other", checked: false }
-          ],
-          previousEngagementExperiencesOther: '',
-          engagementActivitiesTools: [
-            { id: 1, label: "Social media", checked: false },
-            { id: 2, label: "Scheduling software (e.g. when is good, doodle)", checked: false },
-            { id: 3, label: "Fundraising platforms", checked: false },
-            { id: 4, label: "Survey tools", checked: false },
-            { id: 5, label: "Graphic design tools (e.g. adobe, canva)", checked: false },
-            { id: 6, label: "Project management Tool", checked: false },
-            { id: 7, label: "Digital media (e.g. podcasting, streaming video)", checked: false },
-            { id: 8, label: "Other", checked: false }
-          ],
-          engagementActivitiesToolOther: '',
-        },
-        researchExperience: {
-          currentResearchExperience: [
-            { id: 1, label: "Designing your own research project", checked: false },
-            { id: 2, label: "Literature review", checked: false },
-            { id: 3, label: "Data collection in a clinical setting", checked: false },
-            { id: 4, label: "Data collection in a laboratory setting", checked: false },
-            { id: 5, label: "Data collection in a public health/community setting", checked: false },
-            { id: 6, label: "Analyzing data with a statistical package", checked: false },
-            { id: 7, label: "Writing/assisting with a manuscript", checked: false },
-            { id: 8, label: "Other", checked: false },
-            { id: 9, label: "None of the above", checked: false }
-          ],
-          currentResearchExperienceOther: '',
-          previousResearchExperience: [
-            { id: 1, label: "Designing your own research project", checked: false },
-            { id: 2, label: "Literature review", checked: false },
-            { id: 3, label: "Data collection in a clinical setting", checked: false },
-            { id: 4, label: "Data collection in a laboratory setting", checked: false },
-            { id: 5, label: "Data collection in a public health/community setting", checked: false },
-            { id: 6, label: "Analyzing data with a statistical package", checked: false },
-            { id: 7, label: "Writing/assisting with a manuscript", checked: false },
-            { id: 8, label: "Other", checked: false },
-            { id: 9, label: "None of the above", checked: false }
-          ],
-          previousResearchExperienceOther: '',
-          familiarTools: [
-            { id: 1, label: "Excel", checked: false },
-            { id: 2, label: "R", checked: false },
-            { id: 3, label: "Python", checked: false },
-            { id: 4, label: "STATA", checked: false },
-            { id: 5, label: "GIS", checked: false },
-            { id: 6, label: "ATLAS", checked: false },
-            { id: 7, label: "Nvivo", checked: false },
-            { id: 8, label: "Tableau", checked: false },
-            { id: 9, label: "SAS", checked: false },
-            { id: 10, label: "Other", checked: false },
-            { id: 11, label: "None of the above", checked: false }
-          ],
-          familiarToolOther: '',
-          interestResearchService: [
-            { id: 1, label: "Education", checked: false },
-            { id: 2, label: "Community Health", checked: false },
-            { id: 3, label: "Mental Health", checked: false },
-            { id: 4, label: "Incarceration / Criminal Justice", checked: false },
-            { id: 5, label: "Chronic Disease", checked: false },
-            { id: 6, label: "Environment and occupational health", checked: false },
-            { id: 7, label: "Government/Law/Policy", checked: false },
-            { id: 8, label: "Other", checked: false }
-          ],
-          interestResearchServiceOther: '',
-          leadershipOption: ''
-        },
-        growthGoal: {
-          problemSolvingGoal: '',
-          effectiveCommunicationGoal: '',
-          teamworkGoal: '',
-          culturalHumilityGoal: '',
-          ethicalDecisionMakingGoal: '',
-          professionalResponsibilityGoal: ''
-        }
+        // experienceID: '',
+        // hichOption: '',
+        // communityEngagement: {
+        //   communityEngagementExperiences: [
+        //     { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: false },
+        //     { id: 2, label: "Political campaigns", checked: false },
+        //     { id: 3, label: "Faith based organizations", checked: false },
+        //     { id: 4, label: "Short-term volunteer opportunities (e.g. day of service events)", checked: false },
+        //     { id: 5, label: "Medical mission trips", checked: false },
+        //     { id: 6, label: "Other", checked: false }
+        //   ],
+        //   communityEngagementExperiencesOther: '',
+        //   previousEngagementExperiences: [
+        //     { id: 1, label: "Mentoring someone", checked: false },
+        //     { id: 2, label: "Volunteering at a community event (e.g. health fair)", checked: false },
+        //     { id: 3, label: "Recruiting volunteers", checked: false },
+        //     { id: 4, label: "Organizing a service project", checked: false },
+        //     { id: 5, label: "Serving as translator", checked: false },
+        //     { id: 6, label: "Fundraising", checked: false },
+        //     { id: 7, label: "Emergency response volunteering", checked: false },
+        //     { id: 8, label: "Other", checked: false }
+        //   ],
+        //   previousEngagementExperiencesOther: '',
+        //   engagementActivitiesTools: [
+        //     { id: 1, label: "Social media", checked: false },
+        //     { id: 2, label: "Scheduling software (e.g. when is good, doodle)", checked: false },
+        //     { id: 3, label: "Fundraising platforms", checked: false },
+        //     { id: 4, label: "Survey tools", checked: false },
+        //     { id: 5, label: "Graphic design tools (e.g. adobe, canva)", checked: false },
+        //     { id: 6, label: "Project management Tool", checked: false },
+        //     { id: 7, label: "Digital media (e.g. podcasting, streaming video)", checked: false },
+        //     { id: 8, label: "Other", checked: false }
+        //   ],
+        //   engagementActivitiesToolOther: '',
+        // },
+        // researchExperience: {
+        //   currentResearchExperience: [
+        //     { id: 1, label: "Designing your own research project", checked: false },
+        //     { id: 2, label: "Literature review", checked: false },
+        //     { id: 3, label: "Data collection in a clinical setting", checked: false },
+        //     { id: 4, label: "Data collection in a laboratory setting", checked: false },
+        //     { id: 5, label: "Data collection in a public health/community setting", checked: false },
+        //     { id: 6, label: "Analyzing data with a statistical package", checked: false },
+        //     { id: 7, label: "Writing/assisting with a manuscript", checked: false },
+        //     { id: 8, label: "Other", checked: false },
+        //     { id: 9, label: "None of the above", checked: false }
+        //   ],
+        //   currentResearchExperienceOther: '',
+        //   previousResearchExperience: [
+        //     { id: 1, label: "Designing your own research project", checked: false },
+        //     { id: 2, label: "Literature review", checked: false },
+        //     { id: 3, label: "Data collection in a clinical setting", checked: false },
+        //     { id: 4, label: "Data collection in a laboratory setting", checked: false },
+        //     { id: 5, label: "Data collection in a public health/community setting", checked: false },
+        //     { id: 6, label: "Analyzing data with a statistical package", checked: false },
+        //     { id: 7, label: "Writing/assisting with a manuscript", checked: false },
+        //     { id: 8, label: "Other", checked: false },
+        //     { id: 9, label: "None of the above", checked: false }
+        //   ],
+        //   previousResearchExperienceOther: '',
+        //   familiarTools: [
+        //     { id: 1, label: "Excel", checked: false },
+        //     { id: 2, label: "R", checked: false },
+        //     { id: 3, label: "Python", checked: false },
+        //     { id: 4, label: "STATA", checked: false },
+        //     { id: 5, label: "GIS", checked: false },
+        //     { id: 6, label: "ATLAS", checked: false },
+        //     { id: 7, label: "Nvivo", checked: false },
+        //     { id: 8, label: "Tableau", checked: false },
+        //     { id: 9, label: "SAS", checked: false },
+        //     { id: 10, label: "Other", checked: false },
+        //     { id: 11, label: "None of the above", checked: false }
+        //   ],
+        //   familiarToolOther: '',
+        //   interestResearchService: [
+        //     { id: 1, label: "Education", checked: false },
+        //     { id: 2, label: "Community Health", checked: false },
+        //     { id: 3, label: "Mental Health", checked: false },
+        //     { id: 4, label: "Incarceration / Criminal Justice", checked: false },
+        //     { id: 5, label: "Chronic Disease", checked: false },
+        //     { id: 6, label: "Environment and occupational health", checked: false },
+        //     { id: 7, label: "Government/Law/Policy", checked: false },
+        //     { id: 8, label: "Other", checked: false }
+        //   ],
+        //   interestResearchServiceOther: '',
+        //   leadershipOption: ''
+        // },
+        // growthGoal: {
+        //   problemSolvingGoal: '',
+        //   effectiveCommunicationGoal: '',
+        //   teamworkGoal: '',
+        //   culturalHumilityGoal: '',
+        //   ethicalDecisionMakingGoal: '',
+        //   professionalResponsibilityGoal: ''
+        // }
       }
     }
   },
@@ -325,6 +312,52 @@ export default {
     year() {
       return new Date(this.dateInput).getFullYear()
     }
-  }
+  },
+  methods: {
+    async handleSubmitForm() {
+      const user = useLoggedInUserStore()
+      let token = user.token
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
+      axios.post(apiURL, this.goalForm, { headers: { token } }).then(() => {
+        alert("Goal Information has been successfully added.");
+        this.goalForm = {
+            semester: '',
+            // primaryLanguage: '',
+            // experienceID: '',
+            // hichOption: '',
+            // communityEngagement:{
+            //   communityEngagementExperiences: [],
+            //   communityEngagementExperiencesOther:'',
+            //   previousEngagementExperiences: [],
+            //   previousEngagementExperiencesOther:'',
+            //   engagementActivitiesTools: [],
+            //   engagementActivitiesToolOther: ''
+            // },
+            // researchExperience: {
+            //   currentResearchExperience: [],
+            //   currentResearchExperienceOther: '',
+            //   previousResearchExperience: [],
+            //   previousResearchExperienceOther: '',
+            //   familiarTools: [],
+            //   familiarToolOther: '',
+            //   interestResearchService: [],
+            //   interestResearchServiceOther: '',
+            //   leadershipOption: ''
+            // },
+            // growthGoal: {
+            //   problemSolvingGoal: '',
+            //   effectiveCommunicationGoal: '',
+            //   teamworkGoal: '',
+            //   culturalHumilityGoal: '',
+            //   ethicalDecisionMakingGoal: '',
+            //   professionalResponsibilityGoal: '',
+            // },
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+  },
 }
 </script>
