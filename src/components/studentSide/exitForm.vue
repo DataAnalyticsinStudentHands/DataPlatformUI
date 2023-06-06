@@ -4,16 +4,26 @@
       <p class="font-weight-black text-h5 text--primary">Experience Selection + General</p>
       <p class="text-subtitle-1">Please confirm the following information is accurate. If any changes need to be made, type them below.</p>
     </v-container>
-    <v-container>
-        <v-checkbox v-model="firstNameChecked" label="First Name"></v-checkbox>
-        <v-text-field v-if="firstNameChecked" label="First Name"></v-text-field>
-        <v-checkbox v-model="lastNameChecked" label="Last Name"></v-checkbox>
-        <v-text-field v-if="lastNameChecked" label="Last Name"></v-text-field>
-        <v-checkbox v-model="emailChecked" label="Preferred Email"></v-checkbox>
-        <v-text-field v-if="emailChecked" label="Preferred Email"></v-text-field>
-        <v-checkbox v-model="psidChecked" label="PeopleSoft ID"></v-checkbox>
-        <v-text-field v-if="psidChecked" label="PeopleSoft ID"></v-text-field>
-    </v-container>
+      <div style="padding: 10px;">
+      <input type="checkbox" v-model="firstNameChecked" style="outline: 2px solid gray; margin-right: 10px;">
+      <span style="color: gray;">First Name</span><br>
+      <input v-if="firstNameChecked" type="text" placeholder="First Name" style="margin-top: 10px;">
+      </div>
+      <div style="padding: 10px;">
+      <input type="checkbox" v-model="lastNameChecked" style="outline: 2px solid gray; margin-right: 10px;">
+      <span style="color: gray;">Last Name</span><br>
+      <input v-if="lastNameChecked" type="text" placeholder="Last Name" style="margin-top: 10px;">
+      </div>
+      <div style="padding: 10px;">
+      <input type="checkbox" v-model="emailChecked" style="outline: 2px solid gray; margin-right: 10px;">
+      <span style="color: gray;">Preferred Email</span><br>
+      <input v-if="emailChecked" type="text" placeholder="Preferred Email" style="margin-top: 10px;">
+      </div>
+      <div style="padding: 10px;">
+      <input type="checkbox" v-model="psidChecked" style="outline: 2px solid gray; margin-right: 10px;">
+      <span style="color: gray;">PeopleSoft ID</span><br>
+      <input v-if="psidChecked" type="text" placeholder="PeopleSoft ID" style="margin-top: 10px;">
+      </div>
   <v-container>
     <v-toolbar>
       <v-toolbar-title class="mr-4">Semester of Experience</v-toolbar-title>
@@ -46,13 +56,13 @@
       <p class="text-subtitle-1">At the beginning of the semester,  we asked you to share two to three aspirations. Now we would like to know whether you feel you made progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.</p>
     </v-container>
     <v-container>
-    <h2>Inspirations</h2>
+    <h2>Aspirations</h2>
     <v-list>
       <v-list-item
-        v-for="(inspiration, index) in inspirations"
+        v-for="(Aspirations, index) in Aspirations"
         :key="index"
       >
-        <v-list-item-title>{{ inspiration.title }}</v-list-item-title>
+        <v-list-item-title>{{ Aspirations.title }}</v-list-item-title>
       </v-list-item>
     </v-list>
   </v-container>
@@ -60,15 +70,15 @@
       <p class="text-subtitle-1">For each aspiration listed above, please pick the option that best describes the progress you made.</p>
     </v-container>
     <v-container>
-      <h2>Inspirations</h2>
+      <h2>Aspirations</h2>
       <v-list>
         <v-list-item
-          v-for="(inspiration, index) in inspirations"
+          v-for="(Aspirations, index) in Aspirations"
           :key="index"
         >
           <v-list-item-content>
-            <v-list-item-title>{{ inspiration.title }}</v-list-item-title>
-            <v-radio-group v-model="inspiration.progress" row>
+            <v-list-item-title>{{ Aspirations.title }}</v-list-item-title>
+            <v-radio-group v-model="Aspirations.progress" row>
               <v-radio label="I made lots of progress towards this aspiration (1)" value="1"></v-radio>
               <v-radio label="I made some progress towards this aspiration (2)" value="2"></v-radio>
               <v-radio label="I made little progress towards this aspiration (3)" value="3"></v-radio>
@@ -83,15 +93,15 @@
         <p class="text-subtitle-1">For each goal listed above, please pick the option that best describes the connection between your progress and this course.</p>
         </v-container>
         <v-container>
-      <h2>Inspirations</h2>
+      <h2>Aspirations</h2>
       <v-list>
         <v-list-item
-          v-for="(inspiration, index) in inspirations"
+          v-for="(Aspirations, index) in Aspirations"
           :key="index"
         >
           <v-list-item-content>
-            <v-list-item-title>{{ inspiration.title }}</v-list-item-title>
-            <v-radio-group v-model="inspiration.progressConnection" row>
+            <v-list-item-title>{{ Aspirations.title }}</v-list-item-title>
+            <v-radio-group v-model="Aspirations.progressConnection" row>
               <v-radio label="The progress I made towards this aspiration was largely due to this course (1)" value="1"></v-radio>
               <v-radio label="The progress I made towards this aspiration was partly due to this course (2)" value="2"></v-radio>
               <v-radio label="The progress I made towards this aspiration was not due to this course (3)" value="3"></v-radio>
@@ -142,7 +152,7 @@
         <p class="text-subtitle-1">For each goal listed above, please pick the option that best describes the connection between your progress and this course.</p>
         </v-container>
         <v-container>
-      <h2>Inspirations</h2>
+      <h2>Aspirations</h2>
       <v-list>
         <v-list-item
           v-for="(goals, index) in goals"
@@ -566,22 +576,22 @@ export default {
         'Experiance 2023',
         'Experiance 2023',
       ],
-       inspirations: [
+      Aspirations: [
        {
-          title: 'Inspiration 1',
-          content: 'This is the content of inspiration 1.',
+          title: 'Aspirations 1',
+          content: 'This is the content of Aspirations 1.',
           progress: null,
           progressConnection: null,
         },
         {
-          title: 'Inspiration 2',
-          content: 'This is the content of inspiration 2.',
+          title: 'Aspirations 2',
+          content: 'This is the content of Aspirations 2.',
           progress: null,
           progressConnection: null,
         },
         {
-          title: 'Inspiration 3',
-          content: 'This is the content of inspiration 3.',
+          title: 'Aspirations 3',
+          content: 'This is the content of Aspirations 3.',
           progress: null,
           progressConnection: null,
         },
@@ -601,13 +611,13 @@ export default {
           progressConnection: null,
         },
         {
-          title: 'Golal 3',
+          title: 'Goal 3',
           content: 'This is the content of Goal 3.',
           progress: null,
           progressConnection: null,
         },
         {
-          title: 'Golal 4',
+          title: 'Goal 4',
           content: 'This is the content of Goal 3.',
           progress: null,
           progressConnection: null,
