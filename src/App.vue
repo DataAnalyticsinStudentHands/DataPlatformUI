@@ -41,6 +41,12 @@
               </li>
             </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Student'">
+            <li>
+                <router-link to="/studentDashboard">
+                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
+                  Student Dashboard
+                </router-link>
+              </li>
               <li>
                 <router-link to="/studentEntryForm">
                   <span style="position: relative; top: 6px" class="material-icons">description</span>
