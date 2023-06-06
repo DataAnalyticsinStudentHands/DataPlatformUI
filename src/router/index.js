@@ -2,6 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     {
+      path: '/testing',
+      name: 'testing',
+      props: true,
+      component: () => import('../components/studentSide/testing.vue')
+    },
+    {
         path: '/',
         name: 'dashboard',
         props: true,

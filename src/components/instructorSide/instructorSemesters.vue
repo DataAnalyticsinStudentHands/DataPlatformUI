@@ -35,28 +35,76 @@
           </tr>
         </table>
         </center>
+
+        <!-- <div class="flex flex-col col-span-2">
+        <table class="min-w-full shadow-md rounded">
+          <thead class="bg-gray-50 text-xl">
+            <tr>
+              <th class="p-4 text-left">Semester</th>
+              <th class="p-4 text-left">Date Ranges</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-300">
+            <tr
+              v-for="semester in semesterData"
+              :key="semester.semesterName"
+            >
+              <td class="p-2 text-left">
+                {{ semester.semesterName}}
+              </td>
+              <td class="p-2 text-left">
+                {{ semester.semesterStartDate + " - " + semester.semesterEndDate }}
+              </td>
+              <td class="p-2 text-left">{{ client.address.city }}</td>
+            </tr>
+          </tbody>
+        </table>
+        </div> -->
+        {{ semesterData }}
     </main>
   </template>
-  <style>
-      #contentNavbar .nav-link.router-link-exact-active{
-          background-color: #eee;
-      }
-      /* Medium Devices, Desktops */
-      @media only screen and (min-width : 992px) {
-          main {
-              text-align: center;
-          }
-          #contentNavbar .nav-item {
-              border: 3px solid black;
-              border-right: none;
-          }
-          #contentNavbar .nav-item:last-child {
-              border: 1px solid black;
-          }
-      }
-  </style>
-  
-  <script>
-      export default {
-      }
-  </script>
+ 
+<script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import axios from "axios";
+export default {
+  data() {
+    return {
+      semesterData: []
+    };
+  },
+  mounted() {
+    const user = useLoggedInUserStore()
+    let token = user.token
+    let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/semesters/`;
+    axios.get(apiURL, { headers: { token },})
+      .then(
+        (resp) => {
+          this.semesterData = resp.data;
+        })
+      .catch((error) => {
+        console.log(error);
+      });
+    window.scrollTo(0, 0);
+  },
+}
+</script>
+
+<style>
+#contentNavbar .nav-link.router-link-exact-active{
+    background-color: #eee;
+}
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+    main {
+        text-align: center;
+    }
+    #contentNavbar .nav-item {
+        border: 3px solid black;
+        border-right: none;
+    }
+    #contentNavbar .nav-item:last-child {
+        border: 1px solid black;
+    }
+}
+</style>

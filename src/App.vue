@@ -48,6 +48,12 @@
                 </router-link>
               </li>
               <li>
+                <router-link to="/testing">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Testing
+                </router-link>
+              </li>
+              <li>
                 <router-link to="/goalSettingForm">
                   <span style="position: relative; top: 6px" class="material-icons">description</span>
                   Goal Setting Form

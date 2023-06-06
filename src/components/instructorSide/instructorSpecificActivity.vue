@@ -51,6 +51,7 @@
   </style>
   
   <script>
+  import { useLoggedInUserStore } from "@/stored/loggedInUser";
       export default {
       }
   </script>

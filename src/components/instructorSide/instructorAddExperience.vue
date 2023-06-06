@@ -42,8 +42,9 @@
   </style>
   
   <script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
-    data: () => ({
+  data: () => ({
       items: [
         {
           title: 'Activity #1',
