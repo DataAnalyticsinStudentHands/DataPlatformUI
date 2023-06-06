@@ -198,7 +198,7 @@
         </v-col>
         <v-row>
           <v-col cols="12" md="4">
-            <v-btn type="submit" methods="handleSubmitForm">Submit Form</v-btn>
+            <v-btn type="submit" methods="handleSubmitForm" @click="$event => showToast()" class="btn btn-success">Submit Form</v-btn>
           </v-col>
         </v-row>
     </v-container>
@@ -214,6 +214,8 @@
 <script>
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import {toast} from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 export default {
   data() {
     return {
@@ -317,7 +319,7 @@ export default {
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
       axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
-        alert("Student Information has been successfully added.");
+        this.$router.push("/studentEntryForm");
         this.studentInformation = {
             cityOrigin: '',
             primaryLanguage: '',
@@ -366,6 +368,10 @@ export default {
       .catch((error) => {
         console.log(error);
       });
+    },
+    
+    showToast() {
+      toast.success('Form was successfully submitted.',{autoClose: 5000,});
     }
   },
 }

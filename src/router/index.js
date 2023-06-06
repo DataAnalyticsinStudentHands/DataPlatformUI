@@ -185,6 +185,11 @@ const routes = [
       path: '/exitForm',
       name: 'exitForm',
       component: () => import('../components/studentSide/exitForm.vue')
+    },
+    {
+      path: '/studentDashboard',
+      name: 'studentDashboard',
+      component: () => import('../components/studentSide/studentDashboard.vue')
     }
 ]
 const router = createRouter({
