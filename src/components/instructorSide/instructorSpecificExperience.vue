@@ -54,24 +54,24 @@
       }
   </style>
   
-  <script>
-  import { useLoggedInUserStore } from "@/stored/loggedInUser";
+<script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
-    data: () => ({
-      items: [
-        {
-          title: 'Activity #1',
-          value: 1,
-        },
-        {
-          title: 'Activity #2',
-          value: 2,
-        },
-        {
-          title: 'Activity #3',
-          value: 3,
-        },
-      ],
-    }),
-  }
-  </script>
+  data: () => ({
+    items: [
+      {
+        title: 'Activity #1',
+        value: 1,
+      },
+      {
+        title: 'Activity #2',
+        value: 2,
+      },
+      {
+        title: 'Activity #3',
+        value: 3,
+      },
+    ],
+  }),
+}
+</script>

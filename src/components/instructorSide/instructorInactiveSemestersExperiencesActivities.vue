@@ -1,11 +1,11 @@
 <!--'/instructorSemestersInactiveExperiencesActivities'-->
 <template>
-  <main class="">
+  <main>
       <center>
         <br>
         <p class="font-weight-black text-h6">Inactive Semesters, Experiences, and Actvities</p>
         <br>
-            <v-btn style="text-align:center"><router-link class="" to="/instructorAddExperience">
+            <v-btn style="text-align:center"><router-link to="/instructorAddExperience">
             Reactivate Experiences/Activities</router-link>
             </v-btn>
             <v-container fluid>
@@ -24,6 +24,18 @@
     </center>
   </main>
 </template>
+
+<script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  export default {
+    data () {
+      return {
+        selected: [],
+      }
+    },
+  }
+</script>
+
 <style>
     #contentNavbar .nav-link.router-link-exact-active{
         background-color: #eee;
@@ -42,14 +54,3 @@
         }
     }
 </style>
-
-<script>
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
-  export default {
-    data () {
-      return {
-        selected: [],
-      }
-    },
-  }
-</script>

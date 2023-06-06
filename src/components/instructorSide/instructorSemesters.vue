@@ -8,65 +8,30 @@
               <v-btn style="text-align:center"><router-link class="" to="/instructorAddSemester">
               Add New Semester</router-link>
               </v-btn>
-              <table>
+        </center>  
+      <div style="display: flex; justify-content: center;">  
+        <v-table style="width: 80%">
+          <thead>
             <tr>
-              <th style="padding: 30px; text-align: left;">
-                 Semester
-              </th>
-              <th style="padding: 30px; text-align: left;">
-                Date Range
-              </th>
-          </tr>
-          <tr><router-link class="nav-link text-primary" to="/instructorSpecificExperience">
-            <td style="padding: 30px;">
-              Spring 2023
-            </td></router-link>
-            <td style="padding: 30px;"> <router-link class="nav-link text-primary" to="/instructorSpecificExperience">
-              January 17, 2023 - May 11, 2023 </router-link>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 30px;">
-              Fall 2022
-            </td>
-            <td style="padding: 30px;">
-              August 22, 2022 - December 14, 2022
-            </td>
-          </tr>
-        </table>
-        </center>
-
-        <!-- <div class="flex flex-col col-span-2">
-        <table class="min-w-full shadow-md rounded">
-          <thead class="bg-gray-50 text-xl">
-            <tr>
-              <th class="p-4 text-left">Semester</th>
-              <th class="p-4 text-left">Date Ranges</th>
+              <th class="text-left">Semester</th>
+              <th class="text-left">Date Ranges</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-300">
-            <tr
-              v-for="semester in semesterData"
-              :key="semester.semesterName"
-            >
-              <td class="p-2 text-left">
-                {{ semester.semesterName}}
-              </td>
-              <td class="p-2 text-left">
-                {{ semester.semesterStartDate + " - " + semester.semesterEndDate }}
-              </td>
-              <td class="p-2 text-left">{{ client.address.city }}</td>
+          <tbody>
+            <tr @click="editSemester(semester._id)" v-for="semester in semesterData" :key="semester._id">
+              <td class="text-left">{{ semester.semesterName}}</td>
+              <td class="text-left">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
             </tr>
           </tbody>
-        </table>
-        </div> -->
-        {{ semesterData }}
+        </v-table>
+      </div>
     </main>
   </template>
  
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { DateTime } from "luxon";
 export default {
   data() {
     return {
@@ -87,6 +52,14 @@ export default {
       });
     window.scrollTo(0, 0);
   },
+  methods: {
+    formatDate(datetimeDB) {
+      return DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
+    },
+    editSemester(semesterID) {
+      this.$router.push({ name: "instructorSpecificExperience", params: { id: semesterID } });
+    }
+  }
 }
 </script>
 
