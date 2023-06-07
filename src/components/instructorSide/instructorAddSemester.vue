@@ -6,18 +6,18 @@
           <p class="font-weight-black text-h6">New Semester</p><br>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field v-model="semesterName" label="Semester Name"></v-text-field>
+                <v-text-field v-model="semester.semesterName" label="Semester Name"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="semesterStartDate" label="Semester Start Date"></v-text-field>
+                <v-text-field type="date" v-model="semester.semesterStartDate" label="Semester Start Date"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="semesterEndDate" label="Semester End Date"></v-text-field>
+                <v-text-field type="date" v-model="semester.semesterEndDate" label="Semester End Date"></v-text-field>
               </v-col>
             </v-row>
-          <v-btn style="text-align:center;" methods="handleSubmitForm">Submit</v-btn>
+          <v-btn style="text-align:center;" @click="handleSubmitForm">Submit</v-btn>
       </v-container>
     </v-form>
   </main>
@@ -29,17 +29,20 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
-      semesterName: '',
-      semesterStartDate:'',
-      semesterEndDate:''
+      semester: {
+        semesterName: '',
+        semesterStartDate:'',
+        semesterEndDate:''
+      }
     };
   },
   methods: {
     async handleSubmitForm() {
-      const user = useLoggedInUserStore()
-      let token = user.token
+      const user = useLoggedInUserStore();
+      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/semesters/`;
-      axios.post(apiURL, {semesterName: this.semesterName, semesterStartDate: this.semesterStartDate, semesterEndDate: this.semesterEndDate}, {headers: { token }})
+      
+      axios.post(apiURL, this.semester, {headers: { token }})
       .then((response) => {
         alert("Semester has been successfully added.");
         this.$router.push("/instructorSemesters");

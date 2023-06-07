@@ -1,71 +1,81 @@
 <!--'/instructorActivities' this page will only show experiences-->
 <template>
-    <main class="">
-        <center>
-          <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"><router-link class="" to="/instuctorSemesters">Semesters</router-link> | <router-link class="" to="/instuctorExperiences">Experiences</router-link> | <router-link class="" to="/instuctorActivities">Activities</router-link>         </h2>
+  <main class="">
+      <center>
+        <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem"> <router-link class="" to="/instructorSemesters">Semesters</router-link> | <router-link class="" to="/instructorExperiences">Experiences</router-link> | <router-link class="" to="/instructorActivities">Activities</router-link>         </h2>
             <p class="font-weight-black text-h6">Activities</p>
             <br>
-            <v-btn style="text-align:center"><router-link class="" to="/instuctorAddActivity">
+            <v-btn style="text-align:center"><router-link class="" to="/instructorAddActivity">
             Add New Activity</router-link>
             </v-btn>
-            <table>     
-            <tr>
-            <th style="padding: 30px; text-align: left;">
-               Experience Code
-            </th>
-            <th style="padding: 30px; text-align: left;">
-              Experience Name
-            </th>
-          </tr>
-          <tr><router-link class="nav-link text-primary" to="/instuctorSpecificActivity">
-            <td style="padding: 30px;">
-              Apprenticeship - Research Assistant
-            </td></router-link><router-link class="nav-link text-primary" to="/instuctorSpecificActivity">
-            <td style="padding: 30px;">
-                Project 1
-            </td></router-link>
-          </tr>
+      </center>  
+    <div style="display: flex; justify-content: center;">  
+      <v-table style="width: 80%">
+        <thead>
           <tr>
-            <td style="padding: 30px;">
-              Apprenticeship - Research Assistant
-            </td>
-            <td style="padding: 30px;">
-                Homeworks 1-6
-            </td>
+            <th class="text-left">Activity Name</th>
           </tr>
-          <tr>
-            <td style="padding: 30px;">
-                Apprenticeship - Research Assistant
-            </td>
-            <td style="padding: 30px;">
-                Module 1: Before there was Criminology
-            </td>
+        </thead>
+        <tbody>
+          <tr @click="editActivity(activity._id)" v-for="activity in activityData" :key="activity._id">
+            <td class="text-left">{{ activity.activityName }}</td>
           </tr>
-        </table>
-        </center>
-    </main>
-  </template>
-  <style>
-      #contentNavbar .nav-link.router-link-exact-active{
-          background-color: #eee;
-      }
-      /* Medium Devices, Desktops */
-      @media only screen and (min-width : 992px) {
-          main {
-              text-align: center;
-          }
-          #contentNavbar .nav-item {
-              border: 3px solid black;
-              border-right: none;
-          }
-          #contentNavbar .nav-item:last-child {
-              border: 1px solid black;
-          }
-      }
-  </style>
-  
-  <script>
-  import { useLoggedInUserStore } from "@/stored/loggedInUser";
-      export default {
-      }
-  </script>
+        </tbody>
+      </v-table>
+    </div>
+  </main>
+</template>
+
+<script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import axios from "axios";
+import { DateTime } from "luxon";
+export default {
+data() {
+  return {
+    activityData: []
+  };
+},
+mounted() {
+  const user = useLoggedInUserStore()
+  let token = user.token
+  let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/`;
+  axios.get(apiURL, { headers: { token },})
+    .then(
+      (resp) => {
+        this.activityData = resp.data;
+      })
+    .catch((error) => {
+      console.log(error);
+    });
+  window.scrollTo(0, 0);
+},
+methods: {
+  formatDate(datetimeDB) {
+    return DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
+  },
+  editActivity(activityID) {
+    this.$router.push({ name: "instructorSpecificActivity", params: { id: activityID } });
+  }
+}
+}
+</script>
+
+<style>
+#contentNavbar .nav-link.router-link-exact-active{
+  background-color: #eee;
+}
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+  main {
+      text-align: center;
+  }
+  #contentNavbar .nav-item {
+      border: 3px solid black;
+      border-right: none;
+  }
+  #contentNavbar .nav-item:last-child {
+      border: 1px solid black;
+  }
+}
+</style>
