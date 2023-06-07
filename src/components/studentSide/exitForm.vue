@@ -4,22 +4,22 @@
       <p class="font-weight-black text-h5 text--primary">Experience Selection + General</p>
       <p class="text-subtitle-1">Please confirm the following information is accurate. If any changes need to be made, type them below.</p>
     </v-container>
-      <div style="padding: 10px;">
+      <div style="margin-left: 30px;">
       <input type="checkbox" v-model="firstNameChecked" style="outline: 2px solid gray; margin-right: 10px;">
       <span style="color: gray;">First Name</span><br>
       <input v-if="firstNameChecked" type="text" placeholder="First Name" style="margin-top: 10px;">
       </div>
-      <div style="padding: 10px;">
+      <div style="margin-left: 30px;">
       <input type="checkbox" v-model="lastNameChecked" style="outline: 2px solid gray; margin-right: 10px;">
       <span style="color: gray;">Last Name</span><br>
       <input v-if="lastNameChecked" type="text" placeholder="Last Name" style="margin-top: 10px;">
       </div>
-      <div style="padding: 10px;">
+      <div style="margin-left: 30px;">
       <input type="checkbox" v-model="emailChecked" style="outline: 2px solid gray; margin-right: 10px;">
       <span style="color: gray;">Preferred Email</span><br>
       <input v-if="emailChecked" type="text" placeholder="Preferred Email" style="margin-top: 10px;">
       </div>
-      <div style="padding: 10px;">
+      <div style="margin-left: 30px;">
       <input type="checkbox" v-model="psidChecked" style="outline: 2px solid gray; margin-right: 10px;">
       <span style="color: gray;">PeopleSoft ID</span><br>
       <input v-if="psidChecked" type="text" placeholder="PeopleSoft ID" style="margin-top: 10px;">
@@ -171,13 +171,13 @@
       </v-list>
     </v-container>
     <v-container>
-      <h2>Please select which goal(s) you faced barriers to achieving this semester:</h2>
-      <v-checkbox
-        v-for="(goal, index) in goals"
-        :key="index"
-        v-model="goal.barrier"
-        :label="goal.title"
-      ></v-checkbox>
+        <div style="padding: 10px;">
+        <h2>Please select which goal(s) you faced barriers to achieving this semester:</h2>
+        <div v-for="(goal, index) in goals" :key="index" class="custom-checkbox">
+        <input type="checkbox" v-model="goal.barrier" id="checkbox-{{ index }}" style="outline: 2px solid gray; margin-right: 10px; margin-left: 20px;">
+        <label for="checkbox-{{ index }}" style="color: gray; margin-right: 10px;">{{ goal.title }}</label>
+        </div>
+        </div>
     </v-container>
     <v-container>
       <h2>For one of the goals you selected above, please describe what those barriers were and what strategies you employed to overcome those barriers in 3-4 sentences:</h2>
@@ -212,181 +212,6 @@
       <v-divider></v-divider>
       <v-list-item-group>
         <v-list-item v-for="(activity, index) in activities" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ activity.title }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ activity.content }}
-            </v-list-item-subtitle>
-            <v-checkbox v-model="activity.checkedGoals" :label="goal.title" v-for="(goal, i) in goals" :key="i" :value="goal.title" hide-details></v-checkbox>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-container>
-
-
-  <v-container>
-        <p class="font-weight-black text-h5 text--primary">HON 3397: American Crime Story Goals</p>
-      <h2>Below is a list of your goals from the beginning of the semester:</h2>
-      <v-list>
-        <v-list-item v-for="(goal, index) in goals" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>{{ goal.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ goal.content }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-container>
-  <v-container>
-    <h2>For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".</h2>
-    <v-divider></v-divider>
-    <v-list>
-      <v-subheader>Activities</v-subheader>
-      <v-divider></v-divider>
-      <v-list-item-group>
-        <v-list-item v-for="(activity, index) in activities2" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ activity.title }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ activity.content }}
-            </v-list-item-subtitle>
-            <v-checkbox v-model="activity.checkedGoals" :label="goal.title" v-for="(goal, i) in goals" :key="i" :value="goal.title" hide-details></v-checkbox>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-container>
-
-
-  <v-container>
-        <p class="font-weight-black text-h5 text--primary">HON 4350 Goals</p>
-      <h2>Below is a list of your goals from the beginning of the semester:</h2>
-      <v-list>
-        <v-list-item v-for="(goal, index) in goals" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>{{ goal.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ goal.content }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-container>
-  <v-container>
-    <h2>For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".</h2>
-    <v-divider></v-divider>
-    <v-list>
-      <v-subheader>Activities</v-subheader>
-      <v-divider></v-divider>
-      <v-list-item-group>
-        <v-list-item v-for="(activity, index) in activities3" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ activity.title }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ activity.content }}
-            </v-list-item-subtitle>
-            <v-checkbox v-model="activity.checkedGoals" :label="goal.title" v-for="(goal, i) in goals" :key="i" :value="goal.title" hide-details></v-checkbox>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-container>
-
-
-  <v-container>
-        <p class="font-weight-black text-h5 text--primary">CHW Certification Goals</p>
-      <h2>Below is a list of your goals from the beginning of the semester:</h2>
-      <v-list>
-        <v-list-item v-for="(goal, index) in goals" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>{{ goal.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ goal.content }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-container>
-  <v-container>
-    <h2>For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".</h2>
-    <v-divider></v-divider>
-    <v-list>
-      <v-subheader>Activities</v-subheader>
-      <v-divider></v-divider>
-      <v-list-item-group>
-        <v-list-item v-for="(activity, index) in activities4" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ activity.title }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ activity.content }}
-            </v-list-item-subtitle>
-            <v-checkbox v-model="activity.checkedGoals" :label="goal.title" v-for="(goal, i) in goals" :key="i" :value="goal.title" hide-details></v-checkbox>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-container>
-
-
-  <v-container>
-        <p class="font-weight-black text-h5 text--primary">HON 4355 Goals</p>
-      <h2>Below is a list of your goals from the beginning of the semester:</h2>
-      <v-list>
-        <v-list-item v-for="(goal, index) in goals" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>{{ goal.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ goal.content }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-container>
-  <v-container>
-    <h2>For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".</h2>
-    <v-divider></v-divider>
-    <v-list>
-      <v-subheader>Activities</v-subheader>
-      <v-divider></v-divider>
-      <v-list-item-group>
-        <v-list-item v-for="(activity, index) in activities5" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ activity.title }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ activity.content }}
-            </v-list-item-subtitle>
-            <v-checkbox v-model="activity.checkedGoals" :label="goal.title" v-for="(goal, i) in goals" :key="i" :value="goal.title" hide-details></v-checkbox>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-container>
-
-
-  <v-container>
-        <p class="font-weight-black text-h5 text--primary">Internship</p>
-      <h2>Below is a list of your goals from the beginning of the semester:</h2>
-      <v-list>
-        <v-list-item v-for="(goal, index) in goals" :key="index">
-          <v-list-item-content>
-            <v-list-item-title>{{ goal.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ goal.content }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-container>
-  <v-container>
-    <h2>For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".</h2>
-    <v-divider></v-divider>
-    <v-list>
-      <v-subheader>Activities</v-subheader>
-      <v-divider></v-divider>
-      <v-list-item-group>
-        <v-list-item v-for="(activity, index) in activities6" :key="index">
           <v-list-item-content>
             <v-list-item-title>
               {{ activity.title }}
@@ -438,7 +263,7 @@
         <p class="font-weight-black text-h5 text--primary">Growth</p>
     </v-container>
   <v-container>
-    <p>Q15 Please indicate how much growth you experienced during your program in the area of problem solving.</p>
+    <p>Please indicate how much growth you experienced during your program in the area of problem solving.</p>
     <v-radio-group  v-model="problemSolvingGrowth">
       <v-radio label="No growth" value="1" ></v-radio>
       <v-radio label="A little growth" value="2"></v-radio>
@@ -446,7 +271,7 @@
       <v-radio label="A lot of growth" value="4"></v-radio>
     </v-radio-group>
     
-    <p>Q16 Please indicate how much growth you experienced during your program in the area of effective communication.</p>
+    <p>Please indicate how much growth you experienced during your program in the area of effective communication.</p>
     <v-radio-group  v-model="problemSolvingGrowth">
       <v-radio label="No growth" value="1" ></v-radio>
       <v-radio label="A little growth" value="2"></v-radio>
@@ -454,7 +279,7 @@
       <v-radio label="A lot of growth" value="4"></v-radio>
     </v-radio-group>
     
-    <p>Q17 Please indicate how much growth you experienced during your program in the area of teamwork.</p>
+    <p>Please indicate how much growth you experienced during your program in the area of teamwork.</p>
     <v-radio-group  v-model="problemSolvingGrowth">
       <v-radio label="No growth" value="1" ></v-radio>
       <v-radio label="A little growth" value="2"></v-radio>
@@ -462,7 +287,7 @@
       <v-radio label="A lot of growth" value="4"></v-radio>
     </v-radio-group>
     
-    <p>Q18 Please indicate how much growth you experienced during your program in the area of cultural humility.</p>
+    <p>Please indicate how much growth you experienced during your program in the area of cultural humility.</p>
     <v-radio-group  v-model="problemSolvingGrowth">
       <v-radio label="No growth" value="1" ></v-radio>
       <v-radio label="A little growth" value="2"></v-radio>
@@ -470,7 +295,7 @@
       <v-radio label="A lot of growth" value="4"></v-radio>
     </v-radio-group>
     
-    <p>Q19 Please indicate how much growth you experienced during your program in the area of ethical decision making.</p>
+    <p>Please indicate how much growth you experienced during your program in the area of ethical decision making.</p>
     <v-radio-group  v-model="problemSolvingGrowth">
       <v-radio label="No growth" value="1" ></v-radio>
       <v-radio label="A little growth" value="2"></v-radio>
@@ -478,7 +303,7 @@
       <v-radio label="A lot of growth" value="4"></v-radio>
     </v-radio-group>
     
-    <p>Q20 Please indicate how much growth you experienced during your program in the area of professional responsibility.</p>
+    <p>Please indicate how much growth you experienced during your program in the area of professional responsibility.</p>
     <v-radio-group  v-model="problemSolvingGrowth">
       <v-radio label="No growth" value="1" ></v-radio>
       <v-radio label="A little growth" value="2"></v-radio>
@@ -618,7 +443,7 @@ export default {
         },
         {
           title: 'Goal 4',
-          content: 'This is the content of Goal 3.',
+          content: 'This is the content of Goal 4.',
           progress: null,
           progressConnection: null,
         },
