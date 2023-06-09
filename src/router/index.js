@@ -88,6 +88,13 @@ const routes = [
         
     },
     {
+      path: '/updateUserData',
+      name: 'User Data Update Form',
+      props: true,
+      component: () => import('../components/loginPages/updateUserData.vue')
+      
+  },
+    {
         path: '/sendNewCode',
         name: 'Send New Code',
         props: true,
