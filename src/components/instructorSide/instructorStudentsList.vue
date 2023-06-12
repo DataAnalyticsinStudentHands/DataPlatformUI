@@ -1,68 +1,80 @@
 <!--'/adminStudentsList'-->
 <template>
   <main class="">
-      <center>
-        <br>
-        <p class="font-weight-black text-h6">Students</p>
-      <table>
-        <tr>
-          <th style="padding: 30px; text-align: left;">
-             Name
-          </th>
-          <th style="padding: 30px; text-align: left;">
-            Pronouns
-          </th>
-          <th style="padding: 30px; text-align: left;">
-            Triggers
-          </th>
-        </tr>
-        <tr>
-          <td style="padding: 30px;">
-            Abby Garcia
-          </td>
-          <td style="padding: 30px;">
-            She/her/hers
-          </td>
-          <td style="padding: 30px;">
-            Oranges
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 30px;">
-            Lori Vo
-          </td>
-          <td style="padding: 30px;">
-            She/her/hers
-          </td>
-          <td style="padding: 30px;">
-            Thunder
-          </td>
-        </tr>
-      </table>
-    </center>
+    <br><p class="font-weight-black text-h5">Students</p>
+    <div style="display: flex; justify-content: center;">  
+      <v-table style="width: 80%">
+        <thead>
+          <tr>
+            <th class="text-left">Name</th>
+            <th class="text-left">Email</th>
+            <th class="text-left">Pronouns</th>
+            <th class="text-left">Triggers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr @click="editStudent(student.userID)" v-for="student in studentListRaw" :key="student.userID">
+            <td class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName }}</td>
+            <td class="text-left">{{ student.userData.email }}</td>
+            <td class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
+            <td class="text-left">{{ student.studentInformation.issuesConcernsTriggers }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+    </div>
   </main>
 </template>
-<style>
-    #contentNavbar .nav-link.router-link-exact-active{
-        background-color: #eee;
-    }
-    /* Medium Devices, Desktops */
-    @media only screen and (min-width : 992px) {
-        main {
-            text-align: center;
-        }
-        #contentNavbar .nav-item {
-            border: 3px solid black;
-            border-right: none;
-        }
-        #contentNavbar .nav-item:last-child {
-            border: 1px solid black;
-        }
-    }
-</style>
 
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
-    export default {
-    }
+import axios from "axios";
+import { DateTime } from "luxon";
+export default {
+data() {
+  return {
+    studentListRaw: []
+  };
+},
+mounted() {
+  const user = useLoggedInUserStore()
+  let token = user.token
+  let apiURL = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/`;
+  axios.get(apiURL, { headers: { token },})
+    .then(
+      (resp) => {
+        this.studentListRaw = resp.data.data;
+      })
+    .catch((error) => {
+      console.log(error);
+    });
+  window.scrollTo(0, 0);
+},
+methods: {
+  listCheckedOptions(pronounsList) {
+    return pronounsList.filter(item => item.checked === true).map(item => item.label).join(", ");
+  },
+  editStudent(studentID) {
+    this.$router.push({ name: "instructorSpecificStudent", params: { id: studentID } });
+  }
+}
+}
 </script>
+
+<style>
+#contentNavbar .nav-link.router-link-exact-active{
+  background-color: #eee;
+}
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+  main {
+      text-align: center;
+  }
+  #contentNavbar .nav-item {
+      border: 3px solid black;
+      border-right: none;
+  }
+  #contentNavbar .nav-item:last-child {
+      border: 1px solid black;
+  }
+}
+</style>
