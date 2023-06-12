@@ -55,9 +55,6 @@ export default {
 }
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
-    main {
-        text-align: center;
-    }
     #contentNavbar .nav-item {
         border: 3px solid black;
         border-right: none;

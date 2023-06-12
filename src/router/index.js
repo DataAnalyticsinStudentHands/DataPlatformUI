@@ -179,8 +179,8 @@ const routes = [
       component: () => import('../components/instructorSide/instructorInactiveStudents.vue')
     },
     {
-      path: '/instructorInactiveSemestersExperiencesinstructorActivities',
-      name: 'instructorInactiveSemestersExperiencesActivities',
+      path: '/instructorInactiveSemestersExperiencesActivities',
+      name: '/instructorInactiveSemestersExperiencesActivities',
       component: () => import('../components/instructorSide/instructorInactiveSemestersExperiencesActivities.vue')
     },
     {

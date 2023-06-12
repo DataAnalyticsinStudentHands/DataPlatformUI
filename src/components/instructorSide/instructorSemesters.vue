@@ -54,10 +54,11 @@ export default {
   },
   methods: {
     formatDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
+      const formattedDate = DateTime.fromISO(datetimeDB).plus({ days: 1 }).toFormat('MM-dd-yyyy');
+      return formattedDate;
     },
     editSemester(semesterID) {
-      this.$router.push({ name: "instructorSpecificExperience", params: { id: semesterID } });
+      this.$router.push({ name: "instructorSpecificSemester", params: { id: semesterID } });
     }
   }
 }
@@ -69,10 +70,7 @@ export default {
 }
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
-    main {
-        text-align: center;
-    }
-    #contentNavbar .nav-item {
+  #contentNavbar .nav-item {
         border: 3px solid black;
         border-right: none;
     }
