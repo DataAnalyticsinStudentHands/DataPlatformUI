@@ -1,3 +1,4 @@
+<!-- /registerForm -->
 <template>
   <section class="">
     <!-- <div

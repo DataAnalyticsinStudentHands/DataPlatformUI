@@ -88,6 +88,13 @@ const routes = [
         
     },
     {
+      path: '/updateUserData',
+      name: 'User Data Update Form',
+      props: true,
+      component: () => import('../components/loginPages/updateUserData.vue')
+      
+  },
+    {
         path: '/sendNewCode',
         name: 'Send New Code',
         props: true,
@@ -172,8 +179,8 @@ const routes = [
       component: () => import('../components/instructorSide/instructorInactiveStudents.vue')
     },
     {
-      path: '/instructorInactiveSemestersExperiencesinstructorActivities',
-      name: 'instructorInactiveSemestersExperiencesActivities',
+      path: '/instructorInactiveSemestersExperiencesActivities',
+      name: '/instructorInactiveSemestersExperiencesActivities',
       component: () => import('../components/instructorSide/instructorInactiveSemestersExperiencesActivities.vue')
     },
     {

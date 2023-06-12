@@ -111,6 +111,12 @@
               </li>
           </div>
             <li v-if="user.isLoggedIn">
+              <router-link to="/updateUserData">
+                <span style="position: relative; top: 6px" class="material-icons">settings</span>
+                Update Profile Information
+              </router-link>
+            </li>
+            <li v-if="user.isLoggedIn">
               <router-link to="/resetPassword">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
                 Update Password

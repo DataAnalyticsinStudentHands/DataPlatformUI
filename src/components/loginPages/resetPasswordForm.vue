@@ -1,3 +1,4 @@
+<!-- /resetPasswordForm -->
 <template>
   <section class="">
     <div class="px-10 py-20">
@@ -186,3 +187,4 @@ export default {
   },
 };
 </script>
+
