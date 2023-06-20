@@ -98,27 +98,29 @@
                 </router-link>
               </li>
           </div>
-            <li v-if="user.isLoggedIn">
+          <div v-if="user.isLoggedIn">
+            <li>
               <hr> <!-- Horizontal line -->
             </li>
-            <li v-if="user.isLoggedIn">
+            <li>
               <router-link to="/updateUserData">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
                 Update Profile Information
               </router-link>
             </li>
-            <li v-if="user.isLoggedIn">
+            <li>
               <router-link to="/resetPassword">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
                 Update Password
               </router-link>
             </li>
-            <li v-if="user.isLoggedIn">
+            <li>
               <router-link to="/login">
               <span style="position: relative; top: 6px" class="material-icons">logout</span>
               <button @click="store.logout()">Logout</button>
             </router-link>
             </li>
+          </div> 
           </ul>
         </nav>
       </header>
