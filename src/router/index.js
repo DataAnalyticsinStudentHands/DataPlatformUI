@@ -124,7 +124,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorStudentsList.vue')
     },
     {
-      path: '/instructorSpecificStudent/:studentID',
+      path: '/instructorSpecificStudent/:userID',
       name: 'instructorSpecificStudent',
       component: () => import('../components/instructorSide/instructorSpecificStudent.vue')
     },

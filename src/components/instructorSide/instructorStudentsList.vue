@@ -14,7 +14,7 @@
         </thead>
         <tbody>
           <tr @click="editStudent(student.userID)" v-for="student in studentListRaw" :key="student.userID">
-            <td class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName + student.userID }}</td>
+            <td class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName}}</td>
             <td class="text-left">{{ student.userData.email }}</td>
             <td class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
             <td class="text-left">{{ student.studentInformation.issuesConcernsTriggers }}</td>
@@ -22,7 +22,6 @@
         </tbody>
       </v-table>
     </div>
-    {{  }}
   </main>
 </template>
 
@@ -54,7 +53,7 @@ methods: {
     return pronounsList.filter(item => item.checked === true).map(item => item.label).join(", ");
   },
   editStudent(userID) {
-    this.$router.push({ name: "instructorSpecificStudent", params: { id: userID } });
+    this.$router.push({ name: "instructorSpecificStudent", params: {userID: userID} });
   }
 }
 }
