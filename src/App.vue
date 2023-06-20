@@ -97,18 +97,6 @@
                   Semeters, Experiences, <br> Activities
                 </router-link>
               </li>
-              <li>
-                <router-link to="/instructorInactiveStudents">
-                  <span style="position: relative; top: 6px" class="material-icons">person</span>
-                  Inactive Students
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/instructorInactiveSemestersExperiencesActivities">
-                  <span style="position: relative; top: 6px" class="material-icons">school</span>
-                  Inactive Semesters, <br>Experiences, and Activities
-                </router-link>
-              </li>
           </div>
             <li v-if="user.isLoggedIn">
               <router-link to="/updateUserData">

@@ -174,16 +174,6 @@ const routes = [
       component: () => import('../components/instructorSide/instructorSpecificActivity.vue')
     },
     {
-      path: '/instructorInactiveStudents',
-      name: 'instructorInactiveStudents',
-      component: () => import('../components/instructorSide/instructorInactiveStudents.vue')
-    },
-    {
-      path: '/instructorInactiveSemestersExperiencesActivities',
-      name: '/instructorInactiveSemestersExperiencesActivities',
-      component: () => import('../components/instructorSide/instructorInactiveSemestersExperiencesActivities.vue')
-    },
-    {
       path: '/studentEntryForm',
       name: 'studentEntryForm',
       props: true,
