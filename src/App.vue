@@ -99,6 +99,9 @@
               </li>
           </div>
             <li v-if="user.isLoggedIn">
+              <hr> <!-- Horizontal line -->
+            </li>
+            <li v-if="user.isLoggedIn">
               <router-link to="/updateUserData">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
                 Update Profile Information

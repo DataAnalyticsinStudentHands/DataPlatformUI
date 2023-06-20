@@ -236,7 +236,7 @@ export default {
         commentsByStaff: '',
         issuesConcernsTriggers: '',
         enrolledUHInfo: {
-          uhStatus: false,
+          uhStatus: null,
           uhEmail: '',
           peopleSoftID: '',
           expectedGraduationYear: '',
