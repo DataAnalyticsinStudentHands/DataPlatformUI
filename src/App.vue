@@ -94,7 +94,7 @@
               <li>
                 <router-link to="/instructorSemesters">
                   <span style="position: relative; top: 6px" class="material-icons">school</span>
-                  Semeters, Experiences, <br> Activities
+                  Semesters, Experiences, <br> Activities
                 </router-link>
               </li>
           </div>
