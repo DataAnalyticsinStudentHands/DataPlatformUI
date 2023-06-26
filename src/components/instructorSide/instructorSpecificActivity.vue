@@ -1,54 +1,91 @@
 <!--'/instructorSpecificActivity' this page will only show experiences-->
+
 <template>
     <main class="">
-        <center>
-            <v-container>
-                <p class="font-weight-black text-h6">Project 1</p>
-                <br>
-                 <v-row>
-                     <v-col cols="12" md="6">
-                     <v-text-field v-model="activityName" label="Project 1"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                        <v-select
-                        title="Apprenticeship - Research Assistant"
-                        value = "Apprenticeship - Research Assistant"
-                        label="Related Experience"
-                        :items="['Apprenticeship - Research Assistant', 'HON 3350 MW', 'HON 3397']"
-                        variant="solo"
-                        ></v-select>
-                     </v-col>
-                    </v-row>
-            </v-container>
-        </center>
-        <div style="text-align:right;">
-            <v-btn style="text-align:center;">
-            Update
-            </v-btn>
-            <v-btn style="text-align:center">
-            Inactivate
-            </v-btn>
-        </div>
+      <center>
+        <v-container>
+          <p class="font-weight-black text-h6">Activity: {{ originalActivityName }}</p>
+          <br>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="activity.activityName" label="Activity Name"></v-text-field>
+            </v-col>
+          </v-row>
+        </v-container>
+      </center>
+      <div style="text-align:right;">
+        <v-btn style="text-align:center;" @click="handleUpdateForm">Update</v-btn>
+      </div>
     </main>
   </template>
+  
   <style>
-      #contentNavbar .nav-link.router-link-exact-active{
-          background-color: #eee;
+    #contentNavbar .nav-link.router-link-exact-active {
+      background-color: #eee;
+    }
+  
+    /* Medium Devices, Desktops */
+    @media only screen and (min-width: 992px) {
+      #contentNavbar .nav-item {
+        border: 3px solid black;
+        border-right: none;
       }
-      /* Medium Devices, Desktops */
-      @media only screen and (min-width : 992px) {
-        #contentNavbar .nav-item {
-              border: 3px solid black;
-              border-right: none;
-          }
-          #contentNavbar .nav-item:last-child {
-              border: 1px solid black;
-          }
+      #contentNavbar .nav-item:last-child {
+        border: 1px solid black;
       }
+    }
   </style>
   
   <script>
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
-      export default {
-      }
+  import axios from "axios";
+  
+  export default {
+    props: ["id"],
+    data() {
+      return {
+        activity: {
+          activityName: "",
+          activityStatus: false
+        },
+        originalActivityName: "" // Store the original activity name
+      };
+    },
+    beforeMount() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities`;
+      axios
+        .get(`${url}/${this.$route.params.id}`, {
+          headers: { token },
+        })
+        .then((resp) => {
+          let data = resp.data[0];
+          console.log(resp.data[0]);
+          this.activity.activityName = data.activityName;
+          this.activity.activityStatus = data.activityStatus;
+          this.originalActivityName = data.activityName; // Set the original activity name
+        });
+    },
+    methods: {
+      handleUpdateForm() {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities`;
+  
+        // Update the form data
+        axios
+          .put(`${url}/${this.$route.params.id}`, this.activity, {
+            headers: { token },
+          })
+          .then(() => {
+            alert("Update has been saved.");
+            this.$router.back().catch((error) => {
+              console.log(error);
+            });
+          });
+      },
+    },
+  };
   </script>
+  

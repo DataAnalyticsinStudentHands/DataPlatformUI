@@ -35,16 +35,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr
+          <tr 
             v-for="semester in filteredSemesterData"
             :key="semester._id"
           >
             <td class="text-left">
               <input type="checkbox" v-model="selectedSemesters" :value="semester._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
-            <td class="text-left">{{ semester.semesterName }}</td>
-            <td class="text-left">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
-            <td class="text-left">{{ semester.semesterStatus ? 'Active' : 'Inactive' }}</td>
+            <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterName }}</td>
+            <td class="text-left" @click="editSemester(semester._id)">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
+            <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterStatus ? 'Active' : 'Inactive' }}</td>
           </tr>
         </tbody>
       </v-table>

@@ -17,19 +17,30 @@
       <v-btn style="text-align:center">
         <router-link class="" to="/instructorAddActivity">Add New Activity</router-link>
       </v-btn>
+      <br><br>
+      <v-btn style="text-align:center" @click="deactivateActivities" v-if="selectedActivities.length > 0">
+        Deactivate
+      </v-btn>
+      <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0">
+        Activate
+      </v-btn>
     </center>
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 80%">
         <thead>
           <tr>
+            <th class="text-left"></th>
             <th class="text-left">Activity Name</th>
             <th class="text-left">Status</th>
           </tr>
         </thead>
         <tbody>
-          <tr @click="editActivity(activity._id)" v-for="activity in filteredActivityData" :key="activity._id">
-            <td class="text-left">{{ activity.activityName }}</td>
-            <td class="text-left">{{ activity.activityStatus ? 'Active' : 'Inactive' }}</td>
+          <tr v-for="activity in filteredActivityData" :key="activity._id">
+            <td class="text-left">
+              <input type="checkbox" v-model="selectedActivities" :value="activity._id" style="outline: 2px solid #808080; margin-right: 10px;">
+            </td>
+            <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityName }}</td>
+            <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityStatus ? 'Active' : 'Inactive' }}</td>
           </tr>
         </tbody>
       </v-table>
@@ -46,7 +57,8 @@ export default {
   data() {
     return {
       activityData: [],
-      showInactive: false
+      showInactive: false,
+      selectedActivities: []
     };
   },
   mounted() {
@@ -75,6 +87,48 @@ export default {
     },
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+    },
+    deactivateActivities() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { activityStatus: false };
+
+      const promises = this.selectedActivities.map((activityID) => {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/${activityID}`;
+        return axios.put(apiURL, updateStatus, { headers: { token } });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          this.selectedActivities = [];
+          this.fetchActivityData();
+          alert("The activities have been deactivated.");
+          this.$router.push("/instructorActivities"); // Navigate to /instructorActivities
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    activateActivities() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { activityStatus: true };
+
+      const promises = this.selectedActivities.map((activityID) => {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/${activityID}`;
+        return axios.put(apiURL, updateStatus, { headers: { token } });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          this.selectedActivities = [];
+          this.fetchActivityData();
+          alert("The activities have been activated.");
+          this.$router.push("/instructorActivities"); // Navigate to /instructorActivities
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   },
   computed: {

@@ -1,38 +1,50 @@
 <!--'/instructorExperiences' this page will only show experiences-->
 <template>
-  <main class="">
-    <center>
-      <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem">
-        <router-link class="" to="/instructorSemesters">Semesters</router-link> |
-        <router-link class="" to="/instructorExperiences">Experiences</router-link> |
-        <router-link class="" to="/instructorActivities">Activities</router-link>
-      </h2>
+  <main>
+    <div><center>
+      <br>
+      <h2>
+        <router-link to="/instructorSemesters">Semesters</router-link> |
+        <router-link to="/instructorExperiences">Experiences</router-link> |
+        <router-link to="/instructorActivities">Activities</router-link>
+      </h2><br>
       <p class="font-weight-black text-h6">Experiences</p>
       <br>
-      <v-btn style="text-align:center" @click="toggleShowInactive">
+      <v-btn @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Experiences' : 'Show Inactive Experiences' }}
       </v-btn>
       <br>
       <br>
-      <v-btn style="text-align:center">
-        <router-link class="" to="/instructorAddExperience">Add New Experience</router-link>
+      <v-btn>
+        <router-link to="/instructorAddExperience">Add New Experience</router-link>
       </v-btn>
-      <br>
-    </center>
+      <br><br>
+      <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0">
+        Deactivate
+      </v-btn>
+      <v-btn @click="activateExperiences" v-if="selectedExperiences.length > 0">
+        Activate
+      </v-btn>
+      <br></center>
+    </div>
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 80%">
         <thead>
           <tr>
+            <th class="text-left"></th>
             <th class="text-left">Experience Code</th>
             <th class="text-left">Experience Name</th>
             <th class="text-left">Status</th>
           </tr>
         </thead>
         <tbody>
-          <tr @click="editExperience(experience._id)" v-for="experience in filteredExperienceData" :key="experience._id">
-            <td class="text-left">{{ experience.experienceCode }}</td>
-            <td class="text-left">{{ experience.experienceName }}</td>
-            <td class="text-left">{{ experience.experienceStatus ? 'Active' : 'Inactive' }}</td>
+          <tr v-for="experience in filteredExperienceData" :key="experience._id">
+            <td class="text-left">
+              <input type="checkbox" v-model="selectedExperiences" :value="experience._id" style="outline: 2px solid #808080; margin-right: 10px;">
+            </td>
+            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceCode }}</td>
+            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceName }}</td>
+            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceStatus ? 'Active' : 'Inactive' }}</td>
           </tr>
         </tbody>
       </v-table>
@@ -49,7 +61,8 @@ export default {
   data() {
     return {
       experienceData: [],
-      showInactive: false
+      showInactive: false,
+      selectedExperiences: []
     };
   },
   mounted() {
@@ -60,7 +73,7 @@ export default {
     fetchExperienceData() {
       const user = useLoggedInUserStore();
       let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/`;
+      let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
       axios
         .get(apiURL, { headers: { token } })
         .then((resp) => {
@@ -71,13 +84,55 @@ export default {
         });
     },
     formatDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
+      return DateTime.fromISO(datetimeDB).toFormat("MM-dd-yyyy");
     },
     editExperience(experienceID) {
       this.$router.push({ name: "instructorSpecificExperience", params: { id: experienceID } });
     },
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+    },
+    deactivateExperiences() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { experienceStatus: false };
+
+      const promises = this.selectedExperiences.map((experienceID) => {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/${experienceID}`;
+        return axios.put(apiURL, updateStatus, { headers: { token } });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          this.selectedExperiences = [];
+          this.fetchExperienceData();
+          alert("The experience(s) have been deactivated.");
+          this.$router.push("/instructorExperiences"); // Navigate to /instructorExperiences
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    activateExperiences() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { experienceStatus: true };
+
+      const promises = this.selectedExperiences.map((experienceID) => {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/${experienceID}`;
+        return axios.put(apiURL, updateStatus, { headers: { token } });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          this.selectedExperiences = [];
+          this.fetchExperienceData();
+          alert("The experience(s) have been activated.");
+          this.$router.push("/instructorExperiences"); // Navigate to /instructorExperiences
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   },
   computed: {

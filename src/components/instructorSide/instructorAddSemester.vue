@@ -1,4 +1,5 @@
 <!--'/instructorAddSemester' this page will only show experiences-->
+<!--current bug: none of the selected experiences goe sinto experience in the model when submitted-->
 <template>
   <main>
     <v-form @submit.prevent="handleSubmitForm">
@@ -17,8 +18,31 @@
             <v-text-field type="date" v-model="semester.semesterEndDate" label="Semester End Date"></v-text-field>
           </v-col>
         </v-row>
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div> <!-- Display the error message -->
-        <v-btn style="text-align:center;" @click="handleSubmitForm">Submit</v-btn>
+        <v-table style="width: 80%">
+          <thead>
+            <tr>
+              <th class="text-left"></th>
+              <th class="text-left">Experience Code</th>
+              <th class="text-left">Experience Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="experience in experiences" :key="experience._id">
+              <td class="text-left">
+                <input
+                  type="checkbox"
+                  v-model="selectedExperiences"
+                  :value="experience"
+                  style="outline: 2px solid #808080; margin-right: 10px;"
+                />
+              </td>
+              <td class="text-left">{{ experience.experienceCode }}</td>
+              <td class="text-left">{{ experience.experienceName }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
       </v-container>
     </v-form>
   </main>
@@ -32,39 +56,69 @@ export default {
   data() {
     return {
       semester: {
-        semesterName: '',
-        semesterStartDate: '',
-        semesterEndDate: ''
+        semesterName: "",
+        semesterStartDate: "",
+        semesterEndDate: "",
       },
-      errorMessage: '' // Variable to hold the error message
+      experiences: [],
+      selectedExperiences: [],
+      errorMessage: ""
     };
   },
+  beforeMount() {
+    window.scrollTo(0, 0);
+    this.fetchExperienceData();
+  },
   methods: {
-    async handleSubmitForm() {
-      if (!this.semester.semesterName || !this.semester.semesterStartDate || !this.semester.semesterEndDate) {
-        this.errorMessage = 'Please fill in all fields.'; // Set the error message
+    fetchExperienceData() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/`;
+      axios
+        .get(apiURL, { headers: { token } })
+        .then((resp) => {
+          const experiences = resp.data;
+          this.experiences = experiences.filter((experience) => experience.experienceStatus === true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    handleSubmitForm() {
+      if (
+        !this.semester.semesterName ||
+        !this.semester.semesterStartDate ||
+        !this.semester.semesterEndDate
+      ) {
+        this.errorMessage = "Please fill in all fields.";
         return;
       }
 
       const user = useLoggedInUserStore();
       let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/semesters/`;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/semesters/`;
 
-      axios.post(apiURL, this.semester, { headers: { token } })
-        .then((response) => {
+      axios
+        .post(apiURL, {
+          semesterName: this.semester.semesterName,
+          semesterStartDate: this.semester.semesterStartDate,
+          semesterEndDate: this.semester.semesterEndDate,
+          experiences: this.selectedExperiences, 
+        }, { headers: { token } })
+        .then(() => {
           alert("Semester has been successfully added.");
           this.$router.push("/instructorSemesters");
         })
         .catch((error) => {
           if (error.response && error.response.data && error.response.data.error) {
-            this.errorMessage = error.response.data.error; // Set the error message from the backend response
+            this.errorMessage = error.response.data.error;
           } else {
             console.log(error);
           }
         });
     }
   }
-}
+};
 </script>
 
 <style>
