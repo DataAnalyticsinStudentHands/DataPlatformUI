@@ -9,30 +9,62 @@
       </h2>
       <p class="font-weight-black text-h6">Activities</p>
       <br>
+      <v-btn style="text-align:center; margin-right:2rem;">
+        <router-link class="" to="/instructorAddActivity">Add New Activity</router-link>
+      </v-btn>
       <v-btn style="text-align:center" @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Activities' : 'Show Inactive Activities' }}
       </v-btn>
-      <br>
-      <br>
-      <v-btn style="text-align:center">
-        <router-link class="" to="/instructorAddActivity">Add New Activity</router-link>
+      
+      <br><br>
+      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateActivities" v-if="selectedActivities.length > 0">
+        Deactivate
       </v-btn>
+      <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0">
+        Activate
+      </v-btn><br><br>
+
+      <!-- Add the search input field -->
+      <v-text-field
+        v-model="searchQuery"
+        label="Search by activity name"
+        solo-inverted
+        hide-details
+        outlined
+        dense
+      ></v-text-field><br>
+
     </center>
     <div style="display: flex; justify-content: center;">
-      <v-table style="width: 80%">
-        <thead>
-          <tr>
-            <th class="text-left">Activity Name</th>
-            <th class="text-left">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr @click="editActivity(activity._id)" v-for="activity in filteredActivityData" :key="activity._id">
-            <td class="text-left">{{ activity.activityName }}</td>
-            <td class="text-left">{{ activity.activityStatus ? 'Active' : 'Inactive' }}</td>
-          </tr>
-        </tbody>
-      </v-table>
+      <div style="max-height: 400px; overflow-y: auto;">
+        <v-table style="width: 100;">
+          <thead>
+            <tr>
+              <th class="text-left"></th>
+              <th class="text-left">Activity Name</th>
+              <th class="text-left">Status</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="activity in filteredActivityData" :key="activity._id">
+              <td class="text-left">
+                <input
+                  type="checkbox"
+                  v-model="selectedActivities"
+                  :value="activity._id"
+                  style="outline: 2px solid #808080; margin-right: 10px;"
+                >
+              </td>
+              <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityName }}</td>
+              <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityStatus ? 'Active' : 'Inactive' }}</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </v-table>
+      </div>
     </div>
   </main>
 </template>
@@ -46,7 +78,9 @@ export default {
   data() {
     return {
       activityData: [],
-      showInactive: false
+      showInactive: false,
+      selectedActivities: [],
+      searchQuery: ''
     };
   },
   mounted() {
@@ -75,14 +109,62 @@ export default {
     },
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+    },
+    deactivateActivities() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { activityStatus: false };
+
+      const promises = this.selectedActivities.map((activityID) => {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/${activityID}`;
+        return axios.put(apiURL, updateStatus, { headers: { token } });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          this.selectedActivities = [];
+          this.fetchActivityData();
+          alert("The activities have been deactivated.");
+          this.$router.push("/instructorActivities"); // Navigate to /instructorActivities
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    activateActivities() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { activityStatus: true };
+
+      const promises = this.selectedActivities.map((activityID) => {
+        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/${activityID}`;
+        return axios.put(apiURL, updateStatus, { headers: { token } });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          this.selectedActivities = [];
+          this.fetchActivityData();
+          alert("The activities have been activated.");
+          this.$router.push("/instructorActivities"); // Navigate to /instructorActivities
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   },
   computed: {
     filteredActivityData() {
+      const query = this.searchQuery.toLowerCase().trim();
       if (this.showInactive) {
-        return this.activityData.filter((activity) => !activity.activityStatus);
+        return this.activityData.filter(
+          (activity) =>
+            !activity.activityStatus && activity.activityName.toLowerCase().includes(query)
+        );
       } else {
-        return this.activityData.filter((activity) => activity.activityStatus);
+        return this.activityData.filter((activity) =>
+          activity.activityStatus && activity.activityName.toLowerCase().includes(query)
+        );
       }
     }
   }
