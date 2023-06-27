@@ -29,7 +29,7 @@
               <input
                 type="checkbox"
                 v-model="selectedActivities"
-                :value="activity"
+                :value="activity._id"
                 style="outline: 2px solid #808080; margin-right: 10px;"
               />
             </td>

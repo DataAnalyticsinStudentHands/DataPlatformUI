@@ -1,4 +1,5 @@
 <!--'/instructorSemesters' this page will only show semesters-->
+
 <template>
   <main class="">
     <center>
@@ -8,46 +9,49 @@
         <router-link class="" to="/instructorActivities">Activities</router-link>
       </h2>
       <p class="font-weight-black text-h6">Semesters</p>
-      <br>
-      <v-btn style="text-align:center" @click="toggleShowInactive">
-        {{ showInactive ? 'Show Active Semesters' : 'Show Inactive Semesters' }}
-      </v-btn>
-      <br><br>
-      <v-btn style="text-align:center">
+      <br><v-btn style="text-align:center; margin-right:2rem;">
         <router-link class="" to="/instructorAddSemester">Add New Semester</router-link>
       </v-btn>
+      <v-btn style="text-align:center" @click="toggleShowInactive">
+        {{ showInactive ? 'Show Active Semesters' : 'Show Inactive Semesters' }}
+      </v-btn>      
       <br><br>
-      <v-btn style="text-align:center" @click="deactivateSemesters" v-if="selectedSemesters.length > 0">
+      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateSemesters" v-if="selectedSemesters.length > 0">
         Deactivate
       </v-btn>
       <v-btn style="text-align:center" @click="activateSemesters" v-if="selectedSemesters.length > 0">
         Activate
       </v-btn>
+      <br><br>
+      <v-text-field v-model="searchTerm" placeholder="Search by semester name or date ranges"></v-text-field>
     </center>
     <div style="display: flex; justify-content: center;">
-      <v-table style="width: 80%">
-        <thead>
-          <tr>
-            <th class="text-left"></th>
-            <th class="text-left">Semester</th>
-            <th class="text-left">Date Ranges</th>
-            <th class="text-left">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr 
-            v-for="semester in filteredSemesterData"
-            :key="semester._id"
-          >
-            <td class="text-left">
-              <input type="checkbox" v-model="selectedSemesters" :value="semester._id" style="outline: 2px solid #808080; margin-right: 10px;">
-            </td>
-            <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterName }}</td>
-            <td class="text-left" @click="editSemester(semester._id)">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
-            <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterStatus ? 'Active' : 'Inactive' }}</td>
-          </tr>
-        </tbody>
-      </v-table>
+      <div style="max-height: 400px; overflow-y: auto;">
+        <v-table style="width: 100%">
+          <thead>
+            <tr>
+              <th class="text-left column-margin"></th>
+              <th class="text-left column-margin">Semester</th>
+              <th class="text-left column-margin">Date Ranges</th>
+              <th class="text-left column-margin">Status</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="semester in filteredSemesterData" :key="semester._id">
+              <td class="text-left">
+                <input type="checkbox" v-model="selectedSemesters" :value="semester._id" style="outline: 2px solid #808080; margin-right: 10px;">
+              </td>
+              <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterName }}</td>
+              <td class="text-left" @click="editSemester(semester._id)">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
+              <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterStatus ? 'Active' : 'Inactive' }}</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </v-table>
+      </div>
     </div>
   </main>
 </template>
@@ -62,7 +66,8 @@ export default {
     return {
       semesterData: [],
       showInactive: false,
-      selectedSemesters: []
+      selectedSemesters: [],
+      searchTerm: "",
     };
   },
   mounted() {
@@ -133,23 +138,34 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-    }
+    },
   },
   computed: {
     filteredSemesterData() {
+      const searchTerm = this.searchTerm.toLowerCase();
+      const filteredData = this.semesterData.filter((semester) => {
+        const semesterName = semester.semesterName.toLowerCase();
+        const dateRanges = this.formatDate(semester.semesterStartDate) + " to " + this.formatDate(semester.semesterEndDate);
+        return semesterName.includes(searchTerm) || dateRanges.includes(searchTerm);
+      });
+
       if (this.showInactive) {
-        return this.semesterData.filter((semester) => !semester.semesterStatus);
+        return filteredData.filter((semester) => !semester.semesterStatus);
       } else {
-        return this.semesterData.filter((semester) => semester.semesterStatus);
+        return filteredData.filter((semester) => semester.semesterStatus);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
+
 
 <style>
 #contentNavbar .nav-link.router-link-exact-active {
   background-color: #eee;
+}
+.column-margin {
+  margin-right: 10px;
 }
 
 /* Medium Devices, Desktops */

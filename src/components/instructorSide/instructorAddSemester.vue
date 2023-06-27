@@ -32,7 +32,7 @@
                 <input
                   type="checkbox"
                   v-model="selectedExperiences"
-                  :value="experience"
+                  :value="experience._id"
                   style="outline: 2px solid #808080; margin-right: 10px;"
                 />
               </td>

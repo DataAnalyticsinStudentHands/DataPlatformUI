@@ -30,7 +30,7 @@
             <td class="text-left">
               <input
                 type="checkbox"
-                :value="experience"
+                :value="experience._id"
                 v-model="selectedExperiences"
                 style="outline: 2px solid #808080; margin-right: 10px;"
               />

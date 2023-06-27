@@ -9,32 +9,40 @@
         <router-link to="/instructorActivities">Activities</router-link>
       </h2><br>
       <p class="font-weight-black text-h6">Experiences</p>
-      <br>
+      <br><v-btn style="text-align:center; margin-right:2rem;">
+        <router-link to="/instructorAddExperience">Add New Experience</router-link>
+      </v-btn>
       <v-btn @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Experiences' : 'Show Inactive Experiences' }}
       </v-btn>
-      <br>
-      <br>
-      <v-btn>
-        <router-link to="/instructorAddExperience">Add New Experience</router-link>
-      </v-btn>
+      
       <br><br>
-      <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0">
+      <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0" style="text-align:center; margin-right:2rem;">
         Deactivate
       </v-btn>
       <v-btn @click="activateExperiences" v-if="selectedExperiences.length > 0">
         Activate
-      </v-btn>
+      </v-btn><br><br>
+      <v-text-field
+        v-model="searchQuery"
+        label="Search by experience code or name"
+        solo-inverted
+        hide-details
+        outlined
+        dense
+      ></v-text-field>
       <br></center>
     </div>
     <div style="display: flex; justify-content: center;">
-      <v-table style="width: 80%">
+  <div style="max-height: 400px; overflow-y: auto;">
+      <v-table style="width: 100%">
         <thead>
           <tr>
             <th class="text-left"></th>
             <th class="text-left">Experience Code</th>
             <th class="text-left">Experience Name</th>
-            <th class="text-left">Status</th>
+            <th class="text-left">Status</th><th></th>
+          <th></th>
           </tr>
         </thead>
         <tbody>
@@ -44,10 +52,10 @@
             </td>
             <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceCode }}</td>
             <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceName }}</td>
-            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceStatus ? 'Active' : 'Inactive' }}</td>
+            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceStatus ? 'Active' : 'Inactive' }}</td><td></td><td></td>
           </tr>
         </tbody>
-      </v-table>
+      </v-table></div>
     </div>
   </main>
 </template>
@@ -62,7 +70,8 @@ export default {
     return {
       experienceData: [],
       showInactive: false,
-      selectedExperiences: []
+      selectedExperiences: [],
+      searchQuery: ''
     };
   },
   mounted() {
@@ -137,13 +146,25 @@ export default {
   },
   computed: {
     filteredExperienceData() {
-      if (this.showInactive) {
-        return this.experienceData.filter((experience) => !experience.experienceStatus);
-      } else {
-        return this.experienceData.filter((experience) => experience.experienceStatus);
-      }
-    }
+  const query = this.searchQuery.toLowerCase().trim();
+  if (this.showInactive) {
+    return this.experienceData.filter(
+      (experience) =>
+        !experience.experienceStatus &&
+        (experience.experienceCode.toLowerCase().includes(query) ||
+          experience.experienceName.toLowerCase().includes(query))
+    );
+  } else {
+    return this.experienceData.filter(
+      (experience) =>
+        experience.experienceStatus &&
+        (experience.experienceCode.toLowerCase().includes(query) ||
+          experience.experienceName.toLowerCase().includes(query))
+    );
   }
+}
+
+}
 };
 </script>
 
