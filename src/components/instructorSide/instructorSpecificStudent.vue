@@ -1,7 +1,7 @@
 <template>
     <v-form disabled>
       <br><p class="font-weight-black text-h5" style="text-align: center;">Student's Information</p>
-        <v-container>
+        <v-container style="width: 90%; margin: 0 auto;">
           <p class="font-weight-black text-h6">Basic Information</p><br>
             <v-row>
               <v-col cols="12" md="6">
@@ -25,16 +25,19 @@
               <v-col cols="12" md="6">
                 <v-text-field v-model="studentData.studentInformation.cityOrigin" label="City of Origin" variant="outlined"></v-text-field>
               </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="uhStatus" label="Are you currently enrolled in a degree program at the University of Houston?" variant="outlined"></v-text-field>
+              </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="4">
+                <v-text-field v-model="studentData.studentInformation.languagePreference" label="Language Preference" variant="outlined"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="4">
                 <v-text-field v-model="studentData.studentInformation.primaryLanguage" label="Primary Language" variant="outlined" required></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="4">
                 <v-text-field v-model="studentData.studentInformation.otherLanguages" label="Other Languages" variant="outlined"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="studentData.studentInformation.languagePreference" label="Language Preference" variant="outlined"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
@@ -42,131 +45,128 @@
                   <v-text-field v-model="checkedPronouns" label="Pronouns" variant="outlined"></v-text-field>
               </v-col>
               <v-col cols="11" md="6">
-                  <v-text-field v-if="studentData.studentInformation.pronouns.find(pronoun => pronoun.id === 5)" label="Other Pronouns" v-model="studentData.studentInformation.otherPronouns" variant="outlined"></v-text-field>
+                <!--Need to make it an if statement based on other being checked-->
+                <v-text-field v-if="studentData.studentInformation.pronouns.find(pronoun => pronoun.id === 5)" label="Other Pronouns" v-model="studentData.studentInformation.otherPronouns" variant="outlined"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="10">
+              <v-col cols="12">
                 <v-textarea v-model="studentData.studentInformation.commentsByStaff" variant="outlined" label="Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?"></v-textarea>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="10">
+              <v-col cols="12">
                 <v-textarea v-model="studentData.studentInformation.issuesConcernsTriggers" variant="outlined" label="Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?"></v-textarea>
               </v-col>
             </v-row>
             <div v-if="studentData.studentInformation.enrolledUHInfo.uhStatus == true">
-              <p class="font-weight-black text-h6">UH Student's Information</p>
+              <p class="font-weight-black text-h6">UH Student's Information</p><br>
               <v-row>
-                  <v-col cols="12" md="5">
+                  <v-col cols="12" md="6">
                     <v-text-field v-model="studentData.studentInformation.enrolledUHInfo.uhEmail" label="UH Email" variant="outlined"></v-text-field>
                   </v-col>
                 <v-col cols="12" md="3">
                   <v-text-field v-model="studentData.studentInformation.enrolledUHInfo.peopleSoftID" label="PeopleSoft ID" variant="outlined"></v-text-field>
                 </v-col>
-                <v-col cols="12" md="2">
+                <v-col cols="12" md="3">
                   <v-text-field type="date" v-model="studentData.studentInformation.enrolledUHInfo.expectedGraduationYear" label="Expected Graduation Date" min="2023-01-01" max="2099-12-31" variant="outlined"></v-text-field>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" md="7">
+                <v-col cols="12" md="6">
                   <v-text-field label="Do you live on or off campus?" v-model="livingPreference" variant="outlined"></v-text-field>
                 </v-col>
               </v-row>
-              <p class="font-weight-black text-h7">Educational Background and Goals</p>
-              <!-- <v-row>
-                <v-col cols="12" md="7">
-                  <v-text-field variant="outlined" label="Are you a member of the Honors College?">{{ yesOrNo(studentData.studentInformation.enrolledUHInfo.honorsCollegeStatus) }}</v-text-field>
+              <p class="font-weight-black text-h7">Educational Background and Goals</p><br>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Are you a member of the Honors College?" v-model="honorsCollegeStatus" variant="outlined"></v-text-field>
                 </v-col>
-              </v-row> -->
+              </v-row>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Are you affiliated with the Honors College in any other way?" v-model="honorsCollegeAffiliatedStatus" variant="outlined"></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6" v-if="honorsCollegeAffiliatedStatus==='Yes'">
+                  <v-text-field label="If yes, please specify." v-model="studentData.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field label="What is/are your current major(s)?" v-model="majors" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field label="Are you pursuing, or planning to pursue, any of the following Honors College minors?" v-model="honorsMinor" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field label="Are you pursuing any other minors? Please list." v-model="otherMinors" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <p class="font-weight-black text-h7">Other Engagement</p><br>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Are you a member of Honors in Community Health (HICH)?" v-model="hichStatus" variant="outlined"></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?" v-model="hichHistoryStatus" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Have you had other experience with Community Service?" v-model="serviceStatus" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-textarea label="Have you had other experience with Community Service?" v-model="studentData.studentInformation.communityServiceInfo.serviceHistoryDesc" variant="outlined"></v-textarea>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-textarea label="Are you a member of any community organizations outside the University? Please list." v-model="studentData.studentInformation.communityServiceInfo.serviceOrgsOutsideUH" variant="outlined"></v-textarea>
+                </v-col>
+              </v-row>
             </div>
-            
-            <!--
-              <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">Educational Background and Goals</p>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="12" md="7">
-                    <p class="font-weight-black text-h8">Are you a member of the Honors College?</p>
-                    <v-radio-group v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus">
-                      <v-radio label="Yes" value=true v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
-                      <v-radio label="No" value=false v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="12" md="7">
-                    <p class="font-weight-black text-h8">Are you affiliated with the Honors College in any other way? If yes, please specify.</p>
-                    <v-radio-group v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus">
-                      <v-radio label="Yes" value=true v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
-                      <v-text-field v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow" v-if="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus == 'true'" label="Please specify"></v-text-field>
-                      <v-radio label="No" value=false v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
-                    </v-radio-group>
-                  </v-col>
-                </v-row> 
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="12" md="7">
-                    <p class="font-weight-black text-h8">What is/are your current major(s)?</p>
-                    <v-select v-model="studentInformation.enrolledUHInfo.majors" :items="filteredMajors.map(major => major['Plan Name'])" label="Select a Major" multiple chips></v-select>
-                  </v-col>
-                </v-row>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="11" md="7">
-                    <p class="font-weight-black text-h8">Are you pursuing, or planning to pursue, any of the following Honors College minors?</p>
-                    <v-checkbox v-model="studentInformation.enrolledUHInfo.honorsMinor" label="Data & Society"></v-checkbox>
-                  </v-col>
-                </v-row>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="12" md="7">
-                    <p class="font-weight-black text-h8">Are you pursuing any other minors? Please list.</p>
-                    <v-select v-model="studentInformation.enrolledUHInfo.otherMinors" :items="filteredMinors.map(minor => minor['Plan Name'])" label="Select a Minor" multiple chips></v-select>
-                  </v-col>
-                </v-row>
-              <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">Other Engagement</p>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="12" md="7">
-                    <p class="font-weight-black text-h8">Are you a member of Honors in Community Health (HICH)?</p>
-                    <v-radio-group v-model="studentInformation.hichInfo.hichStatus">
-                      <v-radio label="Yes" value=true v-model="studentInformation.hichInfo.hichStatus"></v-radio>
-                      <v-radio label="No" value=false v-model="studentInformation.hichInfo.hichStatus"></v-radio>
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="12" md="7">
-                    <p class="font-weight-black text-h8">Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?</p>
-                    <v-radio-group v-model="studentInformation.hichInfo.hichHistoryStatus">
-                      <v-radio label="Yes" value=true v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
-                      <v-radio label="No" value=false v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'true'">
-                  <v-col cols="11">
-                    <p class="font-weight-black text-h8">Have you had other experience with Community Service?</p>
-                    <v-radio-group v-model="studentInformation.communityServiceInfo.serviceStatus">
-                      <v-radio label="Yes" value=true v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-                      <v-radio label="No" value=false v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-                        <p class="font-weight-black text-h8" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'true') || (studentInformation.communityServiceInfo.serviceStatus == 'false')">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-                        <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'true') || (studentInformation.communityServiceInfo.serviceStatus == 'false')" label="Please specify"></v-textarea>
-                        <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'true'">Are you a member of any community organizations outside the University? Please list.</p>
-                        <v-text-field v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" v-if="studentInformation.communityServiceInfo.serviceStatus == 'true'" label="Please specify"></v-text-field>
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-            <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">Non-UH Students Only</p>
-              <v-col cols="11" md="10">
-                <p class="font-weight-black text-h8" v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-                <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">
-                  <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
-                </v-row>
-              </v-col>
+            <div v-if="studentData.studentInformation.enrolledUHInfo.uhStatus == false">
+              <p class="font-weight-black text-h6">Non-UH Students Information</p><br>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Have you had other experience with Community Service?" v-model="serviceStatus" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-textarea label="Please briefly describe any community service opportunities you were involved in. Include organization and scope of service." v-model="studentData.studentInformation.communityServiceInfo.serviceOrgsOutsideUH" variant="outlined"></v-textarea>
+                </v-col>
+              </v-row>
+            </div>
+              <p class="font-weight-black text-h6">Graduate/Professional School Goals</p><br>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field label="Do you currently plan to pursue graduate or professional (e.g. medical, law) school?" v-model="programGradProStatus" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              <!-- <v-row>
+                <v-col cols="11" md="6">
+                    <v-text-field v-model="programGradProType" label="If you are planning to pursue graduate school, what type of program?" variant="outlined"></v-text-field>
+                </v-col>
+              </v-row>
+              if statement on the fact of it being checked -- Maybe have the information in () but would have to code
+              <v-row>
+                <v-text-field v-if="studentData.studentInformation.graduateProfessionalSchool.programGradProType.find(programType.id === 4 && programType.checked)" label="phD Information" v-model="studentData.studentInformation.graduateProfessionalSchool.phDTextbox"></v-text-field>
+              </v-row>
+              <v-row>
+                <v-text-field v-if="studentData.studentInformation.graduateProfessionalSchool.programGradProType.find(programType.id === 7 && programType.checked)" label="Master Information" v-model="studentData.studentInformation.graduateProfessionalSchool.masterTextbox"></v-text-field>
+              </v-row>
+              <v-row>
+                <v-text-field v-if="studentData.studentInformation.graduateProfessionalSchool.programGradProType.find(programType.id === 8 && programType.checked)" label="Other Information" v-model="studentData.studentInformation.graduateProfessionalSchool.otherTextbox"></v-text-field>
+              </v-row> -->
+              <!--
             <p class="font-weight-black text-h6">Graduate/Professional School Goals</p>
-              <v-col cols="12" md="10">
-                <p class="font-weight-black text-h8">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</p>
-                <v-radio-group v-model="studentInformation.graduateProfessionalSchool.programGradProStatus">
-                  <v-radio label="Yes" value=true v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
-                  <v-radio label="No" value=false v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
-                </v-radio-group>
-              </v-col>
               <v-col cols="12" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'true'">
                 <p class="font-weight-black text-h8">If you are planning to pursue graduate school, what type of program?</p>
                 <div>
@@ -227,11 +227,44 @@ export default {
     livingPreference() {
       return this.studentData.studentInformation.enrolledUHInfo.livingOnCampus ? 'On-Campus' : 'Off-Campus';
     },
-  },
+    uhStatus() {
+      return this.studentData.studentInformation.enrolledUHInfo.uhStatus ? 'Yes' : 'No';
+    },
+    honorsCollegeStatus() {
+      return this.studentData.studentInformation.enrolledUHInfo.honorsCollegeStatus ? 'Yes' : 'No';
+    },
+    honorsCollegeAffiliatedStatus() {
+      return this.studentData.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus ? 'Yes' : 'No';
+    },
+    majors() {
+      const majors = this.studentData.studentInformation.enrolledUHInfo.majors;
+      return Array.isArray(majors) && majors.length > 0 ? majors.join(", ") : "None";
+    },
+    honorsMinor() {
+      const honorsMinor = this.studentData.studentInformation.enrolledUHInfo.honorsMinor;
+      return Array.isArray(honorsMinor) && honorsMinor.length > 0 ? honorsMinor.join(", ") : "None";
+    },
+    otherMinors() {
+      const otherMinors = this.studentData.studentInformation.enrolledUHInfo.otherMinors;
+      return Array.isArray(otherMinors) && otherMinors.length > 0 ? otherMinors.join(", ") : "None";
+    },
+    hichStatus() {
+      return this.studentData.studentInformation.hichInfo.hichStatus ? 'Yes' : 'No';
+    },
+    hichHistoryStatus() {
+      return this.studentData.studentInformation.hichInfo.hichHistoryStatus ? 'Yes' : 'No';
+    },
+    serviceStatus() {
+      return this.studentData.studentInformation.communityServiceInfo.serviceStatus ? 'Yes' : 'No';
+    },
+    programGradProStatus() {
+      return this.studentData.studentInformation.graduateProfessionalSchool.programGradProStatus ? 'Yes' : 'No';
+    },
+    programGradProType() {
+      return this.studentData.studentInformation.graduateProfessionalSchool.programGradProType.filter(program => program.checked === true).map(program => program.label).join(", ");
+    },
+},
   methods: {
-    yesOrNo(status) {
-      return status ? 'Yes' : 'No';
-    }
   }
 }
 </script>

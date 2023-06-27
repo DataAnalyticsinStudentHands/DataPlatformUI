@@ -1,10 +1,10 @@
 <template>
-  <v-container>
+  <v-container style="width: 90%; margin: 0 auto;">
     <p class="font-weight-black text-h5 text--primary">Student Entry Form</p>
     <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.</p>
   </v-container>
   <v-form @submit.prevent="handleSubmitForm">
-    <v-container>
+    <v-container style="width: 90%; margin: 0 auto;">
       <p class="font-weight-black text-h6">Demographics Information</p>
       <v-row>
         <v-col cols="12" md="6">
@@ -155,10 +155,17 @@
             </v-col>
           </v-row>
       <p class="font-weight-black text-h6" v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">Non-UH Students Only</p>
+        <v-col cols="11">
+          <p class="font-weight-black text-h8" v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">Have you had experience with Community Service?</p>
+          <v-radio-group v-model="studentInformation.communityServiceInfo.serviceStatus" v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">
+            <v-radio label="Yes" value=true v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+            <v-radio label="No" value=false v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+          </v-radio-group>
+        </v-col>
         <v-col cols="11" md="10">
           <p class="font-weight-black text-h8" v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
           <v-row v-if="studentInformation.enrolledUHInfo.uhStatus == 'false'">
-            <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
+            <v-textarea v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" label="Please specify"></v-textarea>
           </v-row>
         </v-col>
       <p class="font-weight-black text-h6">Graduate/Professional School Goals</p>
@@ -214,8 +221,6 @@
 <script>
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
-import {toast} from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
 export default {
   data() {
     return {
