@@ -21,7 +21,7 @@
                 <input v-model="email" type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
               </v-col>
             </v-row><br>
-            <p class="font-weight-black text-h6">Password</p>
+            <p class="font-weight-black text-h6">Confirm Password</p>
             <v-row>
               <v-col cols="12" md="6">
                 <input v-model="confirmPassword" type="Password" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="••••••••" required/>

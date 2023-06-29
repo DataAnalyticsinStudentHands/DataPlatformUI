@@ -25,7 +25,7 @@
       </v-btn><br><br>
       <v-text-field
         v-model="searchQuery"
-        label="Search by experience code or name"
+        label="Search by experience category or name"
         solo-inverted
         hide-details
         outlined
@@ -39,7 +39,7 @@
         <thead>
           <tr>
             <th class="text-left"></th>
-            <th class="text-left">Experience Code</th>
+            <th class="text-left">Experience Category</th>
             <th class="text-left">Experience Name</th>
             <th class="text-left">Status</th><th></th>
           <th></th>
@@ -50,7 +50,7 @@
             <td class="text-left">
               <input type="checkbox" v-model="selectedExperiences" :value="experience._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
-            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceCode }}</td>
+            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceCategory }}</td>
             <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceName }}</td>
             <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceStatus ? 'Active' : 'Inactive' }}</td><td></td><td></td>
           </tr>
@@ -151,14 +151,14 @@ export default {
     return this.experienceData.filter(
       (experience) =>
         !experience.experienceStatus &&
-        (experience.experienceCode.toLowerCase().includes(query) ||
+        (experience.experienceCategory.toLowerCase().includes(query) ||
           experience.experienceName.toLowerCase().includes(query))
     );
   } else {
     return this.experienceData.filter(
       (experience) =>
         experience.experienceStatus &&
-        (experience.experienceCode.toLowerCase().includes(query) ||
+        (experience.experienceCategory.toLowerCase().includes(query) ||
           experience.experienceName.toLowerCase().includes(query))
     );
   }

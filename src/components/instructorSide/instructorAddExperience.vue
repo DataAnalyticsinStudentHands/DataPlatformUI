@@ -6,7 +6,7 @@
         <p class="font-weight-black text-h6">New Experience</p>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experience.experienceCode" label="Experience's Code"></v-text-field>
+            <v-text-field v-model="experience.experienceCategory" label="Experience's Category"></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field v-model="experience.experienceName" label="Experience's Name"></v-text-field>
@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       experience: {
-        experienceCode: '',
+        experienceCategory: '',
         experienceName: '',
       },
       activities: [],
@@ -80,7 +80,7 @@ export default {
 
       axios
         .post(apiURL, {
-          experienceCode: this.experience.experienceCode,
+          experienceCategory: this.experience.experienceCategory,
           experienceName: this.experience.experienceName,
           activities: this.selectedActivities,
         }, {

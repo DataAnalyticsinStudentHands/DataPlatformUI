@@ -177,16 +177,16 @@
                   <v-text-field label="Are you planning to pursue any other kind of specialized degree / certificate program?" v-model="specializedDegCertStatus" variant="outlined"></v-text-field>
                 </v-col>
               </v-row>
-              <v-row>
+              <!-- <v-row>
                 <v-col>
                   <v-textarea v-if="specializedDegCertStatus == 'Yes'" v-model="specializedDegCertType" label="Listed Specialized Degree / Certificate Program" variant="outlined"></v-textarea>
                 </v-col>
-              </v-row>
-              <v-row>
+              </v-row> -->
+              <!-- <v-row>
                 <v-col>
                   <v-text-field v-if="studentData.studentInformation.specializedDegCert.specializedDegCertType.find(other => other.id === 6 && other.checked)" v-model="studentData.studentInformation.specializedDegCert.professionalDesignOther" label="Other Specialized Degree / Certificate Program" variant="outlined"></v-text-field>
                 </v-col>
-              </v-row>
+              </v-row> -->
         </v-container>
     </v-form>
 </template>
