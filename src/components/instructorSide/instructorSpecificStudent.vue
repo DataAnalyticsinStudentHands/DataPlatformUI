@@ -2,191 +2,229 @@
     <v-form disabled>
       <br><p class="font-weight-black text-h5" style="text-align: center;">Student's Information</p>
         <v-container style="width: 90%; margin: 0 auto;">
-          <p class="font-weight-black text-h6">Basic Information</p><br>
+          <br><p class="font-weight-black text-h6">Basic Information</p>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field v-model="userData.firstName" label="First Name" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">First Name</label>
+                <p style="margin: 0;">{{ this.userData.firstName }}</p>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="userData.lastName" label="Last Name" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Last Name</label>
+                <p style="margin: 0;">{{ this.userData.lastName }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field v-model="userData.phoneNumber" label="Phone Number" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Phone Number</label>
+                <p style="margin: 0;">{{ this.userData.phoneNumber }}</p>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="userData.email" label="Email" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Email</label>
+                <p style="margin: 0;">{{ this.userData.email }}</p>
               </v-col>
             </v-row>
-          
-          <p class="font-weight-black text-h6">Demographics Information</p><br>
-            <v-row>
+          <br><p class="font-weight-black text-h6">Demographics Information</p>
+          <v-row>
               <v-col cols="12" md="6">
-                <v-text-field v-model="studentData.studentInformation.cityOrigin" label="City of Origin" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">City of Origin</label>
+                <p style="margin: 0;">{{ this.studentData.cityOrigin }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="4">
-                <v-text-field v-model="studentData.studentInformation.languagePreference" label="Language Preference" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Language Preference</label>
+                <p style="margin: 0;">{{ this.studentData.languagePreference }}</p>
               </v-col>
               <v-col cols="12" md="4">
-                <v-text-field v-model="studentData.studentInformation.primaryLanguage" label="Primary Language" variant="outlined" required></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Primary Language</label>
+                <p style="margin: 0;">{{ this.studentData.primaryLanguage }}</p>
               </v-col>
               <v-col cols="12" md="4">
-                <v-text-field v-model="studentData.studentInformation.otherLanguages" label="Other Languages" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Languages</label>
+                <p style="margin: 0;">{{ this.studentData.otherLanguages }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="11" md="6">
-                  <v-text-field v-model="checkedPronouns" label="Pronouns" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Pronouns</label>
+                <p style="margin: 0;">{{ checkedPronouns }}</p>
               </v-col>
               <v-col cols="11" md="6">
-                <v-text-field v-if="studentData.studentInformation.pronouns.find(pronoun => pronoun.id === 5 && pronoun.checked)" label="Other Pronouns" v-model="studentData.studentInformation.otherPronouns" variant="outlined"></v-text-field>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Pronouns</label>
+                <p style="margin: 0;">{{ this.studentData.otherPronouns }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-textarea v-model="studentData.studentInformation.commentsByStaff" variant="outlined" label="Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?"></v-textarea>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?</label>
+                <p style="margin: 0;">{{ this.studentData.commentsByStaff }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-textarea v-model="studentData.studentInformation.issuesConcernsTriggers" variant="outlined" label="Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?"></v-textarea>
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?</label>
+                <p style="margin: 0;">{{ this.studentData.issuesConcernsTriggers }}</p>
               </v-col>
             </v-row>
-            <div v-if="studentData.studentInformation.enrolledUHInfo.uhStatus == true">
-              <p class="font-weight-black text-h6">UH Student's Information</p><br>
+            <div v-if="this.studentData?.enrolledUHInfo?.uhStatus == true">
+              <br><p class="font-weight-black text-h6">UH Student's Information</p>
               <v-row>
                   <v-col cols="12" md="6">
-                    <v-text-field v-model="studentData.studentInformation.enrolledUHInfo.uhEmail" label="UH Email" variant="outlined"></v-text-field>
+                    <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">UH Email</label>
+                    <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.uhEmail }}</p>
                   </v-col>
                 <v-col cols="12" md="3">
-                  <v-text-field v-model="studentData.studentInformation.enrolledUHInfo.peopleSoftID" label="PeopleSoft ID" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">PeopleSoft ID</label>
+                  <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.peopleSoftID }}</p>
                 </v-col>
                 <v-col cols="12" md="3">
-                  <v-text-field type="date" v-model="studentData.studentInformation.enrolledUHInfo.expectedGraduationYear" label="Expected Graduation Date" min="2023-01-01" max="2099-12-31" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Expected Graduation Date</label>
+                  <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.expectedGraduationYear }}</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Do you live on or off campus?" v-model="livingPreference" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Do you live on or off campus?</label>
+                  <p style="margin: 0;">{{ livingPreference }}</p>
                 </v-col>
               </v-row>
-              <p class="font-weight-black text-h7">Educational Background and Goals</p><br>
+              <br><p class="font-weight-black text-h7">Educational Background and Goals</p>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field v-model="uhStatus" label="Are you currently enrolled in a degree program at the University of Houston?" variant="outlined"></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-text-field label="Are you a member of the Honors College?" v-model="honorsCollegeStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you currently enrolled in a degree program at the University of Houston?</label>
+                  <p style="margin: 0;">{{ uhStatus }}</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Are you affiliated with the Honors College in any other way?" v-model="honorsCollegeAffiliatedStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of the Honors College?</label>
+                  <p style="margin: 0;">{{ honorsCollegeStatus }}</p>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you affiliated with the Honors College in any other way?</label>
+                  <p style="margin: 0;">{{ honorsCollegeAffiliatedStatus }}</p>
                 </v-col>
                 <v-col cols="12" md="6" v-if="honorsCollegeAffiliatedStatus==='Yes'">
-                  <v-text-field label="If yes, please specify." v-model="studentData.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">If yes, please specify.</label>
+                  <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.honorsCollegeAffiliatedHow }}</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field label="What is/are your current major(s)?" v-model="majors" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">What is/are your current major(s)?</label>
+                  <p style="margin: 0;">{{ majors }}</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field label="Are you pursuing, or planning to pursue, any of the following Honors College minors?" v-model="honorsMinors" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you pursuing, or planning to pursue, any of the following Honors College minors?</label>
+                  <p style="margin: 0;">{{ honorsMinors }}</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field label="Are you pursuing any other minors? Please list." v-model="otherMinors" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you pursuing any other minors? Please list.</label>
+                  <p style="margin: 0;">{{ otherMinors }}</p>
                 </v-col>
               </v-row>
-              <p class="font-weight-black text-h7">Other Engagement</p><br>
+              <br><p class="font-weight-black text-h7">Other Engagement</p>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Are you a member of Honors in Community Health (HICH)?" v-model="hichStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of Honors in Community Health (HICH)?</label>
+                  <p style="margin: 0;">{{ hichStatus }}</p>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?" v-model="hichHistoryStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Have you participated in HICH Projects?</label>
+                  <p style="margin: 0;">{{ hichHistoryStatus }}</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Have you had other experience with Community Service?" v-model="serviceStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Have you had other experience with Community Service?</label>
+                  <p style="margin: 0;">{{ serviceStatus }}</p>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12">
-                  <v-textarea v-if="serviceStatus === 'Yes'" label="Please briefly describe any community service opportunities you were involved in. Include organization and scope of service." v-model="studentData.studentInformation.communityServiceInfo.serviceHistoryDesc" variant="outlined"></v-textarea>
+                <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</label>
+                  <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceHistoryDesc }}</p>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12">
-                  <v-textarea v-if="serviceStatus === 'Yes'" label="Are you a member of any community organizations outside the University? Please list." v-model="studentData.studentInformation.communityServiceInfo.serviceOrgsOutsideUH" variant="outlined"></v-textarea>
+                <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of any community organizations outside the University? Please list.</label>
+                  <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceOrgsOutsideUH }}</p>
                 </v-col>
               </v-row>
             </div>
-            <div v-if="studentData.studentInformation.enrolledUHInfo.uhStatus == false">
+            <div v-if="this.studentData?.enrolledUHInfo?.uhStatus == false">
               <p class="font-weight-black text-h6">Non-UH Students Information</p><br>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Have you had other experience with Community Service?" v-model="serviceStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Have you had other experience with Community Service?</label>
+                  <p style="margin: 0;">{{ serviceStatus }}</p>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12">
-                  <v-textarea v-if="serviceStatus === 'Yes'" label="Please briefly describe any community service opportunities you were involved in. Include organization and scope of service." v-model="studentData.studentInformation.communityServiceInfo.serviceHistoryDesc" variant="outlined"></v-textarea>
+                <v-col cols="12" v-if="serviceStatus === 'Yes'">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</label>
+                  <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceHistoryDesc }}</p>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12">
-                  <v-textarea v-if="serviceStatus === 'Yes'" label="Are you a member of any community organizations outside the University? Please list." v-model="studentData.studentInformation.communityServiceInfo.serviceOrgsOutsideUH" variant="outlined"></v-textarea>
+                <v-col cols="12" v-if="serviceStatus === 'Yes'">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of any community organizations outside the University? Please list.</label>
+                  <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceOrgsOutsideUH }}</p>
                 </v-col>
               </v-row>
             </div>
-              <p class="font-weight-black text-h6">Graduate/Professional School Goals</p><br>
+            <br><p class="font-weight-black text-h6">Graduate/Professional School Goals</p>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Do you currently plan to pursue graduate or professional (e.g. medical, law) school?" v-model="programGradProStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</label>
+                  <p style="margin: 0;">{{ programGradProStatus }}</p>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="11">
-                    <v-text-field v-model="programGradProType" v-if="programGradProStatus === 'Yes'" label="If you are planning to pursue graduate school, what type of program?" variant="outlined"></v-text-field>
+                <v-col cols="11" v-if="programGradProStatus === 'Yes'">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">If you are planning to pursue graduate school, what type of program?</label>
+                  <p style="margin: 0;">{{ programGradProType }}</p>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row v-if="programGradProStatus === 'Yes'">
                 <v-col cols="11">
-                  <v-text-field v-if="studentData.studentInformation.graduateProfessionalSchool.programGradProType.find(programType => programType.id === 4 && programType.checked)" label="PhD Information" v-model="studentData.studentInformation.graduateProfessionalSchool.phDTextbox" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">PhD Information</label>
+                  <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.phDTextbox }}</p>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-if="studentData.studentInformation.graduateProfessionalSchool.programGradProType.find(programType => programType.id === 7 && programType.checked)" label="Master Information" v-model="studentData.studentInformation.graduateProfessionalSchool.masterTextbox" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Master Information</label>
+                  <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.masterTextbox }}</p>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-if="studentData.studentInformation.graduateProfessionalSchool.programGradProType.find(programType => programType.id === 8 && programType.checked)" label="Other Professional Schooling Information" v-model="studentData.studentInformation.graduateProfessionalSchool.otherTextbox" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Professional Schooling Information</label>
+                  <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.otherTextbox }}</p>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Are you planning to pursue any other kind of specialized degree / certificate program?" v-model="specializedDegCertStatus" variant="outlined"></v-text-field>
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you planning to pursue any other kind of specialized degree / certificate program?</label>
+                  <p style="margin: 0;">{{ specializedDCStatus }}</p>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col>
-                  <v-textarea v-if="specializedDegCertStatus == 'Yes'" v-model="specializedDegCertType" label="Listed Specialized Degree / Certificate Program" variant="outlined"></v-textarea>
+                <v-col v-if="this.studentData?.specializedDegCert?.specializedDegCertStatus">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Listed Specialized Degree / Certificate Program</label>
+                  <p style="margin: 0;">{{ specializedDCType }}</p>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col>
-                  <v-text-field v-if="studentData.studentInformation.specializedDegCert.specializedDegCertType.find(other => other.id === 6 && other.checked)" v-model="studentData.studentInformation.specializedDegCert.professionalDesignOther" label="Other Specialized Degree / Certificate Program" variant="outlined"></v-text-field>
+                <v-col v-if="this.studentData?.specializedDegCert?.specializedDegCertType.find(other => other.id === 6 && other.checked)">
+                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Specialized Degree / Certificate Program</label>
+                  <p style="margin: 0;">{{ this.studentData.specializedDegCert.professionalDesignOther }}</p>
                 </v-col>
-              </v-row>
+              </v-row> 
         </v-container>
     </v-form>
 </template>
@@ -209,58 +247,64 @@ export default {
     axios.get(url + `/${this.$route.params.userID}`, { headers: { token },})
       .then((resp) => {
         this.userData = resp.data.userData;
-        this.studentData = resp.data.studentData;
+        this.studentData = resp.data.studentData.studentInformation;
       });
   },
   computed: {
     checkedPronouns() {
-      return this.studentData.studentInformation.pronouns.filter(pronoun => pronoun.checked === true).map(item => item.label).join(", ");
+      if (this.studentData && this.studentData?.pronouns) {
+        return this.studentData?.pronouns
+          .filter(pronoun => pronoun.checked === true)
+          .map(item => item.label)
+          .join(", ");
+      }
+      return ""; // Return a default value or handle the case when the data is not available
     },
     livingPreference() {
-      const enrolledUHInfo = this.studentData.studentInformation.enrolledUHInfo;
-      return enrolledUHInfo && enrolledUHInfo.livingOnCampus ? 'On-Campus' : 'Off-Campus';
+      const enrolledUHInfo = this.studentData?.enrolledUHInfo;
+      return enrolledUHInfo.livingOnCampus ? 'On-Campus' : 'Off-Campus';
     },
     uhStatus() {
-      return this.studentData.studentInformation.enrolledUHInfo.uhStatus ? 'Yes' : 'No';
+      return this.studentData?.enrolledUHInfo?.uhStatus ? 'Yes' : 'No';
     },
     honorsCollegeStatus() {
-      return this.studentData.studentInformation.enrolledUHInfo.honorsCollegeStatus ? 'Yes' : 'No';
+      return this.studentData?.enrolledUHInfo?.honorsCollegeStatus ? 'Yes' : 'No';
     },
     honorsCollegeAffiliatedStatus() {
-      return this.studentData.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus ? 'Yes' : 'No';
+      return this.studentData?.enrolledUHInfo?.honorsCollegeAffiliatedStatus ? 'Yes' : 'No';
     },
     majors() {
-      const majors = this.studentData.studentInformation.enrolledUHInfo.majors;
+      const majors = this.studentData?.enrolledUHInfo?.majors;
       return Array.isArray(majors) && majors.length > 0 ? majors.join(", ") : "None";
     },
     honorsMinors() {
-      const honorsMinors = this.studentData.studentInformation.enrolledUHInfo.honorsMinors;
+      const honorsMinors = this.studentData?.enrolledUHInfo?.honorsMinors;
       return Array.isArray(honorsMinors) && honorsMinors.length > 0 ? honorsMinors.join(", ") : "None";
     },
     otherMinors() {
-      const otherMinors = this.studentData.studentInformation.enrolledUHInfo.otherMinors;
+      const otherMinors = this.studentData?.enrolledUHInfo?.otherMinors;
       return Array.isArray(otherMinors) && otherMinors.length > 0 ? otherMinors.join(", ") : "None";
     },
     hichStatus() {
-      return this.studentData.studentInformation.hichInfo.hichStatus ? 'Yes' : 'No';
+      return this.studentData?.hichInfo?.hichStatus ? 'Yes' : 'No';
     },
     hichHistoryStatus() {
-      return this.studentData.studentInformation.hichInfo.hichHistoryStatus ? 'Yes' : 'No';
+      return this.studentData?.hichInfo?.hichHistoryStatus ? 'Yes' : 'No';
     },
     serviceStatus() {
-      return this.studentData.studentInformation.communityServiceInfo.serviceStatus ? 'Yes' : 'No';
+      return this.studentData?.communityServiceInfo?.serviceStatus ? 'Yes' : 'No';
     },
     programGradProStatus() {
-      return this.studentData.studentInformation.graduateProfessionalSchool.programGradProStatus ? 'Yes' : 'No';
+      return this.studentData?.graduateProfessionalSchool?.programGradProStatus ? 'Yes' : 'No';
     },
     programGradProType() {
-      return this.studentData.studentInformation.graduateProfessionalSchool.programGradProType.filter(program => program.checked === true).map(program => program.label).join(", ");
+      return this.studentData?.graduateProfessionalSchool?.programGradProType.filter(program => program.checked === true).map(program => program.label).join(", ");
     },
-    specializedDegCertStatus() {
-      return this.studentData.studentInformation.specializedDegCert.specializedDegCertStatus ? 'Yes' : 'No';
+    specializedDCStatus() {
+      return this.studentData?.specializedDegCert?.specializedDegCertStatus ? 'Yes' : 'No';
     },
-    specializedDegCertType() {
-      return this.studentData.studentInformation.specializedDegCert.specializedDegCertType.filter(program => program.checked === true).map(program => program.label).join(", ");
+    specializedDCType() {
+      return this.studentData?.specializedDegCert?.specializedDegCertType.filter(program => program.checked === true).map(program => program.label).join(", ");
     },
 },
   methods: {
