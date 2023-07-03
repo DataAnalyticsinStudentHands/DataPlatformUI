@@ -3,11 +3,11 @@
   <main>
     <center>
       <v-container>
-        <p class="font-weight-black text-h6"> Experience: {{originalExperienceCode}}, {{ originalExperienceName }}</p>
+        <p class="font-weight-black text-h6"> Experience: {{originalexperienceCategory}}, {{ originalExperienceName }}</p>
         <br />
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experienceCode" label="Experience Code"></v-text-field>
+            <v-text-field v-model="experienceCategory" label="Experience Category"></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field v-model="experienceName" label="Experience Name"></v-text-field>
@@ -52,9 +52,9 @@ export default {
   props:["id"],
   data() {
     return {
-      originalExperienceCode: "",
+      originalExperienceCategory: "",
       originalExperienceName: "",
-      experienceCode: "",
+      experienceCategory: "",
       experienceName: "",
       activities: [],
       selectedActivities: [],
@@ -77,9 +77,9 @@ export default {
           const experience = resp.data[0];
           console.log(resp.data);
           console.log(resp.data[0]);
-          this.originalExperienceCode = experience.experienceCode;
+          this.originalExperienceCategory = experience.experienceCategory;
           this.originalExperienceName = experience.experienceName;
-          this.experienceCode = experience.experienceCode;
+          this.experienceCategory = experience.experienceCategory;
           this.experienceName = experience.experienceName;
           this.selectedActivities = experience.activities;
         })
@@ -106,7 +106,7 @@ export default {
       const user = useLoggedInUserStore();
       let token = user.token;
       const updatedExperience = {
-        experienceCode: this.experienceCode,
+        experienceCategory: this.experienceCategory,
         experienceName: this.experienceName,
         activities: this.selectedActivities,
       };
