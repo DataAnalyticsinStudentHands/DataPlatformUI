@@ -5,21 +5,24 @@
       <p class="font-weight-black text-h5 text--primary">Goal Setting Form</p>
       <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.</p>
     </div>
-  </v-container>
-  <v-container>
     <v-row>
       <v-col cols="12" md="5">
-        <p class="font-weight-black text-h8">Current Semester: </p>
+        <p class="font-weight-black text-h8">Current Semester:</p>
         <v-text-field v-model="goalForm.semester" label="Semester" readonly></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="11" md="10">
-        {{ goalForm.experiences }}
         <p class="font-weight-black text-h8">
           Please indicate which one of the experience(s) you are participating in this semester:
         </p>
-        <v-select v-model="goalForm.experienceID" :items="goalForm.experiences" label="Experience"></v-select>
+        <div>
+          <select v-model="goalForm.experienceID" style="border: 1px solid #808080; padding: 5px; border-radius: 4px;">
+            <option v-for="experience in goalForm.experiences" :value="experience.experienceID" :key="experience.experienceID">
+              {{ experience.experienceCategory }}: {{ experience.experienceName }}
+            </option>
+          </select>
+        </div>
       </v-col>
     </v-row>
 
@@ -34,6 +37,11 @@
         <input v-if="engagementExperience.id === 6 && engagementExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.communityEngagementExperiencesOther" style="margin-top: 5px;">
       </div>
     </v-col>
+
+    <p>Selected Community Engagement Experiences:</p>
+    <ul>
+      <li v-for="engagementExperience in selectedCommunityEngagementExperiences" :key="engagementExperience.id">{{ engagementExperience.label }}</li>
+    </ul>
 
     <v-col cols="12" md="10">
   <p class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
@@ -199,7 +207,11 @@ export default {
     return {
       goalForm: {
         semester: '',
-        experiences:[],
+        experiences:[{
+          experienceIDFromList:'',
+          experienceCategory:'',
+          experienceName:''
+        }],
         experienceID: '',
         communityEngagement: {
           communityEngagementExperiences: [
@@ -310,6 +322,16 @@ export default {
     }
   },
   computed: {
+    filteredCommunityEngagementExperiences() {
+    return this.goalForm.communityEngagement.communityEngagementExperiences.filter(
+      experience => experience.checked
+    );
+  },
+  selectedCommunityEngagementExperiences() {
+    return this.goalForm.communityEngagement.communityEngagementExperiences.filter(
+      experience => experience.checked
+    );
+  },
     year() {
       return new Date(this.dateInput).getFullYear()
     }
@@ -339,68 +361,78 @@ export default {
 
     try {
       const response = await axios.get(apiURL, { headers: { token } });
-      this.goalForm.experiences = response.data.map(experience => experience.experienceCategory + ': ' + experience.experienceName);
+      this.goalForm.experiences = response.data.map(experience => ({
+      experienceID: experience._id,
+      experienceCategory: experience.experienceCategory,
+      experienceName: experience.experienceName
+    }));
       // this.goalForm.experiences = response.data;
       console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   },
-    async handleSubmitForm() {
-      const user = useLoggedInUserStore()
-      let token = user.token
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
-      axios.post(apiURL, this.goalForm, { headers: { token } }).then(() => {
-        alert("Goal Information has been successfully added.");
-        this.goalForm = {
-            semester: '',
-            primaryLanguage: '',
-            experienceID: '',
-            communityEngagement:{
-              communityEngagementExperiences: [],
-              communityEngagementExperiencesOther:'',
-              previousEngagementExperiences: [],
-              previousEngagementExperiencesOther:'',
-              engagementActivitiesTools: [],
-              engagementActivitiesToolOther: ''
-            },
-            researchExperience: {
-              currentResearchExperience: [],
-              currentResearchExperienceOther: '',
-              previousResearchExperience: [],
-              previousResearchExperienceOther: '',
-              familiarTools: [],
-              familiarToolOther: '',
-              interestResearchService: [],
-              interestResearchServiceOther: '',
-              leadershipOption: ''
-            },
-            growthGoal: {
-              problemSolvingGoal: '',
-              effectiveCommunicationGoal: '',
-              teamworkGoal: '',
-              culturalHumilityGoal: '',
-              ethicalDecisionMakingGoal: '',
-              professionalResponsibilityGoal: '',
-            },
-            aspirations: {
-              aspirationOne: '',
-              aspirationTwo: '',
-              aspirationThree: '',
-            },
-            goals: {
-              goalOne: '',
-              goalTwo: '',
-              goalThree: '',
-              goalFour: '',
-              goalFive: '',
-            }
+  async handleSubmitForm() {
+  this.goalForm.communityEngagement.communityEngagementExperiences = this.selectedCommunityEngagementExperiences;
+
+  const user = useLoggedInUserStore();
+  let token = user.token;
+  let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
+
+  axios.post(apiURL, this.goalForm, { headers: { token } })
+    .then(() => {
+      alert("Goal Information has been successfully added.");
+      this.goalForm = {
+        semester: '',
+        primaryLanguage: '',
+        experienceID: '',
+        communityEngagement: {
+          communityEngagementExperiences: [],
+          communityEngagementExperiencesOther: '',
+          previousEngagementExperiences: [],
+          previousEngagementExperiencesOther: '',
+          engagementActivitiesTools: [],
+          engagementActivitiesToolOther: ''
+        },
+        researchExperience: {
+          currentResearchExperience: [],
+          currentResearchExperienceOther: '',
+          previousResearchExperience: [],
+          previousResearchExperienceOther: '',
+          familiarTools: [],
+          familiarToolOther: '',
+          interestResearchService: [],
+          interestResearchServiceOther: '',
+          leadershipOption: ''
+        },
+        growthGoal: {
+          problemSolvingGoal: '',
+          effectiveCommunicationGoal: '',
+          teamworkGoal: '',
+          culturalHumilityGoal: '',
+          ethicalDecisionMakingGoal: '',
+          professionalResponsibilityGoal: '',
+        },
+        aspirations: {
+          aspirationOne: '',
+          aspirationTwo: '',
+          aspirationThree: '',
+        },
+        goals: {
+          goalOne: '',
+          goalTwo: '',
+          goalThree: '',
+          goalFour: '',
+          goalFive: '',
         }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    }
+      };
+      this.$router.push('/studentDashboard');
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
   },
 }
 </script>
