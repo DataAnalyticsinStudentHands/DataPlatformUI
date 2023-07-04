@@ -1,4 +1,6 @@
 <!-- /goalSettingForm -->
+<!-- might need to adjustcommunityEngagementExperiences
+Array to match others and add input fields for goals and aspirations  -->
 <template>
   <v-container>
     <div>
@@ -330,7 +332,7 @@ export default {
   selectedCommunityEngagementExperiences() {
     return this.goalForm.communityEngagement.communityEngagementExperiences.filter(
       experience => experience.checked
-    );
+    );npm
   },
     year() {
       return new Date(this.dateInput).getFullYear()
@@ -379,7 +381,54 @@ export default {
   let token = user.token;
   let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
 
-  axios.post(apiURL, this.goalForm, { headers: { token } })
+  const goalForm = {
+    semester: this.goalForm.semester,
+    experienceID: this.goalForm.experienceID,
+    goalForm: {
+      communityEngagement: {
+        communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
+        communityEngagementExperiencesOther: this.goalForm.communityEngagement.communityEngagementExperiencesOther,
+        previousEngagementExperiences: this.goalForm.communityEngagement.previousEngagementExperiences,
+        previousEngagementExperiencesOther: this.goalForm.communityEngagement.previousEngagementExperiencesOther,
+        engagementActivitiesTools: this.goalForm.communityEngagement.engagementActivitiesTools,
+        engagementActivitiesToolOther: this.goalForm.communityEngagement.engagementActivitiesToolOther,
+      },
+      researchExperience: {
+        currentResearchExperience: this.goalForm.researchExperience.currentResearchExperience,
+        currentResearchExperienceOther: this.goalForm.researchExperience.currentResearchExperienceOther,
+        previousResearchExperience: this.goalForm.researchExperience.previousResearchExperience,
+        previousResearchExperienceOther: this.goalForm.researchExperience.previousResearchExperienceOther,
+        familiarTools: this.goalForm.researchExperience.familiarTools,
+        familiarToolOther: this.goalForm.researchExperience.familiarToolOther,
+        interestResearchService: this.goalForm.researchExperience.interestResearchService,
+        interestResearchServiceOther: this.goalForm.researchExperience.interestResearchServiceOther,
+        leadershipOption: this.goalForm.researchExperience.leadershipOption,
+      },
+      growthGoal: {
+        problemSolvingGoal: this.goalForm.growthGoal.problemSolvingGoal,
+        effectiveCommunicationGoal: this.goalForm.growthGoal.effectiveCommunicationGoal,
+        teamworkGoal: this.goalForm.growthGoal.teamworkGoal,
+        culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
+        ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
+        professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
+      },
+      aspirations: {
+        aspirationOne: this.goalForm.aspirations.aspirationOne,
+        aspirationTwo: this.goalForm.aspirations.aspirationTwo,
+        aspirationThree: this.goalForm.aspirations.aspirationThree,
+      },
+      goals: {
+        goalOne: this.goalForm.goals.goalOne,
+        goalTwo: this.goalForm.goals.goalTwo,
+        goalThree: this.goalForm.goals.goalThree,
+        goalFour: this.goalForm.goals.goalFour,
+        goalFive: this.goalForm.goals.goalFive,
+      },
+    },
+  };
+
+  axios
+    .post(apiURL, goalForm, { headers: { token } })
     .then(() => {
       alert("Goal Information has been successfully added.");
       this.goalForm = {
@@ -392,7 +441,7 @@ export default {
           previousEngagementExperiences: [],
           previousEngagementExperiencesOther: '',
           engagementActivitiesTools: [],
-          engagementActivitiesToolOther: ''
+          engagementActivitiesToolOther: '',
         },
         researchExperience: {
           currentResearchExperience: [],
@@ -403,7 +452,7 @@ export default {
           familiarToolOther: '',
           interestResearchService: [],
           interestResearchServiceOther: '',
-          leadershipOption: ''
+          leadershipOption: '',
         },
         growthGoal: {
           problemSolvingGoal: '',
@@ -424,7 +473,7 @@ export default {
           goalThree: '',
           goalFour: '',
           goalFive: '',
-        }
+        },
       };
       this.$router.push('/studentDashboard');
     })
