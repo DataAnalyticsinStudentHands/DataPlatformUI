@@ -334,7 +334,7 @@ export default {
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
       axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
-        this.$router.push("/studentEntryForm");
+        this.$router.push('/studentDashboard');
         this.studentInformation = {
             cityOrigin: '',
             primaryLanguage: '',
