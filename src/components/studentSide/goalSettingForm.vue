@@ -16,7 +16,7 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-row>
       <v-col cols="11" md="10">
         <p class="font-weight-black text-h8">
-          Please indicate which one of the experience(s) you are participating in this semester:
+          Which experience are you filling out this form for:
         </p>
         <div>
           <select v-model="goalForm.experienceID" style="border: 1px solid #808080; padding: 5px; border-radius: 4px;">
@@ -29,23 +29,26 @@ Array to match others and add input fields for goals and aspirations  -->
     </v-row>
 
     <v-col cols="12" md="10">
-      <p class="font-weight-black text-h8">What kind of community engagement experiences, if any, have you had? Check all that apply.</p>
-      <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id" style="padding: 10px;">
-        <label style="color: #656565;">
-          <input type="checkbox" v-model="engagementExperience.checked" style="outline: 2px solid gray; margin-right: 5px;">
-          {{ engagementExperience.label }}
-        </label>
-        <br>
-        <input v-if="engagementExperience.id === 6 && engagementExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.communityEngagementExperiencesOther" style="margin-top: 5px;">
-      </div>
-    </v-col>
+  <p class="font-weight-black text-h8">Have you already filled out this form for another experience this semester?</p>
+  <v-radio-group v-model="isGoalSettingFormFilled">
+    <v-radio label="Yes" value="Yes"></v-radio>
+    <v-radio label="No" value="No"></v-radio>
+  </v-radio-group>
+</v-col>
 
-    <p>Selected Community Engagement Experiences:</p>
-    <ul>
-      <li v-for="engagementExperience in selectedCommunityEngagementExperiences" :key="engagementExperience.id">{{ engagementExperience.label }}</li>
-    </ul>
+    <v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
+  <p class="font-weight-black text-h8">What kind of community engagement experiences, if any, have you had? Check all that apply.</p>
+  <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id">
+    <label style="color: #656565;">
+      <input type="checkbox" v-model="engagementExperience.checked" style="outline: 2px solid gray; margin-right: 5px;">
+      {{ engagementExperience.label }}
+    </label>
+    <br>
+    <input v-if="engagementExperience.id === 6 && engagementExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.communityEngagementExperiencesOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  </div>
+</v-col>
 
-    <v-col cols="12" md="10">
+    <v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
   <p class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
   <div style="padding: 10px;">
     <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id">
@@ -53,13 +56,12 @@ Array to match others and add input fields for goals and aspirations  -->
         <input type="checkbox" v-model="previousExperience.checked" style="outline: 2px solid #808080; margin-right: 10px;">
         {{ previousExperience.label }}
       </label>
-      <br>
-      <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.previousEngagementExperiencesOther" style="margin-top: 5px;">
+      <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.previousEngagementExperiencesOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
 
-<v-col cols="12" md="10">
+<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
   <p class="font-weight-black text-h8">What, if any, tools have you used for community engagement activities?</p>
   <div style="padding: 10px;">
     <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id">
@@ -67,13 +69,12 @@ Array to match others and add input fields for goals and aspirations  -->
         <input type="checkbox" v-model="activitiesTool.checked" style="outline: 2px solid #808080; margin-right: 10px;">
         {{ activitiesTool.label }}
       </label>
-      <br>
-      <input v-if="activitiesTool.id === 8 && activitiesTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.engagementActivitiesToolOther" style="margin-top: 5px;">
+      <input v-if="activitiesTool.id === 8 && activitiesTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.engagementActivitiesToolOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
 
-<v-col cols="12" md="10">
+<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
   <p class="font-weight-black text-h8">What kind of research experiences, if any, have you had? Check all that apply.</p>
   <div style="padding: 10px;">
     <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id">
@@ -81,13 +82,12 @@ Array to match others and add input fields for goals and aspirations  -->
         <input type="checkbox" v-model="currentExperience.checked" style="outline: 2px solid gray; margin-right: 10px;">
         {{ currentExperience.label }}
       </label>
-      <br>
-      <input v-if="currentExperience.id === 7 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.currentResearchExperienceOther" style="margin-top: 5px;">
+      <input v-if="currentExperience.id === 8 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.currentResearchExperienceOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
 
-<v-col cols="12" md="10">
+<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
   <p class="font-weight-black text-h8">From your previous research experiences, which of the following activities have you engaged in?</p>
   <div style="padding: 10px;">
     <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id">
@@ -95,13 +95,12 @@ Array to match others and add input fields for goals and aspirations  -->
         <input type="checkbox" v-model="previousExperience.checked" style="outline: 2px solid gray; margin-right: 10px;">
         {{ previousExperience.label }}
       </label>
-      <br>
-      <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.previousResearchExperienceOther" style="margin-top: 5px;">
+      <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.previousResearchExperienceOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
 
-<v-col cols="12" md="10">
+<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
   <p class="font-weight-black text-h8">What, if any, tools are you familiar with?</p>
   <div style="padding: 10px;">
     <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id">
@@ -109,27 +108,25 @@ Array to match others and add input fields for goals and aspirations  -->
         <input type="checkbox" v-model="familiarTool.checked" style="outline: 2px solid gray; margin-right: 10px;">
         {{ familiarTool.label }}
       </label>
-      <br>
-      <input v-if="familiarTool.id === 8 && familiarTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.familiarToolOther" style="margin-top: 5px;">
+      <input v-if="familiarTool.id === 10 && familiarTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.familiarToolOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
 
-<v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">What, if any, research services are you interested in?</p>
+<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
+  <p class="font-weight-black text-h8">What are your research/service interests? Check all that apply.</p>
   <div style="padding: 10px;">
     <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id">
       <label style="display: flex; align-items: center; color: gray; margin-right: 10px;">
         <input type="checkbox" v-model="interest.checked" style="outline: 2px solid gray; margin-right: 10px;">
         {{ interest.label }}
       </label>
-      <br>
-      <input v-if="interest.id === 8 && interest.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.interestResearchServiceOther" style="margin-top: 5px;">
+      <input v-if="interest.id === 8 && interest.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.interestResearchServiceOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
 
-<v-col cols="12" md="10">
+<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
   <p class="font-weight-black text-h8">Are you interested in potentially holding a leadership position?</p>
   <v-radio-group v-model="goalForm.researchExperience.leadershipOption">
     <v-radio label="Yes" value="Yes"></v-radio>
@@ -193,6 +190,39 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8" style="margin-bottom: 2px;">Please describe 2-3 long-term aspirations you may have. Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there. (E.g. “I want to focus my career on cancer disparities”, “I want to lead a non-profit that addresses food insecurity”, “I want to teach English in a different country”). </p>
+  <label style="margin-bottom: 2px;">Aspiration 1: </label>
+  <input type="text" v-model="goalForm.aspirations.aspirationOne" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  <br>
+  <label style="margin-bottom: 2px;">Aspiration 2: </label>
+  <input type="text" v-model="goalForm.aspirations.aspirationTwo" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  <br>
+  <label style="margin-bottom: 2px;">Aspiration 3: </label>
+  <input type="text" v-model="goalForm.aspirations.aspirationThree" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+</v-col>
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8" style="margin-bottom: 2px;">Please outline 3-5 goals that you have for this experience. Goals are statements that describe what it means for an experience to be a success from your perspective (e.g. “I want to connect with people working on cancer research”, “I want to research access to nutrition education in public schools”, “I want to develop my presentation skills”).</p>
+  <label style="margin-bottom: 2px;">Goal 1: </label>
+  <input type="text" v-model="goalForm.goals.goalOne" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  <br>
+  <label style="margin-bottom: 2px;">Goal 2: </label>
+  <input type="text" v-model="goalForm.goals.goalTwo" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  <br>
+  <label style="margin-bottom: 2px;">Goal 3: </label>
+  <input type="text" v-model="goalForm.goals.goalThree" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  <br>
+  <label style="margin-bottom: 2px;">Goal 4: </label>
+  <input type="text" v-model="goalForm.goals.goalFour" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  <br>
+  <label style="margin-bottom: 2px;">Goal 5: </label>
+  <input type="text" v-model="goalForm.goals.goalFive" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+</v-col>
+
+
+
 <v-row>
   <v-col cols="12" md="4">
     <v-btn @click="handleSubmitForm">Submit Form</v-btn>
@@ -207,6 +237,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
+      isGoalSettingFormFilled: null,
       goalForm: {
         semester: '',
         experiences:[{
@@ -324,16 +355,6 @@ export default {
     }
   },
   computed: {
-    filteredCommunityEngagementExperiences() {
-    return this.goalForm.communityEngagement.communityEngagementExperiences.filter(
-      experience => experience.checked
-    );
-  },
-  selectedCommunityEngagementExperiences() {
-    return this.goalForm.communityEngagement.communityEngagementExperiences.filter(
-      experience => experience.checked
-    );npm
-  },
     year() {
       return new Date(this.dateInput).getFullYear()
     }
@@ -342,7 +363,7 @@ export default {
     this.fetchSemester();
     this.fetchExperiences();
   },
-  methods: { 
+  methods: {
     async fetchSemester() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -375,8 +396,6 @@ export default {
     }
   },
   async handleSubmitForm() {
-  this.goalForm.communityEngagement.communityEngagementExperiences = this.selectedCommunityEngagementExperiences;
-
   const user = useLoggedInUserStore();
   let token = user.token;
   let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
