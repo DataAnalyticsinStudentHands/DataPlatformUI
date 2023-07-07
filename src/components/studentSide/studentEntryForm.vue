@@ -29,17 +29,18 @@
           </v-radio-group>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="11" md="7">
-          <p class="font-weight-black">What are your pronouns? Select all that apply.</p>
-          <div>
-            <div v-for="pronoun in studentInformation.pronouns" :key="pronoun.id">
-              <v-checkbox v-model="pronoun.checked" :label="pronoun.label"></v-checkbox>
-              <v-text-field v-if="pronoun.id === 5 && pronoun.checked" label="Other" v-model="studentInformation.otherPronouns"></v-text-field>
-            </div>
-          </div>
-        </v-col>
-      </v-row>
+      <div>
+  <p class="font-weight-black">What are your pronouns? Select all that apply.</p>
+  <div v-for="pronoun in studentInformation.pronouns" :key="pronoun.id" style="margin-top: 10px;">
+    <label style="display: flex; align-items: center; color: #808080;">
+      <input type="checkbox" v-model="pronoun.checked" style="outline: 2px solid gray; margin-right: 10px;">
+      {{ pronoun.label }}
+    </label>
+    <input v-if="pronoun.id === 5 && pronoun.checked" type="text" placeholder="Other" v-model="studentInformation.otherPronouns" style="margin-left: 10px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+  </div>
+  <br>
+</div>
+
       <p class="font-weight-black text-h8">Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?</p>
       <v-row>
         <v-col cols="12" md="10">
