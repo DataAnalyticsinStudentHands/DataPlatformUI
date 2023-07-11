@@ -3,13 +3,14 @@
   <main class="">
     <br><p class="font-weight-black text-h5" style="text-align: center;">Students</p>
     <div style="display: flex; justify-content: center;">  
-      <v-table style="width: 80%">
+      <v-table style="width: 90%">
         <thead>
           <tr>
             <th class="text-left">Name</th>
             <th class="text-left">Email</th>
             <th class="text-left">Pronouns</th>
-            <th class="text-left">Triggers</th>
+            <th class="text-left">Major(s)</th>
+            <th class="text-left">Minor</th>
           </tr>
         </thead>
         <tbody>
@@ -17,7 +18,8 @@
             <td class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName}}</td>
             <td class="text-left">{{ student.userData.email }}</td>
             <td class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
-            <td class="text-left">{{ student.studentInformation.issuesConcernsTriggers }}</td>
+            <td class="text-left">{{ majors(student.studentInformation.enrolledUHInfo.majors) }}</td>
+            <td class="text-left">{{ minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors) }}</td>
           </tr>
         </tbody>
       </v-table>
@@ -49,6 +51,13 @@ mounted() {
   window.scrollTo(0, 0);
 },
 methods: {
+  majors(majorsList) {
+    return majorsList.length > 0 ? majorsList.join(", ") : "None";
+  },
+  minors(otherMinorsList, honorsMinorsList) {
+    let combinedMinorsList = otherMinorsList.concat(honorsMinorsList);
+    return combinedMinorsList.length > 0 ? combinedMinorsList.join(", ") : "None";
+  },
   listCheckedOptions(pronounsList) {
     return pronounsList.filter(item => item.checked === true).map(item => item.label).join(", ");
   },

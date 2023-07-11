@@ -8,6 +8,18 @@ const routes = [
       component: () => import('../components/studentSide/testing.vue')
     },
     {
+      path: '/studentEntryFormUpdate',
+      name: 'studentEntryFormUpdate',
+      props: true,
+      component: () => import('../components/studentSide/studentEntryFormUpdate.vue')
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      props: true,
+      component: () => import('../components/studentSide/profilePage.vue')
+    },
+    {
         path: '/',
         name: 'dashboard',
         props: true,
@@ -88,12 +100,11 @@ const routes = [
         
     },
     {
-      path: '/updateUserData',
+      path: '/updateBasicInformation',
       name: 'User Data Update Form',
       props: true,
       component: () => import('../components/loginPages/updateUserData.vue')
-      
-  },
+    },
     {
         path: '/sendNewCode',
         name: 'Send New Code',

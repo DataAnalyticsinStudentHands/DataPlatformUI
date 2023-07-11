@@ -102,10 +102,22 @@
             <li>
               <hr> <!-- Horizontal line -->
             </li>
+            <li v-if="user.getRole === 'Student'">
+              <router-link to="/studentEntryFormUpdate">
+                <span style="position: relative; top: 6px" class="material-icons">person</span>
+                student Entry Form Update
+              </router-link>
+            </li>
+            <li v-if="user.getRole === 'Student'">
+              <router-link to="/profile">
+                <span style="position: relative; top: 6px" class="material-icons">person</span>
+                Profile
+              </router-link>
+            </li>
             <li>
-              <router-link to="/updateUserData">
+              <router-link to="/updateBasicInformation">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
-                Update Profile Information
+                Update Basic Information
               </router-link>
             </li>
             <li>
@@ -121,6 +133,7 @@
             </router-link>
             </li>
           </div> 
+          {{ this.displayEntry }}
           </ul>
         </nav>
       </header>
@@ -149,12 +162,16 @@ export default {
     return {
       showElement: useLoggedInUserStore().isLoggedIn === false,
       organizationName: "",
+      displayEntry: []
     };
   },
   methods: {
     showDashboard() {
       this.showElement = true;
     },
+  },
+  beforeMount() {
+
   },
   setup() {
     // function that checks if a user is logged in
@@ -170,6 +187,15 @@ export default {
       })
       .then((resp) => {
         this.organizationName = resp.data;
+      });
+    // trying to use the endpoint to switch display of Student Entry Form based on whether the submitted is true or false
+    let token = user.token;
+    let userGivenID = user.userId;
+    let url = import.meta.env.VITE_ROOT_API + `/studentSideData/forms/submitted`;
+    axios.get(url + `/${userGivenID}`, { headers: { token },})
+      .then((resp) => {
+        console.log(resp.data);
+        this.displayEntry = resp.data.submitted;
       });
   },
 };
