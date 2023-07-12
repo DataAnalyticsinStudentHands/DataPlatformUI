@@ -35,7 +35,6 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-radio label="No" value="No"></v-radio>
   </v-radio-group>
 </v-col>
-
     <v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
   <p class="font-weight-black text-h8">What kind of community engagement experiences, if any, have you had? Check all that apply.</p>
   <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id">
