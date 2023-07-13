@@ -1,5 +1,3 @@
-// Issue with this page and displaying with the old data
-
 <template>
   <v-container style="width: 90%; margin: 0 auto;">
     <p class="font-weight-black text-h5 text--primary">Student Entry Update Form</p>
@@ -59,12 +57,12 @@
         <v-col cols="12" md="10">
           <p class="font-weight-black text-h8">Are you currently enrolled in a degree program at the University of Houston?</p>
           <v-radio-group v-model="studentInformation.enrolledUHInfo.uhStatus" :rules="[v => !!v || 'Information is required']" required>
-            <v-radio label="Yes" value=true v-model="studentInformation.enrolledUHInfo.uhStatus"></v-radio>
-            <v-radio label="No" value=false v-model="studentInformation.enrolledUHInfo.uhStatus"></v-radio>
+            <v-radio label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.uhStatus"></v-radio>
+            <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.uhStatus"></v-radio>
           </v-radio-group>
         </v-col>
       </v-row>
-    <div v-if="studentInformation.enrolledUHInfo.uhStatus === 'true'">
+    <div v-if="studentInformation.enrolledUHInfo.uhStatus === 'Yes'">
       <p class="font-weight-black text-h6">UH Student Only</p>
           <v-row>
             <v-col cols="12" md="7">
@@ -83,8 +81,8 @@
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Do you live on or off campus?</p>
               <v-radio-group v-model="studentInformation.enrolledUHInfo.livingOnCampus">
-                <v-radio label="On-Campus" value=true v-model="studentInformation.enrolledUHInfo.livingOnCampus"></v-radio>
-                <v-radio label="Off-Campus" value=false v-model="studentInformation.enrolledUHInfo.livingOnCampus"></v-radio>
+                <v-radio label="On-Campus" value="On-Campus" v-model="studentInformation.enrolledUHInfo.livingOnCampus"></v-radio>
+                <v-radio label="Off-Campus" value="Off-Campus" v-model="studentInformation.enrolledUHInfo.livingOnCampus"></v-radio>
               </v-radio-group>
             </v-col>
           </v-row>
@@ -93,8 +91,8 @@
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Are you a member of the Honors College?</p>
               <v-radio-group v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus">
-                <v-radio label="Yes" value=true v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
-                <v-radio label="No" value=false v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
+                <v-radio label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
+                <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
               </v-radio-group>
             </v-col>
           </v-row>
@@ -102,9 +100,9 @@
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Are you affiliated with the Honors College in any other way? If yes, please specify.</p>
               <v-radio-group v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus">
-                <v-radio label="Yes" value=true v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
+                <v-radio label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
                 <v-text-field v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow" v-if="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus == 'true'" label="Please specify"></v-text-field>
-                <v-radio label="No" value=false v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
+                <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
               </v-radio-group>
             </v-col>
           </v-row> 
@@ -133,8 +131,8 @@
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Are you a member of Honors in Community Health (HICH)?</p>
               <v-radio-group v-model="studentInformation.hichInfo.hichStatus">
-                <v-radio label="Yes" value=true v-model="studentInformation.hichInfo.hichStatus"></v-radio>
-                <v-radio label="No" value=false v-model="studentInformation.hichInfo.hichStatus"></v-radio>
+                <v-radio label="Yes" value="Yes" v-model="studentInformation.hichInfo.hichStatus"></v-radio>
+                <v-radio label="No" value="No" v-model="studentInformation.hichInfo.hichStatus"></v-radio>
               </v-radio-group>
             </v-col>
           </v-row>
@@ -142,8 +140,8 @@
             <v-col cols="12" md="7">
               <p class="font-weight-black text-h8">Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?</p>
               <v-radio-group v-model="studentInformation.hichInfo.hichHistoryStatus">
-                <v-radio label="Yes" value=true v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
-                <v-radio label="No" value=false v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
+                <v-radio label="Yes" value="Yes" v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
+                <v-radio label="No" value="No" v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
               </v-radio-group>
             </v-col>
           </v-row>
@@ -151,32 +149,32 @@
             <v-col cols="11">
               <p class="font-weight-black text-h8">Have you had other experience with Community Service?</p>
               <v-radio-group v-model="studentInformation.communityServiceInfo.serviceStatus">
-                <v-radio label="Yes" value=true v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-                <v-radio label="No" value=false v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-                  <p class="font-weight-black text-h8" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'true')">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-                  <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'true')" label="Please specify"></v-textarea>
-                  <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'true'">Are you a member of any community organizations outside the University? Please list.</p>
-                  <v-text-field v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" v-if="studentInformation.communityServiceInfo.serviceStatus == 'true'" label="Please specify"></v-text-field>
+                <v-radio label="Yes" value="Yes" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+                <v-radio label="No" value="No" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+                  <p class="font-weight-black text-h8" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
+                  <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')" label="Please specify"></v-textarea>
+                  <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">Are you a member of any community organizations outside the University? Please list.</p>
+                  <v-text-field v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'" label="Please specify"></v-text-field>
               </v-radio-group>
             </v-col>
           </v-row>
     </div>
-    <div v-if="studentInformation.enrolledUHInfo.uhStatus === 'false'">
+    <div v-if="studentInformation.enrolledUHInfo.uhStatus === 'No'">
       <p class="font-weight-black text-h6">Non-UH Students Only</p>
         <v-col cols="11">
           <p class="font-weight-black text-h8">Have you had experience with Community Service?</p>
           <v-radio-group v-model="studentInformation.communityServiceInfo.serviceStatus">
-            <v-radio label="Yes" value=true v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-            <v-radio label="No" value=false v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+            <v-radio label="Yes" value="Yes" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+            <v-radio label="No" value="No" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
           </v-radio-group>
         </v-col>
         <v-col cols="11" md="10">
-          <p class="font-weight-black text-h8" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'true')">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-          <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'true')" label="Please specify"></v-textarea>
+          <p class="font-weight-black text-h8" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
+          <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')" label="Please specify"></v-textarea>
         </v-col>
         <v-col cols="11" md="10">
-          <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'true'">Are you a member of any community organizations outside the University? Please list.</p>
-          <v-row v-if="studentInformation.communityServiceInfo.serviceStatus == 'true'">
+          <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">Are you a member of any community organizations outside the University? Please list.</p>
+          <v-row v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">
             <v-textarea v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" label="Please specify"></v-textarea>
           </v-row>
         </v-col>
@@ -185,11 +183,11 @@
         <v-col cols="12" md="10">
           <p class="font-weight-black text-h8">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</p>
           <v-radio-group v-model="studentInformation.graduateProfessionalSchool.programGradProStatus" required>
-            <v-radio label="Yes" value=true v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
-            <v-radio label="No" value=false v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
+            <v-radio label="Yes" value="Yes" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
+            <v-radio label="No" value="No" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
           </v-radio-group>
         </v-col>
-        <v-col cols="12" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === true || 'true'">
+        <v-col cols="12" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes'">
           <p class="font-weight-black text-h8">If you are planning to pursue graduate school, what type of program?</p>
           <div>
             <div v-for="programType in studentInformation.graduateProfessionalSchool.programGradProType" :key="programType.id">
@@ -203,11 +201,11 @@
         <v-col cols="12" md="10">
           <p class="font-weight-black text-h8">Are you planning to pursue any other kind of specialized degree / certificate program?</p>
           <v-radio-group v-model="studentInformation.specializedDegCert.specializedDegCertStatus" required>
-            <v-radio label="Yes" value=true v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
-            <v-radio label="No" value=false v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
+            <v-radio label="Yes" value="Yes" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
+            <v-radio label="No" value="No" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
           </v-radio-group>
         </v-col>
-        <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === true || 'true'">
+        <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
           <p class="font-weight-black text-h8">If you are planning to pursue a specialized degree / certificate program, what type of program?</p>
           <div>
             <div v-for="specializedType in studentInformation.specializedDegCert.specializedDegCertType" :key="specializedType.id">
@@ -249,13 +247,13 @@ export default {
         commentsByStaff: '',
         issuesConcernsTriggers: '',
         enrolledUHInfo: {
-          uhStatus: null,
+          uhStatus: '',
           uhEmail: '',
           peopleSoftID: '',
           expectedGraduationYear: '',
           livingOnCampus: '',
-          honorsCollegeStatus: null,
-          honorsCollegeAffiliatedStatus: null,
+          honorsCollegeStatus: '',
+          honorsCollegeAffiliatedStatus: '',
           honorsCollegeAffiliatedHow: '',
           majors: [], 
           honorsMinors: [],
@@ -263,22 +261,22 @@ export default {
         },
         hichInfo: {
           hichStatus: '',
-          hichHistoryStatus: null
+          hichHistoryStatus: ''
         },
         communityServiceInfo: {
-          serviceStatus: null,
+          serviceStatus: '',
           serviceHistoryDesc: '',
           serviceOrgsOutsideUH: ''
         },
         graduateProfessionalSchool: {
-          programGradProStatus: null,
+          programGradProStatus: '',
           programGradProType: [],
           phDTextbox: '',
           masterTextbox: '',
           otherTextbox: '',
         },
         specializedDegCert: {
-          specializedDegCertStatus: null,
+          specializedDegCertStatus: '',
           specializedDegCertType: [],
           professionalDesignOther: '',
         },
@@ -294,7 +292,6 @@ export default {
     let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
     axios.get(url + `/${userGivenID}`, { headers: { token },})
       .then((resp) => {
-        console.log(resp.data);
         this.studentInformation = resp.data.studentData.studentInformation;
       });
   },
@@ -322,45 +319,10 @@ export default {
     }
   },
   methods: {
-    clearFormFields() {
-      if (this.studentInformation.enrolledUHInfo.uhStatus === false) {
-        // Clear UH-related fields
-        this.studentInformation.enrolledUHInfo.uhEmail = "";
-        this.studentInformation.enrolledUHInfo.peopleSoftID = "";
-        this.studentInformation.enrolledUHInfo.expectedGraduationYear = "";
-        this.studentInformation.enrolledUHInfo.livingOnCampus = "";
-        this.studentInformation.enrolledUHInfo.honorsCollegeStatus = false;
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus = false;
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow = "";
-        this.studentInformation.enrolledUHInfo.majors = [];
-        this.studentInformation.enrolledUHInfo.honorsMinors = [];
-        this.studentInformation.enrolledUHInfo.otherMinors = [];
-      }
-
-      if (this.studentInformation.hichInfo.hichStatus == 'false') {
-        // Clear HICH-related fields
-        this.studentInformation.hichInfo.hichHistoryStatus = false;
-      }
-
-      if (this.studentInformation.graduateProfessionalSchool.programGradProStatus == 'false') {
-        // Clear graduate/professional school-related fields
-        this.studentInformation.graduateProfessionalSchool.programGradProType = [];
-        this.studentInformation.graduateProfessionalSchool.phDTextbox = "";
-        this.studentInformation.graduateProfessionalSchool.masterTextbox = "";
-        this.studentInformation.graduateProfessionalSchool.otherTextbox = "";
-      }
-
-      if (this.studentInformation.specializedDegCert.specializedDegCertStatus == 'false') {
-        // Clear specialized degree/certificate-related fields
-        this.studentInformation.specializedDegCert.specializedDegCertType = [];
-        this.studentInformation.specializedDegCert.professionalDesignOther = "";
-      }
-    },
     async handleSubmitForm() {
       const user = useLoggedInUserStore()
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
-      this.clearFormFields();
       console.log(this.studentInformation)
       axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
         this.$router.push('/studentDashboard');

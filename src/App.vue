@@ -103,21 +103,15 @@
               <hr> <!-- Horizontal line -->
             </li>
             <li v-if="user.getRole === 'Student'">
-              <router-link to="/studentEntryFormUpdate">
-                <span style="position: relative; top: 6px" class="material-icons">person</span>
-                student Entry Form Update
-              </router-link>
-            </li>
-            <li v-if="user.getRole === 'Student'">
               <router-link to="/profile">
                 <span style="position: relative; top: 6px" class="material-icons">person</span>
                 Profile
               </router-link>
             </li>
             <li>
-              <router-link to="/updateBasicInformation">
+              <router-link to="/updateUserInformation">
                 <span style="position: relative; top: 6px" class="material-icons">settings</span>
-                Update Basic Information
+                Update User Information
               </router-link>
             </li>
             <li>
@@ -132,8 +126,7 @@
               <button @click="store.logout()">Logout</button>
             </router-link>
             </li>
-          </div> 
-          {{ this.displayEntry }}
+          </div>
           </ul>
         </nav>
       </header>
@@ -162,16 +155,16 @@ export default {
     return {
       showElement: useLoggedInUserStore().isLoggedIn === false,
       organizationName: "",
-      displayEntry: []
+      displayEntry: [],
+      firstTimeLoginTF: null
     };
   },
   methods: {
     showDashboard() {
       this.showElement = true;
-    },
+    }
   },
   beforeMount() {
-
   },
   setup() {
     // function that checks if a user is logged in

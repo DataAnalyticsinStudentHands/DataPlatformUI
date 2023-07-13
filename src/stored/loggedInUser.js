@@ -10,13 +10,14 @@ export const useLoggedInUserStore = defineStore({
       userId: "",
       role: "",
       token: "",
-      isLoggedIn: false
+      isLoggedIn: false,
+      firstTimeLoginTF: false
     }
   },
   getters: { //getting the roles
     getRole() {
       return this.role
-    },
+    }
   },
   actions: {
     async login(email, password) {
@@ -29,6 +30,7 @@ export const useLoggedInUserStore = defineStore({
             userId: response.data.userID,
             token: response.data.token
           });
+
           this.$router.push("/");
         }
       } catch (error) {

@@ -100,7 +100,7 @@ const routes = [
         
     },
     {
-      path: '/updateBasicInformation',
+      path: '/updateUserInformation',
       name: 'User Data Update Form',
       props: true,
       component: () => import('../components/loginPages/updateUserData.vue')

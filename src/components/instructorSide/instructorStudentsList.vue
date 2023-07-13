@@ -3,7 +3,7 @@
   <main class="">
     <br><p class="font-weight-black text-h5" style="text-align: center;">Students</p>
     <div style="display: flex; justify-content: center;">  
-      <v-table style="width: 90%">
+      <v-table style="width: 950%">
         <thead>
           <tr>
             <th class="text-left">Name</th>
@@ -11,6 +11,7 @@
             <th class="text-left">Pronouns</th>
             <th class="text-left">Major(s)</th>
             <th class="text-left">Minor</th>
+            <th class="text-left">Expected Graduation Date</th>
           </tr>
         </thead>
         <tbody>
@@ -20,6 +21,7 @@
             <td class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
             <td class="text-left">{{ majors(student.studentInformation.enrolledUHInfo.majors) }}</td>
             <td class="text-left">{{ minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors) }}</td>
+            <td class="text-left">{{ student.studentInformation.enrolledUHInfo.expectedGraduationYear }}</td>
           </tr>
         </tbody>
       </v-table>
