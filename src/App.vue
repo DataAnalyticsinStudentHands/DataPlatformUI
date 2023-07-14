@@ -54,15 +54,15 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/testing">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
-                  Testing
-                </router-link>
-              </li>
-              <li>
                 <router-link to="/goalSettingForm">
                   <span style="position: relative; top: 6px" class="material-icons">description</span>
                   Goal Setting Form
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/exitFormsAvailable">
+                  <span style="position: relative; top: 6px" class="material-icons">description</span>
+                  Exit Forms
                 </router-link>
               </li>
               <li>

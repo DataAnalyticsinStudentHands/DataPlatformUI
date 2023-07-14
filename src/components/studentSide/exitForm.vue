@@ -26,7 +26,7 @@
     <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know whether you feel you made progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.</p>
     <!-- make a list of aspirations from the goal setting form HERE -->
     <ul>
-      <li>Aspiration 1: </li>
+      <li>Aspiration 1:</li>
       <li>Aspiration 2: </li>
       <li>Aspiration 3: </li>
     </ul>
@@ -346,6 +346,16 @@ export default {
         ],
         experienceID: "",
         goalSettingFormID: "",
+        goalForm:[{
+          aspiration1:"",
+          aspiration2:"",
+          aspiration3:"",
+          goal1:"",
+          goal2:"",
+          goal3:"",
+          goal4:"",
+          goal5:"",}
+        ],
         progressMade: {
           aspirationOneProgressResults: [
             { id: 1, label: "I made lots of progress towards this aspiration", checked: false },
@@ -544,9 +554,42 @@ export default {
     };
   },
   mounted() {
+    this.fetchGoalSettingFormData(),
     this.fetchSemester();
   },
   methods: {
+ fetchGoalSettingFormData() {
+  const user = useLoggedInUserStore();
+  const token = user.token;
+  const goalFormID = this.$route.params.id;
+  const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}`;
+
+  axios.get(apiURL, { headers: { token } })
+    .then((resp) => {
+      console.log(resp.data);
+      const goalFormData = resp.data[0]?.goalForm;
+
+      if (goalFormData) {
+        // Update aspirations
+        this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
+        this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
+        this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
+
+        // Update goals
+        this.exitForm.goal1 = goalFormData.goals?.goalOne;
+        this.exitForm.goal2 = goalFormData.goals?.goalTwo;
+        this.exitForm.goal3 = goalFormData.goals?.goalThree;
+        this.exitForm.goal4 = goalFormData.goals?.goalFour;
+        this.exitForm.goal5 = goalFormData.goals?.goalFive;
+      } else {
+        console.log("Goal form data not found in the response.");
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+},
+
     async fetchSemester() {
       const user = useLoggedInUserStore();
       let token = user.token;

@@ -2,12 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     {
-      path: '/testing',
-      name: 'testing',
-      props: true,
-      component: () => import('../components/studentSide/testing.vue')
-    },
-    {
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
@@ -199,6 +193,11 @@ const routes = [
       path: '/exitForm',
       name: 'exitForm',
       component: () => import('../components/studentSide/exitForm.vue')
+    },
+    {
+      path: '/exitFormsAvailable',
+      name: 'exitFormsAvailable',
+      component: () => import('../components/studentSide/exitFormsAvailable.vue')
     },
     {
       path: '/studentDashboard',
