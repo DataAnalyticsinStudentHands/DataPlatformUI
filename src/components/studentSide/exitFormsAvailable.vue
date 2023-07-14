@@ -24,8 +24,7 @@
   <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.experienceName }}</td>
   <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.exitFormCreated ? 'Complete' : 'Incomplete' }}</td>
   <td></td>
-  <td>
-  {{ goalSettingFormIDs[experience._id][0] }}</td>
+  <td></td>
 </tr>
 
           </tbody>

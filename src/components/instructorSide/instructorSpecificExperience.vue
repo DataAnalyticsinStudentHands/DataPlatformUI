@@ -3,7 +3,7 @@
   <main>
     <center>
       <v-container>
-        <p class="font-weight-black text-h6"> Experience: {{originalexperienceCategory}}, {{ originalExperienceName }}</p>
+        <p class="font-weight-black text-h6"> Experience: {{originalExperienceCategory}}, {{ originalExperienceName }}</p>
         <br />
         <v-row>
           <v-col cols="12" md="6">

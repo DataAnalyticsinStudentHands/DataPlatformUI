@@ -26,9 +26,9 @@
     <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know whether you feel you made progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.</p>
     <!-- make a list of aspirations from the goal setting form HERE -->
     <ul>
-      <li>Aspiration 1:</li>
-      <li>Aspiration 2: </li>
-      <li>Aspiration 3: </li>
+      <li>Aspiration 1: {{ exitForm.aspiration1 }} </li>
+      <li>Aspiration 2: {{ exitForm.aspiration2 }} </li>
+      <li>Aspiration 3: {{ exitForm.aspiration3 }}</li>
     </ul>
     <br>
     <p class="font-weight-black text-h8">For each aspiration listed above, please pick the option that best describes the progress you made.</p>
@@ -41,19 +41,19 @@
       </thead>
       <tbody>
         <tr>
-          <td>aspirationOne</td>
+          <td>{{ exitForm.aspiration1 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationOneProgressSelected" />
           </td>
         </tr>
         <tr>
-          <td>aspirationTwo</td>
+          <td>{{ exitForm.aspiration2 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationTwoProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationTwoProgressSelected" />
           </td>
         </tr>
         <tr>
-          <td>aspirationThree</td>
+          <td>{{ exitForm.aspiration3 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationThreeProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationThreeProgressSelected" />
           </td>
@@ -73,19 +73,19 @@
       </thead>
       <tbody>
         <tr>
-          <td>aspirationOne</td>
+          <td>{{ exitForm.aspiration1 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
-          <td>aspirationTwo</td>
+          <td>{{ exitForm.aspiration2 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
-          <td>aspirationThree</td>
+          <td>{{ exitForm.aspiration3 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected" />
           </td>
@@ -96,11 +96,11 @@
     <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share three to give goals for your partcipation in this course. Now we would like to know whether you feel you made progress towards these goals and which activities from the course contribued to your progress. Below is a list of your goals from the beginning of the semester.</p>
     <!-- make a list of goals from the goal setting form HERE -->
     <ul>
-      <li>Goal 1: </li>
-      <li>Goal 2: </li>
-      <li>Goal 3: </li>
-      <li>Goal 4: </li>
-      <li>Goal 5: </li>
+      <li>Goal 1: {{ exitForm.goal1 }}</li>
+      <li>Goal 2: {{ exitForm.goal2 }}</li>
+      <li>Goal 3: {{ exitForm.goal3 }}</li>
+      <li>Goal 4: {{ exitForm.goal4 }}</li>
+      <li>Goal 5: {{ exitForm.goal5 }}</li>
     </ul>
     <br>
     <p class="font-weight-black text-h8">For each goal listed above, please pick the option that best describes the progress you made.</p>
@@ -113,31 +113,31 @@
       </thead>
       <tbody>
         <tr>
-          <td>goalOne</td>
+          <td>{{ exitForm.goal1 }}</td>
           <td v-for="option in exitForm.progressMade.goalOneProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalOneProgressSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalTwo</td>
+          <td>{{ exitForm.goal2 }}</td>
           <td v-for="option in exitForm.progressMade.goalTwoProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalTwoProgressSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalThree</td>
+          <td>{{ exitForm.goal3 }}</td>
           <td v-for="option in exitForm.progressMade.goalThreeProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalThreeProgressSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalFour</td>
+          <td>{{ exitForm.goal4 }}</td>
           <td v-for="option in exitForm.progressMade.goalFourProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFourProgressSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalFive</td>
+          <td>{{ exitForm.goal5 }}</td>
           <td v-for="option in exitForm.progressMade.goalFiveProgressResults" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFiveProgressSelected" />
           </td>
@@ -157,31 +157,31 @@
       </thead>
       <tbody>
         <tr>
-          <td>goalOne</td>
+          <td>{{ exitForm.goal1 }}</td>
           <td v-for="option in exitForm.progressMade.goalOneExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalTwo</td>
+          <td>{{ exitForm.goal2 }}</td>
           <td v-for="option in exitForm.progressMade.goalTwoExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalThree</td>
+          <td>{{ exitForm.goal3 }}</td>
           <td v-for="option in exitForm.progressMade.goalThreeExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalFour</td>
+          <td>{{ exitForm.goal4 }}</td>
           <td v-for="option in exitForm.progressMade.goalFourExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
-          <td>goalFive</td>
+          <td>{{ exitForm.goal5 }}</td>
           <td v-for="option in exitForm.progressMade.goalFiveExperienceConnection" :key="option.id">
             <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" />
           </td>
@@ -195,7 +195,7 @@
     <div v-for="goal in exitForm.goalIssues.goals" :key="goal.id">
   <label style="color: #656565;">
     <input type="checkbox" v-model="goal.checked" style="outline: 2px solid gray; margin-right: 5px;">
-    {{ goal.label }}
+    {{ goal.id === 1 ? exitForm.goal1 : goal.id === 2 ? exitForm.goal2 : goal.id === 3 ? exitForm.goal3 : goal.id === 4 ? exitForm.goal4 : exitForm.goal5 }}
   </label>
 </div>
 <br>
@@ -206,11 +206,11 @@
   <p class="font-weight-black text-h8">Below is a list of your goals from the beginning of the semester</p>
     <!-- make a list of goals from the goal setting form HERE -->
     <ul>
-      <li>Goal 1: </li>
-      <li>Goal 2: </li>
-      <li>Goal 3: </li>
-      <li>Goal 4: </li>
-      <li>Goal 5: </li>
+      <li>Goal 1: {{ exitForm.goal1 }}</li>
+      <li>Goal 2: {{ exitForm.goal2 }}</li>
+      <li>Goal 3: {{ exitForm.goal3 }}</li>
+      <li>Goal 4: {{ exitForm.goal4 }}</li>
+      <li>Goal 5: {{ exitForm.goal5 }}</li>
     </ul>
     <br>
 
@@ -558,7 +558,7 @@ export default {
     this.fetchSemester();
   },
   methods: {
- fetchGoalSettingFormData() {
+    fetchGoalSettingFormData() {
   const user = useLoggedInUserStore();
   const token = user.token;
   const goalFormID = this.$route.params.id;
@@ -575,12 +575,24 @@ export default {
         this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
         this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
 
+        // Log aspirations
+        console.log("Aspiration 1:", this.exitForm.aspiration1);
+        console.log("Aspiration 2:", this.exitForm.aspiration2);
+        console.log("Aspiration 3:", this.exitForm.aspiration3);
+
         // Update goals
         this.exitForm.goal1 = goalFormData.goals?.goalOne;
         this.exitForm.goal2 = goalFormData.goals?.goalTwo;
         this.exitForm.goal3 = goalFormData.goals?.goalThree;
         this.exitForm.goal4 = goalFormData.goals?.goalFour;
         this.exitForm.goal5 = goalFormData.goals?.goalFive;
+
+        // Log goals
+        console.log("Goal 1:", this.exitForm.goal1);
+        console.log("Goal 2:", this.exitForm.goal2);
+        console.log("Goal 3:", this.exitForm.goal3);
+        console.log("Goal 4:", this.exitForm.goal4);
+        console.log("Goal 5:", this.exitForm.goal5);
       } else {
         console.log("Goal form data not found in the response.");
       }
