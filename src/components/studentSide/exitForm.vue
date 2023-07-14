@@ -1,27 +1,14 @@
 <template>
     <v-container>
       <p class="font-weight-black text-h5 text--primary">Exit Form</p>
-    
+
     <p class="font-weight-black text-h8">Current Semester:</p>
-        <v-text-field v-model="exitForm.semester" label="Semester" readonly></v-text-field>
-    <p class="font-weight-black text-h8">
-           Experience automation(?) delete this placeholder 
+        <v-text-field v-model="exitForm.semester"  readonly></v-text-field>
+    <p class="font-weight-black text-h8">Experience:
         </p>
-    <!-- need to import previous experience and grab data 
-      <v-row>
-      <v-col cols="11" md="10">
-        <p class="font-weight-black text-h8">
-          Which experience are you filling out this form for:
-        </p>
-        <div>
-          <select v-model="goalForm.experienceID" style="border: 1px solid #808080; padding: 5px; border-radius: 4px;">
-            <option v-for="experience in goalForm.experiences" :value="experience.experienceID" :key="experience.experienceID">
-              {{ experience.experienceCategory }}: {{ experience.experienceName }}
-            </option>
-          </select>
-        </div>
-      </v-col>
-    </v-row> -->
+      
+      <v-text-field v-model="exitForm.experience.experienceName"  readonly></v-text-field>
+
     <br>
     <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know whether you feel you made progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.</p>
     <!-- make a list of aspirations from the goal setting form HERE -->
@@ -216,7 +203,10 @@
 
     <p class="font-weight-black text-h8">
            goal x activities matrix placeholder 
+           <br>
+      {{ exitForm.experienceActivities.map(activity => activity.activityName).join(', ')}}
         </p>
+
 <br>
   <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> How did this experience contribute to your graduate/progessional goals?</p>
 <input type="text" v-model="exitForm.experienceContributions" style="margin-top: 5px; margin-bottom: 2px; border: none; border: 1px solid grey; padding: 5px; border-radius: 0; width: 50vw; height: 10vw;">
@@ -337,9 +327,8 @@ export default {
     return {
       exitForm: {
         semester: "",
-        experiences: [
+        experience: [
           {
-            experienceIDFromList: "",
             experienceCategory: "",
             experienceName: ""
           }
@@ -356,6 +345,7 @@ export default {
           goal4:"",
           goal5:"",}
         ],
+        experienceActivities:[],
         progressMade: {
           aspirationOneProgressResults: [
             { id: 1, label: "I made lots of progress towards this aspiration", checked: false },
@@ -403,7 +393,7 @@ export default {
           aspirationTwoExperienceConnectionSelected: null,
           aspirationThreeExperienceConnectionSelected: null,
           goalOneProgressResults: [
-            { id: 1, label: "I mamadeke lots of progress towards this goal", checked: false },
+            { id: 1, label: "I made lots of progress towards this goal", checked: false },
             { id: 2, label: "I made some progress towards this goal", checked: false },
             { id: 3, label: "I made little progress towards this goal", checked: false },
             { id: 4, label: "I did not make progress towards this goal", checked: false },
@@ -555,9 +545,47 @@ export default {
   },
   mounted() {
     this.fetchGoalSettingFormData(),
+    this.fetchGoalFormActivities(),
     this.fetchSemester();
+    this.fetchExperienceData();
   },
   methods: {
+    fetchExperienceData() {
+      const goalFormID = this.$route.params.id;
+      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}/experiencedata`;
+
+      axios.get(apiURL)
+        .then((response) => {
+          this.exitForm.experience = response.data;
+          console.log("Experience Data:", this.exitForm.experience.experienceName);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    fetchGoalFormActivities() {
+  const goalFormID = this.$route.params.id;
+  const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}/activities`;
+
+  axios.get(apiURL)
+    .then((resp) => {
+      console.log(resp.data);
+      const activities = resp.data;
+
+      // Update experience activities
+      this.exitForm.experienceActivities = activities.map((activity) => {
+        return {
+          activityName: activity.activityName,
+        };
+      });
+
+      // Log experience activities
+      console.log("Experience Activities:", this.exitForm.experienceActivities);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+},
     fetchGoalSettingFormData() {
   const user = useLoggedInUserStore();
   const token = user.token;
@@ -574,25 +602,12 @@ export default {
         this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
         this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
         this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
-
-        // Log aspirations
-        console.log("Aspiration 1:", this.exitForm.aspiration1);
-        console.log("Aspiration 2:", this.exitForm.aspiration2);
-        console.log("Aspiration 3:", this.exitForm.aspiration3);
-
         // Update goals
         this.exitForm.goal1 = goalFormData.goals?.goalOne;
         this.exitForm.goal2 = goalFormData.goals?.goalTwo;
         this.exitForm.goal3 = goalFormData.goals?.goalThree;
         this.exitForm.goal4 = goalFormData.goals?.goalFour;
         this.exitForm.goal5 = goalFormData.goals?.goalFive;
-
-        // Log goals
-        console.log("Goal 1:", this.exitForm.goal1);
-        console.log("Goal 2:", this.exitForm.goal2);
-        console.log("Goal 3:", this.exitForm.goal3);
-        console.log("Goal 4:", this.exitForm.goal4);
-        console.log("Goal 5:", this.exitForm.goal5);
       } else {
         console.log("Goal form data not found in the response.");
       }
