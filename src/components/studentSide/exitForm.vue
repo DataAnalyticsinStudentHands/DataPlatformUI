@@ -1,3 +1,4 @@
+<!-- /exitForm need to connect matrix to data actvititys x contributions-->
 <template>
     <v-container>
       <p class="font-weight-black text-h5 text--primary">Exit Form</p>
@@ -202,10 +203,53 @@
     <br>
 
     <p class="font-weight-black text-h8">
-           goal x activities matrix placeholder 
+           For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".
            <br>
-      {{ exitForm.experienceActivities.map(activity => activity.activityName).join(', ')}}
         </p>
+
+        <table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Goal 1</th>
+      <th>Goal 2</th>
+      <th>Goal 3</th>
+      <th>Goal 4</th>
+      <th>Goal 5</th>
+      <th>No Goals</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="activity in exitForm.experienceActivities" :key="activity.activityName">
+  <td>{{ activity.activityName }}</td>
+  <td>
+    <input type="checkbox" :id="`${activity.activityName}-goal1`" :name="`${activity.activityName}-goal1`" v-model="exitForm.activitiesContribution.goalOneContributions" @change="updateContribution(activity._id, 'goalOneContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+  </td>
+  <td>
+    <input type="checkbox" :id="`${activity.activityName}-goal2`" :name="`${activity.activityName}-goal2`" v-model="exitForm.activitiesContribution.goalTwoContributions" @change="updateContribution(activity._id, 'goalTwoContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+  </td>
+  <td>
+    <input type="checkbox" :id="`${activity.activityName}-goal3`" :name="`${activity.activityName}-goal3`" v-model="exitForm.activitiesContribution.goalThreeContributions" @change="updateContribution(activity._id, 'goalThreeContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+  </td>
+  <td>
+    <input type="checkbox" :id="`${activity.activityName}-goal4`" :name="`${activity.activityName}-goal4`" v-model="exitForm.activitiesContribution.goalFourContributions" @change="updateContribution(activity._id, 'goalFourContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+  </td>
+  <td>
+    <input type="checkbox" :id="`${activity.activityName}-goal5`" :name="`${activity.activityName}-goal5`" v-model="exitForm.activitiesContribution.goalFiveContributions" @change="updateContribution(activity._id, 'goalFiveContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+  </td>
+  <td>
+    <input type="checkbox" :id="`${activity.activityName}-noGoals`" :name="`${activity.activityName}-noGoals`" v-model="exitForm.activitiesContribution.noContributions" @change="updateContribution(activity._id, 'noContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+  </td>
+</tr>
+
+
+    {{ exitForm.activitiesContribution.noContributions }}
+  </tbody>
+</table>
+
+
+
+
 
 <br>
   <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> How did this experience contribute to your graduate/progessional goals?</p>
@@ -345,7 +389,10 @@ export default {
           goal4:"",
           goal5:"",}
         ],
-        experienceActivities:[],
+        experienceActivities:[{
+          activityID:"",
+          activityName:""}
+        ],
         progressMade: {
           aspirationOneProgressResults: [
             { id: 1, label: "I made lots of progress towards this aspiration", checked: false },
@@ -550,6 +597,18 @@ export default {
     this.fetchExperienceData();
   },
   methods: {
+    updateContribution(activityID, contributionKey, isChecked) {
+    const contributions = this.exitForm.activitiesContribution[contributionKey];
+    if (isChecked) {
+      contributions.push(activityID);
+    } else {
+      const index = contributions.indexOf(activityID);
+      if (index !== -1) {
+        contributions.splice(index, 1);
+      }
+    }
+  },
+
     fetchExperienceData() {
       const goalFormID = this.$route.params.id;
       const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}/experiencedata`;
@@ -570,14 +629,12 @@ export default {
   axios.get(apiURL)
     .then((resp) => {
       console.log(resp.data);
-      const activities = resp.data;
 
       // Update experience activities
-      this.exitForm.experienceActivities = activities.map((activity) => {
-        return {
-          activityName: activity.activityName,
-        };
-      });
+      this.exitForm.experienceActivities = resp.data.map((activity) => ({
+        activityID: activity._id,
+        activityName: activity.activityName
+      }));
 
       // Log experience activities
       console.log("Experience Activities:", this.exitForm.experienceActivities);
@@ -586,6 +643,7 @@ export default {
       console.log(error);
     });
 },
+
     fetchGoalSettingFormData() {
   const user = useLoggedInUserStore();
   const token = user.token;
