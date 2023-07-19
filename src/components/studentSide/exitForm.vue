@@ -244,8 +244,6 @@
   </tr>
 </tbody>
     </table>
-{{ exitForm.activitiesContribution.goalTwoContributions }}
-    {{ exitForm.activitiesContribution.noContributions }}
   </div>
 
 <br>
