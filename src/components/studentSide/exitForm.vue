@@ -20,34 +20,35 @@
     </ul>
     <br>
     <p class="font-weight-black text-h8">For each aspiration listed above, please pick the option that best describes the progress you made.</p>
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">{{ option.label }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{ exitForm.aspiration1 }}</td>
-          <td v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationOneProgressSelected" />
-          </td>
-        </tr>
-        <tr>
-          <td>{{ exitForm.aspiration2 }}</td>
-          <td v-for="option in exitForm.progressMade.aspirationTwoProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationTwoProgressSelected" />
-          </td>
-        </tr>
-        <tr>
-          <td>{{ exitForm.aspiration3 }}</td>
-          <td v-for="option in exitForm.progressMade.aspirationThreeProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationThreeProgressSelected" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+ <table>
+  <thead>
+    <tr>
+      <th></th>
+      <th v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">{{ option.label }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ exitForm.aspiration1 }}</td>
+      <td v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">
+        <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.aspirationOneProgressSelected" :checked="option.checked" />
+      </td>
+    </tr>
+    <tr>
+      <td>{{ exitForm.aspiration2 }}</td>
+      <td v-for="option in exitForm.progressMade.aspirationTwoProgressResults" :key="option.id">
+        <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.aspirationTwoProgressSelected" :checked="option.checked" />
+      </td>
+    </tr>
+    <tr>
+      <td>{{ exitForm.aspiration3 }}</td>
+      <td v-for="option in exitForm.progressMade.aspirationThreeProgressResults" :key="option.id">
+        <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.aspirationThreeProgressSelected" :checked="option.checked" />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 
     <br>
 
@@ -63,19 +64,19 @@
         <tr>
           <td>{{ exitForm.aspiration1 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.aspiration2 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.aspiration3 }}</td>
           <td v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected" />
           </td>
         </tr>
       </tbody>
@@ -103,31 +104,31 @@
         <tr>
           <td>{{ exitForm.goal1 }}</td>
           <td v-for="option in exitForm.progressMade.goalOneProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalOneProgressSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalOneProgressSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal2 }}</td>
           <td v-for="option in exitForm.progressMade.goalTwoProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalTwoProgressSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalTwoProgressSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal3 }}</td>
           <td v-for="option in exitForm.progressMade.goalThreeProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalThreeProgressSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalThreeProgressSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal4 }}</td>
           <td v-for="option in exitForm.progressMade.goalFourProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFourProgressSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalFourProgressSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal5 }}</td>
           <td v-for="option in exitForm.progressMade.goalFiveProgressResults" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFiveProgressSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalFiveProgressSelected" />
           </td>
         </tr>
       </tbody>
@@ -147,31 +148,31 @@
         <tr>
           <td>{{ exitForm.goal1 }}</td>
           <td v-for="option in exitForm.progressMade.goalOneExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal2 }}</td>
           <td v-for="option in exitForm.progressMade.goalTwoExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal3 }}</td>
           <td v-for="option in exitForm.progressMade.goalThreeExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal4 }}</td>
           <td v-for="option in exitForm.progressMade.goalFourExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" />
           </td>
         </tr>
         <tr>
           <td>{{ exitForm.goal5 }}</td>
           <td v-for="option in exitForm.progressMade.goalFiveExperienceConnection" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" />
           </td>
         </tr>
       </tbody>
@@ -180,12 +181,13 @@
 
     <p class="font-weight-black text-h8">Please select which goal(s) you faced barriers to achieving this semester.</p>
      <!-- make a list of goals from the goal setting form HERE -->
-    <div v-for="goal in exitForm.goalIssues.goals" :key="goal.id">
+     <div v-for="goal in exitForm.goalIssues.goals" :key="goal.id">
   <label style="color: #656565;">
     <input type="checkbox" v-model="goal.checked" style="outline: 2px solid gray; margin-right: 5px;">
-    {{ goal.id === 1 ? exitForm.goal1 : goal.id === 2 ? exitForm.goal2 : goal.id === 3 ? exitForm.goal3 : goal.id === 4 ? exitForm.goal4 : exitForm.goal5 }}
+    {{ goal.label }}
   </label>
 </div>
+
 <br>
 <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> For one of the goals you selected above, please describe what those barriers were and what strategies you employed to overcomes those barriers in 3-4 sentences. </p>
 <input type="text" v-model="exitForm.goalIssues.issuesDescription" style="margin-top: 5px; margin-bottom: 2px; border: none; border: 1px solid grey; padding: 5px; border-radius: 0; width: 50vw;">
@@ -263,25 +265,25 @@
         <tr>
           <td>Enroll in another course</td>
           <td v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" />
           </td>
         </tr>
         <tr>
           <td>Complete the minor</td>
           <td v-for="option in exitForm.likelihoodOf.completeMinor" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.likelihoodOf.completeMinorSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.likelihoodOf.completeMinorSelected" />
           </td>
         </tr>
         <tr>
           <td>Recommend this course to a friend</td>
           <td v-for="option in exitForm.likelihoodOf.recommendCourse" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.likelihoodOf.recommendCourseSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.likelihoodOf.recommendCourseSelected" />
           </td>
         </tr>
         <tr>
           <td>Pursue a career in this field</td>
           <td v-for="option in exitForm.likelihoodOf.pursueCareer" :key="option.id">
-            <input class="radio-button" type="radio" :value="option.id" v-model="exitForm.likelihoodOf.pursueCareerSelected" />
+            <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.likelihoodOf.pursueCareerSelected" />
           </td>
         </tr>
       </tbody>
@@ -410,9 +412,9 @@ export default {
             { id: 4, label: "I did not make progress towards this aspiration", checked: false },
             { id: 5, label: "No aspiration listed", checked: false }
           ],
-          aspirationOneProgressSelected: null,
-          aspirationTwoProgressSelected: null,
-          aspirationThreeProgressSelected: null,
+          aspirationOneProgressSelected: "",
+          aspirationTwoProgressSelected:"",
+          aspirationThreeProgressSelected: "",
           aspirationOneExperienceConnection: [
             { id: 1, label: "The progress I made towards this aspiration was largely due to this course", checked: false },
             { id: 2, label: "The progress I made towards this aspiration was partly due to this course", checked: false },
@@ -562,10 +564,10 @@ export default {
             { id: 4, label: "Somewhat unlikely", checked: false },
             { id: 5, label: "Extremely unlikely", checked: false }
           ],
-          enrollAnotherCourseSelected: null,
-          completeMinorSelected: null,
-          recommendCourseSelected: null,
-          pursueCareerSelected: null,
+          enrollAnotherCourseSelected: "",
+          completeMinorSelected: "",
+          recommendCourseSelected: "",
+          pursueCareerSelected: "",
         },
         //general growth goals and the results after experience
         generalGrowth: {
@@ -773,33 +775,42 @@ export default {
     goalSettingFormID: this.exitForm.goalSettingFormID,
     exitForm: {
       progressMade: {
-        aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressResults.find(result => result.checked)?.label,
-        aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressResults.find(result => result.checked)?.label,
-        aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressResults.find(result => result.checked)?.label,
-        goalOneProgressResults: this.exitForm.progressMade.goalOneProgressResults.find(result => result.checked)?.label,
-        goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressResults.find(result => result.checked)?.label,
-        goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressResults.find(result => result.checked)?.label,
-        goalFourProgressResults: this.exitForm.progressMade.goalFourProgressResults.find(result => result.checked)?.label,
-        goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressResults.find(result => result.checked)?.label
+        aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected,
+      aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected,
+      aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected,
+      aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected,
+      aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected,
+      aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected,
+        goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected,
+        goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected,
+        goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected,
+        goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected,
+        goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected,
+        goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected,
+        goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected,
+        goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected,
+        goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected,
+        goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected,
       },
       goalIssues: {
-        goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
-        issuesDescription: this.exitForm.goalIssues.issuesDescription
-      },
+      goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
+      issuesDescription: this.exitForm.goalIssues.issuesDescription
+    },
       activitiesContribution: {
         goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
         goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
         goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
         goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
-        goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions
+        goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
+        noContributions:this.exitForm.activitiesContribution.noContributions,
       },
       experienceContributions: this.exitForm.experienceContributions,
       likelihoodOf: {
-        enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourse.find(result => result.checked)?.label,
-        completeMinor: this.exitForm.likelihoodOf.completeMinor.find(result => result.checked)?.label,
-        recommendCourse: this.exitForm.likelihoodOf.recommendCourse.find(result => result.checked)?.label,
-        pursueCareer: this.exitForm.likelihoodOf.pursueCareer.find(result => result.checked)?.label
-      },
+        enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected,
+        completeMinor: this.exitForm.likelihoodOf.completeMinorSelected,
+        recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected,
+        pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected,
+    },
       generalGrowth: {
         problemSolving: this.exitForm.generalGrowth.problemSolving,
         effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
@@ -822,7 +833,7 @@ export default {
     });
     console.log(response.data);
     alert("Exit form has been successfully submitted.");
-    this.$router.push('/studentDashboard');
+    this.$router.push('/exitFormsAvailable');
   } catch (error) {
     console.log(error);
   }
