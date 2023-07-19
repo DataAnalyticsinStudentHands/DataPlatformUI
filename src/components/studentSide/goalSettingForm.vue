@@ -448,7 +448,6 @@ export default {
   axios
     .post(apiURL, goalForm, { headers: { token } })
     .then(() => {
-      alert("Goal Information has been successfully added.");
       this.goalForm = {
         semester: '',
         primaryLanguage: '',
@@ -493,6 +492,8 @@ export default {
           goalFive: '',
         },
       };
+    
+      alert("Goal form has been successfully submitted.");
       this.$router.push('/studentDashboard');
     })
     .catch((error) => {

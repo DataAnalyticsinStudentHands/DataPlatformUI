@@ -368,12 +368,11 @@ export default {
         semester: "",
         experience: [
           {
+            _id: "",
             experienceCategory: "",
             experienceName: ""
           }
         ],
-        experienceID: "",
-        goalSettingFormID: "",
         goalForm:[{
           aspiration1:"",
           aspiration2:"",
@@ -384,6 +383,7 @@ export default {
           goal4:"",
           goal5:"",}
         ],
+        goalSettingFormID: "",
         experienceActivities:[{
           activityID:"",
           activityName:""}
@@ -721,10 +721,13 @@ export default {
 
   axios.get(apiURL, { headers: { token } })
     .then((resp) => {
-      console.log(resp.data);
+      this.exitForm.goalSettingFormID=resp.data[0]._id;
+
       const goalFormData = resp.data[0]?.goalForm;
 
       if (goalFormData) {
+        
+      console.log("Here!!!!!!");
         // Update aspirations
         this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
         this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
@@ -735,6 +738,7 @@ export default {
         this.exitForm.goal3 = goalFormData.goals?.goalThree;
         this.exitForm.goal4 = goalFormData.goals?.goalFour;
         this.exitForm.goal5 = goalFormData.goals?.goalFive;
+
       } else {
         console.log("Goal form data not found in the response.");
       }
@@ -759,68 +763,70 @@ export default {
     },
 
     async handleSubmitForm() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + "/exitForms/";
+  const user = useLoggedInUserStore();
+  const token = user.token;
+  const apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exitForms/";
 
-      const exitFormData = {
-        semester: this.exitForm.semester,
-        experienceID: this.exitForm.experienceIDFromList,
-        goalSettingFormID: this.exitForm.goalSettingFormID,
-        exitForm: {
-          progressMade: {
-            aspirationOneResults: this.exitForm.progressMade.aspirationOneProgressResults.find(result => result.checked)?.label,
-            aspirationTwoResults: this.exitForm.progressMade.aspirationTwoProgressResults.find(result => result.checked)?.label,
-            aspirationThreeResults: this.exitForm.progressMade.aspirationThreeProgressResults.find(result => result.checked)?.label,
-            goalOneResults: this.exitForm.progressMade.goalOneProgressResults.find(result => result.checked)?.label,
-            goalTwoResults: this.exitForm.progressMade.goalTwoProgressResults.find(result => result.checked)?.label,
-            goalThreeResults: this.exitForm.progressMade.goalThreeProgressResults.find(result => result.checked)?.label,
-            goalFourResults: this.exitForm.progressMade.goalFourProgressResults.find(result => result.checked)?.label,
-            goalFiveResults: this.exitForm.progressMade.goalFiveProgressResults.find(result => result.checked)?.label
-          },
-          goalIssues: {
-            goals: this.exitForm.goalIssues.goals,
-            issuesDescription: this.exitForm.goalIssues.issuesDescription
-          },
-          activitiesContribution: {
-            goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
-            goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
-            goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
-            goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
-            goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions
-          },
-          experienceContributions: this.exitForm.experienceContributions,
-          likelihoodOf: {
-            enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourse.find(result => result.checked)?.label,
-            completeMinor: this.exitForm.likelihoodOf.completeMinor.find(result => result.checked)?.label,
-            recommendCourse: this.exitForm.likelihoodOf.recommendCourse.find(result => result.checked)?.label,
-            pursueCareer: this.exitForm.likelihoodOf.pursueCareer.find(result => result.checked)?.label
-          },
-          generalGrowth: {
-            problemSolving: this.exitForm.generalGrowth.problemSolving,
-            effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
-            teamwork: this.exitForm.generalGrowth.teamwork,
-            culturalHumility: this.exitForm.generalGrowth.culturalHumility,
-            ethicalDecisionMaking: this.exitForm.generalGrowth.ethicalDecisionMaking,
-            professionalResponsibility: this.exitForm.generalGrowth.professionalResponsibility
-          },
-          openEnded: {
-            biggestLessons: this.exitForm.openEnded.biggestLessons,
-            supportOthers: this.exitForm.openEnded.supportOthers,
-            comments: this.exitForm.openEnded.comments
-          }
-        }
-      };
-
-      try {
-        const response = await axios.post(apiURL, exitFormData, {
-          headers: { token }
-        });
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
+  const exitFormData = {
+    semester: this.exitForm.semester,
+    experienceID: this.exitForm.experience._id,
+    goalSettingFormID: this.exitForm.goalSettingFormID,
+    exitForm: {
+      progressMade: {
+        aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressResults.find(result => result.checked)?.label,
+        aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressResults.find(result => result.checked)?.label,
+        aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressResults.find(result => result.checked)?.label,
+        goalOneProgressResults: this.exitForm.progressMade.goalOneProgressResults.find(result => result.checked)?.label,
+        goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressResults.find(result => result.checked)?.label,
+        goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressResults.find(result => result.checked)?.label,
+        goalFourProgressResults: this.exitForm.progressMade.goalFourProgressResults.find(result => result.checked)?.label,
+        goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressResults.find(result => result.checked)?.label
+      },
+      goalIssues: {
+        goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
+        issuesDescription: this.exitForm.goalIssues.issuesDescription
+      },
+      activitiesContribution: {
+        goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
+        goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
+        goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
+        goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
+        goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions
+      },
+      experienceContributions: this.exitForm.experienceContributions,
+      likelihoodOf: {
+        enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourse.find(result => result.checked)?.label,
+        completeMinor: this.exitForm.likelihoodOf.completeMinor.find(result => result.checked)?.label,
+        recommendCourse: this.exitForm.likelihoodOf.recommendCourse.find(result => result.checked)?.label,
+        pursueCareer: this.exitForm.likelihoodOf.pursueCareer.find(result => result.checked)?.label
+      },
+      generalGrowth: {
+        problemSolving: this.exitForm.generalGrowth.problemSolving,
+        effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
+        teamwork: this.exitForm.generalGrowth.teamwork,
+        culturalHumility: this.exitForm.generalGrowth.culturalHumility,
+        ethicalDecisionMaking: this.exitForm.generalGrowth.ethicalDecisionMaking,
+        professionalResponsibility: this.exitForm.generalGrowth.professionalResponsibility
+      },
+      openEnded: {
+        biggestLessons: this.exitForm.openEnded.biggestLessons,
+        supportOthers: this.exitForm.openEnded.supportOthers,
+        comments: this.exitForm.openEnded.comments
       }
     }
+  };
+
+  try {
+    const response = await axios.post(apiURL, exitFormData, {
+      headers: { token }
+    });
+    console.log(response.data);
+    alert("Exit form has been successfully submitted.");
+    this.$router.push('/studentDashboard');
+  } catch (error) {
+    console.log(error);
+  }
+}
   }
 };
 </script>
