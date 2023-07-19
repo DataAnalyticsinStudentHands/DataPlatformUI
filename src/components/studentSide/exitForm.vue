@@ -202,54 +202,51 @@
     </ul>
     <br>
 
+    <div>
     <p class="font-weight-black text-h8">
-           For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".
-           <br>
-        </p>
+      For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".
+      <br>
+    </p>
 
-        <table>
-  <thead>
-    <tr>
-      <th></th>
-      <th>Goal 1</th>
-      <th>Goal 2</th>
-      <th>Goal 3</th>
-      <th>Goal 4</th>
-      <th>Goal 5</th>
-      <th>No Goals</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="activity in exitForm.experienceActivities" :key="activity.activityName">
-  <td>{{ activity.activityName }}</td>
-  <td>
-    <input type="checkbox" :id="`${activity.activityName}-goal1`" :name="`${activity.activityName}-goal1`" v-model="exitForm.activitiesContribution.goalOneContributions" @change="updateContribution(activity._id, 'goalOneContributions', $event.target.checked)" style="outline: 2px solid gray;" />
-  </td>
-  <td>
-    <input type="checkbox" :id="`${activity.activityName}-goal2`" :name="`${activity.activityName}-goal2`" v-model="exitForm.activitiesContribution.goalTwoContributions" @change="updateContribution(activity._id, 'goalTwoContributions', $event.target.checked)" style="outline: 2px solid gray;" />
-  </td>
-  <td>
-    <input type="checkbox" :id="`${activity.activityName}-goal3`" :name="`${activity.activityName}-goal3`" v-model="exitForm.activitiesContribution.goalThreeContributions" @change="updateContribution(activity._id, 'goalThreeContributions', $event.target.checked)" style="outline: 2px solid gray;" />
-  </td>
-  <td>
-    <input type="checkbox" :id="`${activity.activityName}-goal4`" :name="`${activity.activityName}-goal4`" v-model="exitForm.activitiesContribution.goalFourContributions" @change="updateContribution(activity._id, 'goalFourContributions', $event.target.checked)" style="outline: 2px solid gray;" />
-  </td>
-  <td>
-    <input type="checkbox" :id="`${activity.activityName}-goal5`" :name="`${activity.activityName}-goal5`" v-model="exitForm.activitiesContribution.goalFiveContributions" @change="updateContribution(activity._id, 'goalFiveContributions', $event.target.checked)" style="outline: 2px solid gray;" />
-  </td>
-  <td>
-    <input type="checkbox" :id="`${activity.activityName}-noGoals`" :name="`${activity.activityName}-noGoals`" v-model="exitForm.activitiesContribution.noContributions" @change="updateContribution(activity._id, 'noContributions', $event.target.checked)" style="outline: 2px solid gray;" />
-  </td>
-</tr>
-
-
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Goal 1</th>
+          <th>Goal 2</th>
+          <th>Goal 3</th>
+          <th>Goal 4</th>
+          <th>Goal 5</th>
+          <th>No Goals</th>
+        </tr>
+      </thead>
+      <tbody>
+  <tr v-for="activity in exitForm.experienceActivities" :key="activity.activityID">
+    <td>{{ activity.activityName }}</td>
+    <td>
+      <input type="checkbox" :id="`${activity.activityID}-goal1`" :name="`${activity.activityID}-goal1`" :value="activity.activityID" v-model="exitForm.activitiesContribution.goalOneContributions" @change="updateContribution(activity.activityID, 'goalOneContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+    </td>
+    <td>
+      <input type="checkbox" :id="`${activity.activityID}-goal2`" :name="`${activity.activityID}-goal2`" :value="activity.activityID"  v-model="exitForm.activitiesContribution.goalTwoContributions" @change="updateContribution(activity.activityID, 'goalTwoContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+    </td>
+    <td>
+      <input type="checkbox" :id="`${activity.activityID}-goal3`" :name="`${activity.activityID}-goal3`" :value="activity.activityID"  v-model="exitForm.activitiesContribution.goalThreeContributions" @change="updateContribution(activity.activityID, 'goalThreeContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+    </td>
+    <td>
+      <input type="checkbox" :id="`${activity.activityID}-goal4`" :name="`${activity.activityID}-goal4`" :value="activity.activityID"  v-model="exitForm.activitiesContribution.goalFourContributions" @change="updateContribution(activity.activityID, 'goalFourContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+    </td>
+    <td>
+      <input type="checkbox" :id="`${activity.activityID}-goal5`" :name="`${activity.activityID}-goal5`" :value="activity.activityID"  v-model="exitForm.activitiesContribution.goalFiveContributions" @change="updateContribution(activity.activityID, 'goalFiveContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+    </td>
+    <td>
+      <input type="checkbox" :id="`${activity.activityID}-noGoals`" :name="`${activity.activityID}-noGoals`" :value="activity.activityID" v-model="exitForm.activitiesContribution.noContributions" @change="updateContribution(activity.activityID, 'noContributions', $event.target.checked)" style="outline: 2px solid gray;" />
+    </td>
+  </tr>
+</tbody>
+    </table>
+{{ exitForm.activitiesContribution.goalTwoContributions }}
     {{ exitForm.activitiesContribution.noContributions }}
-  </tbody>
-</table>
-
-
-
-
+  </div>
 
 <br>
   <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> How did this experience contribute to your graduate/progessional goals?</p>
@@ -597,17 +594,91 @@ export default {
     this.fetchExperienceData();
   },
   methods: {
-    updateContribution(activityID, contributionKey, isChecked) {
-    const contributions = this.exitForm.activitiesContribution[contributionKey];
-    if (isChecked) {
-      contributions.push(activityID);
-    } else {
-      const index = contributions.indexOf(activityID);
-      if (index !== -1) {
-        contributions.splice(index, 1);
-      }
+    updateContribution(activityId, goal, checked) {
+  // Update specific goal contributions for the activity
+  const contributions = this.exitForm.activitiesContribution[goal];
+  const index = contributions.indexOf(activityId);
+
+  if (checked && index === -1) {
+    contributions.push(activityId);
+  } else if (!checked && index > -1) {
+    contributions.splice(index, 1);
+  }
+
+  // If all activities are checked for "No Goals," populate noContributions with activity names
+  if (goal === 'noContributions' && checked) {
+    const allActivitiesChecked = this.exitForm.experienceActivities.every((activity) => {
+      return this.exitForm.activitiesContribution.noContributions.includes(activity.activityID);
+    });
+
+    if (allActivitiesChecked) {
+      this.exitForm.activitiesContribution.noContributions = this.exitForm.experienceActivities.map((activity) => {
+        return activity.activityID;
+      });
     }
-  },
+  }
+
+  // Check for other goal contributions
+  if (goal === 'goalOneContributions' && checked) {
+    const allActivitiesChecked = this.exitForm.experienceActivities.every((activity) => {
+      return this.exitForm.activitiesContribution.goalOneContributions.includes(activity.activityID);
+    });
+
+    if (allActivitiesChecked) {
+      this.exitForm.activitiesContribution.goalOneContributions = this.exitForm.experienceActivities.map((activity) => {
+        return activity.activityID;
+      });
+    }
+  }
+
+  if (goal === 'goalTwoContributions' && checked) {
+    const allActivitiesChecked = this.exitForm.experienceActivities.every((activity) => {
+      return this.exitForm.activitiesContribution.goalTwoContributions.includes(activity.activityID);
+    });
+
+    if (allActivitiesChecked) {
+      this.exitForm.activitiesContribution.goalTwoContributions = this.exitForm.experienceActivities.map((activity) => {
+        return activity.activityID;
+      });
+    }
+  }
+
+  if (goal === 'goalThreeContributions' && checked) {
+    const allActivitiesChecked = this.exitForm.experienceActivities.every((activity) => {
+      return this.exitForm.activitiesContribution.goalThreeContributions.includes(activity.activityID);
+    });
+
+    if (allActivitiesChecked) {
+      this.exitForm.activitiesContribution.goalThreeContributions = this.exitForm.experienceActivities.map((activity) => {
+        return activity.activityID;
+      });
+    }
+  }
+
+  if (goal === 'goalFourContributions' && checked) {
+    const allActivitiesChecked = this.exitForm.experienceActivities.every((activity) => {
+      return this.exitForm.activitiesContribution.goalFourContributions.includes(activity.activityID);
+    });
+
+    if (allActivitiesChecked) {
+      this.exitForm.activitiesContribution.goalFourContributions = this.exitForm.experienceActivities.map((activity) => {
+        return activity.activityID;
+      });
+    }
+  }
+
+  if (goal === 'goalFiveContributions' && checked) {
+    const allActivitiesChecked = this.exitForm.experienceActivities.every((activity) => {
+      return this.exitForm.activitiesContribution.goalFiveContributions.includes(activity.activityID);
+    });
+
+    if (allActivitiesChecked) {
+      this.exitForm.activitiesContribution.goalFiveContributions = this.exitForm.experienceActivities.map((activity) => {
+        return activity.activityID;
+      });
+    }
+  }
+},
 
     fetchExperienceData() {
       const goalFormID = this.$route.params.id;
