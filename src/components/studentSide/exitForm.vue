@@ -291,7 +291,7 @@
     </table>
   <br v-if="isSpecificExperience(exitForm.experience._id)">
   <!-- growth section -->
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of problem solving.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>problem solving</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.problemSolving">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -299,7 +299,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of effective communication.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>effective communication</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -307,7 +307,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of team.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>teamwork</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.teamwork">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -315,7 +315,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of cultural humility.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>cultural humility</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.culturalHumility">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -323,7 +323,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of ethical decision making.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>ethical decision making</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -331,7 +331,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of professional responsibility.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>

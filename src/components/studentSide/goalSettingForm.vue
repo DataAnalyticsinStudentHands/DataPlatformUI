@@ -81,7 +81,7 @@ Array to match others and add input fields for goals and aspirations  -->
         <input type="checkbox" v-model="currentExperience.checked" style="outline: 2px solid gray; margin-right: 10px;">
         {{ currentExperience.label }}
       </label>
-      <input v-if="currentExperience.id === 7 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.Other" style="margin-top: 5px; border: none; bordercurrentResearchExperience-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+      <input v-if="currentExperience.id === 7 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.Other" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
@@ -137,7 +137,7 @@ Array to match others and add input fields for goals and aspirations  -->
 <!-- growth section1 -->
 <p class="font-weight-black text-h6">Growth</p>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of problem solving.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.problemSolvingGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -146,7 +146,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of effective communication.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.effectiveCommunicationGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -155,7 +155,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of teamwork.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.teamworkGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -164,7 +164,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of cultural humility.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.culturalHumilityGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -173,7 +173,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of ethical decision making.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.ethicalDecisionMakingGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -182,7 +182,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of professional responsibility.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.professionalResponsibilityGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
