@@ -253,8 +253,9 @@
 <input type="text" v-model="exitForm.experienceContributions" style="margin-top: 5px; margin-bottom: 2px; border: none; border: 1px solid grey; padding: 5px; border-radius: 0; width: 50vw; height: 10vw;">
   <br><br>
 
-  <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> Use the scale provided to rate your likelihood of taking the actions listed</p>
-  <table>
+  <p v-if="isSpecificExperience(exitForm.experience._id)" class="font-weight-black text-h8" style="margin-bottom: 2px;"> Use the scale provided to rate your likelihood of taking the actions listed</p>
+  <!-- section for only data and society experiences -->
+  <table v-if="isSpecificExperience(exitForm.experience._id)">
       <thead>
         <tr>
           <th></th>
@@ -263,13 +264,13 @@
       </thead>
       <tbody>
         <tr>
-          <td>Enroll in another course</td>
+          <td>Enroll in another Data & Society Course</td>
           <td v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">
             <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" />
           </td>
         </tr>
         <tr>
-          <td>Complete the minor</td>
+          <td>Complete the Data & Society minor</td>
           <td v-for="option in exitForm.likelihoodOf.completeMinor" :key="option.id">
             <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.likelihoodOf.completeMinorSelected" />
           </td>
@@ -281,16 +282,16 @@
           </td>
         </tr>
         <tr>
-          <td>Pursue a career in this field</td>
+          <td>Pursue a career in Data Science</td>
           <td v-for="option in exitForm.likelihoodOf.pursueCareer" :key="option.id">
             <input class="radio-button" type="radio" :value="option.label" v-model="exitForm.likelihoodOf.pursueCareerSelected" />
           </td>
         </tr>
       </tbody>
     </table>
-  <br>
-  
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of problem solving.</p>
+  <br v-if="isSpecificExperience(exitForm.experience._id)">
+  <!-- growth section -->
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>problem solving</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.problemSolving">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -298,7 +299,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of effective communication.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>effective communication</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -306,7 +307,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of team.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>teamwork</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.teamwork">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -314,7 +315,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of cultural humility.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>cultural humility</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.culturalHumility">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -322,7 +323,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of ethical decision making.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>ethical decision making</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -330,7 +331,7 @@
     <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
   </v-radio-group>
   <br>
-  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of professional responsibility.</p>
+  <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -594,6 +595,19 @@ export default {
     this.fetchExperienceData();
   },
   methods: {
+    isSpecificExperience(experienceID) {
+      // Define the specific experience IDs that you want to show the table for
+      const specificIDs = [
+        //data & society experience IDs
+        "fcc5da10-16c4-11ee-8afa-bd714d8ea2b1",
+        "05fc6720-16c5-11ee-8afa-bd714d8ea2b1",
+        "0edc21a0-16c5-11ee-8afa-bd714d8ea2b1",
+        "15cf9c80-16c5-11ee-8afa-bd714d8ea2b1",
+      ];
+
+      // Check if the experienceID matches any of the specificIDs
+      return specificIDs.includes(experienceID);
+    },
     updateContribution(activityId, goal, checked) {
   // Update specific goal contributions for the activity
   const contributions = this.exitForm.activitiesContribution[goal];

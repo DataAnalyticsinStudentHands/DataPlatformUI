@@ -37,13 +37,13 @@
             <td class="text-left">
               <input type="checkbox" v-model="selectedStudents" :value="student.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
-            <td class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName }}</td>
-            <td class="text-left">{{ student.userData.email }}</td>
-            <td class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
-            <td class="text-left">{{ majors(student.studentInformation.enrolledUHInfo.majors) }}</td>
-            <td class="text-left">{{ minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors) }}</td>
-            <td class="text-left">{{ student.studentInformation.enrolledUHInfo.expectedGraduationYear }}</td>
-            <td class="text-left">
+            <td @click="editStudent(student.userID)" class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName }}</td>
+            <td @click="editStudent(student.userID)" class="text-left">{{ student.userData.email }}</td>
+            <td @click="editStudent(student.userID)" class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
+            <td @click="editStudent(student.userID)" class="text-left">{{ majors(student.studentInformation.enrolledUHInfo.majors) }}</td>
+            <td @click="editStudent(student.userID)" class="text-left">{{ minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors) }}</td>
+            <td @click="editStudent(student.userID)" class="text-left">{{ student.studentInformation.enrolledUHInfo.expectedGraduationYear }}</td>
+            <td @click="editStudent(student.userID)" class="text-left">
               <span v-if="student.userData.userStatus === 'Active'">Active</span>
               <span v-else>Inactive</span>
             </td>

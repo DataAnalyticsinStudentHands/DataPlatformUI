@@ -81,7 +81,7 @@ Array to match others and add input fields for goals and aspirations  -->
         <input type="checkbox" v-model="currentExperience.checked" style="outline: 2px solid gray; margin-right: 10px;">
         {{ currentExperience.label }}
       </label>
-      <input v-if="currentExperience.id === 8 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.currentResearchExperienceOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+      <input v-if="currentExperience.id === 7 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.Other" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
     </div>
   </div>
 </v-col>
@@ -134,9 +134,10 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 
+<!-- growth section1 -->
 <p class="font-weight-black text-h6">Growth</p>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of problem solving.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.problemSolvingGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -145,7 +146,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of effective communication.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.effectiveCommunicationGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -154,7 +155,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of teamwork.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.teamworkGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -163,7 +164,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of cultural humility.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.culturalHumilityGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -172,7 +173,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of ethical decision making.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.ethicalDecisionMakingGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -181,7 +182,7 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of professional responsibility.</p>
+  <p class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.</p>
   <v-radio-group v-model="goalForm.growthGoal.professionalResponsibilityGoal">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
@@ -280,15 +281,14 @@ export default {
         },
         researchExperience: {
           currentResearchExperience: [
-            { id: 1, label: "Designing your own research project", checked: false },
-            { id: 2, label: "Literature review", checked: false },
-            { id: 3, label: "Data collection in a clinical setting", checked: false },
-            { id: 4, label: "Data collection in a laboratory setting", checked: false },
-            { id: 5, label: "Data collection in a public health/community setting", checked: false },
-            { id: 6, label: "Analyzing data with a statistical package", checked: false },
-            { id: 7, label: "Writing/assisting with a manuscript", checked: false },
-            { id: 8, label: "Other", checked: false },
-            { id: 9, label: "None of the above", checked: false }
+            { id: 1, label: "Introduction to Statistics / Introduction to Biostatistics / Introduction to Research courses  ", checked: false },
+            { id: 2, label: "Advanced statistics and programming courses", checked: false },
+            { id: 3, label: "HERE", checked: false },
+            { id: 4, label: "SURF", checked: false },
+            { id: 5, label: "PURS", checked: false },
+            { id: 6, label: "olunteered/Interned in a lab", checked: false },
+            { id: 7, label: "Other", checked: false },
+            { id: 8, label: "None of the above", checked: false }
           ],
           currentResearchExperienceOther: '',
           previousResearchExperience: [
