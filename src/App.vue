@@ -65,12 +65,6 @@
                   Exit Forms
                 </router-link>
               </li>
-              <li>
-                <router-link to="/exitForm">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
-                  Exit Form
-                </router-link>
-              </li>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
               <li>

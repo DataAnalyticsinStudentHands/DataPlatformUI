@@ -1,6 +1,6 @@
 <template>
   <v-form disabled>
-    <br><p class="font-weight-black text-h5">Student's Information</p>
+    <br><p class="font-weight-black text-h5" style="text-align: center;">Student's Information</p>
       <v-container style="width: 90%; margin: 0 auto;">
         <br><p class="font-weight-black text-h6">Basic Information</p>
           <v-row>
