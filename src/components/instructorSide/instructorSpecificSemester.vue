@@ -118,9 +118,9 @@ export default {
       const user = useLoggedInUserStore();
       let token = user.token;
       const updatedSemester = {
-        semesterName: this.semesterName,
-        semesterStartDate: this.semesterStartDate,
-        semesterEndDate:this.semesterEndDate,
+        semesterName: this.semester.semesterName,
+        semesterStartDate: this.semester.semesterStartDate,
+        semesterEndDate:this.semester.semesterEndDate,
         experiences: this.selectedExperiences,
       };
       let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/semesters`;
