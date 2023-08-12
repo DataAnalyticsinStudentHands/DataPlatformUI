@@ -136,7 +136,8 @@ const routes = [
     {
       path: '/instructorSemesters',
       name: 'instructorSemesters',
-      component: () => import('../components/instructorSide/instructorSemesters.vue')
+      component: () => import('../components/instructorSide/instructorSemesters.vue'),
+      props: true
     },
     {
       path: '/instructorAddSemester',

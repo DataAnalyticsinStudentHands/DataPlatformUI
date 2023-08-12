@@ -53,6 +53,9 @@
         </v-table>
       </div>
     </div>
+    <Transition name="bounce">
+        <addModal v-if="addModal" @close="closeaddModal" :title="title" :message="message" />
+    </Transition>
   </main>
 </template>
 
@@ -60,19 +63,30 @@
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
+import addModal from '../alerts/addModal.vue';
 
 export default {
+  components: {
+    addModal,
+  },
   data() {
     return {
       semesterData: [],
       showInactive: false,
       selectedSemesters: [],
       searchTerm: "",
+      addModal: false,
     };
   },
+  props: ['success'],
   mounted() {
     this.fetchSemesterData();
     window.scrollTo(0, 0);
+    if (this.success === 'true') {
+        this.addModal = true;
+        this.title = "Success!"
+        this.message = "Semester successfully created."
+    }
   },
   methods: {
     formatDate(datetimeDB) {
@@ -138,6 +152,11 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    closeaddModal() {
+        this.addModal = false;
+        this.title = '';
+        this.message = '';
     },
   },
   computed: {

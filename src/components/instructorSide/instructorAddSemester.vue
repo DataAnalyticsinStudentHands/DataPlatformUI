@@ -107,7 +107,11 @@ export default {
         }, { headers: { token } })
         .then(() => {
           alert("Semester has been successfully added.");
-          this.$router.push("/instructorSemesters");
+          this.$router.push({ 
+              name: 'instructorSemesters',
+              params: { success: true }
+          });
+
         })
         .catch((error) => {
           if (error.response && error.response.data && error.response.data.error) {

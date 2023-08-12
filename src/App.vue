@@ -117,7 +117,7 @@
             <li>
               <router-link to="/login">
               <span style="position: relative; top: 6px" class="material-icons">logout</span>
-              <button @click="store.logout()">Logout</button>
+              <button @click="handleLogout">Logout</button>
             </router-link>
             </li>
           </div>
@@ -156,6 +156,10 @@ export default {
   methods: {
     showDashboard() {
       this.showElement = true;
+    },
+    handleLogout() {
+      const store = useLoggedInUserStore();
+      store.logout();
     }
   },
   beforeMount() {
