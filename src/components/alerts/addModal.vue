@@ -1,63 +1,61 @@
 <template>
+  <Transition name="bounce">
+    <v-container v-if="isVisible" class="alert-container">
+      <v-row justify="end">
+        <v-col cols="auto">
+          <v-alert type="success" dense elevation="2" @click:close="closeModal">
+            <h4 class="alert-heading">{{ title }}</h4>
+            <p>{{ message }}</p>
+            <div class="decreasing-bar"></div>
+            <template v-slot:append>
+              <v-btn icon small class="close-btn" @click.stop="closeModal">
+                <v-icon small>mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </v-alert>
+        </v-col>
+      </v-row>
+    </v-container>
+  </Transition>
+</template>
 
-    <Transition name="bounce">
-      <div class="alert-modal alert alert-success alert-dismissible fade show" role="alert" v-if="isVisible">
-        <h4 class="alert-heading">{{ title }}</h4>
-        <p>{{ message }}</p>
-        <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
-      </div>
-    </Transition>
-  
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      title: {
-        type: String,
-        default: "Alert"
-      },
-      message: {
-        type: String,
-        default: ""
-      }
+<script>
+export default {
+  props: {
+    title: {
+      type: String,
+      default: "Alert"
     },
-    data() {
-      return {
-        isVisible: true
-      }
-    },
-    mounted() {
-      this.startTimer();
-    },
-    methods: {
-      startTimer() {
-        setTimeout(() => {
-          this.isVisible = false;
-          this.$emit("close");
-        }, 5000); // close after 5 seconds
-      },
-      closeModal() {
+    message: {
+      type: String,
+      default: ""
+    }
+  },
+  data() {
+    return {
+      isVisible: true
+    };
+  },
+  mounted() {
+    this.startTimer();
+  },
+  methods: {
+    startTimer() {
+      setTimeout(() => {
         this.isVisible = false;
         this.$emit("close");
-      }
+      }, 5000);
+    },
+    closeModal() {
+      this.isVisible = false;
+      this.$emit("close");
     }
   }
-  </script>
-  
-  <style scoped>
-.alert-modal {
-  position: fixed;
-  top: 20rem;
-  right: 1rem;
-  transform: none;
-  padding: 1rem 1.25rem;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-}
+};
+</script>
 
-.alert-modal::after {
+<style scoped>
+.decreasing-bar {
   content: '';
   position: absolute;
   bottom: 0;
@@ -66,6 +64,11 @@
   height: 4px;
   background-color: green;
   animation: decrease-width 5s linear forwards;
+}
+
+.close-btn {
+  background-color: transparent !important;
+  padding: 0 !important;
 }
 
 @keyframes decrease-width {
@@ -77,21 +80,13 @@
   }
 }
 
-.alert-modal h4 {
-  margin-bottom: 0.5rem;
-  text-align: left;
-}
-
-.alert-modal p {
-  margin-bottom: 0;
-  text-align: left;
-}
-
-.alert-modal-close-button {
-  border: none;
-  background: transparent;
-  font-size: 1.5rem;
-  cursor: pointer;
+.alert-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: auto;
+  max-width: 400px; /* You can adjust this value based on your preference */
+  z-index: 1000; /* Ensures the alert is on top of other elements */
 }
 
 .bounce-enter-active {
@@ -115,6 +110,4 @@
     transform: translate(0, 0) scale(1);
   }
 }
-
-
-  </style>
+</style>

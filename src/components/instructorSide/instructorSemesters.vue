@@ -56,7 +56,13 @@
     <Transition name="bounce">
         <addModal v-if="addModal" @close="closeaddModal" :title="title" :message="message" />
     </Transition>
+
+    <Transition name="bounce">
+        <deactivateModal v-if="deactivateModal" @close="closeDeactivateModal" :title="title" :message="message" />
+    </Transition>
   </main>
+
+  <p>deactivateModal: {{  deactivateModal }}</p>
 </template>
 
 <script>
@@ -64,10 +70,12 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
 import addModal from '../alerts/addModal.vue';
+import deactivateModal from '../alerts/deactivateModal.vue'
 
 export default {
   components: {
     addModal,
+    deactivateModal,
   },
   data() {
     return {
@@ -76,9 +84,23 @@ export default {
       selectedSemesters: [],
       searchTerm: "",
       addModal: false,
+      deactivateModal: false
     };
   },
-  props: ['success'],
+  props: ['success', 'deactivate'],
+  watch: {
+    '$route': 'onRouteChange'
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (to.params.deactivate === 'true') {
+      this.deactivateModal = true;
+      this.title = "Success!";
+      this.message = "The semester(s) have been deactivated.";
+    } else {
+      this.deactivateModal = false;
+    }
+    next();
+  },
   mounted() {
     this.fetchSemesterData();
     window.scrollTo(0, 0);
@@ -125,8 +147,11 @@ export default {
         .then(() => {
           this.selectedSemesters = [];
           this.fetchSemesterData();
-          alert("The semester(s) have been deactivated.");
-          this.$router.push("/instructorSemesters"); // Navigate to /instructorSemesters
+          //alert("The semester(s) have been deactivated.");
+          this.$router.push({ 
+              name: 'instructorSemesters',
+              params: { deactivate: true }
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -155,6 +180,18 @@ export default {
     },
     closeaddModal() {
         this.addModal = false;
+        this.title = '';
+        this.message = '';
+    },
+    onRouteChange(newRoute) {
+      if (newRoute.params.deactivate === 'true') {
+        this.deactivateModal = true;
+        this.title = "Success!";
+        this.message = "The semester(s) have been deactivated.";
+      }
+    },
+    closeDeactivateModal() {
+        this.deactivateModal = false;
         this.title = '';
         this.message = '';
     },
