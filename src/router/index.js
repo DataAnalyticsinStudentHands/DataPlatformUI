@@ -2,173 +2,208 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     {
+      path: '/studentEntryFormUpdate',
+      name: 'studentEntryFormUpdate',
+      props: true,
+      component: () => import('../components/studentSide/studentEntryFormUpdate.vue')
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      props: true,
+      component: () => import('../components/studentSide/profilePage.vue')
+    },
+    {
         path: '/',
         name: 'dashboard',
         props: true,
-        component: () => import('../components/dashboard.vue')
+        component: () => import('../components/defaultPages/dashboard.vue')
     },
     {
         path: '/intakeform',
         name: 'intakeForm',
         props: true,
-        component: () => import('../components/intakeForm.vue')
+        component: () => import('../components/defaultPages/intakeForm.vue')
     },
     {
         path: '/findclient',
         name: 'findClient',
-        component: () => import('../components/findClient.vue')
+        component: () => import('../components/defaultPages/findClient.vue')
     },
     {
         path: '/updateclient/:id',
         name: 'updateclient',
         props: true,
-        component: () => import('../components/updateClient.vue')
+        component: () => import('../components/defaultPages/updateClient.vue')
     },
     {
         path: '/eventform',
         name: 'eventform',
-        component: () => import('../components/eventForm.vue')
+        component: () => import('../components/defaultPages/eventForm.vue')
     },
     {
         path: '/findEvents',
         name: 'findEvents',
-        component: () => import('../components/findEvents.vue')
+        component: () => import('../components/defaultPages/findEvents.vue')
     },
     {
         path: '/eventDetails/:id',
         name: 'eventdetails',
         props: true,
-        component: () => import('../components/eventDetails.vue')
+        component: () => import('../components/defaultPages/eventDetails.vue')
     },
     {
         path: '/registerForm',
         name: 'Register',
         props: true,
-        component: () => import('../components/registerForm.vue')
+        component: () => import('../components/loginPages/registerForm.vue')
     },
     {
         path: '/login',
         name: 'Login',
         props: true,
-        component: () => import('../components/login.vue')
+        component: () => import('../components/loginPages/login.vue')
         
     },
     {
         path: '/verify',
         name: 'Account Confirmation',
         props: true,
-        component: () => import('../components/accountConfirmed.vue')
+        component: () => import('../components/loginPages/accountConfirmed.vue')
         
     },
     {
         path: '/resetPassword',
         name: 'Password Reset',
         props: true,
-        component: () => import('../components/resetPassword.vue')
+        component: () => import('../components/loginPages/resetPassword.vue')
         
     },
     {
         path: '/resetPasswordForm',
         name: 'Password Reset Form',
         props: true,
-        component: () => import('../components/resetPasswordForm.vue')
+        component: () => import('../components/loginPages/resetPasswordForm.vue')
         
     },
     {
         path: '/updatePasswordForm',
         name: 'Password Update Form',
         props: true,
-        component: () => import('../components/updatePassword.vue')
+        component: () => import('../components/loginPages/updatePassword.vue')
         
+    },
+    {
+      path: '/updateUserInformation',
+      name: 'User Data Update Form',
+      props: true,
+      component: () => import('../components/loginPages/updateUserData.vue')
     },
     {
         path: '/sendNewCode',
         name: 'Send New Code',
         props: true,
-        component: () => import('../components/sendNewCode.vue')
+        component: () => import('../components/loginPages/sendNewCode.vue')
         
     },
     {
         path: '/secondaryData/:id',
         name: 'Secondary Data',
         props: true,
-        component: () => import('../components/secondaryData.vue')
+        component: () => import('../components/defaultPages/secondaryData.vue')
         
     },
     {
-      path: '/adminDash',
-      name: 'adminDash',
-      component: () => import('../components/adminDash.vue')
+      path: '/instructorDash',
+      name: 'instructorDash',
+      component: () => import('../components/instructorSide/instructorDash.vue')
     },
     {
-      path: '/adminReports',
-      name: 'adminReports',
-      component: () => import('../components/adminReports.vue')
+      path: '/instructorReports',
+      name: 'instructorReports',
+      component: () => import('../components/instructorSide/instructorReports.vue')
     },
     {
-      path: '/adminStudentsList',
-      name: 'adminStudentsList',
-      component: () => import('../components/adminStudentsList.vue')
+      path: '/instructorStudentsList',
+      name: 'instructorStudentsList',
+      component: () => import('../components/instructorSide/instructorStudentsList.vue')
     },
     {
-      path: '/adminSpecificStudent/:studentID',
-      name: 'adminSpecificStudent',
-      component: () => import('../components/adminSpecificStudent.vue')
+      path: '/instructorSpecificStudent/:userID',
+      name: 'instructorSpecificStudent',
+      component: () => import('../components/instructorSide/instructorSpecificStudent.vue')
     },
     {
-      path: '/adminSemesters',
-      name: 'adminSemesters',
-      component: () => import('../components/adminSemesters.vue')
+      path: '/instructorSemesters',
+      name: 'instructorSemesters',
+      component: () => import('../components/instructorSide/instructorSemesters.vue'),
+      props: true
     },
     {
-      path: '/adminAddSemester',
-      name: 'adminAddSemester',
-      component: () => import('../components/adminAddSemester.vue')
+      path: '/instructorAddSemester',
+      name: 'instructorAddSemester',
+      component: () => import('../components/instructorSide/instructorAddSemester.vue')
     },
     {
-      path: '/adminSpecificSemester',
-      name: 'adminSpecificSemester',
-      component: () => import('../components/adminSpecificSemester.vue')
+      path: '/instructorSpecificSemester',
+      name: 'instructorSpecificSemester',
+      component: () => import('../components/instructorSide/instructorSpecificSemester.vue')
     },
     {
-      path: '/adminExperiences',
-      name: 'adminExperiences',
-      component: () => import('../components/adminExperiences.vue')
+      path: '/instructorExperiences',
+      name: 'instructornExperiences',
+      component: () => import('../components/instructorSide/instructorExperiences.vue')
     },
     {
-      path: '/adminAddExperience',
-      name: 'adminAddExperience',
-      component: () => import('../components/adminAddExperience.vue')
+      path: '/instructorAddExperience',
+      name: 'instructorAddExperience',
+      component: () => import('../components/instructorSide/instructorAddExperience.vue')
     },
     {
-      path: '/adminSpecificExperience',
-      name: 'adminSpecificExperience',
-      component: () => import('../components/adminSpecificExperience.vue')
+      path: '/instructorSpecificExperience',
+      name: 'instructorSpecificExperience',
+      component: () => import('../components/instructorSide/instructorSpecificExperience.vue')
     },
     {
-      path: '/adminActivities',
-      name: 'adminActivities',
-      component: () => import('../components/adminActivities.vue')
+      path: '/instructorActivities',
+      name: 'instructorActivities',
+      component: () => import('../components/instructorSide/instructorActivities.vue')
     },
     {
-      path: '/adminAddActivity',
-      name: 'adminAddActivity',
-      component: () => import('../components/adminAddActivity.vue')
+      path: '/instructorAddActivity',
+      name: 'instructorAddActivity',
+      component: () => import('../components/instructorSide/instructorAddActivity.vue')
     },
     {
-      path: '/adminSpecificActivity',
-      name: 'adminSpecificActivity',
-      component: () => import('../components/adminSpecificActivity.vue')
+      path: '/instructorSpecificActivity',
+      name: 'instructorSpecificActivity',
+      component: () => import('../components/instructorSide/instructorSpecificActivity.vue')
     },
     {
-      path: '/adminInactiveStudents',
-      name: 'adminInactiveStudents',
-      component: () => import('../components/adminInactiveStudents.vue')
+      path: '/studentEntryForm',
+      name: 'studentEntryForm',
+      props: true,
+      component: () => import('../components/studentSide/studentEntryForm.vue')
     },
     {
-      path: '/adminInactiveSemestersExperiencesActivities',
-      name: 'adminInactiveSemestersExperiencesActivities',
-      component: () => import('../components/adminInactiveSemestersExperiencesActivities.vue')
+      path: '/goalSettingForm',
+      name: 'goalSettingForm',
+      component: () => import('../components/studentSide/goalSettingForm.vue')
+    },
+    {
+      path: '/exitForm',
+      name: 'exitForm',
+      component: () => import('../components/studentSide/exitForm.vue')
+    },
+    {
+      path: '/exitFormsAvailable',
+      name: 'exitFormsAvailable',
+      component: () => import('../components/studentSide/exitFormsAvailable.vue')
+    },
+    {
+      path: '/studentDashboard',
+      name: 'studentDashboard',
+      component: () => import('../components/studentSide/studentDashboard.vue')
     }
 ]
 const router = createRouter({
