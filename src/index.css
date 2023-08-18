@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+button {
+    padding: 10px;
+}
+.errorMessage:empty {
+    display: none;
+}
+.hide {
+    display: none;
+}
