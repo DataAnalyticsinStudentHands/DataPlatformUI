@@ -115,7 +115,7 @@ export default {
         const user = useLoggedInUserStore();
         let token = user.token;
         // Fetch JSON data from the API endpoint
-        const response = await axios.get(import.meta.env.VITE_ROOT_API +'/studentSideData/goalForm/all/', { headers: { token } });
+        const response = await axios.get(import.meta.env.VITE_ROOT_API +'/studentSideData/goalForms/all/', { headers: { token } });
         const jsonData = response.data;
 
         // Convert JSON to CSV format
