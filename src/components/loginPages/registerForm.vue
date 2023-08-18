@@ -194,7 +194,7 @@ export default {
             //using swal from sweetalert.js for customizeble alerts
             swal(
               "You have registered successfully!",
-              "Please check your email and follow the steps to verify tour account.",
+              "Please check your email and follow the steps to verify your account.",
               "success"
             );
             // alert("You have registered successfully.");
