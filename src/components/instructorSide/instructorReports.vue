@@ -59,7 +59,7 @@ export default {
         const jsonData = response.data.data;
 
         // Convert JSON to CSV format
-        const csvData = this.convertToCSV(jsonData);
+        const csvData = this.convertEntryFormToCSV(jsonData);
 
         // Create a Blob containing the CSV data
         const blob = new Blob([csvData], { type: 'text/csv' });
@@ -89,7 +89,7 @@ export default {
         const jsonData = response.data;
 
         // Convert JSON to CSV format
-        const csvData = this.convertToCSV(jsonData);
+        const csvData = this.convertExitFormToCSV(jsonData);
 
         // Create a Blob containing the CSV data
         const blob = new Blob([csvData], { type: 'text/csv' });
@@ -119,7 +119,7 @@ export default {
         const jsonData = response.data;
 
         // Convert JSON to CSV format
-        const csvData = this.convertToCSV(jsonData);
+        const csvData = this.convertGoalSettingFormToCSV(jsonData);
 
         // Create a Blob containing the CSV data
         const blob = new Blob([csvData], { type: 'text/csv' });
@@ -140,19 +140,142 @@ export default {
       }
     },
 
-    convertToCSV(jsonData) {
-      // Create the CSV header row
-      const header = this.getCSVHeader(jsonData[0]);
-      const headerRow = header.join(',');
+    convertGoalSettingFormToCSV(jsonData) {
+  // Create the CSV header row
+  const header = this.getCSVHeader(jsonData[0]);
+  const headerRow = header.join(',');
 
-      // Create the CSV data rows
-      const dataRows = jsonData.map((item) => {
-        const values = this.getCSVRowValues(item, header);
-        return values.join(',');
-      });
+  // Add an extra row with custom text for Aspiration 1 and Aspiration 2
+  const customText1 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 1';
+  const customText2 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 2';
+  const extraRowCSV = ['"' + customText1 + '","' + customText2 + '"'];
 
-      return [headerRow, ...dataRows].join('\n');
-    },
+  // Create the CSV data rows
+  const dataRows = jsonData.map((item) => {
+    const values = this.getCSVRowValues(item, header);
+    return values.join(',');
+  });
+
+  // Combine all rows including the extra row and data rows
+  const csvContent = [headerRow, ...extraRowCSV, ...dataRows].join('\n');
+
+  return csvContent;
+},
+
+    convertEntryFormToCSV(jsonData) {
+  // Create the CSV header row
+  const header = this.getCSVHeader(jsonData[0]);
+  const headerRow = header.join(',');
+
+  // Add an extra row with custom text for Aspiration 1 and Aspiration 2
+  const customText1 = 'City of Origin';
+  const customText2 = 'Primary Language';
+  const customText3 = 'Other Languages';
+  const customText4 = 'What language do you prefer to receive communication in?';
+  const customText5 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - She/her/hers';
+  const customText6 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - He/him/his';
+  const customText7 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - They/them/theirs';
+  const customText8 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - Ze/Zir/Zirs';
+  const customText9 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - Other';
+  const customText10 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - Prefer not to answer';
+  const customText11 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Other - Text';
+  const customText12 = 'Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?';
+  const customText13 = 'Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?';
+  const customText14 = 'Are you currently enrolled in a degree program at the University of Houston?';
+  const customText15 = 'UH Email';
+  const customText16 = 'PeopleSoft ID';
+  const customText17 = 'Expected Graduation Year';
+  const customText18 = 'Do you live on or off campus?';
+  const customText19 = 'Are you a member of the Honors College?';
+  const customText20 = 'Are you affiliated with the Honors College in any other way?';
+  const customText21 = 'If yes, please specify.';
+  const customText22 = 'What is/are your current major(s)?';
+  const customText23 = 'Are you pursuing, or planning to pursue, any of the following Honors College minors?';
+  const customText24 = 'Are you pursuing any other minors? Please list.';
+  const customText25 = 'Are you a member of Honors in Community Health (HICH)?';
+  const customText26 = 'Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?';
+  const customText27 = 'Have you had other experience with Community Service?';
+  const customText28 = 'Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.';
+  const customText29 = 'Are you a member of any community organizations outside the University? Please list.';
+  const customText30 = 'Do you currently plan to pursue graduate or professional (e.g. medical, law) school?';
+  const customText31 = 'If you are planning to pursue graduate school, what type of program?';
+  const customText32 = 'Are you planning to pursue any other kind of specialized degree / certificate program?';
+  const customText33 = 'If you are planning to pursue a specialized degree / certificate program, what type of program?';
+  const extraRowCSV = ['"' + '","' +'","' +'","' +customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","'  + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","' +  customText17 +'","'  +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","' +  customText32 + '","' +customText33 +'","'+ customText5 +'","' + customText6 +'","' + customText7 +'","' + customText8 +'","' + customText9 +'","' + customText10 +'","' + customText11 +'","' + '"'];
+
+  // Create the CSV data rows
+  const dataRows = jsonData.map((item) => {
+    const values = this.getCSVRowValues(item, header);
+    return values.join(',');
+  });
+
+  // Combine all rows including the extra row and data rows
+  const csvContent = [headerRow, ...extraRowCSV, ...dataRows].join('\n');
+
+  return csvContent;
+},
+
+    convertExitFormToCSV(jsonData) {
+  // Create the CSV header row
+  const header = this.getCSVHeader(jsonData[0]);
+  const headerRow = header.join(',');
+
+  // Add an extra row with custom text for Aspiration 1 and Aspiration 2
+  const customText1 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 1';
+  const customText2 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 2';
+  const customText3 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 3';
+  const customText4 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Aspiration 1';
+  const customText5 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Aspiration 2';
+  const customText6 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Aspiration 3';
+  const customText7 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 1';
+  const customText8 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 2';
+  const customText9 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 3';
+  const customText10 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 4';
+  const customText11 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 5';
+  const customText12 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 1';
+  const customText13 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 2';
+  const customText14 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 3';
+  const customText15 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 4';
+  const customText16 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 5';
+  const customText17 = 'For one of the goals you selected above, please describe what those barriers were and what strategies you employed to overcome those barriers in 3-4 sentences.';
+  const customText18 = 'Use the scale provided to rate your likelihood of taking the actions listed - Enroll in another Data & Society Course';
+  const customText19 = 'Use the scale provided to rate your likelihood of taking the actions listed - Complete the Data & Society minor';
+  const customText20 = 'Use the scale provided to rate your likelihood of taking the actions listed - Recommend this course to a friend';
+  const customText21 = 'Use the scale provided to rate your likelihood of taking the actions listed - Pursue a career in Data Science';
+  const customText22 = 'Please indicate how much growth you experienced during your program in the area of problem solving.';
+  const customText23 = 'Please indicate how much growth you experienced during your program in the area of effective communication.';
+  const customText24 = 'Please indicate how much growth you experienced during your program in the area of teamwork.';
+  const customText25 = 'Please indicate how much growth you experienced during your program in the area of cultural humility.';
+  const customText26 = 'Please indicate how much growth you experienced during your program in the area of ethical decision making.';
+  const customText27 = 'Please indicate how much growth you experienced during your program in the area of professional responsibility.';
+  const customText28 = 'What are the biggest lessons and key takeaways you gained from this class and will carry with you moving forward?';
+  const customText29 = 'Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?';
+  const customText30 = 'Use this space to provide any other comments or recommendations you would like to share.';
+  const customText31 = 'How did this experience contribute to your graduate/professional goals?';
+  const customText32 = 'Please select which goal(s) you faced barriers to achieving this semester.';
+  const customText33 = 'How did this experience contribute to your graduate/professional goals?';
+  const customText34 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 1';
+  const customText35 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 2';
+  const customText36 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 3';
+  const customText37 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 4';
+  const customText38 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 5';
+  const customText39 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - No goals';
+  const extraRowCSV = ['"' + customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","' + customText5 +'","' + customText6 +'","' + customText7 +'","' + customText8 +'","' + customText9 +'","' + customText10 +'","' + customText11 +'","' + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","' + '","' +'","' +'","' +  customText17 +'","' + '","' +'","' +'","' +'","' +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","' + '","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' + customText32 + customText33 +'","' + customText34 +'","' + customText35 +'","' + customText36 +'","' + customText37 +'","' + customText38 +'","'  + customText39 +'","' + '"'];
+
+  // Create the CSV data rows
+  const dataRows = jsonData.map((item) => {
+    const values = this.getCSVRowValues(item, header);
+    return values.join(',');
+  });
+
+  // Combine all rows including the extra row and data rows
+  const csvContent = [headerRow, ...extraRowCSV, ...dataRows].join('\n');
+
+  return csvContent;
+},
+
+
+
 
     getCSVHeader(obj, path = '') {
       const header = [];
