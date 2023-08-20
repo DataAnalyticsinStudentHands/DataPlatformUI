@@ -190,7 +190,7 @@
 
 <br>
 <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> For one of the goals you selected above, please describe what those barriers were and what strategies you employed to overcomes those barriers in 3-4 sentences. </p>
-<input type="text" v-model="exitForm.goalIssues.issuesDescription" style="margin-top: 5px; margin-bottom: 2px; border: none; border: 1px solid grey; padding: 5px; border-radius: 0; width: 50vw;">
+<input type="text" v-model="exitForm.goalIssues.issuesDescription" style="margin-top: 5px; margin-bottom: 2px; border: none; border: 1px solid grey; padding: 5px; border-radius: 0; width: 50vw; height:10vw;">
 
   <br><br>
   <p class="font-weight-black text-h8">Below is a list of your goals from the beginning of the semester</p>

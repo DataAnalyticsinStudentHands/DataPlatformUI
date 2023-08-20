@@ -210,7 +210,8 @@ Array to match others and add input fields for goals and aspirations  -->
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormAspirations }">Please describe 2-3 long-term aspirations you may have. Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there. (E.g. “I want to focus my career on cancer disparities”, “I want to lead a non-profit that addresses food insecurity”, “I want to teach English in a different country”). </p>
+  <p class="font-weight-black text-h8" style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormAspirations }">Please describe 2-3 long-term aspirations you may have.<br><br> Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there. <br> Examples:
+    <br><ul><li>“I want to focus my career on cancer disparities”</li><li>“I want to lead a non-profit that addresses food insecurity”</li><li>“I want to teach English in a different country”</li></ul>  </p>
   <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormAspirations }">Aspiration 1: </label>
   <input type="text" v-model="goalForm.aspirations.aspirationOne" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormAspirations }" >
   <br>
@@ -223,7 +224,10 @@ Array to match others and add input fields for goals and aspirations  -->
 </v-col>
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }">Please outline 3-5 goals that you have for this experience. Goals are statements that describe what it means for an experience to be a success from your perspective (e.g. “I want to connect with people working on cancer research”, “I want to research access to nutrition education in public schools”, “I want to develop my presentation skills”).</p>
+  <p class="font-weight-black text-h8" style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }">Please outline 3-5 goals that you have for this experience. <br><br>
+    Goals are statements that describe what it means for an experience to be a success from your perspective,<br>
+    Examples:<br>
+    <ul><li>“I want to connect with people working on cancer research”</li><li>“I want to research access to nutrition education in public schools”</li><li>“I want to develop my presentation skills”</li></ul></p>
   <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }" >Goal 1: </label>
   <input type="text" v-model="goalForm.goals.goalOne" rules="[v => !!v || 'Information is required']" required style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormGoals }" >
   <br>
@@ -277,7 +281,8 @@ export default {
             { id: 3, label: "Faith based organizations", checked: false },
             { id: 4, label: "Short-term volunteer opportunities (e.g. day of service events)", checked: false },
             { id: 5, label: "Medical mission trips", checked: false },
-            { id: 6, label: "Other", checked: false }
+            { id: 6, label: "Other", checked: false },
+            { id: 7, label: "None of the above", checked: false }
           ],
           communityEngagementExperiencesOther: '',
           previousEngagementExperiences: [
@@ -288,7 +293,8 @@ export default {
             { id: 5, label: "Serving as translator", checked: false },
             { id: 6, label: "Fundraising", checked: false },
             { id: 7, label: "Emergency response volunteering", checked: false },
-            { id: 8, label: "Other", checked: false }
+            { id: 8, label: "Other", checked: false },
+            { id: 9, label: "None of the above", checked: false }
           ],
           previousEngagementExperiencesOther: '',
           engagementActivitiesTools: [
@@ -299,7 +305,8 @@ export default {
             { id: 5, label: "Graphic design tools (e.g. adobe, canva)", checked: false },
             { id: 6, label: "Project management Tool", checked: false },
             { id: 7, label: "Digital media (e.g. podcasting, streaming video)", checked: false },
-            { id: 8, label: "Other", checked: false }
+            { id: 8, label: "Other", checked: false },
+            { id: 9, label: "None of the above", checked: false }
           ],
           engagementActivitiesToolOther: '',
         },
@@ -349,7 +356,8 @@ export default {
             { id: 5, label: "Chronic Disease", checked: false },
             { id: 6, label: "Environment and occupational health", checked: false },
             { id: 7, label: "Government/Law/Policy", checked: false },
-            { id: 8, label: "Other", checked: false }
+            { id: 8, label: "Other", checked: false },
+            { id: 9, label: "None of the above", checked: false }
           ],
           interestResearchServiceOther: '',
           leadershipOption: ''

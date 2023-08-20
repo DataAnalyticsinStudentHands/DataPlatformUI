@@ -2,6 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     {
+      path: '/test',
+      name: 'test',
+      props: true,
+      component: () => import('../components/test.vue')
+    },
+    {
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
