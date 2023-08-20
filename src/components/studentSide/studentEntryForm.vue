@@ -1,8 +1,8 @@
 <!-- PHIL, REMEMBER TO TURN OFF ALL DEPENDENT VALUES BEFORE FORM SUBMISSION -->
 
-<template>
+<template> <!-- Start of the Student Entry Form template -->
 
-  <v-container style="width: 90%; margin: 0 auto;">
+  <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
     <p class="font-weight-black text-h5 text--primary">Student Entry Form</p>
     <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.</p>
   </v-container>
@@ -75,21 +75,23 @@
         </div>
 
         <!-- "Other" text field -->
-        <div v-show="isOtherPronounChecked">
             <v-row>
                 <v-col cols="6">
+                  <transition name="slide-y-transition">
+                    <div v-show="isOtherPronounChecked">
                     <v-text-field 
-                        ref="otherPronounsField"
-                        :class="{'error-text': isOtherPronounsInvalid}"
-                        placeholder="Other" 
-                        v-model="studentInformation.otherPronouns" 
-                        outlined
-                        :rules="otherPronounsRules"  
+                      ref="otherPronounsField"
+                      :class="{'error-text': isOtherPronounsInvalid}"
+                      placeholder="Other" 
+                      v-model="studentInformation.otherPronouns" 
+                      outlined
+                      :rules="otherPronounsRules"
                     >
                     </v-text-field>
+                  </div>
+                  </transition>
                 </v-col>
             </v-row>
-        </div>
 
         <!-- Loop for the last checkbox (assuming it's "Prefer not to say") -->
         <div v-if="studentInformation.pronouns.length">
@@ -117,6 +119,8 @@
           <v-textarea v-model="studentInformation.issuesConcernsTriggers" label="Issues, Concerns, Triggers"></v-textarea>
         </v-col>
       </v-row>
+
+
       <v-row>
         <v-col cols="12" md="10">
           <p 
@@ -130,18 +134,23 @@
           </v-radio-group>
         </v-col>
       </v-row>
-    <div v-show="studentInformation.enrolledUHInfo.uhStatus == 'Yes'">
+
+
+      <transition-group name="slide-y-transition" tag="div">
+        <div v-show="isUHStudent" key="uhStudent">
+
+    <div>
           <p 
           :class="{'error-text': isEnrolledUHInfoInvalid}"
           class="font-weight-black text-h6">UH Student Only</p>
           <v-row>
           <v-col cols="12" md="7">
-              <v-text-field 
-              ref="uhEmailField"
-              v-model="studentInformation.enrolledUHInfo.uhEmail" 
-              label="UH Email"
-              :rules="uhEmailRules"
-              ></v-text-field>
+                <v-text-field 
+                ref="uhEmailField"
+                v-model="studentInformation.enrolledUHInfo.uhEmail" 
+                label="UH Email"
+                :rules="uhEmailRules"
+                ></v-text-field>
           </v-col>
           </v-row>
 
@@ -155,13 +164,16 @@
               :rules="peopleSoftIDRules"></v-text-field>
             </v-col>
             <v-col cols="12" md="2">
-              <v-text-field type="date" v-model="studentInformation.enrolledUHInfo.expectedGraduationYear" label="Expected Graduation Date" min="2023-01-01" max="2099-12-31"></v-text-field>
+              <v-text-field 
+              type="date" v-model="studentInformation.enrolledUHInfo.expectedGraduationYear" label="Expected Graduation Date" min="2023-01-01" max="2099-12-31"></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="7">
-              <p class="font-weight-black text-h8">Do you live on or off campus?</p>
-              <v-radio-group v-model="studentInformation.enrolledUHInfo.livingOnCampus">
+              <p 
+              class="font-weight-black text-h8">Do you live on or off campus?</p>
+              <v-radio-group 
+              v-model="studentInformation.enrolledUHInfo.livingOnCampus">
                 <v-radio label="On-Campus" value="On-Campus" v-model="studentInformation.enrolledUHInfo.livingOnCampus"></v-radio>
                 <v-radio label="Off-Campus" value="Off-Campus" v-model="studentInformation.enrolledUHInfo.livingOnCampus"></v-radio>
               </v-radio-group>
@@ -172,125 +184,159 @@
         class="font-weight-black text-h6">Educational Background and Goals</p>
           <v-row>
             <v-col cols="12" md="7">
-              <p 
-              :class="{'error-text': isHonorsCollegeStatusInvalid}"
-              class="font-weight-black text-h8">Are you a member of the Honors College?</p>
-              <v-radio-group 
-              :class="{'error-text': isHonorsCollegeStatusInvalid}"
-              v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"
-              :rules="honorsCollegeStatusRules" 
-              :error-messages="honorsCollegeStatusErrorMessage"
-              >
-                <v-radio 
-                label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
-                <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
-              </v-radio-group>
+                <p 
+                :class="{'error-text': isHonorsCollegeStatusInvalid}"
+                class="font-weight-black text-h8">Are you a member of the Honors College?</p>
+                <v-radio-group 
+                :class="{'error-text': isHonorsCollegeStatusInvalid}"
+                v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"
+                :rules="honorsCollegeStatusRules" 
+                :error-messages="honorsCollegeStatusErrorMessage"
+                >
+                  <v-radio 
+                  label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
+                  <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeStatus"></v-radio>
+                </v-radio-group>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12" md="7">
-              <p 
-              :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
-              class="font-weight-black text-h8">Are you affiliated with the Honors College in any other way? If yes, please specify.</p>
-              <v-radio-group 
-              :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
-              v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"
-              :rules="honorsCollegeAffiliatedStatusRules"
-              :error-messages="honorsCollegeAffiliatedStatusErrorMessage">
-                <v-radio label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
-                <v-text-field 
-                ref="honorsCollegeAffiliatedHowField"
-                v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow" v-show="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus == 'Yes'" 
-                label="Please specify"
-                :rules="honorsCollegeAffiliatedHowRules"
-                ></v-text-field>
-                <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
-              </v-radio-group>
+                <p 
+                :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
+                class="font-weight-black text-h8">Are you affiliated with the Honors College in any other way? If yes, please specify.</p>
+                <v-radio-group 
+                :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
+                v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"
+                :rules="honorsCollegeAffiliatedStatusRules"
+                :error-messages="honorsCollegeAffiliatedStatusErrorMessage">
+                  <v-radio label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
+                  <transition name="slide-y-transition">
+                    <v-text-field 
+                    ref="honorsCollegeAffiliatedHowField"
+                    v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow" v-show="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus == 'Yes'" 
+                    label="Please specify"
+                    :rules="honorsCollegeAffiliatedHowRules"
+                    ></v-text-field>
+                </transition>
+                  <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
+                </v-radio-group>
             </v-col>
           </v-row> 
 
 
           <v-row>
               <v-col cols="12" md="7">
-                  <p 
-                  :class="{'error-text': isMajorsInvalid}"
-                  class="font-weight-black text-h8">What is/are your current major(s)?</p>
-                  <v-autocomplete
-                      ref="majorsField"
-                      clearable
-                      chips
-                      v-model="studentInformation.enrolledUHInfo.majors" 
-                      :items="filteredMajors.map(major => major['Plan Name'])" 
-                      label="Select a Major" 
-                      multiple
-                      :rules="majorsRules"
-                      >
-                  </v-autocomplete>
+                    <p 
+                    :class="{'error-text': isMajorsInvalid}"
+                    class="font-weight-black text-h8">What is/are your current major(s)?</p>
+                    <v-autocomplete
+                        ref="majorsField"
+                        clearable
+                        chips
+                        v-model="studentInformation.enrolledUHInfo.majors" 
+                        :items="filteredMajors.map(major => major['Plan Name'])" 
+                        label="Select a Major" 
+                        multiple
+                        :rules="majorsRules"
+                        >
+                    </v-autocomplete>
               </v-col>
           </v-row>
           <v-row>
             <!-- Honors College Minors not given -->
             <v-col cols="11" md="7">
-              <p class="font-weight-black text-h8">Are you pursuing, or planning to pursue, any of the following Honors College minors?</p>
-              <v-select v-model="studentInformation.enrolledUHInfo.honorsMinors" :items="['Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" label="Select a Honors Minor" multiple chips></v-select>
+                <p 
+                class="font-weight-black text-h8">Are you pursuing, or planning to pursue, any of the following Honors College minors?</p>
+                <v-select 
+                v-model="studentInformation.enrolledUHInfo.honorsMinors" :items="['Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" label="Select a Honors Minor" multiple chips></v-select>
 
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="7">
-              <p class="font-weight-black text-h8">Are you pursuing any other minors?</p>
-              <v-select v-model="studentInformation.enrolledUHInfo.otherMinors" :items="filteredMinors.map(minor => minor['Plan Name'])" label="Select a Minor" multiple chips></v-select>
+                <p 
+                class="font-weight-black text-h8">Are you pursuing any other minors?</p>
+                <v-select 
+                v-model="studentInformation.enrolledUHInfo.otherMinors" :items="filteredMinors.map(minor => minor['Plan Name'])" label="Select a Minor" multiple chips></v-select>
             </v-col>
           </v-row>
-        <p 
-        :class="{'error-text': isOtherEngagementValid}"
-        class="font-weight-black text-h6">Other Engagement</p>
+          <p 
+          :class="{'error-text': isOtherEngagementValid}"
+          class="font-weight-black text-h6">Other Engagement</p>
           <v-row>
             <v-col cols="12" md="7">
-              <p class="font-weight-black text-h8">Are you a member of Honors in Community Health (HICH)?</p>
-              <v-radio-group v-model="studentInformation.hichInfo.hichStatus">
-                <v-radio label="Yes" value="Yes" v-model="studentInformation.hichInfo.hichStatus"></v-radio>
-                <v-radio label="No" value="No" v-model="studentInformation.hichInfo.hichStatus"></v-radio>
-              </v-radio-group>
+                <p 
+                class="font-weight-black text-h8">Are you a member of Honors in Community Health (HICH)?</p>
+                <v-radio-group
+                v-model="studentInformation.hichInfo.hichStatus">
+                  <v-radio label="Yes" value="Yes" v-model="studentInformation.hichInfo.hichStatus"></v-radio>
+                  <v-radio label="No" value="No" v-model="studentInformation.hichInfo.hichStatus"></v-radio>
+                </v-radio-group>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="7">
-              <p class="font-weight-black text-h8">Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?</p>
-              <v-radio-group v-model="studentInformation.hichInfo.hichHistoryStatus">
-                <v-radio label="Yes" value="Yes" v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
-                <v-radio label="No" value="No" v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
-              </v-radio-group>
+               <p 
+               class="font-weight-black text-h8">Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?</p>
+                <v-radio-group 
+                v-model="studentInformation.hichInfo.hichHistoryStatus">
+                  <v-radio label="Yes" value="Yes" v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
+                  <v-radio label="No" value="No" v-model="studentInformation.hichInfo.hichHistoryStatus"></v-radio>
+                </v-radio-group>
             </v-col>
           </v-row>
+          <v-row>
+        <v-col cols="11">
+            <p 
+            v-show="isUHStudent"
+            :class="{'error-text': isServiceStatusInvalid}"
+            class="font-weight-black text-h8">
+                {{ studentInformation.enrolledUHInfo.uhStatus !== 'Yes' 
+                  ? 'Have you had experience with Community Service?' 
+                  : 'Have you had other experience with Community Service?' }}
+            </p>
+            <v-radio-group 
+            v-model="studentInformation.communityServiceInfo.serviceStatus"
+            :rules="serviceStatusRules"
+            :class="{'error-text': isServiceStatusInvalid}">
+              <v-radio label="Yes" value="Yes" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+              <v-radio label="No" value="No" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
+            </v-radio-group>
+        </v-col>
+        <v-col cols="11" md="10">
+          <transition name="slide-y-transition">
+            <div v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">
+              <p class="font-weight-black text-h8">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
+              <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
+            </div>
+          </transition>
+        </v-col>
+        <v-col cols="11" md="10">
+          <transition name="slide-y-transition">
+            <div v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">
+          <p class="font-weight-black text-h8">Are you a member of any community organizations outside the University? Please list.</p>
+          <v-row>
+            <v-textarea v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" label="Please specify"></v-textarea>
+          </v-row>
+        </div>
+          </transition>
+        </v-col>
+      </v-row>
     </div>
-    
-    <div v-show="studentInformation.enrolledUHInfo.uhStatus == 'No'">
+
+  </div>
+  
+  <div v-show="isNotUHStudent" key="notUHStudent">
+
+
+    <div>
       <p 
       :class="{'error-text': isServiceStatusInvalid}"
       class="font-weight-black text-h6">Non-UH Students Only</p>
     </div>
-    <div v-show="studentInformation.enrolledUHInfo.uhStatus">
-      <v-row v-show="studentInformation.enrolledUHInfo.uhStatus == 'Yes'">
-        <v-col cols="11">
-          <p 
-          :class="{'error-text': isServiceStatusInvalid}"
-          class="font-weight-black text-h8">
-              {{ studentInformation.enrolledUHInfo.uhStatus !== 'Yes' 
-                ? 'Have you had experience with Community Service?' 
-                : 'Have you had other experience with Community Service?' }}
-          </p>
-          <v-radio-group 
-          v-model="studentInformation.communityServiceInfo.serviceStatus"
-          :rules="serviceStatusRules"
-          :class="{'error-text': isServiceStatusInvalid}">
-            <v-radio label="Yes" value="Yes" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-            <v-radio label="No" value="No" v-model="studentInformation.communityServiceInfo.serviceStatus"></v-radio>
-          </v-radio-group>
-        </v-col>
-      </v-row>
-      <v-col v-show="studentInformation.enrolledUHInfo.uhStatus == 'No'" 
+    <div>
+      <v-col
       cols="11">
           <p 
           :class="{'error-text': isServiceStatusInvalid}"
@@ -308,16 +354,29 @@
           </v-radio-group>
         </v-col>
         <v-col cols="11" md="10">
-          <p class="font-weight-black text-h8" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-          <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')" label="Please specify"></v-textarea>
+          <transition name="slide-y-transition">
+            <div v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">
+          <p class="font-weight-black text-h8">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
+          <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
+        </div>
+        </transition>
         </v-col>
+        <transition name="slide-y-transition">
+          <div v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">
         <v-col cols="11" md="10">
-          <p class="font-weight-black text-h8" v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">Are you a member of any community organizations outside the University? Please list.</p>
+          <p class="font-weight-black text-h8" >Are you a member of any community organizations outside the University? Please list.</p>
           <v-row v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">
             <v-textarea v-model="studentInformation.communityServiceInfo.serviceOrgsOutsideUH" label="Please specify"></v-textarea>
           </v-row>
         </v-col>
+        </div>
+        </transition>
     </div>
+
+  </div>
+  </transition-group>
+
+
       <p 
       :class="{'error-text': isGraduateProfessionalSchoolGoalsInvalid}"
       class="font-weight-black text-h6">Graduate/Professional School Goals</p>
@@ -333,6 +392,7 @@
             <v-radio label="No" value="No" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
           </v-radio-group>
         </v-col>
+        <transition name="slide-y-transition">
         <v-col cols="12" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes'">
           <p class="font-weight-black text-h8">If you are planning to pursue graduate school, what type of program?</p>
           <div>
@@ -343,14 +403,21 @@
               class="ma-0 pa-0" hide-details="true"></v-checkbox>
               <v-row>
                 <v-col cols="12" md="10">
-                  <v-text-field v-if="programType.id === 4 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.phDTextbox"></v-text-field>
-                  <v-text-field v-if="programType.id === 7 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.masterTextbox"></v-text-field>
-                  <v-text-field v-if="programType.id === 8 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.otherTextbox"></v-text-field>
+                  <transition name="slide-y-transition">
+                    <v-text-field v-if="programType.id === 4 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.phDTextbox"></v-text-field>
+                  </transition>
+                  <transition name="slide-y-transition">
+                    <v-text-field v-if="programType.id === 7 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.masterTextbox"></v-text-field>
+                  </transition>
+                  <transition name="slide-y-transition">
+                    <v-text-field v-if="programType.id === 8 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.otherTextbox"></v-text-field>
+                  </transition>
                 </v-col>
               </v-row>
             </div>
           </div>
         </v-col> 
+      </transition>
         <v-col cols="12" md="10">
           <p 
           :class="{'error-text': isSpecializedDegCertStatusInvalid}"
@@ -363,6 +430,7 @@
             <v-radio label="No" value="No" v-model="studentInformation.specializedDegCert.specializedDegCertStatus"></v-radio>
           </v-radio-group>
         </v-col>
+        <transition name="slide-y-transition">
         <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
           <p class="font-weight-black text-h8">If you are planning to pursue a specialized degree / certificate program, what type of program?</p>
           <div>
@@ -374,12 +442,15 @@
               class="ma-0 pa-0" hide-details="true"></v-checkbox>
               <v-row>
                 <v-col cols="12" md="10">
+                  <transition name="slide-y-transition">
                   <v-text-field v-if="specializedType.id === 6 && specializedType.checked" label="Please Specify" v-model="studentInformation.specializedDegCert.professionalDesignOther"></v-text-field>
+                </transition>
                 </v-col>
               </v-row>
             </div>
           </div>
         </v-col>
+      </transition>
         <v-row>
           <v-col cols="12" md="4">
             <v-btn type="submit" methods="handleValidations" @click="$event => showToast()" class="btn btn-success">Submit Form</v-btn>
@@ -406,6 +477,17 @@
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+
+
+.slide-y-transition-enter-active, .slide-y-transition-leave-active {
+	transition: all 0.5s ease-in-out;
+}
+/* delay leave of parent element */
+.slide-y-transition-leave-active {
+  transition-delay: 0.25s;
+  transition: all 0.5s ease-in-out;
+}
+
 
 .error-text {
   color: darkred;
@@ -663,6 +745,12 @@ export default {
       if (!this.formSubmitted) return false;
       const rule = v => !!v || 'Information is required.';
       return rule(this.studentInformation.enrolledUHInfo.uhStatus) !== true;
+    },
+    isUHStudent() {
+      return this.studentInformation.enrolledUHInfo.uhStatus === 'Yes';
+    },
+    isNotUHStudent() {
+      return this.studentInformation.enrolledUHInfo.uhStatus === 'No';
     },
     uHStudentCheck() {
       return this.formSubmitted && this.studentInformation.enrolledUHInfo.uhStatus === 'Yes';
