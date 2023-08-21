@@ -2,6 +2,18 @@
 <!-- might need to adjustcommunityEngagementExperiences
 Array to match others and add input fields for goals and aspirations  -->
 <template>
+  <!-- <p>this.formSubmitted: {{formSubmitted}}</p>
+  <p>isExperienceIDInvalid: {{isExperienceIDInvalid}}</p>
+  <p>goalForm.experienceID: {{goalForm.experienceID}}</p>
+  <p>experienceIDRules: {{experienceIDRules}}</p> -->
+  <!-- <p>isIsGoalSettingFormFilledInvalid: {{ isIsGoalSettingFormFilledInvalid }}</p>
+  <p>isAspirationsValid {{ isAspirationsValid }}</p> -->
+  <p>isCommunityEngagementExperiencesInvalid: {{ isCommunityEngagementExperiencesInvalid }}</p>
+  <p>isGoalSettingFormFilledCheck: {{ isGoalSettingFormFilledCheck }}</p>
+  
+  <v-form 
+  ref="form"
+  @submit.prevent="submitFormValidations">
   <v-container>
     <div>
       <p class="font-weight-black text-h5 text--primary">Goal Setting Form</p>
@@ -15,134 +27,270 @@ Array to match others and add input fields for goals and aspirations  -->
     </v-row>
     <v-row>
       <v-col cols="11" md="10">
-        <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.experienceID }">
+        <p 
+        :class="{'error-text': isExperienceIDInvalid}"
+        class="font-weight-black text-h8">
           Which experience are you filling out this form for:
         </p>
-        <div class="mt-2 text-sm text-red-600 dark:text-red-500"><b>{{errors.experienceID}}</b></div>
         <div>
-          <select v-model="goalForm.experienceID" style="border: 1px solid #808080; padding: 5px; border-radius: 4px;">
-            <option v-for="experience in goalForm.experiences" :value="experience.experienceID" :key="experience.experienceID">
-              {{ experience.experienceCategory }}: {{ experience.experienceName }}
-            </option>
-          </select>
-          
+          <v-autocomplete
+            v-model="selectedExperience"
+            label="Select an Experience"
+            :items="formattedExperiences"
+            clearable
+            variant="underlined"
+            @update:modelValue="updateExperienceID"
+            :rules="experienceIDRules"
+            required
+          ></v-autocomplete>
+
+
+
+
         </div>
       </v-col>
     </v-row>
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.isGoalSettingFormFilled }">Have you already filled out this form for another experience this semester?</p>
-  <v-radio-group v-model="isGoalSettingFormFilled" :error="!!errors.isGoalSettingFormFilled">
+  <p 
+  :class="{'error-text': isIsGoalSettingFormFilledInvalid}"
+  class="font-weight-black text-h8">Have you already filled out this form for another experience this semester?</p>
+  <v-radio-group 
+  v-model="isGoalSettingFormFilled"
+  :rules="isGoalSettingFormFilledRules"
+  :class="{'error-text': isIsGoalSettingFormFilledInvalid}">
     <v-radio label="Yes" value="Yes"></v-radio>
     <v-radio label="No" value="No"></v-radio>
   </v-radio-group>
-  <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.isGoalSettingFormFilled}}</div>
 </v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedEngagementExperience || errors.otherEngagementExperienceText}">What kind of community engagement experiences, if any, have you had? Check all that apply.</p>
+<transition-group name="slide-y-transition" tag="div">
+<div v-show="isGoalSettingFormFilled === 'No'" key="neverFilledForm">
+
+
+<v-col cols="12" md="10">
+  <p 
+  :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
+  class="font-weight-black text-h8">
+    What kind of community engagement experiences, if any, have you had? Check all that apply.
+  </p>
+
+  <!-- Loop through all checkboxes -->
   <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id">
-    <label style="color: #656565;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedEngagementExperience || errors.otherEngagementExperienceText}">
-      <input type="checkbox" v-model="engagementExperience.checked" style="outline: 2px solid gray; margin-right: 5px;">
-      {{ engagementExperience.label }}
-    </label>
-    <input v-if="engagementExperience.id === 6 && engagementExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.communityEngagementExperiencesOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+    <v-checkbox 
+          ref="communityEngagementExperiencesRef"
+      :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
+        density="compact"
+        class="ma-0 pa-0" hide-details="true"
+        v-model="engagementExperience.checked" 
+        :label="engagementExperience.label"
+        :rules="communityEngagementExperiencesRules"
+    >
+    </v-checkbox>
+
+    <!-- "Please Specify" text field for the 'Other' option -->
+    <transition name="slide-y-transition">
+    <v-row v-show="engagementExperience.id === 6 && engagementExperience.checked">
+        <v-col cols="12">
+          <v-text-field 
+            placeholder="Please Specify" 
+            v-model="goalForm.communityEngagement.communityEngagementExperiencesOther" 
+            outlined
+          >
+          </v-text-field>
+        </v-col>
+    </v-row>
+  </transition>
   </div>
-  <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.noCheckedEngagementExperience}}</div>
-  <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.otherEngagementExperienceText}}</div>
 </v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedPreviousEngagementExperience || errors.otherPreviousEngagementExperienceText}">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
-  <div style="padding: 10px;">
-    <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id">
-      <label style="display: flex; align-items: center; color: #808080;">
-        <input type="checkbox" v-model="previousExperience.checked" style="outline: 2px solid #808080; margin-right: 10px;">
-        {{ previousExperience.label }}
-      </label>
-      <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.previousEngagementExperiencesOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
+  <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id">
+      <v-checkbox 
+        density="compact"
+        class="ma-0 pa-0" hide-details="true"
+        :label="previousExperience.label" 
+        v-model="previousExperience.checked"
+      >
+      </v-checkbox>
+      <transition name="slide-y-transition">
+      <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
+        <v-col cols="12">
+      <v-text-field 
+        placeholder="Please Specify" 
+        v-model="goalForm.communityEngagement.previousEngagementExperiencesOther"
+        outlined
+      >
+      </v-text-field>
+    </v-col>
+    </v-row>
+    </transition>
     </div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.noCheckedPreviousEngagementExperience}}</div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.otherPreviousEngagementExperienceText}}</div>
+</v-col>
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8">
+    What, if any, tools have you used for community engagement activities?
+  </p>
+
+  <!-- Loop through all checkboxes -->
+  <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id">
+    <v-checkbox 
+        density="compact"
+        class="ma-0 pa-0" hide-details="true"
+        v-model="activitiesTool.checked" 
+        :label="activitiesTool.label"
+    >
+    </v-checkbox>
+
+    <!-- "Please Specify" text field for the 'Other' option -->
+    <transition name="slide-y-transition">
+    <v-row v-show="activitiesTool.id === 8 && activitiesTool.checked">
+        <v-col cols="12">
+          <v-text-field 
+            placeholder="Please Specify" 
+            v-model="goalForm.communityEngagement.engagementActivitiesToolOther" 
+            outlined
+          >
+          </v-text-field>
+        </v-col>
+    </v-row>
+  </transition>
   </div>
 </v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedEngagementActivitiesTool || errors.otherEngagementActivitiesToolText}">What, if any, tools have you used for community engagement activities?</p>
-  <div style="padding: 10px;">
-    <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id">
-      <label style="display: flex; align-items: center; color: #808080;">
-        <input type="checkbox" v-model="activitiesTool.checked" style="outline: 2px solid #808080; margin-right: 10px;">
-        {{ activitiesTool.label }}
-      </label>
-      <input v-if="activitiesTool.id === 8 && activitiesTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.communityEngagement.engagementActivitiesToolOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
-    </div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.noCheckedEngagementActivitiesTool}}</div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.otherEngagementActivitiesToolText}}</div>
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8">
+    What kind of research experiences, if any, have you had? Check all that apply.
+  </p>
+
+  <!-- Loop through all checkboxes -->
+  <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id">
+    <v-checkbox 
+        density="compact"
+        class="ma-0 pa-0" hide-details="true"
+        v-model="currentExperience.checked" 
+        :label="currentExperience.label"
+    >
+    </v-checkbox>
+
+    <!-- "Please Specify" text field for the 'Other' option -->
+    <transition name="slide-y-transition">
+    <v-row v-show="currentExperience.id === 7 && currentExperience.checked">
+        <v-col cols="12">
+          <v-text-field 
+            placeholder="Please Specify" 
+            v-model="goalForm.researchExperience.currentResearchExperienceOther" 
+            outlined
+          >
+          </v-text-field>
+        </v-col>
+    </v-row>
+  </transition>
   </div>
 </v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedResearchExperience || errors.otherCurrentExperienceText}">What kind of research experiences, if any, have you had? Check all that apply.</p>
-  <div style="padding: 10px;">
-    <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id">
-      <label style="display: flex; align-items: center; color: gray;">
-        <input type="checkbox" v-model="currentExperience.checked" style="outline: 2px solid gray; margin-right: 10px;">
-        {{ currentExperience.label }}
-      </label>
-      <input v-if="currentExperience.id === 7 && currentExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.currentResearchExperienceOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
-    </div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.noCheckedResearchExperience}}</div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.otherCurrentExperienceText}}</div>
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8">
+    From your previous research experiences, which of the following activities have you engaged in?
+  </p>
+
+  <!-- Loop through all checkboxes -->
+  <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id">
+    <v-checkbox 
+        density="compact"
+        class="ma-0 pa-0" hide-details="true"
+        v-model="previousExperience.checked" 
+        :label="previousExperience.label"
+    >
+    </v-checkbox>
+
+    <!-- "Please Specify" text field for the 'Other' option -->
+    <transition name="slide-y-transition">
+    <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
+        <v-col cols="12">
+          <v-text-field 
+            placeholder="Please Specify" 
+            v-model="goalForm.researchExperience.previousResearchExperienceOther" 
+            outlined
+          >
+          </v-text-field>
+        </v-col>
+    </v-row>
+  </transition>
   </div>
 </v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
-  <p class="font-weight-black text-h8"  :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedPreviousExperience || errors.otherPreviousExperienceText}">From your previous research experiences, which of the following activities have you engaged in?</p>
-  <div style="padding: 10px;">
-    <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id">
-      <label style="display: flex; align-items: center; color: gray;">
-        <input type="checkbox" v-model="previousExperience.checked" style="outline: 2px solid gray; margin-right: 10px;">
-        {{ previousExperience.label }}
-      </label>
-      <input v-if="previousExperience.id === 8 && previousExperience.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.previousResearchExperienceOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
-    </div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.noCheckedPreviousExperience}}</div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.otherPreviousExperienceText}}</div>
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8">
+    What, if any, tools are you familiar with?
+  </p>
+
+  <!-- Loop through all checkboxes -->
+  <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id">
+    <v-checkbox 
+        density="compact"
+        class="ma-0 pa-0" hide-details="true"
+        v-model="familiarTool.checked" 
+        :label="familiarTool.label"
+    >
+    </v-checkbox>
+
+    <!-- "Please Specify" text field for the 'Other' option -->
+    <transition name="slide-y-transition">
+    <v-row v-show="familiarTool.id === 10 && familiarTool.checked">
+        <v-col cols="12">
+          <v-text-field 
+            placeholder="Please Specify" 
+            v-model="goalForm.researchExperience.familiarToolOther" 
+            outlined
+          >
+          </v-text-field>
+        </v-col>
+    </v-row>
+  </transition>
   </div>
 </v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedFamiliarTools || errors.otherFamiliarToolText}">What, if any, tools are you familiar with?</p>
-  <div style="padding: 10px;">
-    <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id">
-      <label style="display: flex; align-items: center; color: gray; margin-right: 10px;">
-        <input type="checkbox" v-model="familiarTool.checked" style="outline: 2px solid gray; margin-right: 10px;">
-        {{ familiarTool.label }}
-      </label>
-      <input v-if="familiarTool.id === 10 && familiarTool.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.familiarToolOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
-    </div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.noCheckedFamiliarTools}}</div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.otherFamiliarToolText}}</div>
+
+<v-col cols="12" md="10">
+  <p class="font-weight-black text-h8">
+    What are your research/service interests? Check all that apply.
+  </p>
+
+  <!-- Loop through all checkboxes -->
+  <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id">
+    <v-checkbox 
+        density="compact"
+        class="ma-0 pa-0" hide-details="true"
+        v-model="interest.checked" 
+        :label="interest.label"
+    >
+    </v-checkbox>
+
+    <!-- "Please Specify" text field for the 'Other' option -->
+    <transition name="slide-y-transition">
+    <v-row v-show="interest.id === 8 && interest.checked">
+        <v-col cols="12">
+          <v-text-field 
+            placeholder="Please Specify" 
+            v-model="goalForm.researchExperience.interestResearchServiceOther" 
+            outlined
+          >
+          </v-text-field>
+        </v-col>
+    </v-row>
+  </transition>
   </div>
 </v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedInterestResearchService || errors.otherInterestResearchServiceText}">What are your research/service interests? Check all that apply.</p>
-  <div style="padding: 10px;">
-    <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id">
-      <label style="display: flex; align-items: center; color: gray; margin-right: 10px;">
-        <input type="checkbox" v-model="interest.checked" style="outline: 2px solid gray; margin-right: 10px;">
-        {{ interest.label }}
-      </label>
-      <input v-if="interest.id === 8 && interest.checked" type="text" placeholder="Please Specify" v-model="goalForm.researchExperience.interestResearchServiceOther" style="margin-top: 5px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;">
-    </div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.noCheckedInterestResearchService}}</div>
-    <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.otherInterestResearchServiceText}}</div>
-  </div>
-</v-col>
 
-<v-col cols="12" md="10" v-if="isGoalSettingFormFilled === 'No'">
+<v-col cols="12" md="10">
   <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedPreviousEngagementExperience || errors.otherPreviousEngagementExperienceText}">Are you interested in potentially holding a leadership position?</p>
   <v-radio-group v-model="goalForm.researchExperience.leadershipOption" :error="!!errors.problemSolvingGoal">
     <v-radio label="Yes" value="Yes"></v-radio>
@@ -151,11 +299,22 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 
+</div>
+</transition-group>
+
 <!-- growth section -->
-<p class="font-weight-black text-h6">Growth</p>
+<p 
+:class="{'error-text': isGrowthInvalid}"
+class="font-weight-black text-h6">Growth</p>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.problemSolvingGoal }">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.</p>
-  <v-radio-group v-model="goalForm.growthGoal.problemSolvingGoal" :error="!!errors.problemSolvingGoal">
+  <p 
+  :class="{'error-text': isProblemSolvingGoalInvalid}"
+  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.</p>
+  <v-radio-group 
+  :class="{'error-text': isProblemSolvingGoalInvalid}"
+  v-model="goalForm.growthGoal.problemSolvingGoal" 
+  :rules="problemSolvingGoalRules"
+  >
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
     <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -163,8 +322,13 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.effectiveCommunicationGoal }">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.</p>
-  <v-radio-group v-model="goalForm.growthGoal.effectiveCommunicationGoal" :error="!!errors.effectiveCommunicationGoal">
+  <p 
+  :class="{'error-text': isEffectiveCommunicationGoalInvalid}"
+  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.</p>
+  <v-radio-group 
+  v-model="goalForm.growthGoal.effectiveCommunicationGoal"
+  :class="{'error-text': isEffectiveCommunicationGoalInvalid}"
+  :rules="effectiveCommunicationGoalRules">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
     <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -172,8 +336,13 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.teamworkGoal }">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.</p>
-  <v-radio-group v-model="goalForm.growthGoal.teamworkGoal" :error="!!errors.teamworkGoal">
+  <p 
+  :class="{'error-text': isTeamworkGoalInvalid}"
+  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.</p>
+  <v-radio-group 
+  v-model="goalForm.growthGoal.teamworkGoal"
+  :class="{'error-text': isTeamworkGoalInvalid}"
+  :rules="teamworkGoalRules">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
     <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -181,8 +350,13 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.culturalHumilityGoal }">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.</p>
-  <v-radio-group v-model="goalForm.growthGoal.culturalHumilityGoal" :error="!!errors.culturalHumilityGoal">
+  <p 
+  :class="{'error-text': isCulturalHumilityGoalInvalid}"
+  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.</p>
+  <v-radio-group 
+  v-model="goalForm.growthGoal.culturalHumilityGoal"
+  :class="{'error-text': isCulturalHumilityGoalInvalid}"
+  :rules="culturalHumilityGoalRules">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
     <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -190,8 +364,13 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.ethicalDecisionMakingGoal }">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.</p>
-  <v-radio-group v-model="goalForm.growthGoal.ethicalDecisionMakingGoal" :error="!!errors.ethicalDecisionMakingGoal">
+  <p 
+  :class="{'error-text': isEthicalDecisionMakingGoalInvalid}"
+  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.</p>
+  <v-radio-group 
+  v-model="goalForm.growthGoal.ethicalDecisionMakingGoal"
+  :class="{'error-text': isEthicalDecisionMakingGoalInvalid}"
+  :rules="ethicalDecisionMakingGoalRules">
     <v-radio label="No growth" value="No growth"></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
     <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -199,8 +378,14 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.professionalResponsibilityGoal }">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.</p>
-  <v-radio-group v-model="goalForm.growthGoal.professionalResponsibilityGoal" :error="!!errors.professionalResponsibilityGoal">
+  <p 
+  :class="{'error-text': isProfessionalResponsibilityGoalInvalid}"
+  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.</p>
+  <v-radio-group 
+  v-model="goalForm.growthGoal.professionalResponsibilityGoal"
+  :class="{'error-text': isProfessionalResponsibilityGoalInvalid}"
+  :rules="professionalResponsibilityGoalRules"
+  >
     <v-radio label="No growth" value="No growth" ></v-radio>
     <v-radio label="A little growth" value="A little growth"></v-radio>
     <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -210,40 +395,94 @@ Array to match others and add input fields for goals and aspirations  -->
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormAspirations }">Please describe 2-3 long-term aspirations you may have.<br><br> Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there. <br> Examples:
-    <br><ul><li>“I want to focus my career on cancer disparities”</li><li>“I want to lead a non-profit that addresses food insecurity”</li><li>“I want to teach English in a different country”</li></ul>  </p>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormAspirations }">Aspiration 1: </label>
-  <input type="text" v-model="goalForm.aspirations.aspirationOne" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormAspirations }" >
-  <br>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormAspirations }">Aspiration 2: </label>
-  <input type="text" v-model="goalForm.aspirations.aspirationTwo" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormAspirations }" >
-  <br>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormAspirations }">Aspiration 3: </label>
-  <input type="text" v-model="goalForm.aspirations.aspirationThree" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormAspirations }" >
-  <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.goalFormAspirations}}</div>
+  <p class="font-weight-black text-h8" style="margin-bottom: 2px;">
+    <span
+    :class="{'error-text': isAspirationsInvalid}"
+    >Please describe 2-3 long-term aspirations you may have.</span>
+      <br><br>
+    Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there. 
+    <br> Examples:
+    <br>
+    <ul>
+      <li>“I want to focus my career on cancer disparities”</li>
+      <li>“I want to lead a non-profit that addresses food insecurity”</li>
+      <li>“I want to teach English in a different country”</li>
+    </ul>  
+  </p>
+
+  <v-text-field
+    ref="aspiration1Field"
+    label="Aspiration 1:"
+    v-model="goalForm.aspirations.aspirationOne"
+    :error-messages="aspirationsErrorMessages"
+  ></v-text-field>
+
+  <v-text-field
+    ref="aspiration2Field"
+    label="Aspiration 2:"
+    v-model="goalForm.aspirations.aspirationTwo"
+    :error-messages="aspirationsErrorMessages"
+  ></v-text-field>
+
+  <v-text-field
+    ref="aspiration3Field"
+    label="Aspiration 3:"
+    v-model="goalForm.aspirations.aspirationThree"
+    :error-messages="aspirationsErrorMessages"
+  ></v-text-field>
 </v-col>
 
+
+
+
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }">Please outline 3-5 goals that you have for this experience. <br><br>
+  <p class="font-weight-black text-h8">
+    <span
+    :class="{'error-text': isGoalsInvalid && formSubmitted}"
+    >Please outline 3-5 goals that you have for this experience.</span> 
+    <br><br>
     Goals are statements that describe what it means for an experience to be a success from your perspective,<br>
     Examples:<br>
-    <ul><li>“I want to connect with people working on cancer research”</li><li>“I want to research access to nutrition education in public schools”</li><li>“I want to develop my presentation skills”</li></ul></p>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }" >Goal 1: </label>
-  <input type="text" v-model="goalForm.goals.goalOne" rules="[v => !!v || 'Information is required']" required style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormGoals }" >
-  <br>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }" >Goal 2: </label>
-  <input type="text" v-model="goalForm.goals.goalTwo" rules="[v => !!v || 'Information is required']" required style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormGoals }" >
-  <br>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }" >Goal 3: </label>
-  <input type="text" v-model="goalForm.goals.goalThree" rules="[v => !!v || 'Information is required']" required style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormGoals }" >
-  <br>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }" >Goal 4: </label>
-  <input type="text" v-model="goalForm.goals.goalFour" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormGoals }" >
-  <br>
-  <label style="margin-bottom: 2px;" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.goalFormGoals }" >Goal 5: </label>
-  <input type="text" v-model="goalForm.goals.goalFive" style="margin-top: 5px; margin-bottom: 2px; border: none; border-bottom: 1px solid grey; padding: 5px; border-radius: 0;" :class="{ 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-red-100 dark:border-red-400': errors.goalFormGoals }" >
+    <ul>
+      <li>“I want to connect with people working on cancer research”</li>
+      <li>“I want to research access to nutrition education in public schools”</li>
+      <li>“I want to develop my presentation skills”</li>
+    </ul>
+  </p>
+
+  <v-text-field
+    label="Goal 1:"
+    v-model="goalForm.goals.goalOne"
+    :error-messages="goalsErrorMessages"
+  ></v-text-field>
+
+  <v-text-field
+    label="Goal 2:"
+    v-model="goalForm.goals.goalTwo"
+    :error-messages="goalsErrorMessages"
+  ></v-text-field>
+
+  <v-text-field
+    label="Goal 3:"
+    v-model="goalForm.goals.goalThree"
+    :error-messages="goalsErrorMessages"
+  ></v-text-field>
+
+  <v-text-field
+    label="Goal 4:"
+    v-model="goalForm.goals.goalFour"
+    :error-messages="goalsErrorMessages"
+  ></v-text-field>
+
+  <v-text-field
+    label="Goal 5:"
+    v-model="goalForm.goals.goalFive"
+    :error-messages="goalsErrorMessages"
+  ></v-text-field>
+  
   <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.goalFormGoals}}</div>
 </v-col>
+
 
 
 
@@ -253,10 +492,46 @@ Array to match others and add input fields for goals and aspirations  -->
   </v-col>
 </v-row>
 </v-container>
-<p>ERRORS {{  this.errors }}</p>
+<!-- <p>ERRORS {{  this.errors }}</p>
 <p>{{ filledGoalsCount }} goals filled out of 5</p>
 <p>{{ filledAspirationsCount }} aspirations filled out of 3</p>
+
+
+<p>goalForm: {{ goalForm }}</p> -->
+</v-form>
 </template>
+
+<style>
+.v-field__input > input[size="1"] {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.v-field__input > input[size="1"]::before,
+.v-field__input > input[size="1"]::after {
+  display: none;
+}
+
+
+
+.slide-y-transition-enter-active, .slide-y-transition-leave-active {
+	transition: all 0.5s ease-in-out;
+}
+/* delay leave of parent element */
+.slide-y-transition-leave-active {
+  transition-delay: 0.25s;
+  transition: all 0.5s ease-in-out;
+}
+
+
+.error-text {
+  color: darkred;
+  }
+
+
+</style>
 
 <script>
 import axios from "axios";
@@ -264,6 +539,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
+      selectedExperience: null,
       errors: {},
       isGoalSettingFormFilled: null,
       goalForm: {
@@ -273,7 +549,7 @@ export default {
           experienceCategory:'',
           experienceName:''
         }],
-        experienceID: '',
+        experienceID: null,
         communityEngagement: {
           communityEngagementExperiences: [
             { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: false },
@@ -382,8 +658,216 @@ export default {
           goalFour: '',
           goalFive: '',
         }
-      }
+      },
+      formSubmitted: false,
+      isGoalsInvalid: null,
+      experienceIDRules: [
+        v => {
+          if (this.formSubmitted) {
+            return !!v || 'Information is required.';
+          }
+          return true;
+        }
+      ],
+      isGoalSettingFormFilledRules: [
+      v => {
+              if (!this.formSubmitted) return true;
+
+              return !!v || 'Information is required.';
+          },
+      ],
+      communityEngagementExperiencesRules: [
+        () => {
+          if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            return true;
+          }
+          
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || 'Information is required.';
+        }
+      ],
+
+
+
+
+
+      problemSolvingGoalRules: [
+        v => {
+              if (!this.formSubmitted) return true;
+
+              return !!v || 'Information is required.';
+          },
+      ],
+      effectiveCommunicationGoalRules: [
+      v => {
+            if (!this.formSubmitted) return true;
+
+            return !!v || 'Information is required.';
+        },
+      ],
+      teamworkGoalRules: [
+      v => {
+            if (!this.formSubmitted) return true;
+
+            return !!v || 'Information is required.';
+        },
+      ],
+      culturalHumilityGoalRules: [
+      v => {
+            if (!this.formSubmitted) return true;
+
+            return !!v || 'Information is required.';
+        },
+      ],
+      ethicalDecisionMakingGoalRules: [
+      v => {
+            if (!this.formSubmitted) return true;
+
+            return !!v || 'Information is required.';
+        },
+      ],
+      professionalResponsibilityGoalRules: [
+      v => {
+            if (!this.formSubmitted) return true;
+
+            return !!v || 'Information is required.';
+        },
+      ],
+      aspirationsRules: [
+        () => {
+          if (this.formSubmitted && this.filledAspirationsCount < 2) {
+            return 'Please fill out at least 2 aspirations.';
+          }
+          return true;
+        }
+      ],
+      isAspirationsValid: true,
     }
+  },
+  watch: {
+    'goalForm.communityEngagement.communityEngagementExperiences': {
+      deep: true,
+      handler(newVal) {
+        // Find the last checkbox
+        const lastCheckbox = newVal[newVal.length - 1];
+
+        // If the last checkbox is checked, uncheck all other checkboxes
+        if (lastCheckbox && lastCheckbox.checked) {
+          newVal.forEach(engagementExperience => {
+            if (engagementExperience.id !== lastCheckbox.id) {
+              engagementExperience.checked = false;
+            }
+          });
+        }
+      }
+    },
+    'goalForm.communityEngagement.previousEngagementExperiences': {
+      deep: true,
+      handler(newVal) {
+        // Find the last checkbox
+        const lastCheckbox = newVal[newVal.length - 1];
+
+        // If the last checkbox is checked, uncheck all other checkboxes
+        if (lastCheckbox && lastCheckbox.checked) {
+          newVal.forEach(experience => {
+            if (experience.id !== lastCheckbox.id) {
+              experience.checked = false;
+            }
+          });
+        }
+      }
+    },
+    'goalForm.communityEngagement.engagementActivitiesTools': {
+      deep: true,
+      handler(newVal) {
+        // Find the last checkbox
+        const lastCheckbox = newVal[newVal.length - 1];
+
+        // If the last checkbox is checked, uncheck all other checkboxes
+        if (lastCheckbox && lastCheckbox.checked) {
+          newVal.forEach(tool => {
+            if (tool.id !== lastCheckbox.id) {
+              tool.checked = false;
+            }
+          });
+        }
+      }
+    },
+    'goalForm.researchExperience.currentResearchExperience': {
+      deep: true,
+      handler(newVal) {
+        // Find the last checkbox
+        const lastCheckbox = newVal[newVal.length - 1];
+
+        // If the last checkbox is checked, uncheck all other checkboxes
+        if (lastCheckbox && lastCheckbox.checked) {
+          newVal.forEach(experience => {
+            if (experience.id !== lastCheckbox.id) {
+              experience.checked = false;
+            }
+          });
+        }
+      }
+    },
+    'goalForm.researchExperience.previousResearchExperience': {
+      deep: true,
+      handler(newVal) {
+        // Find the last checkbox
+        const lastCheckbox = newVal[newVal.length - 1];
+
+        // If the last checkbox is checked, uncheck all other checkboxes
+        if (lastCheckbox && lastCheckbox.checked) {
+          newVal.forEach(experience => {
+            if (experience.id !== lastCheckbox.id) {
+              experience.checked = false;
+            }
+          });
+        }
+      }
+    },
+    'goalForm.researchExperience.familiarTools': {
+      deep: true,
+      handler(newVal) {
+        // Find the last checkbox
+        const lastCheckbox = newVal[newVal.length - 1];
+
+        // If the last checkbox is checked, uncheck all other checkboxes
+        if (lastCheckbox && lastCheckbox.checked) {
+          newVal.forEach(tool => {
+            if (tool.id !== lastCheckbox.id) {
+              tool.checked = false;
+            }
+          });
+        }
+
+        // Add additional validations or logic here as needed
+      }
+    },
+    'goalForm.researchExperience.interestResearchService': {
+      deep: true,
+      handler(newVal) {
+        // Find the last checkbox
+        const lastCheckbox = newVal[newVal.length - 1];
+
+        // If the last checkbox is checked, uncheck all other checkboxes
+        if (lastCheckbox && lastCheckbox.checked) {
+          newVal.forEach(interestItem => {
+            if (interestItem.id !== lastCheckbox.id) {
+              interestItem.checked = false;
+            }
+          });
+        }
+
+        // Add additional validations or logic here as needed
+      }
+    },
+    'isGoalSettingFormFilled'(newValue) {
+      if (newValue === 'Yes' && this.formSubmitted) {
+          // Trigger validation on the fields
+          // this.$refs.uhEmailField.validate();
+          // this.$refs.peopleSoftIDField.validate();
+          // this.$refs.majorsField.validate();
+    }
+  },
   },
   computed: {
     year() {
@@ -408,7 +892,103 @@ export default {
 
       // Filter the array to only include non-empty values and return its length
       return aspirationsArray.filter(aspiration => aspiration && aspiration.trim() !== '').length;
+    },
+    formattedExperiences() {
+      return this.goalForm.experiences.map(experience => `${experience.experienceCategory}: ${experience.experienceName}`);
+    },
+    isExperienceIDInvalid() {
+    if (!this.formSubmitted) return false;
+    return this.experienceIDRules[0](this.goalForm.experienceID) !== true;
+  },
+  isIsGoalSettingFormFilledInvalid() {
+    if (!this.formSubmitted) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.isGoalSettingFormFilled) !== true;
+  },
+  isGoalSettingFormFilledCheck() {
+    return this.formSubmitted && this.isGoalSettingFormFilled === 'Yes';
+  },
+  isCommunityEngagementExperiencesInvalid() {
+    // If isGoalSettingFormFilledCheck = true i.e. it has already been filled, then skip validation
+    if (this.isGoalSettingFormFilledCheck) return '';
+
+    // Check if at least one checkbox is checked
+    if (!this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked)) {
+      return 'Information is required.';
     }
+
+    return '';
+  },
+
+
+
+
+
+
+
+
+
+
+
+  isProblemSolvingGoalInvalid() {
+    if (!this.formSubmitted) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.goalForm.growthGoal.problemSolvingGoal) !== true;
+  },
+  isEffectiveCommunicationGoalInvalid() {
+    if (!this.formSubmitted) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.goalForm.growthGoal.effectiveCommunicationGoal) !== true;
+  },
+  isTeamworkGoalInvalid() {
+    if (!this.formSubmitted) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.goalForm.growthGoal.teamworkGoal) !== true;
+  },
+  isCulturalHumilityGoalInvalid() {
+    if (!this.formSubmitted) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.goalForm.growthGoal.culturalHumilityGoal) !== true;
+  },
+  isEthicalDecisionMakingGoalInvalid() {
+    if (!this.formSubmitted) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.goalForm.growthGoal.ethicalDecisionMakingGoal) !== true;
+  },
+  isProfessionalResponsibilityGoalInvalid() {
+    if (!this.formSubmitted) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.goalForm.growthGoal.professionalResponsibilityGoal) !== true;
+  },
+  isAspirationsInvalid() {
+    if (!this.formSubmitted) return false;
+    return this.filledAspirationsCount < 2;
+  },
+  aspirationsErrorMessages() {
+    if (this.formSubmitted && this.filledAspirationsCount < 2) {
+      this.isAspirationsValid = false;
+      return ['Please fill out at least 2 aspirations.'];
+    }
+    this.isAspirationsValid = true;
+    return [];
+  },
+  // isGoalsInvalid() {
+  //   if (!this.formSubmitted) return false;
+  //   return this.filledGoalsCount < 3;
+  // },
+  goalsErrorMessages() {
+    if (this.formSubmitted && this.filledGoalsCount < 3) {
+      this.isGoalsInvalid = false;
+      return ['Please fill out at least 3 goals.'];
+    }
+    this.isGoalsInvalid = true;
+    return [];
+  },
+  isGrowthInvalid() {
+    if (!this.formSubmitted) return false;
+    return this.isProblemSolvingGoalInvalid || this.isEffectiveCommunicationGoalInvalid || this.isTeamworkGoalInvalid || this.isCulturalHumilityGoalInvalid || this.isEthicalDecisionMakingGoalInvalid || this.isProfessionalResponsibilityGoalInvalid || this.isAspirationsInvalid || this.isGoalsInvalid;
+  },
+
   }, 
   mounted() {
     this.fetchSemester();
@@ -446,7 +1026,34 @@ export default {
       console.log(error);
     }
   },
-  submitFormValidation() {
+  updateExperienceID(selected) {
+    console.log('updateexperienceID called');
+
+    // If the selected value is empty, set experienceID to null or an empty string and exit the method
+    if (!selected) {
+      this.goalForm.experienceID = null; // or '' if you prefer an empty string
+      return;
+    }
+
+    const experience = this.goalForm.experiences.find(exp => `${exp.experienceCategory}: ${exp.experienceName}` === selected);
+    if (experience) {
+      console.log('found selected experience:', experience);
+      this.goalForm.experienceID = experience.experienceID;
+      console.log('experience.experienceID : ', experience.experienceID);
+    }
+  },
+  async submitFormValidation() {
+    this.formSubmitted = true;
+    const { valid } = await this.$refs.form.validate()
+
+    //need to manually validate aspirations and goals because of multiple v-text-fields for one validation
+    if (valid && this.isAspirationsValid && this.isGoalsInvalid) {
+      console.log('Form is valid');
+    } else {
+      this.$refs.communityEngagementExperiencesRef.validate();
+      console.log('Form is invalid');
+    }
+    return;
     this.errors = {}
     if (!this.goalForm.experienceID) {
         this.errors.experienceID = 'Experience is required.'
