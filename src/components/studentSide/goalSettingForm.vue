@@ -8,12 +8,12 @@ Array to match others and add input fields for goals and aspirations  -->
   <p>experienceIDRules: {{experienceIDRules}}</p> -->
   <!-- <p>isIsGoalSettingFormFilledInvalid: {{ isIsGoalSettingFormFilledInvalid }}</p>
   <p>isAspirationsValid {{ isAspirationsValid }}</p> -->
-  <p>isCommunityEngagementExperiencesInvalid: {{ isCommunityEngagementExperiencesInvalid }}</p>
-  <p>isGoalSettingFormFilledCheck: {{ isGoalSettingFormFilledCheck }}</p>
+  <!-- <p>isCommunityEngagementExperiencesInvalid: {{ isCommunityEngagementExperiencesInvalid }}</p>
+  <p>isGoalSettingFormFilledCheck: {{ isGoalSettingFormFilledCheck }}</p> -->
   
   <v-form 
   ref="form"
-  @submit.prevent="submitFormValidations">
+  @submit.prevent>
   <v-container>
     <div>
       <p class="font-weight-black text-h5 text--primary">Goal Setting Form</p>
@@ -38,7 +38,6 @@ Array to match others and add input fields for goals and aspirations  -->
             label="Select an Experience"
             :items="formattedExperiences"
             clearable
-            variant="underlined"
             @update:modelValue="updateExperienceID"
             :rules="experienceIDRules"
             required
@@ -78,7 +77,6 @@ Array to match others and add input fields for goals and aspirations  -->
   <!-- Loop through all checkboxes -->
   <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id">
     <v-checkbox 
-          ref="communityEngagementExperiencesRef"
       :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
@@ -92,56 +90,71 @@ Array to match others and add input fields for goals and aspirations  -->
     <transition name="slide-y-transition">
     <v-row v-show="engagementExperience.id === 6 && engagementExperience.checked">
         <v-col cols="12">
-          <v-text-field 
+          <v-text-field
+            ref="otherExperienceField"
             placeholder="Please Specify" 
-            v-model="goalForm.communityEngagement.communityEngagementExperiencesOther" 
-            outlined
+            :class="{'error-text': isOtherEngagementExperienceInvalid}"
+            v-model="goalForm.communityEngagement.communityEngagementExperiencesOther"
+            :rules="communityEngagementExperiencesOtherRules"
           >
           </v-text-field>
         </v-col>
     </v-row>
   </transition>
   </div>
+
+  <div v-if="isCommunityEngagementExperiencesInvalid" class="styled-error-text">Information is required</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
+  <p 
+  :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
+  class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
   <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id">
       <v-checkbox 
+      :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         :label="previousExperience.label" 
         v-model="previousExperience.checked"
+        :rules="previousEngagementExperiencesRules"
       >
       </v-checkbox>
       <transition name="slide-y-transition">
       <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
         <v-col cols="12">
       <v-text-field 
+      ref="previousEngagementExperiencesOtherRef"
+      :class="{'error-text': isPreviousEngagementExperiencesOtherInvalid}"
         placeholder="Please Specify" 
         v-model="goalForm.communityEngagement.previousEngagementExperiencesOther"
-        outlined
+        :rules="previousEngagementExperiencesOtherRules"
       >
       </v-text-field>
     </v-col>
     </v-row>
     </transition>
     </div>
+    <div v-if="isPreviousEngagementExperiencesInvalid" class="styled-error-text">Information is required</div>
 </v-col>
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">
+  <p 
+  :class="{'error-text': isEngagementActivitiesToolsInvalid}"
+  class="font-weight-black text-h8">
     What, if any, tools have you used for community engagement activities?
   </p>
 
   <!-- Loop through all checkboxes -->
   <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id">
     <v-checkbox 
+    :class="{'error-text': isEngagementActivitiesToolsInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="activitiesTool.checked" 
         :label="activitiesTool.label"
+        :rules="engagementActivitiesToolsRules"
     >
     </v-checkbox>
 
@@ -150,30 +163,37 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-row v-show="activitiesTool.id === 8 && activitiesTool.checked">
         <v-col cols="12">
           <v-text-field 
+          ref="engagementActivitiesToolOtherRef"
+          :class="{'error-text': isEngagementActivitiesToolOtherInvalid}"
             placeholder="Please Specify" 
             v-model="goalForm.communityEngagement.engagementActivitiesToolOther" 
-            outlined
+            :rules="engagementActivitiesToolOtherRules"
           >
           </v-text-field>
         </v-col>
     </v-row>
   </transition>
   </div>
+  <div v-if="isEngagementActivitiesToolsInvalid" class="styled-error-text">Information is required</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">
+  <p 
+  :class="{'error-text': isCurrentResearchExperienceInvalid}"
+  class="font-weight-black text-h8">
     What kind of research experiences, if any, have you had? Check all that apply.
   </p>
 
   <!-- Loop through all checkboxes -->
   <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id">
     <v-checkbox 
+    :class="{'error-text': isCurrentResearchExperienceInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="currentExperience.checked" 
         :label="currentExperience.label"
+        :rules="currentResearchExperienceRules"
     >
     </v-checkbox>
 
@@ -182,30 +202,37 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-row v-show="currentExperience.id === 7 && currentExperience.checked">
         <v-col cols="12">
           <v-text-field 
+          ref="currentResearchExperienceOtherRef"
+          :class="{'error-text': isCurrentResearchExperienceOtherInvalid}"
             placeholder="Please Specify" 
             v-model="goalForm.researchExperience.currentResearchExperienceOther" 
-            outlined
+            :rules="currentResearchExperienceOtherRules"
           >
           </v-text-field>
         </v-col>
     </v-row>
   </transition>
   </div>
+  <div v-if="isCurrentResearchExperienceInvalid" class="styled-error-text">Information is required</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">
+  <p 
+  :class="{'error-text': isPreviousResearchExperienceInvalid}"
+  class="font-weight-black text-h8">
     From your previous research experiences, which of the following activities have you engaged in?
   </p>
 
   <!-- Loop through all checkboxes -->
   <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id">
     <v-checkbox 
+    :class="{'error-text': isPreviousResearchExperienceInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="previousExperience.checked" 
         :label="previousExperience.label"
+        :rules="previousResearchExperienceRules"
     >
     </v-checkbox>
 
@@ -214,30 +241,37 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
         <v-col cols="12">
           <v-text-field 
+          ref="previousResearchExperienceOtherRef"
+          :class="{'error-text': isPreviousResearchExperienceOtherInvalid}"
             placeholder="Please Specify" 
             v-model="goalForm.researchExperience.previousResearchExperienceOther" 
-            outlined
+            :rules="previousResearchExperienceOtherRules"
           >
           </v-text-field>
         </v-col>
     </v-row>
   </transition>
   </div>
+  <div v-if="isPreviousResearchExperienceInvalid" class="styled-error-text">Information is required</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">
+  <p 
+  :class="{'error-text': isFamiliarToolsInvalid}"
+  class="font-weight-black text-h8">
     What, if any, tools are you familiar with?
   </p>
 
   <!-- Loop through all checkboxes -->
   <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id">
     <v-checkbox 
+    :class="{'error-text': isFamiliarToolsInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="familiarTool.checked" 
         :label="familiarTool.label"
+        :rules="familiarToolsRules"
     >
     </v-checkbox>
 
@@ -246,30 +280,37 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-row v-show="familiarTool.id === 10 && familiarTool.checked">
         <v-col cols="12">
           <v-text-field 
+          ref="familiarToolOtherRef"
+          :class="{'error-text': isFamiliarToolOtherInvalid}"
             placeholder="Please Specify" 
             v-model="goalForm.researchExperience.familiarToolOther" 
-            outlined
+            :rules="familiarToolOtherRules"
           >
           </v-text-field>
         </v-col>
     </v-row>
   </transition>
   </div>
+  <div v-if="isFamiliarToolsInvalid" class="styled-error-text">Information is required</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">
+  <p 
+  :class="{'error-text': isInterestResearchServiceInvalid}"
+  class="font-weight-black text-h8">
     What are your research/service interests? Check all that apply.
   </p>
 
   <!-- Loop through all checkboxes -->
   <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id">
     <v-checkbox 
+    :class="{'error-text': isInterestResearchServiceInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="interest.checked" 
         :label="interest.label"
+        :rules="interestResearchServiceRules"
     >
     </v-checkbox>
 
@@ -278,21 +319,29 @@ Array to match others and add input fields for goals and aspirations  -->
     <v-row v-show="interest.id === 8 && interest.checked">
         <v-col cols="12">
           <v-text-field 
+          ref="interestResearchServiceOtherRef"
+          :class="{'error-text': isInterestResearchServiceOtherInvalid}"
             placeholder="Please Specify" 
             v-model="goalForm.researchExperience.interestResearchServiceOther" 
-            outlined
+            :rules="interestResearchServiceOtherRules"
           >
           </v-text-field>
         </v-col>
     </v-row>
   </transition>
   </div>
+  <div v-if="isInterestResearchServiceInvalid" class="styled-error-text">Information is required</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" :class="{ 'block mb-2 text-sm font-medium text-red-700 dark:text-red-500': errors.noCheckedPreviousEngagementExperience || errors.otherPreviousEngagementExperienceText}">Are you interested in potentially holding a leadership position?</p>
-  <v-radio-group v-model="goalForm.researchExperience.leadershipOption" :error="!!errors.problemSolvingGoal">
+  <p 
+  :class="{'error-text': isLeadershipOptionInvalid}"
+  class="font-weight-black text-h8">Are you interested in potentially holding a leadership position?</p>
+  <v-radio-group 
+  :class="{'error-text': isLeadershipOptionInvalid}"
+  v-model="goalForm.researchExperience.leadershipOption"
+  :rules="leadershipOptionRules">
     <v-radio label="Yes" value="Yes"></v-radio>
     <v-radio label="Maybe" value="Maybe"></v-radio>
     <v-radio label="No" value="No"></v-radio>
@@ -395,9 +444,10 @@ class="font-weight-black text-h6">Growth</p>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8" style="margin-bottom: 2px;">
+  <p 
+  :class="{'error-text': isAspirationsInvalid}"
+  class="font-weight-black text-h8" style="margin-bottom: 2px;">
     <span
-    :class="{'error-text': isAspirationsInvalid}"
     >Please describe 2-3 long-term aspirations you may have.</span>
       <br><br>
     Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there. 
@@ -414,14 +464,14 @@ class="font-weight-black text-h6">Growth</p>
     ref="aspiration1Field"
     label="Aspiration 1:"
     v-model="goalForm.aspirations.aspirationOne"
-    :error-messages="aspirationsErrorMessages"
+    :error="isAspirationsInvalid"
   ></v-text-field>
 
   <v-text-field
     ref="aspiration2Field"
     label="Aspiration 2:"
     v-model="goalForm.aspirations.aspirationTwo"
-    :error-messages="aspirationsErrorMessages"
+    :error="isAspirationsInvalid"
   ></v-text-field>
 
   <v-text-field
@@ -436,9 +486,10 @@ class="font-weight-black text-h6">Growth</p>
 
 
 <v-col cols="12" md="10">
-  <p class="font-weight-black text-h8">
+  <p 
+  :class="{'error-text': isGoalsInvalid}"
+  class="font-weight-black text-h8">
     <span
-    :class="{'error-text': isGoalsInvalid && formSubmitted}"
     >Please outline 3-5 goals that you have for this experience.</span> 
     <br><br>
     Goals are statements that describe what it means for an experience to be a success from your perspective,<br>
@@ -453,25 +504,25 @@ class="font-weight-black text-h6">Growth</p>
   <v-text-field
     label="Goal 1:"
     v-model="goalForm.goals.goalOne"
-    :error-messages="goalsErrorMessages"
+    :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
     label="Goal 2:"
     v-model="goalForm.goals.goalTwo"
-    :error-messages="goalsErrorMessages"
+    :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
     label="Goal 3:"
     v-model="goalForm.goals.goalThree"
-    :error-messages="goalsErrorMessages"
+    :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
     label="Goal 4:"
     v-model="goalForm.goals.goalFour"
-    :error-messages="goalsErrorMessages"
+    :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
@@ -480,7 +531,6 @@ class="font-weight-black text-h6">Growth</p>
     :error-messages="goalsErrorMessages"
   ></v-text-field>
   
-  <div class="mt-2 text-sm text-red-600 dark:text-red-500">{{errors.goalFormGoals}}</div>
 </v-col>
 
 
@@ -531,6 +581,136 @@ class="font-weight-black text-h6">Growth</p>
   }
 
 
+.styled-error-text {
+  -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: "Roboto", sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    --v-theme-overlay-multiplier: 1;
+    --v-scrollbar-offset: 0px;
+    --v-theme-background: 255,255,255;
+    --v-theme-background-overlay-multiplier: 1;
+    --v-theme-surface: 255,255,255;
+    --v-theme-surface-overlay-multiplier: 1;
+    --v-theme-surface-variant: 66,66,66;
+    --v-theme-surface-variant-overlay-multiplier: 2;
+    --v-theme-on-surface-variant: 238,238,238;
+    --v-theme-primary: 98,0,238;
+    --v-theme-primary-overlay-multiplier: 2;
+    --v-theme-primary-darken-1: 55,0,179;
+    --v-theme-primary-darken-1-overlay-multiplier: 2;
+    --v-theme-secondary: 3,218,198;
+    --v-theme-secondary-overlay-multiplier: 1;
+    --v-theme-secondary-darken-1: 1,135,134;
+    --v-theme-secondary-darken-1-overlay-multiplier: 1;
+    --v-theme-error: 176,0,32;
+    --v-theme-error-overlay-multiplier: 2;
+    --v-theme-info: 33,150,243;
+    --v-theme-info-overlay-multiplier: 1;
+    --v-theme-success: 76,175,80;
+    --v-theme-success-overlay-multiplier: 1;
+    --v-theme-warning: 251,140,0;
+    --v-theme-warning-overlay-multiplier: 1;
+    --v-theme-on-background: 0,0,0;
+    --v-theme-on-surface: 0,0,0;
+    --v-theme-on-primary: 255,255,255;
+    --v-theme-on-primary-darken-1: 255,255,255;
+    --v-theme-on-secondary: 0,0,0;
+    --v-theme-on-secondary-darken-1: 255,255,255;
+    --v-theme-on-error: 255,255,255;
+    --v-theme-on-info: 255,255,255;
+    --v-theme-on-success: 255,255,255;
+    --v-theme-on-warning: 255,255,255;
+    --v-border-color: 0, 0, 0;
+    --v-border-opacity: 0.12;
+    --v-high-emphasis-opacity: 0.87;
+    --v-medium-emphasis-opacity: 0.6;
+    --v-disabled-opacity: 0.38;
+    --v-idle-opacity: 0.04;
+    --v-hover-opacity: 0.04;
+    --v-focus-opacity: 0.12;
+    --v-selected-opacity: 0.08;
+    --v-activated-opacity: 0.12;
+    --v-pressed-opacity: 0.12;
+    --v-dragged-opacity: 0.08;
+    --v-theme-kbd: 33, 37, 41;
+    --v-theme-on-kbd: 255, 255, 255;
+    --v-theme-code: 245, 245, 245;
+    --v-theme-on-code: 0, 0, 0;
+    --v-input-control-height: 56px;
+    --v-input-padding-top: 16px;
+    --select-chips-margin-bottom: 0px;
+    --autocomplete-chips-margin-bottom: 0px;
+    --combobox-chips-margin-bottom: 0px;
+    --file-input-chips-margin-bottom: 0px;
+    font-weight: 400;
+    letter-spacing: 0.0333333333em;
+    font-size: 12px;
+    color: rgb(var(--v-theme-error));
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+    --tw-border-spacing-x: 0;
+    --tw-border-spacing-y: 0;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+    --tw-pan-x: ;
+    --tw-pan-y: ;
+    --tw-pinch-zoom: ;
+    --tw-scroll-snap-strictness: proximity;
+    --tw-ordinal: ;
+    --tw-slashed-zero: ;
+    --tw-numeric-figure: ;
+    --tw-numeric-spacing: ;
+    --tw-numeric-fraction: ;
+    --tw-ring-inset: ;
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: rgb(59 130 246 / 0.5);
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+    --tw-blur: ;
+    --tw-brightness: ;
+    --tw-contrast: ;
+    --tw-grayscale: ;
+    --tw-hue-rotate: ;
+    --tw-invert: ;
+    --tw-saturate: ;
+    --tw-sepia: ;
+    --tw-drop-shadow: ;
+    --tw-backdrop-blur: ;
+    --tw-backdrop-brightness: ;
+    --tw-backdrop-contrast: ;
+    --tw-backdrop-grayscale: ;
+    --tw-backdrop-hue-rotate: ;
+    --tw-backdrop-invert: ;
+    --tw-backdrop-opacity: ;
+    --tw-backdrop-saturate: ;
+    --tw-backdrop-sepia: ;
+    background-repeat: no-repeat;
+    box-sizing: inherit;
+    padding: 0;
+    margin: 0;
+    line-height: 12px;
+    word-break: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    transition-duration: 150ms;
+    transform-origin: center center;
+}
+
+
+
+
 </style>
 
 <script>
@@ -540,7 +720,6 @@ export default {
   data() {
     return {
       selectedExperience: null,
-      errors: {},
       isGoalSettingFormFilled: null,
       goalForm: {
         semester: '',
@@ -660,7 +839,7 @@ export default {
         }
       },
       formSubmitted: false,
-      isGoalsInvalid: null,
+      isGoalsValid: null,
       experienceIDRules: [
         v => {
           if (this.formSubmitted) {
@@ -679,16 +858,158 @@ export default {
       communityEngagementExperiencesRules: [
         () => {
           if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            console.log('skip validation');
             return true;
           }
           
           return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || 'Information is required.';
         }
       ],
+      communityEngagementExperiencesOtherRules: [
+        v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+              
+              const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.id === 6);
 
+              // If the condition for v-show is false (Other not checked), validation passes automatically
+              if (!otherExperience || !otherExperience.checked) return true;
 
+              return !!v || 'If Other is selected, please specify.';
+          },
+      ],
+      previousEngagementExperiencesRules: [
+      () => {
+          if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            return true;
+          }
+          
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || 'Information is required.';
+        }
+      ],
+      previousEngagementExperiencesOtherRules: [
+      v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+              
+              const previousExperience = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8);
 
+              // If the condition for v-show is false (Other not checked), validation passes automatically
+              if (!previousExperience || !previousExperience.checked) return true;
 
+              return !!v || 'If Other is selected, please specify.';
+          },
+      ],
+      engagementActivitiesToolsRules: [
+      () => {
+          if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            return true;
+          }
+          
+          return this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked) || 'Information is required.';
+        }
+      ],
+      engagementActivitiesToolOtherRules: [
+      v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+              
+              const engagementActivitiesTool = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.id === 8);
+
+              // If the condition for v-show is false (Other not checked), validation passes automatically
+              if (!engagementActivitiesTool || !engagementActivitiesTool.checked) return true;
+
+              return !!v || 'If Other is selected, please specify.';
+          },
+      ],
+      currentResearchExperienceRules: [
+      () => {
+          if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            return true;
+          }
+          
+          return this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked) || 'Information is required.';
+        }
+      ],
+      currentResearchExperienceOtherRules: [
+      v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+              
+              const researchExperience = this.goalForm.researchExperience.currentResearchExperience.find(p => p.id === 7);
+
+              // If the condition for v-show is false (Other not checked), validation passes automatically
+              if (!researchExperience || !researchExperience.checked) return true;
+
+              return !!v || 'If Other is selected, please specify.';
+        }
+      ],
+      previousResearchExperienceRules: [
+      () => {
+          if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            return true;
+          }
+          
+          return this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked) || 'Information is required.';
+        }
+      ],
+      previousResearchExperienceOtherRules: [
+      v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+              
+              const previousExperience = this.goalForm.researchExperience.previousResearchExperience.find(p => p.id === 8);
+
+              // If the condition for v-show is false (Other not checked), validation passes automatically
+              if (!previousExperience || !previousExperience.checked) return true;
+
+              return !!v || 'If Other is selected, please specify.';
+        }
+      ],
+      familiarToolsRules: [
+      () => {
+          if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            return true;
+          }
+          
+          return this.goalForm.researchExperience.familiarTools.some(exp => exp.checked) || 'Information is required.';
+        }
+      ],
+      familiarToolOtherRules: [
+      v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+              
+              const familiarTool = this.goalForm.researchExperience.familiarTools.find(p => p.id === 10);
+
+              // If the condition for v-show is false (Other not checked), validation passes automatically
+              if (!familiarTool || !familiarTool.checked) return true;
+
+              return !!v || 'If Other is selected, please specify.';
+        }
+      ],
+      interestResearchServiceRules: [
+      () => {
+          if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
+            return true;
+          }
+          
+          return this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked) || 'Information is required.';
+        }
+      ],
+      interestResearchServiceOtherRules: [
+      v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+              
+              const researchService = this.goalForm.researchExperience.interestResearchService.find(p => p.id === 8);
+
+              // If the condition for v-show is false (Other not checked), validation passes automatically
+              if (!researchService || !researchService.checked) return true;
+
+              return !!v || 'If Other is selected, please specify.';
+        }
+      ],
+      leadershipOptionRules: [
+      v => {
+              if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
+
+              return !!v || 'Information is required.';
+          },
+      ],
 
       problemSolvingGoalRules: [
         v => {
@@ -758,6 +1079,11 @@ export default {
             }
           });
         }
+
+        const otherExperience= newVal.find(exp => exp.id === 6);
+        if (otherExperience && otherExperience.checked && this.formSubmitted) {
+            this.$refs.otherExperienceField[5].validate();
+        }
       }
     },
     'goalForm.communityEngagement.previousEngagementExperiences': {
@@ -773,6 +1099,10 @@ export default {
               experience.checked = false;
             }
           });
+        }
+        const previousExperience= newVal.find(exp => exp.id === 8);
+        if (previousExperience && previousExperience.checked && this.formSubmitted) {
+          this.$refs.previousEngagementExperiencesOtherRef[7].validate();
         }
       }
     },
@@ -790,6 +1120,10 @@ export default {
             }
           });
         }
+        const engagementActivitiesTool= newVal.find(exp => exp.id === 8);
+        if (engagementActivitiesTool && engagementActivitiesTool.checked && this.formSubmitted) {
+          this.$refs.engagementActivitiesToolOtherRef[7].validate();
+        }
       }
     },
     'goalForm.researchExperience.currentResearchExperience': {
@@ -805,6 +1139,10 @@ export default {
               experience.checked = false;
             }
           });
+        }
+        const researchExperience= newVal.find(exp => exp.id === 7);
+        if (researchExperience && researchExperience.checked && this.formSubmitted) {
+          this.$refs.currentResearchExperienceOtherRef[6].validate();
         }
       }
     },
@@ -822,6 +1160,10 @@ export default {
             }
           });
         }
+        const previousExperience= newVal.find(exp => exp.id === 8);
+        if (previousExperience && previousExperience.checked && this.formSubmitted) {
+          this.$refs.previousResearchExperienceOtherRef[7].validate();
+        }
       }
     },
     'goalForm.researchExperience.familiarTools': {
@@ -838,8 +1180,10 @@ export default {
             }
           });
         }
-
-        // Add additional validations or logic here as needed
+        const familiarTool= newVal.find(exp => exp.id === 10);
+        if (familiarTool && familiarTool.checked && this.formSubmitted) {
+          this.$refs.familiarToolOtherRef[9].validate();
+        }
       }
     },
     'goalForm.researchExperience.interestResearchService': {
@@ -856,18 +1200,12 @@ export default {
             }
           });
         }
-
-        // Add additional validations or logic here as needed
+        const researchService= newVal.find(exp => exp.id === 8);
+        if (researchService && researchService.checked && this.formSubmitted) {
+          this.$refs.interestResearchServiceOtherRef[7].validate();
+        }
       }
     },
-    'isGoalSettingFormFilled'(newValue) {
-      if (newValue === 'Yes' && this.formSubmitted) {
-          // Trigger validation on the fields
-          // this.$refs.uhEmailField.validate();
-          // this.$refs.peopleSoftIDField.validate();
-          // this.$refs.majorsField.validate();
-    }
-  },
   },
   computed: {
     year() {
@@ -906,29 +1244,112 @@ export default {
     return rule(this.isGoalSettingFormFilled) !== true;
   },
   isGoalSettingFormFilledCheck() {
-    return this.formSubmitted && this.isGoalSettingFormFilled === 'Yes';
+    return this.isGoalSettingFormFilled === 'Yes';
   },
   isCommunityEngagementExperiencesInvalid() {
-    // If isGoalSettingFormFilledCheck = true i.e. it has already been filled, then skip validation
-    if (this.isGoalSettingFormFilledCheck) return '';
+    // If form hasn't been submitted or isGoalSettingFormFilledCheck = true i.e. it has already been filled, then skip validation
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return '';
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked)) {
       return 'Information is required.';
     }
-
     return '';
   },
+  isOtherEngagementExperienceInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.id === 6);
+    return otherExperience.checked && !this.goalForm.communityEngagement.communityEngagementExperiencesOther;
+  },
+  isPreviousEngagementExperiencesInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return '';
 
+    // Check if at least one checkbox is checked
+    if (!this.goalForm.communityEngagement.previousEngagementExperiences.some(exp => exp.checked)) {
+      return 'Information is required.';
+    }
+    return '';
+  },
+  isPreviousEngagementExperiencesOtherInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const previousExperience = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8);
+    return previousExperience.checked && !this.goalForm.communityEngagement.previousEngagementExperiencesOther;
+  },
+  isEngagementActivitiesToolsInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return '';
 
+    // Check if at least one checkbox is checked
+    if (!this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked)) {
+      return 'Information is required.';
+    }
+    return '';
+  },
+  isEngagementActivitiesToolOtherInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const engagementActivitiesTool = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.id === 8);
+    return engagementActivitiesTool.checked && !this.goalForm.communityEngagement.engagementActivitiesToolOther;
+  },
+  isCurrentResearchExperienceInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return '';
 
+    // Check if at least one checkbox is checked
+    if (!this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked)) {
+      return 'Information is required.';
+    }
+    return '';
+  },
+  isCurrentResearchExperienceOtherInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const researchExperience = this.goalForm.researchExperience.currentResearchExperience.find(p => p.id === 7);
+    return researchExperience.checked && !this.goalForm.researchExperience.currentResearchExperienceOther;
+  },
+  isPreviousResearchExperienceInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return '';
 
+    // Check if at least one checkbox is checked
+    if (!this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked)) {
+      return 'Information is required.';
+    }
+    return '';
+  },
+  isPreviousResearchExperienceOtherInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const previousExperience = this.goalForm.researchExperience.previousResearchExperience.find(p => p.id === 8);
+    return previousExperience.checked && !this.goalForm.researchExperience.previousResearchExperienceOther;
+  },
+  isFamiliarToolsInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return '';
 
+    // Check if at least one checkbox is checked
+    if (!this.goalForm.researchExperience.familiarTools.some(exp => exp.checked)) {
+      return 'Information is required.';
+    }
+    return '';
+  },
+  isFamiliarToolOtherInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const familiarTool = this.goalForm.researchExperience.familiarTools.find(p => p.id === 10);
+    return familiarTool.checked && !this.goalForm.researchExperience.familiarToolOther;
+  },
+  isInterestResearchServiceInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return '';
 
-
-
-
-
+    // Check if at least one checkbox is checked
+    if (!this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked)) {
+      return 'Information is required.';
+    }
+    return '';
+  },
+  isInterestResearchServiceOtherInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const researchService = this.goalForm.researchExperience.interestResearchService.find(p => p.id === 8);
+    return researchService.checked && !this.goalForm.researchExperience.interestResearchServiceOther;
+  },
+  isLeadershipOptionInvalid() {
+    if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.goalForm.researchExperience.leadershipOption) !== true;
+  },
 
   isProblemSolvingGoalInvalid() {
     if (!this.formSubmitted) return false;
@@ -972,16 +1393,16 @@ export default {
     this.isAspirationsValid = true;
     return [];
   },
-  // isGoalsInvalid() {
-  //   if (!this.formSubmitted) return false;
-  //   return this.filledGoalsCount < 3;
-  // },
+  isGoalsInvalid() {
+    if (!this.formSubmitted) return false;
+    return this.filledGoalsCount < 3;
+  },
   goalsErrorMessages() {
     if (this.formSubmitted && this.filledGoalsCount < 3) {
-      this.isGoalsInvalid = false;
+      this.isGoalsValid = false;
       return ['Please fill out at least 3 goals.'];
     }
-    this.isGoalsInvalid = true;
+    this.isGoalsValid = true;
     return [];
   },
   isGrowthInvalid() {
@@ -1003,7 +1424,6 @@ export default {
       try {
         const response = await axios.get(apiURL, { headers: { token } });
         this.goalForm.semester = response.data.semesterName;
-        console.log(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -1021,13 +1441,11 @@ export default {
       experienceName: experience.experienceName
     }));
       // this.goalForm.experiences = response.data;
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   },
   updateExperienceID(selected) {
-    console.log('updateexperienceID called');
 
     // If the selected value is empty, set experienceID to null or an empty string and exit the method
     if (!selected) {
@@ -1037,9 +1455,7 @@ export default {
 
     const experience = this.goalForm.experiences.find(exp => `${exp.experienceCategory}: ${exp.experienceName}` === selected);
     if (experience) {
-      console.log('found selected experience:', experience);
       this.goalForm.experienceID = experience.experienceID;
-      console.log('experience.experienceID : ', experience.experienceID);
     }
   },
   async submitFormValidation() {
@@ -1047,296 +1463,196 @@ export default {
     const { valid } = await this.$refs.form.validate()
 
     //need to manually validate aspirations and goals because of multiple v-text-fields for one validation
-    if (valid && this.isAspirationsValid && this.isGoalsInvalid) {
+    if (valid) {
       console.log('Form is valid');
+      this.cleanupFormData();
     } else {
-      this.$refs.communityEngagementExperiencesRef.validate();
       console.log('Form is invalid');
+      console.log(await this.$refs.form.validate())
     }
     return;
-    this.errors = {}
-    if (!this.goalForm.experienceID) {
-        this.errors.experienceID = 'Experience is required.'
-    }
-
-    ///validation for if goal setting form was filled before
-    if (!this.isGoalSettingFormFilled) {
-        this.errors.isGoalSettingFormFilled = 'If form is previously filled is required.'
-    }
-
-// Validation for communityEngagementExperiences
-let noCheckedEngagementExperience = true;
-let otherEngagementExperienceChecked = false;
-
-for (const engagementExperience of this.goalForm.communityEngagement.communityEngagementExperiences) {
-  if (engagementExperience.checked) {
-    noCheckedEngagementExperience = false;
-    if (engagementExperience.id === 6) {
-      otherEngagementExperienceChecked = true;
-      if (!this.goalForm.communityEngagement.communityEngagementExperiencesOther) {
-        this.errors.otherEngagementExperienceText = 'Text is required for the "Other" experience.';
-      }
-    }
-  }
-}
-
-if (noCheckedEngagementExperience) {
-  this.errors.noCheckedEngagementExperience = 'At least one community engagement experience should be checked.';
-}
-
-// Validation for previousEngagementExperiences
-let noCheckedPreviousEngagementExperience = true;
-let otherPreviousEngagementExperienceChecked = false;
-
-for (const previousEngagementExperience of this.goalForm.communityEngagement.previousEngagementExperiences) {
-  if (previousEngagementExperience.checked) {
-    noCheckedPreviousEngagementExperience = false;
-    if (previousEngagementExperience.id === 8) {
-      otherPreviousEngagementExperienceChecked = true;
-      if (!this.goalForm.communityEngagement.previousEngagementExperiencesOther) {
-        this.errors.otherPreviousEngagementExperienceText = 'Text is required for the "Other" experience.';
-      }
-    }
-  }
-}
-
-if (noCheckedPreviousEngagementExperience) {
-  this.errors.noCheckedPreviousEngagementExperience = 'At least one previous engagement experience should be checked.';
-}
-
-// Validation for engagementActivitiesTools
-let noCheckedEngagementActivitiesTool = true;
-let otherEngagementActivitiesToolChecked = false;
-
-for (const engagementActivitiesTool of this.goalForm.communityEngagement.engagementActivitiesTools) {
-  if (engagementActivitiesTool.checked) {
-    noCheckedEngagementActivitiesTool = false;
-    if (engagementActivitiesTool.id === 8) {
-      otherEngagementActivitiesToolChecked = true;
-      if (!this.goalForm.communityEngagement.engagementActivitiesToolOther) {
-        this.errors.otherEngagementActivitiesToolText = 'Text is required for the "Other" tool.';
-      }
-    }
-  }
-}
-
-if (noCheckedEngagementActivitiesTool) {
-  this.errors.noCheckedEngagementActivitiesTool = 'At least one engagement activities tool should be checked.';
-}
-
-// Validation for researchExperience
-let noCheckedResearchExperience = true;
-let otherResearchExperienceChecked = false;
-
-for (const currentExperience of this.goalForm.researchExperience.currentResearchExperience) {
-  if (currentExperience.checked) {
-    noCheckedResearchExperience = false;
-    if (currentExperience.id === 7) {
-      otherResearchExperienceChecked = true;
-      if (!this.goalForm.researchExperience.currentResearchExperienceOther) {
-        this.errors.otherCurrentExperienceText = 'Text is required for the "Other" experience.';
-      }
-    }
-  }
-}
-
-if (noCheckedResearchExperience) {
-  this.errors.noCheckedResearchExperience = 'At least one research experience should be checked.';
-}
-
-// Validation for previousResearchExperience
-let noCheckedPreviousExperience = true;
-let otherPreviousExperienceChecked = false;
-
-for (const previousExperience of this.goalForm.researchExperience.previousResearchExperience) {
-  if (previousExperience.checked) {
-    noCheckedPreviousExperience = false;
-    if (previousExperience.id === 8) {
-      otherPreviousExperienceChecked = true;
-      if (!this.goalForm.researchExperience.previousResearchExperienceOther) {
-        this.errors.otherPreviousExperienceText = 'Text is required for the "Other" experience.';
-      }
-    }
-  }
-}
-
-if (noCheckedPreviousExperience) {
-  this.errors.noCheckedPreviousExperience = 'At least one previous experience should be checked.';
-}
-
-// Validation for familiarTools
-let noCheckedFamiliarTools = true;
-let otherFamiliarToolChecked = false;
-
-for (const familiarTool of this.goalForm.researchExperience.familiarTools) {
-  if (familiarTool.checked) {
-    noCheckedFamiliarTools = false;
-    if (familiarTool.id === 10) {
-      otherFamiliarToolChecked = true;
-      if (!this.goalForm.researchExperience.familiarToolOther) {
-        this.errors.otherFamiliarToolText = 'Text is required for the "Other" tool.';
-      }
-    }
-  }
-}
-
-if (noCheckedFamiliarTools) {
-  this.errors.noCheckedFamiliarTools = 'At least one familiar tool should be checked.';
-}
-
-// Validation for interestResearchService
-let noCheckedInterestResearchService = true;
-let otherInterestResearchServiceChecked = false;
-
-for (const interest of this.goalForm.researchExperience.interestResearchService) {
-  if (interest.checked) {
-    noCheckedInterestResearchService = false;
-    if (interest.id === 8) {
-      otherInterestResearchServiceChecked = true;
-      if (!this.goalForm.researchExperience.interestResearchServiceOther) {
-        this.errors.otherInterestResearchServiceText = 'Text is required for the "Other" interest.';
-      }
-    }
-  }
-}
-
-if (noCheckedInterestResearchService) {
-  this.errors.noCheckedInterestResearchService = 'At least one research/service interest should be checked.';
-}
-if (!this.goalForm.growthGoal.problemSolvingGoal) {
-      this.errors.problemSolvingGoal = 'Please input a response'
-    }
-    if (!this.goalForm.growthGoal.effectiveCommunicationGoal) {
-      this.errors.effectiveCommunicationGoal = 'Please input a response'
-    }
-    if (!this.goalForm.growthGoal.culturalHumilityGoal) {
-      this.errors.culturalHumilityGoal = 'Please input a response'
-    }
-    if (!this.goalForm.growthGoal.teamworkGoal) {
-      this.errors.teamworkGoal = 'Please input a response'
-    }
-    if (!this.goalForm.growthGoal.ethicalDecisionMakingGoal) {
-      this.errors.ethicalDecisionMakingGoal = 'Please input a response'
-    }
-    if (!this.goalForm.growthGoal.professionalResponsibilityGoal) {
-      this.errors.professionalResponsibilityGoal = 'Please input a response.'
-    }
-    if (this.filledAspirationsCount < 2) {
-      this.errors.goalFormAspirations = 'At least 2 aspirations are required.'
-    }
-    if (this.filledGoalsCount < 3) {
-      this.errors.goalFormGoals = 'At least 3 goals are required.'
-    }
-    if (Object.keys(this.errors).length === 0) {
-      this.handleSubmitForm();
-    }
   },
+  cleanupFormData() {
+    // Check condition for "Other" text fields
+    const isOtherPreviousEngagementExperienceChecked = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8)?.checked || false;
+
+    if (!isOtherPreviousEngagementExperienceChecked) {
+      this.goalForm.communityEngagement.previousEngagementExperiencesOther = '';
+    }
+
+    const isOtherEngagementActivitiesToolsChecked = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.id === 8)?.checked || false;
+
+    if (!isOtherEngagementActivitiesToolsChecked) {
+      this.goalForm.communityEngagement.engagementActivitiesToolOther= '';
+    }
+
+    const isOtherCurrentResearchExperienceChecked = this.goalForm.researchExperience.currentResearchExperience.find(p => p.id === 7)?.checked || false;
+
+    if (!isOtherCurrentResearchExperienceChecked) {
+      this.goalForm.researchExperience.currentResearchExperienceOther= '';
+    }
+
+    const isOtherPreviousResearchExperienceChecked = this.goalForm.researchExperience.previousResearchExperience.find(p => p.id === 8)?.checked || false;
+
+    if (!isOtherPreviousResearchExperienceChecked) {
+      this.goalForm.researchExperience.previousResearchExperienceOther= '';
+    }
+
+    const isOtherFamiliarToolsChecked = this.goalForm.researchExperience.familiarTools.find(p => p.id === 10)?.checked || false;
+
+    if (!isOtherFamiliarToolsChecked) {
+      this.goalForm.researchExperience.familiarToolOther= '';
+    }
+
+    const isInterestResearchServiceChecked = this.goalForm.researchExperience.interestResearchService.find(p => p.id === 8)?.checked || false;
+
+    if (!isInterestResearchServiceChecked) {
+      this.goalForm.researchExperience.interestResearchServiceOther= '';
+    }
+
+    //Check conditions for having not filled out form previously for semester (nested dependencies)
+    if (this.isGoalSettingFormFilled === 'Yes') {
+      this.goalForm.communityEngagement.communityEngagementExperiences.forEach(experience => {
+          experience.checked = false;
+      });
+      this.goalForm.communityEngagement.communityEngagementExperiencesOther = '';
+      
+      this.goalForm.communityEngagement.previousEngagementExperiences.forEach(experience => {
+          experience.checked = false;
+      });
+      this.goalForm.communityEngagement.previousEngagementExperiencesOther = '';
+      
+      this.goalForm.communityEngagement.engagementActivitiesTools.forEach(experience => {
+          experience.checked = false;
+      });
+      this.goalForm.communityEngagement.engagementActivitiesToolOther = '';
+      
+      this.goalForm.researchExperience.currentResearchExperience.forEach(experience => {
+          experience.checked = false;
+      });
+      this.goalForm.researchExperience.currentResearchExperienceOther = '';
+      
+      this.goalForm.researchExperience.previousResearchExperience.forEach(experience => {
+          experience.checked = false;
+      });
+      this.goalForm.researchExperience.previousResearchExperienceOther = '';
+      
+      this.goalForm.researchExperience.familiarTools.forEach(experience => {
+          experience.checked = false;
+      });
+      this.goalForm.researchExperience.familiarToolOther = '';
+      
+      this.goalForm.researchExperience.interestResearchService.forEach(experience => {
+          experience.checked = false;
+      });
+      this.goalForm.researchExperience.interestResearchServiceOther = '';
+      
+      this.goalForm.researchExperience.leadershipOption = '';
+  }
+
+  // Ensure that aspirations and goals are in order
+
+  // Extract the aspirations from the goalForm
+    const aspirationsArray = [
+        this.goalForm.aspirations.aspirationOne,
+        this.goalForm.aspirations.aspirationTwo,
+        this.goalForm.aspirations.aspirationThree
+    ];
+
+    // Filter out empty aspirations
+    const filledAspirations = aspirationsArray.filter(aspiration => aspiration && aspiration.trim() !== '');
+
+    // Reset the aspirations in the goalForm
+    this.goalForm.aspirations.aspirationOne = filledAspirations[0] || '';
+    this.goalForm.aspirations.aspirationTwo = filledAspirations[1] || '';
+    this.goalForm.aspirations.aspirationThree = filledAspirations[2] || '';
+
+    // Extract the goals from the goalForm
+    const goalsArray = [
+        this.goalForm.goals.goalOne,
+        this.goalForm.goals.goalTwo,
+        this.goalForm.goals.goalThree,
+        this.goalForm.goals.goalFour,
+        this.goalForm.goals.goalFive
+    ];
+
+    // Filter out empty goals
+    const filledGoals = goalsArray.filter(goal => goal && goal.trim() !== '');
+
+    // Reset the goals in the goalForm
+    this.goalForm.goals.goalOne = filledGoals[0] || '';
+    this.goalForm.goals.goalTwo = filledGoals[1] || '';
+    this.goalForm.goals.goalThree = filledGoals[2] || '';
+    this.goalForm.goals.goalFour = filledGoals[3] || '';
+    this.goalForm.goals.goalFive = filledGoals[4] || '';
+
+    // After cleaning up the data, submit the form
+    this.handleSubmitForm();
+  },
+
   async handleSubmitForm() {
-  const user = useLoggedInUserStore();
-  let token = user.token;
-  let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
+    console.log('submit form called');
+    const user = useLoggedInUserStore();
+    let token = user.token;
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
 
-  const goalForm = {
-    semester: this.goalForm.semester,
-    experienceID: this.goalForm.experienceID,
-    goalForm: {
-      communityEngagement: {
-        communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
-        communityEngagementExperiencesOther: this.goalForm.communityEngagement.communityEngagementExperiencesOther,
-        previousEngagementExperiences: this.goalForm.communityEngagement.previousEngagementExperiences,
-        previousEngagementExperiencesOther: this.goalForm.communityEngagement.previousEngagementExperiencesOther,
-        engagementActivitiesTools: this.goalForm.communityEngagement.engagementActivitiesTools,
-        engagementActivitiesToolOther: this.goalForm.communityEngagement.engagementActivitiesToolOther,
-      },
-      researchExperience: {
-        currentResearchExperience: this.goalForm.researchExperience.currentResearchExperience,
-        currentResearchExperienceOther: this.goalForm.researchExperience.currentResearchExperienceOther,
-        previousResearchExperience: this.goalForm.researchExperience.previousResearchExperience,
-        previousResearchExperienceOther: this.goalForm.researchExperience.previousResearchExperienceOther,
-        familiarTools: this.goalForm.researchExperience.familiarTools,
-        familiarToolOther: this.goalForm.researchExperience.familiarToolOther,
-        interestResearchService: this.goalForm.researchExperience.interestResearchService,
-        interestResearchServiceOther: this.goalForm.researchExperience.interestResearchServiceOther,
-        leadershipOption: this.goalForm.researchExperience.leadershipOption,
-      },
-      growthGoal: {
-        problemSolvingGoal: this.goalForm.growthGoal.problemSolvingGoal,
-        effectiveCommunicationGoal: this.goalForm.growthGoal.effectiveCommunicationGoal,
-        teamworkGoal: this.goalForm.growthGoal.teamworkGoal,
-        culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
-        ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
-        professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
-      },
-      aspirations: {
-        aspirationOne: this.goalForm.aspirations.aspirationOne,
-        aspirationTwo: this.goalForm.aspirations.aspirationTwo,
-        aspirationThree: this.goalForm.aspirations.aspirationThree,
-      },
-      goals: {
-        goalOne: this.goalForm.goals.goalOne,
-        goalTwo: this.goalForm.goals.goalTwo,
-        goalThree: this.goalForm.goals.goalThree,
-        goalFour: this.goalForm.goals.goalFour,
-        goalFive: this.goalForm.goals.goalFive,
-      },
-    },
-  };
-
-  axios
-    .post(apiURL, goalForm, { headers: { token } })
-    .then(() => {
-      this.goalForm = {
-        semester: '',
-        primaryLanguage: '',
-        experienceID: '',
+    const goalForm = {
+      semester: this.goalForm.semester,
+      experienceID: this.goalForm.experienceID,
+      goalForm: {
         communityEngagement: {
-          communityEngagementExperiences: [],
-          communityEngagementExperiencesOther: '',
-          previousEngagementExperiences: [],
-          previousEngagementExperiencesOther: '',
-          engagementActivitiesTools: [],
-          engagementActivitiesToolOther: '',
+          communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
+          communityEngagementExperiencesOther: this.goalForm.communityEngagement.communityEngagementExperiencesOther,
+          previousEngagementExperiences: this.goalForm.communityEngagement.previousEngagementExperiences,
+          previousEngagementExperiencesOther: this.goalForm.communityEngagement.previousEngagementExperiencesOther,
+          engagementActivitiesTools: this.goalForm.communityEngagement.engagementActivitiesTools,
+          engagementActivitiesToolOther: this.goalForm.communityEngagement.engagementActivitiesToolOther,
         },
         researchExperience: {
-          currentResearchExperience: [],
-          currentResearchExperienceOther: '',
-          previousResearchExperience: [],
-          previousResearchExperienceOther: '',
-          familiarTools: [],
-          familiarToolOther: '',
-          interestResearchService: [],
-          interestResearchServiceOther: '',
-          leadershipOption: '',
+          currentResearchExperience: this.goalForm.researchExperience.currentResearchExperience,
+          currentResearchExperienceOther: this.goalForm.researchExperience.currentResearchExperienceOther,
+          previousResearchExperience: this.goalForm.researchExperience.previousResearchExperience,
+          previousResearchExperienceOther: this.goalForm.researchExperience.previousResearchExperienceOther,
+          familiarTools: this.goalForm.researchExperience.familiarTools,
+          familiarToolOther: this.goalForm.researchExperience.familiarToolOther,
+          interestResearchService: this.goalForm.researchExperience.interestResearchService,
+          interestResearchServiceOther: this.goalForm.researchExperience.interestResearchServiceOther,
+          leadershipOption: this.goalForm.researchExperience.leadershipOption,
         },
         growthGoal: {
-          problemSolvingGoal: '',
-          effectiveCommunicationGoal: '',
-          teamworkGoal: '',
-          culturalHumilityGoal: '',
-          ethicalDecisionMakingGoal: '',
-          professionalResponsibilityGoal: '',
+          problemSolvingGoal: this.goalForm.growthGoal.problemSolvingGoal,
+          effectiveCommunicationGoal: this.goalForm.growthGoal.effectiveCommunicationGoal,
+          teamworkGoal: this.goalForm.growthGoal.teamworkGoal,
+          culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
+          ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
+          professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
         },
         aspirations: {
-          aspirationOne: '',
-          aspirationTwo: '',
-          aspirationThree: '',
+          aspirationOne: this.goalForm.aspirations.aspirationOne,
+          aspirationTwo: this.goalForm.aspirations.aspirationTwo,
+          aspirationThree: this.goalForm.aspirations.aspirationThree,
         },
         goals: {
-          goalOne: '',
-          goalTwo: '',
-          goalThree: '',
-          goalFour: '',
-          goalFive: '',
+          goalOne: this.goalForm.goals.goalOne,
+          goalTwo: this.goalForm.goals.goalTwo,
+          goalThree: this.goalForm.goals.goalThree,
+          goalFour: this.goalForm.goals.goalFour,
+          goalFive: this.goalForm.goals.goalFive,
         },
-      };
-    
-      alert("Goal form has been successfully submitted.");
-      this.$router.push('/studentDashboard');
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
+      },
+    };
+
+    axios
+      .post(apiURL, goalForm, { headers: { token } })
+      .then(() => {
+      
+        alert("Goal form has been successfully submitted.");
+        this.$router.push('/studentDashboard');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   },
 }

@@ -680,23 +680,24 @@ export default {
   },
   watch: {
     'studentInformation.pronouns': {
-      deep: true,
-      handler(newVal) {
-          const preferNotToAnswer = newVal.find(p => p.id === 6);
-          if (preferNotToAnswer && preferNotToAnswer.checked) {
-              newVal.forEach(pronoun => {
-                  if (pronoun.id !== 6) {
-                      pronoun.checked = false;
-                  }
-              });
-          }
+        deep: true,
+        handler(newVal) {
+            const preferNotToAnswer = newVal.find(p => p.id === 6);
+            if (preferNotToAnswer && preferNotToAnswer.checked) {
+                newVal.forEach(pronoun => {
+                    if (pronoun.id !== 6) {
+                        pronoun.checked = false;
+                    }
+                });
+            }
 
-          const otherPronoun = newVal.find(pronoun => pronoun.id === 5);
-          if (otherPronoun && otherPronoun.checked && this.formSubmitted) {
-              this.$refs.otherPronounsField.validate();
-          }
-      }
-  },
+            const otherPronoun = newVal.find(pronoun => pronoun.id === 5);
+            if (otherPronoun && otherPronoun.checked && this.formSubmitted) {
+              console.log('philtest')
+                this.$refs.otherPronounsField.validate();
+            }
+        }
+    },
   'studentInformation.enrolledUHInfo.uhStatus'(newValue) {
       if (newValue === 'Yes' && this.formSubmitted) {
           // Trigger validation on the fields
