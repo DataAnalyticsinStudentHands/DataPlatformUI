@@ -248,17 +248,27 @@
             <v-col cols="11" md="7">
                 <p 
                 class="font-weight-black text-h8">Are you pursuing, or planning to pursue, any of the following Honors College minors?</p>
-                <v-select 
-                v-model="studentInformation.enrolledUHInfo.honorsMinors" :items="['Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" label="Select a Honors Minor" multiple chips></v-select>
-
+                <v-autocomplete
+                  v-model="studentInformation.enrolledUHInfo.honorsMinors" 
+                  :items="['Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" 
+                  label="Select a Honors Minor" 
+                  multiple 
+                  clearable
+                  chips>
+              </v-autocomplete>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="7">
                 <p 
                 class="font-weight-black text-h8">Are you pursuing any other minors?</p>
-                <v-select 
-                v-model="studentInformation.enrolledUHInfo.otherMinors" :items="filteredMinors.map(minor => minor['Plan Name'])" label="Select a Minor" multiple chips></v-select>
+                <v-autocomplete
+                  v-model="studentInformation.enrolledUHInfo.otherMinors" 
+                  :items="filteredMinors.map(minor => minor['Plan Name'])" 
+                  label="Select a Minor" 
+                  multiple 
+                  clearable
+                  chips></v-autocomplete>
             </v-col>
           </v-row>
           <p 
