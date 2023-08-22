@@ -78,6 +78,7 @@
                 v-model="pronoun.checked" 
                 :label="pronoun.label"
                 :color="pronoun.id === 5 && isOtherPronounsInvalid ? 'error' : ''"
+                :indeterminate="studentInformation.pronouns[studentInformation.pronouns.length - 1].checked && !pronoun.checked"
             >
             </v-checkbox>
 

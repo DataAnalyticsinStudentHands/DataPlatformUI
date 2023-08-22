@@ -89,6 +89,7 @@ Array to match others and add input fields for goals and aspirations  -->
         v-model="engagementExperience.checked" 
         :label="engagementExperience.label"
         :rules="communityEngagementExperiencesRules"
+        :indeterminate="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
     >
     </v-checkbox>
 
@@ -139,6 +140,7 @@ Array to match others and add input fields for goals and aspirations  -->
         :label="previousExperience.label" 
         v-model="previousExperience.checked"
         :rules="previousEngagementExperiencesRules"
+        :indeterminate="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked"
       >
       </v-checkbox>
 
@@ -189,6 +191,7 @@ Array to match others and add input fields for goals and aspirations  -->
         v-model="activitiesTool.checked" 
         :label="activitiesTool.label"
         :rules="engagementActivitiesToolsRules"
+        :indeterminate="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked"
     >
     </v-checkbox>
     <!-- Tooltip -->
@@ -241,6 +244,7 @@ Array to match others and add input fields for goals and aspirations  -->
         v-model="currentExperience.checked" 
         :label="currentExperience.label"
         :rules="currentResearchExperienceRules"
+        :indeterminate="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked"
     >
     </v-checkbox>
 
@@ -294,6 +298,7 @@ Array to match others and add input fields for goals and aspirations  -->
         v-model="previousExperience.checked" 
         :label="previousExperience.label"
         :rules="previousResearchExperienceRules"
+        :indeterminate="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked"
     >
     </v-checkbox>
 
@@ -347,6 +352,7 @@ Array to match others and add input fields for goals and aspirations  -->
         v-model="familiarTool.checked" 
         :label="familiarTool.label"
         :rules="familiarToolsRules"
+        :indeterminate="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked"
     >
     </v-checkbox>
 
@@ -400,6 +406,7 @@ Array to match others and add input fields for goals and aspirations  -->
         v-model="interest.checked" 
         :label="interest.label"
         :rules="interestResearchServiceRules"
+        :indeterminate="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked"
     >
     </v-checkbox>
 
