@@ -250,7 +250,7 @@
                 class="font-weight-black text-h8">Are you pursuing, or planning to pursue, any of the following Honors College minors?</p>
                 <v-autocomplete
                   v-model="studentInformation.enrolledUHInfo.honorsMinors" 
-                  :items="['Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" 
+                  :items="['None','Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" 
                   label="Select a Honors Minor" 
                   multiple 
                   clearable
