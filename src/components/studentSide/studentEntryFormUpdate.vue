@@ -116,7 +116,7 @@
             <!-- Honors College Minors not given -->
             <v-col cols="11" md="7">
               <p class="font-weight-black text-h8">Are you pursuing, or planning to pursue, any of the following Honors College minors?</p>
-              <v-select v-model="studentInformation.enrolledUHInfo.honorsMinors" :items="['Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" label="Select a Honors Minor" multiple chips></v-select>
+              <v-select v-model="studentInformation.enrolledUHInfo.honorsMinors" :items="['None','Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" label="Select a Honors Minor" multiple chips></v-select>
 
             </v-col>
           </v-row>
