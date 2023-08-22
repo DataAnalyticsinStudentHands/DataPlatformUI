@@ -75,7 +75,13 @@ Array to match others and add input fields for goals and aspirations  -->
   </p>
 
   <!-- Loop through all checkboxes -->
-  <div v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" :key="engagementExperience.id">
+  <div 
+  v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" 
+  :key="engagementExperience.id"
+  class="relative"
+  @mouseover="hoveredCheckboxID1 = engagementExperience.id" 
+  @mouseleave="hoveredCheckboxID1 = null"
+  >
     <v-checkbox 
       :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
         density="compact"
@@ -85,6 +91,17 @@ Array to match others and add input fields for goals and aspirations  -->
         :rules="communityEngagementExperiencesRules"
     >
     </v-checkbox>
+
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+      v-if="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked && hoveredCheckboxID1 === engagementExperience.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "None of the above" to select this.
+      </span>
+    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -111,7 +128,10 @@ Array to match others and add input fields for goals and aspirations  -->
   <p 
   :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
   class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
-  <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id">
+  <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id"
+  class="relative"
+  @mouseover="hoveredCheckboxID2 = previousExperience.id" 
+  @mouseleave="hoveredCheckboxID2 = null">
       <v-checkbox 
       :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
         density="compact"
@@ -121,6 +141,17 @@ Array to match others and add input fields for goals and aspirations  -->
         :rules="previousEngagementExperiencesRules"
       >
       </v-checkbox>
+
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+      v-if="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked && hoveredCheckboxID2 === previousExperience.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "None of the above" to select this.
+      </span>
+    </transition>
       <transition name="slide-y-transition">
       <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
         <v-col cols="12">
@@ -147,7 +178,10 @@ Array to match others and add input fields for goals and aspirations  -->
   </p>
 
   <!-- Loop through all checkboxes -->
-  <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id">
+  <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id"
+  class="relative"
+  @mouseover="hoveredCheckboxID1 = activitiesTool.id" 
+  @mouseleave="hoveredCheckboxID1 = null">
     <v-checkbox 
     :class="{'error-text': isEngagementActivitiesToolsInvalid}"
         density="compact"
@@ -157,6 +191,16 @@ Array to match others and add input fields for goals and aspirations  -->
         :rules="engagementActivitiesToolsRules"
     >
     </v-checkbox>
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+      v-if="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked && hoveredCheckboxID1 === engagementExperience.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "None of the above" to select this.
+      </span>
+    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -840,6 +884,13 @@ export default {
       },
       formSubmitted: false,
       isGoalsValid: null,
+      hoveredCheckboxID1: null,
+      hoveredCheckboxID2: null,
+      hoveredCheckboxID3: null,
+      hoveredCheckboxID4: null,
+      hoveredCheckboxID5: null,
+      hoveredCheckboxID6: null,
+      hoveredCheckboxID7: null,
       experienceIDRules: [
         v => {
           if (this.formSubmitted) {

@@ -12,7 +12,9 @@
     <v-container style="width: 90%; margin: 0 auto;">
       <p 
       :class="{'error-text': isDemographicsInformationInvalid}"
-      class="font-weight-black text-h6">Demographics Information</p>
+      class="font-weight-black text-h6 mb-2">Demographics Information</p>
+      <p 
+      class="font-weight-black">In which city were you born?</p>
       <v-row class="mb-4">
       <v-col cols="12" md="6">
           <v-text-field 
@@ -55,7 +57,7 @@
           </v-col>
       </v-row>
 
-      <v-row class="mb-4">
+  <v-row class="mb-4">
         <v-col cols="12">
       <div>
         <p 
@@ -63,7 +65,13 @@
             class="font-weight-black">What are your pronouns? Select all that apply.</p>
 
         <!-- Loop through all checkboxes except the last one -->
-        <div v-for="pronoun in studentInformation.pronouns.slice(0, -1)" :key="pronoun.id">
+        <div 
+          v-for="pronoun in studentInformation.pronouns.slice(0, -1)" 
+          :key="pronoun.id"
+          class="relative"
+          @mouseover="hoveredCheckboxID = pronoun.id" 
+          @mouseleave="hoveredCheckboxID = null"
+          >
             <v-checkbox 
                 density="compact"
                 class="ma-0 pa-0" hide-details="true"
@@ -72,6 +80,17 @@
                 :color="pronoun.id === 5 && isOtherPronounsInvalid ? 'error' : ''"
             >
             </v-checkbox>
+
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+        v-if="studentInformation.pronouns[studentInformation.pronouns.length - 1].checked && !pronoun.checked && hoveredCheckboxID === pronoun.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "Prefer not to answer" to select this.
+      </span>
+    </transition>
         </div>
 
         <!-- "Other" text field -->
@@ -93,7 +112,7 @@
                 </v-col>
             </v-row>
 
-        <!-- Loop for the last checkbox (assuming it's "Prefer not to say") -->
+        <!-- Loop for the last checkbox ("Prefer not to say") -->
         <div v-if="studentInformation.pronouns.length">
             <v-checkbox 
                 density="compact"
@@ -106,6 +125,9 @@
     </div>
   </v-col>
   </v-row>
+
+
+
 
       <p class="font-weight-black text-h8">Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?</p>
       <v-row>
@@ -156,18 +178,23 @@
 
 
           <v-row>
-            <v-col cols="12" md="3">
-              <v-text-field 
-              ref="peopleSoftIDField"
-              v-model="studentInformation.enrolledUHInfo.peopleSoftID" 
-              label="PeopleSoft ID"
-              :rules="peopleSoftIDRules"></v-text-field>
-            </v-col>
-            <v-col cols="12" md="2">
-              <v-text-field 
-              type="date" v-model="studentInformation.enrolledUHInfo.expectedGraduationYear" label="Expected Graduation Date" min="2023-01-01" max="2099-12-31"></v-text-field>
-            </v-col>
-          </v-row>
+          <v-col cols="12" md="4">
+            <v-text-field 
+            ref="peopleSoftIDField"
+            v-model="studentInformation.enrolledUHInfo.peopleSoftID" 
+            label="PeopleSoft ID"
+            :rules="peopleSoftIDRules"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="3">
+            <v-text-field 
+            type="date" 
+            v-model="studentInformation.enrolledUHInfo.expectedGraduationYear" 
+            label="Expected Graduation Date" 
+            min="2023-01-01" 
+            max="2099-12-31"></v-text-field>
+          </v-col>
+        </v-row>
+
           <v-row>
             <v-col cols="12" md="7">
               <p 
@@ -247,14 +274,17 @@
             <!-- Honors College Minors not given -->
             <v-col cols="11" md="7">
                 <p 
+                :class="{'error-text': isHonorsMinorsInvalid}"
                 class="font-weight-black text-h8">Are you pursuing, or planning to pursue, any of the following Honors College minors?</p>
                 <v-autocomplete
+                  ref="honorsMinorsRef"
                   v-model="studentInformation.enrolledUHInfo.honorsMinors" 
-                  :items="['Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" 
+                  :items="['None', 'Data & Society', 'Medicine & Society', 'Phronesis', 'Creative Work', 'Energy & Sustainability', 'Leadership Studies', 'Global Engagement and Research']" 
                   label="Select a Honors Minor" 
-                  multiple 
+                  multiple
                   clearable
-                  chips>
+                  chips
+                  :rules="honorsMinorsRules">
               </v-autocomplete>
             </v-col>
           </v-row>
@@ -316,9 +346,15 @@
         </v-col>
         <v-col cols="11" md="10">
           <transition name="slide-y-transition">
-            <div v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">
-              <p class="font-weight-black text-h8">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-              <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
+            <div v-show="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">
+              <p 
+              :class="{'error-text': isServiceHistoryDescInvalid}"
+              class="font-weight-black text-h8">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
+              <v-textarea 
+              v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" 
+              label="Please specify"
+              :rules="serviceHistoryDescRules"
+              ></v-textarea>
             </div>
           </transition>
         </v-col>
@@ -342,7 +378,7 @@
 
     <div>
       <p 
-      :class="{'error-text': isServiceStatusInvalid}"
+      :class="{'error-text': isServiceStatusInvalid || isServiceHistoryDescInvalid}"
       class="font-weight-black text-h6">Non-UH Students Only</p>
     </div>
     <div>
@@ -365,14 +401,20 @@
         </v-col>
         <v-col cols="11" md="10">
           <transition name="slide-y-transition">
-            <div v-if="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">
-          <p class="font-weight-black text-h8">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
-          <v-textarea v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" label="Please specify"></v-textarea>
+            <div v-show="(studentInformation.communityServiceInfo.serviceStatus == 'Yes')">
+          <p 
+          :class="{'error-text': isServiceHistoryDescInvalid}"
+          class="font-weight-black text-h8">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</p>
+          <v-textarea 
+          v-model="studentInformation.communityServiceInfo.serviceHistoryDesc" 
+          label="Please specify"
+          :rules="serviceHistoryDescRules"
+          ></v-textarea>
         </div>
         </transition>
         </v-col>
         <transition name="slide-y-transition">
-          <div v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">
+          <div v-show="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">
         <v-col cols="11" md="10">
           <p class="font-weight-black text-h8" >Are you a member of any community organizations outside the University? Please list.</p>
           <v-row v-if="studentInformation.communityServiceInfo.serviceStatus == 'Yes'">
@@ -581,6 +623,7 @@ export default {
       majors: [],
       minors: [],
       formSubmitted: false,
+      hoveredCheckboxID: null,
       otherPronounsRules: [
           v => {
               if (!this.formSubmitted) return true;
@@ -659,10 +702,26 @@ export default {
               return (v && v.length > 0) || 'At least one Major is required.';
           }
       ],
+      honorsMinorsRules: [
+      v => {
+              // If user is not a UH student, validation passes automatically
+              if (!this.uHStudentCheck) return true;
+
+              return (v && v.length > 0) || 'Please select at least one Minor, or "None".';
+          }
+      ],
       serviceStatusRules: [
           v => {
             return !!v || 'Information is required.';
           }
+      ],
+      serviceHistoryDescRules: [
+        v => {
+        // if user has not had comm-service experience, then skip validation.
+              if (!this.formSubmitted || this.studentInformation.communityServiceInfo.serviceStatus === 'No') return true;
+
+              return !!v || 'Information is required.';
+            }
       ],
       programGradProStatusRules: [
           v => {
@@ -714,6 +773,7 @@ export default {
           this.$refs.uhEmailField.validate();
           this.$refs.peopleSoftIDField.validate();
           this.$refs.majorsField.validate();
+          this.$refs.honorsMinorsRef.validate();
       }
   },
   'studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus'(newValue) {
@@ -841,23 +901,36 @@ export default {
       // Check the validation rule for the majors
       return this.majorsRules[0](this.studentInformation.enrolledUHInfo.majors) !== true;
   },
+  isHonorsMinorsInvalid() {
+      // if user is not UH Student, skip validation
+      if (!this.uHStudentCheck) return false;
+
+    // Check the validation rule for the minors
+    return this.honorsMinorsRules[0](this.studentInformation.enrolledUHInfo.honorsMinors) !== true;
+  },
   isEducationalBackgroundAndGoalsInvalid() {
       // if user is not UH Student, skip validation
       if (!this.uHStudentCheck) return false;
 
-      return this.isHonorsCollegeStatusInvalid || this.isHonorsCollegeAffiliatedStatusInvalid || this.isMajorsInvalid;
+      return this.isHonorsCollegeStatusInvalid || this.isHonorsCollegeAffiliatedStatusInvalid || this.isMajorsInvalid || this.isHonorsMinorsInvalid;
   },
   isOtherEngagementValid() {
       // if user is not UH Student, skip validation
       if (!this.uHStudentCheck) return false;
 
       // Check serviceStatus validation
-      return this.isServiceStatusInvalid;
+      return this.isServiceStatusInvalid || this.isServiceHistoryDescInvalid;
   },
   isServiceStatusInvalid() {
     if (!this.formSubmitted) return false;
     const rule = v => !!v || 'Information is required';
     return rule(this.studentInformation.communityServiceInfo.serviceStatus) !== true;
+  },
+  isServiceHistoryDescInvalid() {
+    // if form wasn't submitted, or if user has not had comm-service experience, then skip validation.
+    if (!this.formSubmitted || this.studentInformation.communityServiceInfo.serviceStatus === 'No') return false;
+    const rule = v => !!v || 'Information is required';
+    return rule(this.studentInformation.communityServiceInfo.serviceHistoryDesc) !== true;
   },
   isProgramGradProStatusValid() {
     if (!this.formSubmitted) return false;
