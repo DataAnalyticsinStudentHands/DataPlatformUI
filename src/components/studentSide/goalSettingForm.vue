@@ -180,8 +180,8 @@ Array to match others and add input fields for goals and aspirations  -->
   <!-- Loop through all checkboxes -->
   <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id"
   class="relative"
-  @mouseover="hoveredCheckboxID1 = activitiesTool.id" 
-  @mouseleave="hoveredCheckboxID1 = null">
+  @mouseover="hoveredCheckboxID3 = activitiesTool.id" 
+  @mouseleave="hoveredCheckboxID3 = null">
     <v-checkbox 
     :class="{'error-text': isEngagementActivitiesToolsInvalid}"
         density="compact"
@@ -194,7 +194,7 @@ Array to match others and add input fields for goals and aspirations  -->
     <!-- Tooltip -->
     <transition name="slide-y-transition">
       <span 
-      v-if="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked && hoveredCheckboxID1 === engagementExperience.id"
+      v-if="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked && hoveredCheckboxID3 === activitiesTool.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
         style="transform: translate(-100%, 0);"
       >
@@ -230,7 +230,10 @@ Array to match others and add input fields for goals and aspirations  -->
   </p>
 
   <!-- Loop through all checkboxes -->
-  <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id">
+  <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id"
+  class="relative"
+  @mouseover="hoveredCheckboxID4 = currentExperience.id" 
+  @mouseleave="hoveredCheckboxID4 = null">
     <v-checkbox 
     :class="{'error-text': isCurrentResearchExperienceInvalid}"
         density="compact"
@@ -240,6 +243,17 @@ Array to match others and add input fields for goals and aspirations  -->
         :rules="currentResearchExperienceRules"
     >
     </v-checkbox>
+
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+      v-if="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked && hoveredCheckboxID4 === currentExperience.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "None of the above" to select this.
+      </span>
+    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -269,7 +283,10 @@ Array to match others and add input fields for goals and aspirations  -->
   </p>
 
   <!-- Loop through all checkboxes -->
-  <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id">
+  <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id"
+  class="relative"
+  @mouseover="hoveredCheckboxID5 = previousExperience.id" 
+  @mouseleave="hoveredCheckboxID5 = null">
     <v-checkbox 
     :class="{'error-text': isPreviousResearchExperienceInvalid}"
         density="compact"
@@ -279,6 +296,17 @@ Array to match others and add input fields for goals and aspirations  -->
         :rules="previousResearchExperienceRules"
     >
     </v-checkbox>
+
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+      v-if="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked && hoveredCheckboxID5 === previousExperience.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "None of the above" to select this.
+      </span>
+    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -308,7 +336,10 @@ Array to match others and add input fields for goals and aspirations  -->
   </p>
 
   <!-- Loop through all checkboxes -->
-  <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id">
+  <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id"
+  class="relative"
+  @mouseover="hoveredCheckboxID6 = familiarTool.id" 
+  @mouseleave="hoveredCheckboxID6 = null">
     <v-checkbox 
     :class="{'error-text': isFamiliarToolsInvalid}"
         density="compact"
@@ -318,6 +349,17 @@ Array to match others and add input fields for goals and aspirations  -->
         :rules="familiarToolsRules"
     >
     </v-checkbox>
+
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+      v-if="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked && hoveredCheckboxID6 === familiarTool.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "None of the above" to select this.
+      </span>
+    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -347,7 +389,10 @@ Array to match others and add input fields for goals and aspirations  -->
   </p>
 
   <!-- Loop through all checkboxes -->
-  <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id">
+  <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id"
+  class="relative"
+  @mouseover="hoveredCheckboxID7 = interest.id" 
+  @mouseleave="hoveredCheckboxID7 = null">
     <v-checkbox 
     :class="{'error-text': isInterestResearchServiceInvalid}"
         density="compact"
@@ -357,6 +402,17 @@ Array to match others and add input fields for goals and aspirations  -->
         :rules="interestResearchServiceRules"
     >
     </v-checkbox>
+
+    <!-- Tooltip -->
+    <transition name="slide-y-transition">
+      <span 
+      v-if="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked && hoveredCheckboxID7 === interest.id"
+        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
+        style="transform: translate(-100%, 0);"
+      >
+          De-select "None of the above" to select this.
+      </span>
+    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
