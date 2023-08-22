@@ -146,9 +146,32 @@ export default {
   const headerRow = header.join(',');
 
   // Add an extra row with custom text for Aspiration 1 and Aspiration 2
-  const customText1 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 1';
-  const customText2 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 2';
-  const extraRowCSV = ['"' + customText1 + '","' + customText2 + '"'];
+  const customText1 = 'Current Semester';
+  const customText2 = 'Which experience are you filling out this form for';
+  const customText3 = 'What kind of community engagement experiences, if any, have you had? Check all that apply.';
+  const customText4 = 'What kind of community engagement experiences, if any, have you had? Check all that apply. - other - Text';
+  const customText5 = 'From your previous community engagement experiences, which of the following activities have you engaged in?';
+  const customText6 = 'From your previous community engagement experiences, which of the following activities have you engaged in? - Other - Text';
+  const customText7 = 'What, if any, tools have you used for community engagement activities?';
+  const customText8 = 'What, if any, tools have you used for community engagement activities? - other - Text';
+  const customText9 = 'What kind of research experiences, if any, have you had? Check all that apply.';
+  const customText10 = 'What kind of research experiences, if any, have you had? Check all that apply. - Other - Text';
+  const customText11 = 'From your previous research experiences, which of the following activities have you engaged in?';
+  const customText12 = 'From your previous research experiences, which of the following activities have you engaged in? - Other - Text';
+  const customText13 = 'What, if any, tools are you familiar with?';
+  const customText14 = 'What, if any, tools are you familiar with? - Other - Text';
+  const customText15 = 'What are your research/service interests? Check all that apply.';
+  const customText16 = 'What are your research/service interests? Check all that apply - Other - Text';
+  const customText17 = 'Are you interested in potentially holding a leadership position?';
+  const customText18 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of problem solving.';
+  const customText19 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of effective communication.';
+  const customText20 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of teamwork.';
+  const customText21 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of cultural humility.';
+  const customText22 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of ethical decision making.';
+  const customText23 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of professional responsibility.';
+  const customText24 = 'Please describe 2-3 long-term aspirations you may have.';
+  const customText25 = 'Please outline 3-5 goals that you have for this experience.';
+  const extraRowCSV = ['"' + customText3+'","'+'","'+'","' + '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ customText4 + '","' + customText5+'","'+'","'+'","' + '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","' +'","' + customText6 +'","' + customText7 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText8 +'","' + customText9 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText10 +'","' + customText11 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText12 +'","' + customText13 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText14 +'","' + customText15+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' +'","' + customText16 +'","' + customText17 +'","' + customText18 +'","' + customText19 +'","' + customText20 +'","'+ customText21 +'","'+ customText22 +'","'+ customText23 +'","'+ customText24+'","'+'","' +'","'+ customText25+'","'+'","'+'","'+'","'+'","'+'","'+'","' +'","' + customText1 +'","'+'","'+'","' + customText2 +'"'];
 
   // Create the CSV data rows
   const dataRows = jsonData.map((item) => {
@@ -191,7 +214,7 @@ export default {
   const customText21 = 'If yes, please specify.';
   const customText22 = 'What is/are your current major(s)?';
   const customText23 = 'Are you pursuing, or planning to pursue, any of the following Honors College minors?';
-  const customText24 = 'Are you pursuing any other minors? Please list.';
+  const customText24 = 'Are you pursuing any other minors?';
   const customText25 = 'Are you a member of Honors in Community Health (HICH)?';
   const customText26 = 'Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?';
   const customText27 = 'Have you had other experience with Community Service?';
@@ -201,7 +224,9 @@ export default {
   const customText31 = 'If you are planning to pursue graduate school, what type of program?';
   const customText32 = 'Are you planning to pursue any other kind of specialized degree / certificate program?';
   const customText33 = 'If you are planning to pursue a specialized degree / certificate program, what type of program?';
-  const extraRowCSV = ['"' + '","' +'","' +'","' +customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","'  + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","' +  customText17 +'","'  +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","' +  customText32 + '","' +customText33 +'","'+ customText5 +'","' + customText6 +'","' + customText7 +'","' + customText8 +'","' + customText9 +'","' + customText10 +'","' + customText11 +'","' + '"'];
+  const customText34 = 'If you are planning to pursue graduate school, what type of program? - other - Text';
+  const customText35 = 'If you are planning to pursue a specialized degree / certificate program, what type of program? - other - Text';
+  const extraRowCSV = ['"' + '","' +'","' +'","' +customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","' + customText11 +'","'  + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","' +  customText17 +'","'  +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+customText34  +'","'+ customText32 + '","' +customText33 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+customText35+'","'+ customText5 +'","'+'","'+'","' + customText6 +'","'+'","'+'","' + customText7 +'","'+'","'+'","' + customText8 +'","'+'","'+'","' + customText9 +'","'+'","'+'","' + customText10 +'","'+'","' +'","' + '"'];
 
   // Create the CSV data rows
   const dataRows = jsonData.map((item) => {
@@ -260,7 +285,7 @@ export default {
   const customText37 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 4';
   const customText38 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 5';
   const customText39 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - No goals';
-  const extraRowCSV = ['"' + customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","' + customText5 +'","' + customText6 +'","' + customText7 +'","' + customText8 +'","' + customText9 +'","' + customText10 +'","' + customText11 +'","' + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","' + '","' +'","' +'","' +  customText17 +'","' + '","' +'","' +'","' +'","' +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","' + '","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' + customText32 + customText33 +'","' + customText34 +'","' + customText35 +'","' + customText36 +'","' + customText37 +'","' + customText38 +'","'  + customText39 +'","' + '"'];
+  const extraRowCSV = ['"' + customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","' + customText5 +'","' + customText6 +'","' + customText7 +'","' + customText8 +'","' + customText9 +'","' + customText10 +'","' + customText11 +'","' + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","'  +  customText17 +'","'  +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","' + '","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' + customText32 + customText33 +'","' + customText34 +'","' + customText35 +'","' + customText36 +'","' + customText37 +'","' + customText38 +'","'  + customText39 +'","' + '"'];
 
   // Create the CSV data rows
   const dataRows = jsonData.map((item) => {

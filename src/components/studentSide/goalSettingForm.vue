@@ -752,9 +752,6 @@ class="font-weight-black text-h6">Growth</p>
     transform-origin: center center;
 }
 
-
-
-
 </style>
 
 <script>
@@ -1482,7 +1479,7 @@ export default {
     async fetchExperiences() {
     const user = useLoggedInUserStore();
     let token = user.token;
-    let apiURL = import.meta.env.VITE_ROOT_API + '/instructorSideData/experiences/';
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/currentSemesterExperiences/';
 
     try {
       const response = await axios.get(apiURL, { headers: { token } });

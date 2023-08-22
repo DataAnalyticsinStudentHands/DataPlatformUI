@@ -11,7 +11,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
       <div class="ml-10">
       </div>
-      <div class="flex flex-col col-span-2">
+      <!-- removing b/c WIP <div class="flex flex-col col-span-2">
         <table class="min-w-full shadow-md rounded">
           <thead class="bg-gray-50 text-xl">
             <tr>
@@ -30,7 +30,7 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> -->
     </div>
     </div>
   </main>
