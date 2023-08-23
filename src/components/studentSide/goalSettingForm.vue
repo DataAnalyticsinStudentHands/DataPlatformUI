@@ -1588,6 +1588,12 @@ export default {
   },
   cleanupFormData() {
     // Check condition for "Other" text fields
+    const isOtherCommunityEngagementExperiencesChecked = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.id === 6)?.checked || false;
+
+    if (!isOtherCommunityEngagementExperiencesChecked) {
+      this.goalForm.communityEngagement.communityEngagementExperiencesOther = '';
+    }
+
     const isOtherPreviousEngagementExperienceChecked = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8)?.checked || false;
 
     if (!isOtherPreviousEngagementExperienceChecked) {
