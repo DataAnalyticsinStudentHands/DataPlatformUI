@@ -252,7 +252,7 @@
   <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> How did this experience contribute to your graduate/progessional goals?</p>
 <input type="text" v-model="exitForm.experienceContributions" style="margin-top: 5px; margin-bottom: 2px; border: none; border: 1px solid grey; padding: 5px; border-radius: 0; width: 50vw; height: 10vw;">
   <br><br>
-
+<p>{{  isSpecificExperience(exitForm.experience._id) }}</p>
   <p v-if="isSpecificExperience(exitForm.experience._id)" class="font-weight-black text-h8" style="margin-bottom: 2px;"> Use the scale provided to rate your likelihood of taking the actions listed</p>
   <!-- section for only data and society experiences -->
   <table v-if="isSpecificExperience(exitForm.experience._id)">
@@ -593,21 +593,29 @@ export default {
     this.fetchGoalFormActivities(),
     this.fetchSemester();
     this.fetchExperienceData();
+    this.fetchSpecificExperienceIDs();
+    this.isSpecificExperience(this.experience._id);
   },
   methods: {
-    isSpecificExperience(experienceID) {
-      // Define the specific experience IDs that you want to show the table for
-      const specificIDs = [
-        //data & society experience IDs
-        "fcc5da10-16c4-11ee-8afa-bd714d8ea2b1",
-        "05fc6720-16c5-11ee-8afa-bd714d8ea2b1",
-        "0edc21a0-16c5-11ee-8afa-bd714d8ea2b1",
-        "15cf9c80-16c5-11ee-8afa-bd714d8ea2b1",
-      ];
+  async fetchSpecificExperienceIDs() {
+    try {
+      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/currentSemesterDataSocietyExperiences/`;
+      const response = await fetch(apiURL);
+      const data = await response.json();
+      
+      // Extract the specific IDs from the fetched data
+      return data.map(experience => experience._id);
+    } catch (error) {
+      console.error("Error fetching specific experience IDs:", error);
+      return []; // Return an empty array in case of an error
+    }
+  },
 
-      // Check if the experienceID matches any of the specificIDs
-      return specificIDs.includes(experienceID);
-    },
+  async isSpecificExperience(experienceID) {
+    const specificIDs = await this.fetchSpecificExperienceIDs();
+    return specificIDs.includes(experienceID);
+  }
+,
     updateContribution(activityId, goal, checked) {
   // Update specific goal contributions for the activity
   const contributions = this.exitForm.activitiesContribution[goal];

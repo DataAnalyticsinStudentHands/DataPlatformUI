@@ -48,8 +48,7 @@ import 'vue3-toastify/dist/index.css';
       };
     },
     mounted() {
-      const user = useLoggedInUserStore()
-      let token = user.token
+      let token = localStorage.getItem("token");
       let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
       axios
         .get(url, {

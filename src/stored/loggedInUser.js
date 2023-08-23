@@ -30,6 +30,9 @@ export const useLoggedInUserStore = defineStore({
             userId: response.data.userID,
             token: response.data.token
           });
+
+          // Save the token to localStorage
+          localStorage.setItem("token", response.data.token);
           
           if (this.role === 'Instructor') {
             this.$router.push("/instructorDash");
