@@ -549,6 +549,8 @@
 </style>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
@@ -955,11 +957,13 @@ export default {
       const { valid } = await this.$refs.form.validate()
 
       if (valid) {
-        console.log('Form is valid');
         this.cleanupFormData();
         this.submitCompletedForm();
       } else {
-        console.log('Form is invalid');
+        toast.error("Oops! Error(s) detected. Please review and try again.", {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
         return;
       }
     },
@@ -968,7 +972,15 @@ export default {
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
       axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
-        this.$router.push('/studentDashboard');
+        this.$router.push({ 
+              name: 'studentDashboard',
+              params: {
+                toastType: 'success',
+                toastMessage: 'Thank you for completing the Student Entry Form!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--create'
+            }
+          });
       })
       .catch((error) => {
         console.log(error);

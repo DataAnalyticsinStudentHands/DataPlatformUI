@@ -75,10 +75,17 @@
       </div>
     </div>
     <!-- </div> -->
+
+
+
+
   </section>
 </template>
 
+
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   name: "Login",
@@ -90,12 +97,20 @@ export default {
       error: "",
     };
   },
+  mounted() {
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
+  },
   setup() {
     const store = useLoggedInUserStore()
     return {
       // you can return the whole store instance to use it in the template
       store,
     }
-  }
+  },
 };
 </script>

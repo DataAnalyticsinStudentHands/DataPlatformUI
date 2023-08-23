@@ -157,7 +157,7 @@ const routes = [
     },
     {
       path: '/instructorExperiences',
-      name: 'instructornExperiences',
+      name: 'instructorExperiences',
       component: () => import('../components/instructorSide/instructorExperiences.vue')
     },
     {

@@ -14,6 +14,9 @@
         </v-container>
       </center>
       <div style="text-align:right;">
+        <v-btn @click=$router.back() style="margin-right: 10px;">
+          Cancel
+        </v-btn>
         <v-btn style="text-align:center;" @click="handleUpdateForm">Update</v-btn>
       </div>
     </main>
@@ -79,10 +82,15 @@
             headers: { token },
           })
           .then(() => {
-            alert("Update has been saved.");
-            this.$router.back().catch((error) => {
-              console.log(error);
-            });
+            this.$router.push({ 
+              name: 'instructorActivities',
+              params: {
+                toastType: 'info',
+                toastMessage: 'Activity updated!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--update'
+            }
+          });
           });
       },
     },

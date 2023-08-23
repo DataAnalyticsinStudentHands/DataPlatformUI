@@ -61,6 +61,8 @@
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
@@ -77,6 +79,12 @@ export default {
   mounted() {
     this.fetchExperienceData();
     window.scrollTo(0, 0);
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
   },
   methods: {
     fetchExperienceData() {
@@ -113,10 +121,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' deactivated!'
           this.selectedExperiences = [];
           this.fetchExperienceData();
-          alert("The experience(s) have been deactivated.");
-          this.$router.push("/instructorExperiences"); // Navigate to /instructorExperiences
+          toast.error(message, {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -134,10 +145,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' activated!'
           this.selectedExperiences = [];
           this.fetchExperienceData();
-          alert("The experience(s) have been activated.");
-          this.$router.push("/instructorExperiences"); // Navigate to /instructorExperiences
+          toast.success(message, {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--create'
+          });
         })
         .catch((error) => {
           console.log(error);

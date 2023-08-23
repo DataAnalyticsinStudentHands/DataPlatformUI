@@ -818,6 +818,8 @@ class="font-weight-black text-h6">Growth</p>
 </style>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
@@ -1575,11 +1577,12 @@ export default {
 
     //need to manually validate aspirations and goals because of multiple v-text-fields for one validation
     if (valid) {
-      console.log('Form is valid');
       this.cleanupFormData();
     } else {
-      console.log('Form is invalid');
-      console.log(await this.$refs.form.validate())
+      toast.error("Oops! Error(s) detected. Please review and try again.", {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--delete'
+      });
     }
     return;
   },
@@ -1756,9 +1759,26 @@ export default {
     axios
       .post(apiURL, goalForm, { headers: { token } })
       .then(() => {
+        const motivatingMessages = [
+          "Goals successfully set! You're on the right track!",
+          "Great job setting your goals! Let's make them happen!",
+          "Goals locked in! Believe in yourself and you'll achieve them.",
+          "You've set your goals! Now, let's conquer them together!",
+          "Your goals are set! Keep pushing forward and you'll achieve them.",
+          "Way to go! Every goal you set brings you one step closer to success.",
+        ];
+        const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+
       
-        alert("Goal form has been successfully submitted.");
-        this.$router.push('/studentDashboard');
+        this.$router.push({ 
+              name: 'studentDashboard',
+              params: {
+                toastType: 'success',
+                toastMessage: randomMessage,
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--create'
+            }
+          });
       })
       .catch((error) => {
         console.log(error);

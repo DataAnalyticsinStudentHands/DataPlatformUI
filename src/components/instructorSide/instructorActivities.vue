@@ -70,6 +70,8 @@
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
@@ -86,6 +88,12 @@ export default {
   mounted() {
     this.fetchActivityData();
     window.scrollTo(0, 0);
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
   },
   methods: {
     fetchActivityData() {
@@ -122,10 +130,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedActivities.length === 1 ? 'Activity' : 'Activities') + ' deactivated!'
           this.selectedActivities = [];
           this.fetchActivityData();
-          alert("The activities have been deactivated.");
-          this.$router.push("/instructorActivities"); // Navigate to /instructorActivities
+          toast.error(message, {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -143,10 +154,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedActivities.length === 1 ? 'Activity' : 'Activities') + ' activated!'
           this.selectedActivities = [];
           this.fetchActivityData();
-          alert("The activities have been activated.");
-          this.$router.push("/instructorActivities"); // Navigate to /instructorActivities
+          toast.success(message, {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--create'
+          });
         })
         .catch((error) => {
           console.log(error);

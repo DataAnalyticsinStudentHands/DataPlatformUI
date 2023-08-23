@@ -11,3 +11,57 @@ button {
 .hide {
     display: none;
 }
+/* Creating - Green Color Scheme */
+.Toastify__toast--create {
+    background-color: #d4edda !important; /* Light green */
+    color: #155724 !important; /* Dark green */
+}
+  
+.Toastify__toast--create .Toastify__progress-bar {
+    background-color: #155724 !important; /* Dark green */
+}
+  
+/* Updating - Blue Color Scheme */
+.Toastify__toast--update {
+    background-color: #d1e7fd !important; /* Light blue */
+    color: #0b4f8a !important; /* Dark blue */
+}
+  
+.Toastify__toast--update .Toastify__progress-bar {
+    background-color: #0b4f8a !important; /* Dark blue */
+}
+  
+/* Deleting - Red Color Scheme */
+.Toastify__toast--delete {
+    background-color: #f8d7da !important; /* Light red */
+    color: #721c24 !important; /* Dark red */
+}
+  
+.Toastify__toast--delete .Toastify__progress-bar {
+    background-color: #721c24 !important; /* Dark red */
+}
+
+
+/* Sample Code for Toast Alerts
+      toast.success('Created Successfully!', {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--create'
+      });
+
+      toast.info('Updated Successfully!', {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--update'
+      });
+
+      toast.error('Deleted Successfully!', {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--delete'
+      });
+
+
+
+
+
+
+
+*/

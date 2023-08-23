@@ -503,11 +503,20 @@
           </div>
         </v-col>
       </transition>
-        <v-row>
-          <v-col cols="12" md="4">
-            <v-btn type="submit" methods="handleValidations" @click="$event => showToast()" class="btn btn-success">Submit Form</v-btn>
-          </v-col>
-        </v-row>
+      <v-row>
+  <v-col cols="3" md="3">
+    <v-btn type="submit" methods="handleValidations" @click="$event => showToast()" class="btn btn-success">
+      Submit Form
+    </v-btn>
+  </v-col>
+  <v-col cols="3">
+    <v-btn class="btn btn-success" @click="$router.back()">
+      Cancel
+    </v-btn>
+  </v-col>
+</v-row>
+
+
     </v-container>
   </v-form>
 </template>
@@ -977,7 +986,15 @@ export default {
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
       axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
-        this.$router.push('/studentDashboard');
+        this.$router.push({ 
+              name: 'studentDashboard',
+              params: {
+                toastType: 'info',
+                toastMessage: 'Entry Form updated!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--update'
+            }
+          });
       })
       .catch((error) => {
         console.log(error);

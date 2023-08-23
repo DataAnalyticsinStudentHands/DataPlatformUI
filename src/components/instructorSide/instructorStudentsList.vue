@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 
@@ -87,10 +89,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' deactivated!'
           this.selectedStudents = [];
           this.fetchStudentData();
-          alert("The student(s) have been deactivated.");
-          this.$router.push("/instructorStudentsList");
+          toast.error(message, {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--delete'
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -108,10 +113,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' activated!'
           this.selectedStudents = [];
           this.fetchStudentData();
-          alert("The student(s) have been activated.");
-          this.$router.push("/instructorStudentsList");
+          toast.success(message, {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--create'
+          });
         })
         .catch((error) => {
           console.log(error);

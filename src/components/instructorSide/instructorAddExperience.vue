@@ -34,6 +34,9 @@
           </tbody>
         </v-table>
         <v-btn type="submit">Submit</v-btn>
+        <v-btn @click=$router.back() style="margin-left: 10px;">
+          Cancel
+        </v-btn>
       </v-container>
     </v-form>
   </main>
@@ -87,8 +90,15 @@ export default {
           headers: { token },
         })
         .then(() => {
-          alert("Experience has been successfully added.");
-          this.$router.push("/instructorExperiences");
+          this.$router.push({ 
+              name: 'instructorExperiences',
+              params: {
+                toastType: 'success',
+                toastMessage: 'Experience added!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--create'
+            }
+          });
         })
         .catch((error) => {
           console.log(error);

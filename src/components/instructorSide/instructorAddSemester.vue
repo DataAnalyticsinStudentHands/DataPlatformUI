@@ -43,6 +43,9 @@
         </v-table>
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
+        <v-btn @click=$router.back() style="margin-left: 10px;">
+          Cancel
+        </v-btn>
       </v-container>
     </v-form>
   </main>
@@ -106,11 +109,16 @@ export default {
           experiences: this.selectedExperiences, 
         }, { headers: { token } })
         .then(() => {
-          alert("Semester has been successfully added.");
           this.$router.push({ 
               name: 'instructorSemesters',
-              params: { success: true }
+              params: {
+                toastType: 'success',
+                toastMessage: 'Semester added!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--create'
+            }
           });
+
 
         })
         .catch((error) => {

@@ -36,6 +36,8 @@
   </main>
 </template>
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { DateTime } from "luxon";
 import axios from "axios";
@@ -73,6 +75,12 @@ export default {
       }).then((resp) => {
       this.queryData = resp.data;
     });
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
   },
   methods: {
     routePush(routeName) {
