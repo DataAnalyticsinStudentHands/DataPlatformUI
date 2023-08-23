@@ -46,7 +46,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="experience in filteredExperienceData" :key="experience._id">
+          <tr 
+            v-for="experience in filteredExperienceData" 
+            :key="experience._id"
+            :style="{ cursor: 'pointer' }"
+            :class="{ 'hoverRow': hoverId === experience._id}"
+            @mouseenter="hoverId = experience._id"
+            @mouseleave="hoverId = null"
+            >
             <td class="text-left">
               <input type="checkbox" v-model="selectedExperiences" :value="experience._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
@@ -73,7 +80,8 @@ export default {
       experienceData: [],
       showInactive: false,
       selectedExperiences: [],
-      searchQuery: ''
+      searchQuery: '',
+      hoverId: null,
     };
   },
   mounted() {
@@ -198,4 +206,9 @@ export default {
     border: 1px solid black;
   }
 }
+
+.hoverRow {
+    background-color: rgb(200, 201, 205);
+    transition: background-color 0.3s ease-in-out;
+  }
 </style>

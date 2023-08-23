@@ -48,7 +48,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="activity in filteredActivityData" :key="activity._id">
+            <tr 
+              v-for="activity in filteredActivityData" 
+              :key="activity._id"
+              :style="{ cursor: 'pointer' }"
+              :class="{ 'hoverRow': hoverId === activity._id}"
+              @mouseenter="hoverId = activity._id"
+              @mouseleave="hoverId = null">
               <td class="text-left">
                 <input
                   type="checkbox"
@@ -82,7 +88,8 @@ export default {
       activityData: [],
       showInactive: false,
       selectedActivities: [],
-      searchQuery: ''
+      searchQuery: '',
+      hoverId: null,
     };
   },
   mounted() {
@@ -201,4 +208,11 @@ export default {
     border: 1px solid black;
   }
 }
+
+
+.hoverRow {
+    background-color: rgb(200, 201, 205);
+    transition: background-color 0.3s ease-in-out;
+  }
+
 </style>

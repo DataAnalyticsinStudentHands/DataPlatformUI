@@ -33,7 +33,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="student in filteredStudentData" :key="student.userData._id">
+          <tr 
+            v-for="student in filteredStudentData" 
+            :key="student.userData._id"
+            :style="{ cursor: 'pointer' }"
+            :class="{ 'hoverRow': hoverId === student.userData._id}"
+            @mouseenter="hoverId = student.userData._id"
+            @mouseleave="hoverId = null">
             <td class="text-left">
               <input type="checkbox" v-model="selectedStudents" :value="student.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
@@ -67,6 +73,7 @@ export default {
       selectedStudents: [], 
       showInactive: false, 
       searchStudent: "",
+      hoverId: null,
     };
   },
   mounted() {
@@ -223,4 +230,11 @@ export default {
       border: 1px solid black;
   }
 }
+
+
+.hoverRow {
+    background-color: rgb(200, 201, 205);
+    transition: background-color 0.3s ease-in-out;
+  }
+
 </style>
