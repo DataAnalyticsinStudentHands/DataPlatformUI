@@ -5,18 +5,19 @@
     <p class="font-weight-black text-h5" style="text-align: center;">Students</p>
     <center>
       <br>
-    <v-btn style="text-align:center" @click="toggleShowInactive">
-      {{ showInactive ? 'Show Active Students' : 'Show Inactive Students' }}
-    </v-btn>
-    <br><br>
-    <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateStudents" v-if="selectedStudents.length > 0">
-      Deactivate
-    </v-btn>
-    <v-btn style="text-align:center" @click="activateStudents" v-if="selectedStudents.length > 0">
-      Activate
-    </v-btn>
-    <br><br>
-  </center>
+      <v-btn style="text-align:center" @click="toggleShowInactive">
+        {{ showInactive ? 'Show Active Students' : 'Show Inactive Students' }}
+      </v-btn>
+      <br><br>
+      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateStudents" v-if="selectedStudents.length > 0">
+        Deactivate
+      </v-btn>
+      <v-btn style="text-align:center" @click="activateStudents" v-if="selectedStudents.length > 0">
+        Activate
+      </v-btn>
+      <br><br>
+    </center>
+<p>{{ this.userListRaw }}</p>
     <v-text-field v-model="searchStudent" placeholder="Search by student name, email, major, minor, or graduation"></v-text-field>
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 950%">
@@ -32,9 +33,30 @@
             <th class="text-left">Status</th>
           </tr>
         </thead>
+
         <tbody>
-          <tr 
-            v-for="student in filteredStudentData" 
+          
+<tr
+            v-for="user in userListRaw"
+            :key="user._id"
+            :style="{ cursor: 'pointer' }"
+            :class="{ 'hoverRow': hoverId === user._id}"
+            @mouseenter="hoverId = user._id"
+            @mouseleave="hoverId = null">
+            <td class="text-left">
+              <input type="checkbox" v-model="selectedStudents" :value="user._id" style="outline: 2px solid #808080; margin-right: 10px;">
+            </td>
+            <td class="text-left">{{ user.firstName }} {{ user.lastName }}</td>
+            <!-- You can fill in the other columns as needed or leave them empty for the userListRaw data -->
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ user.userStatus }}</td>
+          </tr>
+<tr
+            v-for="student in filteredStudentData"
             :key="student.userData._id"
             :style="{ cursor: 'pointer' }"
             :class="{ 'hoverRow': hoverId === student.userData._id}"
@@ -54,11 +76,33 @@
               <span v-else>Inactive</span>
             </td>
           </tr>
+          <tr
+            v-for="user in user"
+            :key="user._id"
+            :style="{ cursor: 'pointer' }"
+            :class="{ 'hoverRow': hoverId === user._id}"
+            @mouseenter="hoverId = user._id"
+            @mouseleave="hoverId = null">
+            <td class="text-left">
+              <input type="checkbox" v-model="selectedStudents" :value="user._id" style="outline: 2px solid #808080; margin-right: 10px;">
+            </td>
+            <td class="text-left">{{ user.firstName + ' ' + user.lastName }}</td>
+            <td  class="text-left"></td>
+            <td  class="text-left"></td>
+            <td class="text-left"></td>
+            <td  class="text-left"></td>
+            <td  class="text-left"></td>
+            <td  class="text-left">
+              <span v-if="student.userData.userStatus === 'Active'">Active</span>
+              <span v-else>Inactive</span>
+            </td>
+          </tr>
         </tbody>
       </v-table>
     </div>
   </main>
 </template>
+
 
 <script>
 import { toast } from 'vue3-toastify';
@@ -70,6 +114,7 @@ export default {
   data() {
     return {
       studentListRaw: [],
+      userListRaw:[],
       selectedStudents: [], 
       showInactive: false, 
       searchStudent: "",
@@ -78,6 +123,7 @@ export default {
   },
   mounted() {
     this.fetchStudentData();
+    this.fetchIncompletedStudentData();
     window.scrollTo(0, 0);
   },
   methods: {
@@ -162,11 +208,31 @@ export default {
         .get(apiURL, { headers: { token } })
         .then((resp) => {
           this.studentListRaw = resp.data.data;
+          console.log("Student list/w Entry Forms:", this.studentListRaw)
         })
         .catch((error) => {
           console.log(error);
         });
     },
+    fetchIncompletedStudentData() {
+  const user = useLoggedInUserStore();
+  let token = user.token;
+  let apiURL =
+    import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
+  axios
+    .get(apiURL, { headers: { token } })
+    .then((resp) => {
+      // Populate userListRaw with complete user data
+      this.userListRaw = resp.data.userData;
+      console.log("Incompleted Students:", this.userListRaw)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+},
+
+
+
     updateSelectedStatus(student) {
       if (student.checked && student.userData.userStatus === "Active") {
         student.checked = false;
@@ -176,21 +242,54 @@ export default {
   computed: {
   filteredStudentData() {
     const searchStudent = this.searchStudent.toLowerCase();
-    let filteredData = this.studentListRaw.filter((student) => {
+    const filteredData = [];
+
+    // Filter through studentListRaw
+    this.studentListRaw.forEach((student) => {
       const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
       const email = student.userData.email.toLowerCase();
       const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase();
       const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase();
       const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear.toLowerCase();
+      const userStatus = student.userData.userStatus;
 
-      return fullName.includes(searchStudent) || email.includes(searchStudent) || majors.includes(searchStudent) || minors.includes(searchStudent) || graduationDate.includes(searchStudent);
+      if (
+        fullName.includes(searchStudent) ||
+        email.includes(searchStudent) ||
+        majors.includes(searchStudent) ||
+        minors.includes(searchStudent) ||
+        graduationDate.includes(searchStudent) ||
+        (this.showInactive ? userStatus === 'Inactive' : userStatus === 'Active')
+      ) {
+        filteredData.push(student);
+      }
     });
 
-    if (this.showInactive) {
-      filteredData = filteredData.filter((student) => student.userData.userStatus === 'Inactive');
-    } else {
-      filteredData = filteredData.filter((student) => student.userData.userStatus === 'Active');
-    }
+    // Filter through userListRaw
+    this.userListRaw.forEach((user) => {
+      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      const userStatus = user.userStatus;
+
+      if (
+        fullName.includes(searchStudent) &&
+        (this.showInactive ? userStatus === 'Inactive' : userStatus === 'Active')
+      ) {
+        // Create a structure similar to student data for consistency
+        filteredData.push({
+          userData: {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
+          studentInformation: {
+            email: '', // Add any necessary properties here
+            majors: '', // Add any necessary properties here
+            minors: '', // Add any necessary properties here
+            graduationDate: '', // Add any necessary properties here
+          },
+        });
+      }
+    });
 
     return filteredData;
   },
