@@ -16,8 +16,11 @@
         Activate
       </v-btn>
       <br><br>
+
     </center>
-<p>{{ this.userListRaw }}</p>
+    <p class="font-weight-black text-h5">
+        {{ showInactive ? 'Inactive Students' : 'Active Students' }}
+      </p>
     <v-text-field v-model="searchStudent" placeholder="Search by student name, email, major, minor, or graduation"></v-text-field>
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 950%">
@@ -30,31 +33,11 @@
             <th class="text-left">Major(s)</th>
             <th class="text-left">Minor</th>
             <th class="text-left">Expected Graduation Date</th>
-            <th class="text-left">Status</th>
           </tr>
         </thead>
 
         <tbody>
           
-<tr
-            v-for="user in userListRaw"
-            :key="user._id"
-            :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === user._id}"
-            @mouseenter="hoverId = user._id"
-            @mouseleave="hoverId = null">
-            <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="user._id" style="outline: 2px solid #808080; margin-right: 10px;">
-            </td>
-            <td class="text-left">{{ user.firstName }} {{ user.lastName }}</td>
-            <!-- You can fill in the other columns as needed or leave them empty for the userListRaw data -->
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{{ user.userStatus }}</td>
-          </tr>
 <tr
             v-for="student in filteredStudentData"
             :key="student.userData._id"
@@ -71,13 +54,9 @@
             <td @click="editStudent(student.userID)" class="text-left">{{ majors(student.studentInformation.enrolledUHInfo.majors) }}</td>
             <td @click="editStudent(student.userID)" class="text-left">{{ minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors) }}</td>
             <td @click="editStudent(student.userID)" class="text-left">{{ student.studentInformation.enrolledUHInfo.expectedGraduationYear }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">
-              <span v-if="student.userData.userStatus === 'Active'">Active</span>
-              <span v-else>Inactive</span>
-            </td>
           </tr>
           <tr
-            v-for="user in user"
+            v-for="user in filteredUserListRaw"
             :key="user._id"
             :style="{ cursor: 'pointer' }"
             :class="{ 'hoverRow': hoverId === user._id}"
@@ -86,16 +65,12 @@
             <td class="text-left">
               <input type="checkbox" v-model="selectedStudents" :value="user._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
-            <td class="text-left">{{ user.firstName + ' ' + user.lastName }}</td>
-            <td  class="text-left"></td>
-            <td  class="text-left"></td>
-            <td class="text-left"></td>
-            <td  class="text-left"></td>
-            <td  class="text-left"></td>
-            <td  class="text-left">
-              <span v-if="student.userData.userStatus === 'Active'">Active</span>
-              <span v-else>Inactive</span>
-            </td>
+            <td class="text-left">{{ user.firstName }} {{ user.lastName }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
         </tbody>
       </v-table>
@@ -126,58 +101,98 @@ export default {
     this.fetchIncompletedStudentData();
     window.scrollTo(0, 0);
   },
+  
   methods: {
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
     },
+
     deactivateStudents() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      const updateStatus = { userStatus: 'Inactive' };
+  const user = useLoggedInUserStore();
+  let token = user.token;
+  const updateStatus = { userStatus: 'Inactive' };
 
-      const promises = this.selectedStudents.map((student) => { 
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
-        return axios.put(apiURL, updateStatus, { headers: { token } });
-      });
+  const promises = this.selectedStudents.map((student) => { 
+    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
+    return axios.put(apiURL, updateStatus, { headers: { token } });
+  });
 
-      Promise.all(promises)
-        .then(() => {
-          const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' deactivated!'
-          this.selectedStudents = [];
-          this.fetchStudentData();
-          toast.error(message, {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--delete'
-          });
-        })
-        .catch((error) => {
-          console.log(error);
+  Promise.all(promises)
+    .then(() => {
+      const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' deactivated!';
+      // Update user status in studentListRaw and userListRaw
+      const updateStatusInList = (list, newStatus) => {
+        // Use Array.from to create a new array
+        const updatedList = Array.from(list);
+        updatedList.forEach(student => {
+          if (this.selectedStudents.includes(student._id || student.userData._id)) {
+            student.userStatus = newStatus;
+          }
         });
-    },
-    activateStudents() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      const updateStatus = { userStatus: 'Active' };
+        return updatedList;
+      };
 
-      const promises = this.selectedStudents.map((student) => { 
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
-        return axios.put(apiURL, updateStatus, { headers: { token } });
+      this.studentListRaw = updateStatusInList(this.studentListRaw, 'Inactive');
+      this.userListRaw = updateStatusInList(this.userListRaw, 'Inactive');
+
+      this.selectedStudents = [];
+
+      // Fetch data again to ensure synchronization
+      this.fetchStudentData();
+      this.fetchIncompletedStudentData();
+
+      toast.error(message, {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--delete'
       });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+},
+activateStudents() {
+  const user = useLoggedInUserStore();
+  let token = user.token;
+  const updateStatus = { userStatus: 'Active' };
 
-      Promise.all(promises)
-        .then(() => {
-          const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' activated!'
-          this.selectedStudents = [];
-          this.fetchStudentData();
-          toast.success(message, {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--create'
-          });
-        })
-        .catch((error) => {
-          console.log(error);
+  const promises = this.selectedStudents.map((student) => { 
+    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
+    return axios.put(apiURL, updateStatus, { headers: { token } });
+  });
+
+  Promise.all(promises)
+    .then(() => {
+      const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' activated!';
+
+       // Update user status in studentListRaw and userListRaw
+       const updateStatusInList = (list, newStatus) => {
+        const updatedList = Array.from(list);
+        updatedList.forEach(student => {
+          if (this.selectedStudents.includes(student._id || student.userData._id)) {
+            student.userStatus = newStatus;
+          }
         });
-    },
+        return updatedList;
+      };
+
+      this.studentListRaw = updateStatusInList(this.studentListRaw, 'Active');
+      this.userListRaw = updateStatusInList(this.userListRaw, 'Active');
+
+      this.selectedStudents = [];
+
+      // Fetch data again to ensure synchronization
+      this.fetchStudentData();
+      this.fetchIncompletedStudentData();
+
+      toast.success(message, {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--create'
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+},
     majors(majorsList) {
       return majorsList.length > 0 ? majorsList.join(", ") : "None";
     },
@@ -230,9 +245,6 @@ export default {
       console.log(error);
     });
 },
-
-
-
     updateSelectedStatus(student) {
       if (student.checked && student.userData.userStatus === "Active") {
         student.checked = false;
@@ -240,62 +252,30 @@ export default {
     },
   },
   computed: {
-  filteredStudentData() {
-    const searchStudent = this.searchStudent.toLowerCase();
-    const filteredData = [];
-
-    // Filter through studentListRaw
-    this.studentListRaw.forEach((student) => {
-      const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
-      const email = student.userData.email.toLowerCase();
-      const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase();
-      const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase();
-      const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear.toLowerCase();
-      const userStatus = student.userData.userStatus;
-
-      if (
-        fullName.includes(searchStudent) ||
-        email.includes(searchStudent) ||
-        majors.includes(searchStudent) ||
-        minors.includes(searchStudent) ||
-        graduationDate.includes(searchStudent) ||
-        (this.showInactive ? userStatus === 'Inactive' : userStatus === 'Active')
-      ) {
-        filteredData.push(student);
-      }
-    });
-
-    // Filter through userListRaw
-    this.userListRaw.forEach((user) => {
-      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-      const userStatus = user.userStatus;
-
-      if (
-        fullName.includes(searchStudent) &&
-        (this.showInactive ? userStatus === 'Inactive' : userStatus === 'Active')
-      ) {
-        // Create a structure similar to student data for consistency
-        filteredData.push({
-          userData: {
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-          },
-          studentInformation: {
-            email: '', // Add any necessary properties here
-            majors: '', // Add any necessary properties here
-            minors: '', // Add any necessary properties here
-            graduationDate: '', // Add any necessary properties here
-          },
-        });
-      }
-    });
-
-    return filteredData;
-  },
+    filteredStudentData() {
+  const searchStudent = this.searchStudent.toLowerCase();
+  let filteredData = this.studentListRaw.filter((student) => {
+    const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
+    const email = student.userData.email.toLowerCase();
+    const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase();
+    const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase();
+    const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear?.toLowerCase() || ""; // Use optional chaining to handle undefined values
+    return fullName.includes(searchStudent) || email.includes(searchStudent) || majors.includes(searchStudent) || minors.includes(searchStudent) || graduationDate.includes(searchStudent);
+  });
+  if (this.showInactive) {
+    filteredData = filteredData.filter((student) => student.userData.userStatus === 'Inactive');
+  } else {
+    filteredData = filteredData.filter((student) => student.userData.userStatus === 'Active');
+  }
+  return filteredData;
 },
-
-
+filteredUserListRaw() {
+      if (this.showInactive) {
+        return this.userListRaw.filter((user) => user.userStatus === 'Inactive');
+      } else {
+        return this.userListRaw.filter((user) => user.userStatus === 'Active');
+      }
+    },}
 };
 </script>
 
