@@ -50,21 +50,9 @@ Array to match others and add input fields for goals and aspirations  -->
       </v-col>
     </v-row>
 
-<v-col cols="12" md="10">
-  <p 
-  :class="{'error-text': isIsGoalSettingFormFilledInvalid}"
-  class="font-weight-black text-h8">Have you already filled out this form for another experience this semester?</p>
-  <v-radio-group 
-  v-model="isGoalSettingFormFilled"
-  :rules="isGoalSettingFormFilledRules"
-  :class="{'error-text': isIsGoalSettingFormFilledInvalid}">
-    <v-radio label="Yes" value="Yes"></v-radio>
-    <v-radio label="No" value="No"></v-radio>
-  </v-radio-group>
-</v-col>
 
 <transition-group name="slide-y-transition" tag="div">
-<div v-show="isGoalSettingFormFilled === 'No'" key="neverFilledForm">
+<div v-show="hasFilledForm === false" key="neverFilledForm">
 
 
 <v-col cols="12" md="10">
@@ -953,6 +941,7 @@ export default {
       hoveredCheckboxID5: null,
       hoveredCheckboxID6: null,
       hoveredCheckboxID7: null,
+      hasFilledForm: null,
       experienceIDRules: [
         v => {
           if (this.formSubmitted) {
@@ -1351,13 +1340,8 @@ export default {
     if (!this.formSubmitted) return false;
     return this.experienceIDRules[0](this.goalForm.experienceID) !== true;
   },
-  isIsGoalSettingFormFilledInvalid() {
-    if (!this.formSubmitted) return false;
-    const rule = v => !!v || 'Information is required';
-    return rule(this.isGoalSettingFormFilled) !== true;
-  },
   isGoalSettingFormFilledCheck() {
-    return this.isGoalSettingFormFilled === 'Yes';
+    return this.hasFilledForm === true;
   },
   isCommunityEngagementExperiencesInvalid() {
     // If form hasn't been submitted or isGoalSettingFormFilledCheck = true i.e. it has already been filled, then skip validation
@@ -1527,6 +1511,7 @@ export default {
   mounted() {
     this.fetchSemester();
     this.fetchExperiences();
+    this.fetchHasFilledForm();
   },
   methods: {
     async fetchSemester() {
@@ -1556,6 +1541,22 @@ export default {
       // this.goalForm.experiences = response.data;
     } catch (error) {
       console.log(error);
+    }
+  },
+  async fetchHasFilledForm() {
+    const user = useLoggedInUserStore();
+    let token = user.token;
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/hasFilledGoalSettingForm/';
+
+    try {
+      const response = await axios.get(apiURL, {
+        headers: {
+          token: token
+        }
+      });
+      this.hasFilledForm = response.data.hasFilled;
+    } catch (error) {
+      console.error("Error fetching form fill status:", error);
     }
   },
   updateExperienceID(selected) {

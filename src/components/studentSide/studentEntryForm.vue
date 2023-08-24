@@ -506,7 +506,7 @@
       </transition>
         <v-row>
           <v-col cols="12" md="4">
-            <v-btn type="submit" methods="handleValidations" @click="$event => showToast()" class="btn btn-success">Submit Form</v-btn>
+            <v-btn type="submit" methods="handleValidations" class="btn btn-success">Submit Form</v-btn>
           </v-col>
         </v-row>
     </v-container>
@@ -968,6 +968,7 @@ export default {
       }
     },
     async submitCompletedForm() {
+      console.log('this.studentInformation', this.studentInformation)
       const user = useLoggedInUserStore()
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
