@@ -2,7 +2,7 @@
 <template>
   <main class="">
     <br>
-    <p class="font-weight-black text-h5" style="text-align: center;">Students</p>
+    <p class="font-weight-black text-h5" style="text-align: center;">{{ showInactive ? 'Inactive Students' : 'Active Students' }}</p>
     <center>
       <br>
       <v-btn style="text-align:center" @click="toggleShowInactive">
@@ -16,12 +16,10 @@
         Activate
       </v-btn>
       <br><br>
-
     </center>
-    <p class="font-weight-black text-h5">
-        {{ showInactive ? 'Inactive Students' : 'Active Students' }}
-      </p>
-    <v-text-field v-model="searchStudent" placeholder="Search by student name, email, major, minor, or graduation"></v-text-field>
+ 
+
+    <v-text-field v-model="searchStudent" placeholder="Search by student name, email, major, minor, or graduation date"></v-text-field>
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 950%">
         <thead>
@@ -256,9 +254,9 @@ activateStudents() {
   const searchStudent = this.searchStudent.toLowerCase();
   let filteredData = this.studentListRaw.filter((student) => {
     const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
-    const email = student.userData.email.toLowerCase();
-    const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase();
-    const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase();
+    const email = student.userData.email.toLowerCase()|| "";
+    const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase()|| "";
+    const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase()|| "";
     const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear?.toLowerCase() || ""; // Use optional chaining to handle undefined values
     return fullName.includes(searchStudent) || email.includes(searchStudent) || majors.includes(searchStudent) || minors.includes(searchStudent) || graduationDate.includes(searchStudent);
   });
@@ -270,12 +268,23 @@ activateStudents() {
   return filteredData;
 },
 filteredUserListRaw() {
-      if (this.showInactive) {
-        return this.userListRaw.filter((user) => user.userStatus === 'Inactive');
-      } else {
-        return this.userListRaw.filter((user) => user.userStatus === 'Active');
-      }
-    },}
+  const searchStudent = this.searchStudent.toLowerCase();
+
+  let filteredData = this.userListRaw.filter(user => {
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    const email = user.email?.toLowerCase() || "";  // some users might not have emails
+    // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
+    return fullName.includes(searchStudent) || email.includes(searchStudent);
+  });
+
+  if (this.showInactive) {
+    filteredData = filteredData.filter(user => user.userStatus === 'Inactive');
+  } else {
+    filteredData = filteredData.filter(user => user.userStatus === 'Active');
+  }
+
+  return filteredData;
+},}
 };
 </script>
 
