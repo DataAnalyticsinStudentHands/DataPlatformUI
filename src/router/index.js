@@ -74,11 +74,18 @@ const routes = [
     },
     {
         path: '/',
-        name: 'Login',
+        name: 'Home',
         props: true,
         component: () => import('../components/loginPages/login.vue')
         
     },
+    {
+      path: '/login',
+      name: 'Login',
+      props: true,
+      component: () => import('../components/loginPages/login.vue')
+      
+  },
     {
         path: '/verify',
         name: 'Account Confirmation',

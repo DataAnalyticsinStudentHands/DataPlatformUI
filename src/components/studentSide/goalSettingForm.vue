@@ -10,45 +10,76 @@ Array to match others and add input fields for goals and aspirations  -->
   <p>isAspirationsValid {{ isAspirationsValid }}</p> -->
   <!-- <p>isCommunityEngagementExperiencesInvalid: {{ isCommunityEngagementExperiencesInvalid }}</p>
   <p>isGoalSettingFormFilledCheck: {{ isGoalSettingFormFilledCheck }}</p> -->
+  <!-- <p>experienceID: {{  experienceID  }}</p>
+  <p>selectedExperience {{selectedExperience}}</p> -->
+  <!-- <p>{{ goalForm }}</p> -->
   
   <v-form 
   ref="form"
   @submit.prevent>
   <v-container>
     <div>
-      <p class="font-weight-black text-h5 text--primary">Goal Setting Form</p>
-      <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.</p>
+    <p class="font-weight-black text-h5 text--primary">Goal Setting Form</p>
+    <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.</p>
+</div>
+<v-row dense>
+    <v-col cols="12" md="5">
+      <p class="font-weight-black text-h8">Current Semester:</p>
+      <v-text-field v-model="goalForm.semester" label="Semester" readonly></v-text-field>
+    </v-col>
+</v-row>
+<v-row dense>
+    <v-col cols="11" md="10">
+      <p 
+      :class="{'error-text': isExperienceIDInvalid}"
+      class="font-weight-black text-h8">
+        Which experience are you filling out this form for:
+      </p>
+      <div>
+        <v-autocomplete
+          v-model="selectedExperience"
+          label="Select an Experience"
+          :items="formattedExperiences"
+          item-title="text"
+          item-value="value"
+          clearable
+          @update:modelValue="updateExperienceID"
+          :rules="experienceIDRules"
+          required
+        ></v-autocomplete>
+      </div>
+    </v-col>
+</v-row>
+<v-row dense style="padding-bottom: 1rem;">
+  <v-col cols="11">
+    <!-- Container without min-height -->
+    <div style="display: flex; flex-direction: column; align-items: flex-start; min-height: 3.8rem; justify-content: center;">
+      <!-- Loading wheel -->
+      <v-progress-circular 
+        v-show="isLoadingExpCheck"
+        indeterminate 
+        size="20"
+      ></v-progress-circular>
+
+      <!-- Message when experienceFoundWarning is true -->
+      <div v-if="experienceFoundWarning" style="display: flex; align-items: center; color: #4A90E2; font-weight: bold;">
+        <v-icon left small style="margin-right: 0.5rem; color: #4A90E2;">mdi-alert-circle</v-icon>
+        Hi there! You have already filled out a Goal Setting Form for this experience. 
+        Please note that submitting another form for the same experience will overwrite your previous responses.
+      </div>
+
+      <!-- Message when experienceFoundWarning is false -->
+      <div v-if="experienceFoundWarning === false" style="display: flex; align-items: center; color: #4CAF50; font-weight: bold;">
+        <v-icon left small style="margin-right: 0.5rem; color: #4CAF50;">mdi-check-circle</v-icon>
+        You haven't filled out a Goal Setting form for this experience. 
+        Complete this form to start your progress!
+      </div>
     </div>
-    <v-row>
-      <v-col cols="12" md="5">
-        <p class="font-weight-black text-h8">Current Semester:</p>
-        <v-text-field v-model="goalForm.semester" label="Semester" readonly></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="11" md="10">
-        <p 
-        :class="{'error-text': isExperienceIDInvalid}"
-        class="font-weight-black text-h8">
-          Which experience are you filling out this form for:
-        </p>
-        <div>
-          <v-autocomplete
-            v-model="selectedExperience"
-            label="Select an Experience"
-            :items="formattedExperiences"
-            clearable
-            @update:modelValue="updateExperienceID"
-            :rules="experienceIDRules"
-            required
-          ></v-autocomplete>
+  </v-col>
+</v-row>
 
 
 
-
-        </div>
-      </v-col>
-    </v-row>
 
 
 <transition-group name="slide-y-transition" tag="div">
@@ -942,6 +973,9 @@ export default {
       hoveredCheckboxID6: null,
       hoveredCheckboxID7: null,
       hasFilledForm: null,
+      experienceFoundWarning: null,
+      foundDocumentId: null,
+      isLoadingExpCheck: false,
       experienceIDRules: [
         v => {
           if (this.formSubmitted) {
@@ -1167,6 +1201,11 @@ export default {
     }
   },
   watch: {
+    selectedExperience(newVal, oldVal) {
+      if (newVal && newVal !== oldVal) {
+        this.checkExistingForm(newVal);
+      }
+    },
     'goalForm.communityEngagement.communityEngagementExperiences': {
       deep: true,
       handler(newVal) {
@@ -1334,12 +1373,15 @@ export default {
       return aspirationsArray.filter(aspiration => aspiration && aspiration.trim() !== '').length;
     },
     formattedExperiences() {
-      return this.goalForm.experiences.map(experience => `${experience.experienceCategory}: ${experience.experienceName}`);
+      return this.goalForm.experiences.map(experience => ({
+        text: `${experience.experienceCategory}: ${experience.experienceName}`,
+        value: experience.experienceID
+      }));
     },
     isExperienceIDInvalid() {
-    if (!this.formSubmitted) return false;
-    return this.experienceIDRules[0](this.goalForm.experienceID) !== true;
-  },
+      if (!this.formSubmitted) return false;
+      return this.selectedExperience === null || this.selectedExperience === '';
+    },
   isGoalSettingFormFilledCheck() {
     return this.hasFilledForm === true;
   },
@@ -1555,15 +1597,54 @@ export default {
         }
       });
       this.hasFilledForm = response.data.hasFilled;
+      if (this.hasFilledForm) {
+          this.goalForm.communityEngagement = response.data.communityEngagement;
+          this.goalForm.researchExperience = response.data.researchExperience;
+      }
+
     } catch (error) {
       console.error("Error fetching form fill status:", error);
     }
   },
-  updateExperienceID(selected) {
+  async checkExistingForm() {
+      this.isLoadingExpCheck = true;
+      const experienceID = this.selectedExperience;
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/hasCompletedGSFforSemesterExperience/';
 
+      try {
+        const response = await axios.get(apiURL + `${experienceID}`, {
+          headers: {
+            token: token
+          }
+        });
+
+        // If the document wasn't found
+        if (response.data.documentFound === false) {
+          this.foundDocumentId = null;
+          this.experienceFoundWarning = false;
+          return;
+        }
+
+        // If a document was found
+        if (response.data && response.data.id) {
+          this.foundDocumentId = response.data.id;
+          this.experienceFoundWarning = true;
+        } else {
+          this.foundDocumentId = null;
+          this.experienceFoundWarning = false;
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred while checking for existing form:", error);
+      } finally {
+        this.isLoadingExpCheck = false; 
+    }
+  },
+  updateExperienceID(selected) {
     // If the selected value is empty, set experienceID to null or an empty string and exit the method
     if (!selected) {
-      this.goalForm.experienceID = null; // or '' if you prefer an empty string
+      this.goalForm.experienceID = null;
       return;
     }
 
@@ -1707,9 +1788,56 @@ export default {
     this.goalForm.goals.goalFour = filledGoals[3] || '';
     this.goalForm.goals.goalFive = filledGoals[4] || '';
 
-    // After cleaning up the data, submit the form
-    this.handleSubmitForm();
+    // After cleaning up the data, check whether to update or create
+    if (this.foundDocumentId) {
+        this.handleUpdateForm();
+    } else {
+        // If previously filled document wasn't found, create new document
+        this.handleSubmitForm();
+    }
   },
+  async handleUpdateForm() {
+    console.log('update form called');
+    const user = useLoggedInUserStore();
+    let token = user.token;
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/' + this.foundDocumentId;
+
+    const updatedGoalForm = {
+      goalForm: {
+        growthGoal: this.goalForm.growthGoal,
+        aspirations: this.goalForm.aspirations,
+        goals: this.goalForm.goals
+      }
+    };
+
+    console.log('philtest', updatedGoalForm);
+
+  axios
+    .put(apiURL, updatedGoalForm, { headers: { token } })
+    .then(() => {
+      const motivatingMessages = [
+        "Goals updated successfully! Keep pushing forward!",
+        "Great job updating your goals! Let's continue on this journey together!",
+        "Goals refreshed! Remember, every step counts towards achieving them.",
+        "You've adjusted your goals! Stay focused and you'll achieve them in no time.",
+        "Way to keep refining your vision! Remember, it's the journey that counts.",
+      ];
+      const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+
+      this.$router.push({ 
+            name: 'studentDashboard',
+            params: {
+              toastType: 'info',
+              toastMessage: randomMessage,
+              toastPosition: 'top-right',
+              toastCSS: 'Toastify__toast--update'
+          }
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+},
 
   async handleSubmitForm() {
     console.log('submit form called');
@@ -1719,7 +1847,7 @@ export default {
 
     const goalForm = {
       semester: this.goalForm.semester,
-      experienceID: this.goalForm.experienceID,
+      experienceID: this.selectedExperience,
       goalForm: {
         communityEngagement: {
           communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
@@ -1762,6 +1890,8 @@ export default {
         },
       },
     };
+
+    console.log(goalForm)
 
     axios
       .post(apiURL, goalForm, { headers: { token } })
