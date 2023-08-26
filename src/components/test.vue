@@ -1,78 +1,86 @@
 <template>
-  <v-container>
-    <!-- Filters section -->
-    <v-row class="mb-0 pa-0" style="background-color: #f5f5f5;">
-      <v-col cols="12">
-        <v-row no-gutters>
-          <v-col cols="auto" class="d-flex align-center">
-            <v-checkbox
-              v-model="uhStudentsFilterEnabled"
-              hide-details
-              density="compact"
-            ></v-checkbox>
-          </v-col>
-          <v-col cols="2" class="d-flex align-center pa-2">
-            <p :class="{ 'gray-out': !uhStudentsFilterEnabled }">{{ uhStudentsValue ? 'UH Students Only' : 'Non-UH Students Only' }}</p>
-          </v-col>
-          <v-col cols="auto" class="d-flex align-center">
-            <v-switch
-              v-model="uhStudentsValue"
-              :disabled="!uhStudentsFilterEnabled"
-              :true-label="'UH Students Only'"
-              :false-label="'Non-UH Students Only'"
-              hide-details
-              density="compact"
-            ></v-switch>
-          </v-col>
-        </v-row>
-      </v-col>
+  <v-card
+    class="mx-auto"
+    max-width="400"
+  >
+    <v-row
+      align="center"
+      class="pa-6"
+    >
+      <span class="me-4">To</span>
+
+      <v-menu
+        v-model="menu"
+        location="top start"
+        origin="top start"
+        transition="scale-transition"
+      >
+        <template v-slot:activator="{ props }">
+          <v-chip
+            pill
+            v-bind="props"
+            link
+          >
+            <v-avatar start>
+              <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
+            </v-avatar>
+
+            John Leider
+          </v-chip>
+        </template>
+
+        <v-card width="300">
+          <v-list bg-color="black">
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-avatar image="https://cdn.vuetifyjs.com/images/john.png"></v-avatar>
+              </template>
+
+              <v-list-item-title>John Leider</v-list-item-title>
+
+              <v-list-item-subtitle>john@google.com</v-list-item-subtitle>
+
+              <template v-slot:append>
+                <v-list-item-action>
+                  <v-btn
+                    icon
+                    variant="text"
+                    @click="menu = false"
+                  >
+                    <v-icon>mdi-close-circle</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </template>
+            </v-list-item>
+          </v-list>
+
+          <v-list>
+            <v-list-item link prepend-icon="mdi-briefcase">
+              <v-list-item-subtitle>john@gmail.com</v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
     </v-row>
 
-    <!-- New filters section -->
-    <v-row class="mb-0 pa-0" style="background-color: #f5f5f5;">
-      <v-col cols="12">
-        <v-row no-gutters>
-          <v-col cols="auto" class="d-flex align-center">
-            <!-- New checkbox -->
-            <v-checkbox
-              v-model="graduateFilterEnabled"
-              hide-details
-              density="compact"
-            ></v-checkbox>
-          </v-col>
-          <v-col cols="4" class="d-flex align-center pa-2">
-            <!-- New filter text -->
-            <p :class="{ 'gray-out': !graduateFilterEnabled }">{{ pursuingGraduateValue ? 'Pursuing Graduate/Professional School' : 'Not Pursuing Graduate/Professional School' }}</p>
-          </v-col>
-          <v-col cols="auto" class="d-flex align-center">
-            <!-- New switch -->
-            <v-switch
-              v-model="pursuingGraduateValue"
-              :disabled="!graduateFilterEnabled"
-              :true-label="'Pursuing Graduate/Professional School'"
-              :false-label="'Not Pursuing Graduate/Professional School'"
-              hide-details
-              density="compact"
-            ></v-switch>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
+    <v-divider></v-divider>
 
-    <!-- Bar charts sections -->
-    <v-row>
-      <v-col cols="6" class="pa-0">
-        <!-- Left side content -->
-        Left Bar Chart
-      </v-col>
-      <v-col cols="6" class="pa-0">
-        <!-- Right side content -->
-        Right Bar Chart
-      </v-col>
-    </v-row>
-  </v-container>
+    <div class="pa-3">
+      <v-text-field
+        label="Subject"
+        model-value="Re: Vacation Request"
+        single-line
+        variant="underlined"
+      ></v-text-field>
+
+      <v-textarea
+        label="Message"
+        single-line
+        variant="underlined"
+      ></v-textarea>
+    </div>
+  </v-card>
 </template>
-
 <script>
 export default {
   name: 'ReportsPage',
@@ -81,7 +89,8 @@ export default {
       uhStudentsFilterEnabled: false,
       uhStudentsValue: false,
       graduateFilterEnabled: false,
-      pursuingGraduateValue: false
+      pursuingGraduateValue: false,
+      menu: false,
     };
   }
 }

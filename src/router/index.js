@@ -10,6 +10,12 @@ const routes = [
       component: () => import('../components/test.vue')
     },
     {
+      path: '/testTwo',
+      name: 'testTwo',
+      props: true,
+      component: () => import('../components/testTwo.vue')
+    },
+    {
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
@@ -22,7 +28,7 @@ const routes = [
       component: () => import('../components/studentSide/profilePage.vue')
     },
     {
-        path: '/',
+        path: '/dashboard',
         name: 'dashboard',
         props: true,
         component: () => import('../components/defaultPages/dashboard.vue')
@@ -67,7 +73,7 @@ const routes = [
         component: () => import('../components/loginPages/registerForm.vue')
     },
     {
-        path: '/login',
+        path: '/',
         name: 'Login',
         props: true,
         component: () => import('../components/loginPages/login.vue')
