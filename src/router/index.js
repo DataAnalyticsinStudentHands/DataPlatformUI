@@ -4,18 +4,6 @@ import { useLoggedInUserStore } from '../stored/loggedInUser';
 
 const routes = [
     {
-      path: '/test',
-      name: 'test',
-      props: true,
-      component: () => import('../components/test.vue')
-    },
-    {
-      path: '/testTwo',
-      name: 'testTwo',
-      props: true,
-      component: () => import('../components/testTwo.vue')
-    },
-    {
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
