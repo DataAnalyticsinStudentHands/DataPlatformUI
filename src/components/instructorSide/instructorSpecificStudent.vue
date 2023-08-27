@@ -1,6 +1,16 @@
 <template>
   <v-form disabled>
-    <br><p class="font-weight-black text-h5" style="text-align: center;">Student's Information</p>
+    <v-row style="margin-top: 1rem;">
+      <v-col cols="3" style="padding-left: 3rem;">
+        <v-btn @click=$router.back()>
+          Go Back
+        </v-btn>
+      </v-col>
+      <v-col cols="6" class="text-center">
+        <p class="font-weight-black text-h5">Student's Information</p>
+      </v-col>
+      <v-col cols="3"></v-col>
+    </v-row>
       <v-container style="width: 90%; margin: 0 auto;">
         <br><p class="font-weight-black text-h6">Basic Information</p>
           <v-row>

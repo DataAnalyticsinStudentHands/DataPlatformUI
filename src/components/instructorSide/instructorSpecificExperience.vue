@@ -39,6 +39,9 @@
       </v-table>
     </div>
     <div style="text-align: right;">
+      <v-btn @click=$router.back() style="margin-right: 10px;">
+          Cancel
+        </v-btn>
       <v-btn style="text-align: center;" @click="updateExperience">Update</v-btn>
     </div>
   </main>
@@ -114,8 +117,15 @@ export default {
       axios
         .put(apiURL, updatedExperience, { headers: { token } })
         .then(() => {
-          alert("The experience has been updated.");
-          this.$router.push("/instructorExperiences"); // Navigate to /instructorExperiences
+          this.$router.push({ 
+              name: 'instructorExperiences',
+              params: {
+                toastType: 'info',
+                toastMessage: 'Experience updated!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--update'
+            }
+          });
         })
         .catch((error) => {
           console.log(error);

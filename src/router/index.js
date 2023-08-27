@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useLoggedInUserStore } from '../stored/loggedInUser'; 
+
 
 const routes = [
     {
@@ -14,7 +16,7 @@ const routes = [
       component: () => import('../components/studentSide/profilePage.vue')
     },
     {
-        path: '/',
+        path: '/dashboard',
         name: 'dashboard',
         props: true,
         component: () => import('../components/defaultPages/dashboard.vue')
@@ -59,12 +61,19 @@ const routes = [
         component: () => import('../components/loginPages/registerForm.vue')
     },
     {
-        path: '/login',
-        name: 'Login',
+        path: '/',
+        name: 'Home',
         props: true,
         component: () => import('../components/loginPages/login.vue')
         
     },
+    {
+      path: '/login',
+      name: 'Login',
+      props: true,
+      component: () => import('../components/loginPages/login.vue')
+      
+  },
     {
         path: '/verify',
         name: 'Account Confirmation',
@@ -90,21 +99,35 @@ const routes = [
         path: '/updatePasswordForm',
         name: 'Password Update Form',
         props: true,
-        component: () => import('../components/loginPages/updatePassword.vue')
-        
+        component: () => import('../components/loginPages/updatePassword.vue'),
+        beforeEnter: (to, from, next) => {
+          const userStore = useLoggedInUserStore();
+          if (!userStore.isLoggedIn) {
+            next('/error');
+          } else {
+            next();
+          }
+        }
     },
     {
       path: '/updateUserInformation',
       name: 'User Data Update Form',
       props: true,
-      component: () => import('../components/loginPages/updateUserData.vue')
+      component: () => import('../components/loginPages/updateUserData.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn) {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
         path: '/sendNewCode',
         name: 'Send New Code',
         props: true,
         component: () => import('../components/loginPages/sendNewCode.vue')
-        
     },
     {
         path: '/secondaryData/:id',
@@ -116,95 +139,248 @@ const routes = [
     {
       path: '/instructorDash',
       name: 'instructorDash',
-      component: () => import('../components/instructorSide/instructorDash.vue')
+      component: () => import('../components/instructorSide/instructorDash.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorReports',
       name: 'instructorReports',
-      component: () => import('../components/instructorSide/instructorReports.vue')
+      component: () => import('../components/instructorSide/instructorReports.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorStudentsList',
       name: 'instructorStudentsList',
-      component: () => import('../components/instructorSide/instructorStudentsList.vue')
+      component: () => import('../components/instructorSide/instructorStudentsList.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorSpecificStudent/:userID',
       name: 'instructorSpecificStudent',
-      component: () => import('../components/instructorSide/instructorSpecificStudent.vue')
+      component: () => import('../components/instructorSide/instructorSpecificStudent.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorSemesters',
       name: 'instructorSemesters',
+      props: true,
       component: () => import('../components/instructorSide/instructorSemesters.vue'),
-      props: true
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorAddSemester',
       name: 'instructorAddSemester',
-      component: () => import('../components/instructorSide/instructorAddSemester.vue')
+      component: () => import('../components/instructorSide/instructorAddSemester.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorSpecificSemester',
       name: 'instructorSpecificSemester',
-      component: () => import('../components/instructorSide/instructorSpecificSemester.vue')
+      component: () => import('../components/instructorSide/instructorSpecificSemester.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorExperiences',
-      name: 'instructornExperiences',
-      component: () => import('../components/instructorSide/instructorExperiences.vue')
+      name: 'instructorExperiences',
+      component: () => import('../components/instructorSide/instructorExperiences.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorAddExperience',
       name: 'instructorAddExperience',
-      component: () => import('../components/instructorSide/instructorAddExperience.vue')
+      component: () => import('../components/instructorSide/instructorAddExperience.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorSpecificExperience',
       name: 'instructorSpecificExperience',
-      component: () => import('../components/instructorSide/instructorSpecificExperience.vue')
+      component: () => import('../components/instructorSide/instructorSpecificExperience.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorActivities',
       name: 'instructorActivities',
-      component: () => import('../components/instructorSide/instructorActivities.vue')
+      component: () => import('../components/instructorSide/instructorActivities.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/instructorAddActivity',
       name: 'instructorAddActivity',
-      component: () => import('../components/instructorSide/instructorAddActivity.vue')
-    },
+      component: () => import('../components/instructorSide/instructorAddActivity.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },    
     {
       path: '/instructorSpecificActivity',
       name: 'instructorSpecificActivity',
-      component: () => import('../components/instructorSide/instructorSpecificActivity.vue')
+      component: () => import('../components/instructorSide/instructorSpecificActivity.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/studentEntryForm',
       name: 'studentEntryForm',
       props: true,
-      component: () => import('../components/studentSide/studentEntryForm.vue')
+      component: () => import('../components/studentSide/studentEntryForm.vue'),
+      beforeEnter: (to, from, next) => {
+        // Use the Pinia store
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/goalSettingForm',
       name: 'goalSettingForm',
-      component: () => import('../components/studentSide/goalSettingForm.vue')
+      component: () => import('../components/studentSide/goalSettingForm.vue'),
+      beforeEnter: (to, from, next) => {
+        // Use the Pinia store
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/exitForm',
       name: 'exitForm',
-      component: () => import('../components/studentSide/exitForm.vue')
-    },
+      component: () => import('../components/studentSide/exitForm.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },    
     {
       path: '/exitFormsAvailable',
       name: 'exitFormsAvailable',
-      component: () => import('../components/studentSide/exitFormsAvailable.vue')
+      component: () => import('../components/studentSide/exitFormsAvailable.vue'),
+      beforeEnter: (to, from, next) => {
+        // Use the Pinia store
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/studentDashboard',
       name: 'studentDashboard',
-      component: () => import('../components/studentSide/studentDashboard.vue')
-    }
+      component: () => import('../components/studentSide/studentDashboard.vue'),
+      beforeEnter: (to, from, next) => {
+        // Use the Pinia store
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },    
+    {
+      path: '/error',
+      name: 'errorView',
+      component: () => import('../components/error/errorView.vue')
+    },
 ]
 const router = createRouter({
     history: createWebHistory(), routes

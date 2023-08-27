@@ -11,7 +11,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
       <div class="ml-10">
       </div>
-      <div class="flex flex-col col-span-2">
+      <!-- removing b/c WIP <div class="flex flex-col col-span-2">
         <table class="min-w-full shadow-md rounded">
           <thead class="bg-gray-50 text-xl">
             <tr>
@@ -30,12 +30,14 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> -->
     </div>
     </div>
   </main>
 </template>
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { DateTime } from "luxon";
 import axios from "axios";
@@ -48,8 +50,7 @@ export default {
     };
   },
   mounted() {
-    const user = useLoggedInUserStore()
-    let token = user.token
+    let token = localStorage.getItem("token");
     let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
     axios
       .get(url, {
@@ -73,6 +74,12 @@ export default {
       }).then((resp) => {
       this.queryData = resp.data;
     });
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
   },
   methods: {
     routePush(routeName) {

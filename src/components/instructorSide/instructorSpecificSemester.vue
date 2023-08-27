@@ -35,12 +35,15 @@
                 style="outline: 2px solid #808080; margin-right: 10px;"
               />
             </td>
-            <td class="text-left">{{ experience.experienceCode }}</td>
+            <td class="text-left">{{ experience.experienceCategory }}</td>
             <td class="text-left">{{ experience.experienceName }}</td>
           </tr>
         </tbody>
       </v-table>
       <div style="text-align:right;">
+        <v-btn @click=$router.back() style="margin-right: 10px;">
+          Cancel
+        </v-btn>
         <v-btn style="text-align:center;" @click="handleUpdateForm" >
           Update
         </v-btn>
@@ -53,6 +56,8 @@
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
+
+
 
 export default {
   props: ["id"],
@@ -132,9 +137,14 @@ export default {
         axios.put(`${url}/${this.$route.params.id}`, updatedSemester, {
           headers: { token },
         }).then(() => {
-          alert("Update has been saved.");
-          this.$router.back().catch((error) => {
-            console.log(error);
+          this.$router.push({ 
+              name: 'instructorSemesters',
+              params: {
+                toastType: 'info',
+                toastMessage: 'Semester updated!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--update'
+            }
           });
         });
       });

@@ -46,7 +46,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="experience in filteredExperienceData" :key="experience._id">
+          <tr 
+            v-for="experience in filteredExperienceData" 
+            :key="experience._id"
+            :style="{ cursor: 'pointer' }"
+            :class="{ 'hoverRow': hoverId === experience._id}"
+            @mouseenter="hoverId = experience._id"
+            @mouseleave="hoverId = null"
+            >
             <td class="text-left">
               <input type="checkbox" v-model="selectedExperiences" :value="experience._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
@@ -61,6 +68,8 @@
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
@@ -71,12 +80,19 @@ export default {
       experienceData: [],
       showInactive: false,
       selectedExperiences: [],
-      searchQuery: ''
+      searchQuery: '',
+      hoverId: null,
     };
   },
   mounted() {
     this.fetchExperienceData();
     window.scrollTo(0, 0);
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
   },
   methods: {
     fetchExperienceData() {
@@ -113,10 +129,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' deactivated!'
           this.selectedExperiences = [];
           this.fetchExperienceData();
-          alert("The experience(s) have been deactivated.");
-          this.$router.push("/instructorExperiences"); // Navigate to /instructorExperiences
+          toast.error(message, {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -134,10 +153,13 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' activated!'
           this.selectedExperiences = [];
           this.fetchExperienceData();
-          alert("The experience(s) have been activated.");
-          this.$router.push("/instructorExperiences"); // Navigate to /instructorExperiences
+          toast.success(message, {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--create'
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -184,4 +206,9 @@ export default {
     border: 1px solid black;
   }
 }
+
+.hoverRow {
+    background-color: rgb(200, 201, 205);
+    transition: background-color 0.3s ease-in-out;
+  }
 </style>

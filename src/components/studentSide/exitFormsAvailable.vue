@@ -19,14 +19,20 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(experience, index) in completedExperiences" :key="experience._id">
-  <td></td>
-  <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.experienceName }}</td>
-  <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.exitFormCreated ? 'Complete' : 'Incomplete' }}</td>
-  <td></td>
-  <td></td>
-</tr>
-
+            <template v-if="completedExperiences.length === 0">
+              <tr>
+                <td colspan="5" class="text-center">No Exit Forms available.</td>
+              </tr>
+            </template>
+            <template v-else>
+              <tr v-for="(experience, index) in completedExperiences" :key="experience._id">
+                <td></td>
+                <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.experienceName }}</td>
+                <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.exitFormCreated ? 'Complete' : 'Incomplete' }}</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </template>
           </tbody>
         </v-table>
       </div>

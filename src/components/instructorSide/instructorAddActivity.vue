@@ -10,6 +10,9 @@
               </v-col>
             </v-row>
           <v-btn @click="handleSubmitForm">Submit</v-btn>
+          <v-btn @click=$router.back() style="margin-left: 10px;">
+            Cancel
+          </v-btn>
         </v-container>
       </v-form>
     </main>
@@ -34,8 +37,15 @@
         
         axios.post(apiURL, this.activity, {headers: { token }})
         .then((response) => {
-          alert("Activity has been successfully added.");
-          this.$router.push("/instructorActivities");
+          this.$router.push({ 
+              name: 'instructorActivities',
+              params: {
+                toastType: 'success',
+                toastMessage: 'Activity added!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--create'
+            }
+          });
         })
         .catch((error) => {
           console.log(error);

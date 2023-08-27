@@ -60,11 +60,20 @@
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/updateUserData`;
+        const destination = user.role === 'Student' ? 'studentDashboard' : user.role === 'Instructor' ? 'instructorDash' : '';
+
         
         axios.put(apiURL, {firstName: this.firstName, lastName: this.lastName, email: this.email, password: this.confirmPassword}, {headers: { token }})
-        .then((response) => {
-          alert("User data has been successfully updated.");
-          this.$router.push("/");
+        .then(() => {
+          this.$router.push({ 
+              name: destination,
+              params: {
+                toastType: 'info',
+                toastMessage: 'User Information updated!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--update'
+            }
+          });
         })
         .catch((error) => {
             alert(error.response.data.error);

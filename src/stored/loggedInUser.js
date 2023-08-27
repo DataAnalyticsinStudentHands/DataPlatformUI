@@ -30,6 +30,9 @@ export const useLoggedInUserStore = defineStore({
             userId: response.data.userID,
             token: response.data.token
           });
+
+          // Save the token to localStorage
+          localStorage.setItem("token", response.data.token);
           
           if (this.role === 'Instructor') {
             this.$router.push("/instructorDash");
@@ -52,7 +55,31 @@ export const useLoggedInUserStore = defineStore({
         token: "",
         isLoggedIn: false
       });
-      this.$router.push("/login");
+      const logoutMessages = [
+          'See you soon!',
+          'Logged out successfully!',
+          'Goodbye for now!',
+          'See you next time!',
+          "You're safely logged out!",
+          'Hope to see you soon!',
+          'Session ended. Take care!',
+          'Stay safe! See you again!',
+          'Successfully signed out!',
+          "You've logged out. Goodbye!",
+          'Come back soon!'
+      ];
+      // Randomly select a message
+      const randomMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
+
+      this.$router.push({ 
+        name: 'Login',
+        params: {
+          toastType: 'success',
+          toastMessage: randomMessage,
+          toastPosition: 'top-right',
+          toastCSS: 'Toastify__toast--create'
+      }
+    });
       //location.reload(); attempt on trying to remove navigation bar when logging out
     },
     persist: {
