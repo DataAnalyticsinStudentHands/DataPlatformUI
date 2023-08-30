@@ -90,7 +90,6 @@ export default {
       })
       .then((resp) => {
         let data = resp.data[0];
-        console.log(resp.data[0]);
         this.semester.originalSemesterName = data.semesterName;
         this.semester.semesterName = data.semesterName;
         this.semester.semesterStartDate = DateTime.fromISO(data.semesterStartDate)

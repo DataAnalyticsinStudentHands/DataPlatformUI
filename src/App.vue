@@ -185,7 +185,6 @@ export default {
     let url = import.meta.env.VITE_ROOT_API + `/studentSideData/forms/submitted`;
     axios.get(url + `/${userGivenID}`, { headers: { token },})
       .then((resp) => {
-        console.log(resp.data);
         this.displayEntry = resp.data.submitted;
       });
   },

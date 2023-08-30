@@ -41,12 +41,10 @@ export default {
     let token = user.token
     let apiURL = import.meta.env.VITE_ROOT_API + `/studentSideData/getExperienceCount/`;
     this.queryData = [];
-    console.log(this.queryData);
     axios.get(apiURL,{
         headers: { token },
       }).then((resp) => {
       this.queryData = resp.data;
-    console.log(resp.data);
     });
   },
   methods: {

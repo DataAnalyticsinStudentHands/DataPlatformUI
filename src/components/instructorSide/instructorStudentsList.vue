@@ -221,7 +221,6 @@ activateStudents() {
         .get(apiURL, { headers: { token } })
         .then((resp) => {
           this.studentListRaw = resp.data.data;
-          console.log("Student list/w Entry Forms:", this.studentListRaw)
         })
         .catch((error) => {
           console.log(error);
@@ -237,7 +236,6 @@ activateStudents() {
     .then((resp) => {
       // Populate userListRaw with complete user data
       this.userListRaw = resp.data.userData;
-      console.log("Incompleted Students:", this.userListRaw)
     })
     .catch((error) => {
       console.log(error);

@@ -710,7 +710,6 @@ export default {
       axios.get(apiURL)
         .then((response) => {
           this.exitForm.experience = response.data;
-          console.log("Experience Data:", this.exitForm.experience.experienceName);
         })
         .catch((error) => {
           console.log(error);
@@ -722,16 +721,11 @@ export default {
 
   axios.get(apiURL)
     .then((resp) => {
-      console.log(resp.data);
-
       // Update experience activities
       this.exitForm.experienceActivities = resp.data.map((activity) => ({
         activityID: activity._id,
         activityName: activity.activityName
       }));
-
-      // Log experience activities
-      console.log("Experience Activities:", this.exitForm.experienceActivities);
     })
     .catch((error) => {
       console.log(error);
@@ -751,8 +745,6 @@ export default {
       const goalFormData = resp.data[0]?.goalForm;
 
       if (goalFormData) {
-        
-      console.log("Here!!!!!!");
         // Update aspirations
         this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
         this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
@@ -781,7 +773,6 @@ export default {
       try {
         const response = await axios.get(apiURL, { headers: { token } });
         this.exitForm.semester = response.data.semesterName;
-        console.log(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -854,7 +845,6 @@ export default {
     const response = await axios.post(apiURL, exitFormData, {
       headers: { token }
     });
-    console.log(response.data);
     alert("Exit form has been successfully submitted.");
     this.$router.push('/exitFormsAvailable');
   } catch (error) {

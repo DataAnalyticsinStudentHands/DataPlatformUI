@@ -994,7 +994,6 @@ export default {
       communityEngagementExperiencesRules: [
         () => {
           if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) {
-            console.log('skip validation');
             return true;
           }
           
@@ -1796,8 +1795,7 @@ export default {
         this.handleSubmitForm();
     }
   },
-  async handleUpdateForm() {
-    console.log('update form called');
+  async handleUpdateForm() {    
     const user = useLoggedInUserStore();
     let token = user.token;
     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/' + this.foundDocumentId;
@@ -1809,8 +1807,6 @@ export default {
         goals: this.goalForm.goals
       }
     };
-
-    console.log('philtest', updatedGoalForm);
 
   axios
     .put(apiURL, updatedGoalForm, { headers: { token } })
@@ -1840,7 +1836,6 @@ export default {
 },
 
   async handleSubmitForm() {
-    console.log('submit form called');
     const user = useLoggedInUserStore();
     let token = user.token;
     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
@@ -1889,9 +1884,7 @@ export default {
           goalFive: this.goalForm.goals.goalFive,
         },
       },
-    };
-
-    console.log(goalForm)
+    };    
 
     axios
       .post(apiURL, goalForm, { headers: { token } })
