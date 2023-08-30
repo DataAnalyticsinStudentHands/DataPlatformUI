@@ -87,7 +87,6 @@ export default {
     '$route': 'onRouteChange'
   },
   mounted() {
-    console.log('mounted')
     this.fetchSemesterData();
     window.scrollTo(0, 0);
     if (this.$route.params.toastType) {

@@ -76,7 +76,6 @@ export default {
     },
 
     createExitForm(goalSettingFormID, index) {
-      console.log(goalSettingFormID); // Log the value of goalSettingFormID
       this.$router.push({ name: "exitForm", params: { id: goalSettingFormID } });
     },
   },

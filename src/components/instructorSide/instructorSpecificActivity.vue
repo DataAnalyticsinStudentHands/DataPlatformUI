@@ -64,7 +64,6 @@
         })
         .then((resp) => {
           let data = resp.data[0];
-          console.log(resp.data[0]);
           this.activity.activityName = data.activityName;
           this.activity.activityStatus = data.activityStatus;
           this.originalActivityName = data.activityName; // Set the original activity name

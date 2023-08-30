@@ -78,8 +78,6 @@ export default {
         .get(apiURL, { headers: { token } })
         .then((resp) => {
           const experience = resp.data[0];
-          console.log(resp.data);
-          console.log(resp.data[0]);
           this.originalExperienceCategory = experience.experienceCategory;
           this.originalExperienceName = experience.experienceName;
           this.experienceCategory = experience.experienceCategory;

@@ -781,7 +781,6 @@ export default {
 
             const otherPronoun = newVal.find(pronoun => pronoun.id === 5);
             if (otherPronoun && otherPronoun.checked && this.formSubmitted) {
-              console.log('philtest')
                 this.$refs.otherPronounsField.validate();
             }
         }
@@ -973,11 +972,9 @@ export default {
       const { valid } = await this.$refs.form.validate()
 
       if (valid) {
-        console.log('Form is valid');
         this.cleanupFormData();
         this.submitCompletedForm();
       } else {
-        console.log('Form is invalid');
         return;
       }
     },

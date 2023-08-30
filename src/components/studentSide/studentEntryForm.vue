@@ -765,7 +765,6 @@ export default {
 
             const otherPronoun = newVal.find(pronoun => pronoun.id === 5);
             if (otherPronoun && otherPronoun.checked && this.formSubmitted) {
-              console.log('philtest')
                 this.$refs.otherPronounsField.validate();
             }
         }
@@ -785,7 +784,14 @@ export default {
       this.$refs.honorsCollegeAffiliatedHowField.validate();
     }
   },
-
+  'studentInformation.enrolledUHInfo.honorsMinors': {
+        handler(newValues) {
+            if (newValues.includes('None') && newValues.length > 1) {
+                this.studentInformation.enrolledUHInfo.honorsMinors = ['None'];
+            }
+        },
+        deep: true
+    }
 },
   computed: {
     year() {
@@ -968,7 +974,6 @@ export default {
       }
     },
     async submitCompletedForm() {
-      console.log('this.studentInformation', this.studentInformation)
       const user = useLoggedInUserStore()
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
