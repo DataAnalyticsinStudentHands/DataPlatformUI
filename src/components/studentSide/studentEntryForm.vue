@@ -784,7 +784,14 @@ export default {
       this.$refs.honorsCollegeAffiliatedHowField.validate();
     }
   },
-
+  'studentInformation.enrolledUHInfo.honorsMinors': {
+        handler(newValues) {
+            if (newValues.includes('None') && newValues.length > 1) {
+                this.studentInformation.enrolledUHInfo.honorsMinors = ['None'];
+            }
+        },
+        deep: true
+    }
 },
   computed: {
     year() {
