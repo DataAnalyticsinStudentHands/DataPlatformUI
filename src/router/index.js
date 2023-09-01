@@ -383,6 +383,8 @@ const routes = [
     },
 ]
 const router = createRouter({
-    history: createWebHistory(), routes
+    history: createWebHistory('/platform/'), 
+    base: "/platform/", 
+    routes
 })
 export default router
