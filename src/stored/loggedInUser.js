@@ -33,6 +33,9 @@ export const useLoggedInUserStore = defineStore({
 
           // Save the token to localStorage
           localStorage.setItem("token", response.data.token);
+            
+          // Set the global default header for axios
+          axios.defaults.headers.common['token'] = response.data.token;
           
           if (this.role === 'Instructor') {
             this.$router.push("/instructorDash");
@@ -55,6 +58,12 @@ export const useLoggedInUserStore = defineStore({
         token: "",
         isLoggedIn: false
       });
+
+      // Clear the token from localStorage
+      localStorage.removeItem("token");
+
+      // Remove the global default header for axios
+      delete axios.defaults.headers.common['token'];
     
       let logoutMessage = "";
       if (reset) {
