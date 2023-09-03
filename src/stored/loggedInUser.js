@@ -47,7 +47,7 @@ export const useLoggedInUserStore = defineStore({
         alert("Invalid credentials. - Please try again.");
       }
     },
-    logout() {
+    logout(reset = false) {
       // Reset value after user log out
       this.$patch({
         userId: "",
@@ -55,7 +55,12 @@ export const useLoggedInUserStore = defineStore({
         token: "",
         isLoggedIn: false
       });
-      const logoutMessages = [
+    
+      let logoutMessage = "";
+      if (reset) {
+        logoutMessage = "Password Reset! Please login.";
+      } else {
+        let logoutMessages = [
           'See you soon!',
           'Logged out successfully!',
           'Goodbye for now!',
@@ -67,21 +72,21 @@ export const useLoggedInUserStore = defineStore({
           'Successfully signed out!',
           "You've logged out. Goodbye!",
           'Come back soon!'
-      ];
-      // Randomly select a message
-      const randomMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
-
-      this.$router.push({ 
+        ];
+        logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
+      }
+    
+      this.$router.push({
         name: 'Login',
         params: {
           toastType: 'success',
-          toastMessage: randomMessage,
+          toastMessage: logoutMessage,
           toastPosition: 'top-right',
           toastCSS: 'Toastify__toast--create'
-      }
-    });
+        }
+      });
       //location.reload(); attempt on trying to remove navigation bar when logging out
-    },
+    },    
     persist: {
       storage: sessionStorage
     }

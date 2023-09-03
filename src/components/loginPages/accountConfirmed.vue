@@ -73,7 +73,6 @@
             key="loginButton"
           >
           <button
-            v-if="accountActivated"
             key="loginButton"
             @click="$router.push('/login')"
             type="submit"
@@ -90,6 +89,7 @@
                   <div class="block text-sm text-gray-500 mb-2">Didn't receive a code/Expired code?</div>
                   <button
                       @click="toggleEmailField"  
+                      type="button"
                       class="bg-red-700 text-white rounded"
                   >
                       Get New Code
@@ -115,6 +115,7 @@
                   <div class="flex space-x-4"> <!-- Use flex to display buttons side by side -->
                       <button 
                           @click="getNewCode"
+                          type="button"
                           class="bg-red-700 text-white rounded mt-4"
                       >
                           Submit
@@ -122,12 +123,14 @@
                       <button 
                         v-if="showRegisterButton"
                         @click="registerUser"
+                        type="button"
                         class="bg-blue-700 text-white rounded mt-4"
                     >
                         Register
                     </button>
                       <button 
                           @click="cancelEmailInput"
+                          type="button"
                           class="bg-white text-red-700 border border-red-700 rounded mt-4"
                       >
                           Cancel
