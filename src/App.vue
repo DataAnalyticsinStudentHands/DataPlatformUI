@@ -121,6 +121,14 @@
             </router-link>
             </li>
           </div>
+          <div v-if="!user.isLoggedIn">
+            <li>
+              <router-link to="/login">
+              <span style="position: relative; top: 6px" class="material-icons">login</span>
+              <button @click="handleLogout">Login</button>
+            </router-link>
+            </li>
+          </div>
           </ul>
         </nav>
       </header>

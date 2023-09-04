@@ -89,12 +89,21 @@ const routes = [
         
     },
     {
-        path: '/resetPasswordForm',
-        name: 'Password Reset Form',
-        props: true,
-        component: () => import('../components/loginPages/resetPasswordForm.vue')
-        
-    },
+      path: '/resetPasswordForm',
+      name: 'Password Reset Form',
+      props: true,
+      component: () => import('../components/loginPages/resetPasswordForm.vue'),
+      beforeEnter: (to, from, next) => {
+        // Check if the user is coming from the /resetPassword route
+        if (from.path === '/resetPassword') {
+          // Allow navigation to the route
+          next();
+        } else {
+          // Redirect to a different route if not coming from /resetPassword
+          next('/error'); // Redirect to the home page or another appropriate route
+        }
+      }
+    },    
     {
         path: '/updatePasswordForm',
         name: 'Password Update Form',

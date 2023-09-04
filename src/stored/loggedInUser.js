@@ -33,6 +33,9 @@ export const useLoggedInUserStore = defineStore({
 
           // Save the token to localStorage
           localStorage.setItem("token", response.data.token);
+            
+          // Set the global default header for axios
+          axios.defaults.headers.common['token'] = response.data.token;
           
           if (this.role === 'Instructor') {
             this.$router.push("/instructorDash");
@@ -47,7 +50,7 @@ export const useLoggedInUserStore = defineStore({
         alert("Invalid credentials. - Please try again.");
       }
     },
-    logout() {
+    logout(reset = false) {
       // Reset value after user log out
       this.$patch({
         userId: "",
@@ -55,7 +58,18 @@ export const useLoggedInUserStore = defineStore({
         token: "",
         isLoggedIn: false
       });
-      const logoutMessages = [
+
+      // Clear the token from localStorage
+      localStorage.removeItem("token");
+
+      // Remove the global default header for axios
+      delete axios.defaults.headers.common['token'];
+    
+      let logoutMessage = "";
+      if (reset) {
+        logoutMessage = "Password Reset! Please login.";
+      } else {
+        let logoutMessages = [
           'See you soon!',
           'Logged out successfully!',
           'Goodbye for now!',
@@ -67,21 +81,21 @@ export const useLoggedInUserStore = defineStore({
           'Successfully signed out!',
           "You've logged out. Goodbye!",
           'Come back soon!'
-      ];
-      // Randomly select a message
-      const randomMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
-
-      this.$router.push({ 
+        ];
+        logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
+      }
+    
+      this.$router.push({
         name: 'Login',
         params: {
           toastType: 'success',
-          toastMessage: randomMessage,
+          toastMessage: logoutMessage,
           toastPosition: 'top-right',
           toastCSS: 'Toastify__toast--create'
-      }
-    });
+        }
+      });
       //location.reload(); attempt on trying to remove navigation bar when logging out
-    },
+    },    
     persist: {
       storage: sessionStorage
     }

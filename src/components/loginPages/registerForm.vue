@@ -198,7 +198,7 @@ export default {
               "success"
             );
             // alert("You have registered successfully.");
-            this.$router.push("./login");
+            this.$router.push("./verify");
             this.user = {
               firstName: "",
               lastName: "",

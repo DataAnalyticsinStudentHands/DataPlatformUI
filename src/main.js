@@ -1,4 +1,11 @@
 import { createApp, markRaw } from 'vue';
+import axios from 'axios';
+
+// Setting the token as a default header if it exists in localStorage
+if (localStorage.getItem('token')) {
+    axios.defaults.headers.common['token'] = localStorage.getItem('token');
+}
+
 import router from './router';
 import App from './App.vue';
 import './index.css';
