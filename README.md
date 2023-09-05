@@ -17,3 +17,13 @@ VITE_ROOT_API=http://localhost:3000
 ```
 npm run dev
 ```
+### Production deployment
+```
+npm run build
+```
+
+We use [pm2](https://pm2.io/) (see example ecosystem.config.js) for deployment.
+```
+pm2 start ecosystem.config.js
+```
+
