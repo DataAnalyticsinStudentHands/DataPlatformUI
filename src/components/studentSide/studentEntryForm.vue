@@ -740,7 +740,7 @@ export default {
   },
   mounted() {
     // Fetch the JSON data
-    fetch('../../majorsAndMinors.json')
+    fetch('/platform/majorsAndMinors.json')
       .then(response => response.json())
       .then(data => {
         this.majors = data;
