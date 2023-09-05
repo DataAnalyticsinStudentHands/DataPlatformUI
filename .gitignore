@@ -117,3 +117,9 @@ typings/
 
 # TernJS port file
 .tern-port
+
+# ENV file for production environment
+.env.production
+
+# "build" directory - renamed to platform for testing purposes
+platform/
