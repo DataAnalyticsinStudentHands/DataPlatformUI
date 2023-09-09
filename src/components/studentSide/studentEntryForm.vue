@@ -2,6 +2,10 @@
 
 <template> <!-- Start of the Student Entry Form template -->
 
+<!-- <p>{{ otherPronounsRules }}</p>
+<p>{{ honorsCollegeAffiliatedOtherRules }}</p> -->
+<!-- <p>{{this.studentInformation}}</p> -->
+
   <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
     <p class="font-weight-black text-h5 text--primary">Student Entry Form</p>
     <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.</p>
@@ -228,11 +232,11 @@
             </v-col>
           </v-row>
 
-          <v-row>
+          <!-- <v-row>
             <v-col cols="12" md="7">
                 <p 
                 :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
-                class="font-weight-black text-h8">Are you affiliated with the Honors College in any other way? If yes, please specify.</p>
+                class="font-weight-black text-h8">Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?</p>
                 <v-radio-group 
                 :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
                 v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"
@@ -250,7 +254,37 @@
                   <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
                 </v-radio-group>
             </v-col>
-          </v-row> 
+          </v-row>  -->
+<!-- 
+          <p>{{ studentInformation.enrolledUHInfo.honorsCollegeAffiliated }}</p>
+          <p>{{ studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther }}</p> -->
+        <v-row>
+          <v-col cols="12" md="7">
+            <p 
+            class="font-weight-black text-h8">
+                Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?
+            </p>
+            <v-autocomplete
+            :items="['Senior Honors Thesis', 'Honors Mentorship program', 'Honors Club Theatre', 'Honors Dodgeball Society', 'Student Governing Board', 'Bonner Leaders Program', 'Hobby/Leland/Harris Fellow', 'Mellon Research Scholars', 'Speech & Debate', 'Model Arab League, Model UN, etc.', 'Honors Ambassadors', 'Other']"
+            label="Select an affiliation"
+            v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliated"
+            clearable
+            chips
+            multiple>
+            </v-autocomplete>
+            <transition name="slide-y-transition">
+              <v-text-field 
+              ref="honorsCollegeAffiliatedOtherField"
+              v-show="studentInformation.enrolledUHInfo.honorsCollegeAffiliated.includes('Other')"
+              label="Specify Other Affiliation"
+              v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther"
+              outlined
+              :rules="honorsCollegeAffiliatedOtherRules">
+              </v-text-field>
+          </transition>
+        </v-col>
+      </v-row>
+
 
 
           <v-row>
@@ -457,13 +491,25 @@
               <v-row>
                 <v-col cols="12" md="10">
                   <transition name="slide-y-transition">
-                    <v-text-field v-if="programType.id === 4 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.phDTextbox"></v-text-field>
+                    <v-text-field 
+                    ref="phDTextboxField"
+                    v-show="programType.id === 4 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.phDTextbox"
+                    :rules="phDTextboxRules"
+                    ></v-text-field>
                   </transition>
                   <transition name="slide-y-transition">
-                    <v-text-field v-if="programType.id === 7 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.masterTextbox"></v-text-field>
+                    <v-text-field 
+                    ref="masterTextboxField"
+                    v-show="programType.id === 7 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.masterTextbox"
+                    :rules="masterTextboxRules"
+                    ></v-text-field>
                   </transition>
                   <transition name="slide-y-transition">
-                    <v-text-field v-if="programType.id === 8 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.otherTextbox"></v-text-field>
+                    <v-text-field 
+                    ref="otherTextboxField"
+                    v-show="programType.id === 8 && programType.checked" label="Please Specify" v-model="studentInformation.graduateProfessionalSchool.otherTextbox"
+                    :rules="otherTextboxRules"
+                    ></v-text-field>
                   </transition>
                 </v-col>
               </v-row>
@@ -496,7 +542,11 @@
               <v-row>
                 <v-col cols="12" md="10">
                   <transition name="slide-y-transition">
-                  <v-text-field v-if="specializedType.id === 6 && specializedType.checked" label="Please Specify" v-model="studentInformation.specializedDegCert.professionalDesignOther"></v-text-field>
+                  <v-text-field 
+                  ref="professionalDesignOtherField"
+                  v-show="specializedType.id === 6 && specializedType.checked" label="Please Specify" v-model="studentInformation.specializedDegCert.professionalDesignOther"
+                  :rules="professionalDesignOtherRules"
+                  ></v-text-field>
                 </transition>
                 </v-col>
               </v-row>
@@ -579,8 +629,8 @@ export default {
           expectedGraduationYear: '',
           livingOnCampus: '',
           honorsCollegeStatus: '',
-          honorsCollegeAffiliatedStatus: '',
-          honorsCollegeAffiliatedHow: '',
+          honorsCollegeAffiliated: [],
+          honorsCollegeAffiliatedOther: '',
           majors: [], 
           honorsMinors: [],
           otherMinors: []
@@ -636,6 +686,8 @@ export default {
               // If the condition for v-show is false (Other pronoun not checked), validation passes automatically
               if (!otherPronoun || !otherPronoun.checked) return true;
 
+              console.log('Value of v for pronouns:', v);
+
               return !!v || 'If Other is selected, please specify pronouns.';
           },
       ],
@@ -679,23 +731,18 @@ export default {
               return !!v || 'Information is required.';
           },
       ],
-      honorsCollegeAffiliatedStatusRules: [
-          v => {
-              // If user is not a UH student, validation passes automatically
-              if (!this.uHStudentCheck) return true;
-
-              return !!v || 'Information is required.';
-          },
-      ],
-      honorsCollegeAffiliatedHowRules: [
-      v => {
-          // If user is not a UH student, validation passes automatically
-          if (!this.uHStudentCheck) return true;
-          // if user is a UH student, but did not choose "yes" for affiliation with Honors College in any other way, then validation passess automatically
-          if (this.uHStudentCheck && this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus !== 'Yes') return true;
-
-          return !!v || 'Information is required.';
-      },
+      honorsCollegeAffiliatedOtherRules: [
+        v => {
+            // If user is not a UH student, validation passes automatically
+            if (!this.uHStudentCheck) {
+              return true
+            };
+            // if user is a UH student, but did not choose "Other" for affiliation with Honors College, then validation passess automatically
+            if (this.uHStudentCheck && !this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated.includes('Other')) {
+              return true
+            };
+            return !!v || 'If Other is selected, please specify affiliation.';
+        },
       ],
       majorsRules: [
           v => {
@@ -731,11 +778,47 @@ export default {
             return !!v || 'Information is required.';
           }
       ],
+      phDTextboxRules: [
+        v => {
+            // conditions to skip validation
+            if (!this.formSubmitted || (this.studentInformation.graduateProfessionalSchool.programGradProType[3].checked === false ) || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
+              return true
+            }
+            return !!v || "If \"PhD\" is selected, please specify.";
+          }
+      ],
+      masterTextboxRules: [
+        v => {
+          // conditions to skip validation
+            if (!this.formSubmitted || (this.studentInformation.graduateProfessionalSchool.programGradProType[6].checked === false ) || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
+              return true
+            }
+            return !!v || "If \"Master\'s\" is selected, please specify.";
+          }
+      ],
+      otherTextboxRules: [
+        v => {
+          // conditions to skip validation
+            if (!this.formSubmitted || (this.studentInformation.graduateProfessionalSchool.programGradProType[7].checked === false ) || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
+              return true
+            }
+            return !!v || "If \"Other\" is selected, please specify.";
+          }
+      ],
       specializedDegCertStatusRules: [
         v => {
-          return !!v || 'Information is required.';
-        }
-      ]
+              return !!v || 'Information is required.';
+            }
+      ],
+      professionalDesignOtherRules: [
+        v => {
+            // conditions to skip validation
+            if (!this.formSubmitted || (this.studentInformation.specializedDegCert.specializedDegCertType[5].checked === false ) || this.studentInformation.specializedDegCert.specializedDegCertStatus === 'No') {
+              return true
+            }
+            return !!v || "If \"Other\" is selected, please specify.";
+          }
+      ],
     }
   },
   mounted() {
@@ -778,11 +861,13 @@ export default {
           this.$refs.honorsMinorsRef.validate();
       }
   },
-  'studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus'(newValue) {
-    if (newValue === 'Yes' && this.formSubmitted) {
-      // Trigger child validations for "Are you affiliated with the Honors College in any other way? If yes, please specify."
-      this.$refs.honorsCollegeAffiliatedHowField.validate();
-    }
+  'studentInformation.enrolledUHInfo.honorsCollegeAffiliated': {
+      deep: true,
+      handler(newValue) {
+          if (newValue.includes('Other') && this.formSubmitted) {
+              this.$refs.honorsCollegeAffiliatedOtherField.validate();
+          }
+      }
   },
   'studentInformation.enrolledUHInfo.honorsMinors': {
         handler(newValues) {
@@ -791,7 +876,59 @@ export default {
             }
         },
         deep: true
-    }
+    },
+    'studentInformation.graduateProfessionalSchool.programGradProType': {
+        deep: true,
+        handler(newValue) {
+            if (this.formSubmitted) {
+                const phDItem = newValue.find(item => item.id === 4);
+                const masterItem = newValue.find(item => item.id === 7);
+                const otherItem = newValue.find(item => item.id === 8);
+                
+                // Validate for phDTextbox
+                if (phDItem && phDItem.checked) {
+                    const index = newValue.indexOf(phDItem);
+                    if (this.$refs.phDTextboxField[index]) {
+                        this.$refs.phDTextboxField[index].validate();
+                    }
+                }
+                
+                // Validate for masterTextbox
+                if (masterItem && masterItem.checked) {
+                    const index = newValue.indexOf(masterItem);
+                    if (this.$refs.masterTextboxField[index]) {
+                        this.$refs.masterTextboxField[index].validate();
+                    }
+                }
+
+                // Validate for otherTextbox
+                if (otherItem && otherItem.checked) {
+                    const index = newValue.indexOf(otherItem);
+                    if (this.$refs.otherTextboxField[index]) {
+                        this.$refs.otherTextboxField[index].validate();
+                    }
+                }
+            }
+        }
+    },
+    'studentInformation.specializedDegCert.specializedDegCertType': {
+        deep: true,
+        handler(newValue) {
+            if (this.formSubmitted) {
+                const otherItem = newValue.find(item => item.id === 6);
+                // Validate for professionalDesignOther
+                if (otherItem && otherItem.checked) {
+                    const index = newValue.indexOf(otherItem);
+                    if (this.$refs.professionalDesignOtherField[index]) {
+                        this.$refs.professionalDesignOtherField[index].validate();
+                    }
+                }
+            }
+        }
+    },
+
+
+
 },
   computed: {
     year() {
@@ -874,35 +1011,13 @@ export default {
       // If user is not a UH student, then return empty string.
       return '';
   },
-  isHonorsCollegeAffiliatedStatusInvalid() {
-      // if user is not UH Student, skip validation
-      if (!this.uHStudentCheck) return false;
+  // isHonorsCollegeAffiliatedOtherInvalid() {
+  //   // if user is not UH Student, skip validation
+  //   if (!this.uHStudentCheck) return false;
 
-      const radioRule = v => !!v || 'Information is required';
-      const isRadioInvalid = radioRule(this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus) !== true;
-
-      const isTextFieldInvalid = this.studentInformation.enrolledUHInfo.uhStatus === 'Yes' && 
-                                 this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus === 'Yes' && 
-                                 this.honorsCollegeAffiliatedHowRules.some(rule => 
-                                     typeof rule(this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow) === 'string');
-
-      return isRadioInvalid || isTextFieldInvalid;
-  },
-  honorsCollegeAffiliatedStatusErrorMessage() {
-      if (this.uHStudentCheck) {
-          // Evaluate the validation rule
-          const validationResult = this.honorsCollegeAffiliatedStatusRules[0](this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus);
-          
-          // If validation passes (result is true), return an empty string
-          if (validationResult === true) {
-              return '';
-          }
-
-          // Otherwise, return the error message
-          return validationResult;
-      }
-      return '';
-  },
+  //   //Check the validation rule for the "Other" text field
+  //   return this.honorsCollegeAffiliatedOtherRules[0](this.studentInformation.enrolledUHInfo.majors) != true;
+  // },
   isMajorsInvalid() {
       // if user is not UH Student, skip validation
       if (!this.uHStudentCheck) return false;
@@ -921,7 +1036,7 @@ export default {
       // if user is not UH Student, skip validation
       if (!this.uHStudentCheck) return false;
 
-      return this.isHonorsCollegeStatusInvalid || this.isHonorsCollegeAffiliatedStatusInvalid || this.isMajorsInvalid || this.isHonorsMinorsInvalid;
+      return this.isHonorsCollegeStatusInvalid || this.isHonorsCollegeAffiliatedOtherInvalid || this.isMajorsInvalid || this.isHonorsMinorsInvalid;
   },
   isOtherEngagementValid() {
       // if user is not UH Student, skip validation
@@ -952,15 +1067,40 @@ export default {
     return rule(this.studentInformation.specializedDegCert.specializedDegCertStatus) !== true;
   },
   isGraduateProfessionalSchoolGoalsInvalid() {
-    if (!this.formSubmitted) return false;
+      if (!this.formSubmitted) return false;
 
-    return this.isProgramGradProStatusValid || this.isSpecializedDegCertStatusInvalid;
+      const isPhDTextboxValid = this.phDTextboxRules[0](this.studentInformation.graduateProfessionalSchool.phDTextbox);
+
+      // Check if the rule returned a string (indicating an error message)
+      const isPhDTextboxInvalid = typeof isPhDTextboxValid === 'string';
+
+      const isMastersTextboxValid = this.masterTextboxRules[0](this.studentInformation.graduateProfessionalSchool.masterTextbox);
+
+      // Check if the rule returned a string (indicating an error message)
+      const isMastersTextboxInValid = typeof isMastersTextboxValid === 'string';
+      
+      const isOtherTextboxValid = this.otherTextboxRules[0](this.studentInformation.graduateProfessionalSchool.otherTextbox);
+
+      // Check if the rule returned a string (indicating an error message)
+      const isOtherTextboxInValid = typeof isOtherTextboxValid === 'string';
+      
+      const isProfessionalDesignOtherValid = this.professionalDesignOtherRules[0](this.studentInformation.specializedDegCert.professionalDesignOther);
+
+      // Check if the rule returned a string (indicating an error message)
+      const isProfessionalDesignOtherInValid = typeof isProfessionalDesignOtherValid === 'string';
+
+      return this.isProgramGradProStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
   },
+  // Computed function to get the ref of phDTextboxField (it's within a for loop)
+  phDTextboxFieldRef() {
+      return this.$refs.phDTextboxField ? this.$refs.phDTextboxField.find(ref => ref.someCondition) : null;
+  }
   },
   methods: {
     async handleValidations() {
       this.formSubmitted = true;
       const { valid } = await this.$refs.form.validate()
+
 
       if (valid) {
         this.cleanupFormData();
@@ -977,6 +1117,7 @@ export default {
       const user = useLoggedInUserStore()
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
+      
       axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
         this.$router.push({ 
               name: 'studentDashboard',
@@ -1002,8 +1143,8 @@ export default {
       }
 
       // Check condition for UH student
-      //Check condition for "honorsCollegeAffiliatedStatus"
-      const honorsCollegeAffiliatedStatusCheck = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus === 'Yes';
+      //Check condition for "honorsCollegeAffiliated"
+      const honorsCollegeAffiliatedCheck = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated.includes('Other');
 
       if (!this.uHStudentCheck) {
         this.studentInformation.enrolledUHInfo.uhEmail = '';
@@ -1011,15 +1152,15 @@ export default {
         this.studentInformation.enrolledUHInfo.expectedGraduationYear = '';
         this.studentInformation.enrolledUHInfo.livingOnCampus = '';
         this.studentInformation.enrolledUHInfo.honorsCollegeStatus = '';
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus = '';
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow = '';
+        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated = [];
+        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
         this.studentInformation.enrolledUHInfo.majors = [];
         this.studentInformation.enrolledUHInfo.honorsMinors = [];
         this.studentInformation.enrolledUHInfo.otherMinors = [];
         this.studentInformation.hichInfo.hichStatus = '';
         this.studentInformation.hichInfo.hichHistoryStatus = '';
-      } else if (this.uhStudentCheck && !honorsCollegeAffiliatedStatusCheck) {
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow = '';
+      } else if (this.uHStudentCheck && !honorsCollegeAffiliatedCheck) {
+        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
       }
       
       //Check condition for "serviceStatus"
@@ -1063,20 +1204,29 @@ export default {
       //Check condition for specializedDegCertStatus
       const specializedDegCertStatusCheck = this.studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes';
 
-      const professionalDesignOtherFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 6);
+      console.log('specializedDegCertStatusCheck: ', specializedDegCertStatusCheck);
+
+      const professionalDesignOtherFind = this.studentInformation.specializedDegCert.specializedDegCertType.find(p => p.id === 6);
+
+      console.log('professionalDesignOtherFind: ', professionalDesignOtherFind);
+
       const isProfessionalDesignOtherChecked = professionalDesignOtherFind ?professionalDesignOtherFind.checked : false;
 
+      console.log('isProfessionalDesignOtherChecked: ', isProfessionalDesignOtherChecked);
+
       if (!specializedDegCertStatusCheck) {
+        console.log('not checked');
         this.studentInformation.specializedDegCert.specializedDegCertType.forEach(item => {
           item.checked = false;
         });
         this.studentInformation.specializedDegCert.professionalDesignOther = '';
       } else {
+        console.log('checked');
         if (!isProfessionalDesignOtherChecked) {
+          console.log('other not checked');
           this.studentInformation.specializedDegCert.professionalDesignOther = '';
         }
       }
-
     },
   },
 }
