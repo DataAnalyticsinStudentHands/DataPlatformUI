@@ -222,7 +222,7 @@ export default {
             // Handle successful response
             if (response.data.title === 'Success') {
               this.emailError = '';
-              this.emailSuccess = 'Success! Please check your email and follow the steps to reset your password.';
+              this.emailSuccess = 'Success! Please check your email.';
             }
 
         } catch (error) {
