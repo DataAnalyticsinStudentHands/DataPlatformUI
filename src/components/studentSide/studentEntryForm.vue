@@ -265,7 +265,7 @@
                 Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?
             </p>
             <v-autocomplete
-            :items="['Senior Honors Thesis', 'Honors Mentorship program', 'Honors Club Theatre', 'Honors Dodgeball Society', 'Student Governing Board', 'Bonner Leaders Program', 'Hobby/Leland/Harris Fellow', 'Mellon Research Scholars', 'Speech & Debate', 'Model Arab League, Model UN, etc.', 'Honors Ambassadors', 'Other']"
+            :items="['Senior Honors Thesis', 'Honors Mentorship Program', 'Honors Club Theatre', 'Honors Dodgeball Society', 'Student Governing Board', 'Bonner Leaders Program', 'Hobby/Leland/Harris Fellow', 'Mellon Research Scholars', 'Speech & Debate', 'Model Arab League, Model UN, etc.', 'Honors Ambassadors', 'Other']"
             label="Select an affiliation"
             v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliated"
             clearable
