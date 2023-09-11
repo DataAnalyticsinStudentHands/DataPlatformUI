@@ -267,7 +267,7 @@ convertEntryFormToCSV(jsonData) {
     "studentInformation.otherLanguages": 'Other Languages',
     "studentInformation.languagePreference": 'What language do you prefer to receive communication in?',
     "studentInformation.pronouns": 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this).',
-    "studentInformation.otherPronouns": 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Other - Text',
+    "studentInformation.otherPronouns": 'What are your pronouns? Select all that apply. - Other - Text',
     "studentInformation.commentsByStaff": 'Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?',
     "studentInformation.issuesConcernsTriggers": 'Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?',
     "studentInformation.enrolledUHInfo.uhStatus": 'Are you currently enrolled in a degree program at the University of Houston?',
@@ -294,6 +294,33 @@ convertEntryFormToCSV(jsonData) {
     "studentInformation.specializedDegCert.specializedDegCertStatus": 'Are you planning to pursue any other kind of specialized degree / certificate program?',
     "studentInformation.specializedDegCert.specializedDegCertType": 'If you are planning to pursue a specialized degree / certificate program, what type of program?',
   };
+
+  // Programmatically generate keys for pronouns after the initial setup
+  const pronounQuestion = 'What are your pronouns? Select all that apply.';
+  const maxPronouns = 6;  // Assuming maximum of 6 pronoun options, adjust as necessary
+  for (let i = 0; i < maxPronouns; i++) {
+    customTextMapping[`studentInformation.pronouns.${i}.id`] = pronounQuestion;
+    customTextMapping[`studentInformation.pronouns.${i}.label`] = pronounQuestion;
+    customTextMapping[`studentInformation.pronouns.${i}.checked`] = pronounQuestion;
+  }
+
+  // Enhancement for programGradProType
+  const programGradProQuestion = 'If you are planning to pursue graduate school, what type of program?';
+  const maxGradProTypes = 8;  // Assuming maximum of 8 options, adjust as necessary
+  for (let i = 0; i < maxGradProTypes; i++) {
+    customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.id`] = programGradProQuestion;
+    customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.label`] = programGradProQuestion;
+    customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.checked`] = programGradProQuestion;
+  }
+
+  // Enhancement for specializedDegCertType
+  const specializedDegCertQuestion = 'If you are planning to pursue a specialized degree / certificate program, what type of program?';
+  const maxDegCertTypes = 6;  // Assuming maximum of 6 options, adjust as necessary
+  for (let i = 0; i < maxDegCertTypes; i++) {
+    customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.id`] = specializedDegCertQuestion;
+    customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.label`] = specializedDegCertQuestion;
+    customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.checked`] = specializedDegCertQuestion;
+  }
 
   // Replace the necessary indices with your custom texts
   header.forEach((field, index) => {
@@ -418,7 +445,24 @@ getCSVHeader() {
         "studentInformation.primaryLanguage",
         "studentInformation.otherLanguages",
         "studentInformation.languagePreference",
-        "studentInformation.pronouns",
+        "studentInformation.pronouns.0.id",
+        "studentInformation.pronouns.0.label",
+        "studentInformation.pronouns.0.checked",
+        "studentInformation.pronouns.1.id",
+        "studentInformation.pronouns.1.label",
+        "studentInformation.pronouns.1.checked",
+        "studentInformation.pronouns.2.id",
+        "studentInformation.pronouns.2.label",
+        "studentInformation.pronouns.2.checked",
+        "studentInformation.pronouns.3.id",
+        "studentInformation.pronouns.3.label",
+        "studentInformation.pronouns.3.checked",
+        "studentInformation.pronouns.4.id",
+        "studentInformation.pronouns.4.label",
+        "studentInformation.pronouns.4.checked",
+        "studentInformation.pronouns.5.id",
+        "studentInformation.pronouns.5.label",
+        "studentInformation.pronouns.5.checked",
         "studentInformation.otherPronouns",
         "studentInformation.commentsByStaff",
         "studentInformation.issuesConcernsTriggers",
@@ -439,12 +483,52 @@ getCSVHeader() {
         "studentInformation.communityServiceInfo.serviceHistoryDesc",
         "studentInformation.communityServiceInfo.serviceOrgsOutsideUH",
         "studentInformation.graduateProfessionalSchool.programGradProStatus",
-        "studentInformation.graduateProfessionalSchool.programGradProType",
+        "studentInformation.graduateProfessionalSchool.programGradProType.0.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.0.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.0.checked",
+        "studentInformation.graduateProfessionalSchool.programGradProType.1.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.1.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.1.checked",
+        "studentInformation.graduateProfessionalSchool.programGradProType.2.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.2.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.2.checked",
+        "studentInformation.graduateProfessionalSchool.programGradProType.3.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.3.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.3.checked",
+        "studentInformation.graduateProfessionalSchool.programGradProType.4.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.4.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.4.checked",
+        "studentInformation.graduateProfessionalSchool.programGradProType.5.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.5.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.5.checked",
+        "studentInformation.graduateProfessionalSchool.programGradProType.6.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.6.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.6.checked",
+        "studentInformation.graduateProfessionalSchool.programGradProType.7.id",
+        "studentInformation.graduateProfessionalSchool.programGradProType.7.label",
+        "studentInformation.graduateProfessionalSchool.programGradProType.7.checked",
         "studentInformation.graduateProfessionalSchool.phDTextbox",
         "studentInformation.graduateProfessionalSchool.masterTextbox",
         "studentInformation.graduateProfessionalSchool.otherTextbox",
         "studentInformation.specializedDegCert.specializedDegCertStatus",
-        "studentInformation.specializedDegCert.specializedDegCertType",
+        "studentInformation.specializedDegCert.specializedDegCertType.0.id",
+        "studentInformation.specializedDegCert.specializedDegCertType.0.label",
+        "studentInformation.specializedDegCert.specializedDegCertType.0.checked",
+        "studentInformation.specializedDegCert.specializedDegCertType.1.id",
+        "studentInformation.specializedDegCert.specializedDegCertType.1.label",
+        "studentInformation.specializedDegCert.specializedDegCertType.1.checked",
+        "studentInformation.specializedDegCert.specializedDegCertType.2.id",
+        "studentInformation.specializedDegCert.specializedDegCertType.2.label",
+        "studentInformation.specializedDegCert.specializedDegCertType.2.checked",
+        "studentInformation.specializedDegCert.specializedDegCertType.3.id",
+        "studentInformation.specializedDegCert.specializedDegCertType.3.label",
+        "studentInformation.specializedDegCert.specializedDegCertType.3.checked",
+        "studentInformation.specializedDegCert.specializedDegCertType.4.id",
+        "studentInformation.specializedDegCert.specializedDegCertType.4.label",
+        "studentInformation.specializedDegCert.specializedDegCertType.4.checked",
+        "studentInformation.specializedDegCert.specializedDegCertType.5.id",
+        "studentInformation.specializedDegCert.specializedDegCertType.5.label",
+        "studentInformation.specializedDegCert.specializedDegCertType.5.checked",
         "studentInformation.specializedDegCert.professionalDesignOther",
         "createdAt",
         "updatedAt",
@@ -456,32 +540,49 @@ getCSVHeader() {
 
 getCSVRowValues(obj, header) {
   const values = [];
+  
   header.forEach((field) => {
-    // console.log('Inspecting field:', field);
-    const pathKeys = field.split('.');
     let value = obj;
-    pathKeys.forEach((key, index) => {
-      // console.log('Current key:', key);
-      // console.log('Current value:', value);
-      if (value && typeof value === 'object' && key in value) {
-        value = value[key];
-      } else {
-        console.error('Path extraction failed at key:', key);
-        value = undefined;
-      }
-    });
 
-    if (["studentInformation.pronouns", "studentInformation.graduateProfessionalSchool.programGradProType", "studentInformation.specializedDegCert.specializedDegCertType"].includes(field)) {
-      // console.log('Processing special field:', field);
-      if (Array.isArray(value)) {
-        // console.log('Array values before filter:', value);
-        const checkedLabels = value.filter(p => p.checked).map(p => p.label);
-        // console.log('Checked labels:', checkedLabels);
-        value = checkedLabels.join(', ');
-      } else {
-        console.log('Value is not an array for field:', field);
-        value = '';  // Set value to empty string if it's not an array
-      }
+    if (field.startsWith("studentInformation.pronouns.")) {
+        const pathKeys = field.split('.');
+        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
+        const key = pathKeys[pathKeys.length - 1];
+
+        if (obj["studentInformation"]["pronouns"][index]) {
+            value = obj["studentInformation"]["pronouns"][index][key];
+        } else {
+            value = '';
+        }
+    } else if (field.startsWith("studentInformation.graduateProfessionalSchool.programGradProType.")) {
+        const pathKeys = field.split('.');
+        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
+        const key = pathKeys[pathKeys.length - 1];
+
+        if (obj["studentInformation"]["graduateProfessionalSchool"]["programGradProType"][index]) {
+            value = obj["studentInformation"]["graduateProfessionalSchool"]["programGradProType"][index][key];
+        } else {
+            value = '';
+        }
+    } else if (field.startsWith("studentInformation.specializedDegCert.specializedDegCertType.")) {
+        const pathKeys = field.split('.');
+        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
+        const key = pathKeys[pathKeys.length - 1];
+
+        if (obj["studentInformation"]["specializedDegCert"]["specializedDegCertType"][index]) {
+            value = obj["studentInformation"]["specializedDegCert"]["specializedDegCertType"][index][key];
+        } else {
+            value = '';
+        }
+    } else {
+        const pathKeys = field.split('.');
+        pathKeys.forEach((key, index) => {
+          if (value && typeof value === 'object' && key in value) {
+            value = value[key];
+          } else {
+            value = undefined;
+          }
+        });
     }
 
     // Handle arrays (for other fields if any)
@@ -510,6 +611,7 @@ getCSVRowValues(obj, header) {
 
     values.push(value);
   });
+
   return values;
 },
 
