@@ -9,20 +9,6 @@
     <br>
     <br>
     <v-btn @click="downloadAllExitDataAsCSV">Download Student Exit Forms as CSV for <b>All</b> Semesters</v-btn>
-    <!-- <table class="min-w-full shadow-md rounded">
-          <thead class="bg-gray-50 text-xl">
-            <tr>
-              <th class="p-4 text-left">Experience Name</th>
-              <th class="p-4 text-left">Student Amount</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-300">
-            <tr v-for="experience in queryData" :key="experience.experienceID">
-              <td class="p-2 text-left">{{experience.experienceCategory}}: {{ experience.experienceName }}</td>
-              <td class="p-2 text-left">{{ experience.count }}</td>
-            </tr>
-          </tbody>
-        </table> -->
   </div>
 </template>
 
@@ -183,70 +169,6 @@ export default {
   return csvContent;
 },
 
-//     convertEntryFormToCSV(jsonData) {
-//   // Create the CSV header row
-//   const header = this.getCSVHeader(jsonData[0]);
-//   // const headerRow = header.join(',');
-
-//   // After getting the header
-// const numHeaders = header.length;
-
-// // Create an array of empty strings with the same length as the header
-// const extraRowArray = new Array(numHeaders).fill("");
-
-// console.log(extraRowArray)
-// console.log(extraRowArray[0])
-
-//   //
-//   const customText1 = 'City of Origin';
-//   const customText2 = 'Primary Language';
-//   const customText3 = 'Other Languages';
-//   const customText4 = 'What language do you prefer to receive communication in?';
-//   const customText5 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - She/her/hers';
-//   const customText6 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - He/him/his';
-//   const customText7 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - They/them/theirs';
-//   const customText8 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - Ze/Zir/Zirs';
-//   const customText9 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - Other';
-//   const customText10 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Selected Choice - Prefer not to answer';
-//   const customText11 = 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this). - Other - Text';
-//   const customText12 = 'Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?';
-//   const customText13 = 'Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?';
-//   const customText14 = 'Are you currently enrolled in a degree program at the University of Houston?';
-//   const customText15 = 'UH Email';
-//   const customText16 = 'PeopleSoft ID';
-//   const customText17 = 'Expected Graduation Year';
-//   const customText18 = 'Do you live on or off campus?';
-//   const customText19 = 'Are you a member of the Honors College?';
-//   const customText20 = 'Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?';
-//   const customText21 = 'If Other, please specify.';
-//   const customText22 = 'What is/are your current major(s)?';
-//   const customText23 = 'Are you pursuing, or planning to pursue, any of the following Honors College minors?';
-//   const customText24 = 'Are you pursuing any other minors?';
-//   const customText25 = 'Are you a member of Honors in Community Health (HICH)?';
-//   const customText26 = 'Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?';
-//   const customText27 = 'Have you had other experience with Community Service?';
-//   const customText28 = 'Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.';
-//   const customText29 = 'Are you a member of any community organizations outside the University? Please list.';
-//   const customText30 = 'Do you currently plan to pursue graduate or professional (e.g. medical, law) school?';
-//   const customText31 = 'If you are planning to pursue graduate school, what type of program?';
-//   const customText32 = 'Are you planning to pursue any other kind of specialized degree / certificate program?';
-//   const customText33 = 'If you are planning to pursue a specialized degree / certificate program, what type of program?';
-//   const customText34 = 'If you are planning to pursue graduate school, what type of program? - other - Text';
-//   const customText35 = 'If you are planning to pursue a specialized degree / certificate program, what type of program? - other - Text';
-//   const extraRowCSV = ['"' + '","' +'","' +'","' +customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","' + customText11 +'","'  + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","' +  customText17 +'","'  +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+customText34  +'","'+ customText32 + '","' +customText33 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+customText35+'","'+ customText5 +'","'+'","'+'","' + customText6 +'","'+'","'+'","' + customText7 +'","'+'","'+'","' + customText8 +'","'+'","'+'","' + customText9 +'","'+'","'+'","' + customText10 +'","'+'","' +'","' + '"'];
-
-//   // Create the CSV data rows
-//   const dataRows = jsonData.map((item) => {
-//     const values = this.getCSVRowValues(item, header);
-//     return values.join(',');
-//   });
-
-//   // Combine all rows including the extra row and data rows
-//   const csvContent = [headerRow, ...extraRowCSV, ...dataRows].join('\n');
-
-//   return csvContent;
-// },
-
 convertEntryFormToCSV(jsonData) {
   // Create the CSV header row
   const header = this.getCSVHeader(jsonData[0]);
@@ -259,9 +181,9 @@ convertEntryFormToCSV(jsonData) {
 
   // Map fields to custom texts
   const customTextMapping = {
-    "_id": '',  // Empty as specified
-    "organizationID": '',  // Empty as specified
-    "userID": '',  // Empty as specified
+    "_id": '', 
+    "organizationID": '',  
+    "userID": '',  
     "studentInformation.cityOrigin": 'City of Origin',
     "studentInformation.primaryLanguage": 'Primary Language',
     "studentInformation.otherLanguages": 'Other Languages',
@@ -411,29 +333,6 @@ convertEntryFormToCSV(jsonData) {
 },
 
 
-
-
-// getCSVHeader(obj, path = '') {
-//     const header = [];
-//     const keys = Object.keys(obj);
-
-//     // Sort the keys to ensure honorsCollegeAffiliated comes before honorsCollegeAffiliatedOther
-//     keys.sort((a, b) => {
-//         if (a === 'honorsCollegeAffiliated' && b === 'honorsCollegeAffiliatedOther') return -1;
-//         if (a === 'honorsCollegeAffiliatedOther' && b === 'honorsCollegeAffiliated') return 1;
-//         return 0;
-//     });
-
-//     keys.forEach((key) => {
-//         if (typeof obj[key] === 'object' && obj[key] !== null) {
-//             const nestedHeader = this.getCSVHeader(obj[key], `${path}${key}.`);
-//             header.push(...nestedHeader);
-//         } else {
-//             header.push(`${path}${key}`);
-//         }
-//     });
-//     return header;
-// },
 
 getCSVHeader() {
     // Manually ordered headers based on the document structure

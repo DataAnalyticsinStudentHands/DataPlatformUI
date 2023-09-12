@@ -1,5 +1,4 @@
 <!--'/instructorAddSemester' this page will only show experiences-->
-<!--current bug: none of the selected experiences goe sinto experience in the model when submitted-->
 <template>
   <main>
     <v-form @submit.prevent="handleSubmitForm">

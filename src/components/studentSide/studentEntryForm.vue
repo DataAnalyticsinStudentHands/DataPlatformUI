@@ -1,10 +1,4 @@
-<!-- PHIL, REMEMBER TO TURN OFF ALL DEPENDENT VALUES BEFORE FORM SUBMISSION -->
-
 <template> <!-- Start of the Student Entry Form template -->
-
-<!-- <p>{{ otherPronounsRules }}</p>
-<p>{{ honorsCollegeAffiliatedOtherRules }}</p> -->
-<!-- <p>{{this.studentInformation}}</p> -->
 
   <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
     <p class="font-weight-black text-h5 text--primary">Student Entry Form</p>
@@ -231,33 +225,6 @@
                 </v-radio-group>
             </v-col>
           </v-row>
-
-          <!-- <v-row>
-            <v-col cols="12" md="7">
-                <p 
-                :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
-                class="font-weight-black text-h8">Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?</p>
-                <v-radio-group 
-                :class="{'error-text': isHonorsCollegeAffiliatedStatusInvalid}"
-                v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"
-                :rules="honorsCollegeAffiliatedStatusRules"
-                :error-messages="honorsCollegeAffiliatedStatusErrorMessage">
-                  <v-radio label="Yes" value="Yes" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
-                  <transition name="slide-y-transition">
-                    <v-text-field 
-                    ref="honorsCollegeAffiliatedHowField"
-                    v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedHow" v-show="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus == 'Yes'" 
-                    label="Please specify"
-                    :rules="honorsCollegeAffiliatedHowRules"
-                    ></v-text-field>
-                </transition>
-                  <v-radio label="No" value="No" v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedStatus"></v-radio>
-                </v-radio-group>
-            </v-col>
-          </v-row>  -->
-<!-- 
-          <p>{{ studentInformation.enrolledUHInfo.honorsCollegeAffiliated }}</p>
-          <p>{{ studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther }}</p> -->
         <v-row>
           <v-col cols="12" md="7">
             <p 
@@ -686,8 +653,6 @@ export default {
               // If the condition for v-show is false (Other pronoun not checked), validation passes automatically
               if (!otherPronoun || !otherPronoun.checked) return true;
 
-              console.log('Value of v for pronouns:', v);
-
               return !!v || 'If Other is selected, please specify pronouns.';
           },
       ],
@@ -1011,13 +976,6 @@ export default {
       // If user is not a UH student, then return empty string.
       return '';
   },
-  // isHonorsCollegeAffiliatedOtherInvalid() {
-  //   // if user is not UH Student, skip validation
-  //   if (!this.uHStudentCheck) return false;
-
-  //   //Check the validation rule for the "Other" text field
-  //   return this.honorsCollegeAffiliatedOtherRules[0](this.studentInformation.enrolledUHInfo.majors) != true;
-  // },
   isMajorsInvalid() {
       // if user is not UH Student, skip validation
       if (!this.uHStudentCheck) return false;
@@ -1204,26 +1162,19 @@ export default {
       //Check condition for specializedDegCertStatus
       const specializedDegCertStatusCheck = this.studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes';
 
-      console.log('specializedDegCertStatusCheck: ', specializedDegCertStatusCheck);
 
       const professionalDesignOtherFind = this.studentInformation.specializedDegCert.specializedDegCertType.find(p => p.id === 6);
 
-      console.log('professionalDesignOtherFind: ', professionalDesignOtherFind);
-
       const isProfessionalDesignOtherChecked = professionalDesignOtherFind ?professionalDesignOtherFind.checked : false;
 
-      console.log('isProfessionalDesignOtherChecked: ', isProfessionalDesignOtherChecked);
 
       if (!specializedDegCertStatusCheck) {
-        console.log('not checked');
         this.studentInformation.specializedDegCert.specializedDegCertType.forEach(item => {
           item.checked = false;
         });
         this.studentInformation.specializedDegCert.professionalDesignOther = '';
       } else {
-        console.log('checked');
         if (!isProfessionalDesignOtherChecked) {
-          console.log('other not checked');
           this.studentInformation.specializedDegCert.professionalDesignOther = '';
         }
       }

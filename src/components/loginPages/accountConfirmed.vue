@@ -139,14 +139,6 @@
               </div>
           </transition>
         </div>
-
-          <!-- <p class="text-sm font-medium text-black-500 dark:text-black-400">
-            <a
-              href="./login"
-              class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-              >Login</a
-            >
-          </p> -->
         </form>
       </div>
     </div>
@@ -184,7 +176,6 @@ export default {
       axios.put(apiURL, user).then(
         (res) => {
           if (res.status == 200) {
-            // this.$router.push("/login");
             //removing the hide class from the success message div
             var element = document.getElementById("successDIV");
             element.classList.remove("hide");
