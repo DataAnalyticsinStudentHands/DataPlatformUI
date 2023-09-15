@@ -74,9 +74,9 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/instructorReports">
+                <router-link to="/instructorDataProducts">
                   <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
-                  Reports
+                  Data Products
                 </router-link>
               </li>
               <li>

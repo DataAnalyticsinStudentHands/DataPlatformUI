@@ -1,4 +1,4 @@
-<!-- '/instructorReports' -->
+<!-- '/instructorDataProducts' -->
 <template>
   <div>
     <br>
@@ -169,90 +169,107 @@ export default {
   return csvContent;
 },
 
+// convertEntryFormToCSV(jsonData) {
+//   // Create the CSV header row
+//   const header = this.getCSVHeader(jsonData[0]);
+//   const headerRow = header.join(',');
+
+//   const numHeaders = header.length;
+
+//   // Create an array of empty strings with the same length as the header
+//   const extraRowArray = new Array(numHeaders).fill("");
+
+//   // Map fields to custom texts
+//   const customTextMapping = {
+//     "_id": '', 
+//     "organizationID": '',  
+//     "userID": '',  
+//     "studentInformation.cityOrigin": 'City of Origin',
+//     "studentInformation.primaryLanguage": 'Primary Language',
+//     "studentInformation.otherLanguages": 'Other Languages',
+//     "studentInformation.languagePreference": 'What language do you prefer to receive communication in?',
+//     "studentInformation.pronouns": 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this).',
+//     "studentInformation.otherPronouns": 'What are your pronouns? Select all that apply. - Other - Text',
+//     "studentInformation.commentsByStaff": 'Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?',
+//     "studentInformation.issuesConcernsTriggers": 'Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?',
+//     "studentInformation.enrolledUHInfo.uhStatus": 'Are you currently enrolled in a degree program at the University of Houston?',
+//     "studentInformation.enrolledUHInfo.uhEmail": 'UH Email',
+//     "studentInformation.enrolledUHInfo.peopleSoftID": 'PeopleSoft ID',
+//     "studentInformation.enrolledUHInfo.expectedGraduationYear": 'Expected Graduation Year',
+//     "studentInformation.enrolledUHInfo.livingOnCampus": 'Do you live on or off campus?',
+//     "studentInformation.enrolledUHInfo.honorsCollegeStatus": 'Are you a member of the Honors College?',
+//     "studentInformation.enrolledUHInfo.honorsCollegeAffiliated": 'Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?',
+//     "studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther": 'If Other, please specify.',
+//     "studentInformation.enrolledUHInfo.majors": 'What is/are your current major(s)?',
+//     "studentInformation.enrolledUHInfo.honorsMinors": 'Are you pursuing, or planning to pursue, any of the following Honors College minors?',
+//     "studentInformation.enrolledUHInfo.otherMinors": 'Are you pursuing any other minors?',
+//     "studentInformation.hichInfo.hichStatus": 'Are you a member of Honors in Community Health (HICH)?',
+//     "studentInformation.hichInfo.hichHistoryStatus": 'Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?',
+//     "studentInformation.communityServiceInfo.serviceStatus": 'Have you had other experience with Community Service?',
+//     "studentInformation.communityServiceInfo.serviceHistoryDesc": 'Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.',
+//     "studentInformation.communityServiceInfo.serviceOrgsOutsideUH": 'Are you a member of any community organizations outside the University? Please list.',
+//     "studentInformation.graduateProfessionalSchool.programGradProStatus": 'Do you currently plan to pursue graduate or professional (e.g. medical, law) school?',
+//     "studentInformation.graduateProfessionalSchool.programGradProType": 'If you are planning to pursue graduate school, what type of program?',
+//     "studentInformation.graduateProfessionalSchool.phDTextbox": 'If PhD, please specify.',
+//     "studentInformation.graduateProfessionalSchool.masterTextbox": 'If Master\'s, please specify.',
+//     "studentInformation.graduateProfessionalSchool.otherTextbox": 'If Other, please specify.',
+//     "studentInformation.specializedDegCert.specializedDegCertStatus": 'Are you planning to pursue any other kind of specialized degree / certificate program?',
+//     "studentInformation.specializedDegCert.specializedDegCertType": 'If you are planning to pursue a specialized degree / certificate program, what type of program?',
+//   };
+
+//   // Programmatically generate keys for pronouns after the initial setup
+//   const pronounQuestion = 'What are your pronouns? Select all that apply.';
+//   const maxPronouns = 6;  // Assuming maximum of 6 pronoun options, adjust as necessary
+//   for (let i = 0; i < maxPronouns; i++) {
+//     customTextMapping[`studentInformation.pronouns.${i}.id`] = pronounQuestion;
+//     customTextMapping[`studentInformation.pronouns.${i}.label`] = pronounQuestion;
+//     customTextMapping[`studentInformation.pronouns.${i}.checked`] = pronounQuestion;
+//   }
+
+//   // Enhancement for programGradProType
+//   const programGradProQuestion = 'If you are planning to pursue graduate school, what type of program?';
+//   const maxGradProTypes = 8;  // Assuming maximum of 8 options, adjust as necessary
+//   for (let i = 0; i < maxGradProTypes; i++) {
+//     customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.id`] = programGradProQuestion;
+//     customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.label`] = programGradProQuestion;
+//     customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.checked`] = programGradProQuestion;
+//   }
+
+//   // Enhancement for specializedDegCertType
+//   const specializedDegCertQuestion = 'If you are planning to pursue a specialized degree / certificate program, what type of program?';
+//   const maxDegCertTypes = 6;  // Assuming maximum of 6 options, adjust as necessary
+//   for (let i = 0; i < maxDegCertTypes; i++) {
+//     customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.id`] = specializedDegCertQuestion;
+//     customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.label`] = specializedDegCertQuestion;
+//     customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.checked`] = specializedDegCertQuestion;
+//   }
+
+//   // Replace the necessary indices with your custom texts
+//   header.forEach((field, index) => {
+//     if (customTextMapping[field]) {
+//       extraRowArray[index] = customTextMapping[field];
+//     }
+//   });
+
+//   // Join the array into a CSV row
+//   const extraRowCSV = extraRowArray.map(text => `"${text}"`).join(',');
+
+//   // Create the CSV data rows
+//   const dataRows = jsonData.map((item) => {
+//     const values = this.getCSVRowValues(item, header);
+//     return values.join(',');
+//   });
+
+//   // Combine all rows including the extra row and data rows
+//   const csvContent = [headerRow, extraRowCSV, ...dataRows].join('\n');
+
+//   return csvContent;
+// },
+
 convertEntryFormToCSV(jsonData) {
   // Create the CSV header row
   const header = this.getCSVHeader(jsonData[0]);
   const headerRow = header.join(',');
-
-  const numHeaders = header.length;
-
-  // Create an array of empty strings with the same length as the header
-  const extraRowArray = new Array(numHeaders).fill("");
-
-  // Map fields to custom texts
-  const customTextMapping = {
-    "_id": '', 
-    "organizationID": '',  
-    "userID": '',  
-    "studentInformation.cityOrigin": 'City of Origin',
-    "studentInformation.primaryLanguage": 'Primary Language',
-    "studentInformation.otherLanguages": 'Other Languages',
-    "studentInformation.languagePreference": 'What language do you prefer to receive communication in?',
-    "studentInformation.pronouns": 'What are your pronouns? Select all that apply (example, if pronouns are she/they select multiple options to reflect this).',
-    "studentInformation.otherPronouns": 'What are your pronouns? Select all that apply. - Other - Text',
-    "studentInformation.commentsByStaff": 'Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?',
-    "studentInformation.issuesConcernsTriggers": 'Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?',
-    "studentInformation.enrolledUHInfo.uhStatus": 'Are you currently enrolled in a degree program at the University of Houston?',
-    "studentInformation.enrolledUHInfo.uhEmail": 'UH Email',
-    "studentInformation.enrolledUHInfo.peopleSoftID": 'PeopleSoft ID',
-    "studentInformation.enrolledUHInfo.expectedGraduationYear": 'Expected Graduation Year',
-    "studentInformation.enrolledUHInfo.livingOnCampus": 'Do you live on or off campus?',
-    "studentInformation.enrolledUHInfo.honorsCollegeStatus": 'Are you a member of the Honors College?',
-    "studentInformation.enrolledUHInfo.honorsCollegeAffiliated": 'Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?',
-    "studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther": 'If Other, please specify.',
-    "studentInformation.enrolledUHInfo.majors": 'What is/are your current major(s)?',
-    "studentInformation.enrolledUHInfo.honorsMinors": 'Are you pursuing, or planning to pursue, any of the following Honors College minors?',
-    "studentInformation.enrolledUHInfo.otherMinors": 'Are you pursuing any other minors?',
-    "studentInformation.hichInfo.hichStatus": 'Are you a member of Honors in Community Health (HICH)?',
-    "studentInformation.hichInfo.hichHistoryStatus": 'Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?',
-    "studentInformation.communityServiceInfo.serviceStatus": 'Have you had other experience with Community Service?',
-    "studentInformation.communityServiceInfo.serviceHistoryDesc": 'Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.',
-    "studentInformation.communityServiceInfo.serviceOrgsOutsideUH": 'Are you a member of any community organizations outside the University? Please list.',
-    "studentInformation.graduateProfessionalSchool.programGradProStatus": 'Do you currently plan to pursue graduate or professional (e.g. medical, law) school?',
-    "studentInformation.graduateProfessionalSchool.programGradProType": 'If you are planning to pursue graduate school, what type of program?',
-    "studentInformation.graduateProfessionalSchool.phDTextbox": 'If PhD, please specify.',
-    "studentInformation.graduateProfessionalSchool.masterTextbox": 'If Master\'s, please specify.',
-    "studentInformation.graduateProfessionalSchool.otherTextbox": 'If Other, please specify.',
-    "studentInformation.specializedDegCert.specializedDegCertStatus": 'Are you planning to pursue any other kind of specialized degree / certificate program?',
-    "studentInformation.specializedDegCert.specializedDegCertType": 'If you are planning to pursue a specialized degree / certificate program, what type of program?',
-  };
-
-  // Programmatically generate keys for pronouns after the initial setup
-  const pronounQuestion = 'What are your pronouns? Select all that apply.';
-  const maxPronouns = 6;  // Assuming maximum of 6 pronoun options, adjust as necessary
-  for (let i = 0; i < maxPronouns; i++) {
-    customTextMapping[`studentInformation.pronouns.${i}.id`] = pronounQuestion;
-    customTextMapping[`studentInformation.pronouns.${i}.label`] = pronounQuestion;
-    customTextMapping[`studentInformation.pronouns.${i}.checked`] = pronounQuestion;
-  }
-
-  // Enhancement for programGradProType
-  const programGradProQuestion = 'If you are planning to pursue graduate school, what type of program?';
-  const maxGradProTypes = 8;  // Assuming maximum of 8 options, adjust as necessary
-  for (let i = 0; i < maxGradProTypes; i++) {
-    customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.id`] = programGradProQuestion;
-    customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.label`] = programGradProQuestion;
-    customTextMapping[`studentInformation.graduateProfessionalSchool.programGradProType.${i}.checked`] = programGradProQuestion;
-  }
-
-  // Enhancement for specializedDegCertType
-  const specializedDegCertQuestion = 'If you are planning to pursue a specialized degree / certificate program, what type of program?';
-  const maxDegCertTypes = 6;  // Assuming maximum of 6 options, adjust as necessary
-  for (let i = 0; i < maxDegCertTypes; i++) {
-    customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.id`] = specializedDegCertQuestion;
-    customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.label`] = specializedDegCertQuestion;
-    customTextMapping[`studentInformation.specializedDegCert.specializedDegCertType.${i}.checked`] = specializedDegCertQuestion;
-  }
-
-  // Replace the necessary indices with your custom texts
-  header.forEach((field, index) => {
-    if (customTextMapping[field]) {
-      extraRowArray[index] = customTextMapping[field];
-    }
-  });
-
-  // Join the array into a CSV row
-  const extraRowCSV = extraRowArray.map(text => `"${text}"`).join(',');
 
   // Create the CSV data rows
   const dataRows = jsonData.map((item) => {
@@ -260,12 +277,11 @@ convertEntryFormToCSV(jsonData) {
     return values.join(',');
   });
 
-  // Combine all rows including the extra row and data rows
-  const csvContent = [headerRow, extraRowCSV, ...dataRows].join('\n');
+  // Combine all rows to form the final CSV content
+  const csvContent = [headerRow, ...dataRows].join('\n');
 
   return csvContent;
 },
-
 
 
 
@@ -344,23 +360,11 @@ getCSVHeader() {
         "studentInformation.primaryLanguage",
         "studentInformation.otherLanguages",
         "studentInformation.languagePreference",
-        "studentInformation.pronouns.0.id",
-        "studentInformation.pronouns.0.label",
         "studentInformation.pronouns.0.checked",
-        "studentInformation.pronouns.1.id",
-        "studentInformation.pronouns.1.label",
         "studentInformation.pronouns.1.checked",
-        "studentInformation.pronouns.2.id",
-        "studentInformation.pronouns.2.label",
         "studentInformation.pronouns.2.checked",
-        "studentInformation.pronouns.3.id",
-        "studentInformation.pronouns.3.label",
         "studentInformation.pronouns.3.checked",
-        "studentInformation.pronouns.4.id",
-        "studentInformation.pronouns.4.label",
         "studentInformation.pronouns.4.checked",
-        "studentInformation.pronouns.5.id",
-        "studentInformation.pronouns.5.label",
         "studentInformation.pronouns.5.checked",
         "studentInformation.otherPronouns",
         "studentInformation.commentsByStaff",
@@ -371,7 +375,18 @@ getCSVHeader() {
         "studentInformation.enrolledUHInfo.expectedGraduationYear",
         "studentInformation.enrolledUHInfo.livingOnCampus",
         "studentInformation.enrolledUHInfo.honorsCollegeStatus",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.0.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.1.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.2.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.3.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.4.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.5.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.6.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.7.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.8.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.9.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.10.checked",
+        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.11.checked",
         "studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther",
         "studentInformation.enrolledUHInfo.majors",
         "studentInformation.enrolledUHInfo.honorsMinors",
@@ -382,51 +397,23 @@ getCSVHeader() {
         "studentInformation.communityServiceInfo.serviceHistoryDesc",
         "studentInformation.communityServiceInfo.serviceOrgsOutsideUH",
         "studentInformation.graduateProfessionalSchool.programGradProStatus",
-        "studentInformation.graduateProfessionalSchool.programGradProType.0.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.0.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.0.checked",
-        "studentInformation.graduateProfessionalSchool.programGradProType.1.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.1.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.1.checked",
-        "studentInformation.graduateProfessionalSchool.programGradProType.2.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.2.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.2.checked",
-        "studentInformation.graduateProfessionalSchool.programGradProType.3.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.3.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.3.checked",
-        "studentInformation.graduateProfessionalSchool.programGradProType.4.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.4.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.4.checked",
-        "studentInformation.graduateProfessionalSchool.programGradProType.5.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.5.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.5.checked",
-        "studentInformation.graduateProfessionalSchool.programGradProType.6.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.6.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.6.checked",
-        "studentInformation.graduateProfessionalSchool.programGradProType.7.id",
-        "studentInformation.graduateProfessionalSchool.programGradProType.7.label",
         "studentInformation.graduateProfessionalSchool.programGradProType.7.checked",
         "studentInformation.graduateProfessionalSchool.phDTextbox",
         "studentInformation.graduateProfessionalSchool.masterTextbox",
         "studentInformation.graduateProfessionalSchool.otherTextbox",
         "studentInformation.specializedDegCert.specializedDegCertStatus",
-        "studentInformation.specializedDegCert.specializedDegCertType.0.id",
-        "studentInformation.specializedDegCert.specializedDegCertType.0.label",
         "studentInformation.specializedDegCert.specializedDegCertType.0.checked",
-        "studentInformation.specializedDegCert.specializedDegCertType.1.id",
-        "studentInformation.specializedDegCert.specializedDegCertType.1.label",
         "studentInformation.specializedDegCert.specializedDegCertType.1.checked",
-        "studentInformation.specializedDegCert.specializedDegCertType.2.id",
-        "studentInformation.specializedDegCert.specializedDegCertType.2.label",
         "studentInformation.specializedDegCert.specializedDegCertType.2.checked",
-        "studentInformation.specializedDegCert.specializedDegCertType.3.id",
-        "studentInformation.specializedDegCert.specializedDegCertType.3.label",
         "studentInformation.specializedDegCert.specializedDegCertType.3.checked",
-        "studentInformation.specializedDegCert.specializedDegCertType.4.id",
-        "studentInformation.specializedDegCert.specializedDegCertType.4.label",
         "studentInformation.specializedDegCert.specializedDegCertType.4.checked",
-        "studentInformation.specializedDegCert.specializedDegCertType.5.id",
-        "studentInformation.specializedDegCert.specializedDegCertType.5.label",
         "studentInformation.specializedDegCert.specializedDegCertType.5.checked",
         "studentInformation.specializedDegCert.professionalDesignOther",
         "createdAt",
@@ -450,8 +437,11 @@ getCSVRowValues(obj, header) {
 
         if (obj["studentInformation"]["pronouns"][index]) {
             value = obj["studentInformation"]["pronouns"][index][key];
+            if (key === 'checked') {
+                value = value ? "1" : "0";
+            }
         } else {
-            value = '';
+            value = '0';
         }
     } else if (field.startsWith("studentInformation.graduateProfessionalSchool.programGradProType.")) {
         const pathKeys = field.split('.');
@@ -460,8 +450,11 @@ getCSVRowValues(obj, header) {
 
         if (obj["studentInformation"]["graduateProfessionalSchool"]["programGradProType"][index]) {
             value = obj["studentInformation"]["graduateProfessionalSchool"]["programGradProType"][index][key];
+            if (key === 'checked') {
+                value = value ? "1" : "0";
+            }
         } else {
-            value = '';
+            value = '0';
         }
     } else if (field.startsWith("studentInformation.specializedDegCert.specializedDegCertType.")) {
         const pathKeys = field.split('.');
@@ -470,8 +463,24 @@ getCSVRowValues(obj, header) {
 
         if (obj["studentInformation"]["specializedDegCert"]["specializedDegCertType"][index]) {
             value = obj["studentInformation"]["specializedDegCert"]["specializedDegCertType"][index][key];
+            if (key === 'checked') {
+                value = value ? "1" : "0";
+            }
         } else {
-            value = '';
+            value = '0';
+        }
+    } else if (field.startsWith("studentInformation.enrolledUHInfo.honorsCollegeAffiliated.")) {
+        const pathKeys = field.split('.');
+        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
+        const key = pathKeys[pathKeys.length - 1];
+
+        if (obj["studentInformation"]["enrolledUHInfo"]["honorsCollegeAffiliated"][index]) {
+            value = obj["studentInformation"]["enrolledUHInfo"]["honorsCollegeAffiliated"][index][key];
+            if (key === 'checked') {
+                value = value ? "1" : "0";
+            }
+        } else {
+            value = '0';
         }
     } else {
         const pathKeys = field.split('.');
@@ -482,6 +491,21 @@ getCSVRowValues(obj, header) {
             value = undefined;
           }
         });
+
+      // Check if the field is one of the specified ones and transform its value
+      const specifiedFields = [
+          "studentInformation.enrolledUHInfo.uhStatus",
+          "studentInformation.enrolledUHInfo.honorsCollegeStatus",
+          "studentInformation.hichInfo.hichStatus",
+          "studentInformation.hichInfo.hichHistoryStatus",
+          "studentInformation.communityServiceInfo.serviceStatus",
+          "studentInformation.graduateProfessionalSchool.programGradProStatus",
+          "studentInformation.specializedDegCert.specializedDegCertStatus"
+      ];
+
+      if (specifiedFields.includes(field)) {
+          value = this.transformYesNoToBinary(value);
+      }
     }
 
     // Handle arrays (for other fields if any)
@@ -513,6 +537,10 @@ getCSVRowValues(obj, header) {
 
   return values;
 },
+
+transformYesNoToBinary(value) {
+      return value === "Yes" ? "1" : (value === "No" ? "0" : value);
+  },
 
 
   },

@@ -12,12 +12,12 @@
       :class="{'error-text': isDemographicsInformationInvalid}"
       class="font-weight-black text-h6 mb-2">Demographics Information</p>
       <p 
-      class="font-weight-black">In which city were you born?</p>
+      class="font-weight-black">Where are you from? (i.e. the place(s) you call home)</p>
       <v-row class="mb-4">
       <v-col cols="12" md="6">
           <v-text-field 
           v-model="studentInformation.cityOrigin" 
-          label="City of Origin" 
+          label="Place of Origin" 
           outlined>
           </v-text-field>
       </v-col>
@@ -227,7 +227,7 @@
           </v-row>
         <v-row>
           <v-col cols="12" md="7">
-            <p 
+            <!-- <p 
             class="font-weight-black text-h8">
                 Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?
             </p>
@@ -248,7 +248,36 @@
               outlined
               :rules="honorsCollegeAffiliatedOtherRules">
               </v-text-field>
-          </transition>
+          </transition> -->
+          <p 
+            class="font-weight-black text-h8">
+                Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?
+            </p>
+          <div 
+              v-for="affiliatedType in studentInformation.enrolledUHInfo.honorsCollegeAffiliated"
+              :key="affiliatedType.id"
+          >
+              <v-checkbox
+                  v-model="affiliatedType.checked"
+                  :label="affiliatedType.label"
+                  density="compact"
+                  class="ma-0 pa-0" 
+                  :hide-details="true"
+              ></v-checkbox>
+              <v-row>
+                  <v-col cols="12" md="10">
+                      <transition name="slide-y-transition">
+                          <v-text-field
+                              ref="honorsCollegeAffiliatedOtherField"
+                              v-model="studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther"
+                              v-show="affiliatedType.id === 12 && affiliatedType.checked"
+                              label="Please Specify"
+                              :rules="honorsCollegeAffiliatedOtherRules"
+                          ></v-text-field>
+                      </transition>
+                  </v-col>
+              </v-row>
+          </div>
         </v-col>
       </v-row>
 
@@ -596,7 +625,20 @@ export default {
           expectedGraduationYear: '',
           livingOnCampus: '',
           honorsCollegeStatus: '',
-          honorsCollegeAffiliated: [],
+          honorsCollegeAffiliated: [
+            { id: 1, label: "Senior Honors Thesis", checked: false },
+            { id: 2, label: "Honors Mentorship Program", checked: false },
+            { id: 3, label: "Honors Club Theatre", checked: false },
+            { id: 4, label: "Honors Dodgeball Society", checked: false },
+            { id: 5, label: "Student Governing Board", checked: false },
+            { id: 6, label: "Bonner Leaders Program", checked: false },
+            { id: 7, label: "Hobby/Leland/Harris Fellow", checked: false },
+            { id: 8, label: "Mellon Research Scholars", checked: false },
+            { id: 9, label: "Speech & Debate", checked: false },
+            { id: 10, label: "Model Arab League, Model UN, etc.", checked: false },
+            { id: 11, label: "Honors Ambassadors", checked: false },
+            { id: 12, label: "Other", checked: false },
+          ],
           honorsCollegeAffiliatedOther: '',
           majors: [], 
           honorsMinors: [],
@@ -703,7 +745,7 @@ export default {
               return true
             };
             // if user is a UH student, but did not choose "Other" for affiliation with Honors College, then validation passess automatically
-            if (this.uHStudentCheck && !this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated.includes('Other')) {
+            if (this.uHStudentCheck && this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated[11].checked === false) {
               return true
             };
             return !!v || 'If Other is selected, please specify affiliation.';
@@ -891,6 +933,22 @@ export default {
             }
         }
     },
+    'studentInformation.enrolledUHInfo.honorsCollegeAffiliated': {
+        deep: true,
+        handler(newValue) {
+            if (this.formSubmitted) {
+                const otherItem = newValue.find(item => item.id === 12);
+                // Validate for honorsCollegeAffiliatedOther
+                if (otherItem && otherItem.checked) {
+                    const index = newValue.indexOf(otherItem);
+                    if (this.$refs.honorsCollegeAffiliatedOtherField[index]) {
+                        this.$refs.honorsCollegeAffiliatedOtherField[index].validate();
+                    }
+                }
+            }
+        }
+    },
+
 
 
 
@@ -1102,7 +1160,7 @@ export default {
 
       // Check condition for UH student
       //Check condition for "honorsCollegeAffiliated"
-      const honorsCollegeAffiliatedCheck = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated.includes('Other');
+      const honorsCollegeAffiliatedCheck = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated[11].checked === true;
 
       if (!this.uHStudentCheck) {
         this.studentInformation.enrolledUHInfo.uhEmail = '';
@@ -1110,7 +1168,20 @@ export default {
         this.studentInformation.enrolledUHInfo.expectedGraduationYear = '';
         this.studentInformation.enrolledUHInfo.livingOnCampus = '';
         this.studentInformation.enrolledUHInfo.honorsCollegeStatus = '';
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated = [];
+        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated = [
+          { id: 1, label: "Senior Honors Thesis", checked: false },
+          { id: 2, label: "Honors Mentorship Program", checked: false },
+          { id: 3, label: "Honors Club Theatre", checked: false },
+          { id: 4, label: "Honors Dodgeball Society", checked: false },
+          { id: 5, label: "Student Governing Board", checked: false },
+          { id: 6, label: "Bonner Leaders Program", checked: false },
+          { id: 7, label: "Hobby/Leland/Harris Fellow", checked: false },
+          { id: 8, label: "Mellon Research Scholars", checked: false },
+          { id: 9, label: "Speech & Debate", checked: false },
+          { id: 10, label: "Model Arab League, Model UN, etc.", checked: false },
+          { id: 11, label: "Honors Ambassadors", checked: false },
+          { id: 12, label: "Other", checked: false },
+        ],
         this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
         this.studentInformation.enrolledUHInfo.majors = [];
         this.studentInformation.enrolledUHInfo.honorsMinors = [];
