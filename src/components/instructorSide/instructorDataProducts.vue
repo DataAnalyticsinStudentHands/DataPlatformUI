@@ -126,48 +126,21 @@ export default {
 
     convertGoalSettingFormToCSV(jsonData) {
   // Create the CSV header row
-  const header = this.getCSVHeader(jsonData[0]);
+  const header = this.getGoalFormCSVHeader(jsonData[0]);
   const headerRow = header.join(',');
-
-  // Add an extra row with custom text for Aspiration 1 and Aspiration 2
-  const customText1 = 'Current Semester';
-  const customText2 = 'Which experience are you filling out this form for';
-  const customText3 = 'What kind of community engagement experiences, if any, have you had? Check all that apply.';
-  const customText4 = 'What kind of community engagement experiences, if any, have you had? Check all that apply. - other - Text';
-  const customText5 = 'From your previous community engagement experiences, which of the following activities have you engaged in?';
-  const customText6 = 'From your previous community engagement experiences, which of the following activities have you engaged in? - Other - Text';
-  const customText7 = 'What, if any, tools have you used for community engagement activities?';
-  const customText8 = 'What, if any, tools have you used for community engagement activities? - other - Text';
-  const customText9 = 'What kind of research experiences, if any, have you had? Check all that apply.';
-  const customText10 = 'What kind of research experiences, if any, have you had? Check all that apply. - Other - Text';
-  const customText11 = 'From your previous research experiences, which of the following activities have you engaged in?';
-  const customText12 = 'From your previous research experiences, which of the following activities have you engaged in? - Other - Text';
-  const customText13 = 'What, if any, tools are you familiar with?';
-  const customText14 = 'What, if any, tools are you familiar with? - Other - Text';
-  const customText15 = 'What are your research/service interests? Check all that apply.';
-  const customText16 = 'What are your research/service interests? Check all that apply - Other - Text';
-  const customText17 = 'Are you interested in potentially holding a leadership position?';
-  const customText18 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of problem solving.';
-  const customText19 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of effective communication.';
-  const customText20 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of teamwork.';
-  const customText21 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of cultural humility.';
-  const customText22 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of ethical decision making.';
-  const customText23 = 'Please indicate your expectation of the growth you anticipate to see during your program in the area of professional responsibility.';
-  const customText24 = 'Please describe 2-3 long-term aspirations you may have.';
-  const customText25 = 'Please outline 3-5 goals that you have for this experience.';
-  const extraRowCSV = ['"' + customText3+'","'+'","'+'","' + '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ customText4 + '","' + customText5+'","'+'","'+'","' + '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","'+ '","' +'","' + customText6 +'","' + customText7 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText8 +'","' + customText9 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText10 +'","' + customText11 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText12 +'","' + customText13 +'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' + customText14 +'","' + customText15+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","'+'","' +'","' + customText16 +'","' + customText17 +'","' + customText18 +'","' + customText19 +'","' + customText20 +'","'+ customText21 +'","'+ customText22 +'","'+ customText23 +'","'+ customText24+'","'+'","' +'","'+ customText25+'","'+'","'+'","'+'","'+'","'+'","'+'","' +'","' + customText1 +'","'+'","'+'","' + customText2 +'"'];
 
   // Create the CSV data rows
   const dataRows = jsonData.map((item) => {
-    const values = this.getCSVRowValues(item, header);
+    const values = this.getGoalFormCSVRowValues(item, header);
     return values.join(',');
   });
 
   // Combine all rows including the extra row and data rows
-  const csvContent = [headerRow, ...extraRowCSV, ...dataRows].join('\n');
+  const csvContent = [headerRow, ...dataRows].join('\n');
 
   return csvContent;
 },
+
 
 // convertEntryFormToCSV(jsonData) {
 //   // Create the CSV header row
@@ -268,12 +241,12 @@ export default {
 
 convertEntryFormToCSV(jsonData) {
   // Create the CSV header row
-  const header = this.getCSVHeader(jsonData[0]);
+  const header = this.getEntryFormCSVHeader(jsonData[0]);
   const headerRow = header.join(',');
 
   // Create the CSV data rows
   const dataRows = jsonData.map((item) => {
-    const values = this.getCSVRowValues(item, header);
+    const values = this.getEntryFormCSVRowValues(item, header);
     return values.join(',');
   });
 
@@ -350,7 +323,7 @@ convertEntryFormToCSV(jsonData) {
 
 
 
-getCSVHeader() {
+getEntryFormCSVHeader() {
     // Manually ordered headers based on the document structure
     const ordered_headers = [
         "_id",
@@ -423,119 +396,223 @@ getCSVHeader() {
     return ordered_headers;
 },
 
+getEntryFormCSVRowValues(obj, header) {
+    const values = [];
+    
+    header.forEach((field) => {
+        let value = obj;
 
-getCSVRowValues(obj, header) {
-  const values = [];
-  
-  header.forEach((field) => {
-    let value = obj;
+        if (field.includes(".checked")) {
+            const pathKeys = field.split('.');
+            const index = parseInt(pathKeys[pathKeys.length - 2], 10);
+            const key = pathKeys[pathKeys.length - 1];
 
-    if (field.startsWith("studentInformation.pronouns.")) {
-        const pathKeys = field.split('.');
-        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
-        const key = pathKeys[pathKeys.length - 1];
+            // This navigates through the object using the pathKeys
+            for (let i = 0; i < pathKeys.length - 2; i++) {
+                value = value[pathKeys[i]];
+            }
 
-        if (obj["studentInformation"]["pronouns"][index]) {
-            value = obj["studentInformation"]["pronouns"][index][key];
-            if (key === 'checked') {
-                value = value ? "1" : "0";
+            // Extracts the 'checked' value and converts it to a binary representation
+            if (value && index in value) {
+                value = value[index][key] ? "1" : "0";
+            } else {
+                value = '0';
             }
         } else {
-            value = '0';
-        }
-    } else if (field.startsWith("studentInformation.graduateProfessionalSchool.programGradProType.")) {
-        const pathKeys = field.split('.');
-        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
-        const key = pathKeys[pathKeys.length - 1];
+            const pathKeys = field.split('.');
+            pathKeys.forEach((key) => {
+                if (value && typeof value === 'object' && key in value) {
+                    value = value[key];
+                } else {
+                    value = undefined;
+                }
+            });
 
-        if (obj["studentInformation"]["graduateProfessionalSchool"]["programGradProType"][index]) {
-            value = obj["studentInformation"]["graduateProfessionalSchool"]["programGradProType"][index][key];
-            if (key === 'checked') {
-                value = value ? "1" : "0";
+            // Check if the field is one of the specified ones and transform its value
+            const specifiedFields = [
+                "studentInformation.enrolledUHInfo.uhStatus",
+                "studentInformation.enrolledUHInfo.honorsCollegeStatus",
+                "studentInformation.hichInfo.hichStatus",
+                "studentInformation.hichInfo.hichHistoryStatus",
+                "studentInformation.communityServiceInfo.serviceStatus",
+                "studentInformation.graduateProfessionalSchool.programGradProStatus",
+                "studentInformation.specializedDegCert.specializedDegCertStatus"
+            ];
+
+            if (specifiedFields.includes(field)) {
+                value = this.transformYesNoToBinary(value);
+            }
+        }
+
+        // Handle arrays (for other fields if any)
+        if (Array.isArray(value)) {
+            value = value.join(', ');  // Join array items with commas
+        } else if (value !== null && value !== undefined) {
+            value = value.toString();
+        }
+
+        // Replace newlines with spaces
+        if (value) {
+            value = value.replace(/\r?\n|\r/g, ' ');
+        } else {
+            value = '';
+        }
+
+        // If the value contains double quotes, replace them with two double quotes
+        if (value.includes('"')) {
+            value = value.replace(/"/g, '""');
+        }
+
+        // If the value contains commas, enclose it in double quotes
+        if (value.includes(',')) {
+            value = `"${value}"`;
+        }
+
+        values.push(value);
+    });
+
+    return values;
+},
+
+getGoalFormCSVHeader() {
+    // Base headers
+    const ordered_headers = [
+        "_id",
+        "organizationID",
+        "userID",
+        "semester",
+        "experienceName",
+    ];
+
+    // For communityEngagementExperiences
+    for (let i = 0; i < 7; i++) {
+        ordered_headers.push(`goalForm.communityEngagement.communityEngagementExperiences.${i}.checked`);
+    }
+    ordered_headers.push("goalForm.communityEngagement.communityEngagementExperiencesOther");
+
+    // For previousEngagementExperiences
+    for (let i = 0; i < 9; i++) {
+        ordered_headers.push(`goalForm.communityEngagement.previousEngagementExperiences.${i}.checked`);
+    }
+    ordered_headers.push("goalForm.communityEngagement.previousEngagementExperiencesOther");
+
+    // For engagementActivitiesTools
+    for (let i = 0; i < 9; i++) {
+        ordered_headers.push(`goalForm.communityEngagement.engagementActivitiesTools.${i}.checked`);
+    }
+    ordered_headers.push("goalForm.communityEngagement.engagementActivitiesToolOther");
+
+    // For currentResearchExperience
+    for (let i = 0; i < 8; i++) {
+        ordered_headers.push(`goalForm.researchExperience.currentResearchExperience.${i}.checked`);
+    }
+    ordered_headers.push("goalForm.researchExperience.currentResearchExperienceOther");
+
+    // For previousResearchExperience
+    for (let i = 0; i < 9; i++) {
+        ordered_headers.push(`goalForm.researchExperience.previousResearchExperience.${i}.checked`);
+    }
+    ordered_headers.push("goalForm.researchExperience.previousResearchExperienceOther");
+
+    // For familiarTools
+    for (let i = 0; i < 11; i++) {
+        ordered_headers.push(`goalForm.researchExperience.familiarTools.${i}.checked`);
+    }
+    ordered_headers.push("goalForm.researchExperience.familiarToolOther");
+
+    // For interestResearchService
+    for (let i = 0; i < 9; i++) {
+        ordered_headers.push(`goalForm.researchExperience.interestResearchService.${i}.checked`);
+    }
+    ordered_headers.push("goalForm.researchExperience.interestResearchServiceOther");
+
+    // Append the remaining static headers after the dynamic ones
+    ordered_headers.push(
+        "goalForm.researchExperience.leadershipOption",
+        "goalForm.growthGoal.problemSolvingGoal",
+        "goalForm.growthGoal.effectiveCommunicationGoal",
+        "goalForm.growthGoal.teamworkGoal",
+        "goalForm.growthGoal.culturalHumilityGoal",
+        "goalForm.growthGoal.ethicalDecisionMakingGoal",
+        "goalForm.growthGoal.professionalResponsibilityGoal",
+        "goalForm.aspirations.aspirationOne",
+        "goalForm.aspirations.aspirationTwo",
+        "goalForm.aspirations.aspirationThree",
+        "goalForm.goals.goalOne",
+        "goalForm.goals.goalTwo",
+        "goalForm.goals.goalThree",
+        "goalForm.goals.goalFour",
+        "goalForm.goals.goalFive",
+        "createdAt",
+        "updatedAt",
+        "__v"
+    );
+
+    return ordered_headers;
+},
+
+getGoalFormCSVRowValues(obj, header) {
+    const values = [];
+    
+    header.forEach((field) => {
+        let value = obj;
+
+        // Special handling for the nested arrays with 'checked' values
+        if (field.includes(".checked")) {
+            const pathKeys = field.split('.');
+            const index = parseInt(pathKeys[pathKeys.length - 2], 10);
+            const key = pathKeys[pathKeys.length - 1];
+
+            // This navigates through the object using the pathKeys
+            for (let i = 0; i < pathKeys.length - 2; i++) {
+                value = value[pathKeys[i]];
+            }
+
+            // Extracts the 'checked' value and converts it to a binary representation
+            if (value && index in value) {
+                value = value[index][key] ? "1" : "0";
+            } else {
+                value = '0';
             }
         } else {
-            value = '0';
-        }
-    } else if (field.startsWith("studentInformation.specializedDegCert.specializedDegCertType.")) {
-        const pathKeys = field.split('.');
-        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
-        const key = pathKeys[pathKeys.length - 1];
+            const pathKeys = field.split('.');
+            pathKeys.forEach((key) => {
+                if (value && typeof value === 'object' && key in value) {
+                    value = value[key];
+                } else {
+                    value = undefined;
+                }
+            });
 
-        if (obj["studentInformation"]["specializedDegCert"]["specializedDegCertType"][index]) {
-            value = obj["studentInformation"]["specializedDegCert"]["specializedDegCertType"][index][key];
-            if (key === 'checked') {
-                value = value ? "1" : "0";
+            // Handle arrays (for other fields if any)
+            if (Array.isArray(value)) {
+                value = value.join(', ');  // Join array items with commas
+            } else if (value !== null && value !== undefined) {
+                value = value.toString();
             }
-        } else {
-            value = '0';
         }
-    } else if (field.startsWith("studentInformation.enrolledUHInfo.honorsCollegeAffiliated.")) {
-        const pathKeys = field.split('.');
-        const index = parseInt(pathKeys[pathKeys.length - 2], 10);
-        const key = pathKeys[pathKeys.length - 1];
 
-        if (obj["studentInformation"]["enrolledUHInfo"]["honorsCollegeAffiliated"][index]) {
-            value = obj["studentInformation"]["enrolledUHInfo"]["honorsCollegeAffiliated"][index][key];
-            if (key === 'checked') {
-                value = value ? "1" : "0";
-            }
+        // Replace newlines with spaces
+        if (value) {
+            value = value.replace(/\r?\n|\r/g, ' ');
         } else {
-            value = '0';
+            value = '';
         }
-    } else {
-        const pathKeys = field.split('.');
-        pathKeys.forEach((key, index) => {
-          if (value && typeof value === 'object' && key in value) {
-            value = value[key];
-          } else {
-            value = undefined;
-          }
-        });
 
-      // Check if the field is one of the specified ones and transform its value
-      const specifiedFields = [
-          "studentInformation.enrolledUHInfo.uhStatus",
-          "studentInformation.enrolledUHInfo.honorsCollegeStatus",
-          "studentInformation.hichInfo.hichStatus",
-          "studentInformation.hichInfo.hichHistoryStatus",
-          "studentInformation.communityServiceInfo.serviceStatus",
-          "studentInformation.graduateProfessionalSchool.programGradProStatus",
-          "studentInformation.specializedDegCert.specializedDegCertStatus"
-      ];
+        // If the value contains double quotes, replace them with two double quotes
+        if (value.includes('"')) {
+            value = value.replace(/"/g, '""');
+        }
 
-      if (specifiedFields.includes(field)) {
-          value = this.transformYesNoToBinary(value);
-      }
-    }
+        // If the value contains commas, enclose it in double quotes
+        if (value.includes(',')) {
+            value = `"${value}"`;
+        }
 
-    // Handle arrays (for other fields if any)
-    if (Array.isArray(value)) {
-      value = value.join(', ');  // Join array items with commas
-    } else if (value !== null && value !== undefined) {
-      value = value.toString();
-    }
+        values.push(value);
+    });
 
-    // Replace newlines with spaces
-    if (value) {
-      value = value.replace(/\r?\n|\r/g, ' ');
-    } else {
-      value = '';
-    }
-
-    // If the value contains double quotes, replace them with two double quotes
-    if (value.includes('"')) {
-      value = value.replace(/"/g, '""');
-    }
-
-    // If the value contains commas, enclose it in double quotes
-    if (value.includes(',')) {
-      value = `"${value}"`;
-    }
-
-    values.push(value);
-  });
-
-  return values;
+    return values;
 },
 
 transformYesNoToBinary(value) {
