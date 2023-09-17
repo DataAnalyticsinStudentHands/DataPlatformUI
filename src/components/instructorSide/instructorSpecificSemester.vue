@@ -89,7 +89,7 @@ export default {
         headers: { token },
       })
       .then((resp) => {
-        let data = resp.data[0];
+        let data = resp.data;
         this.semester.originalSemesterName = data.semesterName;
         this.semester.semesterName = data.semesterName;
         this.semester.semesterStartDate = DateTime.fromISO(data.semesterStartDate)
@@ -131,7 +131,7 @@ export default {
       axios.get(`${url}/${this.$route.params.id}`, {
         headers: { token },
       }).then((resp) => {
-        let data = resp.data[0];
+        let data = resp.data;
         this.semester.semesterStatus = data.semesterStatus;
         axios.put(`${url}/${this.$route.params.id}`, updatedSemester, {
           headers: { token },
