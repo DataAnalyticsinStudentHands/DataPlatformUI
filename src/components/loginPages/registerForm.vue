@@ -126,11 +126,12 @@
           </button>
           <p class="text-sm font-medium text-black-500 dark:text-black-400">
             Already have an account?
-            <a
-              href="./login"
+            <router-link 
+              to="/login" 
               class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-              >Login here</a
             >
+              Login here
+            </router-link>
           </p>
         </form>
       </div>
