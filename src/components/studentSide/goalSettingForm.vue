@@ -1,18 +1,5 @@
 <!-- /goalSettingForm -->
-<!-- might need to adjustcommunityEngagementExperiences
-Array to match others and add input fields for goals and aspirations  -->
 <template>
-  <!-- <p>this.formSubmitted: {{formSubmitted}}</p>
-  <p>isExperienceIDInvalid: {{isExperienceIDInvalid}}</p>
-  <p>goalForm.experienceID: {{goalForm.experienceID}}</p>
-  <p>experienceIDRules: {{experienceIDRules}}</p> -->
-  <!-- <p>isIsGoalSettingFormFilledInvalid: {{ isIsGoalSettingFormFilledInvalid }}</p>
-  <p>isAspirationsValid {{ isAspirationsValid }}</p> -->
-  <!-- <p>isCommunityEngagementExperiencesInvalid: {{ isCommunityEngagementExperiencesInvalid }}</p>
-  <p>isGoalSettingFormFilledCheck: {{ isGoalSettingFormFilledCheck }}</p> -->
-  <!-- <p>experienceID: {{  experienceID  }}</p>
-  <p>selectedExperience {{selectedExperience}}</p> -->
-  <!-- <p>{{ goalForm }}</p> -->
   
   <v-form 
   ref="form"
@@ -668,12 +655,6 @@ class="font-weight-black text-h6">Growth</p>
   </v-col>
 </v-row>
 </v-container>
-<!-- <p>ERRORS {{  this.errors }}</p>
-<p>{{ filledGoalsCount }} goals filled out of 5</p>
-<p>{{ filledAspirationsCount }} aspirations filled out of 3</p>
-
-
-<p>goalForm: {{ goalForm }}</p> -->
 </v-form>
 </template>
 

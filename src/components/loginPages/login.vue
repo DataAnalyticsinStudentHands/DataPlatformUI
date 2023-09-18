@@ -56,26 +56,26 @@
           >
             Login
           </button>
-
           <p class="text-sm font-medium text-black-500 dark:text-black-400">
             Don't have an account?
-            <a
-              href="./registerForm"
+            <router-link 
+              to="/registerForm" 
               class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-              >Register here</a
             >
+              Register here
+            </router-link>
           </p>
 
-          <a
-            href="./resetPassword"
+          <router-link 
+            to="/resetPassword" 
             class="text-sm font-medium text-primary-600 hover:underline dark:text-blue-500"
-            >Forgot Password?
-          </a>
+          >
+            Forgot Password?
+          </router-link>
+
         </form>
       </div>
     </div>
-    <!-- </div> -->
-
 
 
 

@@ -123,3 +123,6 @@ typings/
 
 # "build" directory - renamed to platform for testing purposes
 platform/
+
+# "build" directory
+build/
