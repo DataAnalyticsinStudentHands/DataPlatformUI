@@ -23,11 +23,8 @@ import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
 const vuetify = createVuetify({
-  components,
-  directives,
-});
-
-export default createVuetify({
+    components,
+    directives,
     icons: {
       defaultSet: 'mdi',
       aliases,
@@ -49,16 +46,14 @@ pinia.use(({ store }) => {
 import Vue3Toastify from 'vue3-toastify';
 
 const app = createApp(App);
-
-app.use(
-  Vue3Toastify,
-  {
+app.use(Vue3Toastify, {
     autoClose: 5000,
     style: {
       opacity: '1',
       userSelect: 'initial',
     },
-  }
-);
-
-createApp(App).use(pinia).use(vuetify).use(router).mount('#app');
+});
+app.use(pinia);
+app.use(vuetify);
+app.use(router);
+app.mount('#app');

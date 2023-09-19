@@ -41,20 +41,6 @@
               </v-text-field>
           </v-col>
       </v-row>
-      <v-row class="mb-4">
-          <v-col cols="12" md="7">
-              <p :class="{'error-text': isLanguagePreferenceInvalid}" class="font-weight-black">What language do you prefer to receive communication in?</p>
-              <v-radio-group 
-              :class="{'error-text': isLanguagePreferenceInvalid}" 
-              v-model="studentInformation.languagePreference" 
-              :rules="[v => !!v || 'Information is required']" 
-              required>
-              <v-radio label="English" value="English"></v-radio>
-              <v-radio label="Spanish" value="Spanish"></v-radio>
-              </v-radio-group>
-          </v-col>
-      </v-row>
-
   <v-row class="mb-4">
         <v-col cols="12">
       <div>
@@ -606,7 +592,6 @@ export default {
         cityOrigin: '', 
         primaryLanguage: '',
         otherLanguages: '',
-        languagePreference: '',
         pronouns: [
           { id: 1, label: "She/her/hers", checked: false },
           { id: 2, label: "He/him/his", checked: false },
@@ -965,12 +950,7 @@ export default {
     },
     isDemographicsInformationInvalid() {
       if (!this.formSubmitted) return false;
-      return this.isLanguagePreferenceInvalid || this.isOtherPronounsInvalid;
-    },
-    isLanguagePreferenceInvalid() {
-      if (!this.formSubmitted) return false;
-      const rule = v => !!v || 'Information is required';
-      return rule(this.studentInformation.languagePreference) !== true;
+      return this.isOtherPronounsInvalid;
     },
     isOtherPronounChecked() {
         const otherPronoun = this.studentInformation.pronouns.find(p => p.id === 5);

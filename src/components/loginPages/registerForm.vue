@@ -72,6 +72,36 @@
               />
             </div>
           </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+            <div class="sm:col-span-2 md:col-span-3">
+              <label class="block mb-2">What language do you prefer to receive communication in?</label>
+              <div class="mt-1 space-y-2 max-w-xs">
+                <label class="inline-flex items-center mr-4">
+                  <input
+                    type="radio"
+                    name="languagePreference"
+                    value="English"
+                    v-model="user.languagePreference"
+                    required
+                  />
+                  <span class="ml-2">English</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="languagePreference"
+                    value="Spanish"
+                    v-model="user.languagePreference"
+                    required
+                  />
+                  <span class="ml-2">Spanish</span>
+                </label>
+              </div>
+              <span class="text-red-700" v-if="isLanguagePreferenceInvalid">
+                Information is required!
+              </span>
+            </div>
+          </div>
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
@@ -157,6 +187,7 @@ export default {
         firstName: "",
         lastName: "",
         email: "",
+        languagePreference: "",
         password: "",
         role: "Basic",
       },
@@ -217,6 +248,7 @@ export default {
       user: {
         firstName: { required },
         lastName: { required },
+        languagePreference: { required },
         password: {
           required,
           minLengthValue: minLength(8),
@@ -227,3 +259,25 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Style for the radio button itself */
+input[type="radio"] {
+    appearance: none;
+    border: 1px solid black;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    outline: none;
+    margin-right: 4px; /* Reduced margin for proximity to the label */
+    position: relative;
+    background-color: white;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+/* Style when the radio button is checked */
+input[type="radio"]:checked {
+    border: 2px solid #333; /* Darker border when checked */
+    background-color: gray;
+}
+</style>
