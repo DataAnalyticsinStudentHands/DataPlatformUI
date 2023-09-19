@@ -75,6 +75,7 @@
         
         axios.put(apiURL, {firstName: this.firstName, lastName: this.lastName, email: this.email, languagePreference: this.languagePreference, password: this.confirmPassword}, {headers: { token }})
         .then(() => {
+          user.setLanguagePreference(this.languagePreference); 
           this.$router.push({ 
               name: destination,
               params: {
@@ -86,7 +87,7 @@
           });
         })
         .catch((error) => {
-            alert(error.response.data.error);
+            console.log(error);
         });
       }
     }

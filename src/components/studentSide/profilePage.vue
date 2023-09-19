@@ -1,13 +1,24 @@
 <template>
   <v-form disabled>
-      <br><div style="width: 90%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-        <p class="font-weight-black text-h5" style="margin-right: auto;">Student's Information</p>
-        <v-col md="2" style="margin-left: auto;">
-          <router-link to="/studentEntryFormUpdate">
-            <v-btn class="btn btn-success">Edit Information</v-btn>
-          </router-link>
-        </v-col>
-      </div>
+    <v-row style="margin-top: 1rem;">
+      <!-- Empty space (padding) -->
+      <v-col cols="4"></v-col>
+      
+      <!-- Text: Student's Information -->
+      <v-col cols="4" class="text-center">
+        <p class="font-weight-black text-h5">Student's Information</p>
+      </v-col>
+      
+      <!-- Button: Edit Information -->
+      <v-col md="2">
+        <router-link to="/studentEntryFormUpdate">
+          <v-btn class="btn btn-success">Edit Information</v-btn>
+        </router-link>
+      </v-col>
+      
+      <!-- Empty space (padding) -->
+      <v-col cols="2"></v-col>
+    </v-row>
       <v-container style="width: 90%; margin: 0 auto;">
         <br><p class="font-weight-black text-h6">Basic Information</p>
           <v-row>
@@ -22,12 +33,12 @@
           </v-row>
           <v-row>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Phone Number</label>
-              <p style="margin: 0;">{{ this.userData.phoneNumber }}</p>
-            </v-col>
-            <v-col cols="12" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Email</label>
               <p style="margin: 0;">{{ this.userData.email }}</p>
+            </v-col>
+            <v-col cols="12" md="4">
+              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Language Preference</label>
+              <p style="margin: 0;">{{ languagePreferenceValue }}</p>
             </v-col>
           </v-row>
         <br><p class="font-weight-black text-h6">Demographics Information</p>
@@ -38,10 +49,6 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="4">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Language Preference</label>
-              <p style="margin: 0;">{{ this.studentData.languagePreference }}</p>
-            </v-col>
             <v-col cols="12" md="4">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Primary Language</label>
               <p style="margin: 0;">{{ this.studentData.primaryLanguage }}</p>
@@ -109,13 +116,13 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you affiliated with the Honors College in any other way?</label>
-                <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.honorsCollegeAffiliatedStatus }}</p>
+              <v-col cols="12" md="10">
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?</label>
+                <p style="margin: 0;">{{ honorsCollegeAffiliated }}</p>
               </v-col>
-              <v-col cols="12" md="6" v-if="this.studentData?.enrolledUHInfo?.honorsCollegeAffiliatedStatus ==='Yes'">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">If yes, please specify.</label>
-                <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.honorsCollegeAffiliatedHow }}</p>
+              <v-col cols="11">
+                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Honors College Affiliation Information</label>
+                <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.honorsCollegeAffiliatedOther }}</p>
               </v-col>
             </v-row>
             <v-row>
@@ -268,6 +275,9 @@ computed: {
     }
     return ""; // Return a default value or handle the case when the data is not available
   },
+  honorsCollegeAffiliated() {
+    return this.studentData.enrolledUHInfo?.honorsCollegeAffiliated.filter(aff => aff.checked === true).map(aff => aff.label).join(", ");
+  },
   majors() {
     const majors = this.studentData?.enrolledUHInfo?.majors;
     return Array.isArray(majors) && majors.length > 0 ? majors.join(", ") : "None";
@@ -285,6 +295,18 @@ computed: {
   },
   specializedDCType() {
     return this.studentData?.specializedDegCert?.specializedDegCertType.filter(program => program.checked === true).map(program => program.label).join(", ");
+  },
+  languagePreferenceValue() {
+      if (this.userData && this.userData.languagePreference) {
+        console.log('1')
+          return this.userData.languagePreference;
+      } else if (this.studentData && this.studentData.languagePreference) {
+        console.log('2')
+          return this.studentData.languagePreference;
+      } else {
+        console.log('3')
+          return ""; // Default value in case it's not found in both formats
+      }
   },
 },
 methods: {

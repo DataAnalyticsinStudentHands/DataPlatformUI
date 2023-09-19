@@ -25,15 +25,9 @@
           </v-row>
           <v-row>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Phone Number</label>
-              <p style="margin: 0;">{{ this.userData.phoneNumber }}</p>
-            </v-col>
-            <v-col cols="12" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Email</label>
               <p style="margin: 0;">{{ this.userData.email }}</p>
             </v-col>
-          </v-row>
-          <v-row>
             <v-col cols="12" md="4">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Language Preference</label>
               <p style="margin: 0;">{{ languagePreferenceValue }}</p>

@@ -11,7 +11,8 @@ export const useLoggedInUserStore = defineStore({
       role: "",
       token: "",
       isLoggedIn: false,
-      firstTimeLoginTF: false
+      firstTimeLoginTF: false,
+      languagePreference: "",
     }
   },
   getters: { //getting the roles
@@ -28,7 +29,8 @@ export const useLoggedInUserStore = defineStore({
             isLoggedIn: true,
             role: response.data.userRole,
             userId: response.data.userID,
-            token: response.data.token
+            token: response.data.token,
+            languagePreference: response.data.languagePreference
           });
 
           // Save the token to localStorage
@@ -92,10 +94,13 @@ export const useLoggedInUserStore = defineStore({
           toastMessage: logoutMessage,
           toastPosition: 'top-right',
           toastCSS: 'Toastify__toast--create'
-        }
+      },
       });
       //location.reload(); attempt on trying to remove navigation bar when logging out
     },    
+    setLanguagePreference(langPref) {
+      this.languagePreference = langPref;
+    },
     persist: {
       storage: sessionStorage
     }
