@@ -332,7 +332,7 @@ getEntryFormCSVHeader() {
         "studentInformation.cityOrigin",
         "studentInformation.primaryLanguage",
         "studentInformation.otherLanguages",
-        "studentInformation.languagePreference",
+        "languagePreference",
         "studentInformation.pronouns.0.checked",
         "studentInformation.pronouns.1.checked",
         "studentInformation.pronouns.2.checked",
@@ -402,7 +402,11 @@ getEntryFormCSVRowValues(obj, header) {
     header.forEach((field) => {
         let value = obj;
 
-        if (field.includes(".checked")) {
+        if (field === "languagePreference") {
+            console.log('called')
+            value = obj.userData?.languagePreference || obj.studentInformation?.languagePreference || '';
+            console.log('value: ', value)
+        } else if (field.includes(".checked")) {
             const pathKeys = field.split('.');
             const index = parseInt(pathKeys[pathKeys.length - 2], 10);
             const key = pathKeys[pathKeys.length - 1];
@@ -441,7 +445,7 @@ getEntryFormCSVRowValues(obj, header) {
 
             if (specifiedFields.includes(field)) {
                 value = this.transformYesNoToBinary(value);
-            }
+            };
         }
 
         // Handle arrays (for other fields if any)
@@ -557,18 +561,27 @@ getGoalFormCSVRowValues(obj, header) {
     header.forEach((field) => {
         let value = obj;
 
+        if (field === "studentInformation.languagePreference") {
+            if (obj.studentInformation && obj.studentInformation.languagePreference !== undefined) {
+                value = obj.studentInformation.languagePreference;
+            } else if (obj.languagePreference !== undefined) {
+                value = obj.languagePreference;
+            } else {
+                value = '';
+            }
+        } 
         // Special handling for the nested arrays with 'checked' values
-        if (field.includes(".checked")) {
+        else if (field.includes(".checked")) {
             const pathKeys = field.split('.');
             const index = parseInt(pathKeys[pathKeys.length - 2], 10);
             const key = pathKeys[pathKeys.length - 1];
 
-            // This navigates through the object using the pathKeys
+            // Navigate through the object using the pathKeys
             for (let i = 0; i < pathKeys.length - 2; i++) {
                 value = value[pathKeys[i]];
             }
 
-            // Extracts the 'checked' value and converts it to a binary representation
+            // Extract the 'checked' value and convert it to a binary representation
             if (value && index in value) {
                 value = value[index][key] ? "1" : "0";
             } else {
@@ -599,12 +612,10 @@ getGoalFormCSVRowValues(obj, header) {
             value = '';
         }
 
-        // If the value contains double quotes, replace them with two double quotes
+        // Handle quotes and commas in the value
         if (value.includes('"')) {
             value = value.replace(/"/g, '""');
         }
-
-        // If the value contains commas, enclose it in double quotes
         if (value.includes(',')) {
             value = `"${value}"`;
         }
@@ -614,6 +625,7 @@ getGoalFormCSVRowValues(obj, header) {
 
     return values;
 },
+
 
 transformYesNoToBinary(value) {
       return value === "Yes" ? "1" : (value === "No" ? "0" : value);
