@@ -1,8 +1,8 @@
-<template> <!-- Start of the Student Entry Form template -->
+<template> <!-- Start of the {{ getTranslation('Student Entry Form') }} template -->
 
   <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
-    <p class="font-weight-black text-h5 text--primary">Student Entry Form</p>
-    <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.</p>
+    <p class="font-weight-black text-h5 text--primary">{{ getTranslation('Student Entry Form') }}</p>
+    <p class="text-subtitle-1">{{ getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.") }}</p>
   </v-container>
   <v-form 
   ref="form"
@@ -10,9 +10,9 @@
     <v-container style="width: 90%; margin: 0 auto;">
       <p 
       :class="{'error-text': isDemographicsInformationInvalid}"
-      class="font-weight-black text-h6 mb-2">Demographics Information</p>
+      class="font-weight-black text-h6 mb-2">{{ getTranslation('Demographics Information') }}</p>
       <p 
-      class="font-weight-black">Where are you from? (i.e. the place(s) you call home)</p>
+      class="font-weight-black">{{ getTranslation('Where are you from? (i.e. the place(s) you call home)') }}</p>
       <v-row class="mb-4">
       <v-col cols="12" md="6">
           <v-text-field 
@@ -24,19 +24,19 @@
       </v-row>
 
       <p 
-      class="font-weight-black">What languages do you speak?</p>
+      class="font-weight-black">{{ getTranslation('What languages do you speak?') }}</p>
       <v-row class="mb-4">
           <v-col cols="12" md="6">
               <v-text-field 
               v-model="studentInformation.primaryLanguage" 
-              label="Primary Language" 
+              label="{{ getTranslation('Primary Language') }}" 
               outlined>
               </v-text-field>
           </v-col>
           <v-col cols="12" md="6">
               <v-text-field 
               v-model="studentInformation.otherLanguages" 
-              label="Other Languages" 
+              label="{{ getTranslation('Other Languages') }}" 
               outlined>
               </v-text-field>
           </v-col>
@@ -46,7 +46,7 @@
       <div>
         <p 
             :class="{'error-text': isOtherPronounsInvalid}"
-            class="font-weight-black">What are your pronouns? Select all that apply.</p>
+            class="font-weight-black">{{ getTranslation('What are your pronouns? Select all that apply.') }}</p>
 
         <!-- Loop through all checkboxes except the last one -->
         <div 
@@ -581,11 +581,93 @@
 </style>
 
 <script>
+// Imports
+import { ref, computed } from 'vue';  // Note: 'computed' is now imported as well.
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import axios from "axios";
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
+// Translations
+const translations = {
+  English: {
+    "Student Entry Form": "Student Entry Form",
+    "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.": "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.",
+    "Demographics Information": "Demographics Information",
+    "Where are you from? (i.e. the place(s) you call home)": "Where are you from? (Ie, place(s) you call home)",
+    "What languages do you speak?": "What languages do you speak?",
+    "Primary Language": "Primary language",
+    "Other Languages": "Other languages",
+    "What are your pronouns? Select all that apply.": "What are your pronouns? Select all that apply.",
+    // ... Add other translations as needed
+  },
+  Spanish: {
+    "Student Entry Form": "Formulario de Inscripción para Estudiantes",
+    "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.": "Complete los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente más tarde.",
+    "Demographics Information": "Información Demográfica",
+    "Where are you from? (i.e. the place(s) you call home)": "¿De dónde eres? (lugar(es) al que usted llama hogar)",
+    "What languages do you speak?": "¿Qué idiomas hablas?",
+    "Primary Language": "Idioma principal",
+    "Other Languages": "Otros idiomas",
+    "What are your pronouns? Select all that apply.": "¿Cuáles son sus pronombres preferidos? Seleccione todas las que correspondan.",
+    // ... Add other translations as needed
+  }
+};
+
+
+
 export default {
+  setup() {
+
+    const translations = {
+      English: {
+        "Student Entry Form": "Student Entry Form",
+        "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.": "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.",
+        "Demographics Information": "Demographics Information",
+        "Where are you from? (i.e. the place(s) you call home)": "Where are you from? (Ie, place(s) you call home)",
+        "What languages do you speak?": "What languages do you speak?",
+        "Primary Language": "Primary language",
+        "Other Languages": "Other languages",
+        "What are your pronouns? Select all that apply.": "What are your pronouns? Select all that apply.",
+        // ... Add other translations as needed
+      },
+      Spanish: {
+        "Student Entry Form": "Formulario de Inscripción para Estudiantes",
+        "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.": "Complete los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente más tarde.",
+        "Demographics Information": "Información Demográfica",
+        "Where are you from? (i.e. the place(s) you call home)": "¿De dónde eres? (lugar(es) al que usted llama hogar)",
+        "What languages do you speak?": "¿Qué idiomas hablas?",
+        "Primary Language": "Idioma principal",
+        "Other Languages": "Otros idiomas",
+        "What are your pronouns? Select all that apply.": "¿Cuáles son sus pronombres preferidos? Seleccione todas las que correspondan.",
+        // ... Add other translations as needed
+      }
+    };
+
+    // Reactive State
+    const currentLanguage = ref('English'); // default value
+    
+    // Functions and Computed Properties
+    const getTranslation = (key) => {
+      return translations[currentLanguage.value][key] || key;
+    };
+
+    console.log('store: ', useLoggedInUserStore().languagePreference);
+
+    
+    // Lifecycle Hooks or Logic (like the login check)
+    if (useLoggedInUserStore().languagePreference === "Spanish") {
+      console.log('spanish')
+        currentLanguage.value = "Spanish";
+        console.log(currentLanguage.value)
+    }
+    
+    // Return the reactive properties and methods you want to access in the template
+    return {
+      getTranslation,
+      // ... any other reactive properties or methods
+    };
+  },
   data() {
     return {
       studentInformation: {
