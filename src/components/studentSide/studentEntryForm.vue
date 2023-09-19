@@ -2,7 +2,7 @@
 
   <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
     <p class="font-weight-black text-h5 text--primary">{{ getTranslation('Student Entry Form') }}</p>
-    <p class="text-subtitle-1">{{ getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.") }}</p>
+    <p class="text-subtitle-1">{{ getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.") }}</p>
   </v-container>
   <v-form 
   ref="form"
@@ -556,7 +556,7 @@
 
 <script>
 // Imports
-import { ref, computed } from 'vue';  // Note: 'computed' is now imported as well.
+import { ref, computed } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -567,7 +567,7 @@ export default {
     const translations = {
       Spanish: {
         "Student Entry Form": "Formulario de Inscripción para Estudiantes",
-        "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again later.": "Complete los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente más tarde.",
+        "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.": "Complete los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente más tarde.",
         "Demographics Information": "Información Demográfica",
         "Where are you from? (Ie, place(s) you call home)": "¿De dónde eres? (lugar(es) al que usted llama hogar)",
         "Place of Origin": "Lugar de Origen",
@@ -629,29 +629,19 @@ export default {
 
     // Reactive State
     const currentLanguage = ref('English'); // default value
-
-    console.log(currentLanguage.value);
-
     
-    // Functions and Computed Properties
     const getTranslation = (key) => {
       return (translations[currentLanguage.value] && translations[currentLanguage.value][key]) || key;
     };
 
-    console.log('store: ', useLoggedInUserStore().languagePreference);
-
-    
     // Lifecycle Hooks or Logic (like the login check)
     if (useLoggedInUserStore().languagePreference === "Spanish") {
-      console.log('spanish')
         currentLanguage.value = "Spanish";
-        console.log(currentLanguage.value)
     }
     
-    // Return the reactive properties and methods you want to access in the template
+    // Return the reactive properties and methods to access in the template
     return {
       getTranslation,
-      // ... any other reactive properties or methods
     };
   },
   data() {
