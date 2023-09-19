@@ -63,7 +63,7 @@
           headers: { token },
         })
         .then((resp) => {
-          let data = resp.data[0];
+          let data = resp.data;
           this.activity.activityName = data.activityName;
           this.activity.activityStatus = data.activityStatus;
           this.originalActivityName = data.activityName; // Set the original activity name

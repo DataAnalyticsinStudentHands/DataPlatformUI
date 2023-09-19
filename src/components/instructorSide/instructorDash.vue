@@ -11,26 +11,6 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
       <div class="ml-10">
       </div>
-      <!-- removing b/c WIP <div class="flex flex-col col-span-2">
-        <table class="min-w-full shadow-md rounded">
-          <thead class="bg-gray-50 text-xl">
-            <tr>
-              <th class="p-4 text-left">Experience Name</th>
-              <th class="p-4 text-left">Number of Students</th>
-              <th class="p-4 text-left">Number of Non-Honor Students</th>
-              <th class="p-4 text-left">Number of Students Who Submitted Their Goals</th>
-              <th class="p-4 text-left">Number of Students Who Submitted Their Exit Survey</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-300">
-            <tr v-for="event in queryData" :key="event._id">
-              <td class="p-2 text-left">{{ event.eventName }}</td>
-              <td class="p-2 text-left">{{ formattedDate(event.date) }}</td>
-              <td class="p-2 text-left">{{ event.attendees }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div> -->
     </div>
     </div>
   </main>

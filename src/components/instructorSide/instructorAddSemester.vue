@@ -1,5 +1,4 @@
 <!--'/instructorAddSemester' this page will only show experiences-->
-<!--current bug: none of the selected experiences goe sinto experience in the model when submitted-->
 <template>
   <main>
     <v-form @submit.prevent="handleSubmitForm">
@@ -22,7 +21,7 @@
           <thead>
             <tr>
               <th class="text-left"></th>
-              <th class="text-left">Experience Code</th>
+              <th class="text-left">Experience Category</th>
               <th class="text-left">Experience Name</th>
             </tr>
           </thead>
@@ -36,7 +35,7 @@
                   style="outline: 2px solid #808080; margin-right: 10px;"
                 />
               </td>
-              <td class="text-left">{{ experience.experienceCode }}</td>
+              <td class="text-left">{{ experience.experienceCategory }}</td>
               <td class="text-left">{{ experience.experienceName }}</td>
             </tr>
           </tbody>

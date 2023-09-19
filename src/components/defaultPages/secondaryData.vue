@@ -230,7 +230,6 @@ export default {
           })
           .catch((error) => {
             this.error = error;
-            console.log(this.client.primaryDataID);
           });
       }
     },

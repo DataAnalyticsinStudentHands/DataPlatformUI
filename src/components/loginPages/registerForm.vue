@@ -1,9 +1,6 @@
 <!-- /registerForm -->
 <template>
   <section class="">
-    <!-- <div
-      class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
-    > -->
     <div class="px-10 py-20">
       <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
         <h1 class="font-bold text-4xl text-red-700 tracking-widest mt-10">
@@ -129,16 +126,16 @@
           </button>
           <p class="text-sm font-medium text-black-500 dark:text-black-400">
             Already have an account?
-            <a
-              href="./login"
+            <router-link 
+              to="/login" 
               class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-              >Login here</a
             >
+              Login here
+            </router-link>
           </p>
         </form>
       </div>
     </div>
-    <!-- </div> -->
   </section>
 </template>
 
@@ -212,15 +209,6 @@ export default {
             this.errorr = err.response.data.error;
           }
         );
-        // .catch((error) => {
-        //   var err = error.response.data;
-        //   if (
-        //     err == "userData validation failed: email: EMAIL ALREADY EXISTS"
-        //   ) {
-        //     this.errorr = error;
-        //     // this.errorr = error;
-        //   }
-        // });
       }
     },
   },

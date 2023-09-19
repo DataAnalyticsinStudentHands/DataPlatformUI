@@ -77,7 +77,7 @@ export default {
       axios
         .get(apiURL, { headers: { token } })
         .then((resp) => {
-          const experience = resp.data[0];
+          const experience = resp.data;
           this.originalExperienceCategory = experience.experienceCategory;
           this.originalExperienceName = experience.experienceName;
           this.experienceCategory = experience.experienceCategory;

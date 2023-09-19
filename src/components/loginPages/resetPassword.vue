@@ -115,13 +115,6 @@ export default {
       axios.put(apiURL, user).then(
         (res) => {
           if (res.status == 200) {
-            //removing the hide class from the success message div
-            // var element = document.getElementById("myDIV");
-            // element.classList.remove("hide");
-            //populating the success variables
-            // this.success = res.data.error;
-            // this.loginLink = " Login";
-            // this.error = "";
             this.submitLoading = false;
             this.$router.push('/resetPasswordForm');
           }

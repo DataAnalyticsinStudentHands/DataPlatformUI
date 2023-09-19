@@ -159,9 +159,9 @@ const routes = [
       }
     },
     {
-      path: '/instructorReports',
-      name: 'instructorReports',
-      component: () => import('../components/instructorSide/instructorReports.vue'),
+      path: '/instructorDataProducts',
+      name: 'instructorDataProducts',
+      component: () => import('../components/instructorSide/instructorDataProducts.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
         if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {

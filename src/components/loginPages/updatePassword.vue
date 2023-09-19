@@ -169,7 +169,6 @@ export default {
           .then(
             (res) => {
               if (res.status == 200) {
-                // this.$router.push("/login");
                 //removing the hide class from the success message div
                 var element = document.getElementById("myDIV");
                 element.classList.remove("hide");

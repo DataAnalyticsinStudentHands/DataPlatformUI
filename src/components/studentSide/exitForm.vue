@@ -593,8 +593,6 @@ export default {
     this.fetchGoalFormActivities(),
     this.fetchSemester();
     this.fetchExperienceData();
-    // this.fetchSpecificExperienceIDs();
-    // this.isSpecificExperience(this.experience._id);
   },
   computed:{
     isSpecificExperience() {

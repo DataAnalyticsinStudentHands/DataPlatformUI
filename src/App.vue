@@ -74,9 +74,9 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="/instructorReports">
+                <router-link to="/instructorDataProducts">
                   <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
-                  Reports
+                  Data Products
                 </router-link>
               </li>
               <li>
@@ -191,10 +191,6 @@ export default {
     let token = user.token;
     let userGivenID = user.userId;
     let url = import.meta.env.VITE_ROOT_API + `/studentSideData/forms/submitted`;
-    // axios.get(url + `/${userGivenID}`, { headers: { token },})
-    //   .then((resp) => {
-    //     this.displayEntry = resp.data.submitted;
-    //   });
   },
 };
 </script>
