@@ -69,6 +69,8 @@ export default {
         .then((resp) => {
           this.completedExperiences = resp.data.data;
           this.goalSettingFormIDs = resp.data.goalSettingFormIDs;
+          console.log('completedExperiences: ', this.completedExperiences);
+          console.log('goalSettingFormIDs: ', this.goalSettingFormIDs);
         })
         .catch((error) => {
           console.log(error);

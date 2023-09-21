@@ -5,7 +5,8 @@
     </h1>
     <v-container style="width: 90%; margin: 0 auto;">
       <v-card
-      class="mx-auto"
+      class="mx-auto elevation-12"
+      color="#385F73"
       width="350"
       >
       <v-list>
@@ -20,10 +21,8 @@
               <template v-slot:activator="{ props }">
                   <v-list-item v-bind="props" color="green darken-4" class="light-green-bg">
 
-                      <!-- Display the title "Entry Form" -->
                       <span class="text-green-800">Entry Form</span>
 
-                      <!-- Append the mdi-message-alert icon -->
                       <template v-slot:append>
                           <v-icon class="text-green-800">mdi-check-bold</v-icon>
                       </template>
@@ -120,7 +119,7 @@ import 'vue3-toastify/dist/index.css';
   </script>
   
   
-<style scoped>
+<style>
 .list-item-no-padding {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;

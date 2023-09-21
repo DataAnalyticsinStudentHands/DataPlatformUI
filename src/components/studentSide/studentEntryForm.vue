@@ -258,7 +258,7 @@
                         chips
                         v-model="studentInformation.enrolledUHInfo.majors" 
                         :items="filteredMajors.map(major => major['Plan Name'])" 
-                        label="Seleccione una Carrera" 
+                        label="Select a Major" 
                         multiple
                         :rules="majorsRules"
                         >
@@ -487,7 +487,7 @@
         </v-col>
         <transition name="slide-y-transition">
         <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
-          <p class="font-weight-black text-h8">{{getTranslation('Si planea seguir un programa especializado de título/certificado, ¿qué tipo de programa?')}}</p>
+          <p class="font-weight-black text-h8">{{getTranslation('If you are planning to pursue a specialized degree / certificate program, what type of program?')}}</p>
           <div>
             <div v-for="specializedType in studentInformation.specializedDegCert.specializedDegCertType" :key="specializedType.id">
               <v-checkbox 
@@ -597,6 +597,7 @@ export default {
         "Are you a member of the Honors College?": "¿Eres miembro del Honors College?",
         "Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?": "¿Está afiliado al Honors College de alguna otra manera (que no sean cursos de Datos y Sociedad, participar en una especialización con Honores o HICH)?",
         "What is/are your current major(s)?": "¿Cuál es/son su(s) especialidad(es) actual(es) en la universidad?",
+        "Select a Major": "Seleccione una Carrera",
         "Are you pursuing, or planning to pursue, any of the following Honors College minors?": "¿Está cursando o planea cursar alguna de las siguientes asignaturas secundarias del Honors College?",
         "Select an Honors Minor": "Seleccione una Asignatura Secundaria del Honors College",
         "Are you pursuing any other minors?": "¿Está persiguiendo otros programas menores? Por favor enumere.",
@@ -616,7 +617,7 @@ export default {
         "Law: JD": "Leyes: JD",
         "Master's: MPH, MBA, MA, MS, MEd, etc": "Maestría: MPH, MBA, MA, MS, MEd, etc",
         "Are you planning to pursue any other kind of specialized degree / certificate program?": "¿Planea seguir algún otro tipo de programa de grado especializado / certificado?",
-        "Si planea seguir un programa especializado de título/certificado, ¿qué tipo de programa?": "Si planea seguir un programa especializado de título/certificado, ¿qué tipo de programa?",
+        "If you are planning to pursue a specialized degree / certificate program, what type of program?": "Si planea seguir un programa especializado de título/certificado, ¿qué tipo de programa?",
         "Nursing: PRN, RN, CNA, etc": "Enfermería: PRN, RN, CNA, etc",
         "Social Work: LSW/LCSW": "Trabajo Social: LSW/LCSW",
         "Business: Certified Public Accountant (CPA, Licensed Public Accountant (LPA), Certified Financial Planner (CFP)": "Negocio: Certificado para Contador/a Publico/a (o CPA en inglés), Contador/a Publico/a con Licencia (o LPA en inglés), Certificado para Planificador Financiero (o CFP en inglés)",
