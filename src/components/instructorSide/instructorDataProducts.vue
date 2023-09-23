@@ -35,35 +35,34 @@ export default {
   },
   methods: {
     async downloadEntryDataAsCSV() {
-        try {
-            const user = useLoggedInUserStore();
-            let token = user.token;
-            // Fetch JSON data from the API endpoint
-            const response = await axios.get(import.meta.env.VITE_ROOT_API + '/studentSideData/studentInformation/all', { headers: { token } });
-            const jsonData = response.data.data;
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        // Fetch JSON data from the API endpoint
+        const response = await axios.get(import.meta.env.VITE_ROOT_API +'/studentSideData/studentInformation/all', { headers: { token } });
+        const jsonData = response.data.data;
 
-            // Convert JSON to CSV format using the renamed headers
-            const csvData = this.convertEntryFormToCSV(jsonData);
+        // Convert JSON to CSV format
+        const csvData = this.convertEntryFormToCSV(jsonData);
 
-            // Create a Blob containing the CSV data
-            const blob = new Blob([csvData], { type: 'text/csv' });
+        // Create a Blob containing the CSV data
+        const blob = new Blob([csvData], { type: 'text/csv' });
 
-            // Create a download link and trigger the download
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'data.csv';
-            document.body.appendChild(link);
-            link.click();
+        // Create a download link and trigger the download
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'data.csv';
+        document.body.appendChild(link);
+        link.click();
 
-            // Clean up
-            URL.revokeObjectURL(url);
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Error downloading data:', error);
-        }
+        // Clean up
+        URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Error downloading data:', error);
+      }
     },
-
 
     async downloadAllExitDataAsCSV() {
       try {
@@ -127,205 +126,37 @@ export default {
 
     convertGoalSettingFormToCSV(jsonData) {
   // Create the CSV header row
-  const originalHeader = this.getGoalFormCSVHeader(jsonData[0]);
+  const header = this.getGoalFormCSVHeader(jsonData[0]);
+  const headerRow = header.join(',');
 
   // Create the CSV data rows
   const dataRows = jsonData.map((item) => {
-    const values = this.getGoalFormCSVRowValues(item, originalHeader);
+    const values = this.getGoalFormCSVRowValues(item, header);
     return values.join(',');
   });
 
-    // Rename headers for CSV output
-    const renameMap = {
-        // "_id": "",
-        // "organizationID": "",
-        // "userID": "",
-        // "semester": "",
-        // "experienceName": "",
-        "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
-        "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
-        "goalForm.communityEngagement.communityEngagementExperiences.2.checked": "ce_faith",
-        "goalForm.communityEngagement.communityEngagementExperiences.3.checked": "ce_short",
-        "goalForm.communityEngagement.communityEngagementExperiences.4.checked": "ce_mission",
-        "goalForm.communityEngagement.communityEngagementExperiences.5.checked": "ce_other",
-        "goalForm.communityEngagement.communityEngagementExperiences.6.checked": "ce_none",
-        "goalForm.communityEngagement.communityEngagementExperiencesOther": "ce_other_text_entry",
-        "goalForm.communityEngagement.previousEngagementExperiences.0.checked": "ce_activities_mentoring",
-        "goalForm.communityEngagement.previousEngagementExperiences.1.checked": "ce_activities_volunteering",
-        "goalForm.communityEngagement.previousEngagementExperiences.2.checked": "ce_activities_recruitment",
-        "goalForm.communityEngagement.previousEngagementExperiences.3.checked": "ce_activities_organizing",
-        "goalForm.communityEngagement.previousEngagementExperiences.4.checked": "ce_activities_translation",
-        "goalForm.communityEngagement.previousEngagementExperiences.5.checked": "ce_activities_fundraising",
-        "goalForm.communityEngagement.previousEngagementExperiences.6.checked": "ce_activities_emergency",
-        "goalForm.communityEngagement.previousEngagementExperiences.7.checked": "ce_activities_other",
-        "goalForm.communityEngagement.previousEngagementExperiences.8.checked": "ce_activities_none",
-        "goalForm.communityEngagement.previousEngagementExperiencesOther": "ce_activities_other_text_entry",
-        "goalForm.communityEngagement.engagementActivitiesTools.0.checked": "ce_tools_media",
-        "goalForm.communityEngagement.engagementActivitiesTools.1.checked": "ce_tools_scheduling",
-        "goalForm.communityEngagement.engagementActivitiesTools.2.checked": "ce_tools_fundraising",
-        "goalForm.communityEngagement.engagementActivitiesTools.3.checked": "ce_tools_survey",
-        "goalForm.communityEngagement.engagementActivitiesTools.4.checked": "ce_tools_design",
-        "goalForm.communityEngagement.engagementActivitiesTools.5.checked": "ce_tools_pm",
-        "goalForm.communityEngagement.engagementActivitiesTools.6.checked": "ce_tools_digital",
-        "goalForm.communityEngagement.engagementActivitiesTools.7.checked": "ce_tools_other",
-        "goalForm.communityEngagement.engagementActivitiesTools.8.checked": "ce_tools_none",
-        "goalForm.communityEngagement.engagementActivitiesToolOther": "ce_tools_other_text_entry",
-        "goalForm.researchExperience.currentResearchExperience.0.checked": "re_intro",
-        "goalForm.researchExperience.currentResearchExperience.1.checked": "re_adv",
-        "goalForm.researchExperience.currentResearchExperience.2.checked": "re_here",
-        "goalForm.researchExperience.currentResearchExperience.3.checked": "re_surf",
-        "goalForm.researchExperience.currentResearchExperience.4.checked": "re_purs",
-        "goalForm.researchExperience.currentResearchExperience.5.checked": "re_lab",
-        "goalForm.researchExperience.currentResearchExperience.6.checked": "re_other",
-        "goalForm.researchExperience.currentResearchExperience.7.checked": "re_none",
-        "goalForm.researchExperience.currentResearchExperienceOther": "re_other_text_entry",
-        "goalForm.researchExperience.previousResearchExperience.0.checked": "re_activities_design",
-        "goalForm.researchExperience.previousResearchExperience.1.checked": "re_activities_lit",
-        "goalForm.researchExperience.previousResearchExperience.2.checked": "re_activities_clinical",
-        "goalForm.researchExperience.previousResearchExperience.3.checked": "re_activites_lab",
-        "goalForm.researchExperience.previousResearchExperience.4.checked": "re_activities_ph",
-        "goalForm.researchExperience.previousResearchExperience.5.checked": "re_activities_analysis",
-        "goalForm.researchExperience.previousResearchExperience.6.checked": "re_activities_manuscript",
-        "goalForm.researchExperience.previousResearchExperience.7.checked": "re_activities_other",
-        "goalForm.researchExperience.previousResearchExperience.8.checked": "re_activities_none",
-        "goalForm.researchExperience.previousResearchExperienceOther": "res_activities_other_text_entry",
-        "goalForm.researchExperience.familiarTools.0.checked": "re_tools_excel",
-        "goalForm.researchExperience.familiarTools.1.checked": "re_tools_r",
-        "goalForm.researchExperience.familiarTools.2.checked": "re_tools_python",
-        "goalForm.researchExperience.familiarTools.3.checked": "re_tools_stata",
-        "goalForm.researchExperience.familiarTools.4.checked": "re_tools_gis",
-        "goalForm.researchExperience.familiarTools.5.checked": "re_tools_atlas",
-        "goalForm.researchExperience.familiarTools.6.checked": "re_tools_nvivo",
-        "goalForm.researchExperience.familiarTools.7.checked": "re_tools_tableau",
-        "goalForm.researchExperience.familiarTools.8.checked": "re_tools_sas",
-        "goalForm.researchExperience.familiarTools.9.checked": "re_tools_other",
-        "goalForm.researchExperience.familiarTools.10.checked": "re_tools_none",
-        "goalForm.researchExperience.familiarToolOther": "re_tools_other_text_entry",
-        "goalForm.researchExperience.interestResearchService.0.checked": "interest_education",
-        "goalForm.researchExperience.interestResearchService.1.checked": "interest_community_health",
-        "goalForm.researchExperience.interestResearchService.2.checked": "interest_mental_health",
-        "goalForm.researchExperience.interestResearchService.3.checked": "interest_incarceration",
-        "goalForm.researchExperience.interestResearchService.4.checked": "interest_chronic_disease",
-        "goalForm.researchExperience.interestResearchService.5.checked": "interest_environment",
-        "goalForm.researchExperience.interestResearchService.6.checked": "interest_govt",
-        "goalForm.researchExperience.interestResearchService.7.checked": "interest_other",
-        "goalForm.researchExperience.interestResearchService.8.checked": "interest_none",
-        "goalForm.researchExperience.interestResearchServiceOther": "interest_other_text_entry",
-        "goalForm.researchExperience.leadershipOption": "leadership_interest",
-        "goalForm.growthGoal.problemSolvingGoal": "growth_problem_solving",
-        "goalForm.growthGoal.effectiveCommunicationGoal": "growth_communication",
-        "goalForm.growthGoal.teamworkGoal": "growth_teamwork",
-        "goalForm.growthGoal.culturalHumilityGoal": "growth_cultural_humility",
-        "goalForm.growthGoal.ethicalDecisionMakingGoal": "growth_ethical_decision",
-        "goalForm.growthGoal.professionalResponsibilityGoal": "growth_professional",
-        "goalForm.aspirations.aspirationOne": "aspiration_1_text_entry",
-        "goalForm.aspirations.aspirationTwo": "aspiration_2_text_entry",
-        "goalForm.aspirations.aspirationThree": "aspiration_3_text_entry",
-        "goalForm.goals.goalOne": "goal_1_text_entry",
-        "goalForm.goals.goalTwo": "goal_2_text_entry",
-        "goalForm.goals.goalThree": "goal_3_text_entry",
-        "goalForm.goals.goalFour": "goal_4_text_entry",
-        "goalForm.goals.goalFive": "goal_5_text_entry",
-        // "createdAt": "",
-        // "updatedAt": "",
-        // "__v": "",
-    };
-    const renamedHeader = originalHeader.map(h => renameMap[h] || h);
-    const headerRow = renamedHeader.join(',');
+  // Combine all rows including the extra row and data rows
+  const csvContent = [headerRow, ...dataRows].join('\n');
 
-    // Combine all rows to form the final CSV content
-    const csvContent = [headerRow, ...dataRows].join('\n');
-
-    return csvContent;
+  return csvContent;
 },
-
 
 convertEntryFormToCSV(jsonData) {
-    // Extract data using original headers
-    const originalHeader = this.getEntryFormCSVHeader(jsonData[0]);
-    const dataRows = jsonData.map((item) => {
-        const values = this.getEntryFormCSVRowValues(item, originalHeader);
-        return values.join(',');
-    });
+  // Create the CSV header row
+  const header = this.getEntryFormCSVHeader(jsonData[0]);
+  const headerRow = header.join(',');
 
-    // Rename headers for CSV output
-    const renameMap = {
-        // "_id": "", // need 
-        // "organizationID": "", // need 
-        // "userID": "", // need 
-        "studentInformation.cityOrigin": "place_of_origin",
-        "studentInformation.primaryLanguage": "primary_language",
-        "studentInformation.otherLanguages": "other_languages",
-        "studentInformation.pronouns.0.checked": "pronouns_she",
-        "studentInformation.pronouns.1.checked": "pronouns_he",
-        "studentInformation.pronouns.2.checked": "pronouns_they",
-        "studentInformation.pronouns.3.checked": "pronouns_ze",
-        "studentInformation.pronouns.4.checked": "pronouns_other",
-        "studentInformation.pronouns.5.checked": "pronouns_no_answer",
-        "studentInformation.otherPronouns": "pronouns_other_text_entry",
-        "studentInformation.commentsByStaff": "pronoun_comments_text_entry",
-        "studentInformation.issuesConcernsTriggers": "issues_text_entry",
-        "studentInformation.enrolledUHInfo.uhStatus": "degree_enrollment",
-        // "studentInformation.enrolledUHInfo.uhEmail": "", // need 
-        // "studentInformation.enrolledUHInfo.peopleSoftID": "", // need 
-        "studentInformation.enrolledUHInfo.expectedGraduationYear": "",
-        "studentInformation.enrolledUHInfo.livingOnCampus": "housing_status",
-        "studentInformation.enrolledUHInfo.honorsCollegeStatus": "honors_membership",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.0.checked": "h_affiliation_thesis",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.1.checked": "h_affiliation_mentorship",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.2.checked": "h_affiliation_theatre",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.3.checked": "h_affiliation_dodgeball",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.4.checked": "h_affiliation_SGB",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.5.checked": "h_affiliation_bonner",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.6.checked": "h_affiliation_ext_fellow",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.7.checked": "h_affiliation_mellon",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.8.checked": "h_affiliation_debate",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.9.checked": "h_affiliation_model",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.10.checked": "h_affiliation_ambassadors",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.11.checked": "h_affiliation_other",
-        "studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther": "h_affiliation_other_text_entry",
-        "studentInformation.enrolledUHInfo.majors": "",
-        "studentInformation.enrolledUHInfo.honorsMinors": "",
-        "studentInformation.enrolledUHInfo.otherMinors": "",
-        "studentInformation.hichInfo.hichStatus": "hich_membership",
-        "studentInformation.hichInfo.hichHistoryStatus": "hich_participation",
-        "studentInformation.communityServiceInfo.serviceStatus": "community_service",
-        "studentInformation.communityServiceInfo.serviceHistoryDesc": "service_text_entry",
-        "studentInformation.communityServiceInfo.serviceOrgsOutsideUH": "community_org_text_entry",
-        "studentInformation.graduateProfessionalSchool.programGradProStatus": "graduate_school",
-        "studentInformation.graduateProfessionalSchool.programGradProType.0.checked": "graduate_md_do",
-        "studentInformation.graduateProfessionalSchool.programGradProType.1.checked": "graduate_pa",
-        "studentInformation.graduateProfessionalSchool.programGradProType.2.checked": "graduate_nursing",
-        "studentInformation.graduateProfessionalSchool.programGradProType.3.checked": "graduate_phd",
-        // "studentInformation.graduateProfessionalSchool.programGradProType.4.checked": "", // need for DrPH
-        "studentInformation.graduateProfessionalSchool.programGradProType.5.checked": "graduate_jd",
-        "studentInformation.graduateProfessionalSchool.programGradProType.6.checked": "graduate_masters",
-        "studentInformation.graduateProfessionalSchool.programGradProType.7.checked": "graduate_other",
-        // "studentInformation.graduateProfessionalSchool.phDTextbox": "", // need
-        // "studentInformation.graduateProfessionalSchool.masterTextbox": "", // need
-        "studentInformation.graduateProfessionalSchool.otherTextbox": "graduate_other_text entry", 
-        "studentInformation.specializedDegCert.specializedDegCertStatus": "certificate_degree",
-        "studentInformation.specializedDegCert.specializedDegCertType.0.checked": "certificate_nursing",
-        "studentInformation.specializedDegCert.specializedDegCertType.1.checked": "certificate_social_work",
-        "studentInformation.specializedDegCert.specializedDegCertType.2.checked": "certificate_business",
-        "studentInformation.specializedDegCert.specializedDegCertType.3.checked": "certificate_engineering",
-        "studentInformation.specializedDegCert.specializedDegCertType.4.checked": "certificate_pm",
-        "studentInformation.specializedDegCert.specializedDegCertType.5.checked": "certificate_other",
-        "studentInformation.specializedDegCert.professionalDesignOther": "certificate_other_text_entry",
-        // "createdAt": "", // need
-        // "updatedAt": "", // need
-        // "__v": "", // need
-    };
-    const renamedHeader = originalHeader.map(h => renameMap[h] || h);
-    const headerRow = renamedHeader.join(',');
+  // Create the CSV data rows
+  const dataRows = jsonData.map((item) => {
+    const values = this.getEntryFormCSVRowValues(item, header);
+    return values.join(',');
+  });
 
-    // Combine all rows to form the final CSV content
-    const csvContent = [headerRow, ...dataRows].join('\n');
+  // Combine all rows to form the final CSV content
+  const csvContent = [headerRow, ...dataRows].join('\n');
 
-    return csvContent;
+  return csvContent;
 },
-
-
 
 
 
@@ -403,6 +234,7 @@ getEntryFormCSVHeader() {
         "studentInformation.cityOrigin",
         "studentInformation.primaryLanguage",
         "studentInformation.otherLanguages",
+        "languagePreference",
         "studentInformation.pronouns.0.checked",
         "studentInformation.pronouns.1.checked",
         "studentInformation.pronouns.2.checked",
@@ -473,7 +305,9 @@ getEntryFormCSVRowValues(obj, header) {
         let value = obj;
 
         if (field === "languagePreference") {
+            console.log('called')
             value = obj.userData?.languagePreference || obj.studentInformation?.languagePreference || '';
+            console.log('value: ', value)
         } else if (field.includes(".checked")) {
             const pathKeys = field.split('.');
             const index = parseInt(pathKeys[pathKeys.length - 2], 10);
@@ -513,9 +347,6 @@ getEntryFormCSVRowValues(obj, header) {
 
             if (specifiedFields.includes(field)) {
                 value = this.transformYesNoToBinary(value);
-            };
-            if (field === "studentInformation.enrolledUHInfo.livingOnCampus") {
-                value = this.transformCampusToBinary(value);
             };
         }
 
@@ -699,13 +530,8 @@ getGoalFormCSVRowValues(obj, header) {
 
 
 transformYesNoToBinary(value) {
-    return value === "Yes" ? "1" : (value === "No" ? "0" : value);
-},
-
-transformCampusToBinary(value) {
-    return value === "On-Campus" ? "1" : (value === "Off-Campus" ? "0" : value);
-},
-
+      return value === "Yes" ? "1" : (value === "No" ? "0" : value);
+  },
 
 
   },
