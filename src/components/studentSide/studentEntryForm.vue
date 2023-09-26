@@ -437,13 +437,18 @@
         </v-col>
         <transition name="slide-y-transition">
         <v-col cols="12" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes'">
-          <p class="font-weight-black text-h8">{{getTranslation('If you are planning to pursue graduate school, what type of program?')}}</p>
+          <p 
+            :class="{'error-text': formSubmitted && isProgramGradProTypeInvalid}"
+            class="font-weight-black text-h8">{{getTranslation('If you are planning to pursue graduate school, what type of program?')}}</p>
           <div>
             <div v-for="programType in studentInformation.graduateProfessionalSchool.programGradProType" :key="programType.id">
               <v-checkbox 
-              v-model="programType.checked" :label="getTranslation(programType.label)"
-              density="compact"
-              class="ma-0 pa-0" hide-details="true"></v-checkbox>
+                v-model="programType.checked" :label="getTranslation(programType.label)"
+                density="compact"
+                class="ma-0 pa-0" hide-details="true"
+                :class="{'error-text': formSubmitted && isProgramGradProTypeInvalid}"
+                :rules="programGradProTypeRules"
+              ></v-checkbox>
               <v-row>
                 <v-col cols="12" md="10">
                   <transition name="slide-y-transition">
@@ -470,6 +475,7 @@
                 </v-col>
               </v-row>
             </div>
+            <div v-if="isProgramGradProTypeInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
           </div>
         </v-col> 
       </transition>
@@ -487,14 +493,19 @@
         </v-col>
         <transition name="slide-y-transition">
         <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
-          <p class="font-weight-black text-h8">{{getTranslation('If you are planning to pursue a specialized degree / certificate program, what type of program?')}}</p>
+          <p 
+          :class="{'error-text': formSubmitted && isSpecializedDegCertTypeInvalid}"
+          class="font-weight-black text-h8">{{getTranslation('If you are planning to pursue a specialized degree / certificate program, what type of program?')}}</p>
           <div>
             <div v-for="specializedType in studentInformation.specializedDegCert.specializedDegCertType" :key="specializedType.id">
               <v-checkbox 
               v-model="specializedType.checked" 
               :label="getTranslation(specializedType.label)"
               density="compact"
-              class="ma-0 pa-0" hide-details="true"></v-checkbox>
+              class="ma-0 pa-0" hide-details="true"
+              :class="{'error-text': formSubmitted && isSpecializedDegCertTypeInvalid}"
+              :rules="specializedDegCertTypeRules"
+              ></v-checkbox>
               <v-row>
                 <v-col cols="12" md="10">
                   <transition name="slide-y-transition">
@@ -507,6 +518,7 @@
                 </v-col>
               </v-row>
             </div>
+            <div v-if="isSpecializedDegCertTypeInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
           </div>
         </v-col>
       </transition>
@@ -829,6 +841,15 @@ export default {
             return !!v || 'Information is required.';
           }
       ],
+      programGradProTypeRules: [
+          v => {
+            if (!this.formSubmitted || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
+              return true;
+            }
+
+            return this.studentInformation.graduateProfessionalSchool.programGradProType.some(type => type.checked) || 'Information is required.';
+          }
+      ],
       phDTextboxRules: [
         v => {
             // conditions to skip validation
@@ -860,6 +881,15 @@ export default {
         v => {
               return !!v || 'Information is required.';
             }
+      ],
+      specializedDegCertTypeRules: [
+          v => {
+            if (!this.formSubmitted || this.studentInformation.specializedDegCert.specializedDegCertStatus === 'No') {
+              return true;
+            }
+
+            return this.studentInformation.specializedDegCert.specializedDegCertType.some(type => type.checked) || 'Information is required.';
+          }
       ],
       professionalDesignOtherRules: [
         v => {
@@ -927,6 +957,14 @@ export default {
             }
         },
         deep: true
+    },
+    'studentInformation.graduateProfessionalSchool.programGradProStatus': {
+      deep: true,
+      handler(newValue) {
+        if (this.formSubmitted) {
+
+        }
+      }
     },
     'studentInformation.graduateProfessionalSchool.programGradProType': {
         deep: true,
@@ -1116,10 +1154,34 @@ export default {
     const rule = v => !!v || 'Information is required';
     return rule(this.studentInformation.graduateProfessionalSchool.programGradProStatus) !== true;
   },
+  isProgramGradProTypeInvalid() {
+    if (!this.formSubmitted || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
+      return ''
+    };
+
+    //Check if at least one checkbox is checked
+    if (!this.studentInformation.graduateProfessionalSchool.programGradProType.some(type => type.checked)) {
+      return 'Information is required.';
+    }
+    return '';
+
+  },
   isSpecializedDegCertStatusInvalid() {
     if (!this.formSubmitted) return false;
     const rule = v => !!v || 'Information is required';
     return rule(this.studentInformation.specializedDegCert.specializedDegCertStatus) !== true;
+  },
+  isSpecializedDegCertTypeInvalid() {
+    if (!this.formSubmitted || this.studentInformation.specializedDegCert.specializedDegCertStatus === "No") {
+      return ''
+    }
+
+    // Check if at least one checkbox is checked
+    if (!this.studentInformation.specializedDegCert.specializedDegCertType.some(type => type.checked)) {
+      return 'Information is required.'
+    };
+    return '';
+
   },
   isGraduateProfessionalSchoolGoalsInvalid() {
       if (!this.formSubmitted) return false;
