@@ -285,9 +285,6 @@
           "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.10.checked": "h_affiliation_ambassadors",
           "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.11.checked": "h_affiliation_other",
           "studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther": "h_affiliation_other_text_entry",
-          "studentInformation.enrolledUHInfo.majors": "",
-          "studentInformation.enrolledUHInfo.honorsMinors": "",
-          "studentInformation.enrolledUHInfo.otherMinors": "",
           "studentInformation.hichInfo.hichStatus": "hich_membership",
           "studentInformation.hichInfo.hichHistoryStatus": "hich_participation",
           "studentInformation.communityServiceInfo.serviceStatus": "community_service",
@@ -433,7 +430,14 @@
           "studentInformation.enrolledUHInfo.honorsCollegeAffiliated.11.checked",
           "studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther",
           "studentInformation.enrolledUHInfo.majors",
-          "studentInformation.enrolledUHInfo.honorsMinors",
+          "h_minor_data_society",
+          "h_minor_medicine_society",
+          "h_minor_phronesis",
+          "h_minor_creative_work",
+          "h_minor_energy",
+          "h_minor_leadership",
+          "h_minor_global",
+          "h_minor_none",
           "studentInformation.enrolledUHInfo.otherMinors",
           "studentInformation.hichInfo.hichStatus",
           "studentInformation.hichInfo.hichHistoryStatus",
@@ -471,9 +475,31 @@
       const values = [];
       
       header.forEach((field) => {
+        console.log('Processing field:', field);
           let value = obj;
-  
-          if (field === "languagePreference") {
+          // Split and encode for the honorsMinors field
+          if (field.startsWith('h_minor_')) {   
+            // Map the field back to the possible value in the honorsMinors array
+            const valueMap = {
+                'h_minor_data_society': 'Data & Society',
+                'h_minor_medicine_society': 'Medicine & Society',
+                'h_minor_phronesis': 'Phronesis',
+                'h_minor_creative_work': 'Creative Work',
+                'h_minor_energy': 'Energy & Sustainability',
+                'h_minor_leadership': 'Leadership Studies',
+                'h_minor_global': 'Global Engagement and Research',
+                'h_minor_none': 'None'
+            };
+            // Get the honorsMinors array from the obj
+            const minorValues = obj.studentInformation?.enrolledUHInfo.honorsMinors || [];
+
+            console.log('minorValues:', minorValues);
+            console.log('Checking for value:', valueMap[field]);     
+
+            // Set 1 if the value is in the array, 0 otherwise
+            value = minorValues.includes(valueMap[field]) ? '1' : '0';
+
+          } else if (field === "languagePreference") {
               value = obj.userData?.languagePreference || obj.studentInformation?.languagePreference || '';
           } else if (field.includes(".checked")) {
               const pathKeys = field.split('.');
