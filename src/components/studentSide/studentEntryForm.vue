@@ -1380,20 +1380,28 @@ export default {
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
       
-      axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
+      try {
+        // Submit the entry form
+        await axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } });
+
+        // After form submission, call the checkFormCompletion action to update the hasCompletedEntryForm state
+        await user.checkFormCompletion();
+        
+        // Show the success message and navigate to the dashboard
         this.$router.push({ 
-              name: 'studentDashboard',
-              params: {
-                toastType: 'success',
-                toastMessage: this.getTranslation('Thank you for completing the Student Entry Form!'),
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--create'
-            }
-          });
-      })
-      .catch((error) => {
+          name: 'studentDashboard',
+          params: {
+            toastType: 'success',
+            toastMessage: this.getTranslation('Thank you for completing the Student Entry Form!'),
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+          }
+        });
+
+      } catch (error) {
+        // Log the error if form submission fails
         console.log(error);
-      });
+      }
     },
     cleanupFormData() {
       // Check condition for "Other" pronouns

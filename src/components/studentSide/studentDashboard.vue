@@ -18,23 +18,27 @@
           </v-list-item>
 
           <v-list-group value="Entry Form">
-              <template v-slot:activator="{ props }">
-                  <v-list-item v-bind="props" color="green darken-4" class="light-green-bg">
+            <template v-slot:activator="{ props }">
+                <v-list-item v-bind="props" :color="hasCompletedEntryForm ? 'green darken-4' : ''" :class="hasCompletedEntryForm ? 'light-green-bg' : 'light-red-bg'">
+                    <span :class="hasCompletedEntryForm ? 'text-green-800' : 'text-red-800'">
+                        {{ hasCompletedEntryForm ? 'Student Entry Form' : 'Complete Student Entry Form' }}
+                    </span>
+                    <template v-slot:append>
+                        <v-icon :class="hasCompletedEntryForm ? 'text-green-800' : 'text-red-800'">{{ hasCompletedEntryForm ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
+                    </template>
+                </v-list-item>
+            </template>
+            <v-list-item class="list-item-no-padding flex" :class="hasCompletedEntryForm ? 'light-green-bg' : 'light-red-bg'">
+                <div class="flex items-center no-right-margin">
+                    <v-icon :class="hasCompletedEntryForm ? 'text-green-800' : 'text-red-800'" size="small">{{'mdi-door-open'}}</v-icon>
+                    <span :class="hasCompletedEntryForm ? 'text-sm text-green-800' : 'text-sm text-red-800'">
+                        {{ hasCompletedEntryForm ? 'Thank you for completing the Student Entry Form!' : 'Please complete the ' }}
+                        <router-link v-if="!hasCompletedEntryForm" to="/studentEntryForm" class="text-blue-500 underline">Student Entry Form</router-link>
+                    </span>
+                </div>
+            </v-list-item>
+        </v-list-group>
 
-                      <span class="text-green-800">Entry Form</span>
-
-                      <template v-slot:append>
-                          <v-icon class="text-green-800">mdi-check-bold</v-icon>
-                      </template>
-                  </v-list-item>
-              </template>
-              <v-list-item class="list-item-no-padding flex light-green-bg">
-                  <div class="flex items-center no-right-margin">
-                      <v-icon class="no-right-margin text-green-800" size="small">mdi-door-open</v-icon>
-                      <span class="text-sm text-green-800">Thank you for completing the Student Entry Form!</span>
-                  </div>
-              </v-list-item>
-          </v-list-group>
 
 
           <v-list-group value="Goal Form">
@@ -42,7 +46,7 @@
                   <v-list-item v-bind="props" class="light-red-bg">
                   <span class="text-red-800">Goal Forms</span>
                       <template v-slot:append>
-                          <v-icon class="text-red-800">mdi-message-alert</v-icon>
+                          <v-icon class="text-red-800">mdi-alert-circle</v-icon>
                       </template>
                   </v-list-item>
               </template>
@@ -59,6 +63,7 @@
       </v-card>
   </v-container>
 </main>
+
 </template>
 
   <script>
@@ -106,6 +111,12 @@ import 'vue3-toastify/dist/index.css';
         toastClassName: this.$route.params.toastCSS
       });
     }
+    },
+    computed: {
+      hasCompletedEntryForm() {
+        const store = useLoggedInUserStore();
+        return store.hasCompletedEntryForm;
+      }
     },
     methods: {
       routePush(routeName) {
