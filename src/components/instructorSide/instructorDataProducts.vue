@@ -138,11 +138,11 @@
   
       // Rename headers for CSV output
       const renameMap = {
-          // "_id": "",
-          // "organizationID": "",
-          // "userID": "",
-          // "semester": "",
-          // "experienceName": "",
+          "_id": "id_form",
+          "organizationID": "id_organization",
+          "userID": "id_user",
+          "semester": "semester",
+          "experienceName": "experience",
           "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
           "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
           "goalForm.communityEngagement.communityEngagementExperiences.2.checked": "ce_faith",
@@ -227,8 +227,8 @@
           "goalForm.goals.goalThree": "goal_3_text_entry",
           "goalForm.goals.goalFour": "goal_4_text_entry",
           "goalForm.goals.goalFive": "goal_5_text_entry",
-          // "createdAt": "",
-          // "updatedAt": "",
+          "createdAt": "goal_created_date",
+          "updatedAt": "goal_updated_date",
           // "__v": "",
       };
       const renamedHeader = originalHeader.map(h => renameMap[h] || h);
@@ -251,9 +251,9 @@
   
       // Rename headers for CSV output
       const renameMap = {
-          // "_id": "", // need 
-          // "organizationID": "", // need 
-          // "userID": "", // need 
+          "_id": "id_form", 
+          "organizationID": "id_organization", 
+          "userID": "id_user", 
           "studentInformation.cityOrigin": "place_of_origin",
           "studentInformation.primaryLanguage": "primary_language",
           "studentInformation.otherLanguages": "other_languages",
@@ -267,8 +267,8 @@
           "studentInformation.commentsByStaff": "pronoun_comments_text_entry",
           "studentInformation.issuesConcernsTriggers": "issues_text_entry",
           "studentInformation.enrolledUHInfo.uhStatus": "degree_enrollment",
-          // "studentInformation.enrolledUHInfo.uhEmail": "", // need 
-          // "studentInformation.enrolledUHInfo.peopleSoftID": "", // need 
+          "studentInformation.enrolledUHInfo.uhEmail": "uh_email", 
+          "studentInformation.enrolledUHInfo.peopleSoftID": "peoplesoft_id", 
           "studentInformation.enrolledUHInfo.expectedGraduationYear": "",
           "studentInformation.enrolledUHInfo.livingOnCampus": "housing_status",
           "studentInformation.enrolledUHInfo.honorsCollegeStatus": "honors_membership",
@@ -298,12 +298,12 @@
           "studentInformation.graduateProfessionalSchool.programGradProType.1.checked": "graduate_pa",
           "studentInformation.graduateProfessionalSchool.programGradProType.2.checked": "graduate_nursing",
           "studentInformation.graduateProfessionalSchool.programGradProType.3.checked": "graduate_phd",
-          // "studentInformation.graduateProfessionalSchool.programGradProType.4.checked": "", // need for DrPH
+          "studentInformation.graduateProfessionalSchool.programGradProType.4.checked": "graduate_drph", 
           "studentInformation.graduateProfessionalSchool.programGradProType.5.checked": "graduate_jd",
           "studentInformation.graduateProfessionalSchool.programGradProType.6.checked": "graduate_masters",
           "studentInformation.graduateProfessionalSchool.programGradProType.7.checked": "graduate_other",
-          // "studentInformation.graduateProfessionalSchool.phDTextbox": "", // need
-          // "studentInformation.graduateProfessionalSchool.masterTextbox": "", // need
+          "studentInformation.graduateProfessionalSchool.phDTextbox": "graduate_phd_text_entry", 
+          "studentInformation.graduateProfessionalSchool.masterTextbox": "graduate_masters_text_entry", 
           "studentInformation.graduateProfessionalSchool.otherTextbox": "graduate_other_text entry", 
           "studentInformation.specializedDegCert.specializedDegCertStatus": "certificate_degree",
           "studentInformation.specializedDegCert.specializedDegCertType.0.checked": "certificate_nursing",
@@ -313,8 +313,8 @@
           "studentInformation.specializedDegCert.specializedDegCertType.4.checked": "certificate_pm",
           "studentInformation.specializedDegCert.specializedDegCertType.5.checked": "certificate_other",
           "studentInformation.specializedDegCert.professionalDesignOther": "certificate_other_text_entry",
-          // "createdAt": "", // need
-          // "updatedAt": "", // need
+          "createdAt": "entry_created_date", 
+          "updatedAt": "entry_updated_date", 
           // "__v": "", // need
       };
       const renamedHeader = originalHeader.map(h => renameMap[h] || h);

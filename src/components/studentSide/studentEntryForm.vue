@@ -475,7 +475,7 @@
                 </v-col>
               </v-row>
             </div>
-            <div v-if="isProgramGradProTypeInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+            <div v-if="isProgramGradProTypeInvalid" :key="isProgramGradProTypeInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
           </div>
         </v-col> 
       </transition>
@@ -518,7 +518,7 @@
                 </v-col>
               </v-row>
             </div>
-            <div v-if="isSpecializedDegCertTypeInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+            <div v-if="isSpecializedDegCertTypeInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
           </div>
         </v-col>
       </transition>
@@ -560,9 +560,141 @@
 }
 
 
+
 .error-text {
   color: darkred;
   }
+
+
+.styled-error-text {
+  -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: "Roboto", sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    --v-theme-overlay-multiplier: 1;
+    --v-scrollbar-offset: 0px;
+    --v-theme-background: 255,255,255;
+    --v-theme-background-overlay-multiplier: 1;
+    --v-theme-surface: 255,255,255;
+    --v-theme-surface-overlay-multiplier: 1;
+    --v-theme-surface-variant: 66,66,66;
+    --v-theme-surface-variant-overlay-multiplier: 2;
+    --v-theme-on-surface-variant: 238,238,238;
+    --v-theme-primary: 98,0,238;
+    --v-theme-primary-overlay-multiplier: 2;
+    --v-theme-primary-darken-1: 55,0,179;
+    --v-theme-primary-darken-1-overlay-multiplier: 2;
+    --v-theme-secondary: 3,218,198;
+    --v-theme-secondary-overlay-multiplier: 1;
+    --v-theme-secondary-darken-1: 1,135,134;
+    --v-theme-secondary-darken-1-overlay-multiplier: 1;
+    --v-theme-error: 176,0,32;
+    --v-theme-error-overlay-multiplier: 2;
+    --v-theme-info: 33,150,243;
+    --v-theme-info-overlay-multiplier: 1;
+    --v-theme-success: 76,175,80;
+    --v-theme-success-overlay-multiplier: 1;
+    --v-theme-warning: 251,140,0;
+    --v-theme-warning-overlay-multiplier: 1;
+    --v-theme-on-background: 0,0,0;
+    --v-theme-on-surface: 0,0,0;
+    --v-theme-on-primary: 255,255,255;
+    --v-theme-on-primary-darken-1: 255,255,255;
+    --v-theme-on-secondary: 0,0,0;
+    --v-theme-on-secondary-darken-1: 255,255,255;
+    --v-theme-on-error: 255,255,255;
+    --v-theme-on-info: 255,255,255;
+    --v-theme-on-success: 255,255,255;
+    --v-theme-on-warning: 255,255,255;
+    --v-border-color: 0, 0, 0;
+    --v-border-opacity: 0.12;
+    --v-high-emphasis-opacity: 0.87;
+    --v-medium-emphasis-opacity: 0.6;
+    --v-disabled-opacity: 0.38;
+    --v-idle-opacity: 0.04;
+    --v-hover-opacity: 0.04;
+    --v-focus-opacity: 0.12;
+    --v-selected-opacity: 0.08;
+    --v-activated-opacity: 0.12;
+    --v-pressed-opacity: 0.12;
+    --v-dragged-opacity: 0.08;
+    --v-theme-kbd: 33, 37, 41;
+    --v-theme-on-kbd: 255, 255, 255;
+    --v-theme-code: 245, 245, 245;
+    --v-theme-on-code: 0, 0, 0;
+    --v-input-control-height: 56px;
+    --v-input-padding-top: 16px;
+    --select-chips-margin-bottom: 0px;
+    --autocomplete-chips-margin-bottom: 0px;
+    --combobox-chips-margin-bottom: 0px;
+    --file-input-chips-margin-bottom: 0px;
+    font-weight: 400;
+    letter-spacing: 0.0333333333em;
+    font-size: 12px;
+    color: rgb(var(--v-theme-error));
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+    --tw-border-spacing-x: 0;
+    --tw-border-spacing-y: 0;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+    --tw-pan-x: ;
+    --tw-pan-y: ;
+    --tw-pinch-zoom: ;
+    --tw-scroll-snap-strictness: proximity;
+    --tw-ordinal: ;
+    --tw-slashed-zero: ;
+    --tw-numeric-figure: ;
+    --tw-numeric-spacing: ;
+    --tw-numeric-fraction: ;
+    --tw-ring-inset: ;
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: rgb(59 130 246 / 0.5);
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+    --tw-blur: ;
+    --tw-brightness: ;
+    --tw-contrast: ;
+    --tw-grayscale: ;
+    --tw-hue-rotate: ;
+    --tw-invert: ;
+    --tw-saturate: ;
+    --tw-sepia: ;
+    --tw-drop-shadow: ;
+    --tw-backdrop-blur: ;
+    --tw-backdrop-brightness: ;
+    --tw-backdrop-contrast: ;
+    --tw-backdrop-grayscale: ;
+    --tw-backdrop-hue-rotate: ;
+    --tw-backdrop-invert: ;
+    --tw-backdrop-opacity: ;
+    --tw-backdrop-saturate: ;
+    --tw-backdrop-sepia: ;
+    background-repeat: no-repeat;
+    box-sizing: inherit;
+    padding: 0;
+    margin: 0;
+    line-height: 12px;
+    word-break: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    transition-duration: 150ms;
+    transform-origin: center center;
+}
+
+
+
 
 </style>
 
@@ -636,7 +768,20 @@ export default {
         "Engineering/Technology: Professional Engineer (PE), Certified Technology Specialist (CTS), etc": "Ingeniería/Tecnología: Ingeniero Profesional (o PE en inglés), Certificado para Especialistas en Tecnología (o CTS en inglés), etc",
         "Project Management: Certified Associate in Project Management (CAPM), Project Management Professional (PMP)": "Gestión de Proyectos: Certificado Asociado en Gestión de Proyectos (o CAPM en inglés), Profesional en Gestión de Proyectos (o PMP en inglés)",
         "Other Professional Designation": "Otra designación profesional",
-        "Submit Form": "Enviar Formulario"
+        "Submit Form": "Enviar Formulario",
+        "Information is required.": "Se requiere información",
+        "If Other is selected, please specify pronouns.": "Si seleccionó 'Otro', por favor especifique sus pronombres.",
+        "Email must end with @cougarnet.uh.edu or @uh.edu": "El correo electrónico debe terminar con @cougarnet.uh.edu o @uh.edu.",
+        "A valid UH email is required.": "Se requiere un correo electrónico válido de Universidad de Houston.",
+        "A valid PeopleSoftID is required.": "Se requiere un PeopleSoftID válido.",
+        "If Other is selected, please specify affiliation.": "Si seleccionó 'Otro', por favor especifique su afiliación.",
+        "At least one Major is required.": "Se requiere al menos una carrera.",
+        "Please select at least one Minor, or 'None'.": "Por favor, seleccione al menos una especialidad secundaria o 'Ninguna'.",
+        "If 'PhD' is selected, please specify.": "Si se selecciona 'PhD', por favor especifique.",
+        "If 'Master\'s' is selected, please specify.": "Si se selecciona 'Maestría', por favor especifique.",
+        "If 'Other' is selected, please specify.": "Si seleccionó 'Otro', por favor especifique.",
+        "Oops! Error(s) detected. Please review and try again.": "¡Ups! Se detectó(ron) error(es). Por favor, revise y vuelva a intentarlo.",
+        "Thank you for completing the Student Entry Form!": "¡Gracias por completar el Formulario de Inscripción para Estudiantes!",
       }
     };
 
@@ -751,7 +896,7 @@ export default {
               // If the condition for v-show is false (Other pronoun not checked), validation passes automatically
               if (!otherPronoun || !otherPronoun.checked) return true;
 
-              return !!v || 'If Other is selected, please specify pronouns.';
+              return !!v || this.getTranslation('If Other is selected, please specify pronouns.');
           },
       ],
       uhEmailRules: [
@@ -760,14 +905,14 @@ export default {
               if (!this.uHStudentCheck) return true;
 
               // Otherwise, check if the email is not empty
-              return !!v || 'A valid UH email is required.';
+              return !!v || this.getTranslation('A valid UH email is required.');
           },
           v => {
               // If user is not a UH student, validation passes automatically
               if (!this.uHStudentCheck) return true;
 
               // Otherwise, validate the email format
-              return /[@](cougarnet\.uh\.edu|uh\.edu)$/.test(v) || 'Email must end with @cougarnet.uh.edu or @uh.edu';
+              return /[@](cougarnet\.uh\.edu|uh\.edu)$/.test(v) || this.getTranslation('Email must end with @cougarnet.uh.edu or @uh.edu');
           }
       ],
       peopleSoftIDRules: [
@@ -776,7 +921,7 @@ export default {
               if (!this.uHStudentCheck) return true;
 
               // Otherwise, check if the email is not empty
-              return !!v || 'A valid PeopleSoftID is required.';
+              return !!v || this.getTranslation('A valid PeopleSoftID is required.');
           },
           v => {
               // If user is not a UH student, validation passes automatically
@@ -791,7 +936,7 @@ export default {
               // If user is not a UH student, validation passes automatically
               if (!this.uHStudentCheck) return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
           },
       ],
       honorsCollegeAffiliatedOtherRules: [
@@ -804,7 +949,7 @@ export default {
             if (this.uHStudentCheck && this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated[11].checked === false) {
               return true
             };
-            return !!v || 'If Other is selected, please specify affiliation.';
+            return !!v || this.getTranslation('If Other is selected, please specify affiliation.');
         },
       ],
       majorsRules: [
@@ -812,7 +957,7 @@ export default {
               // If user is not a UH student, validation passes automatically
               if (!this.uHStudentCheck) return true;
 
-              return (v && v.length > 0) || 'At least one Major is required.';
+              return (v && v.length > 0) || this.getTranslation('At least one Major is required.');
           }
       ],
       honorsMinorsRules: [
@@ -820,12 +965,12 @@ export default {
               // If user is not a UH student, validation passes automatically
               if (!this.uHStudentCheck) return true;
 
-              return (v && v.length > 0) || 'Please select at least one Minor, or "None".';
+              return (v && v.length > 0) || this.getTranslation("Please select at least one Minor, or 'None'.");
           }
       ],
       serviceStatusRules: [
           v => {
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
           }
       ],
       serviceHistoryDescRules: [
@@ -833,12 +978,12 @@ export default {
         // if user has not had comm-service experience, then skip validation.
               if (!this.formSubmitted || this.studentInformation.communityServiceInfo.serviceStatus === 'No') return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
             }
       ],
       programGradProStatusRules: [
           v => {
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
           }
       ],
       programGradProTypeRules: [
@@ -847,7 +992,7 @@ export default {
               return true;
             }
 
-            return this.studentInformation.graduateProfessionalSchool.programGradProType.some(type => type.checked) || 'Information is required.';
+            return this.studentInformation.graduateProfessionalSchool.programGradProType.some(type => type.checked) || this.getTranslation('Information is required.');
           }
       ],
       phDTextboxRules: [
@@ -856,7 +1001,7 @@ export default {
             if (!this.formSubmitted || (this.studentInformation.graduateProfessionalSchool.programGradProType[3].checked === false ) || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
               return true
             }
-            return !!v || "If \"PhD\" is selected, please specify.";
+            return !!v || this.getTranslation("If 'PhD' is selected, please specify.");
           }
       ],
       masterTextboxRules: [
@@ -865,7 +1010,7 @@ export default {
             if (!this.formSubmitted || (this.studentInformation.graduateProfessionalSchool.programGradProType[6].checked === false ) || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
               return true
             }
-            return !!v || "If \"Master\'s\" is selected, please specify.";
+            return !!v || this.getTranslation("If 'Master\'s' is selected, please specify.");
           }
       ],
       otherTextboxRules: [
@@ -874,12 +1019,12 @@ export default {
             if (!this.formSubmitted || (this.studentInformation.graduateProfessionalSchool.programGradProType[7].checked === false ) || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
               return true
             }
-            return !!v || "If \"Other\" is selected, please specify.";
+            return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           }
       ],
       specializedDegCertStatusRules: [
         v => {
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
             }
       ],
       specializedDegCertTypeRules: [
@@ -888,7 +1033,7 @@ export default {
               return true;
             }
 
-            return this.studentInformation.specializedDegCert.specializedDegCertType.some(type => type.checked) || 'Information is required.';
+            return this.studentInformation.specializedDegCert.specializedDegCertType.some(type => type.checked) || this.getTranslation('Information is required.');
           }
       ],
       professionalDesignOtherRules: [
@@ -897,7 +1042,7 @@ export default {
             if (!this.formSubmitted || (this.studentInformation.specializedDegCert.specializedDegCertType[5].checked === false ) || this.studentInformation.specializedDegCert.specializedDegCertStatus === 'No') {
               return true
             }
-            return !!v || "If \"Other\" is selected, please specify.";
+            return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           }
       ],
     }
@@ -1223,7 +1368,7 @@ export default {
         this.cleanupFormData();
         this.submitCompletedForm();
       } else {
-        toast.error("Oops! Error(s) detected. Please review and try again.", {
+        toast.error(this.getTranslation("Oops! Error(s) detected. Please review and try again."), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete'
           });
@@ -1240,7 +1385,7 @@ export default {
               name: 'studentDashboard',
               params: {
                 toastType: 'success',
-                toastMessage: 'Thank you for completing the Student Entry Form!',
+                toastMessage: this.getTranslation('Thank you for completing the Student Entry Form!'),
                 toastPosition: 'top-right',
                 toastCSS: 'Toastify__toast--create'
             }

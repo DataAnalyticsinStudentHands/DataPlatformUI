@@ -125,7 +125,7 @@
   </transition>
   </div>
 
-  <div v-if="isCommunityEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+  <div v-if="isCommunityEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -173,7 +173,7 @@
     </v-row>
     </transition>
     </div>
-    <div v-if="isPreviousEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+    <div v-if="isPreviousEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 <v-col cols="12" md="10">
@@ -225,7 +225,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isEngagementActivitiesToolsInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+  <div v-if="isEngagementActivitiesToolsInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -279,7 +279,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isCurrentResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+  <div v-if="isCurrentResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -333,7 +333,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isPreviousResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+  <div v-if="isPreviousResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -387,7 +387,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isFamiliarToolsInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+  <div v-if="isFamiliarToolsInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -441,7 +441,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isInterestResearchServiceInvalid" class="styled-error-text">{{getTranslation('Information is required')}}</div>
+  <div v-if="isInterestResearchServiceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -850,7 +850,7 @@ export default {
         "Other": "Otro",
         "Please specify": "Por favor especificar",
         "None of the above": "Ninguna de las anteriores",
-        "Information is required": "Se requiere información",
+        "Information is required.": "Se requiere información.",
         "From your previous community engagement experiences, which of the following activities have you engaged in?": "De sus experiencias previas de participación comunitaria, ¿en cuáles de las siguientes actividades se ha involucrado?",
         "Mentoring someone": "Asesorar a alguien",
         "Volunteering at a community event (e.g. health fair)": "Voluntariado/a en un evento comunitario (por ejemplo, feria de salud)",
@@ -922,6 +922,16 @@ export default {
         "Goal 4:": "Objetivo 4:",
         "Goal 5:": "Objetivo 5:",
         "Submit Form": "Enviar Formulario",
+        "If 'Other' is selected, please specify.": "Si seleccionó 'Otro', por favor especifique.",
+        "Please fill out at least 2 aspirations.": "Por favor, complete al menos 2 aspiraciones.",
+        "Please fill out at least 3 goals.": "Por favor, complete al menos 3 metas.",
+        "Oops! Error(s) detected. Please review and try again.": "¡Ups! Se detectó(ron) error(es). Por favor, revise y vuelva a intentarlo.",
+        "Goals successfully set! You're on the right track!": "¡Metas establecidas con éxito! ¡Vas por buen camino!",
+        "Great job setting your goals! Let's make them happen!": "¡Buen trabajo estableciendo tus metas! ¡Vamos a hacerlas realidad!",
+        "Goals locked in! Believe in yourself and you'll achieve them.": "¡Metas aseguradas! Cree en ti mismo y las lograrás.",
+        "You've set your goals! Now, let's conquer them together!": "¡Has establecido tus metas! Ahora, ¡conquistémoslas juntos!",
+        "Your goals are set! Keep pushing forward and you'll achieve them.": "¡Tus metas están definidas! Sigue adelante y las alcanzarás.",
+        "Way to go! Every goal you set brings you one step closer to success.": "¡Bien hecho! Cada meta que estableces te acerca un paso más al éxito.",
       },
     };
 
@@ -1077,7 +1087,7 @@ export default {
       experienceIDRules: [
         v => {
           if (this.formSubmitted) {
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
           }
           return true;
         }
@@ -1086,7 +1096,7 @@ export default {
       v => {
               if (!this.formSubmitted) return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
           },
       ],
       communityEngagementExperiencesRules: [
@@ -1095,7 +1105,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       communityEngagementExperiencesOtherRules: [
@@ -1107,7 +1117,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!otherExperience || !otherExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           },
       ],
       previousEngagementExperiencesRules: [
@@ -1116,7 +1126,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       previousEngagementExperiencesOtherRules: [
@@ -1128,7 +1138,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!previousExperience || !previousExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           },
       ],
       engagementActivitiesToolsRules: [
@@ -1137,7 +1147,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       engagementActivitiesToolOtherRules: [
@@ -1149,7 +1159,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!engagementActivitiesTool || !engagementActivitiesTool.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           },
       ],
       currentResearchExperienceRules: [
@@ -1158,7 +1168,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       currentResearchExperienceOtherRules: [
@@ -1170,7 +1180,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!researchExperience || !researchExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       previousResearchExperienceRules: [
@@ -1179,7 +1189,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       previousResearchExperienceOtherRules: [
@@ -1191,7 +1201,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!previousExperience || !previousExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       familiarToolsRules: [
@@ -1200,7 +1210,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.familiarTools.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.familiarTools.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       familiarToolOtherRules: [
@@ -1212,7 +1222,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!familiarTool || !familiarTool.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       interestResearchServiceRules: [
@@ -1221,7 +1231,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       interestResearchServiceOtherRules: [
@@ -1233,14 +1243,14 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!researchService || !researchService.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       leadershipOptionRules: [
       v => {
               if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
           },
       ],
 
@@ -1248,48 +1258,48 @@ export default {
         v => {
               if (!this.formSubmitted) return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
           },
       ],
       effectiveCommunicationGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       teamworkGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       culturalHumilityGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       ethicalDecisionMakingGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       professionalResponsibilityGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       aspirationsRules: [
         () => {
           if (this.formSubmitted && this.filledAspirationsCount < 2) {
-            return 'Please fill out at least 2 aspirations.';
+            return this.getTranslation('Please fill out at least 2 aspirations.');
           }
           return true;
         }
@@ -1624,7 +1634,7 @@ export default {
   aspirationsErrorMessages() {
     if (this.formSubmitted && this.filledAspirationsCount < 2) {
       this.isAspirationsValid = false;
-      return ['Please fill out at least 2 aspirations.'];
+      return [this.getTranslation('Please fill out at least 2 aspirations.')];
     }
     this.isAspirationsValid = true;
     return [];
@@ -1636,7 +1646,7 @@ export default {
   goalsErrorMessages() {
     if (this.formSubmitted && this.filledGoalsCount < 3) {
       this.isGoalsValid = false;
-      return ['Please fill out at least 3 goals.'];
+      return [this.getTranslation('Please fill out at least 3 goals.')];
     }
     this.isGoalsValid = true;
     return [];
@@ -1758,7 +1768,7 @@ export default {
     if (valid) {
       this.cleanupFormData();
     } else {
-      toast.error("Oops! Error(s) detected. Please review and try again.", {
+      toast.error(this.getTranslation("Oops! Error(s) detected. Please review and try again."), {
         position: 'top-right',
         toastClassName: 'Toastify__toast--delete'
       });
@@ -2002,7 +2012,7 @@ export default {
               name: 'studentDashboard',
               params: {
                 toastType: 'success',
-                toastMessage: randomMessage,
+                toastMessage: this.getTranslation(randomMessage),
                 toastPosition: 'top-right',
                 toastCSS: 'Toastify__toast--create'
             }
