@@ -700,7 +700,7 @@
 
 <script>
 // Imports
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
