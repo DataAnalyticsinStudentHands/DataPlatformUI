@@ -4,63 +4,6 @@
         Welcome {{ firstName }} {{ lastName }}
     </h1>
     <v-container style="width: 90%; margin: 0 auto;">
-      <v-card
-      class="mx-auto elevation-12"
-      color="#385F73"
-      width="350"
-      >
-      <v-list>
-          <v-list-item>
-              <v-list-item-title class="flex-grow-1 text-center">
-                  Student Checklist
-                  <v-icon>mdi-clipboard-check</v-icon>
-              </v-list-item-title>
-          </v-list-item>
-
-          <v-list-group value="Entry Form">
-            <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props" :color="hasCompletedEntryForm ? 'green darken-4' : ''" :class="hasCompletedEntryForm ? 'light-green-bg' : 'light-red-bg'">
-                    <span :class="hasCompletedEntryForm ? 'text-green-800' : 'text-red-800'">
-                        {{ hasCompletedEntryForm ? 'Student Entry Form' : 'Complete Student Entry Form' }}
-                    </span>
-                    <template v-slot:append>
-                        <v-icon :class="hasCompletedEntryForm ? 'text-green-800' : 'text-red-800'">{{ hasCompletedEntryForm ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
-                    </template>
-                </v-list-item>
-            </template>
-            <v-list-item class="list-item-no-padding flex" :class="hasCompletedEntryForm ? 'light-green-bg' : 'light-red-bg'">
-                <div class="flex items-center no-right-margin">
-                    <v-icon :class="hasCompletedEntryForm ? 'text-green-800' : 'text-red-800'" size="small">{{'mdi-door-open'}}</v-icon>
-                    <span :class="hasCompletedEntryForm ? 'text-sm text-green-800' : 'text-sm text-red-800'">
-                        {{ hasCompletedEntryForm ? 'Thank you for completing the Student Entry Form!' : 'Please complete the ' }}
-                        <router-link v-if="!hasCompletedEntryForm" to="/studentEntryForm" class="text-blue-500 underline">Student Entry Form</router-link>
-                    </span>
-                </div>
-            </v-list-item>
-        </v-list-group>
-
-
-
-          <v-list-group value="Goal Form">
-              <template v-slot:activator="{ props }">
-                  <v-list-item v-bind="props" class="light-red-bg">
-                  <span class="text-red-800">Goal Forms</span>
-                      <template v-slot:append>
-                          <v-icon class="text-red-800">mdi-alert-circle</v-icon>
-                      </template>
-                  </v-list-item>
-              </template>
-              <v-list-item class="list-item-no-padding flex light-red-bg">
-                  <div class="flex items-center no-right-margin">
-                      <v-icon class="no-right-margin text-red-800" size="small">mdi-flag-checkered</v-icon>
-                      <span class="text-sm text-red-800">Please complete 2
-                          <router-link to="/goalSettingForm" class="text-blue-500 underline">Goal Setting Forms</router-link><br>(2 Remaining)
-                      </span>
-                  </div>
-              </v-list-item>
-          </v-list-group>
-      </v-list>
-      </v-card>
   </v-container>
 </main>
 
