@@ -107,13 +107,11 @@ export const useLoggedInUserStore = defineStore({
         const response = await axios.get(`${apiURL}/studentSideData/studentChecklist`, {
           headers: { token: this.token }
         });
-        console.log('token: ', this.token)
         if (response && response.data) {
           this.$patch({
             hasCompletedEntryForm: response.data.hasCompletedEntryForm
           });
         }
-        console.log('hasCompletedEntryForm: ', this.hasCompletedEntryForm)
       } catch (error) {
         console.log(error);
       }

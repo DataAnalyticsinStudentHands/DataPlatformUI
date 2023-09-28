@@ -102,7 +102,6 @@
           // Fetch JSON data from the API endpoint
           const response = await axios.get(import.meta.env.VITE_ROOT_API +'/studentSideData/goalForms/all/', { headers: { token } });
           const jsonData = response.data;
-          console.log("Raw API Data:", jsonData);
   
           // Convert JSON to CSV format
           const csvData = this.convertGoalSettingFormToCSV(jsonData);
@@ -475,7 +474,6 @@
       const values = [];
       
       header.forEach((field) => {
-        console.log('Processing field:', field);
           let value = obj;
           // Split and encode for the honorsMinors field
           if (field.startsWith('h_minor_')) {   
@@ -491,10 +489,7 @@
                 'h_minor_none': 'None'
             };
             // Get the honorsMinors array from the obj
-            const minorValues = obj.studentInformation?.enrolledUHInfo.honorsMinors || [];
-
-            console.log('minorValues:', minorValues);
-            console.log('Checking for value:', valueMap[field]);     
+            const minorValues = obj.studentInformation?.enrolledUHInfo.honorsMinors || [];   
 
             // Set 1 if the value is in the array, 0 otherwise
             value = minorValues.includes(valueMap[field]) ? '1' : '0';

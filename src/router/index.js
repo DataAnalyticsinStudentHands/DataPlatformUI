@@ -10,24 +10,6 @@ const routes = [
       component: () => import('../components/studentSide/studentEntryFormUpdate.vue')
     },
     {
-      path: '/test',
-      name: 'test',
-      props: true,
-      component: () => import('../components/test.vue')
-    },
-    {
-      path: '/test2',
-      name: 'test2',
-      props: true,
-      component: () => import('../components/test2.vue')
-    },
-    {
-      path: '/test3',
-      name: 'test3',
-      props: true,
-      component: () => import('../components/test3.vue')
-    },
-    {
       path: '/profile',
       name: 'profile',
       props: true,
