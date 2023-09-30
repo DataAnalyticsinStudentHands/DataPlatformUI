@@ -45,36 +45,36 @@
 
         <v-list-group v-if="hasCompletedEntryForm" value="Register Experiences">
             <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props" :class="selectedExperiencesFinal.length === 0 ? 'light-red-bg' : 'light-green-bg'" @click="selectedExperiencesFinal.length === 0 && updateTooltipStatus()">
-                    <span class="text-red-800 font-weight-black" v-if="selectedExperiencesFinal.length === 0">Register your Experiences</span>
+                <v-list-item v-bind="props" :class="registeredExperiences.length === 0 ? 'light-red-bg' : 'light-green-bg'" @click="registeredExperiences.length === 0 && updateTooltipStatus()">
+                    <span class="text-red-800 font-weight-black" v-if="registeredExperiences.length === 0">Register your Experiences</span>
                     <span class="text-green-800 font-weight-black" v-else>Experiences Registered</span>
                     <template v-slot:append>
-                        <v-icon class="text-red-800" v-if="selectedExperiencesFinal.length === 0">mdi-alert-circle</v-icon>
+                        <v-icon class="text-red-800" v-if="registeredExperiences.length === 0">mdi-alert-circle</v-icon>
                         <v-icon class="text-green-800" v-else>mdi-check-bold</v-icon>
                     </template>
                 </v-list-item>
             </template>
-            <v-list-item class="list-item-no-padding flex" :class="selectedExperiencesFinal.length === 0 ? 'light-red-bg' : 'light-green-bg'">
+            <v-list-item class="list-item-no-padding flex" :class="registeredExperiences.length === 0 ? 'light-red-bg' : 'light-green-bg'">
                 <div class="flex items-center no-right-margin">
-                    <v-icon :class="selectedExperiencesFinal.length === 0 ? 'text-red-800' : 'text-green-800'" size="small">mdi-flag-checkered</v-icon>
-                    <span :class="selectedExperiencesFinal.length === 0 ? 'text-sm text-red-800' : 'text-sm text-green-800'">
-                        <span v-if="selectedExperiencesFinal.length === 0">Please use the "Add/Remove Experiences" button to register!</span>
+                    <v-icon :class="registeredExperiences.length === 0 ? 'text-red-800' : 'text-green-800'" size="small">mdi-flag-checkered</v-icon>
+                    <span :class="registeredExperiences.length === 0 ? 'text-sm text-red-800' : 'text-sm text-green-800'">
+                        <span v-if="registeredExperiences.length === 0">Please use the "Add/Remove Experiences" button to register!</span>
                         <span v-else>Congratulations on registering for your experiences! Good luck!</span>
                     </span>
                 </div>
             </v-list-item>
         </v-list-group>
-        <v-list-group value="Goal Form" v-if="selectedExperiencesFinal.length" class="light-red-bg">
+        <v-list-group value="Goal Form" v-if="registeredExperiences.length" class="light-red-bg">
           <template v-slot:activator="{ props }">
               <v-list-item v-bind="props">
-                  <span class="text-red-800 font-weight-black">Complete Goal Setting Form<span v-if="selectedExperiencesFinal.length > 1">s</span></span>
+                  <span class="text-red-800 font-weight-black">Complete Goal Setting Form<span v-if="registeredExperiences.length > 1">s</span></span>
                   <template v-slot:append>
                       <v-icon class="text-red-800">mdi-alert-circle</v-icon>
                   </template>
               </v-list-item>
           </template>
           <!-- Loop through selected experiences and create a dropdown item for each one -->
-          <v-list-item class="light-red-bg" v-for="experience in selectedExperiencesFinal" :key="experience._id">
+          <v-list-item class="light-red-bg" v-for="experience in registeredExperiences" :key="experience._id">
               <span class="text-sm text-red-800">Complete Goal Setting Form for </span> 
               <router-link 
                   :to="{ name: 'goalSettingForm', params: { id: experience._id } }" 
@@ -116,7 +116,7 @@
 
                 <!-- Dynamic Experience List Items -->
                 <v-list-item class="unclickable"
-                    v-for="experience in selectedExperiencesFinal"
+                    v-for="experience in registeredExperiences"
                     :key="experience._id"
                     :value="experience"
                 >
@@ -126,7 +126,7 @@
                 </v-list-item>
 
                 <!-- Display message when the list is empty -->
-                <v-list-item v-if="selectedExperiencesFinal.length === 0">
+                <v-list-item v-if="registeredExperiences.length === 0">
                     <v-list-item-title>
                         (No Registered Experiences)
                     </v-list-item-title>
@@ -236,7 +236,7 @@
                 <v-btn
                   color="blue-darken-1"
                   variant="text"
-                  @click="saveExperiences"
+                  @click="registerExperiences"
                 >
                   Save
                 </v-btn>
@@ -253,7 +253,6 @@
     </v-row>
   </v-container>
 </main>
-
 </template>
 
 <script>
@@ -270,7 +269,7 @@ export default {
       lastName: "",
       allExperiences: [], // Will contain all experiences from API
       selectedExperiences: [], // Experiences selected by the student
-      selectedExperiencesFinal: [],
+      registeredExperiences: [],
       selectedExperience: null, // Currently selected experience from "allExperiences"
       unselectedExperience: null, // Currently selected experience from "selectedExperiences"
       dialog: false,
@@ -282,6 +281,7 @@ export default {
       ],
       selectedListItem: null, 
       shouldShowTooltip: false,
+      registrationExists: false,
     };
   },
   mounted() {
@@ -310,6 +310,7 @@ export default {
       this.queryData = resp.data;
     });
     this.fetchExperiences();
+    this.fetchRegisteredExperiences();
     if (this.$route.params.toastType) {
     toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
       position: this.$route.params.toastPosition,
@@ -320,7 +321,7 @@ export default {
   watch: {
     dialog(newVal) {
       if (newVal) {
-        this.selectedExperiences = [...this.selectedExperiencesFinal]
+        this.selectedExperiences = [...this.registeredExperiences]
       }
     }
   },
@@ -339,17 +340,6 @@ export default {
       try {
         const response = await axios.get(apiURL, { headers: { token } });
         this.allExperiences = response.data;
-
-        // The logging of activities is optional and can be removed if not required
-        this.allExperiences.forEach(experience => {
-          console.log(`Experience: ${experience.experienceName}`);
-          if (experience.activities && experience.activities.length > 0) {
-            console.log('Associated Activities:', experience.activities);
-          } else {
-            console.log('No associated activities.');
-          }
-        });
-
       } catch (error) {
         console.log(error);
       }
@@ -386,11 +376,6 @@ export default {
     removeAllFromSelected() {
       this.selectedExperiences = [];
     },
-    saveExperiences() {
-      this.selectedExperiencesFinal = [...this.selectedExperiences];
-      this.dialog = false;
-    },
-
     clearSelectedExperiences() {
       this.selectedExperiences = [];
       this.dialog = false;
@@ -401,6 +386,68 @@ export default {
     updateTooltipStatus() {
       this.shouldShowTooltip = !this.shouldShowTooltip;
     },
+    async fetchRegisteredExperiences() {
+      const token = localStorage.getItem('token');
+      const url = import.meta.env.VITE_ROOT_API + '/studentSideData/registeredExperiences';
+
+      try {
+        const response = await axios.get(url, { headers: { token } });
+        if (response.data && response.data.experienceIDs) {
+          // Registration already exists, so a PUT request will be made
+          this.registrationExists = true;
+          // Map the experienceIDs to the full experience objects
+          this.registeredExperiences = response.data.experienceIDs.map(id => this.allExperiences.find(exp => exp._id === id)).filter(exp => exp); // filter out any undefined elements just in case an ID doesn't match ant experience
+        } else {
+          // Registration doesn't exist, therefore a POST request will be made
+          this.registrationExists = false;
+          this.registeredExperiences = [];
+        }
+      } catch (error) {
+        console.log('Error fetching registered experiences: ', error);
+        this.registeredExperiences = [];
+      }
+    },
+    async registerExperiences() {
+      // Depending if a registration already exists, use either POST or PUT
+      const method = this.registrationExists ? 'put' : 'post';
+      // Create an array of experienceIDs from the selected experiences
+      const experienceIDs = this.selectedExperiences.map(exp => exp._id);
+
+      console.log('experienceIDs: ', experienceIDs)
+
+      // Define the URL for the API endpoint
+      const url = import.meta.env.VITE_ROOT_API + '/studentSideData/registerExperiences';
+
+      // Get token from local storage
+      const token = localStorage.getItem('token');
+
+      try {
+        // Make the POST request to register the experiences
+        await axios({
+          method,
+          url,
+          headers: { token },
+          data: { experienceIDs },
+        });
+        this.registrationExists = true;
+
+        // Handle success
+        toast.success('Experiences Registered!', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--create'
+        });
+
+        // Update the final selected experiences list and close the dialog
+        this.registeredExperiences = [...this.selectedExperiences];
+        this.dialog = false;
+      } catch (error) {
+        console.error('Error registering experiences: ', error);
+        toast.error('Error registering experiences. Please contact an administrator.', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete'
+        });
+      }
+    }
   },
 };
 </script>
