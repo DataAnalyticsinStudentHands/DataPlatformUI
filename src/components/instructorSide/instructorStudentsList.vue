@@ -35,7 +35,7 @@
     <v-row class="my-2">
       
       <!-- Items Per Page Field -->
-      <v-col cols="12" md="6">
+      <v-col cols="12" md="4">
         <v-text-field
           v-model="itemsPerPage"
           :min="1"
@@ -47,7 +47,7 @@
       </v-col>
 
       <!-- Pagination -->
-      <v-col cols="12" md="6" class="text-center">
+      <v-col cols="12" md="8" class="text-center">
         <v-pagination
           v-model="currentPage"
           :length="totalPaginationLength"
@@ -73,43 +73,46 @@
         </thead>
 
         <tbody>
-          
-        <tr
-            v-for="student in paginatedStudentData"
-            :key="student.userData._id"
+          <tr
+            v-for="item in paginatedMergedData"
+            :key="item.data._id || item.data.userData._id"
             :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === student.userData._id}"
-            @mouseenter="hoverId = student.userData._id"
+            :class="{ 'hoverRow': hoverId === (item.data._id || item.data.userData._id) }"
+            @mouseenter="hoverId = item.data._id || item.data.userData._id"
             @mouseleave="hoverId = null"
           >
             <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="student.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
+              <input type="checkbox" v-model="selectedStudents" :value="item.data._id || item.data.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ student.userData.email }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ majors(student.studentInformation.enrolledUHInfo.majors) }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors) }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ student.studentInformation.enrolledUHInfo.expectedGraduationYear }}</td>
-          </tr>
-          <tr
-            v-for="user in paginatedUserListRaw"
-            :key="user._id"
-            :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === user._id}"
-            @mouseenter="hoverId = user._id"
-            @mouseleave="hoverId = null">
-            <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="user._id" style="outline: 2px solid #808080; margin-right: 10px;">
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ item.data.userData.firstName + ' ' + item.data.userData.lastName }}
             </td>
-            <td class="text-left">{{ user.firstName }} {{ user.lastName }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td v-else class="text-left">
+              {{ item.data.firstName }} {{ item.data.lastName }}
+            </td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ item.data.userData.email }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ listCheckedOptions(item.data.studentInformation.pronouns) }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ majors(item.data.studentInformation.enrolledUHInfo.majors) }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ minors(item.data.studentInformation.enrolledUHInfo.otherMinors, item.data.studentInformation.enrolledUHInfo.honorsMinors) }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ item.data.studentInformation.enrolledUHInfo.expectedGraduationYear }}
+            </td>
+            <td v-else></td>
           </tr>
         </tbody>
+
       </v-table>
       </div>
 
@@ -332,27 +335,27 @@ activateStudents() {
 
       return filteredData;
     },
-    paginatedStudentData() {
+    mergedFilteredData() {
+      const studentData = this.filteredStudentData.map(student => ({
+        type: 'student',
+        data: student
+      }));
+
+      const userData = this.filteredUserListRaw.map(user => ({
+        type: 'user',
+        data: user
+      }));
+
+      return studentData.concat(userData);
+    },
+    paginatedMergedData() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
-      return this.filteredStudentData.slice(start, end);
-    },
-    paginatedUserListRaw() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = this.currentPage * this.itemsPerPage;
-      return this.filteredUserListRaw.slice(start, end);
-    },
-    totalPagesForStudentData() {
-      return Math.ceil(this.filteredStudentData.length / this.itemsPerPage);
-    },
-    totalPagesForUserListRaw() {
-      return Math.ceil(this.filteredUserListRaw.length / this.itemsPerPage);
+      return this.mergedFilteredData.slice(start, end);
     },
     totalPaginationLength() {
-      console.log('totalPagesForStudentData: ', this.totalPagesForStudentData);
-      console.log('totalPagesForUserListRaw: ', this.totalPagesForUserListRaw);
-      return Math.max(this.totalPagesForStudentData, this.totalPagesForUserListRaw);
-    },  
+      return Math.ceil(this.mergedFilteredData.length / this.itemsPerPage);
+    },
 }
 };
 </script>
