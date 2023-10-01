@@ -16,27 +16,32 @@
     </v-col>
 </v-row>
 <v-row dense>
-    <v-col cols="11" md="10">
-      <p 
+  <v-col cols="11" md="10">
+    <div v-if="goalForm.experiences[0].experienceID"> <!-- Check if the first object's experienceIDFromList property is non-empty -->
+    <p 
       :class="{'error-text': isExperienceIDInvalid}"
       class="font-weight-black text-h8">
         {{getTranslation('Which experience are you filling out this form for:')}}
-      </p>
-      <div>
-        <v-autocomplete
-          v-model="selectedExperience"
-          :label="getTranslation('Select an Experience')"
-          :items="formattedExperiences"
-          item-title="text"
-          item-value="value"
-          clearable
-          @update:modelValue="updateExperienceID"
-          :rules="experienceIDRules"
-          required
-        ></v-autocomplete>
-      </div>
-    </v-col>
+    </p>
+      <v-autocomplete
+        v-model="selectedExperience"
+        :label="getTranslation('Select an Experience')"
+        :items="formattedExperiences"
+        item-title="text"
+        item-value="value"
+        clearable
+        @update:modelValue="updateExperienceID"
+        :rules="experienceIDRules"
+        required
+      ></v-autocomplete>
+    </div>
+    <div v-else style="display: flex; align-items: center; color: #CC0000; font-weight: bold;"> <!-- If experienceIDFromList is empty, show this message -->
+      <p>You have not registered for any experiences! <router-link :to="{ name: 'studentDashboard', params: { action: 'register' } }" class="text-blue-600 underline hover:text-blue-800">Register for Experiences here</router-link>.</p>
+    </div>
+  </v-col>
 </v-row>
+
+<div v-if="goalForm.experiences[0].experienceID">
 <v-row dense style="padding-bottom: 1rem;">
   <v-col cols="11">
     <!-- Container without min-height -->
@@ -659,6 +664,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
     <v-btn @click="submitFormValidation">{{getTranslation('Submit Form')}}</v-btn>
   </v-col>
 </v-row>
+</div>
 </v-container>
 </v-form>
 </template>
@@ -1659,8 +1665,10 @@ export default {
   }, 
   mounted() {
     this.fetchSemester();
-    this.fetchExperiences();
-    this.fetchHasFilledForm();
+    this.fetchExperiences().then(() => {  // fetchExperiences returns a Promise
+      this.fetchHasFilledForm();
+      this.selectExperienceFromRouteParam();
+    });
   },
   methods: {
     async fetchSemester() {
@@ -1676,22 +1684,22 @@ export default {
       }
     },
     async fetchExperiences() {
-    const user = useLoggedInUserStore();
-    let token = user.token;
-    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/currentSemesterExperiences/';
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/currentSemesterExperiences/';
 
-    try {
-      const response = await axios.get(apiURL, { headers: { token } });
-      this.goalForm.experiences = response.data.map(experience => ({
-      experienceID: experience._id,
-      experienceCategory: experience.experienceCategory,
-      experienceName: experience.experienceName
-    }));
-      // this.goalForm.experiences = response.data;
-    } catch (error) {
-      console.log(error);
-    }
-  },
+      try {
+        const response = await axios.get(apiURL, { headers: { token } });
+        this.goalForm.experiences = response.data.map(experience => ({
+        experienceID: experience._id,
+        experienceCategory: experience.experienceCategory,
+        experienceName: experience.experienceName
+      }));
+        // this.goalForm.experiences = response.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
   async fetchHasFilledForm() {
     const user = useLoggedInUserStore();
     let token = user.token;
@@ -1758,6 +1766,17 @@ export default {
     const experience = this.goalForm.experiences.find(exp => `${exp.experienceCategory}: ${exp.experienceName}` === selected);
     if (experience) {
       this.goalForm.experienceID = experience.experienceID;
+    }
+  },
+  selectExperienceFromRouteParam() {
+    const experienceIdFromRoute = this.$route.params.id;
+    if (experienceIdFromRoute) {
+      const experienceToSelect = this.formattedExperiences.find(
+        exp => exp.value === experienceIdFromRoute
+      );
+      if (experienceToSelect) {
+        this.selectedExperience = experienceToSelect;
+      }
     }
   },
   async submitFormValidation() {

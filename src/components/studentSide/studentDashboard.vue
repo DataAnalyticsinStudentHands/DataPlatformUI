@@ -312,11 +312,16 @@ export default {
     this.fetchExperiences();
     this.fetchRegisteredExperiences();
     if (this.$route.params.toastType) {
-    toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-      position: this.$route.params.toastPosition,
-      toastClassName: this.$route.params.toastCSS
-    });
-  }
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    };
+    // Check if the route has a parameter named 'action' with value 'register'
+    if (this.$route.params.action === 'register') {
+      // Open the 'Add / Remove Experiences' dialog
+      this.dialog = true;
+    }
   },
   watch: {
     dialog(newVal) {
