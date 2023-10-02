@@ -1719,6 +1719,7 @@ export default {
   async checkExistingForm() {
       this.isLoadingExpCheck = true;
       const experienceID = this.selectedExperience;
+      console.log('experienceID 1722: ', experienceID.value)
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/hasCompletedGSFforSemesterExperience/';
@@ -1779,7 +1780,7 @@ export default {
     const { valid } = await this.$refs.form.validate()
 
     //need to manually validate aspirations and goals because of multiple v-text-fields for one validation
-    if (valid) {
+    if (valid && !this.isAspirationsInvalid && !this.isGoalsInvalid) {
       this.cleanupFormData();
     } else {
       toast.error(this.getTranslation("Oops! Error(s) detected. Please review and try again."), {
@@ -1941,6 +1942,9 @@ export default {
         "Way to keep refining your vision! Remember, it's the journey that counts.",
       ];
       const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+      
+      // Update pinia store
+      this.updateChecklistStore();
 
       this.$router.push({ 
             name: 'studentDashboard',
@@ -1964,7 +1968,7 @@ export default {
 
     const goalForm = {
       semester: this.goalForm.semester,
-      experienceID: this.selectedExperience,
+      experienceID: this.selectedExperience.value,
       goalForm: {
         communityEngagement: {
           communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
@@ -2021,6 +2025,9 @@ export default {
         ];
         const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
 
+        // Update pinia store
+        this.updateChecklistStore();
+
       
         this.$router.push({ 
               name: 'studentDashboard',
@@ -2035,7 +2042,11 @@ export default {
       .catch((error) => {
         console.log(error);
       });
-  }
+  },
+  async updateChecklistStore() {
+    const user = useLoggedInUserStore();
+    await user.checkFormCompletion();
+  },
 
   },
 }

@@ -64,25 +64,41 @@
                 </div>
             </v-list-item>
         </v-list-group>
-        <v-list-group value="Goal Form" v-if="registeredExperiences.length" class="light-red-bg">
+        <v-list-group value="Goal Form" v-if="registeredExperiences.length" :class="areAllGoalsSet ? 'light-green-bg' : 'light-red-bg'">
           <template v-slot:activator="{ props }">
               <v-list-item v-bind="props">
-                  <span class="text-red-800 font-weight-black">Complete Goal Setting Form<span v-if="registeredExperiences.length > 1">s</span></span>
+                <span :class="areAllGoalsSet ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
+                    {{ areAllGoalsSet ? 'Completed' : 'Complete' }} Goal Setting Form<span v-if="registeredExperiences.length > 1">s</span>
+                </span>
                   <template v-slot:append>
-                      <v-icon class="text-red-800">mdi-alert-circle</v-icon>
+                      <v-icon :class="areAllGoalsSet ? 'text-green-800' : 'text-red-800'">{{ areAllGoalsSet ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
                   </template>
               </v-list-item>
           </template>
-          <!-- Loop through selected experiences and create a dropdown item for each one -->
-          <v-list-item class="light-red-bg" v-for="experience in registeredExperiences" :key="experience._id">
-              <span class="text-sm text-red-800">Complete Goal Setting Form for </span> 
-              <router-link 
-                  :to="{ name: 'goalSettingForm', params: { id: experience._id } }" 
-                  class="text-blue-600 underline hover:text-blue-800">
-                  {{ experience.experienceName }}
-              </router-link>
-          </v-list-item>
-      </v-list-group>
+            <!-- Loop through selected experiences and create a dropdown item for each one -->
+            <v-list-item 
+                v-for="experience in registeredExperiences" 
+                :key="experience._id" 
+                :class="isFormCompleted(experience._id) ? 'light-green-bg' : 'light-red-bg'"
+            >
+                <span :class="isFormCompleted(experience._id) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
+                    {{ isFormCompleted(experience._id) ? 'Completed' : 'Complete' }} Goal Setting Form for 
+                </span> 
+                <!-- Conditionally render router-link or plain text based on completion status -->
+                <router-link 
+                    v-if="!isFormCompleted(experience._id)"
+                    :to="{ name: 'goalSettingForm', params: { id: experience._id } }" 
+                    class="text-blue-600 underline hover:text-blue-800"
+                >
+                    {{ experience.experienceName }}
+                </router-link>
+                <!-- Render plain text if form is completed -->
+                <span v-else class="text-green-800">
+                    {{ experience.experienceName }}
+                </span>
+            </v-list-item>
+       </v-list-group>
+
 
       
       </v-list>
@@ -253,6 +269,8 @@
     </v-row>
   </v-container>
 </main>
+<p>hasCompletedEntryForm: {{ hasCompletedEntryForm }}</p>
+<p>goalSettingFormCompletion: {{ goalSettingFormCompletion }}</p>
 </template>
 
 <script>
@@ -334,7 +352,23 @@ export default {
     hasCompletedEntryForm() {
       const store = useLoggedInUserStore();
       return store.hasCompletedEntryForm;
-    }
+    },
+    goalSettingFormCompletion() {
+      const store = useLoggedInUserStore();
+      return store.goalSettingFormCompletion;
+    },
+    areAllGoalsSet() {
+      if (!this.goalSettingFormCompletion) {
+        // goalSettingFormCompletion is undefined, return false
+        return false;
+      }
+      console.log('this.goalSettingFormCompletion:', this.goalSettingFormCompletion);
+      return this.registeredExperiences.every(experience => {
+        console.log('experience._id:', experience._id);
+        return this.goalSettingFormCompletion[experience._id];
+      });
+    },
+
   },
   methods: {
     async fetchExperiences() {
@@ -413,6 +447,7 @@ export default {
       }
     },
     async registerExperiences() {
+      console.log('Before update:', this.goalSettingFormCompletion, this.registeredExperiences);
       // Depending if a registration already exists, use either POST or PUT
       const method = this.registrationExists ? 'put' : 'post';
       // Create an array of experienceIDs from the selected experiences
@@ -442,11 +477,21 @@ export default {
 
         // Update the final selected experiences list and close the dialog
         this.registeredExperiences = [...this.selectedExperiences];
-        this.dialog = false;
+
+        if (this.registeredExperiences.length === 0) {
+          this.goalSettingFormCompletion = {};
+        }
 
         // Update session stores
         const user = useLoggedInUserStore()
         await user.checkFormCompletion();
+
+        console.log('After update:', this.goalSettingFormCompletion, this.registeredExperiences);
+
+        // Wait for the next DOM update cycle, then close the dialog
+        this.$nextTick(() => {
+          this.dialog = false;
+        });
 
       } catch (error) {
         console.error('Error registering experiences: ', error);
@@ -455,7 +500,10 @@ export default {
           toastClassName: 'Toastify__toast--delete'
         });
       }
-    }
+    },
+    isFormCompleted(experienceId) {
+      return this.goalSettingFormCompletion && this.goalSettingFormCompletion[experienceId];
+    },
   },
 };
 </script>

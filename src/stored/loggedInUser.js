@@ -15,6 +15,7 @@ export const useLoggedInUserStore = defineStore({
       languagePreference: "",
       hasCompletedEntryForm: false,
       hasRegisteredExperiences: false,
+      goalSettingFormCompletion: {},
     }
   },
   getters: { //getting the roles
@@ -109,9 +110,11 @@ export const useLoggedInUserStore = defineStore({
           headers: { token: this.token }
         });
         if (response && response.data) {
+          console.log('response.data: ', response.data)
           this.$patch({
             hasCompletedEntryForm: response.data.hasCompletedEntryForm,
-            hasRegisteredExperiences: response.data.hasRegisteredExperiences
+            hasRegisteredExperiences: response.data.hasRegisteredExperiences,
+            goalSettingFormCompletion: response.data.goalSettingFormCompletion,
           });
         }
       } catch (error) {
