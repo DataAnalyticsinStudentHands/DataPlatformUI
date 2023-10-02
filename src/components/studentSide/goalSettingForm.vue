@@ -17,7 +17,7 @@
 </v-row>
 <v-row dense>
   <v-col cols="11" md="10">
-    <div v-if="goalForm.experiences[0].experienceID"> <!-- Check if the first object's experienceIDFromList property is non-empty -->
+    <div>
     <p 
       :class="{'error-text': isExperienceIDInvalid}"
       class="font-weight-black text-h8">
@@ -35,13 +35,9 @@
         required
       ></v-autocomplete>
     </div>
-    <div v-else style="display: flex; align-items: center; color: #CC0000; font-weight: bold;"> <!-- If experienceIDFromList is empty, show this message -->
-      <p>You have not registered for any experiences! <router-link :to="{ name: 'studentDashboard', params: { action: 'register' } }" class="text-blue-600 underline hover:text-blue-800">Register for Experiences here</router-link>.</p>
-    </div>
   </v-col>
 </v-row>
 
-<div v-if="goalForm.experiences[0].experienceID">
 <v-row dense style="padding-bottom: 1rem;">
   <v-col cols="11">
     <!-- Container without min-height -->
@@ -664,7 +660,6 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
     <v-btn @click="submitFormValidation">{{getTranslation('Submit Form')}}</v-btn>
   </v-col>
 </v-row>
-</div>
 </v-container>
 </v-form>
 </template>

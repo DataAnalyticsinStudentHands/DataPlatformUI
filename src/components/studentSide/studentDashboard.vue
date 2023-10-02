@@ -418,8 +418,6 @@ export default {
       // Create an array of experienceIDs from the selected experiences
       const experienceIDs = this.selectedExperiences.map(exp => exp._id);
 
-      console.log('experienceIDs: ', experienceIDs)
-
       // Define the URL for the API endpoint
       const url = import.meta.env.VITE_ROOT_API + '/studentSideData/registerExperiences';
 
@@ -445,6 +443,11 @@ export default {
         // Update the final selected experiences list and close the dialog
         this.registeredExperiences = [...this.selectedExperiences];
         this.dialog = false;
+
+        // Update session stores
+        const user = useLoggedInUserStore()
+        await user.checkFormCompletion();
+
       } catch (error) {
         console.error('Error registering experiences: ', error);
         toast.error('Error registering experiences. Please contact an administrator.', {

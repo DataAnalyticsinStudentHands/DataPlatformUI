@@ -53,7 +53,7 @@
                   Student Entry Form
                 </router-link>
               </li>
-              <li v-if="user.hasCompletedEntryForm">
+              <li v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences">
                 <router-link to="/goalSettingForm">
                   <span style="position: relative; top: 6px" class="material-icons">description</span>
                   Goal Setting Form

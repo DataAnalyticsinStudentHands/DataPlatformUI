@@ -14,6 +14,7 @@ export const useLoggedInUserStore = defineStore({
       firstTimeLoginTF: false,
       languagePreference: "",
       hasCompletedEntryForm: false,
+      hasRegisteredExperiences: false,
     }
   },
   getters: { //getting the roles
@@ -109,7 +110,8 @@ export const useLoggedInUserStore = defineStore({
         });
         if (response && response.data) {
           this.$patch({
-            hasCompletedEntryForm: response.data.hasCompletedEntryForm
+            hasCompletedEntryForm: response.data.hasCompletedEntryForm,
+            hasRegisteredExperiences: response.data.hasRegisteredExperiences
           });
         }
       } catch (error) {
