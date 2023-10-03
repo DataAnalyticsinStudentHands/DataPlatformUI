@@ -75,25 +75,27 @@
         <tbody>
           <tr
             v-for="item in paginatedMergedData"
-            :key="item.data._id || item.data.userData._id"
+            :key="item.data._id"
             :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === (item.data._id || item.data.userData._id) }"
-            @mouseenter="hoverId = item.data._id || item.data.userData._id"
+            :class="{ 'hoverRow': hoverId === (item.data._id ) }"
+            @mouseenter="hoverId = item.data._id"
             @mouseleave="hoverId = null"
           >
             <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="item.data._id || item.data.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
+              <input type="checkbox" v-model="selectedStudents" :value="item.data._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ item.data.userData.firstName + ' ' + item.data.userData.lastName }}
             </td>
             <td v-else class="text-left">
-              {{ item.data.firstName }} {{ item.data.lastName }}
+              {{ item.data.userData.firstName }} {{ item.data.userData.lastName }}
             </td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ item.data.userData.email }}
             </td>
-            <td v-else></td>
+            <td v-else class="text-left">
+              {{ item.data.userData.email }}
+            </td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ listCheckedOptions(item.data.studentInformation.pronouns) }}
             </td>
@@ -273,35 +275,86 @@ activateStudents() {
         .get(apiURL, { headers: { token } })
         .then((resp) => {
           this.studentListRaw = resp.data.data;
+          console.log('this.studentListRaw: ', this.studentListRaw)
         })
         .catch((error) => {
           console.log(error);
         });
     },
     fetchIncompletedStudentData() {
-  const user = useLoggedInUserStore();
-  let token = user.token;
-  let apiURL =
-    import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
-  axios
-    .get(apiURL, { headers: { token } })
-    .then((resp) => {
-      // Populate userListRaw with complete user data
-      this.userListRaw = resp.data.userData;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-},
+      console.log('fetchIncompleteStudentData called')
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let apiURL =
+        import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
+      axios
+        .get(apiURL, { headers: { token } })
+        .then((resp) => {
+          // Populate userListRaw with complete user data
+          this.userListRaw = resp.data.userData;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+        console.log('this.userListRaw: ', this.userListRaw)
+    },
     updateSelectedStatus(student) {
       if (student.checked && student.userData.userStatus === "Active") {
         student.checked = false;
+      }
+    },
+    normalizeData(data, type) {
+      if (type === 'student') {
+        return {
+          _id: data._id,
+          userID: data.userData._id,
+          studentInformation: {
+            enrolledUHInfo: {
+              uhEmail: data.studentInformation.enrolledUHInfo.uhEmail,
+              majors: data.studentInformation.enrolledUHInfo.majors,
+              honorsMinors: data.studentInformation.enrolledUHInfo.honorsMinors,
+              otherMinors: data.studentInformation.enrolledUHInfo.otherMinors
+            },
+            pronouns: data.studentInformation.pronouns
+          },
+          userData: {
+            _id: data.userData._id,
+            firstName: data.userData.firstName,
+            lastName: data.userData.lastName,
+            email: data.userData.email,
+            userStatus: data.userData.userStatus
+          }
+        };
+      } else if (type === 'user') {
+        return {
+          _id: data._id,
+          userID: data._id,
+          studentInformation: {
+            enrolledUHInfo: {
+              uhEmail: "",
+              majors: null,
+              honorsMinors: null,
+              otherMinors: null
+            },
+            pronouns: null
+          },
+          userData: {
+            _id: data.userData._id,
+            firstName: data.userData.firstName,
+            lastName: data.userData.lastName,
+            email: data.userData.email,
+            userStatus: data.userData.userStatus
+          }
+        };
       }
     },
   },
   computed: {
     filteredStudentData() {
       const searchStudent = this.searchStudent.toLowerCase();
+      if (!searchStudent) {
+        return this.studentListRaw;
+      }
       let filteredData = this.studentListRaw.filter((student) => {
         const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
         const email = student.userData.email.toLowerCase()|| "";
@@ -319,10 +372,18 @@ activateStudents() {
     },
     filteredUserListRaw() {
       const searchStudent = this.searchStudent.toLowerCase();
+      if (!searchStudent) {
+        return this.userListRaw;
+      }
+      console.log('this.searchStudent: ', this.searchStudent);
+
+      console.log('filteredUserListRaw - this.userListRaw: ', this.userListRaw);
 
       let filteredData = this.userListRaw.filter(user => {
-        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-        const email = user.email?.toLowerCase() || "";  // some users might not have emails
+        const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
+        console.log('fullName: ', fullName);
+        const email = user.userData.email?.toLowerCase() || "";  // some users might not have emails
+        console.log('email: ', email);
         // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
         return fullName.includes(searchStudent) || email.includes(searchStudent);
       });
@@ -333,24 +394,34 @@ activateStudents() {
         filteredData = filteredData.filter(user => user.userStatus === 'Active');
       }
 
+      console.log('filteredUserListRaw - filteredData: ', filteredData);
       return filteredData;
     },
+
     mergedFilteredData() {
       const studentData = this.filteredStudentData.map(student => ({
         type: 'student',
-        data: student
+        data: this.normalizeData(student, 'student')
       }));
+      console.log('studentData: ', studentData);
+
+      console.log('this.filteredUserListRaw: ', this.filteredUserListRaw);
 
       const userData = this.filteredUserListRaw.map(user => ({
         type: 'user',
-        data: user
+        data: this.normalizeData(user, 'user')
       }));
+      console.log('userData: ', userData);
 
+      const mergedData = studentData.concat(userData);
+      console.log('mergedFilteredData:', mergedData);
       return studentData.concat(userData);
     },
     paginatedMergedData() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
+      const paginatedData = this.mergedFilteredData.slice(start, end);
+      console.log('paginatedMergedData:', paginatedData);
       return this.mergedFilteredData.slice(start, end);
     },
     totalPaginationLength() {
