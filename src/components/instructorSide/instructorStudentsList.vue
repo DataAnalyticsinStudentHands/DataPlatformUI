@@ -3,20 +3,23 @@
   <main class="">
     <br>
     <p class="font-weight-black text-h5" style="text-align: center;">{{ showInactive ? 'Inactive Students' : 'Active Students' }}</p>
-    <center>
-      <br>
-      <v-btn style="text-align:center" @click="toggleShowInactive">
+    <v-row justify="center" class="pt-5">
+    <v-col cols="12" class="text-center">
+      <v-btn @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Students' : 'Show Inactive Students' }}
       </v-btn>
-      <br><br>
-      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateStudents" v-if="selectedStudents.length > 0">
+    </v-col>
+  </v-row>
+  <v-row justify="center">
+    <v-col cols="12" class="text-center">
+      <v-btn style="margin-right:2rem;" @click="deactivateStudents" v-if="selectedStudents.length > 0">
         Deactivate
       </v-btn>
-      <v-btn style="text-align:center" @click="activateStudents" v-if="selectedStudents.length > 0">
+      <v-btn @click="activateStudents" v-if="selectedStudents.length > 0">
         Activate
       </v-btn>
-      <br><br>
-    </center>
+    </v-col>
+  </v-row>
  
 
     <!-- First Row: Search Field -->
@@ -152,11 +155,13 @@ export default {
         // reset to the first page on a new search
         this.currentPage = 1;
       }
-    }
+    },
   },
   methods: {
     toggleShowInactive() {
+      console.log('showInactiveCalled')
       this.showInactive = !this.showInactive;
+      console.log('showInactive: ', this.showInactive)
     },
 
     deactivateStudents() {
@@ -275,7 +280,7 @@ activateStudents() {
         .get(apiURL, { headers: { token } })
         .then((resp) => {
           this.studentListRaw = resp.data.data;
-          console.log('this.studentListRaw: ', this.studentListRaw)
+          console.log('fetchStudentData - studentListRaw: ', this.studentListRaw);
         })
         .catch((error) => {
           console.log(error);
@@ -292,6 +297,7 @@ activateStudents() {
         .then((resp) => {
           // Populate userListRaw with complete user data
           this.userListRaw = resp.data.userData;
+          console.log('fetchIncompletedStudentData - userListRaw: ', this.userListRaw);
         })
         .catch((error) => {
           console.log(error);
@@ -352,58 +358,77 @@ activateStudents() {
   computed: {
     filteredStudentData() {
       const searchStudent = this.searchStudent.toLowerCase();
-      if (!searchStudent) {
-        return this.studentListRaw;
+
+      let filteredData = this.studentListRaw;
+
+      // If there is a search query, filter the data based on the search query
+      if (searchStudent) {
+        console.log('this.searchStudent: ', this.searchStudent);
+        console.log('filteredStudentListRaw - this.studentListRaw: ', this.studentListRaw);
+
+        filteredData = this.studentListRaw.filter(user => {
+          const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
+          console.log('fullName: ', fullName);
+          const email = user.userData.email?.toLowerCase() || "";
+          console.log('email: ', email);
+          return fullName.includes(searchStudent) || email.includes(searchStudent);
+        });
       }
-      let filteredData = this.studentListRaw.filter((student) => {
-        const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
-        const email = student.userData.email.toLowerCase()|| "";
-        const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase()|| "";
-        const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase()|| "";
-        const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear?.toLowerCase() || ""; // Use optional chaining to handle undefined values
-        return fullName.includes(searchStudent) || email.includes(searchStudent) || majors.includes(searchStudent) || minors.includes(searchStudent) || graduationDate.includes(searchStudent);
-      });
+
+      console.log('filteredStudentData - filteredData: ', filteredData);
+
+      // Regardless of whether there is a search query, filter the data based on Active/Inactive status
       if (this.showInactive) {
-        filteredData = filteredData.filter((student) => student.userData.userStatus === 'Inactive');
+        console.log('showInactive called')
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Inactive');
       } else {
-        filteredData = filteredData.filter((student) => student.userData.userStatus === 'Active');
+        console.log('showInactive not called')
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Active');
       }
+
+      console.log('filteredStudentListRaw - filteredData: ', filteredData);
       return filteredData;
     },
     filteredUserListRaw() {
       const searchStudent = this.searchStudent.toLowerCase();
-      if (!searchStudent) {
-        return this.userListRaw;
+
+      let filteredData = this.userListRaw;
+
+      // If there is a search query, filter the data based on the search query
+      if (searchStudent) {
+        console.log('this.searchStudent: ', this.searchStudent);
+        console.log('filteredUserListRaw - this.userListRaw: ', this.userListRaw);
+
+        filteredData = this.userListRaw.filter(user => {
+          const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
+          console.log('fullName: ', fullName);
+          const email = user.userData.email?.toLowerCase() || "";  // some users might not have emails
+          console.log('email: ', email);
+          // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
+          return fullName.includes(searchStudent) || email.includes(searchStudent);
+        });
       }
-      console.log('this.searchStudent: ', this.searchStudent);
 
-      console.log('filteredUserListRaw - this.userListRaw: ', this.userListRaw);
-
-      let filteredData = this.userListRaw.filter(user => {
-        const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
-        console.log('fullName: ', fullName);
-        const email = user.userData.email?.toLowerCase() || "";  // some users might not have emails
-        console.log('email: ', email);
-        // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
-        return fullName.includes(searchStudent) || email.includes(searchStudent);
-      });
-
+      // Regardless of whether there is a search query, filter the data based on Active/Inactive status
       if (this.showInactive) {
-        filteredData = filteredData.filter(user => user.userStatus === 'Inactive');
+        console.log('showInactive called')
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Inactive');
       } else {
-        filteredData = filteredData.filter(user => user.userStatus === 'Active');
+        console.log('showInactive not called')
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Active');
       }
 
       console.log('filteredUserListRaw - filteredData: ', filteredData);
       return filteredData;
     },
 
+
     mergedFilteredData() {
+      console.log('mergedFilteredData called')
       const studentData = this.filteredStudentData.map(student => ({
         type: 'student',
         data: this.normalizeData(student, 'student')
       }));
-      console.log('studentData: ', studentData);
 
       console.log('this.filteredUserListRaw: ', this.filteredUserListRaw);
 
@@ -413,15 +438,11 @@ activateStudents() {
       }));
       console.log('userData: ', userData);
 
-      const mergedData = studentData.concat(userData);
-      console.log('mergedFilteredData:', mergedData);
       return studentData.concat(userData);
     },
     paginatedMergedData() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
-      const paginatedData = this.mergedFilteredData.slice(start, end);
-      console.log('paginatedMergedData:', paginatedData);
       return this.mergedFilteredData.slice(start, end);
     },
     totalPaginationLength() {
