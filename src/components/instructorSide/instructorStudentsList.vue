@@ -78,14 +78,19 @@
         <tbody>
           <tr
             v-for="item in paginatedMergedData"
-            :key="item.data._id"
+            :key="item.data.userData._id"
             :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === (item.data._id ) }"
-            @mouseenter="hoverId = item.data._id"
+            :class="{ 'hoverRow': hoverId === (item.data.userData._id ) }"
+            @mouseenter="hoverId = item.data.userData._id"
             @mouseleave="hoverId = null"
           >
             <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="item.data._id" style="outline: 2px solid #808080; margin-right: 10px;">
+              <input
+                type="checkbox"
+                v-model="selectedStudents"
+                :value="item.type === 'student' ? item.data.userData._id : item.data._id"
+                style="outline: 2px solid #808080; margin-right: 10px;"
+              >
             </td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ item.data.userData.firstName + ' ' + item.data.userData.lastName }}
@@ -120,7 +125,7 @@
 
       </v-table>
       </div>
-
+<p>selectedStudents: {{ selectedStudents }}</p>
   </main>
 </template>
 
@@ -159,54 +164,56 @@ export default {
   },
   methods: {
     toggleShowInactive() {
-      console.log('showInactiveCalled')
       this.showInactive = !this.showInactive;
-      console.log('showInactive: ', this.showInactive)
+      this.currentPage = 1;
     },
 
     deactivateStudents() {
-  const user = useLoggedInUserStore();
-  let token = user.token;
-  const updateStatus = { userStatus: 'Inactive' };
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { userStatus: 'Inactive' };
 
-  const promises = this.selectedStudents.map((student) => { 
-    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
-    return axios.put(apiURL, updateStatus, { headers: { token } });
-  });
+      console.log('deactivateStudents - this.selectedStudents: ', this.selectedStudents);
 
-  Promise.all(promises)
-    .then(() => {
-      const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' deactivated!';
-      // Update user status in studentListRaw and userListRaw
-      const updateStatusInList = (list, newStatus) => {
-        // Use Array.from to create a new array
-        const updatedList = Array.from(list);
-        updatedList.forEach(student => {
-          if (this.selectedStudents.includes(student._id || student.userData._id)) {
-            student.userStatus = newStatus;
-          }
-        });
-        return updatedList;
-      };
-
-      this.studentListRaw = updateStatusInList(this.studentListRaw, 'Inactive');
-      this.userListRaw = updateStatusInList(this.userListRaw, 'Inactive');
-
-      this.selectedStudents = [];
-
-      // Fetch data again to ensure synchronization
-      this.fetchStudentData();
-      this.fetchIncompletedStudentData();
-
-      toast.error(message, {
-        position: 'top-right',
-        toastClassName: 'Toastify__toast--delete'
+      const promises = this.selectedStudents.map((student) => { 
+        console.log('deactivateStudents - student: ', student);
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
+        return axios.put(apiURL, updateStatus, { headers: { token } });
       });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-},
+
+      Promise.all(promises)
+        .then(() => {
+          const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' deactivated!';
+          // Update user status in studentListRaw and userListRaw
+          const updateStatusInList = (list, newStatus) => {
+            // Use Array.from to create a new array
+            const updatedList = Array.from(list);
+            updatedList.forEach(student => {
+              if (this.selectedStudents.includes(student.userData._id)) {
+                student.userData.userStatus = newStatus;
+              }
+            });
+            return updatedList;
+          };
+
+          this.studentListRaw = updateStatusInList(this.studentListRaw, 'Inactive');
+          this.userListRaw = updateStatusInList(this.userListRaw, 'Inactive');
+
+          this.selectedStudents = [];
+
+          // Fetch data again to ensure synchronization
+          this.fetchStudentData();
+          this.fetchIncompletedStudentData();
+
+          toast.error(message, {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
 activateStudents() {
   const user = useLoggedInUserStore();
   let token = user.token;
@@ -225,8 +232,8 @@ activateStudents() {
        const updateStatusInList = (list, newStatus) => {
         const updatedList = Array.from(list);
         updatedList.forEach(student => {
-          if (this.selectedStudents.includes(student._id || student.userData._id)) {
-            student.userStatus = newStatus;
+          if (this.selectedStudents.includes(student.userData._id)) {
+            student.userData.userStatus = newStatus;
           }
         });
         return updatedList;
@@ -280,14 +287,12 @@ activateStudents() {
         .get(apiURL, { headers: { token } })
         .then((resp) => {
           this.studentListRaw = resp.data.data;
-          console.log('fetchStudentData - studentListRaw: ', this.studentListRaw);
         })
         .catch((error) => {
           console.log(error);
         });
     },
     fetchIncompletedStudentData() {
-      console.log('fetchIncompleteStudentData called')
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL =
@@ -297,12 +302,10 @@ activateStudents() {
         .then((resp) => {
           // Populate userListRaw with complete user data
           this.userListRaw = resp.data.userData;
-          console.log('fetchIncompletedStudentData - userListRaw: ', this.userListRaw);
         })
         .catch((error) => {
           console.log(error);
         });
-        console.log('this.userListRaw: ', this.userListRaw)
     },
     updateSelectedStatus(student) {
       if (student.checked && student.userData.userStatus === "Active") {
@@ -363,30 +366,20 @@ activateStudents() {
 
       // If there is a search query, filter the data based on the search query
       if (searchStudent) {
-        console.log('this.searchStudent: ', this.searchStudent);
-        console.log('filteredStudentListRaw - this.studentListRaw: ', this.studentListRaw);
 
         filteredData = this.studentListRaw.filter(user => {
           const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
-          console.log('fullName: ', fullName);
           const email = user.userData.email?.toLowerCase() || "";
-          console.log('email: ', email);
           return fullName.includes(searchStudent) || email.includes(searchStudent);
         });
       }
 
-      console.log('filteredStudentData - filteredData: ', filteredData);
-
       // Regardless of whether there is a search query, filter the data based on Active/Inactive status
       if (this.showInactive) {
-        console.log('showInactive called')
         filteredData = filteredData.filter(user => user.userData.userStatus === 'Inactive');
       } else {
-        console.log('showInactive not called')
         filteredData = filteredData.filter(user => user.userData.userStatus === 'Active');
       }
-
-      console.log('filteredStudentListRaw - filteredData: ', filteredData);
       return filteredData;
     },
     filteredUserListRaw() {
@@ -396,14 +389,10 @@ activateStudents() {
 
       // If there is a search query, filter the data based on the search query
       if (searchStudent) {
-        console.log('this.searchStudent: ', this.searchStudent);
-        console.log('filteredUserListRaw - this.userListRaw: ', this.userListRaw);
 
         filteredData = this.userListRaw.filter(user => {
           const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
-          console.log('fullName: ', fullName);
           const email = user.userData.email?.toLowerCase() || "";  // some users might not have emails
-          console.log('email: ', email);
           // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
           return fullName.includes(searchStudent) || email.includes(searchStudent);
         });
@@ -411,32 +400,24 @@ activateStudents() {
 
       // Regardless of whether there is a search query, filter the data based on Active/Inactive status
       if (this.showInactive) {
-        console.log('showInactive called')
         filteredData = filteredData.filter(user => user.userData.userStatus === 'Inactive');
       } else {
-        console.log('showInactive not called')
         filteredData = filteredData.filter(user => user.userData.userStatus === 'Active');
       }
-
-      console.log('filteredUserListRaw - filteredData: ', filteredData);
       return filteredData;
     },
 
 
     mergedFilteredData() {
-      console.log('mergedFilteredData called')
       const studentData = this.filteredStudentData.map(student => ({
         type: 'student',
         data: this.normalizeData(student, 'student')
       }));
 
-      console.log('this.filteredUserListRaw: ', this.filteredUserListRaw);
-
       const userData = this.filteredUserListRaw.map(user => ({
         type: 'user',
         data: this.normalizeData(user, 'user')
       }));
-      console.log('userData: ', userData);
 
       return studentData.concat(userData);
     },
