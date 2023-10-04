@@ -77,12 +77,12 @@
 
         <tbody>
           <tr
-            v-for="item in paginatedMergedData"
-            :key="item.data.userData._id"
-            :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === (item.data.userData._id ) }"
-            @mouseenter="hoverId = item.data.userData._id"
-            @mouseleave="hoverId = null"
+              v-for="item in paginatedMergedData"
+              :key="item.type === 'student' ? item.data.userData._id : item.data._id"
+              :style="{ cursor: 'pointer' }"
+              :class="{ 'hoverRow': hoverId === (item.type === 'student' ? item.data.userData._id : item.data._id) }"
+              @mouseenter="hoverId = item.type === 'student' ? item.data.userData._id : item.data._id"
+              @mouseleave="hoverId = null"
           >
             <td class="text-left">
               <input

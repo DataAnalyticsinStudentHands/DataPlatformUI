@@ -269,8 +269,6 @@
     </v-row>
   </v-container>
 </main>
-<p>hasCompletedEntryForm: {{ hasCompletedEntryForm }}</p>
-<p>goalSettingFormCompletion: {{ goalSettingFormCompletion }}</p>
 </template>
 
 <script>

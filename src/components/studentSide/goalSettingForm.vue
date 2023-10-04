@@ -37,6 +37,7 @@
     </div>
   </v-col>
 </v-row>
+<p>selectedExperience: {{ selectedExperience }}</p>
 
 <v-row dense style="padding-bottom: 1rem;">
   <v-col cols="11">
@@ -1720,6 +1721,7 @@ export default {
       this.isLoadingExpCheck = true;
       const experienceID = this.selectedExperience;
       console.log('experienceID 1722: ', experienceID.value)
+      console.log('experienceID 1722: ', experienceID)
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/hasCompletedGSFforSemesterExperience/';
@@ -1765,15 +1767,10 @@ export default {
     }
   },
   selectExperienceFromRouteParam() {
-    const experienceIdFromRoute = this.$route.params.id;
-    if (experienceIdFromRoute) {
-      const experienceToSelect = this.formattedExperiences.find(
-        exp => exp.value === experienceIdFromRoute
-      );
-      if (experienceToSelect) {
-        this.selectedExperience = experienceToSelect;
+      const experienceIdFromRoute = this.$route.params.id;
+      if (experienceIdFromRoute) {
+        this.selectedExperience = experienceIdFromRoute;
       }
-    }
   },
   async submitFormValidation() {
     this.formSubmitted = true;
@@ -1914,8 +1911,10 @@ export default {
     if (this.foundDocumentId) {
         this.handleUpdateForm();
     } else {
+        console.log('submit: ', this.selectedExperience.value)
         // If previously filled document wasn't found, create new document
         this.handleSubmitForm();
+        
     }
   },
   async handleUpdateForm() {    
@@ -1968,7 +1967,7 @@ export default {
 
     const goalForm = {
       semester: this.goalForm.semester,
-      experienceID: this.selectedExperience.value,
+      experienceID: this.selectedExperience,
       goalForm: {
         communityEngagement: {
           communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
