@@ -6,7 +6,11 @@
   @submit.prevent>
   <v-container  style="width: 90%; margin: 0 auto;">
     <div>
+
+      
     <p class="font-weight-black text-h5 text--primary">{{getTranslation('Goal Setting Form')}}</p>
+
+
     <p class="text-subtitle-1">{{getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
 </div>
 <v-row dense>
@@ -37,7 +41,7 @@
     </div>
   </v-col>
 </v-row>
-<p>selectedExperience: {{ selectedExperience }}</p>
+
 
 <v-row dense style="padding-bottom: 1rem;">
   <v-col cols="11">

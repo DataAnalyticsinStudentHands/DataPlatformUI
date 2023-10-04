@@ -160,7 +160,8 @@
 
               <v-tooltip
                   v-model="shouldShowTooltip"
-                  location="right"
+                  location="bottom"
+                  class="custom-tooltip"
               >
                   <template v-slot:activator="{ props }">
                       <v-btn
@@ -536,4 +537,14 @@ export default {
 }
 
 
+</style>
+
+
+<style scoped>
+.custom-tooltip {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    font-style: italic;
+}
 </style>

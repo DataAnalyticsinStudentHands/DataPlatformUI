@@ -22,7 +22,7 @@
       
       <v-row>
         <v-col :cols="12">
-          <v-card @click="dialog = true" class="mx-auto" color="red-lighten-5" max-width="400">
+          <v-card @click="dialog = true" class="mx-auto" max-width="400">
             <v-card-title color="red darken-2">
               Goal Form Completion Tracker
             </v-card-title>

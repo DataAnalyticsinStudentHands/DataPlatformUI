@@ -125,7 +125,7 @@
 
       </v-table>
       </div>
-<p>selectedStudents: {{ selectedStudents }}</p>
+
   </main>
 </template>
 

@@ -141,7 +141,7 @@
           "organizationID": "id_organization",
           "userID": "id_user",
           "semester": "semester",
-          "experienceName": "experience",
+          "experienceID": "experience",
           "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
           "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
           "goalForm.communityEngagement.communityEngagementExperiences.2.checked": "ce_faith",
@@ -578,7 +578,7 @@
           "organizationID",
           "userID",
           "semester",
-          "experienceName",
+          "experienceID",
       ];
   
       // For communityEngagementExperiences
