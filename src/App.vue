@@ -47,13 +47,13 @@
                   Student Dashboard
                 </router-link>
               </li>
-              <li>
+              <li v-if="!user.hasCompletedEntryForm">
                 <router-link to="/studentEntryForm">
                   <span style="position: relative; top: 6px" class="material-icons">description</span>
                   Student Entry Form
                 </router-link>
               </li>
-              <li>
+              <li v-if="user.hasCompletedEntryForm">
                 <router-link to="/goalSettingForm">
                   <span style="position: relative; top: 6px" class="material-icons">description</span>
                   Goal Setting Form
@@ -125,7 +125,7 @@
             <li>
               <router-link to="/login">
               <span style="position: relative; top: 6px" class="material-icons">login</span>
-              <button @click="handleLogout">Login</button>
+              <button>Login</button>
             </router-link>
             </li>
           </div>
@@ -187,10 +187,6 @@ export default {
       .then((resp) => {
         this.organizationName = resp.data;
       });
-    // trying to use the endpoint to switch display of Student Entry Form based on whether the submitted is true or false
-    let token = user.token;
-    let userGivenID = user.userId;
-    let url = import.meta.env.VITE_ROOT_API + `/studentSideData/forms/submitted`;
   },
 };
 </script>

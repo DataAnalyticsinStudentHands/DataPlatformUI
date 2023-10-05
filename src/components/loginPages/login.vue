@@ -4,7 +4,7 @@
     <div class="px-10 py-20">
       <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
         <form
-          @submit.prevent="store.login(email, password)"
+          @submit.prevent="login"
           class="space-y-4 md:space-y-6"
           action="/login"
           method="POST"
@@ -112,5 +112,17 @@ export default {
       store,
     }
   },
+  methods: {
+    async login() {
+      try {
+        // Attempt to login
+        await this.store.login(this.email, this.password);
+        // After successful login, check if the user has completed forms
+        await this.store.checkFormCompletion();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 };
 </script>

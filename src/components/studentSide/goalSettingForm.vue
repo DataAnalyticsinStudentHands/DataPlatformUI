@@ -4,15 +4,15 @@
   <v-form 
   ref="form"
   @submit.prevent>
-  <v-container>
+  <v-container  style="width: 90%; margin: 0 auto;">
     <div>
-    <p class="font-weight-black text-h5 text--primary">Goal Setting Form</p>
-    <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.</p>
+    <p class="font-weight-black text-h5 text--primary">{{getTranslation('Goal Setting Form')}}</p>
+    <p class="text-subtitle-1">{{getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
 </div>
 <v-row dense>
     <v-col cols="12" md="5">
-      <p class="font-weight-black text-h8">Current Semester:</p>
-      <v-text-field v-model="goalForm.semester" label="Semester" readonly></v-text-field>
+      <p class="font-weight-black text-h8">{{getTranslation('Current Semester:')}}</p>
+      <v-text-field v-model="goalForm.semester" :label="getTranslation('Semester')" readonly></v-text-field>
     </v-col>
 </v-row>
 <v-row dense>
@@ -20,12 +20,12 @@
       <p 
       :class="{'error-text': isExperienceIDInvalid}"
       class="font-weight-black text-h8">
-        Which experience are you filling out this form for:
+        {{getTranslation('Which experience are you filling out this form for:')}}
       </p>
       <div>
         <v-autocomplete
           v-model="selectedExperience"
-          label="Select an Experience"
+          :label="getTranslation('Select an Experience')"
           :items="formattedExperiences"
           item-title="text"
           item-value="value"
@@ -51,15 +51,13 @@
       <!-- Message when experienceFoundWarning is true -->
       <div v-if="experienceFoundWarning" style="display: flex; align-items: center; color: #4A90E2; font-weight: bold;">
         <v-icon left small style="margin-right: 0.5rem; color: #4A90E2;">mdi-alert-circle</v-icon>
-        Hi there! You have already filled out a Goal Setting Form for this experience. 
-        Please note that submitting another form for the same experience will overwrite your previous responses.
+        {{getTranslation('Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.')}}
       </div>
 
       <!-- Message when experienceFoundWarning is false -->
       <div v-if="experienceFoundWarning === false" style="display: flex; align-items: center; color: #4CAF50; font-weight: bold;">
         <v-icon left small style="margin-right: 0.5rem; color: #4CAF50;">mdi-check-circle</v-icon>
-        You haven't filled out a Goal Setting form for this experience. 
-        Complete this form to start your progress!
+        {{getTranslation("You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!")}}
       </div>
     </div>
   </v-col>
@@ -77,7 +75,7 @@
   <p 
   :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
   class="font-weight-black text-h8">
-    What kind of community engagement experiences, if any, have you had? Check all that apply.
+    {{getTranslation('What kind of community engagement experiences, if any, have you had? Check all that apply.')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -93,7 +91,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="engagementExperience.checked" 
-        :label="engagementExperience.label"
+        :label="getTranslation(engagementExperience.label)"
         :rules="communityEngagementExperiencesRules"
         :indeterminate="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
     >
@@ -104,9 +102,9 @@
       <span 
       v-if="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked && hoveredCheckboxID1 === engagementExperience.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
+        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
       >
-          De-select "None of the above" to select this.
+          {{getTranslation("De-select 'None of the above' to select this.")}}
       </span>
     </transition>
 
@@ -116,7 +114,7 @@
         <v-col cols="12">
           <v-text-field
             ref="otherExperienceField"
-            placeholder="Please Specify" 
+            :placeholder="getTranslation('Please specify')" 
             :class="{'error-text': isOtherEngagementExperienceInvalid}"
             v-model="goalForm.communityEngagement.communityEngagementExperiencesOther"
             :rules="communityEngagementExperiencesOtherRules"
@@ -127,14 +125,14 @@
   </transition>
   </div>
 
-  <div v-if="isCommunityEngagementExperiencesInvalid" class="styled-error-text">Information is required</div>
+  <div v-if="isCommunityEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
-  class="font-weight-black text-h8">From your previous community engagement experiences, which of the following activities have you engaged in?</p>
+  class="font-weight-black text-h8">{{getTranslation('From your previous community engagement experiences, which of the following activities have you engaged in?')}}</p>
   <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id"
   class="relative"
   @mouseover="hoveredCheckboxID2 = previousExperience.id" 
@@ -143,7 +141,7 @@
       :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
-        :label="previousExperience.label" 
+        :label="getTranslation(previousExperience.label)" 
         v-model="previousExperience.checked"
         :rules="previousEngagementExperiencesRules"
         :indeterminate="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked"
@@ -153,11 +151,11 @@
     <!-- Tooltip -->
     <transition name="slide-y-transition">
       <span 
-      v-if="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked && hoveredCheckboxID2 === previousExperience.id"
+        v-if="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked && hoveredCheckboxID2 === previousExperience.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
+        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
       >
-          De-select "None of the above" to select this.
+        {{getTranslation("De-select 'None of the above' to select this.")}}
       </span>
     </transition>
       <transition name="slide-y-transition">
@@ -166,7 +164,7 @@
       <v-text-field 
       ref="previousEngagementExperiencesOtherRef"
       :class="{'error-text': isPreviousEngagementExperiencesOtherInvalid}"
-        placeholder="Please Specify" 
+        :placeholder="getTranslation('Please specify')" 
         v-model="goalForm.communityEngagement.previousEngagementExperiencesOther"
         :rules="previousEngagementExperiencesOtherRules"
       >
@@ -175,14 +173,14 @@
     </v-row>
     </transition>
     </div>
-    <div v-if="isPreviousEngagementExperiencesInvalid" class="styled-error-text">Information is required</div>
+    <div v-if="isPreviousEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isEngagementActivitiesToolsInvalid}"
   class="font-weight-black text-h8">
-    What, if any, tools have you used for community engagement activities?
+    {{getTranslation('What, if any, tools have you used for community engagement activities?')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -195,7 +193,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="activitiesTool.checked" 
-        :label="activitiesTool.label"
+        :label="getTranslation(activitiesTool.label)"
         :rules="engagementActivitiesToolsRules"
         :indeterminate="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked"
     >
@@ -205,9 +203,9 @@
       <span 
       v-if="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked && hoveredCheckboxID3 === activitiesTool.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
+        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
       >
-          De-select "None of the above" to select this.
+          {{getTranslation("De-select 'None of the above' to select this.")}}
       </span>
     </transition>
 
@@ -218,7 +216,7 @@
           <v-text-field 
           ref="engagementActivitiesToolOtherRef"
           :class="{'error-text': isEngagementActivitiesToolOtherInvalid}"
-            placeholder="Please Specify" 
+            :placeholder="getTranslation('Please specify')" 
             v-model="goalForm.communityEngagement.engagementActivitiesToolOther" 
             :rules="engagementActivitiesToolOtherRules"
           >
@@ -227,7 +225,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isEngagementActivitiesToolsInvalid" class="styled-error-text">Information is required</div>
+  <div v-if="isEngagementActivitiesToolsInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -235,7 +233,7 @@
   <p 
   :class="{'error-text': isCurrentResearchExperienceInvalid}"
   class="font-weight-black text-h8">
-    What kind of research experiences, if any, have you had? Check all that apply.
+    {{getTranslation('What kind of research experiences, if any, have you had? Check all that apply.')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -248,7 +246,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="currentExperience.checked" 
-        :label="currentExperience.label"
+        :label="getTranslation(currentExperience.label)"
         :rules="currentResearchExperienceRules"
         :indeterminate="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked"
     >
@@ -259,9 +257,9 @@
       <span 
       v-if="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked && hoveredCheckboxID4 === currentExperience.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
+        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
       >
-          De-select "None of the above" to select this.
+          {{getTranslation("De-select 'None of the above' to select this.")}}
       </span>
     </transition>
 
@@ -272,7 +270,7 @@
           <v-text-field 
           ref="currentResearchExperienceOtherRef"
           :class="{'error-text': isCurrentResearchExperienceOtherInvalid}"
-            placeholder="Please Specify" 
+            :placeholder="getTranslation('Please specify')" 
             v-model="goalForm.researchExperience.currentResearchExperienceOther" 
             :rules="currentResearchExperienceOtherRules"
           >
@@ -281,7 +279,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isCurrentResearchExperienceInvalid" class="styled-error-text">Information is required</div>
+  <div v-if="isCurrentResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -289,7 +287,7 @@
   <p 
   :class="{'error-text': isPreviousResearchExperienceInvalid}"
   class="font-weight-black text-h8">
-    From your previous research experiences, which of the following activities have you engaged in?
+    {{getTranslation('From your previous research experiences, which of the following activities have you engaged in?')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -302,7 +300,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="previousExperience.checked" 
-        :label="previousExperience.label"
+        :label="getTranslation(previousExperience.label)"
         :rules="previousResearchExperienceRules"
         :indeterminate="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked"
     >
@@ -313,9 +311,9 @@
       <span 
       v-if="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked && hoveredCheckboxID5 === previousExperience.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
+        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
       >
-          De-select "None of the above" to select this.
+          {{getTranslation("De-select 'None of the above' to select this.")}}
       </span>
     </transition>
 
@@ -326,7 +324,7 @@
           <v-text-field 
           ref="previousResearchExperienceOtherRef"
           :class="{'error-text': isPreviousResearchExperienceOtherInvalid}"
-            placeholder="Please Specify" 
+            :placeholder="getTranslation('Please specify')" 
             v-model="goalForm.researchExperience.previousResearchExperienceOther" 
             :rules="previousResearchExperienceOtherRules"
           >
@@ -335,7 +333,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isPreviousResearchExperienceInvalid" class="styled-error-text">Information is required</div>
+  <div v-if="isPreviousResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -343,7 +341,7 @@
   <p 
   :class="{'error-text': isFamiliarToolsInvalid}"
   class="font-weight-black text-h8">
-    What, if any, tools are you familiar with?
+    {{getTranslation('What, if any, tools are you familiar with?')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -356,7 +354,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="familiarTool.checked" 
-        :label="familiarTool.label"
+        :label="getTranslation(familiarTool.label)"
         :rules="familiarToolsRules"
         :indeterminate="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked"
     >
@@ -367,9 +365,9 @@
       <span 
       v-if="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked && hoveredCheckboxID6 === familiarTool.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
+        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
       >
-          De-select "None of the above" to select this.
+          {{getTranslation("De-select 'None of the above' to select this.")}}
       </span>
     </transition>
 
@@ -380,7 +378,7 @@
           <v-text-field 
           ref="familiarToolOtherRef"
           :class="{'error-text': isFamiliarToolOtherInvalid}"
-            placeholder="Please Specify" 
+            :placeholder="getTranslation('Please specify')" 
             v-model="goalForm.researchExperience.familiarToolOther" 
             :rules="familiarToolOtherRules"
           >
@@ -389,7 +387,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isFamiliarToolsInvalid" class="styled-error-text">Information is required</div>
+  <div v-if="isFamiliarToolsInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
@@ -397,7 +395,7 @@
   <p 
   :class="{'error-text': isInterestResearchServiceInvalid}"
   class="font-weight-black text-h8">
-    What are your research/service interests? Check all that apply.
+    {{getTranslation('What are your research/service interests? Check all that apply.')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -410,7 +408,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="interest.checked" 
-        :label="interest.label"
+        :label="getTranslation(interest.label)"
         :rules="interestResearchServiceRules"
         :indeterminate="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked"
     >
@@ -421,9 +419,9 @@
       <span 
       v-if="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked && hoveredCheckboxID7 === interest.id"
         class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
+        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
       >
-          De-select "None of the above" to select this.
+          {{getTranslation("De-select 'None of the above' to select this.")}}
       </span>
     </transition>
 
@@ -434,7 +432,7 @@
           <v-text-field 
           ref="interestResearchServiceOtherRef"
           :class="{'error-text': isInterestResearchServiceOtherInvalid}"
-            placeholder="Please Specify" 
+            :placeholder="getTranslation('Please specify')"
             v-model="goalForm.researchExperience.interestResearchServiceOther" 
             :rules="interestResearchServiceOtherRules"
           >
@@ -443,20 +441,20 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isInterestResearchServiceInvalid" class="styled-error-text">Information is required</div>
+  <div v-if="isInterestResearchServiceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isLeadershipOptionInvalid}"
-  class="font-weight-black text-h8">Are you interested in potentially holding a leadership position?</p>
+  class="font-weight-black text-h8">{{getTranslation('Are you interested in potentially holding a leadership position?')}}</p>
   <v-radio-group 
   :class="{'error-text': isLeadershipOptionInvalid}"
   v-model="goalForm.researchExperience.leadershipOption"
   :rules="leadershipOptionRules">
-    <v-radio label="Yes" value="Yes"></v-radio>
-    <v-radio label="Maybe" value="Maybe"></v-radio>
+    <v-radio :label="getTranslation('Yes')" value="Yes"></v-radio>
+    <v-radio :label="getTranslation('Maybe')" value="Maybe"></v-radio>
     <v-radio label="No" value="No"></v-radio>
   </v-radio-group>
 </v-col>
@@ -467,91 +465,98 @@
 <!-- growth section -->
 <p 
 :class="{'error-text': isGrowthInvalid}"
-class="font-weight-black text-h6">Growth</p>
+class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
 <v-col cols="12" md="10">
-  <p 
+  <span 
   :class="{'error-text': isProblemSolvingGoalInvalid}"
-  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.</p>
+  class="font-weight-black text-h8"
+  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.')">
+</span>
   <v-radio-group 
   :class="{'error-text': isProblemSolvingGoalInvalid}"
   v-model="goalForm.growthGoal.problemSolvingGoal" 
   :rules="problemSolvingGoalRules"
   >
-    <v-radio label="No growth" value="No growth"></v-radio>
-    <v-radio label="A little growth" value="A little growth"></v-radio>
-    <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-    <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
+    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p 
+  <span 
   :class="{'error-text': isEffectiveCommunicationGoalInvalid}"
-  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.</p>
+  class="font-weight-black text-h8"
+  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.')"></span>
   <v-radio-group 
   v-model="goalForm.growthGoal.effectiveCommunicationGoal"
   :class="{'error-text': isEffectiveCommunicationGoalInvalid}"
   :rules="effectiveCommunicationGoalRules">
-    <v-radio label="No growth" value="No growth"></v-radio>
-    <v-radio label="A little growth" value="A little growth"></v-radio>
-    <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-    <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
+    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p 
+  <span
   :class="{'error-text': isTeamworkGoalInvalid}"
-  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.</p>
+  class="font-weight-black text-h8"
+  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.')"></span>
   <v-radio-group 
   v-model="goalForm.growthGoal.teamworkGoal"
   :class="{'error-text': isTeamworkGoalInvalid}"
   :rules="teamworkGoalRules">
-    <v-radio label="No growth" value="No growth"></v-radio>
-    <v-radio label="A little growth" value="A little growth"></v-radio>
-    <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-    <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
+    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p 
+  <span 
   :class="{'error-text': isCulturalHumilityGoalInvalid}"
-  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.</p>
+  class="font-weight-black text-h8"
+  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.')"></span>
   <v-radio-group 
   v-model="goalForm.growthGoal.culturalHumilityGoal"
   :class="{'error-text': isCulturalHumilityGoalInvalid}"
   :rules="culturalHumilityGoalRules">
-    <v-radio label="No growth" value="No growth"></v-radio>
-    <v-radio label="A little growth" value="A little growth"></v-radio>
-    <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-    <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
+    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p 
+  <span 
   :class="{'error-text': isEthicalDecisionMakingGoalInvalid}"
-  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.</p>
+  class="font-weight-black text-h8"
+  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.')"></span>
   <v-radio-group 
   v-model="goalForm.growthGoal.ethicalDecisionMakingGoal"
   :class="{'error-text': isEthicalDecisionMakingGoalInvalid}"
   :rules="ethicalDecisionMakingGoalRules">
-    <v-radio label="No growth" value="No growth"></v-radio>
-    <v-radio label="A little growth" value="A little growth"></v-radio>
-    <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-    <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
+    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
-  <p 
+  <span 
   :class="{'error-text': isProfessionalResponsibilityGoalInvalid}"
-  class="font-weight-black text-h8">Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.</p>
+  class="font-weight-black text-h8"
+  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.')"></span>
   <v-radio-group 
   v-model="goalForm.growthGoal.professionalResponsibilityGoal"
   :class="{'error-text': isProfessionalResponsibilityGoalInvalid}"
   :rules="professionalResponsibilityGoalRules"
   >
-    <v-radio label="No growth" value="No growth" ></v-radio>
-    <v-radio label="A little growth" value="A little growth"></v-radio>
-    <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-    <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
+    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 
@@ -561,35 +566,35 @@ class="font-weight-black text-h6">Growth</p>
   :class="{'error-text': isAspirationsInvalid}"
   class="font-weight-black text-h8" style="margin-bottom: 2px;">
     <span
-    >Please describe 2-3 long-term aspirations you may have.</span>
-      <br><br>
-    Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there. 
-    <br> Examples:
+    >{{getTranslation('Please describe 2-3 long-term aspirations you may have.')}}</span>
+    <br><br>
+    {{getTranslation('Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.')}}
+    <br> {{getTranslation('Examples:')}}
     <br>
     <ul>
-      <li>“I want to focus my career on cancer disparities”</li>
-      <li>“I want to lead a non-profit that addresses food insecurity”</li>
-      <li>“I want to teach English in a different country”</li>
+      <li>{{getTranslation('“I want to focus my career on cancer disparities”')}}</li>
+      <li>{{getTranslation('“I want to lead a non-profit that addresses food insecurity”')}}</li>
+      <li>{{getTranslation('“I want to teach English in a different country”')}}</li>
     </ul>  
   </p>
 
   <v-text-field
     ref="aspiration1Field"
-    label="Aspiration 1:"
+    :label="getTranslation('Aspiration 1:')"
     v-model="goalForm.aspirations.aspirationOne"
     :error="isAspirationsInvalid"
   ></v-text-field>
 
   <v-text-field
     ref="aspiration2Field"
-    label="Aspiration 2:"
+    :label="getTranslation('Aspiration 2:')"
     v-model="goalForm.aspirations.aspirationTwo"
     :error="isAspirationsInvalid"
   ></v-text-field>
 
   <v-text-field
     ref="aspiration3Field"
-    label="Aspiration 3:"
+    :label="getTranslation('Aspiration 3:')"
     v-model="goalForm.aspirations.aspirationThree"
     :error-messages="aspirationsErrorMessages"
   ></v-text-field>
@@ -603,43 +608,43 @@ class="font-weight-black text-h6">Growth</p>
   :class="{'error-text': isGoalsInvalid}"
   class="font-weight-black text-h8">
     <span
-    >Please outline 3-5 goals that you have for this experience.</span> 
+    >{{getTranslation('Please outline 3-5 goals that you have for this experience.')}}</span> 
     <br><br>
-    Goals are statements that describe what it means for an experience to be a success from your perspective,<br>
-    Examples:<br>
+    {{getTranslation('Goals are statements that describe what it means for an experience to be a success from your perspective,')}}<br>
+    {{getTranslation('Examples:')}}<br>
     <ul>
-      <li>“I want to connect with people working on cancer research”</li>
-      <li>“I want to research access to nutrition education in public schools”</li>
-      <li>“I want to develop my presentation skills”</li>
+      <li>{{getTranslation('“I want to connect with people working on cancer research”')}}</li>
+      <li>{{getTranslation('“I want to research access to nutrition education in public schools”')}}</li>
+      <li>{{getTranslation('“I want to develop my presentation skills”')}}</li>
     </ul>
   </p>
 
   <v-text-field
-    label="Goal 1:"
+    :label="getTranslation('Goal 1:')"
     v-model="goalForm.goals.goalOne"
     :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
-    label="Goal 2:"
+  :label="getTranslation('Goal 2:')"
     v-model="goalForm.goals.goalTwo"
     :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
-    label="Goal 3:"
+  :label="getTranslation('Goal 3:')"
     v-model="goalForm.goals.goalThree"
     :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
-    label="Goal 4:"
+  :label="getTranslation('Goal 4:')"
     v-model="goalForm.goals.goalFour"
     :error="isGoalsInvalid"
   ></v-text-field>
 
   <v-text-field
-    label="Goal 5:"
+  :label="getTranslation('Goal 5:')"
     v-model="goalForm.goals.goalFive"
     :error-messages="goalsErrorMessages"
   ></v-text-field>
@@ -651,7 +656,7 @@ class="font-weight-black text-h6">Growth</p>
 
 <v-row>
   <v-col cols="12" md="4">
-    <v-btn @click="submitFormValidation">Submit Form</v-btn>
+    <v-btn @click="submitFormValidation">{{getTranslation('Submit Form')}}</v-btn>
   </v-col>
 </v-row>
 </v-container>
@@ -818,11 +823,133 @@ class="font-weight-black text-h6">Growth</p>
 </style>
 
 <script>
+import { ref } from 'vue';
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import axios from "axios";
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
+  setup() {
+    const translations = {
+      Spanish: {
+        "Goal Setting Form": "Formulario de Establecimiento de Objetivos",
+        "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.": "Complete los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente más tarde.",
+        "Current Semester:": "Semestre Actual",
+        "Semester": "Semestre",
+        "Which experience are you filling out this form for:": "¿Para cuál experiencia está completando este formulario?",
+        "Select an Experience": "Seleccione una Experiencia",
+        "Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.": "¡Hola! Ya ha completado un Formulario de Establecimiento de Objetivos para esta experiencia. Tenga en cuenta que enviar otro formulario para la misma experiencia sobrescribirá sus respuestas anteriores.",
+        "You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!": "No ha completado un Formulario de Establecimiento de Objetivos para esta experiencia. ¡Complete este formulario para comenzar su progreso!",
+        "What kind of community engagement experiences, if any, have you had? Check all that apply.": "¿Qué tipo de experiencias de participación comunitaria, si las hubo, ha tenido? Marque todo lo que corresponda.",
+        "De-select 'None of the above' to select this.": "Deseleccione 'Ninguna de las anteriores' para seleccionar esto.",
+        "Volunteer organizations (e.g. scouts, nonprofits, food banks)": "Organizaciones de voluntarios (por ejemplo, exploradores, organizaciones sin fines de lucro, bancos de alimentos)",
+        "Political campaigns": "Campañas políticas",
+        "Faith based organizations": "Organizaciones basadas en la fe",
+        "Short-term volunteer opportunities (e.g. day of service events)": "Oportunidades de voluntariado a corto plazo (por ejemplo, eventos del día de servicio)",
+        "Medical mission trips": "Viajes de misiones médicas",
+        "Other": "Otro",
+        "Please specify": "Por favor especificar",
+        "None of the above": "Ninguna de las anteriores",
+        "Information is required.": "Se requiere información.",
+        "From your previous community engagement experiences, which of the following activities have you engaged in?": "De sus experiencias previas de participación comunitaria, ¿en cuáles de las siguientes actividades se ha involucrado?",
+        "Mentoring someone": "Asesorar a alguien",
+        "Volunteering at a community event (e.g. health fair)": "Voluntariado/a en un evento comunitario (por ejemplo, feria de salud)",
+        "Recruiting volunteers": "Reclutamiento de voluntarios/as",
+        "Organizing a service project": "Organizar un proyecto de servicio",
+        "Serving as translator": "Sirviendo como traductor",
+        "Fundraising": "Recaudación de fondos",
+        "Emergency response volunteering": "Voluntariado de respuesta a emergencias",
+        "What, if any, tools have you used for community engagement activities?": "¿Qué herramientas, si alguna, ha utilizado para las actividades de participación comunitaria?",
+        "Social media": "Redes sociales",
+        "Scheduling software (e.g. when is good, doodle)": "Software de programación (por ejemplo, when is good, doodle)",
+        "Fundraising platforms": "Plataformas de recaudación de fondos",
+        "Survey tools": "Herramientas de encuesta",
+        "Graphic design tools (e.g. adobe, canva)": "Herramientas de diseño gráfico (por ejemplo, adobe, canva)",
+        "Project management Tool": "Herramienta de gestión de proyectos",
+        "Digital media (e.g. podcasting, streaming video)": "Medios digitales (por ejemplo, podcasting, transmisión de video)",
+        "What kind of research experiences, if any, have you had? Check all that apply.": "¿Qué tipo de experiencias de investigación, si las hubo, ha tenido? Marque todo lo que corresponda.",
+        "Introduction to Statistics / Introduction to Biostatistics / Introduction to Research courses": "Cursos de Introducción a la Estadística / Introducción a la Bioestadística / Introducción a la Investigación",
+        "Advanced statistics and programming courses": "Cursos avanzados de estadística y programación",
+        "Volunteered/Interned in a lab": "Voluntario/a o internado/a en un laboratorio",
+        "From your previous research experiences, which of the following activities have you engaged in?": "De sus experiencias previas de investigación, ¿cuál de las siguientes actividades ha realizado?",
+        "Designing your own research project": "Diseñando su propio proyecto de investigación",
+        "Literature review": "Revisión de literatura",
+        "Data collection in a clinical setting": "Recopilación de datos en un entorno clínico",
+        "Data collection in a laboratory setting": "Recopilación de datos en un entorno de laboratorio",
+        "Data collection in a public health/community setting": "Recopilación de datos en un entorno de salud pública/comunitario",
+        "Analyzing data with a statistical package": "Análisis de datos con un paquete estadístico",
+        "Writing/assisting with a manuscript": "Escribir/ayudar con un manuscrito",
+        "What, if any, tools are you familiar with?": "¿Con qué herramientas, si las hay, está familiarizado?",
+        "What are your research/service interests? Check all that apply.": "¿Cuáles son sus intereses de investigación/servicio? Marque todo lo que corresponda",
+        "Education": "Educación",
+        "Community Health": "Salud de la comunidad",
+        "Mental Health": "Salud mental",
+        "Incarceration / Criminal Justice": "Encarcelamiento / Justicia Penal",
+        "Chronic Disease": "Enfermedades crónicas",
+        "Environment and occupational health": "Medio ambiente y salud ocupacional",
+        "Government/Law/Policy": "Gobierno/Ley/Política",
+        "Are you interested in potentially holding a leadership position?": "¿Está interesado en ocupar un puesto de liderazgo?",
+        "Yes": "Si",
+        "Maybe": "Tal vez",
+        "Growth": "Crecimiento",
+        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>resolución de problemas.</u>",
+        "No growth": "Sin crecimiento",
+        "A little growth": "Sin crecimiento",
+        "A moderate amount of growth": "Una cantidad moderada de crecimiento",
+        "A lot of growth": "Mucho crecimiento",
+        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>comunicación efectiva</u>.",
+        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>trabajo en equipo</u>.",
+        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>humildad cultural</u>.",
+        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>toma de decisiones éticas</u>.",
+        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>responsabilidad profesional</u>.",
+        "Please describe 2-3 long-term aspirations you may have.": "Por favor describa 2 o 3 aspiraciones a largo plazo que pueda tener.",
+        "Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.": "Las aspiraciones son declaraciones que describen dónde quiere terminar sin necesariamente describir exactamente cómo llegará allí.",
+        "Examples:": "Por ejemplo:",
+        "“I want to focus my career on cancer disparities”": "“Quiero centrar mi carrera en las disparidades del cáncer”",
+        "“I want to lead a non-profit that addresses food insecurity”": "“Quiero dirigir una organización sin fines de lucro que aborde la inseguridad alimentaria”",
+        "“I want to teach English in a different country”": "“Quiero enseñar inglés en un país diferente”",
+        "Aspiration 1:": "Aspiración 1:",
+        "Aspiration 2:": "Aspiración 2:",
+        "Aspiration 3:": "Aspiración 3:",
+        "Please outline 3-5 goals that you have for this experience.": "Por favor describa entre 3 y 5 metas que tiene para esta experiencia.",
+        "Goals are statements that describe what it means for an experience to be a success from your perspective,": "Las metas son declaraciones que describen lo que significa que una experiencia sea un éxito desde su perspectiva",
+        "“I want to connect with people working on cancer research”": "“Quiero conectarme con personas que trabajan en la investigación del cáncer”",
+        "“I want to research access to nutrition education in public schools”": "“Quiero investigar el acceso a la educación nutricional en las escuelas públicas”",
+        "“I want to develop my presentation skills”": "“Quiero desarrollar mis habilidades de presentación”",
+        "Goal 1:": "Objetivo 1:",
+        "Goal 2:": "Objetivo 2:",
+        "Goal 3:": "Objetivo 3:",
+        "Goal 4:": "Objetivo 4:",
+        "Goal 5:": "Objetivo 5:",
+        "Submit Form": "Enviar Formulario",
+        "If 'Other' is selected, please specify.": "Si seleccionó 'Otro', por favor especifique.",
+        "Please fill out at least 2 aspirations.": "Por favor, complete al menos 2 aspiraciones.",
+        "Please fill out at least 3 goals.": "Por favor, complete al menos 3 metas.",
+        "Oops! Error(s) detected. Please review and try again.": "¡Ups! Se detectó(ron) error(es). Por favor, revise y vuelva a intentarlo.",
+        "Goals successfully set! You're on the right track!": "¡Metas establecidas con éxito! ¡Vas por buen camino!",
+        "Great job setting your goals! Let's make them happen!": "¡Buen trabajo estableciendo tus metas! ¡Vamos a hacerlas realidad!",
+        "Goals locked in! Believe in yourself and you'll achieve them.": "¡Metas aseguradas! Cree en ti mismo y las lograrás.",
+        "You've set your goals! Now, let's conquer them together!": "¡Has establecido tus metas! Ahora, ¡conquistémoslas juntos!",
+        "Your goals are set! Keep pushing forward and you'll achieve them.": "¡Tus metas están definidas! Sigue adelante y las alcanzarás.",
+        "Way to go! Every goal you set brings you one step closer to success.": "¡Bien hecho! Cada meta que estableces te acerca un paso más al éxito.",
+      },
+    };
+
+    // Reactive State
+    const currentLanguage = ref('English'); // default value
+    
+    const getTranslation = (key) => {
+      return (translations[currentLanguage.value] && translations[currentLanguage.value][key]) || key;
+    };
+
+    if (useLoggedInUserStore().languagePreference === "Spanish") {
+      currentLanguage.value = "Spanish";
+    }
+
+    return {
+      getTranslation,
+    }
+  },
   data() {
     return {
       selectedExperience: null,
@@ -960,7 +1087,7 @@ export default {
       experienceIDRules: [
         v => {
           if (this.formSubmitted) {
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
           }
           return true;
         }
@@ -969,7 +1096,7 @@ export default {
       v => {
               if (!this.formSubmitted) return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
           },
       ],
       communityEngagementExperiencesRules: [
@@ -978,7 +1105,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       communityEngagementExperiencesOtherRules: [
@@ -990,7 +1117,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!otherExperience || !otherExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           },
       ],
       previousEngagementExperiencesRules: [
@@ -999,7 +1126,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       previousEngagementExperiencesOtherRules: [
@@ -1011,7 +1138,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!previousExperience || !previousExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           },
       ],
       engagementActivitiesToolsRules: [
@@ -1020,7 +1147,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       engagementActivitiesToolOtherRules: [
@@ -1032,7 +1159,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!engagementActivitiesTool || !engagementActivitiesTool.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
           },
       ],
       currentResearchExperienceRules: [
@@ -1041,7 +1168,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       currentResearchExperienceOtherRules: [
@@ -1053,7 +1180,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!researchExperience || !researchExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       previousResearchExperienceRules: [
@@ -1062,7 +1189,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       previousResearchExperienceOtherRules: [
@@ -1074,7 +1201,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!previousExperience || !previousExperience.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       familiarToolsRules: [
@@ -1083,7 +1210,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.familiarTools.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.familiarTools.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       familiarToolOtherRules: [
@@ -1095,7 +1222,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!familiarTool || !familiarTool.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       interestResearchServiceRules: [
@@ -1104,7 +1231,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked) || 'Information is required.';
+          return this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked) || this.getTranslation('Information is required.');
         }
       ],
       interestResearchServiceOtherRules: [
@@ -1116,14 +1243,14 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!researchService || !researchService.checked) return true;
 
-              return !!v || 'If Other is selected, please specify.';
+              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
         }
       ],
       leadershipOptionRules: [
       v => {
               if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
           },
       ],
 
@@ -1131,48 +1258,48 @@ export default {
         v => {
               if (!this.formSubmitted) return true;
 
-              return !!v || 'Information is required.';
+              return !!v || this.getTranslation('Information is required.');
           },
       ],
       effectiveCommunicationGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       teamworkGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       culturalHumilityGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       ethicalDecisionMakingGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       professionalResponsibilityGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || 'Information is required.';
+            return !!v || this.getTranslation('Information is required.');
         },
       ],
       aspirationsRules: [
         () => {
           if (this.formSubmitted && this.filledAspirationsCount < 2) {
-            return 'Please fill out at least 2 aspirations.';
+            return this.getTranslation('Please fill out at least 2 aspirations.');
           }
           return true;
         }
@@ -1507,7 +1634,7 @@ export default {
   aspirationsErrorMessages() {
     if (this.formSubmitted && this.filledAspirationsCount < 2) {
       this.isAspirationsValid = false;
-      return ['Please fill out at least 2 aspirations.'];
+      return [this.getTranslation('Please fill out at least 2 aspirations.')];
     }
     this.isAspirationsValid = true;
     return [];
@@ -1519,7 +1646,7 @@ export default {
   goalsErrorMessages() {
     if (this.formSubmitted && this.filledGoalsCount < 3) {
       this.isGoalsValid = false;
-      return ['Please fill out at least 3 goals.'];
+      return [this.getTranslation('Please fill out at least 3 goals.')];
     }
     this.isGoalsValid = true;
     return [];
@@ -1641,7 +1768,7 @@ export default {
     if (valid) {
       this.cleanupFormData();
     } else {
-      toast.error("Oops! Error(s) detected. Please review and try again.", {
+      toast.error(this.getTranslation("Oops! Error(s) detected. Please review and try again."), {
         position: 'top-right',
         toastClassName: 'Toastify__toast--delete'
       });
@@ -1885,7 +2012,7 @@ export default {
               name: 'studentDashboard',
               params: {
                 toastType: 'success',
-                toastMessage: randomMessage,
+                toastMessage: this.getTranslation(randomMessage),
                 toastPosition: 'top-right',
                 toastCSS: 'Toastify__toast--create'
             }

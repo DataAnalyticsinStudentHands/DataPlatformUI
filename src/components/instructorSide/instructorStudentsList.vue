@@ -19,7 +19,45 @@
     </center>
  
 
-    <v-text-field v-model="searchStudent" placeholder="Search by student name, email, major, minor, or graduation date"></v-text-field>
+    <!-- First Row: Search Field -->
+    <v-row class="my-2">
+      <v-col cols="12">
+        <v-text-field 
+          v-model="searchStudent" 
+          placeholder="Search by student name, email, major, minor, or graduation date"
+          outlined
+          style="width: 100%;"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+
+    <!-- Second Row: Items Per Page Field and Pagination -->
+    <v-row class="my-2">
+      
+      <!-- Items Per Page Field -->
+      <v-col cols="12" md="4">
+        <v-text-field
+          v-model="itemsPerPage"
+          :min="1"
+          type="number"
+          label="Number of Students Shown Per Page"
+          outlined
+          style="width: 70%;"
+        ></v-text-field>
+      </v-col>
+
+      <!-- Pagination -->
+      <v-col cols="12" md="8" class="text-center">
+        <v-pagination
+          v-model="currentPage"
+          :length="totalPaginationLength"
+          :total-visible="10"
+        ></v-pagination>
+      </v-col>
+      
+    </v-row>
+
+
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 950%">
         <thead>
@@ -35,44 +73,49 @@
         </thead>
 
         <tbody>
-          
-<tr
-            v-for="student in filteredStudentData"
-            :key="student.userData._id"
-            :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === student.userData._id}"
-            @mouseenter="hoverId = student.userData._id"
-            @mouseleave="hoverId = null">
-            <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="student.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
-            </td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ student.userData.firstName + ' ' + student.userData.lastName }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ student.userData.email }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ listCheckedOptions(student.studentInformation.pronouns) }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ majors(student.studentInformation.enrolledUHInfo.majors) }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors) }}</td>
-            <td @click="editStudent(student.userID)" class="text-left">{{ student.studentInformation.enrolledUHInfo.expectedGraduationYear }}</td>
-          </tr>
           <tr
-            v-for="user in filteredUserListRaw"
-            :key="user._id"
+            v-for="item in paginatedMergedData"
+            :key="item.data._id || item.data.userData._id"
             :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === user._id}"
-            @mouseenter="hoverId = user._id"
-            @mouseleave="hoverId = null">
+            :class="{ 'hoverRow': hoverId === (item.data._id || item.data.userData._id) }"
+            @mouseenter="hoverId = item.data._id || item.data.userData._id"
+            @mouseleave="hoverId = null"
+          >
             <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="user._id" style="outline: 2px solid #808080; margin-right: 10px;">
+              <input type="checkbox" v-model="selectedStudents" :value="item.data._id || item.data.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
             </td>
-            <td class="text-left">{{ user.firstName }} {{ user.lastName }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ item.data.userData.firstName + ' ' + item.data.userData.lastName }}
+            </td>
+            <td v-else class="text-left">
+              {{ item.data.firstName }} {{ item.data.lastName }}
+            </td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ item.data.userData.email }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ listCheckedOptions(item.data.studentInformation.pronouns) }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ majors(item.data.studentInformation.enrolledUHInfo.majors) }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ minors(item.data.studentInformation.enrolledUHInfo.otherMinors, item.data.studentInformation.enrolledUHInfo.honorsMinors) }}
+            </td>
+            <td v-else></td>
+            <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
+              {{ item.data.studentInformation.enrolledUHInfo.expectedGraduationYear }}
+            </td>
+            <td v-else></td>
           </tr>
         </tbody>
+
       </v-table>
-    </div>
+      </div>
+
   </main>
 </template>
 
@@ -92,6 +135,8 @@ export default {
       showInactive: false, 
       searchStudent: "",
       hoverId: null,
+      currentPage: 1,
+      itemsPerPage: 10,
     };
   },
   mounted() {
@@ -99,7 +144,14 @@ export default {
     this.fetchIncompletedStudentData();
     window.scrollTo(0, 0);
   },
-  
+  watch: {
+    searchStudent(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        // reset to the first page on a new search
+        this.currentPage = 1;
+      }
+    }
+  },
   methods: {
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
@@ -249,40 +301,62 @@ activateStudents() {
   },
   computed: {
     filteredStudentData() {
-  const searchStudent = this.searchStudent.toLowerCase();
-  let filteredData = this.studentListRaw.filter((student) => {
-    const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
-    const email = student.userData.email.toLowerCase()|| "";
-    const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase()|| "";
-    const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase()|| "";
-    const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear?.toLowerCase() || ""; // Use optional chaining to handle undefined values
-    return fullName.includes(searchStudent) || email.includes(searchStudent) || majors.includes(searchStudent) || minors.includes(searchStudent) || graduationDate.includes(searchStudent);
-  });
-  if (this.showInactive) {
-    filteredData = filteredData.filter((student) => student.userData.userStatus === 'Inactive');
-  } else {
-    filteredData = filteredData.filter((student) => student.userData.userStatus === 'Active');
-  }
-  return filteredData;
-},
-filteredUserListRaw() {
-  const searchStudent = this.searchStudent.toLowerCase();
+      const searchStudent = this.searchStudent.toLowerCase();
+      let filteredData = this.studentListRaw.filter((student) => {
+        const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
+        const email = student.userData.email.toLowerCase()|| "";
+        const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase()|| "";
+        const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase()|| "";
+        const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear?.toLowerCase() || ""; // Use optional chaining to handle undefined values
+        return fullName.includes(searchStudent) || email.includes(searchStudent) || majors.includes(searchStudent) || minors.includes(searchStudent) || graduationDate.includes(searchStudent);
+      });
+      if (this.showInactive) {
+        filteredData = filteredData.filter((student) => student.userData.userStatus === 'Inactive');
+      } else {
+        filteredData = filteredData.filter((student) => student.userData.userStatus === 'Active');
+      }
+      return filteredData;
+    },
+    filteredUserListRaw() {
+      const searchStudent = this.searchStudent.toLowerCase();
 
-  let filteredData = this.userListRaw.filter(user => {
-    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-    const email = user.email?.toLowerCase() || "";  // some users might not have emails
-    // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
-    return fullName.includes(searchStudent) || email.includes(searchStudent);
-  });
+      let filteredData = this.userListRaw.filter(user => {
+        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+        const email = user.email?.toLowerCase() || "";  // some users might not have emails
+        // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
+        return fullName.includes(searchStudent) || email.includes(searchStudent);
+      });
 
-  if (this.showInactive) {
-    filteredData = filteredData.filter(user => user.userStatus === 'Inactive');
-  } else {
-    filteredData = filteredData.filter(user => user.userStatus === 'Active');
-  }
+      if (this.showInactive) {
+        filteredData = filteredData.filter(user => user.userStatus === 'Inactive');
+      } else {
+        filteredData = filteredData.filter(user => user.userStatus === 'Active');
+      }
 
-  return filteredData;
-},}
+      return filteredData;
+    },
+    mergedFilteredData() {
+      const studentData = this.filteredStudentData.map(student => ({
+        type: 'student',
+        data: student
+      }));
+
+      const userData = this.filteredUserListRaw.map(user => ({
+        type: 'user',
+        data: user
+      }));
+
+      return studentData.concat(userData);
+    },
+    paginatedMergedData() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = this.currentPage * this.itemsPerPage;
+      return this.mergedFilteredData.slice(start, end);
+    },
+    totalPaginationLength() {
+      return Math.ceil(this.mergedFilteredData.length / this.itemsPerPage);
+    },
+}
 };
 </script>
 
