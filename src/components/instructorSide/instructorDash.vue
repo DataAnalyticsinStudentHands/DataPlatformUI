@@ -40,7 +40,7 @@
         </v-card-title>
         <!-- v-dialog content -->
 
-        <v-card-text>
+        <v-card-text  class="py-1">
           This tool will show you the list of students who:
           <v-list dense class="mt-0">
             <v-list-item-group>
@@ -74,6 +74,7 @@
               <v-autocomplete
                 v-model="selectedExperience"
                 :items="formattedExperiences"
+                label="Experience"
                 item-title="text"
                 item-value="value"
                 clearable
