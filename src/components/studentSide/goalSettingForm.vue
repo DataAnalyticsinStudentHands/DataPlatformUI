@@ -4,7 +4,6 @@
   <v-progress-circular indeterminate></v-progress-circular>
 </div>
 <div v-else>
-  The current screen size is: {{ screenSizeMixin }}
   <v-form 
   ref="form"
   @submit.prevent>

@@ -98,6 +98,7 @@ export default {
     };
   },
   mounted() {
+    console.log(this.$route.params);
     if (this.$route.params.toastType) {
       toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
         position: this.$route.params.toastPosition,

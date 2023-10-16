@@ -210,17 +210,16 @@ export default {
             if (res.status == 200) {
               if (useLoggedInUserStore().isLoggedIn === true) {
                 useLoggedInUserStore().logout(true);
-              } else {
-                this.$router.push({
-                  name: 'Login',
-                  params: {
-                    toastType: 'success',
-                    toastMessage: 'Password Reset! Please login.',
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--create'
-                  }
-                })
               }
+              this.$router.push({
+                name: 'Login',
+                params: {
+                  toastType: 'success',
+                  toastMessage: 'Password Reset! Please login.',
+                  toastPosition: 'top-right',
+                  toastCSS: 'Toastify__toast--create'
+                }
+              });
             }
           },
           (err) => {

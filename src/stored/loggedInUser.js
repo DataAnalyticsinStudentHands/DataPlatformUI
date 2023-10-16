@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 // Defining a store
 export const useLoggedInUserStore = defineStore({
@@ -70,37 +72,6 @@ export const useLoggedInUserStore = defineStore({
 
       // Remove the global default header for axios
       delete axios.defaults.headers.common['token'];
-    
-      let logoutMessage = "";
-      if (reset) {
-        logoutMessage = "Password Reset! Please login.";
-      } else {
-        let logoutMessages = [
-          'See you soon!',
-          'Logged out successfully!',
-          'Goodbye for now!',
-          'See you next time!',
-          "You're safely logged out!",
-          'Hope to see you soon!',
-          'Session ended. Take care!',
-          'Stay safe! See you again!',
-          'Successfully signed out!',
-          "You've logged out. Goodbye!",
-          'Come back soon!'
-        ];
-        logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
-      }
-    
-      this.$router.push({
-        name: 'Login',
-        params: {
-          toastType: 'success',
-          toastMessage: logoutMessage,
-          toastPosition: 'top-right',
-          toastCSS: 'Toastify__toast--create'
-      },
-      });
-      //location.reload(); attempt on trying to remove navigation bar when logging out
     },    
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
