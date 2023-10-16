@@ -1,6 +1,10 @@
 <!-- /goalSettingForm -->
 <template>
-  
+  <div v-if="loading" class="loading-container">
+  <v-progress-circular indeterminate></v-progress-circular>
+</div>
+<div v-else>
+  The current screen size is: {{ screenSizeMixin }}
   <v-form 
   ref="form"
   @submit.prevent>
@@ -665,8 +669,11 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
     <v-btn @click="submitFormValidation">{{getTranslation('Submit Form')}}</v-btn>
   </v-col>
 </v-row>
+
 </v-container>
 </v-form>
+
+</div>
 </template>
 
 <style>
@@ -956,6 +963,7 @@ export default {
       getTranslation,
     }
   },
+  
   data() {
     return {
       selectedExperience: null,
@@ -1661,15 +1669,29 @@ export default {
     if (!this.formSubmitted) return false;
     return this.isProblemSolvingGoalInvalid || this.isEffectiveCommunicationGoalInvalid || this.isTeamworkGoalInvalid || this.isCulturalHumilityGoalInvalid || this.isEthicalDecisionMakingGoalInvalid || this.isProfessionalResponsibilityGoalInvalid || this.isAspirationsInvalid || this.isGoalsInvalid;
   },
+  loading() {
+    const store = useLoggedInUserStore();
+    return store.loading;
+  }
 
   }, 
   mounted() {
-    this.fetchSemester();
-    this.fetchExperiences().then(() => {  // fetchExperiences returns a Promise
-      this.fetchHasFilledForm();
-      this.selectExperienceFromRouteParam();
-    });
+    useLoggedInUserStore().startLoading();
+
+    try {
+      this.fetchSemester();
+      this.fetchExperiences().then(() => {
+        this.fetchHasFilledForm();
+        this.selectExperienceFromRouteParam();
+      });
+    } catch (error) {
+      // Handle any errors that occur during the fetch operations
+      console.error('Error:', error);
+    } finally {
+      useLoggedInUserStore().stopLoading();
+    }
   },
+
   methods: {
     async fetchSemester() {
       const user = useLoggedInUserStore();
@@ -1724,8 +1746,6 @@ export default {
   async checkExistingForm() {
       this.isLoadingExpCheck = true;
       const experienceID = this.selectedExperience;
-      console.log('experienceID 1722: ', experienceID.value)
-      console.log('experienceID 1722: ', experienceID)
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/hasCompletedGSFforSemesterExperience/';
@@ -1915,7 +1935,6 @@ export default {
     if (this.foundDocumentId) {
         this.handleUpdateForm();
     } else {
-        console.log('submit: ', this.selectedExperience.value)
         // If previously filled document wasn't found, create new document
         this.handleSubmitForm();
         

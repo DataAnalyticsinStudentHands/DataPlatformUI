@@ -5,6 +5,10 @@
       <p class="font-weight-black text-h5 text--primary">User Information Update Form</p>
       <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again.</p>
     </v-container>
+    <div v-if="loading" class="loading-container">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+    <div v-else>
     <v-form @submit.prevent="handleSubmitForm">
       <v-container style="width: 90%; margin: 0 auto;">
         <v-col cols="12" md="6">
@@ -29,6 +33,7 @@
         <v-btn @click="handleSubmitForm">Submit</v-btn>
       </v-container>
     </v-form>
+  </div>
   </main>
 </template>
 
@@ -48,22 +53,40 @@
       };
     },
     mounted() {
-        const user = useLoggedInUserStore()
-        let token = user.token
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/user/`;
-        axios.get(apiURL, { headers: { token },})
-        .then(
-            (resp) => {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/user/`;
+
+      try {
+        useLoggedInUserStore().startLoading();
+
+        axios.get(apiURL, { headers: { token } })
+          .then((resp) => {
             this.userData = resp.data.user;
             this.firstName = this.userData.firstName;
             this.lastName = this.userData.lastName;
             this.email = this.userData.email;
             this.languagePreference = this.userData.languagePreference;
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+            useLoggedInUserStore().stopLoading();
+          });
+
         window.scrollTo(0, 0);
+      } catch (error) {
+        console.error('Error:', error);
+        useLoggedInUserStore().stopLoading();
+      }
+    },
+
+    computed: {
+      loading() {
+        const store = useLoggedInUserStore();
+        return store.loading;
+      }
     },
     methods: {
       async handleSubmitForm() {

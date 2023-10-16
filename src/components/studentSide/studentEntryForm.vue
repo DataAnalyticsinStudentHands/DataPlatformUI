@@ -1,9 +1,46 @@
 <template> <!-- Start of the Student Entry Form template -->
 
-  <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
-    <p class="font-weight-black text-h5 text--primary">{{ getTranslation('Student Entry Form') }}</p>
-    <p class="text-subtitle-1">{{ getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.") }}</p>
-  </v-container>
+<v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
+  <div style="display: flex; align-items: center;">
+    <p class="font-weight-black text-h5 text--primary">
+      {{ getTranslation('Student Entry Form') }}
+    </p>
+      <v-dialog width="500">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            size="x-small"
+            class="pb-2"
+            variant="text"
+            icon="mdi-help-circle-outline"
+            flat
+            v-bind="props"
+          >
+          </v-btn>
+        </template>
+
+        <template v-slot:default="{ isActive }">
+          <v-card title="Student Entry Form">
+            <v-card-text>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                text="Close"
+                @click="isActive.value = false"
+              ></v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
+  </div>
+  <p class="text-subtitle-1">
+    {{ getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.") }}
+  </p>
+</v-container>
+
   <v-form 
   ref="form"
   @submit.prevent="handleValidations">
@@ -258,7 +295,7 @@
                         chips
                         v-model="studentInformation.enrolledUHInfo.majors" 
                         :items="filteredMajors.map(major => major['Plan Name'])" 
-                        label="Select a Major" 
+                        :label= "getTranslation('Select a Major')"
                         multiple
                         :rules="majorsRules"
                         >
@@ -887,6 +924,7 @@ export default {
       minors: [],
       formSubmitted: false,
       hoveredCheckboxID: null,
+
       otherPronounsRules: [
           v => {
               if (!this.formSubmitted) return true;
@@ -1351,7 +1389,7 @@ export default {
       // Check if the rule returned a string (indicating an error message)
       const isProfessionalDesignOtherInValid = typeof isProfessionalDesignOtherValid === 'string';
 
-      return this.isProgramGradProStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
+      return this.isProgramGradPrStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
   },
   // Computed function to get the ref of phDTextboxField (it's within a for loop)
   phDTextboxFieldRef() {
@@ -1362,8 +1400,6 @@ export default {
     async handleValidations() {
       this.formSubmitted = true;
       const { valid } = await this.$refs.form.validate()
-
-
       if (valid) {
         this.cleanupFormData();
         this.submitCompletedForm();
@@ -1375,6 +1411,7 @@ export default {
         return;
       }
     },
+
     async submitCompletedForm() {
       const user = useLoggedInUserStore()
       let token = user.token

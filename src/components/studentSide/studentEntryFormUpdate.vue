@@ -258,7 +258,7 @@
                         chips
                         v-model="studentInformation.enrolledUHInfo.majors" 
                         :items="filteredMajors.map(major => major['Plan Name'])" 
-                        label="Select a Major" 
+                        :label= "getTranslation('Select a Major')"
                         multiple
                         :rules="majorsRules"
                         >
@@ -700,7 +700,7 @@
 
 <script>
 // Imports
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -887,6 +887,7 @@ export default {
       minors: [],
       formSubmitted: false,
       hoveredCheckboxID: null,
+
       otherPronounsRules: [
           v => {
               if (!this.formSubmitted) return true;
@@ -1361,7 +1362,7 @@ export default {
       // Check if the rule returned a string (indicating an error message)
       const isProfessionalDesignOtherInValid = typeof isProfessionalDesignOtherValid === 'string';
 
-      return this.isProgramGradProStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
+      return this.isProgramGradPrStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
   },
   // Computed function to get the ref of phDTextboxField (it's within a for loop)
   phDTextboxFieldRef() {
@@ -1372,8 +1373,6 @@ export default {
     async handleValidations() {
       this.formSubmitted = true;
       const { valid } = await this.$refs.form.validate()
-
-
       if (valid) {
         this.cleanupFormData();
         this.submitCompletedForm();
@@ -1385,25 +1384,34 @@ export default {
         return;
       }
     },
+
     async submitCompletedForm() {
       const user = useLoggedInUserStore()
       let token = user.token
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
       
-      axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } }).then(() => {
+      try {
+        // Submit the entry form
+        await axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } });
+
+        // After form submission, call the checkFormCompletion action to update the hasCompletedEntryForm state
+        await user.checkFormCompletion();
+        
+        // Show the success message and navigate to the dashboard
         this.$router.push({ 
-              name: 'studentDashboard',
-              params: {
-                toastType: 'success',
-                toastMessage: this.getTranslation('Thank you for completing the Student Entry Form!'),
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--create'
-            }
-          });
-      })
-      .catch((error) => {
+          name: 'studentDashboard',
+          params: {
+            toastType: 'success',
+            toastMessage: this.getTranslation('Thank you for completing the Student Entry Form!'),
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+          }
+        });
+
+      } catch (error) {
+        // Log the error if form submission fails
         console.log(error);
-      });
+      }
     },
     cleanupFormData() {
       // Check condition for "Other" pronouns

@@ -16,6 +16,7 @@ export const useLoggedInUserStore = defineStore({
       hasCompletedEntryForm: false,
       hasRegisteredExperiences: false,
       goalSettingFormCompletion: {},
+      loading: false,
     }
   },
   getters: { //getting the roles
@@ -110,7 +111,6 @@ export const useLoggedInUserStore = defineStore({
           headers: { token: this.token }
         });
         if (response && response.data) {
-          console.log('response.data: ', response.data)
           this.$patch({
             hasCompletedEntryForm: response.data.hasCompletedEntryForm,
             hasRegisteredExperiences: response.data.hasRegisteredExperiences,
@@ -120,6 +120,12 @@ export const useLoggedInUserStore = defineStore({
       } catch (error) {
         console.log(error);
       }
+    },
+    startLoading() {
+      this.loading = true;
+    },
+    stopLoading() {
+      this.loading = false;
     },
     persist: {
       storage: sessionStorage

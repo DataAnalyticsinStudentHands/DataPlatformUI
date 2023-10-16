@@ -17,7 +17,9 @@
         <v-btn @click=$router.back() style="margin-right: 10px;">
           Cancel
         </v-btn>
+
         <v-btn style="text-align:center;" @click="handleUpdateForm">Update</v-btn>
+        
       </div>
     </main>
   </template>
@@ -54,6 +56,7 @@
         originalActivityName: "" // Store the original activity name
       };
     },
+
     beforeMount() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -69,6 +72,7 @@
           this.originalActivityName = data.activityName; // Set the original activity name
         });
     },
+
     methods: {
       handleUpdateForm() {
         const user = useLoggedInUserStore();

@@ -1,5 +1,4 @@
 <template>
-  <v-form disabled>
     <v-row style="margin-top: 1rem;">
       <!-- Empty space (padding) -->
       <v-col cols="4"></v-col>
@@ -11,14 +10,21 @@
       
       <!-- Button: Edit Information -->
       <v-col md="3">
-        <router-link to="/studentEntryFormUpdate">
-          <v-btn class="btn btn-success">{{getTranslation('Edit Information')}}</v-btn>
-        </router-link>
+        <div v-if="!loading">
+          <router-link to="/studentEntryFormUpdate">
+            <v-btn class="btn btn-success">{{getTranslation('Edit Information')}}</v-btn>
+          </router-link>
+        </div>
       </v-col>
       
       <!-- Empty space (padding) -->
       <v-col cols="2"></v-col>
     </v-row>
+    <v-form disabled>
+      <div v-if="loading" class="loading-container">
+        <v-progress-circular indeterminate></v-progress-circular>
+      </div>
+      <div v-else>
       <v-container style="width: 90%; margin: 0 auto;">
         <br><p class="font-weight-black text-h6">{{getTranslation('Basic Information')}}</p>
           <v-row>
@@ -240,6 +246,7 @@
               </v-col>
             </v-row> 
       </v-container>
+      </div>
   </v-form>
 </template>
 
@@ -353,12 +360,22 @@ beforeMount() {
   let token = user.token;
   let userGivenID = user.userId;
   let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
-  axios.get(url + `/${userGivenID}`, { headers: { token },})
-    .then((resp) => {
-      this.userData = resp.data.userData;
-      this.studentData = resp.data.studentData.studentInformation;
-    });
+
+  useLoggedInUserStore().startLoading();
+  try {
+    axios.get(url + `/${userGivenID}`, { headers: { token },})
+      .then((resp) => {
+        console.log('resp.data: ', resp.data);
+        this.userData = resp.data.userData;
+        this.studentData = resp.data.studentData.studentInformation;
+        useLoggedInUserStore().stopLoading();
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    useLoggedInUserStore().stopLoading();
+  } 
 },
+
 computed: {
   checkedPronouns() {
     if (this.studentData && this.studentData?.pronouns) {
@@ -399,6 +416,10 @@ computed: {
           return ""; // Default value in case it's not found in both formats
       }
   },
+  loading() {
+    const store = useLoggedInUserStore();
+    return store.loading;
+  }
 },
 methods: {
 }

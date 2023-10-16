@@ -5,19 +5,24 @@
     <p class="font-weight-black text-h5" style="text-align: center;">{{ showInactive ? 'Inactive Students' : 'Active Students' }}</p>
     <v-row justify="center" class="pt-5">
     <v-col cols="12" class="text-center">
+
       <v-btn @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Students' : 'Show Inactive Students' }}
       </v-btn>
+
     </v-col>
   </v-row>
   <v-row justify="center">
     <v-col cols="12" class="text-center">
+
       <v-btn style="margin-right:2rem;" @click="deactivateStudents" v-if="selectedStudents.length > 0">
         Deactivate
       </v-btn>
+
       <v-btn @click="activateStudents" v-if="selectedStudents.length > 0">
         Activate
       </v-btn>
+
     </v-col>
   </v-row>
  
@@ -60,7 +65,10 @@
       
     </v-row>
 
-
+    <div v-if="loading" justify="center" align="center">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+    <div v-else>
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 950%">
         <thead>
@@ -84,6 +92,7 @@
               @mouseenter="hoverId = item.type === 'student' ? item.data.userData._id : item.data._id"
               @mouseleave="hoverId = null"
           >
+
             <td class="text-left">
               <input
                 type="checkbox"
@@ -92,6 +101,7 @@
                 style="outline: 2px solid #808080; margin-right: 10px;"
               >
             </td>
+
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ item.data.userData.firstName + ' ' + item.data.userData.lastName }}
             </td>
@@ -120,11 +130,13 @@
               {{ item.data.studentInformation.enrolledUHInfo.expectedGraduationYear }}
             </td>
             <td v-else></td>
+
           </tr>
         </tbody>
 
       </v-table>
       </div>
+    </div>
 
   </main>
 </template>
@@ -149,11 +161,19 @@ export default {
       itemsPerPage: 10,
     };
   },
+
   mounted() {
-    this.fetchStudentData();
-    this.fetchIncompletedStudentData();
-    window.scrollTo(0, 0);
+    useLoggedInUserStore().startLoading();
+    try {
+      this.fetchStudentData();
+      this.fetchIncompletedStudentData();
+      window.scrollTo(0, 0);
+    } catch (error) {
+      // Handle any errors that occur during the fetch operations
+      console.error('Error:', error);
+    }
   },
+
   watch: {
     searchStudent(newVal, oldVal) {
       if (newVal !== oldVal) {
@@ -161,8 +181,15 @@ export default {
         this.currentPage = 1;
       }
     },
+    itemsPerPage(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.currentPage = 1;
+      }
+    },
   },
+
   methods: {
+
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
       this.currentPage = 1;
@@ -173,10 +200,7 @@ export default {
       let token = user.token;
       const updateStatus = { userStatus: 'Inactive' };
 
-      console.log('deactivateStudents - this.selectedStudents: ', this.selectedStudents);
-
       const promises = this.selectedStudents.map((student) => { 
-        console.log('deactivateStudents - student: ', student);
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
         return axios.put(apiURL, updateStatus, { headers: { token } });
       });
@@ -214,6 +238,7 @@ export default {
           console.log(error);
         });
     },
+    
 activateStudents() {
   const user = useLoggedInUserStore();
   let token = user.token;
@@ -257,6 +282,7 @@ activateStudents() {
       console.log(error);
     });
 },
+
     majors(majorsList) {
       return majorsList.length > 0 ? majorsList.join(", ") : "None";
     },
@@ -272,41 +298,42 @@ activateStudents() {
         .map((item) => item.label)
         .join(", ");
     },
+    
     editStudent(userID) {
       this.$router.push({
         name: "instructorSpecificStudent",
         params: { userID: userID },
       });
     },
-    fetchStudentData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL =
-        import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/`;
-      axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          this.studentListRaw = resp.data.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+
+    async fetchStudentData() {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL =
+          import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/`;
+        const resp = await axios.get(apiURL, { headers: { token } });
+        this.studentListRaw = resp.data.data;
+      } catch (error) {
+        console.log(error);
+      }
     },
-    fetchIncompletedStudentData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL =
-        import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
-      axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          // Populate userListRaw with complete user data
-          this.userListRaw = resp.data.userData;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+
+    async fetchIncompletedStudentData() {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL =
+          import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
+        const resp = await axios.get(apiURL, { headers: { token } });
+        this.userListRaw = resp.data.userData;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        useLoggedInUserStore().stopLoading();
+      }
     },
+
     updateSelectedStatus(student) {
       if (student.checked && student.userData.userStatus === "Active") {
         student.checked = false;
@@ -359,6 +386,7 @@ activateStudents() {
     },
   },
   computed: {
+
     filteredStudentData() {
       const searchStudent = this.searchStudent.toLowerCase();
 
@@ -382,6 +410,7 @@ activateStudents() {
       }
       return filteredData;
     },
+
     filteredUserListRaw() {
       const searchStudent = this.searchStudent.toLowerCase();
 
@@ -421,14 +450,21 @@ activateStudents() {
 
       return studentData.concat(userData);
     },
+
     paginatedMergedData() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
       return this.mergedFilteredData.slice(start, end);
     },
+
     totalPaginationLength() {
       return Math.ceil(this.mergedFilteredData.length / this.itemsPerPage);
     },
+    
+    loading() {
+      const store = useLoggedInUserStore();
+      return store.loading;
+    }
 }
 };
 </script>

@@ -9,6 +9,8 @@ if (localStorage.getItem('token')) {
 import router from './router';
 import App from './App.vue';
 import './index.css';
+import screenSizeMixin from './responsiveDesign/responsive.js';
+import './responsiveDesign/responsiveStyles.css';
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
 
 // state management library
@@ -21,6 +23,7 @@ import { createVuetify } from 'vuetify';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
+
 
 const vuetify = createVuetify({
     components,
@@ -46,6 +49,9 @@ pinia.use(({ store }) => {
 import Vue3Toastify from 'vue3-toastify';
 
 const app = createApp(App);
+
+app.mixin(screenSizeMixin);
+
 app.use(Vue3Toastify, {
     autoClose: 5000,
     style: {

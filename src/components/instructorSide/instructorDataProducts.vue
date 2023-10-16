@@ -2,10 +2,14 @@
 <template>
     <div>
       <br>
+
       <v-btn @click="downloadEntryDataAsCSV">Download Student Entry Forms as CSV</v-btn>
+
       <br>
       <br>
+
       <v-btn @click="downloadAllGoalDataAsCSV">Download Student Goal Setting Forms as CSV for <b>All</b> Semesters</v-btn>
+
       <br>
       <br>
       <v-btn @click="downloadAllExitDataAsCSV">Download Student Exit Forms as CSV for <b>All</b> Semesters</v-btn>
@@ -34,6 +38,7 @@
       });
     },
     methods: {
+
       async downloadEntryDataAsCSV() {
           try {
               const user = useLoggedInUserStore();
@@ -126,15 +131,15 @@
       },
   
       convertGoalSettingFormToCSV(jsonData) {
-    // Create the CSV header row
-    const originalHeader = this.getGoalFormCSVHeader(jsonData[0]);
-  
-    // Create the CSV data rows
-    const dataRows = jsonData.map((item) => {
-      const values = this.getGoalFormCSVRowValues(item, originalHeader);
-      return values.join(',');
-    });
-  
+        // Create the CSV header row
+        const originalHeader = this.getGoalFormCSVHeader(jsonData[0]);
+    
+        // Create the CSV data rows
+        const dataRows = jsonData.map((item) => {
+        const values = this.getGoalFormCSVRowValues(item, originalHeader);
+        return values.join(',');
+        });
+    
       // Rename headers for CSV output
       const renameMap = {
           "_id": "id_form",

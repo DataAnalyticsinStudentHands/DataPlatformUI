@@ -1,150 +1,106 @@
 <template>
-  <main class="flex flex-row">
-    <div id="_container" class="h-screen">
-      <header v-if="showElement" class="w-full">
-        <section class="text-center">
-          <img class="m-auto" src="@/assets/DanPersona.svg" />
-        </section>
-        <nav class="mt-10">
-          <ul class="flex flex-col gap-4">
-            <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
-              <li>
-                <router-link to="/">
-                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
-                  Dashboard
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/intakeform">
-                  <span style="position: relative; top: 6px" class="material-icons">people</span>
-                  Client Intake Form
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/eventform">
-                  <span style="position: relative; top: 6px" class="material-icons">event</span>
-                  Create Event
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/findclient">
-                  <span
-                    style="position: relative; top: 6px" class="material-icons">search</span>
-                  Find Client
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/findEvents">
-                  <span style="position: relative; top: 6px" class="material-icons">search</span>
-                  Find Event
-                </router-link>
-              </li>
-            </div>
-          <div v-if="user.isLoggedIn && user.getRole === 'Student'">
-            <li>
-                <router-link to="/studentDashboard">
-                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
-                  Student Dashboard
-                </router-link>
-              </li>
-              <li v-if="!user.hasCompletedEntryForm">
-                <router-link to="/studentEntryForm">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
-                  Student Entry Form
-                </router-link>
-              </li>
-              <li v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences">
-                <router-link to="/goalSettingForm">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
-                  Goal Setting Form
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/exitFormsAvailable">
-                  <span style="position: relative; top: 6px" class="material-icons">description</span>
-                  Exit Forms
-                </router-link>
-              </li>
-          </div>
-          <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
-              <li>
-                <router-link to="/instructorDash">
-                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
-                  Dashboard
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/instructorDataProducts">
-                  <span style="position: relative; top: 6px" class="material-icons">dashboard</span>
-                  Data Products
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/instructorStudentsList">
-                  <span style="position: relative; top: 6px" class="material-icons">person</span>
-                  Students
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/instructorSemesters">
-                  <span style="position: relative; top: 6px" class="material-icons">school</span>
-                  Semesters, Experiences, <br> Activities
-                </router-link>
-              </li>
-          </div>
-          <div v-if="user.isLoggedIn">
-            <li>
-              <hr> <!-- Horizontal line -->
-            </li>
-            <li v-if="user.getRole === 'Student'">
-              <router-link to="/profile">
-                <span style="position: relative; top: 6px" class="material-icons">person</span>
-                Profile
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/updateUserInformation">
-                <span style="position: relative; top: 6px" class="material-icons">settings</span>
-                Update User Information
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/resetPassword">
-                <span style="position: relative; top: 6px" class="material-icons">settings</span>
-                Update Password
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/login">
-              <span style="position: relative; top: 6px" class="material-icons">logout</span>
-              <button @click="handleLogout">Logout</button>
-            </router-link>
-            </li>
-          </div>
-          <div v-if="!user.isLoggedIn">
-            <li>
-              <router-link to="/login">
-              <span style="position: relative; top: 6px" class="material-icons">login</span>
-              <button>Login</button>
-            </router-link>
-            </li>
-          </div>
-          </ul>
-        </nav>
-      </header>
-    </div>
-    <div class="grow w-4/5">
-      <section
-        class="justify-end items-center h-24 flex"
-        style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+  <v-app>
+    <v-layout class="rounded">
+      <v-navigation-drawer
+      color="#c8102e"
       >
-        <h1 class="mr-20 text-3xl text-white">{{ organizationName }}</h1>
-      </section>
-      <div>
-        <router-view @showDashboard="showDashboard"></router-view>
-      </div>
-    </div>
-  </main>
+        <template v-slot:prepend>
+          <v-list-item
+            lines="two"
+            prepend-avatar="@/assets/DanPersona.svg"
+            title="Jane Smith"
+            subtitle="Logged in"
+            class="text-white"
+          ></v-list-item>
+        </template>
+
+<v-list density="compact" nav class="text-white">
+  <div v-if="!user.isLoggedIn">
+    <v-list-item 
+      to="login"
+      prepend-icon="mdi-login"
+      value="login"
+      class="text-base tracking-wider py-2"
+    >Login</v-list-item>
+  </div>
+  <div v-if="user.isLoggedIn && user.getRole === 'Student'">
+    <v-list-item 
+      to="studentDashboard"
+      prepend-icon="mdi-view-dashboard"
+      value="dashboard"
+      class="text-base tracking-wider py-2"
+    >Student Dashboard</v-list-item>
+    <v-list-item 
+      v-if="!user.hasCompletedEntryForm"
+      to="studentEntryForm"
+      prepend-icon="mdi-file-document"
+      value="entryForm"
+      class="text-base tracking-wider py-2"
+    >Student Entry Form</v-list-item>
+    <v-list-item 
+      v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences"
+      to="goalSettingForm"
+      prepend-icon="mdi-file-document"
+      value="goalForm"
+      class="text-base tracking-wider py-2"
+    >Goal Setting Form</v-list-item>
+    <v-list-item 
+      v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences"
+      to="exitFormsAvailable"
+      prepend-icon="mdi-file-document"
+      value="exitForm"
+      class="text-base tracking-wider py-2"
+    >Exit Forms</v-list-item>
+  </div>
+  <div v-if="user.isLoggedIn">
+    <v-list-item>
+      <hr> <!-- Horizontal line -->
+      <v-divider></v-divider>
+    </v-list-item>
+    <v-list-item 
+      v-if="user.getRole === 'Student'"
+      to="profile"
+      prepend-icon="mdi-account"
+      value="profile"
+      class="text-base tracking-wider py-2"
+    >Profile</v-list-item>
+    <v-list-item
+      to="updateUserInformation"
+      prepend-icon="mdi-cog"
+      value="updateInfo"
+      class="text-base tracking-wider py-2"
+    >Update User Information</v-list-item>
+    <v-list-item
+      to="resetPassword"
+      prepend-icon="mdi-cog"
+      value="updatePass"
+      class="text-base tracking-wider py-2"
+    >Update Password</v-list-item>
+    <v-list-item
+      to="login"
+      prepend-icon="mdi-logout"
+      value="updatePass"
+      class="text-base tracking-wider py-2"
+      @click="handleLogout"
+    >Logout</v-list-item>
+  </div>
+</v-list>
+
+      </v-navigation-drawer>
+
+    <v-app-bar 
+      style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+    >
+      <template v-slot:append>
+        <h1 class="mr-10 text-2xl text-white">{{ organizationName }}</h1>
+      </template>
+    </v-app-bar>
+
+    <v-main style="min-height: 300px;">
+      <router-view @showDashboard="showDashboard"></router-view>
+    </v-main>
+  </v-layout>
+  </v-app>
 </template>
 
 <script>

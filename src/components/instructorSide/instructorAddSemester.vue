@@ -71,7 +71,7 @@ export default {
     window.scrollTo(0, 0);
     this.fetchExperienceData();
   },
-  methods: {
+    methods: {
     fetchExperienceData() {
       const user = useLoggedInUserStore();
       let token = user.token;

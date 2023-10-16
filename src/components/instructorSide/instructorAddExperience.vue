@@ -62,6 +62,7 @@ export default {
     this.fetchActivityData();
   },
   methods: {
+
     fetchActivityData() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -76,11 +77,11 @@ export default {
           console.log(error);
         });
     },
+
     handleSubmitForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/`;
-
       axios
         .post(apiURL, {
           experienceCategory: this.experience.experienceCategory,

@@ -1,8 +1,12 @@
 <template>
+  <div v-if="loading" class="loading-container">
+    <v-progress-circular indeterminate></v-progress-circular>
+  </div>
+  <div v-else>
   <main>
       <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">
         Welcome {{ firstName }} {{ lastName }}
-    </h1>
+      </h1>
     <v-container fluid style="width: 90%; margin: 0 auto;">
       <v-row>
         <v-col cols="12" md="5" offset-md="1" class="align-start">
@@ -127,7 +131,36 @@
             <v-list-item>
                 <v-list-item-title class="flex-grow-1 text-center">
                   <span class="font-weight-black text-base">Registered Experiences</span>
-                    <v-icon>mdi-school</v-icon>
+                  <v-dialog width="500">
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        size="x-small"
+                        class="pb-3"
+                        variant="text"
+                        icon="mdi-help-circle-outline"
+                        flat
+                        v-bind="props"
+                      >
+                      </v-btn>
+                    </template>
+
+                    <template v-slot:default="{ isActive }">
+                      <v-card title="Registered Experiences">
+                        <v-card-text>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+
+                          <v-btn
+                            text="Close"
+                            @click="isActive.value = false"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </template>
+                  </v-dialog>
                 </v-list-item-title>
 
                 <!-- Dynamic Experience List Items -->
@@ -270,6 +303,7 @@
     </v-row>
   </v-container>
 </main>
+</div>
 </template>
 
 <script>
@@ -301,44 +335,41 @@ export default {
       registrationExists: false,
     };
   },
-  mounted() {
-    let token = localStorage.getItem("token");
-    let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
-    axios
-      .get(url, {
-        headers: {token},
-      })
-      .then(
-        (res) => {
-          this.firstName = res.data.user.firstName;
-          this.lastName = res.data.user.lastName;
-        },
-        (err) => {
-          if (err) {
-            this.$router.push("/login");
-          }
-        }
-      )
-    let apiURL = import.meta.env.VITE_ROOT_API + `/dashboarddata/recentEvent/`;
-    this.queryData = [];
-    axios.get(apiURL,{
-        headers: { token: localStorage.getItem("token") },
-      }).then((resp) => {
-      this.queryData = resp.data;
-    });
-    this.fetchExperiences();
-    this.fetchRegisteredExperiences();
+  async mounted() {
+    useLoggedInUserStore().startLoading();
+      try {
+          let token = localStorage.getItem("token");
+          let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
+
+          let response = await axios.get(url, { headers: { token } });
+          this.firstName = response.data.user.firstName;
+          this.lastName = response.data.user.lastName;
+
+          let apiURL = import.meta.env.VITE_ROOT_API + `/dashboarddata/recentEvent/`;
+          this.queryData = [];
+          response = await axios.get(apiURL, { headers: { token } });
+          this.queryData = response.data;
+
+          await this.fetchExperiences();
+          await this.fetchRegisteredExperiences();
+      } catch (err) {
+          console.error(err);
+          this.$router.push("/login");
+      } finally {
+        useLoggedInUserStore().stopLoading();
+      }
     if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-        position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
-      });
-    };
-    // Check if the route has a parameter named 'action' with value 'register'
-    if (this.$route.params.action === 'register') {
-      // Open the 'Add / Remove Experiences' dialog
-      this.dialog = true;
-    }
+            toast[this.$route.params.toastType](this.$route.params.toastMessage, {
+                position: this.$route.params.toastPosition,
+                toastClassName: this.$route.params.toastCSS
+            });
+        }
+
+        // Check if the route has a parameter named 'action' with value 'register'
+        if (this.$route.params.action === 'register') {
+            // Open the 'Add / Remove Experiences' dialog
+            this.dialog = true;
+        }
   },
   watch: {
     dialog(newVal) {
@@ -348,6 +379,10 @@ export default {
     }
   },
   computed: {
+    loading() {
+      const store = useLoggedInUserStore();
+      return store.loading;
+    },
     hasCompletedEntryForm() {
       const store = useLoggedInUserStore();
       return store.hasCompletedEntryForm;
