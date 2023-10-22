@@ -23,19 +23,9 @@
   export default {
     data(){
       return{
-      queryData:[],
       }
     },
     mounted(){
-      const user = useLoggedInUserStore()
-      let token = user.token
-      let apiURL = import.meta.env.VITE_ROOT_API + `/studentSideData/getExperienceCount/`;
-      this.queryData = [];
-      axios.get(apiURL,{
-          headers: { token },
-        }).then((resp) => {
-        this.queryData = resp.data;
-      });
     },
     methods: {
 

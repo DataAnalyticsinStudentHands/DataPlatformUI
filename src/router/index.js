@@ -187,7 +187,7 @@ const routes = [
       }
     },
     {
-      path: '/instructorSpecificStudent/:userID',
+      path: '/instructorSpecificStudent',
       name: 'instructorSpecificStudent',
       component: () => import('../components/instructorSide/instructorSpecificStudent.vue'),
       beforeEnter: (to, from, next) => {

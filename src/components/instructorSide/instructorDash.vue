@@ -39,31 +39,6 @@
           Goal Form Completion Tracker
         </v-card-title>
         <!-- v-dialog content -->
-
-        <v-card-text  class="py-1">
-          This tool will show you the list of students who:
-          <v-list dense class="mt-0">
-            <v-list-item-group>
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon small>mdi-circle-medium</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  Have registered for the selected Experience
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon small>mdi-circle-medium</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  Have not yet completed a Goal Setting Form for the selected Experience
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-card-text>
-
         <v-card-subtitle class="text-h6">
           Select an Experience
         </v-card-subtitle>

@@ -18,16 +18,17 @@
               size="large"
               variant="text"
               icon="mdi-menu"
-              @click.stop="rail = !rail"
+              @click="rail = !rail"
               class="text-white"
             ></v-btn>
           </v-list-item>
         </div>
         <div v-else>
           <v-list-item
+            v-if="loggedIn"
             lines="two"
             prepend-avatar="@/assets/DanPersona.svg"
-            title="Jane Smith"
+            :title="fullName"
             subtitle="Logged in"
             class="text-white"
           >
@@ -49,7 +50,16 @@
               prepend-icon="mdi-login"
               value="Login"
               class=" tracking-wider "
-            >Login</v-list-item>
+            >Login
+            <template v-slot:append>
+              <v-btn
+                variant="text"
+                size="small"
+                icon="mdi-arrow-expand-left"
+                @click.stop.prevent="sidebarToggle"
+              ></v-btn>
+            </template>
+          </v-list-item>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Student'">
             <v-list-item 
@@ -207,6 +217,14 @@ export default {
   computed: {
     isMdAndUp() {
       return this.$vuetify.display.mdAndUp;
+    },
+    fullName() {
+      const store = useLoggedInUserStore();
+      return (store.firstName.trim() + ' ' + store.lastName.trim());
+    },
+    loggedIn() {
+      const store = useLoggedInUserStore();
+      return store.isLoggedIn;
     }
   },
   methods: {

@@ -5,7 +5,7 @@
   <div v-else>
   <main>
       <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">
-        Welcome {{ firstName }} {{ lastName }}
+        Welcome {{ fullName }}
       </h1>
     <v-container fluid style="width: 90%; margin: 0 auto;">
       <v-row>
@@ -338,18 +338,6 @@ export default {
   async mounted() {
     useLoggedInUserStore().startLoading();
       try {
-          let token = localStorage.getItem("token");
-          let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
-
-          let response = await axios.get(url, { headers: { token } });
-          this.firstName = response.data.user.firstName;
-          this.lastName = response.data.user.lastName;
-
-          let apiURL = import.meta.env.VITE_ROOT_API + `/dashboarddata/recentEvent/`;
-          this.queryData = [];
-          response = await axios.get(apiURL, { headers: { token } });
-          this.queryData = response.data;
-
           await this.fetchExperiences();
           await this.fetchRegisteredExperiences();
       } catch (err) {
@@ -402,6 +390,11 @@ export default {
         return this.goalSettingFormCompletion[experience._id];
       });
     },
+    fullName() {
+      const store = useLoggedInUserStore();
+      return (store.firstName.trim() + ' ' + store.lastName.trim());
+    },
+
 
   },
   methods: {

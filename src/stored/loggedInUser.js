@@ -12,6 +12,8 @@ export const useLoggedInUserStore = defineStore({
       userId: "",
       role: "",
       token: "",
+      firstName: "",
+      lastName: "",
       isLoggedIn: false,
       firstTimeLoginTF: false,
       languagePreference: "",
@@ -44,6 +46,21 @@ export const useLoggedInUserStore = defineStore({
             
           // Set the global default header for axios
           axios.defaults.headers.common['token'] = response.data.token;
+
+          let token = localStorage.getItem("token");
+          let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
+
+          try {
+            let fullName = await axios.get(url, { headers: { token } });
+            if (fullName) {
+              this.$patch({
+                firstName: fullName.data.user.firstName,
+                lastName: fullName.data.user.lastName
+              })
+            }
+          } catch (error) {
+            console.log(error)
+          }
           
           if (this.role === 'Instructor') {
             this.$router.push("/instructorDash");
@@ -82,6 +99,7 @@ export const useLoggedInUserStore = defineStore({
           headers: { token: this.token }
         });
         if (response && response.data) {
+          console.log('response.data: ', response.data);
           this.$patch({
             hasCompletedEntryForm: response.data.hasCompletedEntryForm,
             hasRegisteredExperiences: response.data.hasRegisteredExperiences,

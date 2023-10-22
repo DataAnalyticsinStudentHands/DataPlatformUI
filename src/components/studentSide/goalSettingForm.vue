@@ -8,14 +8,45 @@
   ref="form"
   @submit.prevent>
   <v-container  style="width: 90%; margin: 0 auto;">
-    <div>
+    <div style="display: flex; align-items: center;">
 
       
     <p class="font-weight-black text-h5 text--primary">{{getTranslation('Goal Setting Form')}}</p>
 
+    <v-dialog width="500">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            size="x-small"
+            class="pb-2"
+            variant="text"
+            icon="mdi-help-circle-outline"
+            flat
+            v-bind="props"
+          >
+          </v-btn>
+        </template>
 
+        <template v-slot:default="{ isActive }">
+          <v-card title="Goal Setting Form">
+            <v-card-text>
+              The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course. 
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                text="Close"
+                @click="isActive.value = false"
+              ></v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
+
+    </div>
     <p class="text-subtitle-1">{{getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
-</div>
+
 <v-row dense>
     <v-col cols="12" md="5">
       <p class="font-weight-black text-h8">{{getTranslation('Current Semester:')}}</p>

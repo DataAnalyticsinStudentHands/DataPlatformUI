@@ -21,7 +21,7 @@
         <template v-slot:default="{ isActive }">
           <v-card title="Student Entry Form">
             <v-card-text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.
             </v-card-text>
 
             <v-card-actions>
