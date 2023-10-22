@@ -16,16 +16,16 @@ const routes = [
       component: () => import('../components/studentSide/profilePage.vue')
     },
     {
-      path: '/test',
-      name: 'test',
-      props: true,
-      component: () => import('../test.vue')
-    },
-    {
       path: '/test1',
       name: 'test1',
       props: true,
       component: () => import('../components/test1.vue')
+    },
+    {
+      path: '/test2',
+      name: 'test2',
+      props: true,
+      component: () => import('../components/loginPages/test2.vue')
     },
     {
         path: '/dashboard',
