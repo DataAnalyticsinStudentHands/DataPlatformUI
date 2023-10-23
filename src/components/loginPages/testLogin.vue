@@ -94,14 +94,19 @@ export default {
   },
   methods: {
     async login() {
-      // Check if form is valid before proceeding
-      if (this.$refs.loginForm.validate()) {
+      // Check if there are any errors in the form
+      await this.$refs.loginForm.validate();
+      const hasErrors = this.$refs.loginForm.errors.length > 0;
+
+      // If no errors, proceed with login
+      if (!hasErrors) {
+        console.log('form is valid');
         this.loading = true;
         try {
           // Attempt to login
           await this.store.login(this.email, this.password);
-          //If invalid login, error message will appear from Pinia store
-          //If unverified account, send to verification view
+          // If invalid login, error message will appear from Pinia store
+          // If unverified account, send to verification view
           console.log(this.store.unverified)
           if (this.store.unverified === true) {
             this.sendNewCode();
@@ -111,6 +116,8 @@ export default {
         } finally {
           this.loading = false;
         }
+      } else {
+        console.log('form has errors');
       }
     },
     async sendNewCode() {
