@@ -28,6 +28,12 @@ const routes = [
       component: () => import('../components/loginPages/test2.vue')
     },
     {
+      path: '/testLogin',
+      name: 'testLogin',
+      props: true,
+      component: () => import('../components/loginPages/testLogin.vue')
+    },
+    {
         path: '/dashboard',
         name: 'dashboard',
         props: true,
