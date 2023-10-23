@@ -5,21 +5,28 @@
           Welcome to Data & Society
       </h2>
 
-      <v-text-field
-        label="Email:"
-        v-model="email"
-        prepend-icon="mdi-email"
-      ></v-text-field>
+      <!-- Added form here -->
+      <v-form ref="loginForm">
+        <v-text-field
+          label="Email:"
+          v-model="email"
+          :rules="emailRules"
+          required
+          prepend-icon="mdi-email"
+        ></v-text-field>
 
-      <v-text-field
-        label="Password:"
-        type="password"
-        v-model="password"
-        prepend-icon="mdi-lock"
-      ></v-text-field>
+        <v-text-field
+          label="Password:"
+          type="password"
+          v-model="password"
+          :rules="requiredRule"
+          required
+          prepend-icon="mdi-lock"
+        ></v-text-field>
+      </v-form>
 
       <v-row>
-        <v-col cols="12" class="pl-0">
+        <v-col cols="12" class="pl-0 pt-6">
           <span
             class="font-semibold text-base text-red-800 cursor-pointer"
             @click="$emit('change-tab', 'resetPass')"
@@ -42,6 +49,7 @@
       <v-row justify="center">
         <v-col cols="8">
           <v-btn
+            :loading="loading"
             block
             class="mt-3 bg-red-700 text-white rounded"
             @click="login"
@@ -53,19 +61,30 @@
 </template>
 
 <script>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
+import axios from 'axios'
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
   name: "LoginForm",
   props: ["tab"],
   data() {
-    return {
-      email: "",
-      password: "",
-      error: "",
-    };
+      return {
+        email: "",
+        password: "",
+        error: "",
+        loading: false,
+        emailRules: [
+            v => {
+                if (!v) {
+                    return 'E-mail is required';
+                } else if (!/.+@.+/.test(v)) {
+                    return 'E-mail must be valid';
+                }
+                return true;
+            }
+        ],
+        requiredRule: [v => !!v || 'This field is required']
+      };
   },
   setup() {
     const store = useLoggedInUserStore()
@@ -75,15 +94,49 @@ export default {
   },
   methods: {
     async login() {
-      try {
-        // Attempt to login
-        await this.store.login(this.email, this.password);
-        // After successful login, check if the user has completed forms
-        await this.store.checkFormCompletion();
-      } catch (error) {
-        console.log(error);
+      // Check if form is valid before proceeding
+      if (this.$refs.loginForm.validate()) {
+        this.loading = true;
+        try {
+          // Attempt to login
+          await this.store.login(this.email, this.password);
+          //If invalid login, error message will appear from Pinia store
+          //If unverified account, send to verification view
+          console.log(this.store.unverified)
+          if (this.store.unverified === true) {
+            this.sendNewCode();
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.loading = false;
+        }
       }
     },
+    async sendNewCode() {
+    let user = {
+      email: this.email,
+      error: this.error,
+    };
+    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/sendNewCode`;
+
+    axios.put(apiURL, user)
+      .then((res) => {
+        if (res.status == 200) {
+          let userID = res.data.userID; // Extract the userID from the response
+          this.$router.push({ 
+            name: 'testVerifyExisting', 
+            params: { id: userID } 
+          });
+        } else {
+          console.log('Unexpected response status:', res.status);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+
   }
 };
 </script>

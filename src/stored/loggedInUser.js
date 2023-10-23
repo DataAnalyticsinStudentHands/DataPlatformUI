@@ -15,7 +15,7 @@ export const useLoggedInUserStore = defineStore({
       firstName: "",
       lastName: "",
       isLoggedIn: false,
-      firstTimeLoginTF: false,
+      unverified: null,
       languagePreference: "",
       hasCompletedEntryForm: false,
       hasRegisteredExperiences: false,
@@ -48,31 +48,45 @@ export const useLoggedInUserStore = defineStore({
           axios.defaults.headers.common['token'] = response.data.token;
 
           let token = localStorage.getItem("token");
-          let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
 
-          try {
-            let fullName = await axios.get(url, { headers: { token } });
-            if (fullName) {
-              this.$patch({
-                firstName: fullName.data.user.firstName,
-                lastName: fullName.data.user.lastName
-              })
-            }
-          } catch (error) {
-            console.log(error)
-          }
+        // If userStatus is 'Pending', update unverified and token fields
+        if (response.data.userStatus === 'Pending') {
+          console.log('pending fetched');
+          this.$patch({
+            unverified: true,
+            token: response.data.token
+          });
+          return;
+        }
+
+        await this.getFullName();
           
           if (this.role === 'Instructor') {
             this.$router.push("/instructorDash");
           } else if (this.role === 'Student') {
-            this.$router.push("/studentDashboard");
+            // After successful login, check if the student has completed forms
+            await this.checkFormCompletion();
+            if (this.hasCompletedEntryForm) {
+              this.$router.push("/studentDashboard");
+            } else {
+              this.$router.push("/studentEntryForm");
+            }
           } else {
             this.$router.push("/");
           }
         }
       } catch (error) {
-        console.log(error)
-        alert("Invalid credentials. - Please try again.");
+        if (error.response && error.response.status === 401) {
+            const message = "Invalid email or password."
+            toast.error(message, {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--delete',
+              limit: 2,
+              multiple: false
+            });
+        } else {
+            console.log(error);
+        }
       }
     },
     logout(reset = false) {
@@ -81,7 +95,15 @@ export const useLoggedInUserStore = defineStore({
         userId: "",
         role: "",
         token: "",
-        isLoggedIn: false
+        firstName: "",
+        lastName: "",
+        isLoggedIn: false,
+        unverified: null,
+        languagePreference: "",
+        hasCompletedEntryForm: false,
+        hasRegisteredExperiences: false,
+        goalSettingFormCompletion: {},
+        loading: false,
       });
 
       // Clear the token from localStorage
@@ -90,6 +112,69 @@ export const useLoggedInUserStore = defineStore({
       // Remove the global default header for axios
       delete axios.defaults.headers.common['token'];
     },    
+    async getFullName() {
+      let token = localStorage.getItem("token");
+      let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
+
+      try {
+        let fullName = await axios.get(url, { headers: { token } });
+        if (fullName) {
+          this.$patch({
+            firstName: fullName.data.user.firstName,
+            lastName: fullName.data.user.lastName
+          })
+        }
+      } catch (error) {
+        console.log(error);
+    }
+    },
+    async verifyExistingAcc(responseData) {
+      // Extract the required details from the responseData
+      const { token, userID, userRole, languagePreference } = responseData;
+
+      // Update the Pinia store with the extracted details
+      this.$patch({
+        isLoggedIn: true,
+        role: userRole,
+        userId: userID,
+        token: token,
+        languagePreference: languagePreference
+      });
+
+      // Save the new token to localStorage
+      localStorage.setItem("token", token);
+
+      // Set the global default header for axios
+      axios.defaults.headers.common['token'] = token;
+
+      // If the status of the user is 'Pending', update the unverified field
+      if (responseData.userStatus === 'Pending') {
+        this.$patch({
+          unverified: true,
+          token: token
+        });
+        return; // Return from the method since the account is still pending
+      }
+
+      // Fetch the full name of the user
+      await this.getFullName();
+
+      // Navigate to the appropriate dashboard based on the user's role
+      if (this.role === 'Instructor') {
+        this.$router.push("/instructorDash");
+      } else if (this.role === 'Student') {
+        // After successful verification, check if the student has completed forms
+        await this.checkFormCompletion();
+        if (this.hasCompletedEntryForm) {
+          this.$router.push("/studentDashboard");
+        } else {
+          this.$router.push("/studentEntryForm");
+        }
+      } else {
+        this.$router.push("/");
+      }
+    },
+
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
     },

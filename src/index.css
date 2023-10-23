@@ -67,3 +67,13 @@ button {
     align-items: center;
     min-height: 100vh; /* Ensures it takes up the full viewport height */
   }
+
+
+  @media (max-width: 600px) {  /* This is just an example breakpoint; adjust as needed */
+    .Toastify__toast--delete {
+        width: 80%;           /* Set the toast width */
+        margin: 0 auto;       /* Center the toast */
+        padding: 10px;        /* Adjust the padding */
+        font-size: 16px;      /* Adjust the font size */
+    }
+}

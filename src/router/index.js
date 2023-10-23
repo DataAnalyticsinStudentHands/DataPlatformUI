@@ -4,6 +4,14 @@ import { useLoggedInUserStore } from '../stored/loggedInUser';
 
 const routes = [
     {
+      path: '/',
+      // name: 'Home',
+      // props: true,
+      // component: () => import('../components/loginPages/login.vue')
+      redirect: '/testLogin'
+      
+  },
+    {
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
@@ -25,14 +33,26 @@ const routes = [
       path: '/test2',
       name: 'test2',
       props: true,
-      component: () => import('../components/loginPages/test2.vue')
-    },
-    {
-      path: '/testLogin',
-      name: 'testLogin',
-      props: true,
-      component: () => import('../components/loginPages/testLogin.vue')
-    },
+      component: () => import('../components/loginPages/test2.vue'),
+      children: [
+        {
+          path: '',
+          redirect: '/testLogin'
+        },
+        {
+          path: '/testLogin', // Note: Don't need the leading slash for child paths
+          name: 'testLogin',
+          props: true,
+          component: () => import('../components/loginPages/testLogin.vue')
+        },
+        {
+          path: '/testVerifyExisting',
+          name: 'testVerifyExisting',
+          props: true,
+          component: () => import('../components/loginPages/testVerifyExisting.vue')
+        }
+      ]
+    },    
     {
         path: '/dashboard',
         name: 'dashboard',
@@ -77,13 +97,6 @@ const routes = [
         name: 'Register',
         props: true,
         component: () => import('../components/loginPages/registerForm.vue')
-    },
-    {
-        path: '/',
-        name: 'Home',
-        props: true,
-        component: () => import('../components/loginPages/login.vue')
-        
     },
     {
       path: '/login',
