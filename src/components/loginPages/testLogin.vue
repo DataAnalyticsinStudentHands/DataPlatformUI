@@ -5,7 +5,7 @@
           Welcome to Data & Society
       </h2>
 
-      <!-- Added form here -->
+      <!-- Login form -->
       <v-form ref="loginForm">
         <v-text-field
           label="Email:"

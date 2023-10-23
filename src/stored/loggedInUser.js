@@ -60,20 +60,7 @@ export const useLoggedInUserStore = defineStore({
         }
 
         await this.getFullName();
-          
-          if (this.role === 'Instructor') {
-            this.$router.push("/instructorDash");
-          } else if (this.role === 'Student') {
-            // After successful login, check if the student has completed forms
-            await this.checkFormCompletion();
-            if (this.hasCompletedEntryForm) {
-              this.$router.push("/studentDashboard");
-            } else {
-              this.$router.push("/studentEntryForm");
-            }
-          } else {
-            this.$router.push("/");
-          }
+        
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -158,23 +145,10 @@ export const useLoggedInUserStore = defineStore({
 
       // Fetch the full name of the user
       await this.getFullName();
-
-      // Navigate to the appropriate dashboard based on the user's role
-      if (this.role === 'Instructor') {
-        this.$router.push("/instructorDash");
-      } else if (this.role === 'Student') {
-        // After successful verification, check if the student has completed forms
-        await this.checkFormCompletion();
-        if (this.hasCompletedEntryForm) {
-          this.$router.push("/studentDashboard");
-        } else {
-          this.$router.push("/studentEntryForm");
-        }
-      } else {
-        this.$router.push("/");
-      }
     },
+    async verifyFromRegistration() {
 
+    },
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
     },

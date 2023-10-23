@@ -64,6 +64,7 @@ export default {
   mounted() {
     if (this.$route.params && this.$route.params.id) {
         this.userID = this.$route.params.id; 
+        console.log(this.userID);
     }
   },
   methods: {
@@ -95,6 +96,20 @@ export default {
         if (res.status === 200) {
             console.log('The account has been successfully activated.');
             await store.verifyExistingAcc(res.data);
+            // Navigate to the appropriate dashboard based on the user's role
+            if (store.role === 'Instructor') {
+                this.$router.push("/instructorDash");
+            } else if (store.role === 'Student') {
+                // After successful verification, check if the student has completed forms
+                await store.checkFormCompletion();
+                if (store.hasCompletedEntryForm) {
+                this.$router.push("/studentDashboard");
+                } else {
+                this.$router.push("/studentEntryForm");
+                }
+            } else {
+                this.$router.push("/");
+            }
         } else {
             console.log('Unexpected response status:', res.status);
         }

@@ -118,6 +118,21 @@ export default {
       try {
         // Attempt to login
         await this.store.login(this.email, this.password);
+
+        if (this.store.role === 'Instructor') {
+            this.$router.push("/instructorDash");
+          } else if (this.store.role === 'Student') {
+            // After successful login, check if the student has completed forms
+            await this.store.checkFormCompletion();
+            if (this.store.hasCompletedEntryForm) {
+              this.$router.push("/studentDashboard");
+            } else {
+              this.$router.push("/studentEntryForm");
+            }
+          } else {
+            this.$router.push("/");
+          };
+
         // After successful login, check if the user has completed forms
         await this.store.checkFormCompletion();
       } catch (error) {

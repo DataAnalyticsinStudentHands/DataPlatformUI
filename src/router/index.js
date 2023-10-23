@@ -46,6 +46,12 @@ const routes = [
           component: () => import('../components/loginPages/testLogin.vue')
         },
         {
+          path: '/testRegister', // Note: Don't need the leading slash for child paths
+          name: 'testRegister',
+          props: true,
+          component: () => import('../components/loginPages/testRegister.vue')
+        },
+        {
           path: '/testVerifyExisting',
           name: 'testVerifyExisting',
           props: true,

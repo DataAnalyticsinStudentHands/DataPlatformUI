@@ -12,7 +12,7 @@
         <v-tab @click="changeRoute('/testLogin')" value="testLogin">
           <span class="font-semibold text-red-800">Login</span>
         </v-tab>
-          <v-tab @click="changeRoute('register')" :value="$route.path === '/register'"> <!-- Updated this line -->
+          <v-tab @click="changeRoute('/testRegister')" value="testRegister"> <!-- Updated this line -->
             <span class="font-semibold text-red-800">Register</span>
           </v-tab>
         </v-tabs>
@@ -33,13 +33,15 @@ import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import LoginForm from "@/components/loginPages/testLogin.vue";
 import VerifyExisting from "@/components/loginPages/testVerifyExisting.vue";
+import RegisterForm from "@/components/loginPages/testRegister.vue";
 
 export default {
   name: "Login",
   emits: ["showDashboard"],
   components: {
     LoginForm,
-    VerifyExisting
+    VerifyExisting,
+    RegisterForm,
   },
   data() {
     return {
@@ -60,6 +62,19 @@ export default {
     const store = useLoggedInUserStore()
     return {
       store,
+    }
+  },
+  watch: {
+    // Watch the route and update the tab accordingly
+    '$route.path': {
+      immediate: true, // Execute the handler function immediately upon registration
+      handler(newValue) {
+        if (newValue === '/testLogin') {
+          this.tab = 'testLogin';
+        } else if (newValue === '/testRegister') {
+          this.tab = 'testRegister';
+        }
+      }
     }
   },
   methods: {
