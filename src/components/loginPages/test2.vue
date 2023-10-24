@@ -58,8 +58,6 @@
 
 
 <script>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import LoginForm from "@/components/loginPages/testLogin.vue";
 import VerifyNew from "@/components/loginPages/testVerifyNew.vue";

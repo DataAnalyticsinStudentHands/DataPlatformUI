@@ -4,6 +4,7 @@
     "Welcome to Data & Society": "Bienvenido a Data & Society",
     "Email:": "Correo electrónico:",
     "Password:": "Contraseña:",
+    "Password": "Contraseña",
     "Forgot Your Password?": "¿Olvidaste tu contraseña?",
     "Have a Confirmation Code?": "¿Tienes un código de confirmación?",
     "Create Your Account": "Crea Tu Cuenta",
@@ -43,5 +44,14 @@
     "Password is required": "La contraseña es obligatoria",
     "Password must be at least 8 characters long": "La contraseña debe tener al menos 8 caracteres",
     "Passwords must match": "Las contraseñas deben coincidir",
-    "Re-entered password is required": "Se requiere volver a ingresar la contraseña"
+    "Re-entered password is required": "Se requiere volver a ingresar la contraseña",
+    "Passwords do not match!": "¡Las contraseñas no coinciden!",
+    "Emails do not match!": "¡Los correos electrónicos no coinciden!",
+    "An error occurred. Please try again.": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+    "Success! You may now reset your password.": "¡Éxito! Ahora puedes restablecer tu contraseña.",
+    "Invalid code. Please try again.": "Código inválido. Por favor, inténtalo de nuevo.",
+    "Password Reset! You may now login.": "¡Contraseña reestablecida! Ahora puedes iniciar sesión.",
+    "Your account is activated! You may now login.": "¡Tu cuenta ha sido activada! Ahora puedes iniciar sesión.",
+    "Invalid Email or Code.": "Correo electrónico o código inválido.",
+    "Your code has already expired. A new code has been sent! Please wait for email.": "Tu código ya ha expirado. ¡Se ha enviado un nuevo código! Por favor, espera el correo electrónico."
 }

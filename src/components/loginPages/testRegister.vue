@@ -168,14 +168,14 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
         if (this.user.password !== this.user.confirm_pasword) {
           this.errorr = "Passwords do not match.";
           this.isConfirmPasswordValid = false;
-          toast.error('Passwords do not match!', {
+          toast.error(this.$t('Passwords do not match!'), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete'
           });
         } else if (this.user.email !== this.user.confirm_email) {
           this.errorr = "Emails do not match.";
           this.isConfirmEmailValid = false;
-          toast.error('Emails do not match!', {
+          toast.error(this.$t('Emails do not match!'), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete'
           });
@@ -224,7 +224,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
             },
             (err) => {
               if (err.response && err.response.data.title === 'Registration Failed.') {
-                toast.error(err.response.data.error, {
+                toast.error(this.$t(err.response.data.error), {
                   position: 'top-right',
                   toastClassName: 'Toastify__toast--delete'
                 });

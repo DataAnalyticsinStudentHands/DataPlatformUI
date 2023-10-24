@@ -116,7 +116,7 @@ export default {
                     name: 'testLogin',
                     params: {
                         toastType: 'success',
-                        toastMessage: 'Your account is activated! You may now login.',
+                        toastMessage: this.$t('Your account is activated! You may now login.'),
                         toastPosition: 'top-right',
                         toastCSS: 'Toastify__toast--create'
                     }
@@ -125,7 +125,7 @@ export default {
         } catch (err) {
             console.log('err: ', err.message);
             if (err.response.data.title === 'Invalid') {
-                toast.error("Invalid Email or Code.", {
+                toast.error(this.$t('Invalid Email or Code.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });
@@ -134,7 +134,7 @@ export default {
                 try {
                     await this.sendNewCode();
                 } catch (error) {
-                    toast.error("An unexpected error occurred. Please try again.", {
+                    toast.error(this.$t('An error occurred. Please try again.'), {
                         position: 'top-right',
                         toastClassName: 'Toastify__toast--delete'
                     });
@@ -156,7 +156,7 @@ export default {
         axios.put(apiURL, user)
         .then((res) => {
             if (res.status == 200) {
-                toast.error('Your code has already expired. A new code has been sent! Please wait for email.', {
+                toast.error(this.$t('Your code has already expired. A new code has been sent! Please wait for email.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete',
                     autoClose: false,

@@ -177,19 +177,19 @@ export default {
                             name: 'testLogin',
                             params: { 
                                 toastType: 'success',
-                                toastMessage: 'Password Reset! You may now login.',
+                                toastMessage: this.$t('Password Reset! You may now login.'),
                                 toastPosition: 'top-right',
                                 toastCSS: 'Toastify__toast--create'
                             }
                         });
                     } else {
-                        toast.error("An error occurred. Please try again.", {
+                        toast.error(this.$t('An error occurred. Please try again.'), {
                             position: 'top-right',
                             toastClassName: 'Toastify__toast--delete'
                         });
                     }
                 } catch (error) {
-                    toast.error('An error occurred. Please try again.', {
+                    toast.error(this.$t('An error occurred. Please try again.'), {
                         position: 'top-right',
                         toastClassName: 'Toastify__toast--delete'
                     });

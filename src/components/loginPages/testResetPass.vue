@@ -92,13 +92,13 @@ export default {
                         // Grab the token from the response
                         this.token = response.data.token;
                     } else {
-                        toast.error("An error occurred. Please try again.", {
+                        toast.error(this.$t('An error occurred. Please try again.'), {
                             position: 'top-right',
                             toastClassName: 'Toastify__toast--delete'
                         });
                     }
                 } catch (error) {
-                    toast.error('An error occurred. Please try again.', {
+                    toast.error(this.$t('An error occurred. Please try again.'), {
                         position: 'top-right',
                         toastClassName: 'Toastify__toast--delete'
                     });

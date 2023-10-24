@@ -114,20 +114,20 @@ export default {
                             params: { 
                                 userID: this.userID,
                                 toastType: 'success',
-                                toastMessage: 'Success! You may now reset your password.',
+                                toastMessage: this.$t('Success! You may now reset your password.'),
                                 toastPosition: 'top-right',
                                 toastCSS: 'Toastify__toast--create'
                             }
                         });
 
                     } else {
-                        toast.error("Invalid code. Please try again.", {
+                        toast.error(this.$t('Invalid code. Please try again.'), {
                             position: 'top-right',
                             toastClassName: 'Toastify__toast--delete'
                         });
                     }
                 } catch (error) {
-                    toast.error('Invalid code. Please try again.', {
+                    toast.error(this.$t('Invalid code. Please try again.'), {
                         position: 'top-right',
                         toastClassName: 'Toastify__toast--delete'
                     });

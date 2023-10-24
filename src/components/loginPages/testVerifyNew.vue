@@ -112,7 +112,7 @@ export default {
                     this.$router.push("/");
                 }
             } else {
-                toast.error('An error occurred. Please try again.', {
+                toast.error(this.$t('An error occurred. Please try again.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });
@@ -123,7 +123,7 @@ export default {
                 if (err.response.data.title === 'Expired code') {
                     try {
                         await this.sendNewCode();
-                        toast.error('Your code has already expired. A new code has been sent! Please wait for email.', {
+                        toast.error(this.$t('Your code has already expired. A new code has been sent! Please wait for email.'), {
                             position: 'top-right',
                             toastClassName: 'Toastify__toast--delete',
                             autoClose: false,
@@ -139,7 +139,7 @@ export default {
                 }
             } else {
                 console.log(err);
-                toast.error('An error has occured. Please try again.', {
+                toast.error(this.$t('An error has occured. Please try again.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });
