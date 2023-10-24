@@ -3,13 +3,13 @@
         <v-row>
             <v-col cols="12" class="pb-0">
                 <h2 class="font-bold text-2xl text-red-700 tracking-widest">
-                    Please Verify Your Email
+                    {{$t('Please Verify Your Email')}}
                 </h2>
             </v-col>
         </v-row>
         <v-row>
             <v-col cols="12">
-                Please check your email for a confirmation code to verify your email address. This may take a few minutes.
+                {{$t('Please check your email for a confirmation code to verify your email address. This may take a few minutes.')}}
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -19,7 +19,7 @@
                         <v-text-field
                             v-model="code"
                             :rules="rules"
-                            label="Confirmation Code:"
+                            :label="$t('Confirmation Code:')"
                             class="mx-auto"
                             style="width: 100%;"
                         >
@@ -29,7 +29,7 @@
                             type="submit" 
                             block 
                             class="mt-3 bg-red-700 text-white rounded"
-                        >Submit</v-btn>
+                        >{{$t('Submit')}}</v-btn>
                     </v-form>
                 </v-sheet>
             </v-col>

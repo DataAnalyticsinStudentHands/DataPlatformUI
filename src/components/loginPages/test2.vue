@@ -1,35 +1,56 @@
 <template>
-  <v-row justify="center" class="mt-5" :class="{'fill-height': $vuetify.display.xs}">
-    <v-col cols="12" sm="10" md="8" lg="6">
-      <v-card class="pa-5 fill-height" :elevation="$vuetify.display.xs ? 0 : 8">
-        <v-tabs 
-          v-model="tab" 
-          centered 
-          grow
-          density="comfortable"
-          slider-color="red-800"
-        >
-        <v-tab @click="changeRoute('/testLogin')" value="testLogin">
-          <span class="font-semibold text-red-800">Login</span>
-        </v-tab>
-          <v-tab @click="changeRoute('/testRegister')" value="testRegister"> <!-- Updated this line -->
-            <span class="font-semibold text-red-800">Register</span>
-          </v-tab>
-        </v-tabs>
-
-        <router-view 
-          v-slot="{ Component }" 
-          @navigateTo="changeRoute"
-        >
-          <v-expand-transition>
-              <component :is="Component" />
-          </v-expand-transition>
-        </router-view>
-
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-container>
+    <v-row>
+      <v-col cols="12" sm="10" md="8" lg="6" class="mx-auto">
+        <v-row class="mb-n4">
+          <!-- Spacer to push switch to the end -->
+          <v-col class="flex-grow-1"></v-col>
+          <!-- Language toggle -->
+          <v-col cols="auto">
+            <v-switch
+              v-model="language"
+              inset
+              hide-details
+              color="red-800"
+              @change="changeLanguage"
+              prepend-icon="mdi-translate"
+              :label="language ? 'ES' : 'EN'"
+              class="switch-container"
+            ></v-switch>
+          </v-col>
+        </v-row>
+        
+        <v-card class="pa-5 mb-12" :class="{'fill-height': $vuetify.display.xs}" :elevation="$vuetify.display.xs ? 0 : 8">
+          <v-tabs 
+            v-model="tab" 
+            centered 
+            grow
+            density="comfortable"
+            slider-color="red-800"
+          >
+            <v-tab @click="changeRoute('/testLogin')" value="testLogin">
+              <span class="font-semibold text-red-800">{{ $t('Login') }}</span>
+            </v-tab>
+            <v-tab @click="changeRoute('/testRegister')" value="testRegister">
+              <span class="font-semibold text-red-800">{{$t('Register')}}</span>
+            </v-tab>
+          </v-tabs>
+  
+          <router-view 
+            v-slot="{ Component }" 
+            @navigateTo="changeRoute"
+          >
+            <v-expand-transition>
+                <component :is="Component" />
+            </v-expand-transition>
+          </router-view>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
+  
 
   
 
@@ -57,10 +78,11 @@ export default {
       tab: 'testLogin',
       forgotPassword: null,
       forgotPasswordColor: null,
+      language: false // false for English, true for Spanish
     };
   },
   mounted() {
-
+      this.language = this.$i18n.locale === 'es';
   },
   setup() {
     const store = useLoggedInUserStore()
@@ -104,7 +126,35 @@ export default {
         });
       }
     },
+    changeLanguage() {
+      if (this.language) {
+        // set the app to Spanish
+        this.$i18n.locale = 'es';
+      } else {
+        // set the app to English
+        this.$i18n.locale = 'en';
+      }
+    },
 
   },
 };
 </script>
+
+<style scoped>
+.switch-container {
+  transform: scale(0.7);
+}
+
+.v-input__prepend .mdi-translate {
+    /* Adjust the top value to move the icon up or down */
+    top: 0; 
+    /* Adjust the left value to move the icon left or right */
+    left: 0; 
+    position: relative;
+}
+
+.card-spacing {
+  margin-bottom: 50px; /* Adjust this value based on your requirements */
+}
+
+</style>

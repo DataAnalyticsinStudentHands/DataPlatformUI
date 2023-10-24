@@ -2,13 +2,13 @@
   <div>
     <v-card-text>
       <h2 class="font-bold text-2xl text-red-700 tracking-widest text-center mt-3 mb-5">
-          Welcome to Data & Society
+          {{$t('Welcome to Data & Society')}}
       </h2>
 
       <!-- Login form -->
       <v-form ref="loginForm">
         <v-text-field
-          label="Email:"
+          :label="$t('Email:')"
           v-model="email"
           :rules="emailRules"
           required
@@ -16,7 +16,7 @@
         ></v-text-field>
 
         <v-text-field
-          label="Password:"
+          :label="$t('Password:')"
           type="password"
           v-model="password"
           :rules="requiredRule"
@@ -31,7 +31,7 @@
             class="font-semibold text-base text-red-800 cursor-pointer"
             @click="$emit('navigateTo', '/testResetPass')"
           >
-            Forgot Your Password?
+            {{$t('Forgot Your Password?')}}
           </span>
         </v-col>
       </v-row>
@@ -41,7 +41,7 @@
             class="font-bold text-base text-red-800 cursor-pointer"
             @click="$emit('navigateTo', '/testVerifyExisting')"
           >
-            Have a Confirmation Code?
+            {{$t('Have a Confirmation Code?')}}
           </span>
         </v-col>
       </v-row>
@@ -53,7 +53,7 @@
             block
             class="mt-3 bg-red-700 text-white rounded"
             @click="login"
-          >Login</v-btn>
+          >{{$t('Login')}}</v-btn>
         </v-col>
       </v-row>
     </v-card-text>

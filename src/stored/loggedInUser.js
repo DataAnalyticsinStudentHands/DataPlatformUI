@@ -61,6 +61,9 @@ export const useLoggedInUserStore = defineStore({
         }
 
         await this.getFullName();
+
+        // set the i18n locale
+        
         
         }
       } catch (error) {

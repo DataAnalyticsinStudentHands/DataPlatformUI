@@ -3,19 +3,19 @@
             <v-row>
                 <v-col cols="12" class="pb-0">
                     <h2 class="font-bold text-2xl text-red-700 tracking-widest">
-                        Password Reset Code
+                        {{$t('Password Reset Code')}}
                     </h2>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    Please check your email and input the password reset code.
+                    {{$t('Please check your email and input the password reset code.')}}
                     <br>
-                    If you do not see an email, please check your Spam folder, or 
+                    {{$t('If you do not see an email, please check your Spam folder, or ')}}
                     <span 
                         class="font-semibold text-red-800 cursor-pointer"
                         @click="$router.push('/testRegister')"
-                    >Register for an Account.</span>
+                    >{{$t('Register for an Account.')}}</span>
                 </v-col>
             </v-row>
                 <v-row justify="center">
@@ -25,7 +25,7 @@
                                 <v-text-field
                                     v-model="code"
                                     :rules="rules"
-                                    label="Code:"
+                                    :label="$t('Code:')"
                                     class="mx-auto"
                                     style="width: 100%;"
                                 >
@@ -36,12 +36,12 @@
                                     <v-btn 
                                         @click="goBackToLogin"
                                         class="mt-3 mr-2"
-                                    >Back to Login</v-btn>
+                                    >{{$t('Back to Login')}}</v-btn>
                                     <v-btn 
                                         :loading="loading"
                                         type="submit" 
                                         class="mt-3 bg-red-700 text-white rounded"
-                                    >Submit</v-btn>
+                                    >{{$t('Submit')}}</v-btn>
                                 </div>
                             </v-form>
                         </v-sheet>

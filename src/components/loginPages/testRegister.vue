@@ -4,7 +4,7 @@
         <v-row justify="center">
             <v-col cols="12" class="text-center">
                 <h1 class="font-bold text-2xl text-red-700 tracking-widest mt-3 mb-5">
-                    Create Your Account
+                    {{$t('Create Your Account')}}
                 </h1>
             </v-col>
         </v-row>
@@ -12,30 +12,30 @@
             <v-row>
                 <!-- First Name and Last Name -->
                 <v-col cols="12" md="6">
-                    <label for="firstName" class="block font-semibold">First Name</label>
+                    <label for="firstName" class="block font-semibold">{{$t('First Name')}}</label>
                     <input
                     v-model="user.firstName"
                     type="text"
                     name="firstName"
                     id="firstName"
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    placeholder="First name"
+                    :placeholder="$t('First Name')"
                     required="" />
                 </v-col>
                 <v-col cols="12" md="6">
-                    <label for="lastName" class="block font-semibold">Last Name</label>
+                    <label for="lastName" class="block font-semibold">{{$t('Last Name')}}</label>
                     <input 
                     v-model="user.lastName"
                     type="text"
                     name="lastName"
                     id="lastName"
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    placeholder="Last name"
+                    :placeholder="$t('Last Name')"
                     required="" />
                 </v-col>
                 <!-- Email and Confirm Email -->
                 <v-col cols="12" md="6">
-                    <label for="email" class="block font-semibold">Your email</label>
+                    <label for="email" class="block font-semibold">{{$t('Your email')}}</label>
                     <input 
                     v-model="user.email"
                     type="email"
@@ -46,7 +46,7 @@
                     required="" />
                 </v-col>
                 <v-col cols="12" md="6">
-                    <label for="confirm_email" class="block font-semibold">Confirm Email</label>
+                    <label for="confirm_email" class="block font-semibold">{{$t('Confirm Email')}}</label>
                     <input 
                     v-model="user.confirm_email"
                     type="email"
@@ -58,7 +58,7 @@
                 </v-col>
                 <!-- Language Preference -->
                 <v-col cols="12">
-                    <label class="block mb-2 font-semibold">Preferred communication language</label>
+                    <label class="block mb-2 font-semibold">{{$t('Preferred communication language')}}</label>
                     <v-row>
                         <v-col cols="6" md="3">
                             <label class="inline-flex items-center">
@@ -68,7 +68,7 @@
                                 value="English"
                                 v-model="user.languagePreference"
                                 required />
-                            <span class="ml-2">English</span>
+                            <span class="ml-2">{{$t('English')}}</span>
                             </label>
                         </v-col>
                         <v-col cols="6" md="3">
@@ -79,14 +79,14 @@
                                 value="Spanish"
                                 v-model="user.languagePreference"
                                 required />
-                            <span class="ml-2">Spanish</span>
+                            <span class="ml-2">{{$t('Spanish')}}</span>
                             </label>
                         </v-col>
                     </v-row>
                 </v-col>
                 <!-- Password and Confirm Password -->
                 <v-col cols="12" md="6">
-                    <label for="password" class="block font-semibold">Password</label>
+                    <label for="password" class="block font-semibold">{{$t('Password')}}</label>
                     <input 
                     v-model="user.password"
                     type="password"
@@ -100,7 +100,7 @@
                     </span>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <label for="confirm-password" class="block font-semibold">Confirm password</label>
+                    <label for="confirm-password" class="block font-semibold">{{$t('Confirm password')}}</label>
                     <input 
                     v-model="user.confirm_pasword"
                     type="password"
@@ -118,11 +118,11 @@
                     :loading="loading"
                     type="submit" 
                     class="bg-red-700 text-white rounded w-full py-2 hover:bg-red-600"
-                  >Create an account</v-btn>
+                  >{{$t('Create an account')}}</v-btn>
                   <p class="text-sm font-medium text-gray-500 mt-4 text-center">
-                  Already have an account?
+                  {{$t('Already have an account?')}}
                   <!-- Updated this line to use @click and router.push -->
-                  <span class="font-bold text-red-700 hover:underline cursor-pointer" @click="$router.push('/testLogin')">Login here</span>
+                  <span class="font-bold text-red-700 hover:underline cursor-pointer" @click="$router.push('/testLogin')">{{$t('Login here')}}</span>
                   </p>
               </v-col>
           </v-row>

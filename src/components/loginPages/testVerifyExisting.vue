@@ -3,13 +3,13 @@
         <v-row>
             <v-col cols="12" class="pb-0">
                 <h2 class="font-bold text-2xl text-red-700 tracking-widest">
-                    Verify Your Email
+                    {{$t('Verify Your Email')}}
                 </h2>
             </v-col>
         </v-row>
         <v-row>
             <v-col cols="12">
-                Please enter your email address and the confirmation code received in your email to verify your account:
+                {{$t('Please enter your email address and the confirmation code received in your email to verify your account:')}}
             </v-col>
         </v-row>
         <v-form ref="form" @submit.prevent="formSubmit">
@@ -19,7 +19,7 @@
                         <v-text-field
                             v-model="email"
                             :rules="emailRules"
-                            label="Email:"
+                            :label="$t('Email:')"
                             class="mx-auto"
                             style="width: 100%;"
                         >
@@ -33,7 +33,7 @@
                         <v-text-field
                             v-model="code"
                             :rules="codeRules"
-                            label="Confirmation Code:"
+                            :label="$t('Confirmation Code:')"
                             class="mx-auto"
                             style="width: 100%;"
                         >
@@ -43,12 +43,12 @@
                             <v-btn 
                                 @click="goBackToLogin"
                                 class="mt-3 mr-2"
-                            >Back to Login</v-btn>
+                            >{{$t('Back to Login')}}</v-btn>
                             <v-btn 
                                 :loading="loading"
                                 type="submit" 
                                 class="mt-3 bg-red-700 text-white rounded"
-                            >Submit</v-btn>
+                            >{{$t('Submit')}}</v-btn>
                         </div>
                 </v-sheet>
             </v-col>

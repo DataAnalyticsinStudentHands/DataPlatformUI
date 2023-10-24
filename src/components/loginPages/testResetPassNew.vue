@@ -3,13 +3,13 @@
         <v-row>
             <v-col cols="12" class="pb-0">
                 <h2 class="font-bold text-2xl text-red-700 tracking-widest">
-                    Update Password
+                    {{$t('Update Password')}}
                 </h2>
             </v-col>
         </v-row>
         <v-row>
             <v-col cols="12">
-                Please enter your new password:
+                {{$t('Please enter your new password:')}}
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -21,7 +21,7 @@
                             v-model="newPassword"
                             type="password"
                             :rules="newPassRules"
-                            label="New Password:"
+                            :label="$t('New Password:')"
                             class="mx-auto"
                             style="width: 100%;"
                             prepend-icon="mdi-lock"
@@ -32,7 +32,7 @@
                             v-model="reEnterPassword"
                             type="password"
                             :rules="reEnterPassRules"
-                            label="Re-enter Password:"
+                            :label="$t('Re-enter Password:')"
                             class="mx-auto"
                             style="width: 100%;"
                             prepend-icon="mdi-lock"
@@ -43,12 +43,12 @@
                             <v-btn 
                                 @click="goBackToLogin"
                                 class="mt-3 mr-2"
-                            >Back to Login</v-btn>
+                            >{{$t('Back to Login')}}</v-btn>
                             <v-btn 
                                 :loading="loading"
                                 type="submit" 
                                 class="mt-3 bg-red-700 text-white rounded"
-                            >Submit</v-btn>
+                            >{{$t('Submit')}}</v-btn>
                         </div>
                     </v-form>
                 </v-sheet>
