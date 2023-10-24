@@ -52,10 +52,10 @@ const routes = [
           component: () => import('../components/loginPages/testRegister.vue')
         },
         {
-          path: '/testVerifyExisting',
-          name: 'testVerifyExisting',
+          path: '/testVerifyNew',
+          name: 'testVerifyNew',
           props: true,
-          component: () => import('../components/loginPages/testVerifyExisting.vue')
+          component: () => import('../components/loginPages/testVerifyNew.vue')
         },
         {
           path: '/testResetPass',
@@ -74,6 +74,12 @@ const routes = [
           name: 'testResetPassNew',
           props: true,
           component: () => import('../components/loginPages/testResetPassNew.vue')
+        },
+        {
+          path: '/testVerifyExisting',
+          name: 'testVerifyExisting',
+          props: true,
+          component: () => import('../components/loginPages/testVerifyExisting.vue')
         },
       ]
     },    

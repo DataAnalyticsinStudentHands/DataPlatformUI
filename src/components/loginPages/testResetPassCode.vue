@@ -113,9 +113,10 @@ export default {
                             name: 'testResetPassNew',
                             params: { 
                                 userID: this.userID,
+                                toastType: 'success',
                                 toastMessage: 'Success! You may now reset your password.',
                                 toastPosition: 'top-right',
-                                toastClassName: 'Toastify__toast--create'
+                                toastCSS: 'Toastify__toast--create'
                             }
                         });
 
@@ -138,7 +139,6 @@ export default {
             }
         },
         goBackToLogin() {
-            // Assuming you have a route named 'login'
             this.$router.push({name: 'testLogin'});
         },
     }

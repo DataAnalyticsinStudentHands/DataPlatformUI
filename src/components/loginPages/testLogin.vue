@@ -39,7 +39,7 @@
         <v-col cols="12" class="pl-0">
           <span
             class="font-bold text-base text-red-800 cursor-pointer"
-            @click="$emit('change-tab', 'verify')"
+            @click="$emit('navigateTo', '/testVerifyExisting')"
           >
             Have a Confirmation Code?
           </span>
@@ -95,13 +95,12 @@ export default {
     }
   },
   mounted() {
-        if (this.$route.params.toastMessage) {
-          console.log('params');
-            toast.success(this.$route.params.toastMessage, {
-                position: this.$route.params.toastPosition || 'top-right',
-                toastClassName: this.$route.params.toastClassName || 'Toastify__toast'
-            });
-        }
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
     },
   methods: {
     async login() {
@@ -157,7 +156,7 @@ export default {
         if (res.status == 200) {
           let userID = res.data.userID; // Extract the userID from the response
           this.$router.push({ 
-            name: 'testVerifyExisting', 
+            name: 'testVerifyNew', 
             params: { id: userID } 
           });
         } else {

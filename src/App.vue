@@ -232,6 +232,7 @@ export default {
       this.showElement = true;
     },
     async handleLogout() {
+      console.log('handleLogout called');
       const store = useLoggedInUserStore();
       
       await store.logout();
@@ -253,13 +254,13 @@ export default {
       console.log('logoutMessage: ', logoutMessage)
     
       this.$router.push({
-        name: 'Login',
-        params: {
-          toastType: 'success',
-          toastMessage: logoutMessage,
-          toastPosition: 'top-right',
-          toastCSS: 'Toastify__toast--create'
-      },
+          name: 'testLogin',
+          params: {
+            toastType: 'success',
+            toastMessage: logoutMessage,
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+        },
       });
     },
     sidebarToggle() {

@@ -218,7 +218,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
               await store.verifyExistingAcc(response.data);
 
               this.$router.push({ 
-                name: 'testVerifyExisting', 
+                name: 'testVerifyNew', 
                 params: { id: userID } 
               });
             },

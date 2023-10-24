@@ -114,9 +114,9 @@ export default {
     },
     mounted() {
         if (this.$route.params.toastMessage) {
-            toast.success(this.$route.params.toastMessage, {
+            toast[this.$route.params.toastType](this.$route.params.toastMessage, {
                 position: this.$route.params.toastPosition || 'top-right',
-                toastClassName: this.$route.params.toastClassName || 'Toastify__toast'
+                toastClassName: this.$route.params.toastCSS || 'Toastify__toast'
             });
         }
     },
@@ -176,11 +176,11 @@ export default {
                         this.$router.push({ 
                             name: 'testLogin',
                             params: { 
+                                toastType: 'success',
                                 toastMessage: 'Password Reset! You may now login.',
                                 toastPosition: 'top-right',
-                                toastClassName: 'Toastify__toast--create'
+                                toastCSS: 'Toastify__toast--create'
                             }
-
                         });
                     } else {
                         toast.error("An error occurred. Please try again.", {
@@ -202,7 +202,6 @@ export default {
         },
 
         goBackToLogin() {
-            // Assuming you have a route named 'login'
             this.$router.push({name: 'testLogin'});
         },
     }

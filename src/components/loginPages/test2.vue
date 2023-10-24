@@ -41,7 +41,7 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import LoginForm from "@/components/loginPages/testLogin.vue";
-import VerifyExisting from "@/components/loginPages/testVerifyExisting.vue";
+import VerifyNew from "@/components/loginPages/testVerifyNew.vue";
 import RegisterForm from "@/components/loginPages/testRegister.vue";
 
 export default {
@@ -49,7 +49,7 @@ export default {
   emits: ["showDashboard"],
   components: {
     LoginForm,
-    VerifyExisting,
+    VerifyNew,
     RegisterForm,
   },
   data() {
@@ -60,12 +60,7 @@ export default {
     };
   },
   mounted() {
-    if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-        position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
-      });
-    }
+
   },
   setup() {
     const store = useLoggedInUserStore()
@@ -102,7 +97,7 @@ export default {
         // For simple string routes (backward compatibility)
         this.$router.push(payload);
       } else if (payload && payload.routeName && payload.userID) {
-        // If payload is an object containing the routeName and userID
+        // Payload is an object containing the routeName and userID
         this.$router.push({
           name: payload.routeName, // use the route's name
           params: { userID: payload.userID } // passing userID as a route parameter

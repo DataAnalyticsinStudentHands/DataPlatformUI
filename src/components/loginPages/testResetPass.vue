@@ -117,7 +117,6 @@ export default {
             }
         },
         goBackToLogin() {
-            // Assuming you have a route named 'login'
             this.$router.push({name: 'testLogin'});
         },
     }

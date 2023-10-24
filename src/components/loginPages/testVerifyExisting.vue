@@ -3,37 +3,57 @@
         <v-row>
             <v-col cols="12" class="pb-0">
                 <h2 class="font-bold text-2xl text-red-700 tracking-widest">
-                    Please Verify Your Email
+                    Verify Your Email
                 </h2>
             </v-col>
         </v-row>
         <v-row>
             <v-col cols="12">
-                Please check your email for a confirmation code to verify your email address. This may take a few minutes.
+                Please enter your email address and the confirmation code received in your email to verify your account:
+            </v-col>
+        </v-row>
+        <v-form ref="form" @submit.prevent="formSubmit">
+        <v-row justify="center">
+            <v-col cols="8">
+                <v-sheet>
+                        <v-text-field
+                            v-model="email"
+                            :rules="emailRules"
+                            label="Email:"
+                            class="mx-auto"
+                            style="width: 100%;"
+                        >
+                        </v-text-field>
+                </v-sheet>
             </v-col>
         </v-row>
         <v-row justify="center">
-            <v-col cols="8"> <!-- Adjust the cols values as required -->
+            <v-col cols="8"> 
                 <v-sheet>
-                    <v-form ref="form" validate-on="submit lazy" @submit.prevent="formSubmit">
                         <v-text-field
                             v-model="code"
-                            :rules="rules"
+                            :rules="codeRules"
                             label="Confirmation Code:"
                             class="mx-auto"
                             style="width: 100%;"
                         >
                         </v-text-field>
-                        <v-btn 
-                            :loading="loading"
-                            type="submit" 
-                            block 
-                            class="mt-3 bg-red-700 text-white rounded"
-                        >Submit</v-btn>
-                    </v-form>
+                        <!-- Flex container to center the buttons -->
+                        <div class="d-flex justify-center align-center">
+                            <v-btn 
+                                @click="goBackToLogin"
+                                class="mt-3 mr-2"
+                            >Back to Login</v-btn>
+                            <v-btn 
+                                :loading="loading"
+                                type="submit" 
+                                class="mt-3 bg-red-700 text-white rounded"
+                            >Submit</v-btn>
+                        </div>
                 </v-sheet>
             </v-col>
         </v-row>
+        </v-form>
     </v-card-text>
 </template>
 
@@ -50,22 +70,28 @@ export default {
   props: ["id"],
   data() {
     return {
+      email: null,
       code: null,
       loading: false,
-      userID: null,
-      rules: [
-        value => {
-            if (value) return true
-            return 'Please enter a code.'
-        },
+      emailRules: [
+        v => {
+            if (!v) {
+                return 'Email is required';
+            } else if (!/.+@.+/.test(v)) {
+                return 'Email must be valid';
+            }
+            return true;
+        }
+      ],
+      codeRules: [
+        v => {
+            if (!v) {
+                return 'Confirmation code is required.'
+            }
+            return true;
+        }
       ],
     };
-  },
-  mounted() {
-    if (this.$route.params && this.$route.params.id) {
-        this.userID = this.$route.params.id; 
-        console.log(this.userID);
-    }
   },
   methods: {
     formSubmit() {
@@ -78,71 +104,41 @@ export default {
     async activateAccount() {
         this.loading = true;
         let user = {
+            email: this.email,
             code: this.code,
-            userID: this.userID,
-            error: this.error,
         };
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verify`;
-        const store = useLoggedInUserStore();
-        let token = store.token;
-
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verifyExisting`;
         try {
-            const res = await axios.put(apiURL, user, {
-                headers: {
-                    'token': token
-                }
-            });
+            const res = await axios.put(apiURL, user);
 
             if (res.status === 200) {
-                console.log('The account has been successfully activated.');
-                await store.verifyExistingAcc(res.data);
-                store.isLoggedIn = true;
-                // Navigate to the appropriate dashboard based on the user's role
-                if (store.role === 'Instructor') {
-                    this.$router.push("/instructorDash");
-                } else if (store.role === 'Student') {
-                    // After successful verification, check if the student has completed forms
-                    await store.checkFormCompletion();
-                    if (store.hasCompletedEntryForm) {
-                    this.$router.push("/studentDashboard");
-                    } else {
-                    this.$router.push("/studentEntryForm");
+                this.$router.push({
+                    name: 'testLogin',
+                    params: {
+                        toastType: 'success',
+                        toastMessage: 'Your account is activated! You may now login.',
+                        toastPosition: 'top-right',
+                        toastCSS: 'Toastify__toast--create'
                     }
-                } else {
-                    this.$router.push("/");
-                }
-            } else {
-                toast.error('An error occurred. Please try again.', {
+                });
+            }
+        } catch (err) {
+            console.log('err: ', err.message);
+            if (err.response.data.title === 'Invalid') {
+                toast.error("Invalid Email or Code.", {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });
             }
-        } catch (err) {
-            console.log('err: ', err);
-            if (err.response && err.response.status === 401) {
-                if (err.response.data.title === 'Expired code') {
-                    try {
-                        await this.sendNewCode();
-                        toast.error('Your code has already expired. A new code has been sent! Please wait for email.', {
-                            position: 'top-right',
-                            toastClassName: 'Toastify__toast--delete',
-                            autoClose: false,
-                        });
-                    } catch (error) {
-                        console.log(error);
-                    }
-                } else if (err.response.data.title === 'Invalid code') {
-                    toast.error('Invalid code.', {
+            if (err.response.data.title === 'Expired') {
+                try {
+                    await this.sendNewCode();
+                } catch (error) {
+                    toast.error("An unexpected error occurred. Please try again.", {
                         position: 'top-right',
                         toastClassName: 'Toastify__toast--delete'
                     });
                 }
-            } else {
-                console.log(err);
-                toast.error('An error has occured. Please try again.', {
-                    position: 'top-right',
-                    toastClassName: 'Toastify__toast--delete'
-                });
             }
         } finally {
             this.loading = false;
@@ -152,7 +148,7 @@ export default {
 
     async sendNewCode() {
         let user = {
-        userID: this.userID,
+        email: this.email,
         error: this.error,
         };
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/sendNewCode`;
@@ -160,14 +156,22 @@ export default {
         axios.put(apiURL, user)
         .then((res) => {
             if (res.status == 200) {
-            let userID = res.data.userID; // Extract the userID from the response
+                toast.error('Your code has already expired. A new code has been sent! Please wait for email.', {
+                    position: 'top-right',
+                    toastClassName: 'Toastify__toast--delete',
+                    autoClose: false,
+                });
             } else {
-            console.log('Unexpected response status:', res.status);
+                console.log('Unexpected response status:', res.status);
             }
         })
         .catch((err) => {
             console.log(err);
         });
+    },
+
+    goBackToLogin() {
+        this.$router.push({name: 'testLogin'});
     },
   }
 }
