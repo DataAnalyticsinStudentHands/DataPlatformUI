@@ -18,7 +18,7 @@
       <v-list>
           <v-list-item>
               <v-list-item-title class="flex-grow-1 text-center">
-                  <span class="font-weight-black text-lg">Student Checklist</span>
+                  <span class="font-weight-black text-lg">Checklist</span>
                   <v-icon>mdi-clipboard-check</v-icon>
               </v-list-item-title>
           </v-list-item>
@@ -123,14 +123,14 @@
           <v-list>
             <v-list-item class="grey lighten-1">
               <v-list-item-title class="flex-grow-1 text-center">
-                <span class="font-weight-black text-base">Fall 2023</span>
+                <span class="font-weight-black text-base">{{semesterName}}</span>
               </v-list-item-title>
             </v-list-item>
 
 
             <v-list-item>
                 <v-list-item-title class="flex-grow-1 text-center">
-                  <span class="font-weight-black text-base">Registered Experiences</span>
+                  <span class="font-weight-black text-base">Experiences</span>
                   <v-dialog width="500">
                     <template v-slot:activator="{ props }">
                       <v-btn
@@ -208,94 +208,99 @@
                   <span>Register Here!</span>
               </v-tooltip>
 
-          <v-dialog
-            v-model="dialog"
-            persistent
-            width="1024"
-            scrim="rgba(0, 0, 0, 0.7)"
-          >
-            <v-card>
-              <v-card-title>
-                <span class="font-weight-black text-xl">Add / Remove Experiences - Fall 2023</span>
-              </v-card-title>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="5">
-                    <v-list density="compact">
-                      <v-list-subheader> All Experiences</v-list-subheader>
+              <v-dialog
+                v-model="dialog"
+                persistent
+                max-width="100%"
+                scrim="rgba(0, 0, 0, 0.7)"
+              >
+                <v-card>
+                  <v-card-title>
+                    <span class="font-weight-black text-xl">Add / Remove Experiences - Fall 2023</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-row>
 
-                        <v-list-item
-                          v-for="experience in allExperiences"
-                          :key="experience._id"
-                          @click="toggleExperienceSelection(experience)"
-                          :class="isSelected(experience) ? 'light-red-bg' : ''"
-                        >
-                          <v-list-item-title>
-                            {{ experience.experienceName }}
-                          </v-list-item-title>
-                          
-                          <!-- Add a check icon to show which items are selected -->
-                          <template v-slot:append>
-                            <v-icon v-if="isSelected(experience)">mdi-check</v-icon>
-                          </template>
-                        </v-list-item>
-                    </v-list>
-                  </v-col>
-                  <!-- Action Buttons -->
-                  <v-col cols="2" class="text-center d-flex align-center justify-center">
-                    <div>
-                        <v-row class="mb-2">
-                            <v-btn @click="addAllToSelected">
-                                <v-icon>mdi-chevron-double-right</v-icon>
-                            </v-btn>
-                        </v-row>
-                        <v-row>
-                            <v-btn @click="removeAllFromSelected">
-                                <v-icon>mdi-chevron-double-left</v-icon>
-                            </v-btn>
-                        </v-row>
-                    </div>
-                </v-col>
-                <v-col cols="5">
-                  <v-list density="compact">
-                      <v-list-subheader> My Experiences</v-list-subheader>
-                      <v-list-item
-                          v-for="experience in selectedExperiences"
-                          :key="experience._id"
-                          :value="experience"
-                          @click="removeFromMyExperiences(experience)"
-                      >
-                          <v-list-item-title>
+                      <!-- All Experiences Column -->
+                      <v-col cols="12" md="5">
+                        <v-list density="compact">
+                          <v-list-subheader>All Experiences</v-list-subheader>
+                          <v-list-item
+                            v-for="experience in allExperiences"
+                            :key="experience._id"
+                            @click="toggleExperienceSelection(experience)"
+                            :class="isSelected(experience) ? 'light-red-bg' : ''"
+                          >
+                            <v-list-item-title>
                               {{ experience.experienceName }}
-                          </v-list-item-title>
-                      </v-list-item>
-                  </v-list>
-              </v-col>
+                            </v-list-item-title>
+                            
+                            <!-- Add a check icon to show which items are selected -->
+                            <template v-slot:append>
+                              <v-icon v-if="isSelected(experience)">mdi-check</v-icon>
+                            </template>
+                          </v-list-item>
+                        </v-list>
+                      </v-col>
 
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="clearSelectedExperiences"
-                >
-                  Close
-                </v-btn>
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="registerExperiences"
-                >
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+                      <!-- Action Buttons Column -->
+                      <v-col cols="12" md="2" class="text-center d-flex align-center justify-center">
+                        <div>
+                          <v-row class="mb-2">
+                              <v-btn @click="addAllToSelected">
+                                  <v-icon>mdi-chevron-double-right</v-icon>
+                              </v-btn>
+                          </v-row>
+                          <v-row>
+                              <v-btn @click="removeAllFromSelected">
+                                  <v-icon>mdi-chevron-double-left</v-icon>
+                              </v-btn>
+                          </v-row>
+                        </div>
+                      </v-col>
+
+                      <!-- My Experiences Column -->
+                      <v-col cols="12" md="5">
+                        <v-list density="compact">
+                          <v-list-subheader>My Experiences</v-list-subheader>
+                          <v-list-item
+                              v-for="experience in selectedExperiences"
+                              :key="experience._id"
+                              :value="experience"
+                              @click="removeFromMyExperiences(experience)"
+                          >
+                              <v-list-item-title>
+                                  {{ experience.experienceName }}
+                              </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-col>
+
+                    </v-row>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue-darken-1"
+                      variant="text"
+                      @click="clearSelectedExperiences"
+                    >
+                      Close
+                    </v-btn>
+                    <v-btn
+                      color="blue-darken-1"
+                      variant="text"
+                      @click="registerExperiences"
+                    >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
         </v-col>
       </v-row>
     </v-list-item>
+
         </v-list>
         </v-card>
 
@@ -393,6 +398,10 @@ export default {
     fullName() {
       const store = useLoggedInUserStore();
       return (store.firstName.trim() + ' ' + store.lastName.trim());
+    },
+    semesterName() {
+      const store = useLoggedInUserStore();
+      return store.semesterName;
     },
 
 

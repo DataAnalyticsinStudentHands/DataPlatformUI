@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     navigateToLogin() {
-      this.$router.push({ name: 'Login' });
+      this.$router.push({ name: 'testLogin' });
     }
   }
 }

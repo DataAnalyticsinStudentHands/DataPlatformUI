@@ -21,6 +21,7 @@ export const useLoggedInUserStore = defineStore({
       hasRegisteredExperiences: false,
       goalSettingFormCompletion: {},
       loading: false,
+      semesterName: "",
     }
   },
   getters: { //getting the roles
@@ -62,7 +63,7 @@ export const useLoggedInUserStore = defineStore({
 
         await this.getFullName();
 
-        // set the i18n locale
+        await this.getCurrentSemester();
         
         
         }
@@ -169,6 +170,7 @@ export const useLoggedInUserStore = defineStore({
           });
         }
       } catch (error) {
+        console.log('checkFormCompletion: ', error);
         console.log(error);
       }
     },
@@ -187,6 +189,22 @@ export const useLoggedInUserStore = defineStore({
     },
     stopLoading() {
       this.loading = false;
+    },
+    async getCurrentSemester() {
+      try {
+        const response = await axios.get(`${apiURL}/studentSideData/goalForms/semester`, {
+          headers: { token: this.token }
+        });
+        
+        if (response && response.data) {
+          console.log('response: ', response);
+          this.$patch({
+            semesterName: response.data.semesterName
+          });
+        }
+      } catch (error) {
+          console.log(error)
+      }
     },
     persist: {
       storage: sessionStorage

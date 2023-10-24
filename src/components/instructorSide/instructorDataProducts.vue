@@ -47,7 +47,7 @@
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.download = 'data.csv';
+              link.download = 'entryData.csv';
               document.body.appendChild(link);
               link.click();
   
@@ -78,7 +78,7 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'data.csv';
+          link.download = 'exitData.csv';
           document.body.appendChild(link);
           link.click();
   
@@ -108,7 +108,7 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'data.csv';
+          link.download = 'goalData.csv';
           document.body.appendChild(link);
           link.click();
   
