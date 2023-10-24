@@ -69,6 +69,12 @@ const routes = [
           props: true,
           component: () => import('../components/loginPages/testResetPassCode.vue')
         },
+        {
+          path: '/testResetPassNew',
+          name: 'testResetPassNew',
+          props: true,
+          component: () => import('../components/loginPages/testResetPassNew.vue')
+        },
       ]
     },    
     {

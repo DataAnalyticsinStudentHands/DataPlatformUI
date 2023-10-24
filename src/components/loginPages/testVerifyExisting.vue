@@ -96,6 +96,7 @@ export default {
             if (res.status === 200) {
                 console.log('The account has been successfully activated.');
                 await store.verifyExistingAcc(res.data);
+                store.isLoggedIn = true;
                 // Navigate to the appropriate dashboard based on the user's role
                 if (store.role === 'Instructor') {
                     this.$router.push("/instructorDash");
@@ -111,9 +112,13 @@ export default {
                     this.$router.push("/");
                 }
             } else {
-                console.log('Unexpected response status:', res.status);
+                toast.error('An error occurred. Please try again.', {
+                    position: 'top-right',
+                    toastClassName: 'Toastify__toast--delete'
+                });
             }
         } catch (err) {
+            console.log('err: ', err);
             if (err.response && err.response.status === 401) {
                 if (err.response.data.title === 'Expired code') {
                     try {

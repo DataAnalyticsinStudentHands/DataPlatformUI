@@ -61,6 +61,8 @@
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import axios from 'axios'
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
@@ -92,6 +94,15 @@ export default {
       store,
     }
   },
+  mounted() {
+        if (this.$route.params.toastMessage) {
+          console.log('params');
+            toast.success(this.$route.params.toastMessage, {
+                position: this.$route.params.toastPosition || 'top-right',
+                toastClassName: this.$route.params.toastClassName || 'Toastify__toast'
+            });
+        }
+    },
   methods: {
     async login() {
       // Check if there are any errors in the form

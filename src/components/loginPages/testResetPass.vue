@@ -53,9 +53,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
     data() {
         return {
-            awaitingEmailInput: true,
-            awaitingConfirmationCode: false,
-            userID: null,
+            userID: "",
             loading: false,
             email: null,
             rules: [
@@ -91,6 +89,8 @@ export default {
 
                     if (response.status === 200) {
                         this.userID = response.data.userID;
+                        // Grab the token from the response
+                        this.token = response.data.token;
                     } else {
                         toast.error("An error occurred. Please try again.", {
                             position: 'top-right',
@@ -104,7 +104,11 @@ export default {
                     });
                 } finally {
                     this.loading = false;
-                    this.$emit('navigateTo', { route: '/testResetPassCode', userID: this.userID });
+                    // this.$emit('navigateTo', { route: '/testResetPassCode', userID: this.userID });
+                    this.$router.push({
+                        name: 'testResetPassCode',
+                        params: { userID: this.userID }
+                    });
 
 
                 }

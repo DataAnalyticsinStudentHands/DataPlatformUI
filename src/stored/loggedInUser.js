@@ -45,7 +45,7 @@ export const useLoggedInUserStore = defineStore({
           localStorage.setItem("token", response.data.token);
             
           // Set the global default header for axios
-          axios.defaults.headers.common['token'] = response.data.token;
+          this.setTokenHeader(response.data.token);
 
           let token = localStorage.getItem("token");
 
@@ -53,6 +53,7 @@ export const useLoggedInUserStore = defineStore({
         if (response.data.userStatus === 'Pending') {
           console.log('pending fetched');
           this.$patch({
+            isLoggedIn: false,
             unverified: true,
             token: response.data.token
           });
@@ -97,7 +98,7 @@ export const useLoggedInUserStore = defineStore({
       localStorage.removeItem("token");
 
       // Remove the global default header for axios
-      delete axios.defaults.headers.common['token'];
+      this.removeTokenHeader();
     },    
     async getFullName() {
       let token = localStorage.getItem("token");
@@ -121,7 +122,6 @@ export const useLoggedInUserStore = defineStore({
 
       // Update the Pinia store with the extracted details
       this.$patch({
-        isLoggedIn: true,
         role: userRole,
         userId: userID,
         token: token,
@@ -132,7 +132,7 @@ export const useLoggedInUserStore = defineStore({
       localStorage.setItem("token", token);
 
       // Set the global default header for axios
-      axios.defaults.headers.common['token'] = token;
+      this.setTokenHeader(token);
 
       // If the status of the user is 'Pending', update the unverified field
       if (responseData.userStatus === 'Pending') {
@@ -169,6 +169,16 @@ export const useLoggedInUserStore = defineStore({
         console.log(error);
       }
     },
+    setTokenHeader(token) {
+      if (token) {
+        axios.defaults.headers.common['token'] = token;
+        this.token = token;
+      }
+    },
+    removeTokenHeader() {
+        delete axios.defaults.headers.common['token'];
+        this.token = "";
+    },   
     startLoading() {
       this.loading = true;
     },

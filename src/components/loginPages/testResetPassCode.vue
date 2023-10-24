@@ -1,3 +1,146 @@
 <template>
-    Hello
+    <v-card-text>
+            <v-row>
+                <v-col cols="12" class="pb-0">
+                    <h2 class="font-bold text-2xl text-red-700 tracking-widest">
+                        Password Reset Code
+                    </h2>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12">
+                    Please check your email and input the password reset code.
+                    <br>
+                    If you do not see an email, please check your Spam folder, or 
+                    <span 
+                        class="font-semibold text-red-800 cursor-pointer"
+                        @click="$router.push('/testRegister')"
+                    >Register for an Account.</span>
+                </v-col>
+            </v-row>
+                <v-row justify="center">
+                    <v-col cols="8">
+                        <v-sheet>
+                            <v-form ref="passForm" @submit.prevent="passFormSubmit">
+                                <v-text-field
+                                    v-model="code"
+                                    :rules="rules"
+                                    label="Code:"
+                                    class="mx-auto"
+                                    style="width: 100%;"
+                                >
+                                </v-text-field>
+
+                                <!-- Flex container to center the buttons -->
+                                <div class="d-flex justify-center align-center">
+                                    <v-btn 
+                                        @click="goBackToLogin"
+                                        class="mt-3 mr-2"
+                                    >Back to Login</v-btn>
+                                    <v-btn 
+                                        :loading="loading"
+                                        type="submit" 
+                                        class="mt-3 bg-red-700 text-white rounded"
+                                    >Submit</v-btn>
+                                </div>
+                            </v-form>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
+    </v-card-text>
 </template>
+
+
+<script>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+export default {
+    data() {
+        return {
+            userID: null,
+            loading: false,
+            code: null,
+            rules: [
+                v => {
+                    if (!v) {
+                        return 'Code is required.';
+                    }
+                    return true;
+                }
+            ],
+        };
+    },
+    mounted() {
+        if (this.$route.params && this.$route.params.userID) {
+            this.userID = this.$route.params.userID; 
+            console.log(this.userID);
+        }
+    },
+    methods: {
+        async passFormSubmit() {
+            // Check if there are any errors in the form
+            await this.$refs.passForm.validate();
+            const passFormInvalid = this.$refs.passForm.errors.length > 0;
+
+            // Instantiate the store
+            const loggedInUserStore = useLoggedInUserStore();
+
+            // If no errors, proceed
+            if (!passFormInvalid) {
+                console.log('pass form is valid');
+                this.loading = true;
+                
+                let requestData = {
+                    userID: this.userID,
+                    confirmationCode: this.code 
+                };
+
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/resetPassWithCode`;
+
+                try {
+                    const response = await axios.post(apiURL, requestData);
+
+                    if (response.status === 200) {
+                        console.log('200');
+                        // Set token as global header
+                        console.log('response.data.token', response.data.token);
+                        loggedInUserStore.setTokenHeader(response.data.token);
+                        console.log('loggedInUserStore.token: ', loggedInUserStore.token);
+                        
+                        this.$router.push({
+                            name: 'testResetPassNew',
+                            params: { 
+                                userID: this.userID,
+                                toastMessage: 'Success! You may now reset your password.',
+                                toastPosition: 'top-right',
+                                toastClassName: 'Toastify__toast--create'
+                            }
+                        });
+
+                    } else {
+                        toast.error("Invalid code. Please try again.", {
+                            position: 'top-right',
+                            toastClassName: 'Toastify__toast--delete'
+                        });
+                    }
+                } catch (error) {
+                    toast.error('Invalid code. Please try again.', {
+                        position: 'top-right',
+                        toastClassName: 'Toastify__toast--delete'
+                    });
+                } finally {
+                    this.loading = false;
+                }
+            } else {
+                console.log('form has errors');
+            }
+        },
+        goBackToLogin() {
+            // Assuming you have a route named 'login'
+            this.$router.push({name: 'testLogin'});
+        },
+    }
+}
+</script>

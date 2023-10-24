@@ -9,7 +9,7 @@
             </v-col>
         </v-row>
         <form @submit.prevent="userSubmitForm">
-            <v-row dense>
+            <v-row>
                 <!-- First Name and Last Name -->
                 <v-col cols="12" md="6">
                     <label for="firstName" class="block font-semibold">First Name</label>
@@ -216,7 +216,6 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
               const store = useLoggedInUserStore();
 
               await store.verifyExistingAcc(response.data);
-              
 
               this.$router.push({ 
                 name: 'testVerifyExisting', 
