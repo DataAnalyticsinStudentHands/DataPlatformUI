@@ -76,16 +76,16 @@ export default {
             newPassRules: [
                 v => {
                     if (!v) {
-                        return 'Password is required';
+                        return this.$t('Password is required');
                     }
                     if (v.length < 8) {
-                        return 'Password must be at least 8 characters long';
+                        return this.$t('Password must be at least 8 characters long');
                     }
                     return true;
                 },
                 v => {
                     if (v !== this.reEnterPassword) {
-                        return 'Passwords must match';
+                        return this.$t('Passwords must match');
                     }
                     return true;
                 }
@@ -95,16 +95,16 @@ export default {
             reEnterPassRules: [
                 v => {
                     if (!v) {
-                        return 'Re-entered password is required';
+                        return this.$t('Re-entered password is required');
                     }
                     if (v.length < 8) {
-                        return 'Password must be at least 8 characters long';
+                        return this.$t('Password must be at least 8 characters long');
                     }
                     return true;
                 },
                 v => {
                     if (v !== this.newPassword) {
-                        return 'Passwords must match';
+                        return this.$t('Passwords must match');
                     }
                     return true;
                 }

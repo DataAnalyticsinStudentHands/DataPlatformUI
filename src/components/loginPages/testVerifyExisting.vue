@@ -76,9 +76,9 @@ export default {
       emailRules: [
         v => {
             if (!v) {
-                return 'Email is required';
+                return this.$t('Email is required');
             } else if (!/.+@.+/.test(v)) {
-                return 'Email must be valid';
+                return this.$t('Email must be valid');
             }
             return true;
         }
@@ -86,7 +86,7 @@ export default {
       codeRules: [
         v => {
             if (!v) {
-                return 'Confirmation code is required.'
+                return this.$t('Code is required')
             }
             return true;
         }

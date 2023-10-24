@@ -56,7 +56,7 @@ export default {
       rules: [
         value => {
             if (value) return true
-            return 'Please enter a code.'
+            return this.$t('Code is required.')
         },
       ],
     };

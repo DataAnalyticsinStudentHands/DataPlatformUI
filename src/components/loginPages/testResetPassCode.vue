@@ -65,7 +65,7 @@ export default {
             rules: [
                 v => {
                     if (!v) {
-                        return 'Code is required.';
+                        return this.$t('Code is required');
                     }
                     return true;
                 }

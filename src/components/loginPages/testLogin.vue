@@ -78,14 +78,14 @@ export default {
         emailRules: [
             v => {
                 if (!v) {
-                    return 'Email is required';
+                    return this.$t('Email is required');
                 } else if (!/.+@.+/.test(v)) {
-                    return 'Email must be valid';
+                    return this.$t('Email must be valid');
                 }
                 return true;
             }
         ],
-        requiredRule: [v => !!v || 'This field is required']
+        requiredRule: [v => !!v || this.$t('This field is required')]
       };
   },
   setup() {

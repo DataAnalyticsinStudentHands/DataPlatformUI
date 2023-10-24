@@ -35,5 +35,13 @@
     "New Password:": "Nueva Contraseña:",
     "Re-enter Password:": "Reingresa la Contraseña:",
     "Verify Your Email": "Verifica Tu Correo Electrónico",
-    "Please enter your email address and the confirmation code received in your email to verify your account:": "Por favor, ingresa tu dirección de correo electrónico y el código de confirmación recibido en tu correo para verificar tu cuenta:"
+    "Please enter your email address and the confirmation code received in your email to verify your account:": "Por favor, ingresa tu dirección de correo electrónico y el código de confirmación recibido en tu correo para verificar tu cuenta:",
+    "Email is required": "El correo electrónico es obligatorio",
+    "Email must be valid": "El correo electrónico debe ser válido",
+    "This field is required": "Este campo es obligatorio",
+    "Code is required": "El código es obligatorio",
+    "Password is required": "La contraseña es obligatoria",
+    "Password must be at least 8 characters long": "La contraseña debe tener al menos 8 caracteres",
+    "Passwords must match": "Las contraseñas deben coincidir",
+    "Re-entered password is required": "Se requiere volver a ingresar la contraseña"
 }
