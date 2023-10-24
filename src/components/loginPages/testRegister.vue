@@ -132,6 +132,8 @@
 
   
   <script>
+  import { toast } from 'vue3-toastify';
+  import 'vue3-toastify/dist/index.css';
   import useVuelidate from "@vuelidate/core";
   import { minLength, required } from "@vuelidate/validators";
   import axios from "axios";
@@ -160,21 +162,29 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
       };
     },
     methods: {
-      chechConfirmPassword() {
+      checkConfirmPassword() {
         this.isConfirmPasswordValid = true;
         this.isConfirmEmailValid = true;
         if (this.user.password !== this.user.confirm_pasword) {
           this.errorr = "Passwords do not match.";
           this.isConfirmPasswordValid = false;
+          toast.error('Passwords do not match!', {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
         } else if (this.user.email !== this.user.confirm_email) {
           this.errorr = "Emails do not match.";
           this.isConfirmEmailValid = false;
+          toast.error('Emails do not match!', {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
         }
       },
       async userSubmitForm() {
         // Checks to see if there are any errors in validation
         const isFormCorrect = await this.v$.$validate();
-        this.chechConfirmPassword();
+        this.checkConfirmPassword();
         // If no errors found. isFormCorrect = True then the form is submitted
         if (
           isFormCorrect &&
@@ -214,7 +224,14 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
               });
             },
             (err) => {
-              this.errorr = err.response.data.error;
+              if (err.response && err.response.data.title === 'Registration Failed.') {
+                toast.error(err.response.data.error, {
+                  position: 'top-right',
+                  toastClassName: 'Toastify__toast--delete'
+                });
+              } else {
+                console.log(err);
+              }
             }
           ).finally(() => {
             this.loading = false;

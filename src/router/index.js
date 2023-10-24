@@ -56,7 +56,19 @@ const routes = [
           name: 'testVerifyExisting',
           props: true,
           component: () => import('../components/loginPages/testVerifyExisting.vue')
-        }
+        },
+        {
+          path: '/testResetPass',
+          name: 'testResetPass',
+          props: true,
+          component: () => import('../components/loginPages/testResetPass.vue')
+        },
+        {
+          path: '/testResetPassCode',
+          name: 'testResetPassCode',
+          props: true,
+          component: () => import('../components/loginPages/testResetPassCode.vue')
+        },
       ]
     },    
     {

@@ -76,70 +76,73 @@ export default {
         this.activateAccount();
     },
     async activateAccount() {
-    this.loading = true;
-    let user = {
-        code: this.code,
-        userID: this.userID,
-        error: this.error,
-    };
-    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verify`;
-    const store = useLoggedInUserStore();
-    let token = store.token;
+        this.loading = true;
+        let user = {
+            code: this.code,
+            userID: this.userID,
+            error: this.error,
+        };
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verify`;
+        const store = useLoggedInUserStore();
+        let token = store.token;
 
-    try {
-        const res = await axios.put(apiURL, user, {
-            headers: {
-                'token': token
-            }
-        });
+        try {
+            const res = await axios.put(apiURL, user, {
+                headers: {
+                    'token': token
+                }
+            });
 
-        if (res.status === 200) {
-            console.log('The account has been successfully activated.');
-            await store.verifyExistingAcc(res.data);
-            // Navigate to the appropriate dashboard based on the user's role
-            if (store.role === 'Instructor') {
-                this.$router.push("/instructorDash");
-            } else if (store.role === 'Student') {
-                // After successful verification, check if the student has completed forms
-                await store.checkFormCompletion();
-                if (store.hasCompletedEntryForm) {
-                this.$router.push("/studentDashboard");
+            if (res.status === 200) {
+                console.log('The account has been successfully activated.');
+                await store.verifyExistingAcc(res.data);
+                // Navigate to the appropriate dashboard based on the user's role
+                if (store.role === 'Instructor') {
+                    this.$router.push("/instructorDash");
+                } else if (store.role === 'Student') {
+                    // After successful verification, check if the student has completed forms
+                    await store.checkFormCompletion();
+                    if (store.hasCompletedEntryForm) {
+                    this.$router.push("/studentDashboard");
+                    } else {
+                    this.$router.push("/studentEntryForm");
+                    }
                 } else {
-                this.$router.push("/studentEntryForm");
+                    this.$router.push("/");
                 }
             } else {
-                this.$router.push("/");
+                console.log('Unexpected response status:', res.status);
             }
-        } else {
-            console.log('Unexpected response status:', res.status);
-        }
-    } catch (err) {
-        if (err.response && err.response.status === 401) {
-            if (err.response.data.title === 'Expired code') {
-                try {
-                    await this.sendNewCode();
-                    toast.error('Your code has already expired. A new code has been sent! Please wait for email.', {
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                if (err.response.data.title === 'Expired code') {
+                    try {
+                        await this.sendNewCode();
+                        toast.error('Your code has already expired. A new code has been sent! Please wait for email.', {
+                            position: 'top-right',
+                            toastClassName: 'Toastify__toast--delete',
+                            autoClose: false,
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+                } else if (err.response.data.title === 'Invalid code') {
+                    toast.error('Invalid code.', {
                         position: 'top-right',
-                        toastClassName: 'Toastify__toast--delete',
-                        autoClose: false,
+                        toastClassName: 'Toastify__toast--delete'
                     });
-                } catch (error) {
-                    console.log(error);
                 }
-            } else if (err.response.data.title === 'Invalid code') {
-                toast.error('Invalid code.', {
+            } else {
+                console.log(err);
+                toast.error('An error has occured. Please try again.', {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });
             }
-        } else {
-            console.log('hi');
-            console.log(err);
+        } finally {
+            this.loading = false;
         }
-    } finally {
-        this.loading = false;
-    }
-},
+    },
 
 
     async sendNewCode() {

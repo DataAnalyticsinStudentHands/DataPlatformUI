@@ -29,7 +29,7 @@
         <v-col cols="12" class="pl-0 pt-6">
           <span
             class="font-semibold text-base text-red-800 cursor-pointer"
-            @click="$emit('change-tab', 'resetPass')"
+            @click="$emit('navigateTo', '/testResetPass')"
           >
             Forgot Your Password?
           </span>
@@ -76,9 +76,9 @@ export default {
         emailRules: [
             v => {
                 if (!v) {
-                    return 'E-mail is required';
+                    return 'Email is required';
                 } else if (!/.+@.+/.test(v)) {
-                    return 'E-mail must be valid';
+                    return 'Email must be valid';
                 }
                 return true;
             }
@@ -105,6 +105,20 @@ export default {
         try {
           // Attempt to login
           await this.store.login(this.email, this.password);
+          // Navigate to the appropriate dashboard based on the user's role
+          if (this.store.role === 'Instructor') {
+            this.$router.push("/instructorDash");
+          } else if (this.store.role === 'Student') {
+            // After successful verification, check if the student has completed forms
+            await this.store.checkFormCompletion();
+            if (this.store.hasCompletedEntryForm) {
+              this.$router.push("/studentDashboard");
+            } else {
+              this.$router.push("/studentEntryForm");
+            }
+          } else {
+            this.$router.push("/");
+          }
           // If invalid login, error message will appear from Pinia store
           // If unverified account, send to verification view
           console.log(this.store.unverified)

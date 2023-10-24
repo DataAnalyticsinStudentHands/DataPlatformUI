@@ -16,7 +16,16 @@
             <span class="font-semibold text-red-800">Register</span>
           </v-tab>
         </v-tabs>
-        <router-view></router-view>
+
+        <router-view 
+          v-slot="{ Component }" 
+          @navigateTo="changeRoute"
+        >
+          <v-expand-transition>
+              <component :is="Component" />
+          </v-expand-transition>
+        </router-view>
+
       </v-card>
     </v-col>
   </v-row>
@@ -88,11 +97,17 @@ export default {
         console.log(error);
       }
     },
-    handleChangeTab(value) {
-      this.tab = value;
-    },
-    changeRoute(routeName) {
-      this.$router.push(routeName);
+    changeRoute(payload) {
+      if (typeof payload === 'string') {
+        // For simple string routes (backward compatibility)
+        this.$router.push(payload);
+      } else if (payload && payload.route) {
+        // If payload is an object containing the route and userID
+        this.$router.push({
+          path: payload.route,
+          params: { userID: payload.userID } // passing userID as a route parameter
+        });
+      }
     },
   },
 };
