@@ -197,8 +197,8 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
             async (response) => {
               //using swal from sweetalert.js for customizeble alerts
               swal(
-                "You have registered successfully!",
-                "Please check your email and follow the steps to verify your account.",
+                this.$t("You have registered successfully!"),
+                this.$t("Please check your email and follow the steps to verify your account."),
                 "success"
               );
 

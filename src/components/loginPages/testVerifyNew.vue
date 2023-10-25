@@ -132,7 +132,7 @@ export default {
                         console.log(error);
                     }
                 } else if (err.response.data.title === 'Invalid code') {
-                    toast.error('Invalid code.', {
+                    toast.error(this.$t('Invalid code.'), {
                         position: 'top-right',
                         toastClassName: 'Toastify__toast--delete'
                     });

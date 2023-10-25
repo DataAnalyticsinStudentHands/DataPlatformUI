@@ -50,8 +50,11 @@
     "An error occurred. Please try again.": "Ocurrió un error. Por favor, inténtalo de nuevo.",
     "Success! You may now reset your password.": "¡Éxito! Ahora puedes restablecer tu contraseña.",
     "Invalid code. Please try again.": "Código inválido. Por favor, inténtalo de nuevo.",
+    "Invalid code.": "Código inválido.",
     "Password Reset! You may now login.": "¡Contraseña reestablecida! Ahora puedes iniciar sesión.",
     "Your account is activated! You may now login.": "¡Tu cuenta ha sido activada! Ahora puedes iniciar sesión.",
     "Invalid Email or Code.": "Correo electrónico o código inválido.",
-    "Your code has already expired. A new code has been sent! Please wait for email.": "Tu código ya ha expirado. ¡Se ha enviado un nuevo código! Por favor, espera el correo electrónico."
+    "Your code has already expired. A new code has been sent! Please wait for email.": "Tu código ya ha expirado. ¡Se ha enviado un nuevo código! Por favor, espera el correo electrónico.",
+    "You have registered successfully!": "¡Te has registrado exitosamente!",
+    "Please check your email and follow the steps to verify your account.": "Por favor revisa tu correo electrónico y sigue los pasos para verificar tu cuenta."
 }
