@@ -13,7 +13,7 @@
             </v-col>
         </v-row>
         <v-row justify="center">
-            <v-col cols="8"> <!-- Adjust the cols values as required -->
+            <v-col cols="12" md="8">
                 <v-sheet>
                     <v-form ref="form" validate-on="submit lazy" @submit.prevent="formSubmit">
                         <v-text-field
@@ -24,12 +24,16 @@
                             style="width: 100%;"
                         >
                         </v-text-field>
-                        <v-btn 
-                            :loading="loading"
-                            type="submit" 
-                            block 
-                            class="mt-3 bg-red-700 text-white rounded"
-                        >{{$t('Submit')}}</v-btn>
+                        <v-row justify="center">
+                            <v-col cols="6">
+                                <v-btn 
+                                    :loading="loading"
+                                    type="submit" 
+                                    block 
+                                    class="mt-3 bg-red-700 text-white rounded"
+                                >{{$t('Submit')}}</v-btn>
+                            </v-col>
+                       </v-row>
                     </v-form>
                 </v-sheet>
             </v-col>
@@ -63,8 +67,7 @@ export default {
   },
   mounted() {
     if (this.$route.params && this.$route.params.id) {
-        this.userID = this.$route.params.id; 
-        console.log(this.userID);
+        this.userID = this.$route.params.id;
     }
   },
   methods: {
@@ -94,7 +97,6 @@ export default {
             });
 
             if (res.status === 200) {
-                console.log('The account has been successfully activated.');
                 await store.verifyExistingAcc(res.data);
                 store.isLoggedIn = true;
                 // Navigate to the appropriate dashboard based on the user's role

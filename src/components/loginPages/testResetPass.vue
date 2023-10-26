@@ -13,7 +13,7 @@
                 </v-col>
             </v-row>
                 <v-row justify="center">
-                    <v-col cols="8">
+                    <v-col cols="12" md="10">
                         <v-sheet>
                             <v-form ref="emailForm" @submit.prevent="emailFormSubmit">
                                 <v-text-field
@@ -76,7 +76,6 @@ export default {
 
             // If no errors, proceed with login
             if (!emailFormInvalid) {
-                console.log('email form is valid');
                 this.loading = true;
                 let user = {
                     email: this.email,
@@ -112,8 +111,6 @@ export default {
 
 
                 }
-            } else {
-                console.log('form has errors');
             }
         },
         goBackToLogin() {

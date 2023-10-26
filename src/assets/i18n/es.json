@@ -56,5 +56,6 @@
     "Invalid Email or Code.": "Correo electrónico o código inválido.",
     "Your code has already expired. A new code has been sent! Please wait for email.": "Tu código ya ha expirado. ¡Se ha enviado un nuevo código! Por favor, espera el correo electrónico.",
     "You have registered successfully!": "¡Te has registrado exitosamente!",
-    "Please check your email and follow the steps to verify your account.": "Por favor revisa tu correo electrónico y sigue los pasos para verificar tu cuenta."
+    "Please check your email and follow the steps to verify your account.": "Por favor revisa tu correo electrónico y sigue los pasos para verificar tu cuenta.",
+    "Invalid email or password.": "Correo electrónico o contraseña inválidos."
 }

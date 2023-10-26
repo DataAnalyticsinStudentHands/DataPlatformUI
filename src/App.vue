@@ -232,7 +232,6 @@ export default {
       this.showElement = true;
     },
     async handleLogout() {
-      console.log('handleLogout called');
       const store = useLoggedInUserStore();
       
       await store.logout();
@@ -251,7 +250,6 @@ export default {
         'Come back soon!'
       ];
       logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
-      console.log('logoutMessage: ', logoutMessage)
     
       this.$router.push({
           name: 'testLogin',
@@ -267,7 +265,6 @@ export default {
       if (this.isMdAndUp) {
         this.rail = !this.rail;
       } else {
-        console.log('sidebarToggle drawer')
         this.drawer = !this.drawer;
       }
     }

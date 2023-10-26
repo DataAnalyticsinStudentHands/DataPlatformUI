@@ -52,7 +52,6 @@ export const useLoggedInUserStore = defineStore({
 
         // If userStatus is 'Pending', update unverified and token fields
         if (response.data.userStatus === 'Pending') {
-          console.log('pending fetched');
           this.$patch({
             isLoggedIn: false,
             unverified: true,
@@ -162,7 +161,6 @@ export const useLoggedInUserStore = defineStore({
           headers: { token: this.token }
         });
         if (response && response.data) {
-          console.log('response.data: ', response.data);
           this.$patch({
             hasCompletedEntryForm: response.data.hasCompletedEntryForm,
             hasRegisteredExperiences: response.data.hasRegisteredExperiences,
@@ -170,7 +168,6 @@ export const useLoggedInUserStore = defineStore({
           });
         }
       } catch (error) {
-        console.log('checkFormCompletion: ', error);
         console.log(error);
       }
     },
@@ -197,7 +194,6 @@ export const useLoggedInUserStore = defineStore({
         });
         
         if (response && response.data) {
-          console.log('response: ', response);
           this.$patch({
             semesterName: response.data.semesterName
           });

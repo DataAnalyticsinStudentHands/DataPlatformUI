@@ -216,7 +216,7 @@
               >
                 <v-card>
                   <v-card-title>
-                    <span class="font-weight-black text-xl">Add / Remove Experiences - Fall 2023</span>
+                    <span class="font-weight-black text-xl">Add / Remove Experiences - {{ semesterName }}</span>
                   </v-card-title>
                   <v-card-text>
                     <v-row>
@@ -389,9 +389,7 @@ export default {
         // goalSettingFormCompletion is undefined, return false
         return false;
       }
-      console.log('this.goalSettingFormCompletion:', this.goalSettingFormCompletion);
       return this.registeredExperiences.every(experience => {
-        console.log('experience._id:', experience._id);
         return this.goalSettingFormCompletion[experience._id];
       });
     },
@@ -483,7 +481,6 @@ export default {
       }
     },
     async registerExperiences() {
-      console.log('Before update:', this.goalSettingFormCompletion, this.registeredExperiences);
       // Depending if a registration already exists, use either POST or PUT
       const method = this.registrationExists ? 'put' : 'post';
       // Create an array of experienceIDs from the selected experiences
@@ -521,8 +518,6 @@ export default {
         // Update session stores
         const user = useLoggedInUserStore()
         await user.checkFormCompletion();
-
-        console.log('After update:', this.goalSettingFormCompletion, this.registeredExperiences);
 
         // Wait for the next DOM update cycle, then close the dialog
         this.$nextTick(() => {

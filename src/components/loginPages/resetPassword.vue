@@ -116,7 +116,7 @@ export default {
         (res) => {
           if (res.status == 200) {
             this.submitLoading = false;
-            this.$router.push('/resetPasswordForm');
+            this.$router.push('/updatePasswordForm');
           }
         },
         (err) => {

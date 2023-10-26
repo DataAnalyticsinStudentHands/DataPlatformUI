@@ -13,7 +13,7 @@
             </v-col>
         </v-row>
         <v-row justify="center">
-            <v-col cols="8">
+            <v-col cols="12" md="10">
                 <v-sheet>
                     <v-form ref="passForm" @submit.prevent="passFormSubmit">
                         <!-- New Password Field with prepend icon -->
@@ -148,11 +148,8 @@ export default {
             // Instantiate the store
             const loggedInUserStore = useLoggedInUserStore();
 
-            console.log('loggedInUserStore.token: ', loggedInUserStore.token);
-
             // If no errors, proceed with updating the password
             if (!passFormInvalid) {
-                console.log('pass form is valid');
                 this.loading = true;
                 
                 // We're sending the new password for reset, no need to send email
@@ -196,8 +193,6 @@ export default {
                 } finally {
                     this.loading = false;
                 }
-            } else {
-                console.log('form has errors');
             }
         },
 

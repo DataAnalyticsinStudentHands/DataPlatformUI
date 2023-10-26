@@ -359,7 +359,6 @@ beforeMount() {
   try {
     axios.get(url + `/${userGivenID}`, { headers: { token },})
       .then((resp) => {
-        console.log('resp.data: ', resp.data);
         this.userData = resp.data.userData;
         this.studentData = resp.data.studentData?.studentInformation;
         useLoggedInUserStore().stopLoading();

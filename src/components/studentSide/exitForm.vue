@@ -844,7 +844,7 @@ export default {
         this.exitForm.goal5 = goalFormData.goals?.goalFive;
 
       } else {
-        console.log("Goal form data not found in the response.");
+        console.error("Goal form data not found in the response.");
       }
     })
     .catch((error) => {

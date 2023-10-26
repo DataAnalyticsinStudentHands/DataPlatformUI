@@ -19,7 +19,7 @@
                 </v-col>
             </v-row>
                 <v-row justify="center">
-                    <v-col cols="8">
+                    <v-col cols="12" md="8">
                         <v-sheet>
                             <v-form ref="passForm" @submit.prevent="passFormSubmit">
                                 <v-text-field
@@ -75,7 +75,6 @@ export default {
     mounted() {
         if (this.$route.params && this.$route.params.userID) {
             this.userID = this.$route.params.userID; 
-            console.log(this.userID);
         }
     },
     methods: {
@@ -89,7 +88,6 @@ export default {
 
             // If no errors, proceed
             if (!passFormInvalid) {
-                console.log('pass form is valid');
                 this.loading = true;
                 
                 let requestData = {
@@ -103,11 +101,8 @@ export default {
                     const response = await axios.post(apiURL, requestData);
 
                     if (response.status === 200) {
-                        console.log('200');
                         // Set token as global header
-                        console.log('response.data.token', response.data.token);
                         loggedInUserStore.setTokenHeader(response.data.token);
-                        console.log('loggedInUserStore.token: ', loggedInUserStore.token);
                         
                         this.$router.push({
                             name: 'testResetPassNew',
@@ -134,8 +129,6 @@ export default {
                 } finally {
                     this.loading = false;
                 }
-            } else {
-                console.log('form has errors');
             }
         },
         goBackToLogin() {

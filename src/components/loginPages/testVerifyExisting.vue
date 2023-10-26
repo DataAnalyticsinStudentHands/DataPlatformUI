@@ -14,7 +14,7 @@
         </v-row>
         <v-form ref="form" @submit.prevent="formSubmit">
         <v-row justify="center">
-            <v-col cols="8">
+            <v-col cols="12" md="10">
                 <v-sheet>
                         <v-text-field
                             v-model="email"
@@ -28,7 +28,7 @@
             </v-col>
         </v-row>
         <v-row justify="center">
-            <v-col cols="8"> 
+            <v-col cols="12" md="10"> 
                 <v-sheet>
                         <v-text-field
                             v-model="code"

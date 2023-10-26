@@ -110,7 +110,6 @@ export default {
 
       // If no errors, proceed with login
       if (!hasErrors) {
-        console.log('form is valid');
         this.loading = true;
         try {
           // Attempt to login
@@ -131,7 +130,6 @@ export default {
           }
           // If invalid login, error message will appear from Pinia store
           // If unverified account, send to verification view
-          console.log(this.store.unverified)
           if (this.store.unverified === true) {
             this.sendNewCode();
           }
@@ -140,8 +138,6 @@ export default {
         } finally {
           this.loading = false;
         }
-      } else {
-        console.log('form has errors');
       }
     },
     async sendNewCode() {
