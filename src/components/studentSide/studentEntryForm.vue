@@ -1,9 +1,46 @@
 <template> <!-- Start of the Student Entry Form template -->
 
-  <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
-    <p class="font-weight-black text-h5 text--primary">{{ getTranslation('Student Entry Form') }}</p>
-    <p class="text-subtitle-1">{{ getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.") }}</p>
-  </v-container>
+<v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
+  <div style="display: flex; align-items: center;">
+    <p class="font-weight-black text-h5 text--primary">
+      {{ getTranslation('Student Entry Form') }}
+    </p>
+      <v-dialog width="500">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            size="x-small"
+            class="pb-2"
+            variant="text"
+            icon="mdi-help-circle-outline"
+            flat
+            v-bind="props"
+          >
+          </v-btn>
+        </template>
+
+        <template v-slot:default="{ isActive }">
+          <v-card :title="getTranslation('Student Entry Form')">
+            <v-card-text>
+              {{getTranslation('This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.')}}
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                text="Close"
+                @click="isActive.value = false"
+              ></v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
+  </div>
+  <p class="text-subtitle-1">
+    {{ getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.") }}
+  </p>
+</v-container>
+
   <v-form 
   ref="form"
   @submit.prevent="handleValidations">
@@ -66,16 +103,6 @@
             >
             </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-        v-if="studentInformation.pronouns[studentInformation.pronouns.length - 1].checked && !pronoun.checked && hoveredCheckboxID === pronoun.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
-      >
-          De-select "Prefer not to answer" to select this.
-      </span>
-    </transition>
         </div>
 
         <!-- "Other" text field -->
@@ -258,7 +285,7 @@
                         chips
                         v-model="studentInformation.enrolledUHInfo.majors" 
                         :items="filteredMajors.map(major => major['Plan Name'])" 
-                        label="Select a Major" 
+                        :label= "getTranslation('Select a Major')"
                         multiple
                         :rules="majorsRules"
                         >
@@ -529,174 +556,29 @@
         </v-row>
     </v-container>
   </v-form>
+
+
+  <!-- // First time user v-dialog -->
+  <v-dialog v-model="showNewUserDialog" width="500">
+  <v-card>
+    <v-card-title class="font-weight-bold">
+      {{getTranslation('Welcome In!')}}
+    </v-card-title>
+    
+    <v-card-text>
+      {{getTranslation('We are happy to have you. Your first task is to complete the Student Entry Form!')}}
+    </v-card-text>
+
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn text="Close" @click="showNewUserDialog = false"></v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+
+
 </template>
-
-<style>
-.v-field__input > input[size="1"] {
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-  outline: none;
-}
-
-.v-field__input > input[size="1"]::before,
-.v-field__input > input[size="1"]::after {
-  display: none;
-}
-
-.no-padding {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-
-.slide-y-transition-enter-active, .slide-y-transition-leave-active {
-	transition: all 0.5s ease-in-out;
-}
-/* delay leave of parent element */
-.slide-y-transition-leave-active {
-  transition-delay: 0.25s;
-  transition: all 0.5s ease-in-out;
-}
-
-
-
-.error-text {
-  color: darkred;
-  }
-
-
-.styled-error-text {
-  -webkit-text-size-adjust: 100%;
-    tab-size: 4;
-    font-family: "Roboto", sans-serif;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    --v-theme-overlay-multiplier: 1;
-    --v-scrollbar-offset: 0px;
-    --v-theme-background: 255,255,255;
-    --v-theme-background-overlay-multiplier: 1;
-    --v-theme-surface: 255,255,255;
-    --v-theme-surface-overlay-multiplier: 1;
-    --v-theme-surface-variant: 66,66,66;
-    --v-theme-surface-variant-overlay-multiplier: 2;
-    --v-theme-on-surface-variant: 238,238,238;
-    --v-theme-primary: 98,0,238;
-    --v-theme-primary-overlay-multiplier: 2;
-    --v-theme-primary-darken-1: 55,0,179;
-    --v-theme-primary-darken-1-overlay-multiplier: 2;
-    --v-theme-secondary: 3,218,198;
-    --v-theme-secondary-overlay-multiplier: 1;
-    --v-theme-secondary-darken-1: 1,135,134;
-    --v-theme-secondary-darken-1-overlay-multiplier: 1;
-    --v-theme-error: 176,0,32;
-    --v-theme-error-overlay-multiplier: 2;
-    --v-theme-info: 33,150,243;
-    --v-theme-info-overlay-multiplier: 1;
-    --v-theme-success: 76,175,80;
-    --v-theme-success-overlay-multiplier: 1;
-    --v-theme-warning: 251,140,0;
-    --v-theme-warning-overlay-multiplier: 1;
-    --v-theme-on-background: 0,0,0;
-    --v-theme-on-surface: 0,0,0;
-    --v-theme-on-primary: 255,255,255;
-    --v-theme-on-primary-darken-1: 255,255,255;
-    --v-theme-on-secondary: 0,0,0;
-    --v-theme-on-secondary-darken-1: 255,255,255;
-    --v-theme-on-error: 255,255,255;
-    --v-theme-on-info: 255,255,255;
-    --v-theme-on-success: 255,255,255;
-    --v-theme-on-warning: 255,255,255;
-    --v-border-color: 0, 0, 0;
-    --v-border-opacity: 0.12;
-    --v-high-emphasis-opacity: 0.87;
-    --v-medium-emphasis-opacity: 0.6;
-    --v-disabled-opacity: 0.38;
-    --v-idle-opacity: 0.04;
-    --v-hover-opacity: 0.04;
-    --v-focus-opacity: 0.12;
-    --v-selected-opacity: 0.08;
-    --v-activated-opacity: 0.12;
-    --v-pressed-opacity: 0.12;
-    --v-dragged-opacity: 0.08;
-    --v-theme-kbd: 33, 37, 41;
-    --v-theme-on-kbd: 255, 255, 255;
-    --v-theme-code: 245, 245, 245;
-    --v-theme-on-code: 0, 0, 0;
-    --v-input-control-height: 56px;
-    --v-input-padding-top: 16px;
-    --select-chips-margin-bottom: 0px;
-    --autocomplete-chips-margin-bottom: 0px;
-    --combobox-chips-margin-bottom: 0px;
-    --file-input-chips-margin-bottom: 0px;
-    font-weight: 400;
-    letter-spacing: 0.0333333333em;
-    font-size: 12px;
-    color: rgb(var(--v-theme-error));
-    border-width: 0;
-    border-style: solid;
-    border-color: #e5e7eb;
-    --tw-border-spacing-x: 0;
-    --tw-border-spacing-y: 0;
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    --tw-rotate: 0;
-    --tw-skew-x: 0;
-    --tw-skew-y: 0;
-    --tw-scale-x: 1;
-    --tw-scale-y: 1;
-    --tw-pan-x: ;
-    --tw-pan-y: ;
-    --tw-pinch-zoom: ;
-    --tw-scroll-snap-strictness: proximity;
-    --tw-ordinal: ;
-    --tw-slashed-zero: ;
-    --tw-numeric-figure: ;
-    --tw-numeric-spacing: ;
-    --tw-numeric-fraction: ;
-    --tw-ring-inset: ;
-    --tw-ring-offset-width: 0px;
-    --tw-ring-offset-color: #fff;
-    --tw-ring-color: rgb(59 130 246 / 0.5);
-    --tw-ring-offset-shadow: 0 0 #0000;
-    --tw-ring-shadow: 0 0 #0000;
-    --tw-shadow: 0 0 #0000;
-    --tw-shadow-colored: 0 0 #0000;
-    --tw-blur: ;
-    --tw-brightness: ;
-    --tw-contrast: ;
-    --tw-grayscale: ;
-    --tw-hue-rotate: ;
-    --tw-invert: ;
-    --tw-saturate: ;
-    --tw-sepia: ;
-    --tw-drop-shadow: ;
-    --tw-backdrop-blur: ;
-    --tw-backdrop-brightness: ;
-    --tw-backdrop-contrast: ;
-    --tw-backdrop-grayscale: ;
-    --tw-backdrop-hue-rotate: ;
-    --tw-backdrop-invert: ;
-    --tw-backdrop-opacity: ;
-    --tw-backdrop-saturate: ;
-    --tw-backdrop-sepia: ;
-    background-repeat: no-repeat;
-    box-sizing: inherit;
-    padding: 0;
-    margin: 0;
-    line-height: 12px;
-    word-break: break-word;
-    word-wrap: break-word;
-    hyphens: auto;
-    transition-duration: 150ms;
-    transform-origin: center center;
-}
-
-
-
-
-</style>
 
 <script>
 // Imports
@@ -782,6 +664,9 @@ export default {
         "If 'Other' is selected, please specify.": "Si seleccionó 'Otro', por favor especifique.",
         "Oops! Error(s) detected. Please review and try again.": "¡Ups! Se detectó(ron) error(es). Por favor, revise y vuelva a intentarlo.",
         "Thank you for completing the Student Entry Form!": "¡Gracias por completar el Formulario de Inscripción para Estudiantes!",
+        "Welcome In!": "¡Bienvenido!",
+        "We are happy to have you. Your first task is to complete the Student Entry Form!": "Estamos felices de tenerte. Tu primera tarea es completar el Formulario de Inscripción para Estudiantes.",
+        "This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.": "Este formulario recopila información básica sobre ti, ¡para que podamos conocerte mejor! Parte de esta información será compartida con tu instructor o líder de experiencia. Puedes actualizar esta información en cualquier momento en tu “perfil”."
       }
     };
 
@@ -887,6 +772,8 @@ export default {
       minors: [],
       formSubmitted: false,
       hoveredCheckboxID: null,
+      showNewUserDialog: false,
+
       otherPronounsRules: [
           v => {
               if (!this.formSubmitted) return true;
@@ -1058,6 +945,13 @@ export default {
       .catch(error => {
         console.log('Error:', error);
       });
+
+    const loggedInUserStore = useLoggedInUserStore();
+
+    // Check the hasCompletedEntryForm state
+    if (!loggedInUserStore.hasCompletedEntryForm) {
+      this.showNewUserDialog = true; // Open the dialog if the condition is met
+    }
   },
   watch: {
     'studentInformation.pronouns': {
@@ -1351,7 +1245,7 @@ export default {
       // Check if the rule returned a string (indicating an error message)
       const isProfessionalDesignOtherInValid = typeof isProfessionalDesignOtherValid === 'string';
 
-      return this.isProgramGradProStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
+      return this.isProgramGradPrStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
   },
   // Computed function to get the ref of phDTextboxField (it's within a for loop)
   phDTextboxFieldRef() {
@@ -1362,8 +1256,6 @@ export default {
     async handleValidations() {
       this.formSubmitted = true;
       const { valid } = await this.$refs.form.validate()
-
-
       if (valid) {
         this.cleanupFormData();
         this.submitCompletedForm();
@@ -1375,6 +1267,7 @@ export default {
         return;
       }
     },
+
     async submitCompletedForm() {
       const user = useLoggedInUserStore()
       let token = user.token
@@ -1507,3 +1400,170 @@ export default {
   },
 }
 </script>
+
+<style>
+.v-field__input > input[size="1"] {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.v-field__input > input[size="1"]::before,
+.v-field__input > input[size="1"]::after {
+  display: none;
+}
+
+.no-padding {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+.slide-y-transition-enter-active, .slide-y-transition-leave-active {
+	transition: all 0.5s ease-in-out;
+}
+/* delay leave of parent element */
+.slide-y-transition-leave-active {
+  transition-delay: 0.25s;
+  transition: all 0.5s ease-in-out;
+}
+
+
+
+.error-text {
+  color: darkred;
+  }
+
+
+.styled-error-text {
+  -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: "Roboto", sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    --v-theme-overlay-multiplier: 1;
+    --v-scrollbar-offset: 0px;
+    --v-theme-background: 255,255,255;
+    --v-theme-background-overlay-multiplier: 1;
+    --v-theme-surface: 255,255,255;
+    --v-theme-surface-overlay-multiplier: 1;
+    --v-theme-surface-variant: 66,66,66;
+    --v-theme-surface-variant-overlay-multiplier: 2;
+    --v-theme-on-surface-variant: 238,238,238;
+    --v-theme-primary: 98,0,238;
+    --v-theme-primary-overlay-multiplier: 2;
+    --v-theme-primary-darken-1: 55,0,179;
+    --v-theme-primary-darken-1-overlay-multiplier: 2;
+    --v-theme-secondary: 3,218,198;
+    --v-theme-secondary-overlay-multiplier: 1;
+    --v-theme-secondary-darken-1: 1,135,134;
+    --v-theme-secondary-darken-1-overlay-multiplier: 1;
+    --v-theme-error: 176,0,32;
+    --v-theme-error-overlay-multiplier: 2;
+    --v-theme-info: 33,150,243;
+    --v-theme-info-overlay-multiplier: 1;
+    --v-theme-success: 76,175,80;
+    --v-theme-success-overlay-multiplier: 1;
+    --v-theme-warning: 251,140,0;
+    --v-theme-warning-overlay-multiplier: 1;
+    --v-theme-on-background: 0,0,0;
+    --v-theme-on-surface: 0,0,0;
+    --v-theme-on-primary: 255,255,255;
+    --v-theme-on-primary-darken-1: 255,255,255;
+    --v-theme-on-secondary: 0,0,0;
+    --v-theme-on-secondary-darken-1: 255,255,255;
+    --v-theme-on-error: 255,255,255;
+    --v-theme-on-info: 255,255,255;
+    --v-theme-on-success: 255,255,255;
+    --v-theme-on-warning: 255,255,255;
+    --v-border-color: 0, 0, 0;
+    --v-border-opacity: 0.12;
+    --v-high-emphasis-opacity: 0.87;
+    --v-medium-emphasis-opacity: 0.6;
+    --v-disabled-opacity: 0.38;
+    --v-idle-opacity: 0.04;
+    --v-hover-opacity: 0.04;
+    --v-focus-opacity: 0.12;
+    --v-selected-opacity: 0.08;
+    --v-activated-opacity: 0.12;
+    --v-pressed-opacity: 0.12;
+    --v-dragged-opacity: 0.08;
+    --v-theme-kbd: 33, 37, 41;
+    --v-theme-on-kbd: 255, 255, 255;
+    --v-theme-code: 245, 245, 245;
+    --v-theme-on-code: 0, 0, 0;
+    --v-input-control-height: 56px;
+    --v-input-padding-top: 16px;
+    --select-chips-margin-bottom: 0px;
+    --autocomplete-chips-margin-bottom: 0px;
+    --combobox-chips-margin-bottom: 0px;
+    --file-input-chips-margin-bottom: 0px;
+    font-weight: 400;
+    letter-spacing: 0.0333333333em;
+    font-size: 12px;
+    color: rgb(var(--v-theme-error));
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+    --tw-border-spacing-x: 0;
+    --tw-border-spacing-y: 0;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+    --tw-pan-x: ;
+    --tw-pan-y: ;
+    --tw-pinch-zoom: ;
+    --tw-scroll-snap-strictness: proximity;
+    --tw-ordinal: ;
+    --tw-slashed-zero: ;
+    --tw-numeric-figure: ;
+    --tw-numeric-spacing: ;
+    --tw-numeric-fraction: ;
+    --tw-ring-inset: ;
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: rgb(59 130 246 / 0.5);
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+    --tw-blur: ;
+    --tw-brightness: ;
+    --tw-contrast: ;
+    --tw-grayscale: ;
+    --tw-hue-rotate: ;
+    --tw-invert: ;
+    --tw-saturate: ;
+    --tw-sepia: ;
+    --tw-drop-shadow: ;
+    --tw-backdrop-blur: ;
+    --tw-backdrop-brightness: ;
+    --tw-backdrop-contrast: ;
+    --tw-backdrop-grayscale: ;
+    --tw-backdrop-hue-rotate: ;
+    --tw-backdrop-invert: ;
+    --tw-backdrop-opacity: ;
+    --tw-backdrop-saturate: ;
+    --tw-backdrop-sepia: ;
+    background-repeat: no-repeat;
+    box-sizing: inherit;
+    padding: 0;
+    margin: 0;
+    line-height: 12px;
+    word-break: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    transition-duration: 150ms;
+    transform-origin: center center;
+}
+
+
+
+
+</style>

@@ -12,20 +12,28 @@
       <br><v-btn style="text-align:center; margin-right:2rem;">
         <router-link class="" to="/instructorAddSemester">Add New Semester</router-link>
       </v-btn>
+
       <v-btn style="text-align:center" @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Semesters' : 'Show Inactive Semesters' }}
-      </v-btn>      
+      </v-btn>     
+
       <br><br>
+
       <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateSemesters" v-if="selectedSemesters.length > 0">
         Deactivate
       </v-btn>
+
       <v-btn style="text-align:center" @click="activateSemesters" v-if="selectedSemesters.length > 0">
         Activate
       </v-btn>
       <br><br>
       <v-text-field v-model="searchTerm" placeholder="Search by semester name or date ranges"></v-text-field>
     </center>
-    <div style="display: flex; justify-content: center;">
+
+    <div v-if="loading" justify="center" align="center">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+    <div v-else style="display: flex; justify-content: center;">
       <div style="max-height: 400px; overflow-y: auto;">
         <v-table style="width: 100%">
           <thead>
@@ -47,10 +55,13 @@
               @mouseenter="hoverId = semester._id"
               @mouseleave="hoverId = null"
               >
+
               <td class="text-left">
                 <input type="checkbox" v-model="selectedSemesters" :value="semester._id" style="outline: 2px solid #808080; margin-right: 10px;">
               </td>
+
               <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterName }}</td>
+
               <td class="text-left" @click="editSemester(semester._id)">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
               <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterStatus ? 'Active' : 'Inactive' }}</td>
               <td></td>
@@ -87,39 +98,53 @@ export default {
     '$route': 'onRouteChange'
   },
   mounted() {
-    this.fetchSemesterData();
+    useLoggedInUserStore().startLoading();
+    this.fetchSemesterData()
+      .then(() => {
+        useLoggedInUserStore().stopLoading();
+      })
+      .catch((error) => {
+        console.error(error);
+        useLoggedInUserStore().stopLoading();
+      });
     window.scrollTo(0, 0);
+
     if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, {
         position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
+        toastClassName: this.$route.params.toastCSS,
       });
     }
-
   },
   methods: {
     formatDate(datetimeDB) {
       const formattedDate = DateTime.fromISO(datetimeDB).plus({ days: 1 }).toFormat('MM-dd-yyyy');
       return formattedDate;
     },
+
     editSemester(semesterID) {
       this.$router.push({ name: "instructorSpecificSemester", params: { id: semesterID } });
     },
-    fetchSemesterData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/semesters/`;
-      axios.get(apiURL, { headers: { token } })
-        .then((resp) => {
-          this.semesterData = resp.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+
+    async fetchSemesterData() {
+      useLoggedInUserStore().startLoading();
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/semesters/`;
+        const resp = await axios.get(apiURL, { headers: { token } });
+        this.semesterData = resp.data;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     },
+
+
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
     },
+
     deactivateSemesters() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -144,6 +169,7 @@ export default {
           console.log(error);
         });
     },
+    
     activateSemesters() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -170,6 +196,7 @@ export default {
         });
     },
   },
+
   computed: {
     filteredSemesterData() {
       const searchTerm = this.searchTerm.toLowerCase();
@@ -185,6 +212,10 @@ export default {
         return filteredData.filter((semester) => semester.semesterStatus);
       }
     },
+    loading() {
+      const store = useLoggedInUserStore();
+      return store.loading;
+    }
   },
 };
 </script>

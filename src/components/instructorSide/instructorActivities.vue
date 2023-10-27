@@ -7,22 +7,30 @@
         <router-link class="" to="/instructorExperiences">Experiences</router-link> |
         <router-link class="" to="/instructorActivities">Activities</router-link>
       </h2>
-      <p class="font-weight-black text-h6">Activities</p>
+      <p class="font-weight-black text-h6">
+        {{ showInactive ? 'Inactive' : 'Active' }} Activities
+      </p>
       <br>
+
       <v-btn style="text-align:center; margin-right:2rem;">
         <router-link class="" to="/instructorAddActivity">Add New Activity</router-link>
       </v-btn>
+      
       <v-btn style="text-align:center" @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Activities' : 'Show Inactive Activities' }}
       </v-btn>
       
       <br><br>
+
       <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateActivities" v-if="selectedActivities.length > 0">
         Deactivate
       </v-btn>
+
       <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0">
         Activate
-      </v-btn><br><br>
+      </v-btn>
+      
+      <br><br>
 
       <!-- Add the search input field -->
       <v-text-field
@@ -35,8 +43,12 @@
       ></v-text-field><br>
 
     </center>
-    <div style="display: flex; justify-content: center;">
+    <div v-if="loading" justify="center" align="center">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+    <div v-else style="display: flex; justify-content: center;">
       <div style="max-height: 400px; overflow-y: auto;">
+
         <v-table style="width: 100;">
           <thead>
             <tr>
@@ -55,6 +67,7 @@
               :class="{ 'hoverRow': hoverId === activity._id}"
               @mouseenter="hoverId = activity._id"
               @mouseleave="hoverId = null">
+
               <td class="text-left">
                 <input
                   type="checkbox"
@@ -63,8 +76,10 @@
                   style="outline: 2px solid #808080; margin-right: 10px;"
                 >
               </td>
+
               <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityName }}</td>
               <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityStatus ? 'Active' : 'Inactive' }}</td>
+
               <td></td>
               <td></td>
             </tr>
@@ -92,8 +107,18 @@ export default {
       hoverId: null,
     };
   },
+
   mounted() {
-    this.fetchActivityData();
+    useLoggedInUserStore().startLoading();
+    this.fetchActivityData()
+    .then(() => {
+      useLoggedInUserStore().stopLoading();
+    })
+    .catch((error) => {
+      console.log(error)
+      useLoggedInUserStore().stopLoading();
+    });
+
     window.scrollTo(0, 0);
     if (this.$route.params.toastType) {
       toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
@@ -102,29 +127,33 @@ export default {
       });
     }
   },
+
   methods: {
-    fetchActivityData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/`;
-      axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          this.activityData = resp.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    async fetchActivityData() {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/activities/";
+        const resp = await axios.get(apiURL, { headers: { token } });
+        this.activityData = resp.data;
+      } catch (error) {
+        console.log(error);
+        throw error
+      }
     },
+
     formatDate(datetimeDB) {
       return DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
     },
+
     editActivity(activityID) {
       this.$router.push({ name: "instructorSpecificActivity", params: { id: activityID } });
     },
+
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
     },
+
     deactivateActivities() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -149,6 +178,7 @@ export default {
           console.log(error);
         });
     },
+
     activateActivities() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -173,7 +203,9 @@ export default {
           console.log(error);
         });
     }
+    
   },
+
   computed: {
     filteredActivityData() {
       const query = this.searchQuery.toLowerCase().trim();
@@ -187,9 +219,14 @@ export default {
           activity.activityStatus && activity.activityName.toLowerCase().includes(query)
         );
       }
+    },
+    loading() {
+      const store = useLoggedInUserStore()
+      return store.loading;
     }
   }
 };
+
 </script>
 
 <style>

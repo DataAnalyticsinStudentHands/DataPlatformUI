@@ -1,5 +1,4 @@
 <template>
-  <v-form disabled>
     <v-row style="margin-top: 1rem;">
       <!-- Empty space (padding) -->
       <v-col cols="4"></v-col>
@@ -11,14 +10,21 @@
       
       <!-- Button: Edit Information -->
       <v-col md="3">
-        <router-link to="/studentEntryFormUpdate">
-          <v-btn class="btn btn-success">{{getTranslation('Edit Information')}}</v-btn>
-        </router-link>
+        <div v-if="!loading && completedEntryForm">
+          <router-link to="/studentEntryFormUpdate">
+            <v-btn class="btn btn-success">{{getTranslation('Edit Information')}}</v-btn>
+          </router-link>
+        </div>
       </v-col>
       
       <!-- Empty space (padding) -->
       <v-col cols="2"></v-col>
     </v-row>
+    <v-form disabled>
+      <div v-if="loading" class="loading-container">
+        <v-progress-circular indeterminate></v-progress-circular>
+      </div>
+      <div v-else>
       <v-container style="width: 90%; margin: 0 auto;">
         <br><p class="font-weight-black text-h6">{{getTranslation('Basic Information')}}</p>
           <v-row>
@@ -45,17 +51,17 @@
         <v-row>
             <v-col cols="12" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Place of Origin')}}</label>
-              <p style="margin: 0;">{{ this.studentData.cityOrigin }}</p>
+              <p style="margin: 0;">{{ this.studentData?.cityOrigin }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="4">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Primary Language')}}</label>
-              <p style="margin: 0;">{{ this.studentData.primaryLanguage }}</p>
+              <p style="margin: 0;">{{ this.studentData?.primaryLanguage }}</p>
             </v-col>
             <v-col cols="12" md="4">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Languages')}}</label>
-              <p style="margin: 0;">{{ this.studentData.otherLanguages }}</p>
+              <p style="margin: 0;">{{ this.studentData?.otherLanguages }}</p>
             </v-col>
           </v-row>
           <v-row>
@@ -65,19 +71,19 @@
             </v-col>
             <v-col cols="11" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Pronouns')}}</label>
-              <p style="margin: 0;">{{ this.studentData.otherPronouns }}</p>
+              <p style="margin: 0;">{{ this.studentData?.otherPronouns }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?')}}</label>
-              <p style="margin: 0;">{{ this.studentData.commentsByStaff }}</p>
+              <p style="margin: 0;">{{ this.studentData?.commentsByStaff }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?')}}</label>
-              <p style="margin: 0;">{{ this.studentData.issuesConcernsTriggers }}</p>
+              <p style="margin: 0;">{{ this.studentData?.issuesConcernsTriggers }}</p>
             </v-col>
           </v-row>
           <div v-if="this.studentData?.enrolledUHInfo?.uhStatus == 'Yes'">
@@ -85,28 +91,28 @@
             <v-row>
                 <v-col cols="12" md="6">
                   <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('UH Email')}}</label>
-                  <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.uhEmail }}</p>
+                  <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.uhEmail }}</p>
                 </v-col>
               <v-col cols="12" md="3">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('PeopleSoft ID')}}</label>
-                <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.peopleSoftID }}</p>
+                <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.peopleSoftID }}</p>
               </v-col>
               <v-col cols="12" md="3">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Expected Graduation Date')}}</label>
-                <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.expectedGraduationYear }}</p>
+                <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.expectedGraduationYear }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Do you live on or off campus?')}}</label>
-                <p style="margin: 0;">{{ getTranslation(this.studentData.enrolledUHInfo.livingOnCampus) }}</p>
+                <p style="margin: 0;">{{ getTranslation(this.studentData?.enrolledUHInfo?.livingOnCampus) }}</p>
               </v-col>
             </v-row>
             <br><p class="font-weight-black text-h7">{{getTranslation('Educational Background and Goals')}}</p>
             <v-row>
               <v-col cols="12" md="6">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you currently enrolled in a degree program at the University of Houston?')}}</label>
-                <p style="margin: 0;">{{ getTranslation(this.studentData.enrolledUHInfo.uhStatus) }}</p>
+                <p style="margin: 0;">{{ getTranslation(this.studentData?.enrolledUHInfo?.uhStatus) }}</p>
               </v-col>
             </v-row>
             <v-row>
@@ -163,13 +169,13 @@
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.')}}</label>
-                <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceHistoryDesc }}</p>
+                <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceHistoryDesc }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of any community organizations outside the University?')}}</label>
-                <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceOrgsOutsideUH }}</p>
+                <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceOrgsOutsideUH }}</p>
               </v-col>
             </v-row>
           </div>
@@ -184,13 +190,13 @@
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus === 'Yes'">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.')}}</label>
-                <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceHistoryDesc }}</p>
+                <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceHistoryDesc }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus === 'Yes'">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of any community organizations outside the University?')}}</label>
-                <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceOrgsOutsideUH }}</p>
+                <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceOrgsOutsideUH }}</p>
               </v-col>
             </v-row>
           </div>
@@ -236,10 +242,11 @@
             <v-row>
               <v-col v-if="this.studentData?.specializedDegCert?.specializedDegCertType.find(other => other.id === 6 && other.checked)">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Specialized Degree / Certificate Program')}}</label>
-                <p style="margin: 0;">{{ this.studentData.specializedDegCert.professionalDesignOther }}</p>
+                <p style="margin: 0;">{{ this.studentData?.specializedDegCert?.professionalDesignOther }}</p>
               </v-col>
             </v-row> 
       </v-container>
+      </div>
   </v-form>
 </template>
 
@@ -316,12 +323,6 @@ setup() {
       "Engineering/Technology: Professional Engineer (PE), Certified Technology Specialist (CTS), etc": "Ingeniería/Tecnología: Ingeniero Profesional (o PE en inglés), Certificado para Especialistas en Tecnología (o CTS en inglés), etc",
       "Project Management: Certified Associate in Project Management (CAPM), Project Management Professional (PMP)": "Gestión de Proyectos: Certificado Asociado en Gestión de Proyectos (o CAPM en inglés), Profesional en Gestión de Proyectos (o PMP en inglés)",
       "Other Professional Designation": "Otra designación profesional",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
     }
   };
 
@@ -345,7 +346,7 @@ setup() {
 data() {
   return {
       userData: [],
-      studentData: []
+      studentData: [],
   };
 },
 beforeMount() {
@@ -353,12 +354,21 @@ beforeMount() {
   let token = user.token;
   let userGivenID = user.userId;
   let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
-  axios.get(url + `/${userGivenID}`, { headers: { token },})
-    .then((resp) => {
-      this.userData = resp.data.userData;
-      this.studentData = resp.data.studentData.studentInformation;
-    });
+
+  useLoggedInUserStore().startLoading();
+  try {
+    axios.get(url + `/${userGivenID}`, { headers: { token },})
+      .then((resp) => {
+        this.userData = resp.data.userData;
+        this.studentData = resp.data.studentData?.studentInformation;
+        useLoggedInUserStore().stopLoading();
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    useLoggedInUserStore().stopLoading();
+  } 
 },
+
 computed: {
   checkedPronouns() {
     if (this.studentData && this.studentData?.pronouns) {
@@ -399,6 +409,14 @@ computed: {
           return ""; // Default value in case it's not found in both formats
       }
   },
+  loading() {
+    const store = useLoggedInUserStore();
+    return store.loading;
+  },
+  completedEntryForm() {
+    const store = useLoggedInUserStore();
+    return store.hasCompletedEntryForm;
+  }
 },
 methods: {
 }

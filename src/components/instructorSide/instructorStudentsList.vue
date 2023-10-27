@@ -3,20 +3,28 @@
   <main class="">
     <br>
     <p class="font-weight-black text-h5" style="text-align: center;">{{ showInactive ? 'Inactive Students' : 'Active Students' }}</p>
-    <center>
-      <br>
-      <v-btn style="text-align:center" @click="toggleShowInactive">
+    <v-row justify="center" class="pt-5">
+    <v-col cols="12" class="text-center">
+
+      <v-btn @click="toggleShowInactive">
         {{ showInactive ? 'Show Active Students' : 'Show Inactive Students' }}
       </v-btn>
-      <br><br>
-      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateStudents" v-if="selectedStudents.length > 0">
+
+    </v-col>
+  </v-row>
+  <v-row justify="center">
+    <v-col cols="12" class="text-center">
+
+      <v-btn style="margin-right:2rem;" @click="deactivateStudents" v-if="selectedStudents.length > 0">
         Deactivate
       </v-btn>
-      <v-btn style="text-align:center" @click="activateStudents" v-if="selectedStudents.length > 0">
+
+      <v-btn @click="activateStudents" v-if="selectedStudents.length > 0">
         Activate
       </v-btn>
-      <br><br>
-    </center>
+
+    </v-col>
+  </v-row>
  
 
     <!-- First Row: Search Field -->
@@ -57,7 +65,10 @@
       
     </v-row>
 
-
+    <div v-if="loading" justify="center" align="center">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+    <div v-else>
     <div style="display: flex; justify-content: center;">
       <v-table style="width: 950%">
         <thead>
@@ -74,26 +85,35 @@
 
         <tbody>
           <tr
-            v-for="item in paginatedMergedData"
-            :key="item.data._id || item.data.userData._id"
-            :style="{ cursor: 'pointer' }"
-            :class="{ 'hoverRow': hoverId === (item.data._id || item.data.userData._id) }"
-            @mouseenter="hoverId = item.data._id || item.data.userData._id"
-            @mouseleave="hoverId = null"
+              v-for="item in paginatedMergedData"
+              :key="item.type === 'student' ? item.data.userData._id : item.data._id"
+              :style="{ cursor: 'pointer' }"
+              :class="{ 'hoverRow': hoverId === (item.type === 'student' ? item.data.userData._id : item.data._id) }"
+              @mouseenter="hoverId = item.type === 'student' ? item.data.userData._id : item.data._id"
+              @mouseleave="hoverId = null"
           >
+
             <td class="text-left">
-              <input type="checkbox" v-model="selectedStudents" :value="item.data._id || item.data.userData._id" style="outline: 2px solid #808080; margin-right: 10px;">
+              <input
+                type="checkbox"
+                v-model="selectedStudents"
+                :value="item.type === 'student' ? item.data.userData._id : item.data._id"
+                style="outline: 2px solid #808080; margin-right: 10px;"
+              >
             </td>
+
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ item.data.userData.firstName + ' ' + item.data.userData.lastName }}
             </td>
             <td v-else class="text-left">
-              {{ item.data.firstName }} {{ item.data.lastName }}
+              {{ item.data.userData.firstName }} {{ item.data.userData.lastName }}
             </td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ item.data.userData.email }}
             </td>
-            <td v-else></td>
+            <td v-else class="text-left">
+              {{ item.data.userData.email }}
+            </td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
               {{ listCheckedOptions(item.data.studentInformation.pronouns) }}
             </td>
@@ -110,11 +130,13 @@
               {{ item.data.studentInformation.enrolledUHInfo.expectedGraduationYear }}
             </td>
             <td v-else></td>
+
           </tr>
         </tbody>
 
       </v-table>
       </div>
+    </div>
 
   </main>
 </template>
@@ -139,67 +161,84 @@ export default {
       itemsPerPage: 10,
     };
   },
+
   mounted() {
-    this.fetchStudentData();
-    this.fetchIncompletedStudentData();
-    window.scrollTo(0, 0);
+    useLoggedInUserStore().startLoading();
+    try {
+      this.fetchStudentData();
+      this.fetchIncompletedStudentData();
+      window.scrollTo(0, 0);
+    } catch (error) {
+      // Handle any errors that occur during the fetch operations
+      console.error('Error:', error);
+    }
   },
+
   watch: {
     searchStudent(newVal, oldVal) {
       if (newVal !== oldVal) {
         // reset to the first page on a new search
         this.currentPage = 1;
       }
-    }
+    },
+    itemsPerPage(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.currentPage = 1;
+      }
+    },
   },
+
   methods: {
+
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+      this.currentPage = 1;
     },
 
     deactivateStudents() {
-  const user = useLoggedInUserStore();
-  let token = user.token;
-  const updateStatus = { userStatus: 'Inactive' };
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const updateStatus = { userStatus: 'Inactive' };
 
-  const promises = this.selectedStudents.map((student) => { 
-    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
-    return axios.put(apiURL, updateStatus, { headers: { token } });
-  });
-
-  Promise.all(promises)
-    .then(() => {
-      const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' deactivated!';
-      // Update user status in studentListRaw and userListRaw
-      const updateStatusInList = (list, newStatus) => {
-        // Use Array.from to create a new array
-        const updatedList = Array.from(list);
-        updatedList.forEach(student => {
-          if (this.selectedStudents.includes(student._id || student.userData._id)) {
-            student.userStatus = newStatus;
-          }
-        });
-        return updatedList;
-      };
-
-      this.studentListRaw = updateStatusInList(this.studentListRaw, 'Inactive');
-      this.userListRaw = updateStatusInList(this.userListRaw, 'Inactive');
-
-      this.selectedStudents = [];
-
-      // Fetch data again to ensure synchronization
-      this.fetchStudentData();
-      this.fetchIncompletedStudentData();
-
-      toast.error(message, {
-        position: 'top-right',
-        toastClassName: 'Toastify__toast--delete'
+      const promises = this.selectedStudents.map((student) => { 
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/userStatusUpdate/${student}`; 
+        return axios.put(apiURL, updateStatus, { headers: { token } });
       });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-},
+
+      Promise.all(promises)
+        .then(() => {
+          const message = (this.selectedStudents.length === 1 ? 'Student' : 'Students') + ' deactivated!';
+          // Update user status in studentListRaw and userListRaw
+          const updateStatusInList = (list, newStatus) => {
+            // Use Array.from to create a new array
+            const updatedList = Array.from(list);
+            updatedList.forEach(student => {
+              if (this.selectedStudents.includes(student.userData._id)) {
+                student.userData.userStatus = newStatus;
+              }
+            });
+            return updatedList;
+          };
+
+          this.studentListRaw = updateStatusInList(this.studentListRaw, 'Inactive');
+          this.userListRaw = updateStatusInList(this.userListRaw, 'Inactive');
+
+          this.selectedStudents = [];
+
+          // Fetch data again to ensure synchronization
+          this.fetchStudentData();
+          this.fetchIncompletedStudentData();
+
+          toast.error(message, {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    
 activateStudents() {
   const user = useLoggedInUserStore();
   let token = user.token;
@@ -218,8 +257,8 @@ activateStudents() {
        const updateStatusInList = (list, newStatus) => {
         const updatedList = Array.from(list);
         updatedList.forEach(student => {
-          if (this.selectedStudents.includes(student._id || student.userData._id)) {
-            student.userStatus = newStatus;
+          if (this.selectedStudents.includes(student.userData._id)) {
+            student.userData.userStatus = newStatus;
           }
         });
         return updatedList;
@@ -243,6 +282,7 @@ activateStudents() {
       console.log(error);
     });
 },
+
     majors(majorsList) {
       return majorsList.length > 0 ? majorsList.join(", ") : "None";
     },
@@ -258,104 +298,173 @@ activateStudents() {
         .map((item) => item.label)
         .join(", ");
     },
+    
     editStudent(userID) {
       this.$router.push({
         name: "instructorSpecificStudent",
         params: { userID: userID },
       });
     },
-    fetchStudentData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL =
-        import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/`;
-      axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          this.studentListRaw = resp.data.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+
+    async fetchStudentData() {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL =
+          import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/`;
+        const resp = await axios.get(apiURL, { headers: { token } });
+        this.studentListRaw = resp.data.data;
+      } catch (error) {
+        console.log(error);
+      }
     },
-    fetchIncompletedStudentData() {
-  const user = useLoggedInUserStore();
-  let token = user.token;
-  let apiURL =
-    import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
-  axios
-    .get(apiURL, { headers: { token } })
-    .then((resp) => {
-      // Populate userListRaw with complete user data
-      this.userListRaw = resp.data.userData;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-},
+
+    async fetchIncompletedStudentData() {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL =
+          import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
+        const resp = await axios.get(apiURL, { headers: { token } });
+        this.userListRaw = resp.data.userData;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        useLoggedInUserStore().stopLoading();
+      }
+    },
+
     updateSelectedStatus(student) {
       if (student.checked && student.userData.userStatus === "Active") {
         student.checked = false;
       }
     },
+    normalizeData(data, type) {
+      if (type === 'student') {
+        return {
+          _id: data._id,
+          userID: data.userData._id,
+          studentInformation: {
+            enrolledUHInfo: {
+              uhEmail: data.studentInformation.enrolledUHInfo.uhEmail,
+              majors: data.studentInformation.enrolledUHInfo.majors,
+              honorsMinors: data.studentInformation.enrolledUHInfo.honorsMinors,
+              otherMinors: data.studentInformation.enrolledUHInfo.otherMinors
+            },
+            pronouns: data.studentInformation.pronouns
+          },
+          userData: {
+            _id: data.userData._id,
+            firstName: data.userData.firstName,
+            lastName: data.userData.lastName,
+            email: data.userData.email,
+            userStatus: data.userData.userStatus
+          }
+        };
+      } else if (type === 'user') {
+        return {
+          _id: data._id,
+          userID: data._id,
+          studentInformation: {
+            enrolledUHInfo: {
+              uhEmail: "",
+              majors: null,
+              honorsMinors: null,
+              otherMinors: null
+            },
+            pronouns: null
+          },
+          userData: {
+            _id: data.userData._id,
+            firstName: data.userData.firstName,
+            lastName: data.userData.lastName,
+            email: data.userData.email,
+            userStatus: data.userData.userStatus
+          }
+        };
+      }
+    },
   },
   computed: {
+
     filteredStudentData() {
       const searchStudent = this.searchStudent.toLowerCase();
-      let filteredData = this.studentListRaw.filter((student) => {
-        const fullName = `${student.userData.firstName} ${student.userData.lastName}`.toLowerCase();
-        const email = student.userData.email.toLowerCase()|| "";
-        const majors = this.majors(student.studentInformation.enrolledUHInfo.majors).toLowerCase()|| "";
-        const minors = this.minors(student.studentInformation.enrolledUHInfo.otherMinors, student.studentInformation.enrolledUHInfo.honorsMinors).toLowerCase()|| "";
-        const graduationDate = student.studentInformation.enrolledUHInfo.expectedGraduationYear?.toLowerCase() || ""; // Use optional chaining to handle undefined values
-        return fullName.includes(searchStudent) || email.includes(searchStudent) || majors.includes(searchStudent) || minors.includes(searchStudent) || graduationDate.includes(searchStudent);
-      });
+
+      let filteredData = this.studentListRaw;
+
+      // If there is a search query, filter the data based on the search query
+      if (searchStudent) {
+
+        filteredData = this.studentListRaw.filter(user => {
+          const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
+          const email = user.userData.email?.toLowerCase() || "";
+          return fullName.includes(searchStudent) || email.includes(searchStudent);
+        });
+      }
+
+      // Regardless of whether there is a search query, filter the data based on Active/Inactive status
       if (this.showInactive) {
-        filteredData = filteredData.filter((student) => student.userData.userStatus === 'Inactive');
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Inactive');
       } else {
-        filteredData = filteredData.filter((student) => student.userData.userStatus === 'Active');
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Active');
       }
       return filteredData;
     },
+
     filteredUserListRaw() {
       const searchStudent = this.searchStudent.toLowerCase();
 
-      let filteredData = this.userListRaw.filter(user => {
-        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-        const email = user.email?.toLowerCase() || "";  // some users might not have emails
-        // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
-        return fullName.includes(searchStudent) || email.includes(searchStudent);
-      });
+      let filteredData = this.userListRaw;
 
-      if (this.showInactive) {
-        filteredData = filteredData.filter(user => user.userStatus === 'Inactive');
-      } else {
-        filteredData = filteredData.filter(user => user.userStatus === 'Active');
+      // If there is a search query, filter the data based on the search query
+      if (searchStudent) {
+
+        filteredData = this.userListRaw.filter(user => {
+          const fullName = `${user.userData.firstName} ${user.userData.lastName}`.toLowerCase();
+          const email = user.userData.email?.toLowerCase() || "";  // some users might not have emails
+          // Assuming users from this list don't have major, minor, and graduation details, we only filter by name and email.
+          return fullName.includes(searchStudent) || email.includes(searchStudent);
+        });
       }
 
+      // Regardless of whether there is a search query, filter the data based on Active/Inactive status
+      if (this.showInactive) {
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Inactive');
+      } else {
+        filteredData = filteredData.filter(user => user.userData.userStatus === 'Active');
+      }
       return filteredData;
     },
+
+
     mergedFilteredData() {
       const studentData = this.filteredStudentData.map(student => ({
         type: 'student',
-        data: student
+        data: this.normalizeData(student, 'student')
       }));
 
       const userData = this.filteredUserListRaw.map(user => ({
         type: 'user',
-        data: user
+        data: this.normalizeData(user, 'user')
       }));
 
       return studentData.concat(userData);
     },
+
     paginatedMergedData() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
       return this.mergedFilteredData.slice(start, end);
     },
+
     totalPaginationLength() {
       return Math.ceil(this.mergedFilteredData.length / this.itemsPerPage);
     },
+    
+    loading() {
+      const store = useLoggedInUserStore();
+      return store.loading;
+    }
 }
 };
 </script>

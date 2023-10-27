@@ -42,8 +42,11 @@
       <v-btn @click=$router.back() style="margin-right: 10px;">
           Cancel
         </v-btn>
+
       <v-btn style="text-align: center;" @click="updateExperience">Update</v-btn>
+
     </div>
+
   </main>
 </template>
 
@@ -63,12 +66,15 @@ export default {
       selectedActivities: [],
     };
   },
+
   beforeMount() {
     window.scrollTo(0, 0);
     this.fetchExperienceData(); // Fetch experience data before component is mounted
     this.fetchActivityData(); // Fetch activities after experience data
   },
+
   methods: {
+
     fetchExperienceData() {
       // Fetch experience data from the backend
       const user = useLoggedInUserStore();
@@ -88,6 +94,7 @@ export default {
           console.log(error);
         });
     },
+
     fetchActivityData() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -102,6 +109,7 @@ export default {
           console.log(error);
         });
     },
+
     updateExperience() {
       // Handle update logic
       const user = useLoggedInUserStore();
@@ -115,6 +123,7 @@ export default {
       axios
         .put(apiURL, updatedExperience, { headers: { token } })
         .then(() => {
+
           this.$router.push({ 
               name: 'instructorExperiences',
               params: {
@@ -129,6 +138,7 @@ export default {
           console.log(error);
         });
     },
+    
   },
 };
 </script>

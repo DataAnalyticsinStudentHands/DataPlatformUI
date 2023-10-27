@@ -44,9 +44,11 @@
         <v-btn @click=$router.back() style="margin-right: 10px;">
           Cancel
         </v-btn>
+
         <v-btn style="text-align:center;" @click="handleUpdateForm" >
           Update
         </v-btn>
+
       </div>
     </v-container>
   </main>
@@ -74,37 +76,41 @@ export default {
       selectedExperiences: [],
     };
   },
+
   beforeMount() {
     window.scrollTo(0, 0);
     this.fetchExperienceData();
     this.fetchSemesterData();
   },
+
   methods: {
+
     fetchSemesterData(){
       const user = useLoggedInUserStore();
-    let token = user.token;
-    let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/semesters`;
-    axios
-      .get(`${url}/${this.$route.params.id}`, {
-        headers: { token },
-      })
-      .then((resp) => {
-        let data = resp.data;
-        this.semester.originalSemesterName = data.semesterName;
-        this.semester.semesterName = data.semesterName;
-        this.semester.semesterStartDate = DateTime.fromISO(data.semesterStartDate)
-          .plus({ days: 1 })
-          .toISODate();
-        this.semester.semesterEndDate = DateTime.fromISO(data.semesterEndDate)
-          .plus({ days: 1 })
-          .toISODate();
-        this.semester.semesterStatus = data.semesterStatus;
-        this.selectedExperiences = data.experiences;
-      })
-      .catch((error) => {
-          console.log(error);
-        });
+      let token = user.token;
+      let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/semesters`;
+      axios
+        .get(`${url}/${this.$route.params.id}`, {
+          headers: { token },
+        })
+        .then((resp) => {
+          let data = resp.data;
+          this.semester.originalSemesterName = data.semesterName;
+          this.semester.semesterName = data.semesterName;
+          this.semester.semesterStartDate = DateTime.fromISO(data.semesterStartDate)
+            .plus({ days: 1 })
+            .toISODate();
+          this.semester.semesterEndDate = DateTime.fromISO(data.semesterEndDate)
+            .plus({ days: 1 })
+            .toISODate();
+          this.semester.semesterStatus = data.semesterStatus;
+          this.selectedExperiences = data.experiences;
+        })
+        .catch((error) => {
+            console.log(error);
+          });
     },
+
     fetchExperienceData() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -118,6 +124,7 @@ export default {
           console.log(error);
         });
     },
+
     handleUpdateForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -148,6 +155,7 @@ export default {
         });
       });
     },
+    
   },
 };
 </script>

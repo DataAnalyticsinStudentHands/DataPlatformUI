@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 // Defining a store
 export const useLoggedInUserStore = defineStore({
@@ -10,10 +12,16 @@ export const useLoggedInUserStore = defineStore({
       userId: "",
       role: "",
       token: "",
+      firstName: "",
+      lastName: "",
       isLoggedIn: false,
-      firstTimeLoginTF: false,
+      unverified: null,
       languagePreference: "",
       hasCompletedEntryForm: false,
+      hasRegisteredExperiences: false,
+      goalSettingFormCompletion: {},
+      loading: false,
+      semesterName: "",
     }
   },
   getters: { //getting the roles
@@ -38,19 +46,36 @@ export const useLoggedInUserStore = defineStore({
           localStorage.setItem("token", response.data.token);
             
           // Set the global default header for axios
-          axios.defaults.headers.common['token'] = response.data.token;
-          
-          if (this.role === 'Instructor') {
-            this.$router.push("/instructorDash");
-          } else if (this.role === 'Student') {
-            this.$router.push("/studentDashboard");
-          } else {
-            this.$router.push("/");
-          }
+          this.setTokenHeader(response.data.token);
+
+          let token = localStorage.getItem("token");
+
+        // If userStatus is 'Pending', update unverified and token fields
+        if (response.data.userStatus === 'Pending') {
+          this.$patch({
+            isLoggedIn: false,
+            unverified: true,
+            token: response.data.token
+          });
+          return;
+        }
+
+        await this.getFullName();
+
+        await this.getCurrentSemester();
+        
+        
         }
       } catch (error) {
-        console.log(error)
-        alert("Invalid credentials. - Please try again.");
+        if (error.response && error.response.status === 401) {
+          return {
+            toast: true,
+            message: 'Invalid email or password.',
+            type: 'error',
+          };
+        } else {
+            console.log(error);
+        }
       }
     },
     logout(reset = false) {
@@ -59,46 +84,72 @@ export const useLoggedInUserStore = defineStore({
         userId: "",
         role: "",
         token: "",
-        isLoggedIn: false
+        firstName: "",
+        lastName: "",
+        isLoggedIn: false,
+        unverified: null,
+        languagePreference: "",
+        hasCompletedEntryForm: false,
+        hasRegisteredExperiences: false,
+        goalSettingFormCompletion: {},
+        loading: false,
       });
 
       // Clear the token from localStorage
       localStorage.removeItem("token");
 
       // Remove the global default header for axios
-      delete axios.defaults.headers.common['token'];
-    
-      let logoutMessage = "";
-      if (reset) {
-        logoutMessage = "Password Reset! Please login.";
-      } else {
-        let logoutMessages = [
-          'See you soon!',
-          'Logged out successfully!',
-          'Goodbye for now!',
-          'See you next time!',
-          "You're safely logged out!",
-          'Hope to see you soon!',
-          'Session ended. Take care!',
-          'Stay safe! See you again!',
-          'Successfully signed out!',
-          "You've logged out. Goodbye!",
-          'Come back soon!'
-        ];
-        logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
-      }
-    
-      this.$router.push({
-        name: 'Login',
-        params: {
-          toastType: 'success',
-          toastMessage: logoutMessage,
-          toastPosition: 'top-right',
-          toastCSS: 'Toastify__toast--create'
-      },
-      });
-      //location.reload(); attempt on trying to remove navigation bar when logging out
+      this.removeTokenHeader();
     },    
+    async getFullName() {
+      let token = localStorage.getItem("token");
+      let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
+
+      try {
+        let fullName = await axios.get(url, { headers: { token } });
+        if (fullName) {
+          this.$patch({
+            firstName: fullName.data.user.firstName,
+            lastName: fullName.data.user.lastName
+          })
+        }
+      } catch (error) {
+        console.log(error);
+    }
+    },
+    async verifyExistingAcc(responseData) {
+      // Extract the required details from the responseData
+      const { token, userID, userRole, languagePreference } = responseData;
+
+      // Update the Pinia store with the extracted details
+      this.$patch({
+        role: userRole,
+        userId: userID,
+        token: token,
+        languagePreference: languagePreference
+      });
+
+      // Save the new token to localStorage
+      localStorage.setItem("token", token);
+
+      // Set the global default header for axios
+      this.setTokenHeader(token);
+
+      // If the status of the user is 'Pending', update the unverified field
+      if (responseData.userStatus === 'Pending') {
+        this.$patch({
+          unverified: true,
+          token: token
+        });
+        return; // Return from the method since the account is still pending
+      }
+
+      // Fetch the full name of the user
+      await this.getFullName();
+    },
+    async verifyFromRegistration() {
+
+    },
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
     },
@@ -109,11 +160,44 @@ export const useLoggedInUserStore = defineStore({
         });
         if (response && response.data) {
           this.$patch({
-            hasCompletedEntryForm: response.data.hasCompletedEntryForm
+            hasCompletedEntryForm: response.data.hasCompletedEntryForm,
+            hasRegisteredExperiences: response.data.hasRegisteredExperiences,
+            goalSettingFormCompletion: response.data.goalSettingFormCompletion,
           });
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+    setTokenHeader(token) {
+      if (token) {
+        axios.defaults.headers.common['token'] = token;
+        this.token = token;
+      }
+    },
+    removeTokenHeader() {
+        delete axios.defaults.headers.common['token'];
+        this.token = "";
+    },   
+    startLoading() {
+      this.loading = true;
+    },
+    stopLoading() {
+      this.loading = false;
+    },
+    async getCurrentSemester() {
+      try {
+        const response = await axios.get(`${apiURL}/studentSideData/goalForms/semester`, {
+          headers: { token: this.token }
+        });
+        
+        if (response && response.data) {
+          this.$patch({
+            semesterName: response.data.semesterName
+          });
+        }
+      } catch (error) {
+          console.log(error)
       }
     },
     persist: {

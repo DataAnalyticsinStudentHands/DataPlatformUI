@@ -3,7 +3,7 @@
     <v-row align="center" justify="center" class="fill-height">
       <v-col cols="12" class="text-center mt-10">
         <h1 :class="fontSizeClass" class="font-bold text-red-700 tracking-widest">
-          Oops! Error 404 Page Not Found
+          Oops! Page Not Found
         </h1>
         <v-btn @click="navigateToLogin" :class="buttonClass" class="mt-5">
           Go to Login
@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     navigateToLogin() {
-      this.$router.push({ name: 'Login' });
+      this.$router.push({ name: 'login' });
     }
   }
 }

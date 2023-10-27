@@ -169,18 +169,29 @@ export default {
           .then(
             (res) => {
               if (res.status == 200) {
-                //removing the hide class from the success message div
-                var element = document.getElementById("myDIV");
-                element.classList.remove("hide");
                 //populating the success variables
                 this.success = res.data.error;
                 this.loginLink = " Login";
                 this.error = "";
+                // Show the success message and navigate to the dashboard
+                this.$router.push({ 
+                  name: 'studentDashboard',
+                  params: {
+                    toastType: 'success',
+                    toastMessage: 'Password successfully reset!',
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                  }
+                });
               }
             },
             (err) => {
               this.error = err.response.data.error;
               this.success = "";
+              toast.error('An error occurred. Please try again later.', {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete'
+              });
             }
           );
       }

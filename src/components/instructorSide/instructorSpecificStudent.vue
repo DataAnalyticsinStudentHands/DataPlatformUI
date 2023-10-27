@@ -14,10 +14,12 @@
       <v-container style="width: 90%; margin: 0 auto;">
         <br><p class="font-weight-black text-h6">Basic Information</p>
           <v-row>
+
             <v-col cols="12" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">First Name</label>
               <p style="margin: 0;">{{ this.userData.firstName }}</p>
             </v-col>
+            
             <v-col cols="12" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Last Name</label>
               <p style="margin: 0;">{{ this.userData.lastName }}</p>
@@ -246,16 +248,23 @@ data() {
       studentData: []
   };
 },
+
 beforeMount() {
-  const user = useLoggedInUserStore();
-  let token = user.token;
-  let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
-  axios.get(url + `/${this.$route.params.userID}`, { headers: { token },})
-    .then((resp) => {
+  (async () => {
+    try {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
+      const resp = await axios.get(url + `/${this.$route.params.userID}`, { headers: { token }});
       this.userData = resp.data.userData;
       this.studentData = resp.data.studentData.studentInformation;
-    });
+    } catch (error) {
+      console.error('Error fetching student information:', error);
+    }
+  })();
 },
+
+
 computed: {
   checkedPronouns() {
     if (this.studentData && this.studentData?.pronouns) {

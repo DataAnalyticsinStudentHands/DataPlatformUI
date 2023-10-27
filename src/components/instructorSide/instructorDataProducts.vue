@@ -2,10 +2,14 @@
 <template>
     <div>
       <br>
+
       <v-btn @click="downloadEntryDataAsCSV">Download Student Entry Forms as CSV</v-btn>
+
       <br>
       <br>
+
       <v-btn @click="downloadAllGoalDataAsCSV">Download Student Goal Setting Forms as CSV for <b>All</b> Semesters</v-btn>
+
       <br>
       <br>
       <v-btn @click="downloadAllExitDataAsCSV">Download Student Exit Forms as CSV for <b>All</b> Semesters</v-btn>
@@ -19,21 +23,12 @@
   export default {
     data(){
       return{
-      queryData:[],
       }
     },
     mounted(){
-      const user = useLoggedInUserStore()
-      let token = user.token
-      let apiURL = import.meta.env.VITE_ROOT_API + `/studentSideData/getExperienceCount/`;
-      this.queryData = [];
-      axios.get(apiURL,{
-          headers: { token },
-        }).then((resp) => {
-        this.queryData = resp.data;
-      });
     },
     methods: {
+
       async downloadEntryDataAsCSV() {
           try {
               const user = useLoggedInUserStore();
@@ -52,7 +47,7 @@
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.download = 'data.csv';
+              link.download = 'entryData.csv';
               document.body.appendChild(link);
               link.click();
   
@@ -83,7 +78,7 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'data.csv';
+          link.download = 'exitData.csv';
           document.body.appendChild(link);
           link.click();
   
@@ -113,7 +108,7 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'data.csv';
+          link.download = 'goalData.csv';
           document.body.appendChild(link);
           link.click();
   
@@ -126,22 +121,22 @@
       },
   
       convertGoalSettingFormToCSV(jsonData) {
-    // Create the CSV header row
-    const originalHeader = this.getGoalFormCSVHeader(jsonData[0]);
-  
-    // Create the CSV data rows
-    const dataRows = jsonData.map((item) => {
-      const values = this.getGoalFormCSVRowValues(item, originalHeader);
-      return values.join(',');
-    });
-  
+        // Create the CSV header row
+        const originalHeader = this.getGoalFormCSVHeader(jsonData[0]);
+    
+        // Create the CSV data rows
+        const dataRows = jsonData.map((item) => {
+        const values = this.getGoalFormCSVRowValues(item, originalHeader);
+        return values.join(',');
+        });
+    
       // Rename headers for CSV output
       const renameMap = {
           "_id": "id_form",
           "organizationID": "id_organization",
           "userID": "id_user",
           "semester": "semester",
-          "experienceName": "experience",
+          "experienceID": "experience",
           "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
           "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
           "goalForm.communityEngagement.communityEngagementExperiences.2.checked": "ce_faith",
@@ -578,7 +573,7 @@
           "organizationID",
           "userID",
           "semester",
-          "experienceName",
+          "experienceID",
       ];
   
       // For communityEngagementExperiences

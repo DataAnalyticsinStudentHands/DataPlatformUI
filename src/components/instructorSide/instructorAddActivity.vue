@@ -9,7 +9,9 @@
                 <v-text-field v-model="activity.activityName" label="Activity's Name"></v-text-field>
               </v-col>
             </v-row>
+
           <v-btn @click="handleSubmitForm">Submit</v-btn>
+
           <v-btn @click=$router.back() style="margin-left: 10px;">
             Cancel
           </v-btn>
@@ -29,6 +31,7 @@
         }
       };
     },
+    
     methods: {
       async handleSubmitForm() {
         const user = useLoggedInUserStore();
@@ -52,6 +55,7 @@
         });
       }
     }
+
   }
   </script>
   
