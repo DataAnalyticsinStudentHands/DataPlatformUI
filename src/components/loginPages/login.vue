@@ -1,101 +1,98 @@
-<!-- /login -->
 <template>
-  <section class="">
-    <div class="px-10 py-20">
-      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <form
-          @submit.prevent="login"
-          class="space-y-4 md:space-y-6"
-          action="/login"
-          method="POST"
-        >
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+  <div>
+    <v-card-text>
+      <h2 class="font-bold text-2xl text-red-700 tracking-widest text-center mt-3 mb-5">
+          {{$t('Welcome to Data & Society')}}
+      </h2>
+
+      <!-- Login form -->
+      <v-form ref="loginForm">
+        <v-text-field
+          :label="$t('Email:')"
+          v-model="email"
+          :rules="emailRules"
+          required
+          prepend-icon="mdi-email"
+        ></v-text-field>
+
+        <v-text-field
+          :label="$t('Password:')"
+          type="password"
+          v-model="password"
+          :rules="requiredRule"
+          required
+          prepend-icon="mdi-lock"
+        ></v-text-field>
+      </v-form>
+
+      <v-row>
+        <v-col cols="12" class="pl-0 pt-6">
+          <span
+            class="font-semibold text-base text-red-800 cursor-pointer"
+            @click="$emit('navigateTo', '/passResetRequest')"
           >
-            <div>
-              <label for="email" class="block">Email</label>
-              <input
-                v-model="email"
-                type="email"
-                name="email"
-                id="email"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="name@company.com"
-              />
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+            {{$t('Forgot Your Password?')}}
+          </span>
+        </v-col>
+      </v-row>
+      <v-row class="mt-0">
+        <v-col cols="12" class="pl-0">
+          <span
+            class="font-bold text-base text-red-800 cursor-pointer"
+            @click="$emit('navigateTo', '/verifyAccWithEmailCode')"
           >
-            <div>
-              <label for="password" class="block">Password</label>
-              <input
-                v-model="password"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="••••••••"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div
-              class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
-              role="alert"
-            >
-              {{ error }}
-            </div>
-          </div>
-          <button
+            {{$t('Have a Confirmation Code?')}}
+          </span>
+        </v-col>
+      </v-row>
+
+      <v-row justify="center">
+        <v-col cols="8">
+          <v-btn
+            :loading="loading"
+            block
+            class="mt-3 bg-red-700 text-white rounded"
             @click="login"
-            type="submit"
-            class="bg-red-700 text-white rounded"
-          >
-            Login
-          </button>
-          <p class="text-sm font-medium text-black-500 dark:text-black-400">
-            Don't have an account?
-            <router-link 
-              to="/registerForm" 
-              class="font-medium text-primary-600 hover:underline dark:text-blue-500"
-            >
-              Register here
-            </router-link>
-          </p>
-
-          <router-link 
-            to="/resetPassword" 
-            class="text-sm font-medium text-primary-600 hover:underline dark:text-blue-500"
-          >
-            Forgot Password?
-          </router-link>
-
-        </form>
-      </div>
-    </div>
-
-
-
-  </section>
+          >{{$t('Login')}}</v-btn>
+        </v-col>
+      </v-row>
+    </v-card-text>
+  </div>
 </template>
-
 
 <script>
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import axios from 'axios'
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
 export default {
-  name: "Login",
-  emits: ["showDashboard"],
+  name: "LoginForm",
+  props: ["tab"],
   data() {
+      return {
+        email: "",
+        password: "",
+        error: "",
+        loading: false,
+        emailRules: [
+            v => {
+                if (!v) {
+                    return this.$t('Email is required');
+                } else if (!/.+@.+/.test(v)) {
+                    return this.$t('Email must be valid');
+                }
+                return true;
+            }
+        ],
+        requiredRule: [v => !!v || this.$t('This field is required')]
+      };
+  },
+  setup() {
+    const store = useLoggedInUserStore()
     return {
-      email: "",
-      password: "",
-      error: "",
-    };
+      store,
+    }
   },
   mounted() {
     if (this.$route.params.toastType) {
@@ -104,24 +101,33 @@ export default {
         toastClassName: this.$route.params.toastCSS
       });
     }
-  },
-  setup() {
-    const store = useLoggedInUserStore()
-    return {
-      // you can return the whole store instance to use it in the template
-      store,
-    }
-  },
+    },
   methods: {
     async login() {
-      try {
-        // Attempt to login
-        await this.store.login(this.email, this.password);
+      // Check if there are any errors in the form
+      await this.$refs.loginForm.validate();
+      const hasErrors = this.$refs.loginForm.errors.length > 0;
 
-        if (this.store.role === 'Instructor') {
+      // If no errors, proceed with login
+      if (!hasErrors) {
+        this.loading = true;
+        try {
+          // Attempt to login
+          const loginStore = await this.store.login(this.email, this.password);
+
+          if (loginStore && loginStore.toast) {
+            toast[loginStore.type](this.$t(loginStore.message), {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--delete',
+              limit: 2,
+              multiple: false
+            });
+          }
+          // Navigate to the appropriate dashboard based on the user's role
+          if (this.store.role === 'Instructor') {
             this.$router.push("/instructorDash");
           } else if (this.store.role === 'Student') {
-            // After successful login, check if the student has completed forms
+            // After successful verification, check if the student has completed forms
             await this.store.checkFormCompletion();
             if (this.store.hasCompletedEntryForm) {
               this.$router.push("/studentDashboard");
@@ -130,14 +136,43 @@ export default {
             }
           } else {
             this.$router.push("/");
-          };
-
-        // After successful login, check if the user has completed forms
-        await this.store.checkFormCompletion();
-      } catch (error) {
-        console.log(error);
+          }
+          // If invalid login, error message will appear from Pinia store
+          // If unverified account, send to verification view
+          if (this.store.unverified === true) {
+            this.sendNewCode();
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.loading = false;
+        }
       }
-    }
+    },
+    async sendNewCode() {
+    let user = {
+      email: this.email,
+      error: this.error,
+    };
+    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/sendNewCode`;
+
+    axios.put(apiURL, user)
+      .then((res) => {
+        if (res.status == 200) {
+          let userID = res.data.userID; // Extract the userID from the response
+          this.$router.push({ 
+            name: 'verifyAccWithCode', 
+            params: { id: userID } 
+          });
+        } else {
+          console.log('Unexpected response status:', res.status);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+
   }
 };
 </script>

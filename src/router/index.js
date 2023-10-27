@@ -2,13 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useLoggedInUserStore } from '../stored/loggedInUser'; 
 
 
+
 const routes = [
     {
       path: '/',
       // name: 'Home',
       // props: true,
       // component: () => import('../components/loginPages/login.vue')
-      redirect: '/testLogin'
+      redirect: '/login'
       
   },
     {
@@ -24,62 +25,56 @@ const routes = [
       component: () => import('../components/studentSide/profilePage.vue')
     },
     {
-      path: '/test1',
-      name: 'test1',
+      path: '/mainAuthWrap',
+      name: 'mainAuthWrap',
       props: true,
-      component: () => import('../components/test1.vue')
-    },
-    {
-      path: '/test2',
-      name: 'test2',
-      props: true,
-      component: () => import('../components/loginPages/test2.vue'),
+      component: () => import('../components/loginPages/mainAuthWrap.vue'),
       children: [
         {
           path: '',
-          redirect: '/testLogin'
+          redirect: '/login'
         },
         {
-          path: '/testLogin', // Note: Don't need the leading slash for child paths
-          name: 'testLogin',
+          path: '/login', 
+          name: 'login',
           props: true,
-          component: () => import('../components/loginPages/testLogin.vue')
+          component: () => import('../components/loginPages/login.vue')
         },
         {
-          path: '/testRegister', // Note: Don't need the leading slash for child paths
-          name: 'testRegister',
+          path: '/register', 
+          name: 'register',
           props: true,
-          component: () => import('../components/loginPages/testRegister.vue')
+          component: () => import('../components/loginPages/accountRegistration/register.vue')
         },
         {
-          path: '/testVerifyNew',
-          name: 'testVerifyNew',
+          path: '/verifyAccWithCode',
+          name: 'verifyAccWithCode',
           props: true,
-          component: () => import('../components/loginPages/testVerifyNew.vue')
+          component: () => import('../components/loginPages/accountRegistration/verifyAccWithCode.vue')
         },
         {
-          path: '/testResetPass',
-          name: 'testResetPass',
+          path: '/passResetRequest',
+          name: 'passResetRequest',
           props: true,
-          component: () => import('../components/loginPages/testResetPass.vue')
+          component: () => import('../components/loginPages/passReset/passResetRequest.vue')
         },
         {
-          path: '/testResetPassCode',
-          name: 'testResetPassCode',
+          path: '/passResetCode',
+          name: 'passResetCode',
           props: true,
-          component: () => import('../components/loginPages/testResetPassCode.vue')
+          component: () => import('../components/loginPages/passReset/passResetCode.vue')
         },
         {
-          path: '/testResetPassNew',
-          name: 'testResetPassNew',
+          path: '/passResetNewEntry',
+          name: 'passResetNewEntry',
           props: true,
-          component: () => import('../components/loginPages/testResetPassNew.vue')
+          component: () => import('../components/loginPages/passReset/passResetNewEntry.vue')
         },
         {
-          path: '/testVerifyExisting',
-          name: 'testVerifyExisting',
+          path: '/verifyAccWithEmailCode',
+          name: 'verifyAccWithEmailCode',
           props: true,
-          component: () => import('../components/loginPages/testVerifyExisting.vue')
+          component: () => import('../components/loginPages/accountRegistration/verifyAccWithEmailCode.vue')
         },
       ]
     },    
@@ -123,33 +118,6 @@ const routes = [
         component: () => import('../components/defaultPages/eventDetails.vue')
     },
     {
-        path: '/registerForm',
-        name: 'Register',
-        props: true,
-        component: () => import('../components/loginPages/registerForm.vue')
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      props: true,
-      component: () => import('../components/loginPages/login.vue')
-      
-  },
-    {
-        path: '/verify',
-        name: 'Account Confirmation',
-        props: true,
-        component: () => import('../components/loginPages/accountConfirmed.vue')
-        
-    },
-    {
-        path: '/resetPassword',
-        name: 'Password Reset',
-        props: true,
-        component: () => import('../components/loginPages/resetPassword.vue')
-        
-    },
-    {
       path: '/resetPasswordForm',
       name: 'Password Reset Form',
       props: true,
@@ -159,7 +127,7 @@ const routes = [
         path: '/updatePassword',
         name: 'updatePassword',
         props: true,
-        component: () => import('../components/loginPages/updatePassword.vue'),
+        component: () => import('../components/loginPages/passReset/updatePassword.vue'),
         beforeEnter: (to, from, next) => {
           const userStore = useLoggedInUserStore();
           if (!userStore.isLoggedIn) {

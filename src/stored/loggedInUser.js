@@ -68,13 +68,11 @@ export const useLoggedInUserStore = defineStore({
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
-            const message = "Invalid email or password."
-            toast.error(message, {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--delete',
-              limit: 2,
-              multiple: false
-            });
+          return {
+            toast: true,
+            message: 'Invalid email or password.',
+            type: 'error',
+          };
         } else {
             console.log(error);
         }

@@ -3,23 +3,29 @@
             <v-row>
                 <v-col cols="12" class="pb-0">
                     <h2 class="font-bold text-2xl text-red-700 tracking-widest">
-                        {{$t('Password Reset')}}
+                        {{$t('Password Reset Code')}}
                     </h2>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    {{$t('Please enter your email. If it exists in our records, you will receive a confirmation code shortly to reset your password.')}}
+                    {{$t('Please check your email and input the password reset code.')}}
+                    <br>
+                    {{$t('If you do not see an email, please check your Spam folder, or ')}}
+                    <span 
+                        class="font-semibold text-red-800 cursor-pointer"
+                        @click="$router.push('/register')"
+                    >{{$t('Register for an Account.')}}</span>
                 </v-col>
             </v-row>
                 <v-row justify="center">
-                    <v-col cols="12" md="10">
+                    <v-col cols="12" md="8">
                         <v-sheet>
-                            <v-form ref="emailForm" @submit.prevent="emailFormSubmit">
+                            <v-form ref="passForm" @submit.prevent="passFormSubmit">
                                 <v-text-field
-                                    v-model="email"
+                                    v-model="code"
                                     :rules="rules"
-                                    :label="$t('Email:')"
+                                    :label="$t('Code:')"
                                     class="mx-auto"
                                     style="width: 100%;"
                                 >
@@ -53,68 +59,80 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
     data() {
         return {
-            userID: "",
+            userID: null,
             loading: false,
-            email: null,
+            code: null,
             rules: [
                 v => {
                     if (!v) {
-                        return this.$t('Email is required');
-                    } else if (!/.+@.+/.test(v)) {
-                        return this.$t('Email must be valid');
+                        return this.$t('Code is required');
                     }
                     return true;
                 }
             ],
         };
     },
+    mounted() {
+        if (this.$route.params && this.$route.params.userID) {
+            this.userID = this.$route.params.userID; 
+        }
+    },
     methods: {
-        async emailFormSubmit() {
+        async passFormSubmit() {
             // Check if there are any errors in the form
-            await this.$refs.emailForm.validate();
-            const emailFormInvalid = this.$refs.emailForm.errors.length > 0;
+            await this.$refs.passForm.validate();
+            const passFormInvalid = this.$refs.passForm.errors.length > 0;
 
-            // If no errors, proceed with login
-            if (!emailFormInvalid) {
+            // Instantiate the store
+            const loggedInUserStore = useLoggedInUserStore();
+
+            // If no errors, proceed
+            if (!passFormInvalid) {
                 this.loading = true;
-                let user = {
-                    email: this.email,
-                    error: this.error,
+                
+                let requestData = {
+                    userID: this.userID,
+                    confirmationCode: this.code 
                 };
-                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/resetPassword`;
+
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/resetPassWithCode`;
 
                 try {
-                    const response = await axios.put(apiURL, user);
+                    const response = await axios.post(apiURL, requestData);
 
                     if (response.status === 200) {
-                        this.userID = response.data.userID;
-                        // Grab the token from the response
-                        this.token = response.data.token;
+                        // Set token as global header
+                        loggedInUserStore.setTokenHeader(response.data.token);
+                        
+                        this.$router.push({
+                            name: 'passResetNewEntry',
+                            params: { 
+                                userID: this.userID,
+                                toastType: 'success',
+                                toastMessage: this.$t('Success! You may now reset your password.'),
+                                toastPosition: 'top-right',
+                                toastCSS: 'Toastify__toast--create'
+                            }
+                        });
+
                     } else {
-                        toast.error(this.$t('An error occurred. Please try again.'), {
+                        toast.error(this.$t('Invalid code. Please try again.'), {
                             position: 'top-right',
                             toastClassName: 'Toastify__toast--delete'
                         });
                     }
                 } catch (error) {
-                    toast.error(this.$t('An error occurred. Please try again.'), {
+                    toast.error(this.$t('Invalid code. Please try again.'), {
                         position: 'top-right',
                         toastClassName: 'Toastify__toast--delete'
                     });
                 } finally {
                     this.loading = false;
-                    // this.$emit('navigateTo', { route: '/testResetPassCode', userID: this.userID });
-                    this.$router.push({
-                        name: 'testResetPassCode',
-                        params: { userID: this.userID }
-                    });
-
-
                 }
             }
         },
         goBackToLogin() {
-            this.$router.push({name: 'testLogin'});
+            this.$router.push({name: 'login'});
         },
     }
 }

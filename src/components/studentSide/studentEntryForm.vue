@@ -19,9 +19,9 @@
         </template>
 
         <template v-slot:default="{ isActive }">
-          <v-card title="Student Entry Form">
+          <v-card :title="getTranslation('Student Entry Form')">
             <v-card-text>
-              This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.
+              {{getTranslation('This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.')}}
             </v-card-text>
 
             <v-card-actions>
@@ -103,16 +103,6 @@
             >
             </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-        v-if="studentInformation.pronouns[studentInformation.pronouns.length - 1].checked && !pronoun.checked && hoveredCheckboxID === pronoun.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0);"
-      >
-          De-select "Prefer not to answer" to select this.
-      </span>
-    </transition>
         </div>
 
         <!-- "Other" text field -->
@@ -571,13 +561,12 @@
   <!-- // First time user v-dialog -->
   <v-dialog v-model="showNewUserDialog" width="500">
   <v-card>
-    <!-- Bold title "Welcome In!" -->
     <v-card-title class="font-weight-bold">
-      Welcome In!
+      {{getTranslation('Welcome In!')}}
     </v-card-title>
     
     <v-card-text>
-      We are happy to have you. Your first task is to complete the Student Entry Form!
+      {{getTranslation('We are happy to have you. Your first task is to complete the Student Entry Form!')}}
     </v-card-text>
 
     <v-card-actions>
@@ -675,6 +664,9 @@ export default {
         "If 'Other' is selected, please specify.": "Si seleccionó 'Otro', por favor especifique.",
         "Oops! Error(s) detected. Please review and try again.": "¡Ups! Se detectó(ron) error(es). Por favor, revise y vuelva a intentarlo.",
         "Thank you for completing the Student Entry Form!": "¡Gracias por completar el Formulario de Inscripción para Estudiantes!",
+        "Welcome In!": "¡Bienvenido!",
+        "We are happy to have you. Your first task is to complete the Student Entry Form!": "Estamos felices de tenerte. Tu primera tarea es completar el Formulario de Inscripción para Estudiantes.",
+        "This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.": "Este formulario recopila información básica sobre ti, ¡para que podamos conocerte mejor! Parte de esta información será compartida con tu instructor o líder de experiencia. Puedes actualizar esta información en cualquier momento en tu “perfil”."
       }
     };
 

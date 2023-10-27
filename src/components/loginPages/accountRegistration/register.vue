@@ -122,7 +122,7 @@
                   <p class="text-sm font-medium text-gray-500 mt-4 text-center">
                   {{$t('Already have an account?')}}
                   <!-- Updated this line to use @click and router.push -->
-                  <span class="font-bold text-red-700 hover:underline cursor-pointer" @click="$router.push('/testLogin')">{{$t('Login here')}}</span>
+                  <span class="font-bold text-red-700 hover:underline cursor-pointer" @click="$router.push('/login')">{{$t('Login here')}}</span>
                   </p>
               </v-col>
           </v-row>
@@ -218,7 +218,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
               await store.verifyExistingAcc(response.data);
 
               this.$router.push({ 
-                name: 'testVerifyNew', 
+                name: 'verifyAccWithCode', 
                 params: { id: userID } 
               });
             },

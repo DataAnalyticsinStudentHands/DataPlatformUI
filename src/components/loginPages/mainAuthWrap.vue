@@ -1,26 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" sm="10" md="8" lg="6" class="mx-auto">
-        <v-row class="mb-n4">
-          <!-- Spacer to push switch to the end -->
-          <v-col class="flex-grow-1"></v-col>
-          <!-- Language toggle -->
-          <v-col cols="auto">
-            <v-switch
-              v-model="language"
-              inset
-              hide-details
-              color="red-800"
-              @change="changeLanguage"
-              prepend-icon="mdi-translate"
-              :label="language ? 'ES' : 'EN'"
-              class="switch-container"
-            ></v-switch>
-          </v-col>
-        </v-row>
+      <v-col cols="12" sm="10" md="8" lg="6" class="mx-auto pt-5">
         
         <v-card class="pa-5 mb-12" :class="{'fill-height': $vuetify.display.xs}" :elevation="$vuetify.display.xs ? 0 : 8">
+          
           <v-tabs 
             v-model="tab" 
             centered 
@@ -28,13 +12,30 @@
             density="comfortable"
             slider-color="red-800"
           >
-            <v-tab @click="changeRoute('/testLogin')" value="testLogin">
+            <v-tab @click="changeRoute('/login')" value="login">
               <span class="font-semibold text-red-800">{{ $t('Login') }}</span>
             </v-tab>
-            <v-tab @click="changeRoute('/testRegister')" value="testRegister">
+            <v-tab @click="changeRoute('/register')" value="register">
               <span class="font-semibold text-red-800">{{$t('Register')}}</span>
             </v-tab>
           </v-tabs>
+          <v-row class="mb-n4 align-center justify-end">
+            <!-- Language toggle -->
+            <v-col cols="auto" class="pt-3 pb-0 pr-1">
+              <v-switch
+                density="compact"
+                v-model="language"
+                inset
+                hide-details
+                color="red-800"
+                @change="changeLanguage"
+                label="ES"
+                class="switch-container"
+              ></v-switch>
+            </v-col>
+          </v-row>
+
+          
   
           <router-view 
             v-slot="{ Component }" 
@@ -59,12 +60,12 @@
 
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
-import LoginForm from "@/components/loginPages/testLogin.vue";
-import VerifyNew from "@/components/loginPages/testVerifyNew.vue";
-import RegisterForm from "@/components/loginPages/testRegister.vue";
+import LoginForm from "@/components/loginPages/login.vue";
+import VerifyNew from "@/components/loginPages/accountRegistration/verifyAccWithCode.vue";
+import RegisterForm from "@/components/loginPages/accountRegistration/register.vue";
 
 export default {
-  name: "Login",
+  name: "mainAuthWrap",
   emits: ["showDashboard"],
   components: {
     LoginForm,
@@ -73,7 +74,7 @@ export default {
   },
   data() {
     return {
-      tab: 'testLogin',
+      tab: 'login',
       forgotPassword: null,
       forgotPasswordColor: null,
       language: false // false for English, true for Spanish
@@ -93,10 +94,10 @@ export default {
     '$route.path': {
       immediate: true, // Execute the handler function immediately upon registration
       handler(newValue) {
-        if (newValue === '/testLogin') {
-          this.tab = 'testLogin';
-        } else if (newValue === '/testRegister') {
-          this.tab = 'testRegister';
+        if (newValue === '/login') {
+          this.tab = 'login';
+        } else if (newValue === '/register') {
+          this.tab = 'register';
         }
       }
     }

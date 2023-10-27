@@ -113,7 +113,7 @@ export default {
 
             if (res.status === 200) {
                 this.$router.push({
-                    name: 'testLogin',
+                    name: 'login',
                     params: {
                         toastType: 'success',
                         toastMessage: this.$t('Your account is activated! You may now login.'),
@@ -171,7 +171,7 @@ export default {
     },
 
     goBackToLogin() {
-        this.$router.push({name: 'testLogin'});
+        this.$router.push({name: 'login'});
     },
   }
 }

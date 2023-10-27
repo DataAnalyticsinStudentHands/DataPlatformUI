@@ -171,7 +171,7 @@ export default {
 
                         // Redirecting the user to login after password reset
                         this.$router.push({ 
-                            name: 'testLogin',
+                            name: 'login',
                             params: { 
                                 toastType: 'success',
                                 toastMessage: this.$t('Password Reset! You may now login.'),
@@ -197,7 +197,7 @@ export default {
         },
 
         goBackToLogin() {
-            this.$router.push({name: 'testLogin'});
+            this.$router.push({name: 'login'});
         },
     }
 }

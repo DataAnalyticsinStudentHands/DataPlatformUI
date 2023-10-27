@@ -27,9 +27,9 @@
         </template>
 
         <template v-slot:default="{ isActive }">
-          <v-card title="Goal Setting Form">
+          <v-card :title="getTranslation('Goal Setting Form')">
             <v-card-text>
-              The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course. 
+              {{getTranslation('The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course.')}}
             </v-card-text>
 
             <v-card-actions>
@@ -137,16 +137,6 @@
     >
     </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-      v-if="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked && hoveredCheckboxID1 === engagementExperience.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
-      >
-          {{getTranslation("De-select 'None of the above' to select this.")}}
-      </span>
-    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -188,16 +178,7 @@
       >
       </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-        v-if="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked && hoveredCheckboxID2 === previousExperience.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
-      >
-        {{getTranslation("De-select 'None of the above' to select this.")}}
-      </span>
-    </transition>
+
       <transition name="slide-y-transition">
       <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
         <v-col cols="12">
@@ -238,16 +219,7 @@
         :indeterminate="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked"
     >
     </v-checkbox>
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-      v-if="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked && hoveredCheckboxID3 === activitiesTool.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
-      >
-          {{getTranslation("De-select 'None of the above' to select this.")}}
-      </span>
-    </transition>
+
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -292,16 +264,7 @@
     >
     </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-      v-if="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked && hoveredCheckboxID4 === currentExperience.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
-      >
-          {{getTranslation("De-select 'None of the above' to select this.")}}
-      </span>
-    </transition>
+ 
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -346,16 +309,6 @@
     >
     </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-      v-if="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked && hoveredCheckboxID5 === previousExperience.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
-      >
-          {{getTranslation("De-select 'None of the above' to select this.")}}
-      </span>
-    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -400,16 +353,6 @@
     >
     </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-      v-if="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked && hoveredCheckboxID6 === familiarTool.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
-      >
-          {{getTranslation("De-select 'None of the above' to select this.")}}
-      </span>
-    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -454,16 +397,6 @@
     >
     </v-checkbox>
 
-    <!-- Tooltip -->
-    <transition name="slide-y-transition">
-      <span 
-      v-if="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked && hoveredCheckboxID7 === interest.id"
-        class="absolute top-0 left-0 mt-2 ml-6 px-2 py-1 text-xs text-white bg-gray-800 rounded"
-        style="transform: translate(-100%, 0); max-width: 15vw; white-space: normal;"
-      >
-          {{getTranslation("De-select 'None of the above' to select this.")}}
-      </span>
-    </transition>
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
@@ -618,26 +551,33 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
     </ul>  
   </p>
 
-  <v-text-field
+  <v-textarea
     ref="aspiration1Field"
     :label="getTranslation('Aspiration 1:')"
     v-model="goalForm.aspirations.aspirationOne"
     :error="isAspirationsInvalid"
-  ></v-text-field>
+    auto-grow
+    rows="1"
+  ></v-textarea>
 
-  <v-text-field
+
+  <v-textarea
     ref="aspiration2Field"
     :label="getTranslation('Aspiration 2:')"
     v-model="goalForm.aspirations.aspirationTwo"
     :error="isAspirationsInvalid"
-  ></v-text-field>
+    auto-grow
+    rows="1"
+  ></v-textarea>
 
-  <v-text-field
+  <v-textarea
     ref="aspiration3Field"
     :label="getTranslation('Aspiration 3:')"
     v-model="goalForm.aspirations.aspirationThree"
     :error-messages="aspirationsErrorMessages"
-  ></v-text-field>
+    auto-grow
+    rows="1"
+  ></v-textarea>
 </v-col>
 
 
@@ -659,35 +599,45 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
     </ul>
   </p>
 
-  <v-text-field
+  <v-textarea
     :label="getTranslation('Goal 1:')"
     v-model="goalForm.goals.goalOne"
     :error="isGoalsInvalid"
-  ></v-text-field>
+    auto-grow
+    rows="1"    
+  ></v-textarea>
 
-  <v-text-field
+  <v-textarea
   :label="getTranslation('Goal 2:')"
     v-model="goalForm.goals.goalTwo"
     :error="isGoalsInvalid"
-  ></v-text-field>
+    auto-grow
+    rows="1"
+  ></v-textarea>
 
-  <v-text-field
+  <v-textarea
   :label="getTranslation('Goal 3:')"
     v-model="goalForm.goals.goalThree"
     :error="isGoalsInvalid"
-  ></v-text-field>
+    auto-grow
+    rows="1"
+  ></v-textarea>
 
-  <v-text-field
+  <v-textarea
   :label="getTranslation('Goal 4:')"
     v-model="goalForm.goals.goalFour"
     :error="isGoalsInvalid"
-  ></v-text-field>
+    auto-grow
+    rows="1"
+  ></v-textarea>
 
-  <v-text-field
+  <v-textarea
   :label="getTranslation('Goal 5:')"
     v-model="goalForm.goals.goalFive"
     :error-messages="goalsErrorMessages"
-  ></v-text-field>
+    auto-grow
+    rows="1"
+  ></v-textarea>
   
 </v-col>
 
@@ -884,7 +834,6 @@ export default {
         "Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.": "¡Hola! Ya ha completado un Formulario de Establecimiento de Objetivos para esta experiencia. Tenga en cuenta que enviar otro formulario para la misma experiencia sobrescribirá sus respuestas anteriores.",
         "You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!": "No ha completado un Formulario de Establecimiento de Objetivos para esta experiencia. ¡Complete este formulario para comenzar su progreso!",
         "What kind of community engagement experiences, if any, have you had? Check all that apply.": "¿Qué tipo de experiencias de participación comunitaria, si las hubo, ha tenido? Marque todo lo que corresponda.",
-        "De-select 'None of the above' to select this.": "Deseleccione 'Ninguna de las anteriores' para seleccionar esto.",
         "Volunteer organizations (e.g. scouts, nonprofits, food banks)": "Organizaciones de voluntarios (por ejemplo, exploradores, organizaciones sin fines de lucro, bancos de alimentos)",
         "Political campaigns": "Campañas políticas",
         "Faith based organizations": "Organizaciones basadas en la fe",
@@ -975,6 +924,7 @@ export default {
         "You've set your goals! Now, let's conquer them together!": "¡Has establecido tus metas! Ahora, ¡conquistémoslas juntos!",
         "Your goals are set! Keep pushing forward and you'll achieve them.": "¡Tus metas están definidas! Sigue adelante y las alcanzarás.",
         "Way to go! Every goal you set brings you one step closer to success.": "¡Bien hecho! Cada meta que estableces te acerca un paso más al éxito.",
+        "The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course.": "El proceso de establecimiento de objetivos nos ayuda a seguir adaptando clases y programas según las necesidades de nuestros estudiantes. Utilizamos sus comentarios para mejorar las clases y programas futuros. Establecer objetivos también te permite ser más intencional a medida que avanzas en la experiencia y te brinda la oportunidad de reflexionar al final del curso."
       },
     };
 

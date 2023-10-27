@@ -46,7 +46,7 @@
           <div v-if="!user.isLoggedIn">
             <v-list-item 
               :active="activeLink === 'Login'"
-              to="testLogin"
+              to="login"
               prepend-icon="mdi-login"
               value="Login"
               class=" tracking-wider "
@@ -252,7 +252,7 @@ export default {
       logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
     
       this.$router.push({
-          name: 'testLogin',
+          name: 'login',
           params: {
             toastType: 'success',
             toastMessage: logoutMessage,
