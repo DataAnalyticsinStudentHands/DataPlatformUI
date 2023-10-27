@@ -156,8 +156,8 @@ const routes = [
       component: () => import('../components/loginPages/resetPasswordForm.vue')
     },    
     {
-        path: '/updatePasswordForm',
-        name: 'Password Update Form',
+        path: '/updatePassword',
+        name: 'updatePassword',
         props: true,
         component: () => import('../components/loginPages/updatePassword.vue'),
         beforeEnter: (to, from, next) => {

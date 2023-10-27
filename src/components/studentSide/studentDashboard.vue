@@ -192,8 +192,9 @@
             <v-col cols="auto">
 
               <v-tooltip
+                  ref="expTooltip"
                   v-model="shouldShowTooltip"
-                  location="bottom"
+                  :location="($vuetify.display.xs || $vuetify.display.sm) ? 'bottom' : 'left'"
                   class="custom-tooltip"
               >
                   <template v-slot:activator="{ props }">
@@ -457,7 +458,11 @@ export default {
       return this.selectedExperiences.some(exp => exp._id === experience._id);
     },
     updateTooltipStatus() {
-      this.shouldShowTooltip = !this.shouldShowTooltip;
+        if (this.$refs.expTooltip) {
+            setTimeout(() => {
+                this.shouldShowTooltip = !this.shouldShowTooltip;
+            }, 250); // 500 milliseconds = 0.5 seconds
+        }
     },
     async fetchRegisteredExperiences() {
       const token = localStorage.getItem('token');

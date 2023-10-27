@@ -145,7 +145,7 @@
             >Update User Information</v-list-item>
             <v-list-item
               :active="activeLink === 'Password Reset'"
-              to="resetPassword"
+              to="updatePassword"
               prepend-icon="mdi-cog"
               value="Password Reset"
               class=" tracking-wider "
