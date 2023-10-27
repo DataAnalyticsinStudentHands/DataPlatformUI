@@ -178,7 +178,7 @@
           <v-icon>mdi-menu</v-icon>
         </v-btn>
         <template v-slot:append>
-          <h1 class="mr-10 text-2xl text-white">Engaged Data</h1>
+          <h1 class="mr-10 text-2xl text-white">{{ organizationName }}</h1>
         </template>
       </v-app-bar>
 
