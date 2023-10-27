@@ -147,7 +147,7 @@
                     <template v-slot:default="{ isActive }">
                       <v-card title="Registered Experiences">
                         <v-card-text>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                          Experiences are courses, projects, research, and other opportunities for growth. Select the Experiences you are a part of!
                         </v-card-text>
 
                         <v-card-actions>
