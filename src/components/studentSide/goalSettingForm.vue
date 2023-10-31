@@ -886,7 +886,7 @@ export default {
         "Growth": "Crecimiento",
         "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>resolución de problemas.</u>",
         "No growth": "Sin crecimiento",
-        "A little growth": "Sin crecimiento",
+        "A little growth": "Un poco de crecimiento",
         "A moderate amount of growth": "Una cantidad moderada de crecimiento",
         "A lot of growth": "Mucho crecimiento",
         "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>comunicación efectiva</u>.",
@@ -994,7 +994,7 @@ export default {
         },
         researchExperience: {
           currentResearchExperience: [
-            { id: 1, label: "Introduction to Statistics / Introduction to Biostatistics / Introduction to Research courses  ", checked: false },
+            { id: 1, label: "Introduction to Statistics / Introduction to Biostatistics / Introduction to Research courses", checked: false },
             { id: 2, label: "Advanced statistics and programming courses", checked: false },
             { id: 3, label: "HERE", checked: false },
             { id: 4, label: "SURF", checked: false },
