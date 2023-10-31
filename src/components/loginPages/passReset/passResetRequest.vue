@@ -2,7 +2,7 @@
     <v-card-text>
             <v-row>
                 <v-col cols="12" class="pb-0">
-                    <h2 class="font-bold text-2xl text-red-700 tracking-widest">
+                    <h2 class="font-bold text-2xl text-red-800 tracking-widest">
                         {{$t('Password Reset')}}
                     </h2>
                 </v-col>

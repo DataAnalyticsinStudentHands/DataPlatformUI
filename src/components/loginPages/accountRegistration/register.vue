@@ -3,7 +3,7 @@
     <v-container>
         <v-row justify="center">
             <v-col cols="12" class="text-center">
-                <h1 class="font-bold text-2xl text-red-700 tracking-widest mt-3 mb-5">
+                <h1 class="font-bold text-2xl text-red-800 tracking-widest mt-3 mb-5">
                     {{$t('Create Your Account')}}
                 </h1>
             </v-col>

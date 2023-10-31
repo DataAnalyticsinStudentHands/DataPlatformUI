@@ -1,6 +1,7 @@
 import { createApp, markRaw } from 'vue';
 import axios from 'axios';
 import { createI18n } from 'vue-i18n';
+import handleErrorMixin from './mixins/handleErrorMixin';
 
 
 // Setting the token as a default header if it exists in localStorage
@@ -71,6 +72,8 @@ const i18n = createI18n({
 const app = createApp(App);
 
 app.mixin(screenSizeMixin);
+
+app.mixin(handleErrorMixin);
 
 app.use(Vue3Toastify, {
     autoClose: 5000,

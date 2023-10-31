@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card-text>
-      <h2 class="font-bold text-2xl text-red-700 tracking-widest text-center mt-3 mb-5">
+      <h2 class="font-bold text-2xl text-red-800 tracking-widest text-center mt-3 mb-5">
           {{$t('Welcome to Engaged Data')}}
       </h2>
 
