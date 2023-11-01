@@ -104,7 +104,7 @@ export default {
         useLoggedInUserStore().stopLoading();
       })
       .catch((error) => {
-        console.error(error);
+        this.handleError(error);
         useLoggedInUserStore().stopLoading();
       });
     window.scrollTo(0, 0);
@@ -135,7 +135,7 @@ export default {
         const resp = await axios.get(apiURL, { headers: { token } });
         this.semesterData = resp.data;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
         throw error;
       }
     },
@@ -166,7 +166,7 @@ export default {
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
     
@@ -192,7 +192,7 @@ export default {
           
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
   },

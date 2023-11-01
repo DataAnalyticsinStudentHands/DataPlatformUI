@@ -71,7 +71,7 @@ export default {
           this.goalSettingFormIDs = resp.data.goalSettingFormIDs;
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
 

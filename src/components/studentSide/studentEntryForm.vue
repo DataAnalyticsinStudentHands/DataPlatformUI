@@ -1293,7 +1293,7 @@ export default {
 
       } catch (error) {
         // Log the error if form submission fails
-        console.log(error);
+        this.handleError(error);
       }
     },
     cleanupFormData() {

@@ -259,7 +259,7 @@ beforeMount() {
       this.userData = resp.data.userData;
       this.studentData = resp.data.studentData.studentInformation;
     } catch (error) {
-      console.error('Error fetching student information:', error);
+      this.handleError('Error fetching student information:', error);
     }
   })();
 },

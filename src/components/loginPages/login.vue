@@ -143,7 +143,7 @@ export default {
             this.sendNewCode();
           }
         } catch (error) {
-          console.log(error);
+          this.handleError(error);
         } finally {
           this.loading = false;
         }

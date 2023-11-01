@@ -347,7 +347,7 @@ export default {
           await this.fetchExperiences();
           await this.fetchRegisteredExperiences();
       } catch (err) {
-          console.error(err);
+          this.handleError(err);
           this.$router.push("/login");
       } finally {
         useLoggedInUserStore().stopLoading();
@@ -415,7 +415,7 @@ export default {
         const response = await axios.get(apiURL, { headers: { token } });
         this.allExperiences = response.data;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
     routePush(routeName) {
@@ -530,7 +530,7 @@ export default {
         });
 
       } catch (error) {
-        console.error('Error registering experiences: ', error);
+        this.handleError('Error registering experiences: ', error);
         toast.error('Error registering experiences. Please contact an administrator.', {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete'

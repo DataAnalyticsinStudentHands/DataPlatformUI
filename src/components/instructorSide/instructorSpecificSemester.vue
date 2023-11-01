@@ -107,7 +107,7 @@ export default {
           this.selectedExperiences = data.experiences;
         })
         .catch((error) => {
-            console.log(error);
+            this.handleError(error);
           });
     },
 
@@ -121,7 +121,7 @@ export default {
           this.semester.experiences = resp.data.filter((experience) => experience.experienceStatus === true);
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
 

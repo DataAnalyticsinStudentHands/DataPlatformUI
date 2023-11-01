@@ -110,7 +110,7 @@ export default {
         // After successful login, check if the user has completed forms
         await this.store.checkFormCompletion();
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
     changeRoute(payload) {

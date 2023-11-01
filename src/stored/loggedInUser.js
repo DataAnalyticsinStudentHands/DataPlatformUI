@@ -74,7 +74,7 @@ export const useLoggedInUserStore = defineStore({
             type: 'error',
           };
         } else {
-            console.log(error);
+            this.handleError(error);
         }
       }
     },
@@ -114,7 +114,7 @@ export const useLoggedInUserStore = defineStore({
           })
         }
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
     }
     },
     async verifyExistingAcc(responseData) {
@@ -166,7 +166,7 @@ export const useLoggedInUserStore = defineStore({
           });
         }
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
     setTokenHeader(token) {
@@ -197,7 +197,7 @@ export const useLoggedInUserStore = defineStore({
           });
         }
       } catch (error) {
-          console.log(error)
+          this.handleError(error)
       }
     },
     persist: {

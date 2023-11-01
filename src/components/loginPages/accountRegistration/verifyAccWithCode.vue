@@ -131,7 +131,7 @@ export default {
                             autoClose: false,
                         });
                     } catch (error) {
-                        console.log(error);
+                        this.handleError(error);
                     }
                 } else if (err.response.data.title === 'Invalid code') {
                     toast.error(this.$t('Invalid code.'), {

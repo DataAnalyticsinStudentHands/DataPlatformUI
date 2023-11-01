@@ -364,7 +364,7 @@ beforeMount() {
         useLoggedInUserStore().stopLoading();
       });
   } catch (error) {
-    console.error('Error:', error);
+    this.handleError('Error:', error);
     useLoggedInUserStore().stopLoading();
   } 
 },

@@ -55,7 +55,7 @@
               URL.revokeObjectURL(url);
               document.body.removeChild(link);
           } catch (error) {
-              console.error('Error downloading data:', error);
+              this.handleError('Error downloading data:', error);
           }
       },
   
@@ -86,7 +86,7 @@
           URL.revokeObjectURL(url);
           document.body.removeChild(link);
         } catch (error) {
-          console.error('Error downloading data:', error);
+          this.handleError('Error downloading data:', error);
         }
       },
   
@@ -116,7 +116,7 @@
           URL.revokeObjectURL(url);
           document.body.removeChild(link);
         } catch (error) {
-          console.error('Error downloading data:', error);
+          this.handleError('Error downloading data:', error);
         }
       },
   

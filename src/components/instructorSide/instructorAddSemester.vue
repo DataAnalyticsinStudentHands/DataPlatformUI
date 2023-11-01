@@ -83,7 +83,7 @@ export default {
           this.experiences = experiences.filter((experience) => experience.experienceStatus === true);
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
     handleSubmitForm() {
@@ -124,7 +124,7 @@ export default {
           if (error.response && error.response.data && error.response.data.error) {
             this.errorMessage = error.response.data.error;
           } else {
-            console.log(error);
+            this.handleError(error);
           }
         });
     }

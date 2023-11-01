@@ -198,7 +198,7 @@ export default {
           })
           .catch((error) => {
             this.error = error.response.data.error;
-            console.log(error);
+            this.handleError(error);
           });
       }
     },

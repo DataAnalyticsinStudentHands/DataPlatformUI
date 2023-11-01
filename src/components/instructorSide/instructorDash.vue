@@ -197,7 +197,7 @@ export default {
           experienceName: experience.experienceName
         }));
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
     async fetchStudentsWithoutGoalForm(experienceID) {
@@ -207,7 +207,7 @@ export default {
         const response = await axios.get(url, { headers: {token} });
         this.studentsWithoutGoalForm = response.data;
       } catch (error) {
-        console.error(error);
+        this.handleError(error);
       }
     },
     navigateToProfile(userID) {

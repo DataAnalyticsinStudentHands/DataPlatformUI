@@ -699,7 +699,7 @@ export default {
       const data = await response.json();
       return data.map(experience => experience._id);
     } catch (error) {
-      console.error("Error fetching specific experience IDs:", error);
+      this.handleError("Error fetching specific experience IDs:", error);
       return [];
     }
   },
@@ -799,7 +799,7 @@ export default {
           this.exitForm.experience = response.data;
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
     fetchGoalFormActivities() {
@@ -815,7 +815,7 @@ export default {
       }));
     })
     .catch((error) => {
-      console.log(error);
+      this.handleError(error);
     });
 },
 
@@ -844,11 +844,11 @@ export default {
         this.exitForm.goal5 = goalFormData.goals?.goalFive;
 
       } else {
-        console.error("Goal form data not found in the response.");
+        this.handleError("Goal form data not found in the response.");
       }
     })
     .catch((error) => {
-      console.log(error);
+      this.handleError(error);
     });
 },
 
@@ -861,7 +861,7 @@ export default {
         const response = await axios.get(apiURL, { headers: { token } });
         this.exitForm.semester = response.data.semesterName;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
 
@@ -935,7 +935,7 @@ export default {
     alert("Exit form has been successfully submitted.");
     this.$router.push('/exitFormsAvailable');
   } catch (error) {
-    console.log(error);
+    this.handleError(error);
   }
 }
   }

@@ -1666,7 +1666,7 @@ export default {
       });
     } catch (error) {
       // Handle any errors that occur during the fetch operations
-      console.error('Error:', error);
+      this.handleError('Error:', error);
     } finally {
       useLoggedInUserStore().stopLoading();
     }
@@ -1682,7 +1682,7 @@ export default {
         const response = await axios.get(apiURL, { headers: { token } });
         this.goalForm.semester = response.data.semesterName;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
     async fetchExperiences() {
@@ -1699,7 +1699,7 @@ export default {
       }));
         // this.goalForm.experiences = response.data;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
   async fetchHasFilledForm() {
@@ -1720,7 +1720,7 @@ export default {
       }
 
     } catch (error) {
-      console.error("Error fetching form fill status:", error);
+      this.handleError("Error fetching form fill status:", error);
     }
   },
   async checkExistingForm() {
@@ -1753,7 +1753,7 @@ export default {
           this.experienceFoundWarning = false;
         }
       } catch (error) {
-        console.error("An unexpected error occurred while checking for existing form:", error);
+        this.handleError("An unexpected error occurred while checking for existing form:", error);
       } finally {
         this.isLoadingExpCheck = false; 
     }
@@ -1959,7 +1959,7 @@ export default {
         });
     })
     .catch((error) => {
-      console.log(error);
+      this.handleError(error);
     });
 },
 
@@ -2042,7 +2042,7 @@ export default {
           });
       })
       .catch((error) => {
-        console.log(error);
+        this.handleError(error);
       });
   },
   async updateChecklistStore() {
