@@ -28,7 +28,7 @@
       <v-row>
         <v-col cols="12" class="pl-0 pt-6">
           <span
-            class="font-semibold text-base text-red-800 cursor-pointer"
+            class="font-semibold text-base text-red-800 cursor-pointer no-select"
             @click="$emit('navigateTo', '/passResetRequest')"
           >
             {{$t('Forgot Your Password?')}}
@@ -38,7 +38,7 @@
       <v-row class="mt-0">
         <v-col cols="12" class="pl-0">
           <span
-            class="font-bold text-base text-red-800 cursor-pointer"
+            class="font-bold text-base text-red-800 cursor-pointer no-select"
             @click="$emit('navigateTo', '/verifyAccWithEmailCode')"
           >
             {{$t('Have a Confirmation Code?')}}
@@ -176,3 +176,16 @@ export default {
   }
 };
 </script>
+
+
+<style>
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Safari */
+    -khtml-user-select: none;    /* Konqueror HTML */
+    -moz-user-select: none;      /* Old versions of Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
+
+</style>
