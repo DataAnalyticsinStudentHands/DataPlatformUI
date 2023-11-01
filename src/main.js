@@ -64,6 +64,8 @@ const i18n = createI18n({
   messages: {
     es: esTranslation // Spanish translations
   },
+  missingWarn: false,
+  silentFallbackWarn: true,
   silentTranslationWarn: true,  // Suppress warnings for missing translations
   fallbackLocale: 'en'
 });

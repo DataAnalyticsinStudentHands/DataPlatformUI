@@ -11,7 +11,7 @@
     <div style="display: flex; align-items: center;">
 
       
-    <p class="font-weight-black text-h5 text--primary">{{getTranslation('Goal Setting Form')}}</p>
+    <p class="font-weight-black text-h5 text--primary">{{$t('Goal Setting Form')}}</p>
 
     <v-dialog width="500">
         <template v-slot:activator="{ props }">
@@ -27,9 +27,9 @@
         </template>
 
         <template v-slot:default="{ isActive }">
-          <v-card :title="getTranslation('Goal Setting Form')">
+          <v-card :title="$t('Goal Setting Form')">
             <v-card-text>
-              {{getTranslation('The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course.')}}
+              {{$t('The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course.')}}
             </v-card-text>
 
             <v-card-actions>
@@ -45,12 +45,12 @@
       </v-dialog>
 
     </div>
-    <p class="text-subtitle-1">{{getTranslation("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
+    <p class="text-subtitle-1">{{$t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
 
 <v-row dense>
     <v-col cols="12" md="5">
-      <p class="font-weight-black text-h8">{{getTranslation('Current Semester:')}}</p>
-      <v-text-field v-model="goalForm.semester" :label="getTranslation('Semester')" readonly></v-text-field>
+      <p class="font-weight-black text-h8">{{$t('Current Semester:')}}</p>
+      <v-text-field v-model="goalForm.semester" :label="$t('Semester')" readonly></v-text-field>
     </v-col>
 </v-row>
 <v-row dense>
@@ -59,11 +59,11 @@
     <p 
       :class="{'error-text': isExperienceIDInvalid}"
       class="font-weight-black text-h8">
-        {{getTranslation('Which experience are you filling out this form for:')}}
+        {{$t('Which experience are you filling out this form for:')}}
     </p>
       <v-autocomplete
         v-model="selectedExperience"
-        :label="getTranslation('Select an Experience')"
+        :label="$t('Select an Experience')"
         :items="formattedExperiences"
         item-title="text"
         item-value="value"
@@ -91,13 +91,13 @@
       <!-- Message when experienceFoundWarning is true -->
       <div v-if="experienceFoundWarning" style="display: flex; align-items: center; color: #4A90E2; font-weight: bold;">
         <v-icon left small style="margin-right: 0.5rem; color: #4A90E2;">mdi-alert-circle</v-icon>
-        {{getTranslation('Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.')}}
+        {{$t('Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.')}}
       </div>
 
       <!-- Message when experienceFoundWarning is false -->
       <div v-if="experienceFoundWarning === false" style="display: flex; align-items: center; color: #4CAF50; font-weight: bold;">
         <v-icon left small style="margin-right: 0.5rem; color: #4CAF50;">mdi-check-circle</v-icon>
-        {{getTranslation("You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!")}}
+        {{$t("You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!")}}
       </div>
     </div>
   </v-col>
@@ -115,7 +115,7 @@
   <p 
   :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
   class="font-weight-black text-h8">
-    {{getTranslation('What kind of community engagement experiences, if any, have you had? Check all that apply.')}}
+    {{$t('What kind of community engagement experiences, if any, have you had? Check all that apply.')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -131,7 +131,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="engagementExperience.checked" 
-        :label="getTranslation(engagementExperience.label)"
+        :label="$t(engagementExperience.label)"
         :rules="communityEngagementExperiencesRules"
         :indeterminate="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
     >
@@ -144,7 +144,7 @@
         <v-col cols="12">
           <v-text-field
             ref="otherExperienceField"
-            :placeholder="getTranslation('Please specify')" 
+            :placeholder="$t('Please specify')" 
             :class="{'error-text': isOtherEngagementExperienceInvalid}"
             v-model="goalForm.communityEngagement.communityEngagementExperiencesOther"
             :rules="communityEngagementExperiencesOtherRules"
@@ -155,14 +155,14 @@
   </transition>
   </div>
 
-  <div v-if="isCommunityEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
+  <div v-if="isCommunityEngagementExperiencesInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
-  class="font-weight-black text-h8">{{getTranslation('From your previous community engagement experiences, which of the following activities have you engaged in?')}}</p>
+  class="font-weight-black text-h8">{{$t('From your previous community engagement experiences, which of the following activities have you engaged in?')}}</p>
   <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id"
   class="relative"
   @mouseover="hoveredCheckboxID2 = previousExperience.id" 
@@ -171,7 +171,7 @@
       :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
         density="compact"
         class="ma-0 pa-0" hide-details="true"
-        :label="getTranslation(previousExperience.label)" 
+        :label="$t(previousExperience.label)" 
         v-model="previousExperience.checked"
         :rules="previousEngagementExperiencesRules"
         :indeterminate="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked"
@@ -185,7 +185,7 @@
       <v-text-field 
       ref="previousEngagementExperiencesOtherRef"
       :class="{'error-text': isPreviousEngagementExperiencesOtherInvalid}"
-        :placeholder="getTranslation('Please specify')" 
+        :placeholder="$t('Please specify')" 
         v-model="goalForm.communityEngagement.previousEngagementExperiencesOther"
         :rules="previousEngagementExperiencesOtherRules"
       >
@@ -194,14 +194,14 @@
     </v-row>
     </transition>
     </div>
-    <div v-if="isPreviousEngagementExperiencesInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
+    <div v-if="isPreviousEngagementExperiencesInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
 </v-col>
 
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isEngagementActivitiesToolsInvalid}"
   class="font-weight-black text-h8">
-    {{getTranslation('What, if any, tools have you used for community engagement activities?')}}
+    {{$t('What, if any, tools have you used for community engagement activities?')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -214,7 +214,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="activitiesTool.checked" 
-        :label="getTranslation(activitiesTool.label)"
+        :label="$t(activitiesTool.label)"
         :rules="engagementActivitiesToolsRules"
         :indeterminate="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked"
     >
@@ -228,7 +228,7 @@
           <v-text-field 
           ref="engagementActivitiesToolOtherRef"
           :class="{'error-text': isEngagementActivitiesToolOtherInvalid}"
-            :placeholder="getTranslation('Please specify')" 
+            :placeholder="$t('Please specify')" 
             v-model="goalForm.communityEngagement.engagementActivitiesToolOther" 
             :rules="engagementActivitiesToolOtherRules"
           >
@@ -237,7 +237,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isEngagementActivitiesToolsInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
+  <div v-if="isEngagementActivitiesToolsInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
 </v-col>
 
 
@@ -245,7 +245,7 @@
   <p 
   :class="{'error-text': isCurrentResearchExperienceInvalid}"
   class="font-weight-black text-h8">
-    {{getTranslation('What kind of research experiences, if any, have you had? Check all that apply.')}}
+    {{$t('What kind of research experiences, if any, have you had? Check all that apply.')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -258,7 +258,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="currentExperience.checked" 
-        :label="getTranslation(currentExperience.label)"
+        :label="$t(currentExperience.label)"
         :rules="currentResearchExperienceRules"
         :indeterminate="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked"
     >
@@ -273,7 +273,7 @@
           <v-text-field 
           ref="currentResearchExperienceOtherRef"
           :class="{'error-text': isCurrentResearchExperienceOtherInvalid}"
-            :placeholder="getTranslation('Please specify')" 
+            :placeholder="$t('Please specify')" 
             v-model="goalForm.researchExperience.currentResearchExperienceOther" 
             :rules="currentResearchExperienceOtherRules"
           >
@@ -282,7 +282,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isCurrentResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
+  <div v-if="isCurrentResearchExperienceInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
 </v-col>
 
 
@@ -290,7 +290,7 @@
   <p 
   :class="{'error-text': isPreviousResearchExperienceInvalid}"
   class="font-weight-black text-h8">
-    {{getTranslation('From your previous research experiences, which of the following activities have you engaged in?')}}
+    {{$t('From your previous research experiences, which of the following activities have you engaged in?')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -303,7 +303,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="previousExperience.checked" 
-        :label="getTranslation(previousExperience.label)"
+        :label="$t(previousExperience.label)"
         :rules="previousResearchExperienceRules"
         :indeterminate="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked"
     >
@@ -317,7 +317,7 @@
           <v-text-field 
           ref="previousResearchExperienceOtherRef"
           :class="{'error-text': isPreviousResearchExperienceOtherInvalid}"
-            :placeholder="getTranslation('Please specify')" 
+            :placeholder="$t('Please specify')" 
             v-model="goalForm.researchExperience.previousResearchExperienceOther" 
             :rules="previousResearchExperienceOtherRules"
           >
@@ -326,7 +326,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isPreviousResearchExperienceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
+  <div v-if="isPreviousResearchExperienceInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
 </v-col>
 
 
@@ -334,7 +334,7 @@
   <p 
   :class="{'error-text': isFamiliarToolsInvalid}"
   class="font-weight-black text-h8">
-    {{getTranslation('What, if any, tools are you familiar with?')}}
+    {{$t('What, if any, tools are you familiar with?')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -347,7 +347,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="familiarTool.checked" 
-        :label="getTranslation(familiarTool.label)"
+        :label="$t(familiarTool.label)"
         :rules="familiarToolsRules"
         :indeterminate="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked"
     >
@@ -361,7 +361,7 @@
           <v-text-field 
           ref="familiarToolOtherRef"
           :class="{'error-text': isFamiliarToolOtherInvalid}"
-            :placeholder="getTranslation('Please specify')" 
+            :placeholder="$t('Please specify')" 
             v-model="goalForm.researchExperience.familiarToolOther" 
             :rules="familiarToolOtherRules"
           >
@@ -370,7 +370,7 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isFamiliarToolsInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
+  <div v-if="isFamiliarToolsInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
 </v-col>
 
 
@@ -378,7 +378,7 @@
   <p 
   :class="{'error-text': isInterestResearchServiceInvalid}"
   class="font-weight-black text-h8">
-    {{getTranslation('What are your research/service interests? Check all that apply.')}}
+    {{$t('What are your research/service interests? Check all that apply.')}}
   </p>
 
   <!-- Loop through all checkboxes -->
@@ -391,7 +391,7 @@
         density="compact"
         class="ma-0 pa-0" hide-details="true"
         v-model="interest.checked" 
-        :label="getTranslation(interest.label)"
+        :label="$t(interest.label)"
         :rules="interestResearchServiceRules"
         :indeterminate="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked"
     >
@@ -405,7 +405,7 @@
           <v-text-field 
           ref="interestResearchServiceOtherRef"
           :class="{'error-text': isInterestResearchServiceOtherInvalid}"
-            :placeholder="getTranslation('Please specify')"
+            :placeholder="$t('Please specify')"
             v-model="goalForm.researchExperience.interestResearchServiceOther" 
             :rules="interestResearchServiceOtherRules"
           >
@@ -414,20 +414,20 @@
     </v-row>
   </transition>
   </div>
-  <div v-if="isInterestResearchServiceInvalid" class="styled-error-text">{{getTranslation('Information is required.')}}</div>
+  <div v-if="isInterestResearchServiceInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
 </v-col>
 
 
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isLeadershipOptionInvalid}"
-  class="font-weight-black text-h8">{{getTranslation('Are you interested in potentially holding a leadership position?')}}</p>
+  class="font-weight-black text-h8">{{$t('Are you interested in potentially holding a leadership position?')}}</p>
   <v-radio-group 
   :class="{'error-text': isLeadershipOptionInvalid}"
   v-model="goalForm.researchExperience.leadershipOption"
   :rules="leadershipOptionRules">
-    <v-radio :label="getTranslation('Yes')" value="Yes"></v-radio>
-    <v-radio :label="getTranslation('Maybe')" value="Maybe"></v-radio>
+    <v-radio :label="$t('Yes')" value="Yes"></v-radio>
+    <v-radio :label="$t('Maybe')" value="Maybe"></v-radio>
     <v-radio label="No" value="No"></v-radio>
   </v-radio-group>
 </v-col>
@@ -438,98 +438,108 @@
 <!-- growth section -->
 <p 
 :class="{'error-text': isGrowthInvalid}"
-class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
+class="font-weight-black text-h6">{{$t('Growth')}}</p>
 <v-col cols="12" md="10">
   <span 
-  :class="{'error-text': isProblemSolvingGoalInvalid}"
-  class="font-weight-black text-h8"
-  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.')">
+    :class="{'error-text': isProblemSolvingGoalInvalid}"
+    class="font-weight-black text-h8"
+>
+    {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('problem solving') }}</u>.
 </span>
+
   <v-radio-group 
   :class="{'error-text': isProblemSolvingGoalInvalid}"
   v-model="goalForm.growthGoal.problemSolvingGoal" 
   :rules="problemSolvingGoalRules"
   >
-    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
-    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
-    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
-    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
+    <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+    <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
   <span 
   :class="{'error-text': isEffectiveCommunicationGoalInvalid}"
   class="font-weight-black text-h8"
-  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.')"></span>
+  >
+{{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('effective communication.') }}</u>
+  </span>
   <v-radio-group 
   v-model="goalForm.growthGoal.effectiveCommunicationGoal"
   :class="{'error-text': isEffectiveCommunicationGoalInvalid}"
   :rules="effectiveCommunicationGoalRules">
-    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
-    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
-    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
-    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
+    <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+    <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
   <span
   :class="{'error-text': isTeamworkGoalInvalid}"
   class="font-weight-black text-h8"
-  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.')"></span>
+  >
+  {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('teamwork.') }}</u>
+  </span>
   <v-radio-group 
   v-model="goalForm.growthGoal.teamworkGoal"
   :class="{'error-text': isTeamworkGoalInvalid}"
   :rules="teamworkGoalRules">
-    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
-    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
-    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
-    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
+    <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+    <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
   <span 
   :class="{'error-text': isCulturalHumilityGoalInvalid}"
-  class="font-weight-black text-h8"
-  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.')"></span>
+  class="font-weight-black text-h8">
+    {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('cultural humility.') }}</u>
+  </span>
   <v-radio-group 
   v-model="goalForm.growthGoal.culturalHumilityGoal"
   :class="{'error-text': isCulturalHumilityGoalInvalid}"
   :rules="culturalHumilityGoalRules">
-    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
-    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
-    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
-    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
+    <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+    <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
   <span 
   :class="{'error-text': isEthicalDecisionMakingGoalInvalid}"
   class="font-weight-black text-h8"
-  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.')"></span>
+  >
+   {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('ethical decision making.') }}</u>
+  </span>
   <v-radio-group 
   v-model="goalForm.growthGoal.ethicalDecisionMakingGoal"
   :class="{'error-text': isEthicalDecisionMakingGoalInvalid}"
   :rules="ethicalDecisionMakingGoalRules">
-    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
-    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
-    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
-    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
+    <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+    <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 <v-col cols="12" md="10">
   <span 
   :class="{'error-text': isProfessionalResponsibilityGoalInvalid}"
-  class="font-weight-black text-h8"
-  v-html="getTranslation('Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.')"></span>
+  class="font-weight-black text-h8">
+   {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('professional responsibility.') }}</u>
+  </span>
   <v-radio-group 
   v-model="goalForm.growthGoal.professionalResponsibilityGoal"
   :class="{'error-text': isProfessionalResponsibilityGoalInvalid}"
   :rules="professionalResponsibilityGoalRules"
   >
-    <v-radio :label="getTranslation('No growth')" value="No growth"></v-radio>
-    <v-radio :label="getTranslation('A little growth')" value="A little growth"></v-radio>
-    <v-radio :label="getTranslation('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
-    <v-radio :label="getTranslation('A lot of growth')" value="A lot of growth"></v-radio>
+    <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+    <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+    <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+    <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
   </v-radio-group>
 </v-col>
 
@@ -539,21 +549,21 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
   :class="{'error-text': isAspirationsInvalid}"
   class="font-weight-black text-h8" style="margin-bottom: 2px;">
     <span
-    >{{getTranslation('Please describe 2-3 long-term aspirations you may have.')}}</span>
+    >{{$t('Please describe 2-3 long-term aspirations you may have.')}}</span>
     <br><br>
-    {{getTranslation('Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.')}}
-    <br> {{getTranslation('Examples:')}}
+    {{$t('Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.')}}
+    <br> {{$t('Examples:')}}
     <br>
     <ul>
-      <li>{{getTranslation('“I want to focus my career on cancer disparities”')}}</li>
-      <li>{{getTranslation('“I want to lead a non-profit that addresses food insecurity”')}}</li>
-      <li>{{getTranslation('“I want to teach English in a different country”')}}</li>
+      <li>{{$t('“I want to focus my career on cancer disparities”')}}</li>
+      <li>{{$t('“I want to lead a non-profit that addresses food insecurity”')}}</li>
+      <li>{{$t('“I want to teach English in a different country”')}}</li>
     </ul>  
   </p>
 
   <v-textarea
     ref="aspiration1Field"
-    :label="getTranslation('Aspiration 1:')"
+    :label="$t('Aspiration 1:')"
     v-model="goalForm.aspirations.aspirationOne"
     :error="isAspirationsInvalid"
     auto-grow
@@ -563,7 +573,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
 
   <v-textarea
     ref="aspiration2Field"
-    :label="getTranslation('Aspiration 2:')"
+    :label="$t('Aspiration 2:')"
     v-model="goalForm.aspirations.aspirationTwo"
     :error="isAspirationsInvalid"
     auto-grow
@@ -572,7 +582,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
 
   <v-textarea
     ref="aspiration3Field"
-    :label="getTranslation('Aspiration 3:')"
+    :label="$t('Aspiration 3:')"
     v-model="goalForm.aspirations.aspirationThree"
     :error-messages="aspirationsErrorMessages"
     auto-grow
@@ -588,19 +598,19 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
   :class="{'error-text': isGoalsInvalid}"
   class="font-weight-black text-h8">
     <span
-    >{{getTranslation('Please outline 3-5 goals that you have for this experience.')}}</span> 
+    >{{$t('Please outline 3-5 goals that you have for this experience.')}}</span> 
     <br><br>
-    {{getTranslation('Goals are statements that describe what it means for an experience to be a success from your perspective,')}}<br>
-    {{getTranslation('Examples:')}}<br>
+    {{$t('Goals are statements that describe what it means for an experience to be a success from your perspective,')}}<br>
+    {{$t('Examples:')}}<br>
     <ul>
-      <li>{{getTranslation('“I want to connect with people working on cancer research”')}}</li>
-      <li>{{getTranslation('“I want to research access to nutrition education in public schools”')}}</li>
-      <li>{{getTranslation('“I want to develop my presentation skills”')}}</li>
+      <li>{{$t('“I want to connect with people working on cancer research”')}}</li>
+      <li>{{$t('“I want to research access to nutrition education in public schools”')}}</li>
+      <li>{{$t('“I want to develop my presentation skills”')}}</li>
     </ul>
   </p>
 
   <v-textarea
-    :label="getTranslation('Goal 1:')"
+    :label="$t('Goal 1:')"
     v-model="goalForm.goals.goalOne"
     :error="isGoalsInvalid"
     auto-grow
@@ -608,7 +618,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
   ></v-textarea>
 
   <v-textarea
-  :label="getTranslation('Goal 2:')"
+  :label="$t('Goal 2:')"
     v-model="goalForm.goals.goalTwo"
     :error="isGoalsInvalid"
     auto-grow
@@ -616,7 +626,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
   ></v-textarea>
 
   <v-textarea
-  :label="getTranslation('Goal 3:')"
+  :label="$t('Goal 3:')"
     v-model="goalForm.goals.goalThree"
     :error="isGoalsInvalid"
     auto-grow
@@ -624,7 +634,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
   ></v-textarea>
 
   <v-textarea
-  :label="getTranslation('Goal 4:')"
+  :label="$t('Goal 4:')"
     v-model="goalForm.goals.goalFour"
     :error="isGoalsInvalid"
     auto-grow
@@ -632,7 +642,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
   ></v-textarea>
 
   <v-textarea
-  :label="getTranslation('Goal 5:')"
+  :label="$t('Goal 5:')"
     v-model="goalForm.goals.goalFive"
     :error-messages="goalsErrorMessages"
     auto-grow
@@ -646,7 +656,7 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
 
 <v-row>
   <v-col cols="12" md="4">
-    <v-btn @click="submitFormValidation">{{getTranslation('Submit Form')}}</v-btn>
+    <v-btn @click="submitFormValidation">{{$t('Submit Form')}}</v-btn>
   </v-col>
 </v-row>
 
@@ -816,134 +826,11 @@ class="font-weight-black text-h6">{{getTranslation('Growth')}}</p>
 </style>
 
 <script>
-import { ref } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import axios from "axios";
 export default {
-  setup() {
-    const translations = {
-      Spanish: {
-        "Goal Setting Form": "Formulario de Establecimiento de Objetivos",
-        "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.": "Complete los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente más tarde.",
-        "Current Semester:": "Semestre Actual",
-        "Semester": "Semestre",
-        "Which experience are you filling out this form for:": "¿Para cuál experiencia está completando este formulario?",
-        "Select an Experience": "Seleccione una Experiencia",
-        "Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.": "¡Hola! Ya ha completado un Formulario de Establecimiento de Objetivos para esta experiencia. Tenga en cuenta que enviar otro formulario para la misma experiencia sobrescribirá sus respuestas anteriores.",
-        "You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!": "No ha completado un Formulario de Establecimiento de Objetivos para esta experiencia. ¡Complete este formulario para comenzar su progreso!",
-        "What kind of community engagement experiences, if any, have you had? Check all that apply.": "¿Qué tipo de experiencias de participación comunitaria, si las hubo, ha tenido? Marque todo lo que corresponda.",
-        "Volunteer organizations (e.g. scouts, nonprofits, food banks)": "Organizaciones de voluntarios (por ejemplo, exploradores, organizaciones sin fines de lucro, bancos de alimentos)",
-        "Political campaigns": "Campañas políticas",
-        "Faith based organizations": "Organizaciones basadas en la fe",
-        "Short-term volunteer opportunities (e.g. day of service events)": "Oportunidades de voluntariado a corto plazo (por ejemplo, eventos del día de servicio)",
-        "Medical mission trips": "Viajes de misiones médicas",
-        "Other": "Otro",
-        "Please specify": "Por favor especificar",
-        "None of the above": "Ninguna de las anteriores",
-        "Information is required.": "Se requiere información.",
-        "From your previous community engagement experiences, which of the following activities have you engaged in?": "De sus experiencias previas de participación comunitaria, ¿en cuáles de las siguientes actividades se ha involucrado?",
-        "Mentoring someone": "Asesorar a alguien",
-        "Volunteering at a community event (e.g. health fair)": "Voluntariado/a en un evento comunitario (por ejemplo, feria de salud)",
-        "Recruiting volunteers": "Reclutamiento de voluntarios/as",
-        "Organizing a service project": "Organizar un proyecto de servicio",
-        "Serving as translator": "Sirviendo como traductor",
-        "Fundraising": "Recaudación de fondos",
-        "Emergency response volunteering": "Voluntariado de respuesta a emergencias",
-        "What, if any, tools have you used for community engagement activities?": "¿Qué herramientas, si alguna, ha utilizado para las actividades de participación comunitaria?",
-        "Social media": "Redes sociales",
-        "Scheduling software (e.g. when is good, doodle)": "Software de programación (por ejemplo, when is good, doodle)",
-        "Fundraising platforms": "Plataformas de recaudación de fondos",
-        "Survey tools": "Herramientas de encuesta",
-        "Graphic design tools (e.g. adobe, canva)": "Herramientas de diseño gráfico (por ejemplo, adobe, canva)",
-        "Project management Tool": "Herramienta de gestión de proyectos",
-        "Digital media (e.g. podcasting, streaming video)": "Medios digitales (por ejemplo, podcasting, transmisión de video)",
-        "What kind of research experiences, if any, have you had? Check all that apply.": "¿Qué tipo de experiencias de investigación, si las hubo, ha tenido? Marque todo lo que corresponda.",
-        "Introduction to Statistics / Introduction to Biostatistics / Introduction to Research courses": "Cursos de Introducción a la Estadística / Introducción a la Bioestadística / Introducción a la Investigación",
-        "Advanced statistics and programming courses": "Cursos avanzados de estadística y programación",
-        "Volunteered/Interned in a lab": "Voluntario/a o internado/a en un laboratorio",
-        "From your previous research experiences, which of the following activities have you engaged in?": "De sus experiencias previas de investigación, ¿cuál de las siguientes actividades ha realizado?",
-        "Designing your own research project": "Diseñando su propio proyecto de investigación",
-        "Literature review": "Revisión de literatura",
-        "Data collection in a clinical setting": "Recopilación de datos en un entorno clínico",
-        "Data collection in a laboratory setting": "Recopilación de datos en un entorno de laboratorio",
-        "Data collection in a public health/community setting": "Recopilación de datos en un entorno de salud pública/comunitario",
-        "Analyzing data with a statistical package": "Análisis de datos con un paquete estadístico",
-        "Writing/assisting with a manuscript": "Escribir/ayudar con un manuscrito",
-        "What, if any, tools are you familiar with?": "¿Con qué herramientas, si las hay, está familiarizado?",
-        "What are your research/service interests? Check all that apply.": "¿Cuáles son sus intereses de investigación/servicio? Marque todo lo que corresponda",
-        "Education": "Educación",
-        "Community Health": "Salud de la comunidad",
-        "Mental Health": "Salud mental",
-        "Incarceration / Criminal Justice": "Encarcelamiento / Justicia Penal",
-        "Chronic Disease": "Enfermedades crónicas",
-        "Environment and occupational health": "Medio ambiente y salud ocupacional",
-        "Government/Law/Policy": "Gobierno/Ley/Política",
-        "Are you interested in potentially holding a leadership position?": "¿Está interesado en ocupar un puesto de liderazgo?",
-        "Yes": "Si",
-        "Maybe": "Tal vez",
-        "Growth": "Crecimiento",
-        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>problem solving</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>resolución de problemas.</u>",
-        "No growth": "Sin crecimiento",
-        "A little growth": "Un poco de crecimiento",
-        "A moderate amount of growth": "Una cantidad moderada de crecimiento",
-        "A lot of growth": "Mucho crecimiento",
-        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>effective communication</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>comunicación efectiva</u>.",
-        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>teamwork</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>trabajo en equipo</u>.",
-        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>cultural humility</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>humildad cultural</u>.",
-        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>ethical decision making</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>toma de decisiones éticas</u>.",
-        "Please indicate your expectation of the growth you anticipate to see during your program in the area of <u>professional responsibility</u>.": "Por favor indique su expectativa del crecimiento que anticipa ver durante su programa en el área de <u>responsabilidad profesional</u>.",
-        "Please describe 2-3 long-term aspirations you may have.": "Por favor describa 2 o 3 aspiraciones a largo plazo que pueda tener.",
-        "Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.": "Las aspiraciones son declaraciones que describen dónde quiere terminar sin necesariamente describir exactamente cómo llegará allí.",
-        "Examples:": "Por ejemplo:",
-        "“I want to focus my career on cancer disparities”": "“Quiero centrar mi carrera en las disparidades del cáncer”",
-        "“I want to lead a non-profit that addresses food insecurity”": "“Quiero dirigir una organización sin fines de lucro que aborde la inseguridad alimentaria”",
-        "“I want to teach English in a different country”": "“Quiero enseñar inglés en un país diferente”",
-        "Aspiration 1:": "Aspiración 1:",
-        "Aspiration 2:": "Aspiración 2:",
-        "Aspiration 3:": "Aspiración 3:",
-        "Please outline 3-5 goals that you have for this experience.": "Por favor describa entre 3 y 5 metas que tiene para esta experiencia.",
-        "Goals are statements that describe what it means for an experience to be a success from your perspective,": "Las metas son declaraciones que describen lo que significa que una experiencia sea un éxito desde su perspectiva",
-        "“I want to connect with people working on cancer research”": "“Quiero conectarme con personas que trabajan en la investigación del cáncer”",
-        "“I want to research access to nutrition education in public schools”": "“Quiero investigar el acceso a la educación nutricional en las escuelas públicas”",
-        "“I want to develop my presentation skills”": "“Quiero desarrollar mis habilidades de presentación”",
-        "Goal 1:": "Objetivo 1:",
-        "Goal 2:": "Objetivo 2:",
-        "Goal 3:": "Objetivo 3:",
-        "Goal 4:": "Objetivo 4:",
-        "Goal 5:": "Objetivo 5:",
-        "Submit Form": "Enviar Formulario",
-        "If 'Other' is selected, please specify.": "Si seleccionó 'Otro', por favor especifique.",
-        "Please fill out at least 2 aspirations.": "Por favor, complete al menos 2 aspiraciones.",
-        "Please fill out at least 3 goals.": "Por favor, complete al menos 3 metas.",
-        "Oops! Error(s) detected. Please review and try again.": "¡Ups! Se detectó(ron) error(es). Por favor, revise y vuelva a intentarlo.",
-        "Goals successfully set! You're on the right track!": "¡Metas establecidas con éxito! ¡Vas por buen camino!",
-        "Great job setting your goals! Let's make them happen!": "¡Buen trabajo estableciendo tus metas! ¡Vamos a hacerlas realidad!",
-        "Goals locked in! Believe in yourself and you'll achieve them.": "¡Metas aseguradas! Cree en ti mismo y las lograrás.",
-        "You've set your goals! Now, let's conquer them together!": "¡Has establecido tus metas! Ahora, ¡conquistémoslas juntos!",
-        "Your goals are set! Keep pushing forward and you'll achieve them.": "¡Tus metas están definidas! Sigue adelante y las alcanzarás.",
-        "Way to go! Every goal you set brings you one step closer to success.": "¡Bien hecho! Cada meta que estableces te acerca un paso más al éxito.",
-        "The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course.": "El proceso de establecimiento de objetivos nos ayuda a seguir adaptando clases y programas según las necesidades de nuestros estudiantes. Utilizamos sus comentarios para mejorar las clases y programas futuros. Establecer objetivos también te permite ser más intencional a medida que avanzas en la experiencia y te brinda la oportunidad de reflexionar al final del curso."
-      },
-    };
-
-    // Reactive State
-    const currentLanguage = ref('English'); // default value
-    
-    const getTranslation = (key) => {
-      return (translations[currentLanguage.value] && translations[currentLanguage.value][key]) || key;
-    };
-
-    if (useLoggedInUserStore().languagePreference === "Spanish") {
-      currentLanguage.value = "Spanish";
-    }
-
-    return {
-      getTranslation,
-    }
-  },
-  
   data() {
     return {
       selectedExperience: null,
@@ -1081,7 +968,7 @@ export default {
       experienceIDRules: [
         v => {
           if (this.formSubmitted) {
-            return !!v || this.getTranslation('Information is required.');
+            return !!v || this.$t('Information is required.');
           }
           return true;
         }
@@ -1090,7 +977,7 @@ export default {
       v => {
               if (!this.formSubmitted) return true;
 
-              return !!v || this.getTranslation('Information is required.');
+              return !!v || this.$t('Information is required.');
           },
       ],
       communityEngagementExperiencesRules: [
@@ -1099,7 +986,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.getTranslation('Information is required.');
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.$t('Information is required.');
         }
       ],
       communityEngagementExperiencesOtherRules: [
@@ -1111,7 +998,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!otherExperience || !otherExperience.checked) return true;
 
-              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
+              return !!v || this.$t("If 'Other' is selected, please specify.");
           },
       ],
       previousEngagementExperiencesRules: [
@@ -1120,7 +1007,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.getTranslation('Information is required.');
+          return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.$t('Information is required.');
         }
       ],
       previousEngagementExperiencesOtherRules: [
@@ -1132,7 +1019,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!previousExperience || !previousExperience.checked) return true;
 
-              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
+              return !!v || this.$t("If 'Other' is selected, please specify.");
           },
       ],
       engagementActivitiesToolsRules: [
@@ -1141,7 +1028,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked) || this.getTranslation('Information is required.');
+          return this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked) || this.$t('Information is required.');
         }
       ],
       engagementActivitiesToolOtherRules: [
@@ -1153,7 +1040,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!engagementActivitiesTool || !engagementActivitiesTool.checked) return true;
 
-              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
+              return !!v || this.$t("If 'Other' is selected, please specify.");
           },
       ],
       currentResearchExperienceRules: [
@@ -1162,7 +1049,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked) || this.getTranslation('Information is required.');
+          return this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked) || this.$t('Information is required.');
         }
       ],
       currentResearchExperienceOtherRules: [
@@ -1174,7 +1061,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!researchExperience || !researchExperience.checked) return true;
 
-              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
+              return !!v || this.$t("If 'Other' is selected, please specify.");
         }
       ],
       previousResearchExperienceRules: [
@@ -1183,7 +1070,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked) || this.getTranslation('Information is required.');
+          return this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked) || this.$t('Information is required.');
         }
       ],
       previousResearchExperienceOtherRules: [
@@ -1195,7 +1082,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!previousExperience || !previousExperience.checked) return true;
 
-              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
+              return !!v || this.$t("If 'Other' is selected, please specify.");
         }
       ],
       familiarToolsRules: [
@@ -1204,7 +1091,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.familiarTools.some(exp => exp.checked) || this.getTranslation('Information is required.');
+          return this.goalForm.researchExperience.familiarTools.some(exp => exp.checked) || this.$t('Information is required.');
         }
       ],
       familiarToolOtherRules: [
@@ -1216,7 +1103,7 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!familiarTool || !familiarTool.checked) return true;
 
-              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
+              return !!v || this.$t("If 'Other' is selected, please specify.");
         }
       ],
       interestResearchServiceRules: [
@@ -1225,7 +1112,7 @@ export default {
             return true;
           }
           
-          return this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked) || this.getTranslation('Information is required.');
+          return this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked) || this.$t('Information is required.');
         }
       ],
       interestResearchServiceOtherRules: [
@@ -1237,14 +1124,14 @@ export default {
               // If the condition for v-show is false (Other not checked), validation passes automatically
               if (!researchService || !researchService.checked) return true;
 
-              return !!v || this.getTranslation("If 'Other' is selected, please specify.");
+              return !!v || this.$t("If 'Other' is selected, please specify.");
         }
       ],
       leadershipOptionRules: [
       v => {
               if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return true;
 
-              return !!v || this.getTranslation('Information is required.');
+              return !!v || this.$t('Information is required.');
           },
       ],
 
@@ -1252,48 +1139,48 @@ export default {
         v => {
               if (!this.formSubmitted) return true;
 
-              return !!v || this.getTranslation('Information is required.');
+              return !!v || this.$t('Information is required.');
           },
       ],
       effectiveCommunicationGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || this.getTranslation('Information is required.');
+            return !!v || this.$t('Information is required.');
         },
       ],
       teamworkGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || this.getTranslation('Information is required.');
+            return !!v || this.$t('Information is required.');
         },
       ],
       culturalHumilityGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || this.getTranslation('Information is required.');
+            return !!v || this.$t('Information is required.');
         },
       ],
       ethicalDecisionMakingGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || this.getTranslation('Information is required.');
+            return !!v || this.$t('Information is required.');
         },
       ],
       professionalResponsibilityGoalRules: [
       v => {
             if (!this.formSubmitted) return true;
 
-            return !!v || this.getTranslation('Information is required.');
+            return !!v || this.$t('Information is required.');
         },
       ],
       aspirationsRules: [
         () => {
           if (this.formSubmitted && this.filledAspirationsCount < 2) {
-            return this.getTranslation('Please fill out at least 2 aspirations.');
+            return this.$t('Please fill out at least 2 aspirations.');
           }
           return true;
         }
@@ -1492,7 +1379,7 @@ export default {
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked)) {
-      return 'Information is required.';
+      return this.$t('Information is required.');
     }
     return '';
   },
@@ -1506,7 +1393,7 @@ export default {
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.communityEngagement.previousEngagementExperiences.some(exp => exp.checked)) {
-      return 'Information is required.';
+      return this.$t('Information is required.');
     }
     return '';
   },
@@ -1520,7 +1407,7 @@ export default {
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked)) {
-      return 'Information is required.';
+      return this.$t('Information is required.');
     }
     return '';
   },
@@ -1534,7 +1421,7 @@ export default {
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked)) {
-      return 'Information is required.';
+      return this.$t('Information is required.');
     }
     return '';
   },
@@ -1548,7 +1435,7 @@ export default {
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked)) {
-      return 'Information is required.';
+      return this.$t('Information is required.');
     }
     return '';
   },
@@ -1562,7 +1449,7 @@ export default {
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.researchExperience.familiarTools.some(exp => exp.checked)) {
-      return 'Information is required.';
+      return this.$t('Information is required.');
     }
     return '';
   },
@@ -1576,7 +1463,7 @@ export default {
 
     // Check if at least one checkbox is checked
     if (!this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked)) {
-      return 'Information is required.';
+      return this.$t('Information is required.');
     }
     return '';
   },
@@ -1587,38 +1474,38 @@ export default {
   },
   isLeadershipOptionInvalid() {
     if (!this.formSubmitted || this.isGoalSettingFormFilledCheck) return false;
-    const rule = v => !!v || 'Information is required';
+    const rule = v => !!v || this.$t('Information is required');
     return rule(this.goalForm.researchExperience.leadershipOption) !== true;
   },
 
   isProblemSolvingGoalInvalid() {
     if (!this.formSubmitted) return false;
-    const rule = v => !!v || 'Information is required';
+    const rule = v => !!v || this.$t('Information is required');
     return rule(this.goalForm.growthGoal.problemSolvingGoal) !== true;
   },
   isEffectiveCommunicationGoalInvalid() {
     if (!this.formSubmitted) return false;
-    const rule = v => !!v || 'Information is required';
+    const rule = v => !!v || this.$t('Information is required');
     return rule(this.goalForm.growthGoal.effectiveCommunicationGoal) !== true;
   },
   isTeamworkGoalInvalid() {
     if (!this.formSubmitted) return false;
-    const rule = v => !!v || 'Information is required';
+    const rule = v => !!v || this.$t('Information is required');
     return rule(this.goalForm.growthGoal.teamworkGoal) !== true;
   },
   isCulturalHumilityGoalInvalid() {
     if (!this.formSubmitted) return false;
-    const rule = v => !!v || 'Information is required';
+    const rule = v => !!v || this.$t('Information is required');
     return rule(this.goalForm.growthGoal.culturalHumilityGoal) !== true;
   },
   isEthicalDecisionMakingGoalInvalid() {
     if (!this.formSubmitted) return false;
-    const rule = v => !!v || 'Information is required';
+    const rule = v => !!v || this.$t('Information is required');
     return rule(this.goalForm.growthGoal.ethicalDecisionMakingGoal) !== true;
   },
   isProfessionalResponsibilityGoalInvalid() {
     if (!this.formSubmitted) return false;
-    const rule = v => !!v || 'Information is required';
+    const rule = v => !!v || this.$t('Information is required');
     return rule(this.goalForm.growthGoal.professionalResponsibilityGoal) !== true;
   },
   isAspirationsInvalid() {
@@ -1628,7 +1515,7 @@ export default {
   aspirationsErrorMessages() {
     if (this.formSubmitted && this.filledAspirationsCount < 2) {
       this.isAspirationsValid = false;
-      return [this.getTranslation('Please fill out at least 2 aspirations.')];
+      return [this.$t('Please fill out at least 2 aspirations.')];
     }
     this.isAspirationsValid = true;
     return [];
@@ -1640,7 +1527,7 @@ export default {
   goalsErrorMessages() {
     if (this.formSubmitted && this.filledGoalsCount < 3) {
       this.isGoalsValid = false;
-      return [this.getTranslation('Please fill out at least 3 goals.')];
+      return [this.$t('Please fill out at least 3 goals.')];
     }
     this.isGoalsValid = true;
     return [];
@@ -1656,7 +1543,17 @@ export default {
 
   }, 
   mounted() {
-    useLoggedInUserStore().startLoading();
+    const loggedInUserStore = useLoggedInUserStore();
+
+    // Translations
+    if (loggedInUserStore.languagePreference === "Spanish") {
+      // Set to Spanish
+      this.$i18n.locale = 'es';
+    } else {
+      // Default to English
+      this.$i18n.locale = 'en';
+    }
+    loggedInUserStore.startLoading();
 
     try {
       this.fetchSemester();
@@ -1664,11 +1561,12 @@ export default {
         this.fetchHasFilledForm();
         this.selectExperienceFromRouteParam();
       });
+
     } catch (error) {
       // Handle any errors that occur during the fetch operations
       this.handleError('Error:', error);
     } finally {
-      useLoggedInUserStore().stopLoading();
+      loggedInUserStore.stopLoading();
     }
   },
 
@@ -1784,7 +1682,7 @@ export default {
     if (valid && !this.isAspirationsInvalid && !this.isGoalsInvalid) {
       this.cleanupFormData();
     } else {
-      toast.error(this.getTranslation("Oops! Error(s) detected. Please review and try again."), {
+      toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
         position: 'top-right',
         toastClassName: 'Toastify__toast--delete'
       });
@@ -2035,7 +1933,7 @@ export default {
               name: 'studentDashboard',
               params: {
                 toastType: 'success',
-                toastMessage: this.getTranslation(randomMessage),
+                toastMessage: this.$t(randomMessage),
                 toastPosition: 'top-right',
                 toastCSS: 'Toastify__toast--create'
             }
