@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "start": "npm build && npm serve"
+    "start": "npm run build && serve"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^3.0.3",
