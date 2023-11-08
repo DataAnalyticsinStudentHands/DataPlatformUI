@@ -132,9 +132,9 @@
     
       // Rename headers for CSV output
       const renameMap = {
-          "_id": "id_form",
-          "organizationID": "id_organization",
-          "userID": "id_user",
+          "_id": "goal_id",
+          "organizationID": "org_id",
+          "userID": "user_id",
           "semester": "semester",
           "experienceID": "experience",
           "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
@@ -245,9 +245,9 @@
   
       // Rename headers for CSV output
       const renameMap = {
-          "_id": "id_form", 
-          "organizationID": "id_organization", 
-          "userID": "id_user", 
+          "_id": "entry_id", 
+          "organizationID": "org_id", 
+          "userID": "user_id", 
           "studentInformation.cityOrigin": "place_of_origin",
           "studentInformation.primaryLanguage": "primary_language",
           "studentInformation.otherLanguages": "other_languages",
