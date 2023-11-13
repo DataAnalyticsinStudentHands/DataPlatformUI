@@ -166,8 +166,6 @@
 
       <v-app-bar 
         scroll-target="#main"
-        scroll-behavior="hide"
-        scroll-threshold="10"
         style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
       >
         <v-btn 
@@ -307,6 +305,7 @@ export default {
     .main-content {
         overflow-y: auto;
         height: 100vh;
+        padding-bottom: 5vh;
     }
 
 </style>
