@@ -22,6 +22,7 @@ export const useLoggedInUserStore = defineStore({
       goalSettingFormCompletion: {},
       loading: false,
       semesterName: "",
+      currentActivityId: null,
     }
   },
   getters: { //getting the roles
@@ -93,6 +94,7 @@ export const useLoggedInUserStore = defineStore({
         hasRegisteredExperiences: false,
         goalSettingFormCompletion: {},
         loading: false,
+        currentActivityId: null,
       });
 
       // Clear the token from localStorage

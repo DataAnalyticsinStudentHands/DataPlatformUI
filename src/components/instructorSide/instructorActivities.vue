@@ -32,7 +32,7 @@
       
       <br><br>
 
-      <!-- Add the search input field -->
+      <!-- Search input field -->
       <v-text-field
         v-model="searchQuery"
         label="Search by activity name"
@@ -41,6 +41,20 @@
         outlined
         dense
       ></v-text-field><br>
+
+      <!-- Search by Experiences-->
+      <v-autocomplete
+        v-model="selectedExperiences"
+        :items="experiences"
+        item-title="experienceName"
+        item-value="_id"
+        label="Filter by Experience"
+        multiple
+        chips
+        single-line
+        clearable
+        return-object
+      ></v-autocomplete><br>
 
     </center>
     <div v-if="loading" justify="center" align="center">
@@ -103,12 +117,15 @@ export default {
       selectedActivities: [],
       searchQuery: '',
       hoverId: null,
+      experiences: [],
+      selectedExperiences: [],
     };
   },
 
   mounted() {
     useLoggedInUserStore().startLoading();
-    this.fetchActivityData()
+    this.fetchActivityData();
+    this.fetchExperienceData()
     .then(() => {
       useLoggedInUserStore().stopLoading();
     })
@@ -136,7 +153,23 @@ export default {
         this.activityData = resp.data;
       } catch (error) {
         this.handleError(error);
-        throw error
+        throw error;
+      }
+    },
+
+    async fetchExperienceData() {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/active/";
+        const resp = await axios.get(apiURL, {headers: { token }});
+        this.experiences = resp.data.map(exp => ({
+          _id: exp._id,
+          experienceName: exp.experienceName
+        }));
+      } catch (error) {
+        this.handleError(error);
+        throw error;
       }
     },
 
@@ -145,7 +178,9 @@ export default {
     },
 
     editActivity(activityID) {
-      this.$router.push({ name: "instructorSpecificActivity", params: { id: activityID } });
+      const store = useLoggedInUserStore();
+      store.currentActivityId = activityID;
+      this.$router.push({ name: "instructorSpecificActivity" });
     },
 
     toggleShowInactive() {
@@ -208,16 +243,29 @@ export default {
   computed: {
     filteredActivityData() {
       const query = this.searchQuery.toLowerCase().trim();
-      if (this.showInactive) {
-        return this.activityData.filter(
-          (activity) =>
-            !activity.activityStatus && activity.activityName.toLowerCase().includes(query)
-        );
-      } else {
-        return this.activityData.filter((activity) =>
-          activity.activityStatus && activity.activityName.toLowerCase().includes(query)
+
+      // Show only active/inactie activities based on toggle
+      let filteredData = this.activityData.filter((activity) => 
+        this.showInactive ? !activity.activityStatus : activity.activityStatus
+      );
+
+      // If there is a search query, further filter the data
+      if (query) {
+        filteredData = filteredData.filter((activity) => 
+          activity.activityName.toLowerCase().includes(query)
         );
       }
+
+      // If an Experience is selected, filter the data
+      if (this.selectedExperiences && this.selectedExperiences.length) {
+        filteredData = filteredData.filter((activity) => 
+          activity.experiences && activity.experiences.some((exp) =>
+            this.selectedExperiences.map(e => e._id).includes(exp._id)
+          )
+        );
+      }
+
+      return filteredData;
     },
     loading() {
       const store = useLoggedInUserStore()

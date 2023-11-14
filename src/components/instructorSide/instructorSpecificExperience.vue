@@ -67,9 +67,9 @@ export default {
     };
   },
 
-  beforeMount() {
+  mounted() {
     window.scrollTo(0, 0);
-    this.fetchExperienceData(); // Fetch experience data before component is mounted
+    this.fetchExperienceData(); // Fetch experience data when component is mounted
     this.fetchActivityData(); // Fetch activities after experience data
   },
 
