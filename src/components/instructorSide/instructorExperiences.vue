@@ -22,11 +22,11 @@
       
       <br><br>
 
-      <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0" style="text-align:center; margin-right:2rem;">
+      <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0 && !showInactive" style="text-align:center; margin-right:2rem;">
         Deactivate
       </v-btn>
 
-      <v-btn @click="activateExperiences" v-if="selectedExperiences.length > 0">
+      <v-btn @click="activateExperiences" v-if="selectedExperiences.length > 0 && showInactive">
         Activate
       </v-btn>
       
@@ -52,7 +52,6 @@
             <th class="text-left"></th>
             <th class="text-left">Experience Category</th>
             <th class="text-left">Experience Name</th>
-            <th class="text-left">Status</th><th></th>
           <th></th>
           </tr>
         </thead>
@@ -72,7 +71,6 @@
 
             <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceCategory }}</td>
             <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceName }}</td>
-            <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceStatus ? 'Active' : 'Inactive' }}</td><td></td><td></td>
 
           </tr>
         </tbody>
@@ -144,6 +142,7 @@ export default {
 
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+      this.selectedExperiences = [];
     },
 
     deactivateExperiences() {
@@ -162,9 +161,9 @@ export default {
           this.selectedExperiences = [];
           this.fetchExperienceData();
 
-          toast.error(message, {
+          toast.success(message, {
               position: 'top-right',
-              toastClassName: 'Toastify__toast--delete'
+              toastClassName: 'Toastify__toast--create'
             });
           })
           

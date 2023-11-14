@@ -40,13 +40,12 @@
           </tr>
         </tbody>
       </v-table>
-      <div style="text-align:right;">
+      <div style="text-align:left;">
+        <v-btn style="text-align:center;" @click="handleUpdateForm" class="mr-4">
+          Update
+        </v-btn>
         <v-btn @click=$router.back() style="margin-right: 10px;">
           Cancel
-        </v-btn>
-
-        <v-btn style="text-align:center;" @click="handleUpdateForm" >
-          Update
         </v-btn>
 
       </div>

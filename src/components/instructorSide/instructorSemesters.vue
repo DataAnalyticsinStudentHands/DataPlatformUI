@@ -8,7 +8,9 @@
         <router-link class="" to="/instructorExperiences">Experiences</router-link> |
         <router-link class="" to="/instructorActivities">Activities</router-link>
       </h2>
-      <p class="font-weight-black text-h6">Semesters</p>
+      <p class="font-weight-black text-h6">
+        {{ showInactive ? 'Inactive' : 'Active' }} Semesters
+      </p>
       <br><v-btn style="text-align:center; margin-right:2rem;">
         <router-link class="" to="/instructorAddSemester">Add New Semester</router-link>
       </v-btn>
@@ -19,11 +21,11 @@
 
       <br><br>
 
-      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateSemesters" v-if="selectedSemesters.length > 0">
+      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateSemesters" v-if="selectedSemesters.length > 0 && !showInactive">
         Deactivate
       </v-btn>
 
-      <v-btn style="text-align:center" @click="activateSemesters" v-if="selectedSemesters.length > 0">
+      <v-btn style="text-align:center" @click="activateSemesters" v-if="selectedSemesters.length > 0 && showInactive">
         Activate
       </v-btn>
       <br><br>
@@ -41,7 +43,6 @@
               <th class="text-left column-margin"></th>
               <th class="text-left column-margin">Semester</th>
               <th class="text-left column-margin">Date Ranges</th>
-              <th class="text-left column-margin">Status</th>
               <th></th>
               <th></th>
             </tr>
@@ -63,7 +64,6 @@
               <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterName }}</td>
 
               <td class="text-left" @click="editSemester(semester._id)">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
-              <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterStatus ? 'Active' : 'Inactive' }}</td>
               <td></td>
               <td></td>
             </tr>
@@ -143,6 +143,7 @@ export default {
 
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+      this.selectedSemesters = [];
     },
 
     deactivateSemesters() {
@@ -160,9 +161,9 @@ export default {
           const message = (this.selectedSemesters.length === 1 ? 'Semester' : 'Semesters') + ' deactivated!'
           this.selectedSemesters = [];
           this.fetchSemesterData();
-          toast.error(message, {
+          toast.success(message, {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
+            toastClassName: 'Toastify__toast--create'
           });
         })
         .catch((error) => {

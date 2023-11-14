@@ -22,11 +22,11 @@
       
       <br><br>
 
-      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateActivities" v-if="selectedActivities.length > 0">
+      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateActivities" v-if="selectedActivities.length > 0 && !showInactive">
         Deactivate
       </v-btn>
 
-      <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0">
+      <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0 && showInactive">
         Activate
       </v-btn>
       
@@ -54,7 +54,6 @@
             <tr>
               <th class="text-left"></th>
               <th class="text-left">Activity Name</th>
-              <th class="text-left">Status</th>
               <th></th>
               <th></th>
             </tr>
@@ -78,7 +77,6 @@
               </td>
 
               <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityName }}</td>
-              <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityStatus ? 'Active' : 'Inactive' }}</td>
 
               <td></td>
               <td></td>
@@ -152,6 +150,7 @@ export default {
 
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+      this.selectedActivities = [];
     },
 
     deactivateActivities() {
@@ -169,9 +168,9 @@ export default {
           const message = (this.selectedActivities.length === 1 ? 'Activity' : 'Activities') + ' deactivated!'
           this.selectedActivities = [];
           this.fetchActivityData();
-          toast.error(message, {
+          toast.success(message, {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
+            toastClassName: 'Toastify__toast--create'
           });
         })
         .catch((error) => {

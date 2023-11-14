@@ -229,9 +229,9 @@ export default {
           this.fetchStudentData();
           this.fetchIncompletedStudentData();
 
-          toast.error(message, {
+          toast.success(message, {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
+            toastClassName: 'Toastify__toast--create'
           });
         })
         .catch((error) => {

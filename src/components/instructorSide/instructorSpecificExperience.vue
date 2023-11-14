@@ -38,12 +38,12 @@
         </tbody>
       </v-table>
     </div>
-    <div style="text-align: right;">
-      <v-btn @click=$router.back() style="margin-right: 10px;">
+    <div style="text-align: left;">
+      <v-btn style="text-align: center;" @click="updateExperience" class="ml-4 mr-4">Update</v-btn>
+      <v-btn @click=$router.back()>
           Cancel
         </v-btn>
 
-      <v-btn style="text-align: center;" @click="updateExperience">Update</v-btn>
 
     </div>
 
