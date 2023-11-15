@@ -277,6 +277,18 @@ export default {
 </script>
 
 <style>
+.v-field__input > input[size="1"] {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.v-field__input > input[size="1"]::before,
+.v-field__input > input[size="1"]::after {
+  display: none;
+}
+
 #contentNavbar .nav-link.router-link-exact-active {
   background-color: #eee;
 }
