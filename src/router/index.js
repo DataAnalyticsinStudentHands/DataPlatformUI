@@ -335,6 +335,19 @@ const routes = [
       }
     },
     {
+      path: '/instructorProgressMonitor',
+      name: 'instructorProgressMonitor',
+      component: () => import('../components/instructorSide/instructorProgressMonitor.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/studentEntryForm',
       name: 'studentEntryForm',
       props: true,
