@@ -30,7 +30,7 @@
         
                 <!-- Table -->
                 <div style="display: flex; justify-content: center;">
-                <table style="width: 95%;">
+                <v-table style="width: 95%;">
                     <thead>
                     <tr>
                         <th class="text-left">Name</th>
@@ -58,7 +58,7 @@
                         <td class="text-left">{{ student.expectedGraduationDate }}</td>
                     </tr>
                     </tbody>
-                </table>
+                </v-table>
                 </div>
         
             </v-card>

@@ -16,7 +16,7 @@
             </div>
             <!-- Table -->
             <div v-else style="display: flex; justify-content: center;" class="table-container">
-              <table style="width: 95%;">
+              <v-table style="width: 95%;">
                 <thead>
                   <tr>
                     <th class="text-left">Name</th>
@@ -36,7 +36,7 @@
                     <td class="text-left">{{ student.email }}</td>
                   </tr>
                 </tbody>
-              </table>
+              </v-table>
             </div>
           </v-card>
         </v-col>
