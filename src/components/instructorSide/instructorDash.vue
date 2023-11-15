@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     navigateToProgressMonitor() {
-      this.$router.push({ name: 'instructorProgressMonitor' });
+      this.$router.push({ name: 'instructorProgressMonitorContainer' });
     },
 
   },

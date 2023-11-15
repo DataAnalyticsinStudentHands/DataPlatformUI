@@ -1,13 +1,6 @@
 <template>
     <v-container>
-      <v-row>
-        <v-col cols="12">            
-            <v-btn @click=$router.back()>
-            <v-icon left>mdi-arrow-left</v-icon>
-            Go Back
-            </v-btn>
-        </v-col>
-      </v-row>
+
       <v-row>
         <v-col cols="12">
             <v-card>
@@ -68,13 +61,6 @@
                 </table>
                 </div>
         
-                <!-- Further content of the dialog goes here -->
-                <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" text @click="closeView">
-                    Close
-                </v-btn>
-                </v-card-actions>
             </v-card>
             </v-col>
         </v-row>
@@ -87,7 +73,7 @@
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
   
   export default {
-    name: "InstructorProgressMonitor",
+    name: "StudentsWithoutGoalForms",
     data() {
       return {
         selectedExperience: null,
@@ -160,18 +146,11 @@
           params: { userID: userID },
         });
       },
-      closeView() {
-        this.$router.go(-1); // Go back to the previous page
-      },
     },
   };
   </script>
   
   <style scoped>
-
-.text-wrap {
-  white-space: normal;
-}
 
 .v-field__input > input[size="1"] {
   background-color: transparent;
@@ -189,5 +168,7 @@
   background-color: #f0f0f0; /* light grey background */
   cursor: pointer;
 }
+
+
   </style>
   

@@ -335,9 +335,35 @@ const routes = [
       }
     },
     {
-      path: '/instructorProgressMonitor',
-      name: 'instructorProgressMonitor',
-      component: () => import('../components/instructorSide/instructorProgressMonitor.vue'),
+      path: '/instructorProgressMonitorContainer',
+      name: 'instructorProgressMonitorContainer',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/instructorProgressMonitorContainer.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/studentsWithoutGoalForms',
+      name: 'studentsWithoutGoalForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutGoalForms.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/studentsWithoutEntryForms',
+      name: 'studentsWithoutEntryForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutEntryForms.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
         if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
