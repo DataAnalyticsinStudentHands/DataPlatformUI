@@ -1,5 +1,307 @@
 <!-- /exitForm need to connect matrix to data actvititys x contributions-->
 <template>
+
+
+<!-- Exit Form: {{ exitForm }} -->
+
+
+
+  <v-container>
+    <!-- Title -->
+    <v-row dense>
+      <v-col cols="12">
+        <p class="font-weight-black text-h5 text--primary">Exit Form</p>
+      </v-col>
+    </v-row>
+
+    <!-- Current Semester -->
+    <v-row dense>
+      <v-col cols="12">
+        <p class="font-weight-black text-h8">Current Semester:</p>
+      </v-col>
+    </v-row>
+    <v-row dense>
+      <v-col cols="12">
+        <v-text-field v-model="exitForm.semester" readonly></v-text-field>
+      </v-col>
+    </v-row>
+
+    <!-- Experience -->
+    <v-row dense>
+      <v-col cols="12">
+        <p class="font-weight-black text-h8">Experience:</p>
+      </v-col>
+    </v-row>
+    <v-row dense>
+      <v-col cols="12">
+        <v-text-field v-model="exitForm.experience.experienceName" readonly></v-text-field>
+      </v-col>
+    </v-row>
+
+    <!-- Aspirations -->
+    <v-row dense>
+      <v-col cols="12">
+        <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know whether you feel you made progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.</p>
+      </v-col>
+    </v-row>
+    <v-row dense>
+      <v-col cols="12">
+        <v-list density="compact">
+          <template v-for="(aspiration, index) in [exitForm.aspiration1, exitForm.aspiration2, exitForm.aspiration3]">
+            <v-list-item v-if="aspiration" :key="index">
+              <v-list-item-title>
+                <span class="font-weight-black"> Aspiration {{ index + 1 }}: </span>
+              </v-list-item-title>
+              {{ aspiration }}
+            </v-list-item>
+          </template>
+        </v-list>
+      </v-col>
+    </v-row>
+
+    <!-- Aspirations Progress Table -->
+    <v-row>
+      <v-col cols="12">
+        <p class="font-weight-black text-h8">For each aspiration listed above, please pick the option that best describes the progress you made.</p>
+      </v-col>
+    </v-row>
+
+    <v-row>
+    <v-col cols="12">
+        <v-row>
+          <v-col cols="12">
+              <!-- Mobile View -->
+              <div class="d-sm-none">
+                <div v-if="exitForm.aspiration1">
+                  <div class="font-semibold italic">“{{ exitForm.aspiration1 }}”</div>
+                  <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected" color="custom-red">
+                    <v-radio
+                      v-for="option in exitForm.progressMade.aspirationOneProgressResults"
+                      :label="option.xs_label"
+                      :key="option.id"
+                      :value="option.label"
+                    ></v-radio>
+                  </v-radio-group>
+                </div>
+                <div v-if="exitForm.aspiration2">
+                  <div class="font-semibold italic">“{{ exitForm.aspiration2 }}”</div>
+                  <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected" color="custom-red">
+                    <v-radio
+                      v-for="option in exitForm.progressMade.aspirationTwoProgressResults"
+                      :label="option.xs_label"
+                      :key="option.id"
+                      :value="option.label"
+                    ></v-radio>
+                  </v-radio-group>
+                </div>
+                <div v-if="exitForm.aspiration3">
+                  <div class="font-semibold italic">“{{ exitForm.aspiration3 }}”</div>
+                  <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected" color="custom-red">
+                    <v-radio
+                      v-for="option in exitForm.progressMade.aspirationThreeProgressResults"
+                      :label="option.xs_label"
+                      :key="option.id"
+                      :value="option.label"
+                    ></v-radio>
+                  </v-radio-group>
+                </div>
+              </div>
+          </v-col>
+        </v-row>
+
+
+        <!-- Non-Mobile View -->
+        
+      <v-card>
+        <v-table class="d-none d-sm-flex">
+          <thead>
+            <tr>
+              <th></th>
+              <th v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id" class="text-center">{{ option.label }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="exitForm.aspiration1">
+              <td>{{ exitForm.aspiration1 }}</td>
+              <td v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">
+                <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected" color="custom-red">
+                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                </v-radio-group>
+              </td>
+            </tr>
+            <tr v-if="exitForm.aspiration2">
+              <td>{{ exitForm.aspiration2 }}</td>
+              <td v-for="option in exitForm.progressMade.aspirationTwoProgressResults" :key="option.id">
+                <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected" color="custom-red">
+                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                </v-radio-group>
+              </td>
+            </tr>
+            <tr v-if="exitForm.aspiration3">
+              <td>{{ exitForm.aspiration3 }}</td>
+              <td v-for="option in exitForm.progressMade.aspirationThreeProgressResults" :key="option.id">
+                <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected" color="custom-red">
+                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                </v-radio-group>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-card>
+    </v-col>
+  </v-row>
+
+  <!-- Aspirations Connection Table -->
+  <v-row>
+    <v-col cols="12">
+      <p class="font-weight-black text-h8">For each aspiration listed above, please pick the option that best describes the connection between your progress and this course.</p>
+    </v-col>
+  </v-row>
+
+  <v-row>
+    <v-col cols="12">
+      <v-row>
+        <v-col cols="12">
+          <!-- Mobile View -->
+          <div class="d-sm-none">
+            <div v-if="exitForm.aspiration1">
+              <div class="font-semibold italic">“{{ exitForm.aspiration1 }}”</div>
+              <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
+              <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected" color="custom-red">
+                <v-radio
+                  v-for="option in exitForm.progressMade.aspirationOneExperienceConnection"
+                  :label="option.xs_label"
+                  :key="option.id"
+                  :value="option.label"
+                ></v-radio>
+              </v-radio-group>
+            </div>
+            <div v-if="exitForm.aspiration2">
+              <div class="font-semibold italic">“{{ exitForm.aspiration2 }}”</div>
+              <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
+              <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected" color="custom-red">
+                <v-radio
+                  v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection"
+                  :label="option.xs_label"
+                  :key="option.id"
+                  :value="option.label"
+                ></v-radio>
+              </v-radio-group>
+            </div>
+            <div v-if="exitForm.aspiration3">
+              <div class="font-semibold italic">“{{ exitForm.aspiration3 }}”</div>
+              
+              <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
+              <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected" color="custom-red">
+                <v-radio
+                  v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection"
+                  :label="option.xs_label"
+                  :key="option.id"
+                  :value="option.label"
+                ></v-radio>
+              </v-radio-group>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+    </v-col>
+  </v-row>
+
+
+  <!-- Non-Mobile View -->
+
+  <v-row>
+    <v-col cols="12">
+      <v-card>
+        <v-table class="d-none d-sm-flex">
+          <thead>
+            <tr>
+              <th></th>
+              <th v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id" class="text-center">{{ option.label }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="exitForm.aspiration1">
+              <td>{{ exitForm.aspiration1 }}</td>
+              <td v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id">
+                <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected" color="custom-red">
+                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                </v-radio-group>
+              </td>
+            </tr>
+            <tr v-if="exitForm.aspiration2">
+              <td>{{ exitForm.aspiration2 }}</td>
+              <td v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection" :key="option.id">
+                <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected" color="custom-red">
+                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                </v-radio-group>
+              </td>
+            </tr>
+            <tr v-if="exitForm.aspiration3">
+              <td>{{ exitForm.aspiration3 }}</td>
+              <td v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection" :key="option.id">
+                <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected" color="custom-red">
+                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                </v-radio-group>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-card>
+    </v-col>
+  </v-row>
+
+  <!-- List of Goals -->
+
+  <v-row>
+    <v-col cols="12">
+      <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share three to give goals for your participation in this course. Now we would like to know whether you feel you made progress towards these goals and which activities from the course contribued to your progress. Below is a list of your goals from the beginning of the semester.</p>
+    </v-col>
+  </v-row>
+
+  <v-row dense>
+    <v-col cols="12">
+      <v-list density="compact">
+        <template v-for="(goal, index) in [exitForm.goal1, exitForm.goal2, exitForm.goal3, exitForm.goal4, exitForm.goal5]">
+          <v-list-item v-if="goal" :key="index">
+            <v-list-item-title>
+              <span class="font-weight-black">Goal {{ index + 1 }}: </span>
+            </v-list-item-title>
+            {{ goal }}
+          </v-list-item>
+        </template>
+      </v-list>
+    </v-col>
+  </v-row>
+
+
+
+
+
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  </v-container>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <v-container>
       <p class="font-weight-black text-h5 text--primary">Exit Form</p>
 
@@ -82,7 +384,7 @@
       </tbody>
     </table>
     <br>
-    <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share three to give goals for your partcipation in this course. Now we would like to know whether you feel you made progress towards these goals and which activities from the course contribued to your progress. Below is a list of your goals from the beginning of the semester.</p>
+    <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share three to give goals for your participation in this course. Now we would like to know whether you feel you made progress towards these goals and which activities from the course contribued to your progress. Below is a list of your goals from the beginning of the semester.</p>
     <!-- make a list of goals from the goal setting form HERE -->
     <ul>
       <li>Goal 1: {{ exitForm.goal1 }}</li>
@@ -252,9 +554,9 @@
   <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> How did this experience contribute to your graduate/progessional goals?</p>
 <input type="text" v-model="exitForm.experienceContributions" style="margin-top: 5px; margin-bottom: 2px; border: none; border: 1px solid grey; padding: 5px; border-radius: 0; width: 50vw; height: 10vw;">
   <br><br>
-  <p v-if="isSpecificExperience" class="font-weight-black text-h8" style="margin-bottom: 2px;"> Use the scale provided to rate your likelihood of taking the actions listed</p>
+  <p class="font-weight-black text-h8" style="margin-bottom: 2px;"> Use the scale provided to rate your likelihood of taking the actions listed</p>
   <!-- section for only data and society experiences -->
-  <table v-if="isSpecificExperience">
+  <table>
       <thead>
         <tr>
           <th></th>
@@ -288,7 +590,7 @@
         </tr>
       </tbody>
     </table>
-  <br v-if="isSpecificExperience">
+  <br>
   <!-- growth section -->
   <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>problem solving</u>.</p>
   <v-radio-group v-model="exitForm.generalGrowth.problemSolving">
@@ -364,95 +666,6 @@ import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
-  setup() {
-    const translations = {
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      "": "",
-      
-    }
-  },
   data() {
     return {
       specificIDs:[],
@@ -482,46 +695,40 @@ export default {
         ],
         progressMade: {
           aspirationOneProgressResults: [
-            { id: 1, label: "I made lots of progress towards this aspiration", checked: false },
-            { id: 2, label: "I made some progress towards this aspiration", checked: false },
-            { id: 3, label: "I made little progress towards this aspiration", checked: false },
-            { id: 4, label: "I did not make progress towards this aspiration", checked: false },
-            { id: 5, label: "No aspiration listed", checked: false }
+            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress.", checked: false },
+            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress.", checked: false },
+            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress.", checked: false },
+            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress.", checked: false }
           ],
           aspirationTwoProgressResults: [
-            { id: 1, label: "I made lots of progress towards this aspiration", checked: false },
-            { id: 2, label: "I made some progress towards this aspiration", checked: false },
-            { id: 3, label: "I made little progress towards this aspiration", checked: false },
-            { id: 4, label: "I did not make progress towards this aspiration", checked: false },
-            { id: 5, label: "No aspiration listed", checked: false }
+            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress.", checked: false },
+            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress.", checked: false },
+            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress.", checked: false },
+            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress.", checked: false }
           ],
           aspirationThreeProgressResults: [
-            { id: 1, label: "I made lots of progress towards this aspiration", checked: false },
-            { id: 2, label: "I made some progress towards this aspiration", checked: false },
-            { id: 3, label: "I made little progress towards this aspiration", checked: false },
-            { id: 4, label: "I did not make progress towards this aspiration", checked: false },
-            { id: 5, label: "No aspiration listed", checked: false }
+            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress.", checked: false },
+            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress.", checked: false },
+            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress.", checked: false },
+            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress.", checked: false }
           ],
           aspirationOneProgressSelected: "",
           aspirationTwoProgressSelected:"",
           aspirationThreeProgressSelected: "",
           aspirationOneExperienceConnection: [
-            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this aspiration was not due to this course", checked: false },
-            { id: 4, label: "No aspiration listed", checked: false }
+            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course.",  checked: false },
+            { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course.",  checked: false }
           ],
           aspirationTwoExperienceConnection: [
-            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this aspiration was not due to this course", checked: false },
-            { id: 4, label: "No aspiration listed", checked: false }
+            { id: 1, label: "The progress I made towards this aspiration was largely due to this course",  xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this aspiration was partly due to this course",  xs_label: "Partly due to this course.", checked: false },
+            { id: 3, label: "The progress I made towards this aspiration was not due to this course",  xs_label: "Not due to this course.", checked: false }
           ],
           aspirationThreeExperienceConnection: [
-            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this aspiration was not due to this course", checked: false },
-            { id: 4, label: "No aspiration listed", checked: false }
+            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+            { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course.", checked: false }
           ],
           aspirationOneExperienceConnectionSelected: null,
           aspirationTwoExperienceConnectionSelected: null,
@@ -678,18 +885,18 @@ export default {
     };
   },
   mounted() {
-    this.fetchGoalSettingFormData(),
-    this.fetchGoalFormActivities(),
+    this.fetchGoalSettingFormData();
+    this.fetchGoalFormActivities();
     this.fetchSemester();
     this.fetchExperienceData();
   },
   computed:{
     isSpecificExperience() {
-    return this.specificIDs.includes(this.exitForm.experience._id);
+    // return this.specificIDs.includes(this.exitForm.experience._id);
   },
   },
   async created() {
-  this.specificIDs = await this.fetchSpecificExperienceIDs();
+  // this.specificIDs = await this.fetchSpecificExperienceIDs();
 },
   methods: {
   async fetchSpecificExperienceIDs() {
@@ -803,54 +1010,55 @@ export default {
         });
     },
     fetchGoalFormActivities() {
-  const goalFormID = this.$route.params.id;
-  const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}/activities`;
+      const goalFormID = this.$route.params.id;
+      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}/activities`;
 
-  axios.get(apiURL)
-    .then((resp) => {
-      // Update experience activities
-      this.exitForm.experienceActivities = resp.data.map((activity) => ({
-        activityID: activity._id,
-        activityName: activity.activityName
-      }));
-    })
-    .catch((error) => {
-      this.handleError(error);
-    });
-},
+      axios.get(apiURL)
+        .then((resp) => {
+          // Update experience activities
+          this.exitForm.experienceActivities = resp.data.map((activity) => ({
+            activityID: activity._id,
+            activityName: activity.activityName
+          }));
+        })
+        .catch((error) => {
+          this.handleError(error);
+        });
+    },
 
     fetchGoalSettingFormData() {
-  const user = useLoggedInUserStore();
-  const token = user.token;
-  const goalFormID = this.$route.params.id;
-  const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}`;
+      const user = useLoggedInUserStore();
+      const token = user.token;
+      const goalFormID = this.$route.params.id;
+      console.log('goalFormID: ', goalFormID);
+      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}`;
 
-  axios.get(apiURL, { headers: { token } })
-    .then((resp) => {
-      this.exitForm.goalSettingFormID=resp.data._id;
+      axios.get(apiURL, { headers: { token } })
+        .then((resp) => {
+          this.exitForm.goalSettingFormID=resp.data._id;
 
-      const goalFormData = resp.data?.goalForm;
+          const goalFormData = resp.data?.goalForm;
 
-      if (goalFormData) {
-        // Update aspirations
-        this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
-        this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
-        this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
-        // Update goals
-        this.exitForm.goal1 = goalFormData.goals?.goalOne;
-        this.exitForm.goal2 = goalFormData.goals?.goalTwo;
-        this.exitForm.goal3 = goalFormData.goals?.goalThree;
-        this.exitForm.goal4 = goalFormData.goals?.goalFour;
-        this.exitForm.goal5 = goalFormData.goals?.goalFive;
+          if (goalFormData) {
+            // Update aspirations
+            this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
+            this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
+            this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
+            // Update goals
+            this.exitForm.goal1 = goalFormData.goals?.goalOne;
+            this.exitForm.goal2 = goalFormData.goals?.goalTwo;
+            this.exitForm.goal3 = goalFormData.goals?.goalThree;
+            this.exitForm.goal4 = goalFormData.goals?.goalFour;
+            this.exitForm.goal5 = goalFormData.goals?.goalFive;
 
-      } else {
-        this.handleError("Goal form data not found in the response.");
-      }
-    })
-    .catch((error) => {
-      this.handleError(error);
-    });
-},
+          } else {
+            this.handleError("Goal form data not found in the response.");
+          }
+        })
+        .catch((error) => {
+          this.handleError(error);
+        });
+    },
 
     async fetchSemester() {
       const user = useLoggedInUserStore();

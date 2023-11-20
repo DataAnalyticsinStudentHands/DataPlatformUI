@@ -176,7 +176,7 @@
     <v-icon>mdi-menu</v-icon>
   </v-btn>
 
-  <!-- Placeholder for left side content, if any -->
+  <!-- Placeholder for left side content -->
   <v-spacer></v-spacer>
 
   <!-- Advertisement text -->

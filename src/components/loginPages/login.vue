@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card-text>
-      <h2 class="font-bold text-2xl text-red-800 tracking-widest text-center mt-3 mb-5">
+      <h2 class="font-bold text-2xl text-custom-red tracking-widest text-center mt-3 mb-5">
           {{$t('Welcome to Engaged Data')}}
       </h2>
 
@@ -28,7 +28,7 @@
       <v-row>
         <v-col cols="12" class="pl-0 pt-6">
           <span
-            class="font-semibold text-base text-red-800 cursor-pointer no-select"
+            class="font-semibold text-base text-custom-red cursor-pointer no-select"
             @click="$emit('navigateTo', '/passResetRequest')"
           >
             {{$t('Forgot Your Password?')}}
@@ -38,7 +38,7 @@
       <v-row class="mt-0">
         <v-col cols="12" class="pl-0">
           <span
-            class="font-bold text-base text-red-800 cursor-pointer no-select"
+            class="font-bold text-base text-custom-red cursor-pointer no-select"
             @click="$emit('navigateTo', '/verifyAccWithEmailCode')"
           >
             {{$t('Have a Confirmation Code?')}}
@@ -51,7 +51,7 @@
           <v-btn
             :loading="loading"
             block
-            class="mt-3 bg-red-700 text-white rounded"
+            class="mt-3 bg-custom-red text-white rounded"
             @click="login"
           >{{$t('Login')}}</v-btn>
         </v-col>

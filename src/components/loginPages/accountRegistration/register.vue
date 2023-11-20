@@ -3,7 +3,7 @@
     <v-container>
         <v-row justify="center">
             <v-col cols="12" class="text-center">
-                <h1 class="font-bold text-2xl text-red-800 tracking-widest mt-3 mb-5">
+                <h1 class="font-bold text-2xl text-custom-red tracking-widest mt-3 mb-5">
                     {{$t('Create Your Account')}}
                 </h1>
             </v-col>
@@ -95,7 +95,7 @@
                     placeholder="••••••••"
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     required="" />
-                    <span class="text-red-700" v-if="v$.user.password.$error">
+                    <span class="text-custom-red" v-if="v$.user.password.$error">
                     <p v-for="error of v$.user.password.$errors" :key="error.$uid">{{ error.$message }}!</p>
                     </span>
                 </v-col>
@@ -117,12 +117,12 @@
                   <v-btn 
                     :loading="loading"
                     type="submit" 
-                    class="bg-red-700 text-white rounded w-full py-2 hover:bg-red-600"
+                    class="bg-custom-red text-white rounded w-full py-2 hover:bg-red-600"
                   >{{$t('Create an account')}}</v-btn>
                   <p class="text-sm font-medium text-gray-500 mt-4 text-center">
                   {{$t('Already have an account?')}}
                   <!-- Updated this line to use @click and router.push -->
-                  <span class="font-bold text-red-700 hover:underline cursor-pointer" @click="$router.push('/login')">{{$t('Login here')}}</span>
+                  <span class="font-bold text-custom-red hover:underline cursor-pointer" @click="$router.push('/login')">{{$t('Login here')}}</span>
                   </p>
               </v-col>
           </v-row>

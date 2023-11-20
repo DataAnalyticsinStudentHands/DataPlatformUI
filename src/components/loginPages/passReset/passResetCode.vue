@@ -2,7 +2,7 @@
     <v-card-text>
             <v-row>
                 <v-col cols="12" class="pb-0">
-                    <h2 class="font-bold text-2xl text-red-800 tracking-widest">
+                    <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                         {{$t('Password Reset Code')}}
                     </h2>
                 </v-col>
@@ -13,7 +13,7 @@
                     <br>
                     {{$t('If you do not see an email, please check your Spam folder, or ')}}
                     <span 
-                        class="font-semibold text-red-800 cursor-pointer"
+                        class="font-semibold text-custom-red cursor-pointer"
                         @click="$router.push('/register')"
                     >{{$t('Register for an Account.')}}</span>
                 </v-col>
@@ -40,7 +40,7 @@
                                     <v-btn 
                                         :loading="loading"
                                         type="submit" 
-                                        class="mt-3 bg-red-700 text-white rounded"
+                                        class="mt-3 bg-custom-red text-white rounded"
                                     >{{$t('Submit')}}</v-btn>
                                 </div>
                             </v-form>

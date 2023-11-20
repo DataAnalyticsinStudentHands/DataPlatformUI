@@ -19,16 +19,16 @@
             </tr>
           </thead>
           <tbody>
-            <template v-if="completedExperiences.length === 0">
+            <template v-if="completedExperiences !== undefined && completedExperiences.length === 0">
               <tr>
                 <td colspan="5" class="text-center">No Exit Forms available.</td>
               </tr>
             </template>
             <template v-else>
-              <tr v-for="(experience, index) in completedExperiences" :key="experience._id">
+              <tr v-for="(experience, index) in completedExperiences" :key="experience.goalFormID">
                 <td></td>
-                <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.experienceName }}</td>
-                <td class="text-left" @click="createExitForm(goalSettingFormIDs[experience._id][0], index)">{{ experience.exitFormCreated ? 'Complete' : 'Incomplete' }}</td>
+                <td class="text-left" @click="createExitForm(experience.goalFormID, index)">{{ experience.experienceName }}</td>
+                <td class="text-left" @click="createExitForm(experience.goalFormID, index)">{{ experience.exitFormCreated ? 'Complete' : 'Incomplete' }}</td>
                 <td></td>
                 <td></td>
               </tr>
@@ -49,8 +49,6 @@ export default {
   data() {
     return {
       completedExperiences: [],
-      goalSettingFormIDs: {},
-      selectedExperiences: [],
       searchTerm: "",
     };
   },
@@ -67,8 +65,7 @@ export default {
       axios
         .get(apiURL, { headers: { token } })
         .then((resp) => {
-          this.completedExperiences = resp.data.data;
-          this.goalSettingFormIDs = resp.data.goalSettingFormIDs;
+          this.completedExperiences = resp.data;
         })
         .catch((error) => {
           this.handleError(error);

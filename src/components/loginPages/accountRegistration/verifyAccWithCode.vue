@@ -2,7 +2,7 @@
     <v-card-text>
         <v-row>
             <v-col cols="12" class="pb-0">
-                <h2 class="font-bold text-2xl text-red-800 tracking-widest">
+                <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                     {{$t('Please Verify Your Email')}}
                 </h2>
             </v-col>
@@ -30,7 +30,7 @@
                                     :loading="loading"
                                     type="submit" 
                                     block 
-                                    class="mt-3 bg-red-700 text-white rounded"
+                                    class="mt-3 bg-custom-red text-white rounded"
                                 >{{$t('Submit')}}</v-btn>
                             </v-col>
                        </v-row>
