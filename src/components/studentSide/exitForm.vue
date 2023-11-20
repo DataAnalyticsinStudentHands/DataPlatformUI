@@ -7,6 +7,7 @@
 
 
   <v-container>
+    <v-form ref="exitForm">
     <!-- Title -->
     <v-row dense>
       <v-col cols="12">
@@ -62,7 +63,7 @@
     <!-- Aspirations Progress Table -->
     <v-row>
       <v-col cols="12">
-        <p class="font-weight-black text-h8">For each aspiration listed above, please pick the option that best describes the progress you made.</p>
+        <p :class="{'text-custom-red': isAspirationProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each aspiration listed, please pick the option that best describes the progress you made.</p>
       </v-col>
     </v-row>
 
@@ -71,7 +72,7 @@
       <v-col cols="12">
         <div v-if="exitForm.aspiration1">
           <div class="font-semibold italic">“{{ exitForm.aspiration1 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.aspirationOneProgressResults"
               :label="option.xs_label"
@@ -82,7 +83,7 @@
         </div>
         <div v-if="exitForm.aspiration2">
           <div class="font-semibold italic">“{{ exitForm.aspiration2 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected"  :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.aspirationTwoProgressResults"
               :label="option.xs_label"
@@ -93,7 +94,7 @@
         </div>
         <div v-if="exitForm.aspiration3">
           <div class="font-semibold italic">“{{ exitForm.aspiration3 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected"  :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.aspirationThreeProgressResults"
               :label="option.xs_label"
@@ -121,7 +122,7 @@
             <tr v-if="exitForm.aspiration1">
               <td>{{ exitForm.aspiration1 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationOneProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -129,7 +130,7 @@
             <tr v-if="exitForm.aspiration2">
               <td>{{ exitForm.aspiration2 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationTwoProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationTwoProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -137,7 +138,7 @@
             <tr v-if="exitForm.aspiration3">
               <td>{{ exitForm.aspiration3 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationThreeProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationThreeProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -151,7 +152,7 @@
   <!-- Aspirations Connection Table -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">For each aspiration listed above, please pick the option that best describes the connection between your progress and this course.</p>
+      <p :class="{'text-custom-red': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each aspiration listed, please pick the option that best describes the connection between your progress and this course.</p>
     </v-col>
   </v-row>
 
@@ -163,7 +164,7 @@
             <div v-if="exitForm.aspiration1">
               <div class="font-semibold italic">“{{ exitForm.aspiration1 }}”</div>
               <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
-              <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected"  :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.aspirationOneExperienceConnection"
                   :label="option.xs_label"
@@ -175,7 +176,7 @@
             <div v-if="exitForm.aspiration2">
               <div class="font-semibold italic">“{{ exitForm.aspiration2 }}”</div>
               <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
-              <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected"  :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection"
                   :label="option.xs_label"
@@ -188,7 +189,7 @@
               <div class="font-semibold italic">“{{ exitForm.aspiration3 }}”</div>
               
               <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
-              <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected"  :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection"
                   :label="option.xs_label"
@@ -219,7 +220,7 @@
             <tr v-if="exitForm.aspiration1">
               <td>{{ exitForm.aspiration1 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationOneExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -227,7 +228,7 @@
             <tr v-if="exitForm.aspiration2">
               <td>{{ exitForm.aspiration2 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationTwoExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -235,7 +236,7 @@
             <tr v-if="exitForm.aspiration3">
               <td>{{ exitForm.aspiration3 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationThreeExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -246,12 +247,12 @@
     </v-col>
   </v-row>
 
+  <!-- Goals Progress Table -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share three to give goals for your participation in this course. Now we would like to know whether you feel you made progress towards these goals and which activities from the course contribued to your progress.</p>
-  <!-- Goals Progress Table -->
+      <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">At the beginning of the semester, we asked you to share three goals for your participation in this course. Now we would like to know whether you feel you made progress towards these goals and which activities from the course contributed to your progress.</p>
 
-      <p class="font-weight-black text-h8">For each goal listed below, please pick the option that best describes the progress you made.</p>
+      <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each goal listed below, please pick the option that best describes the progress you made.</p>
     </v-col>
   </v-row>
   
@@ -260,7 +261,7 @@
       <v-col cols="12">
         <div v-if="exitForm.goal1">
           <div class="font-semibold italic">“{{ exitForm.goal1 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.goalOneProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.goalOneProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalOneProgressResults"
               :label="option.xs_label"
@@ -271,7 +272,7 @@
         </div>
         <div v-if="exitForm.goal2">
           <div class="font-semibold italic">“{{ exitForm.goal2 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.goalTwoProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.goalTwoProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalTwoProgressResults"
               :label="option.xs_label"
@@ -282,7 +283,7 @@
         </div>
         <div v-if="exitForm.goal3">
           <div class="font-semibold italic">“{{ exitForm.goal3 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.goalThreeProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.goalThreeProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalThreeProgressResults"
               :label="option.xs_label"
@@ -293,7 +294,7 @@
         </div>
         <div v-if="exitForm.goal4">
           <div class="font-semibold italic">“{{ exitForm.goal4 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.goalFourProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.goalFourProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalFourProgressResults"
               :label="option.xs_label"
@@ -304,7 +305,7 @@
         </div>
         <div v-if="exitForm.goal5">
           <div class="font-semibold italic">“{{ exitForm.goal5 }}”</div>
-          <v-radio-group v-model="exitForm.progressMade.goalFiveProgressSelected" color="custom-red">
+          <v-radio-group v-model="exitForm.progressMade.goalFiveProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalFiveProgressResults"
               :label="option.xs_label"
@@ -332,7 +333,7 @@
             <tr v-if="exitForm.goal1">
               <td>{{ exitForm.goal1 }}</td>
               <td v-for="option in exitForm.progressMade.goalOneProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalOneProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalOneProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalOneProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -340,7 +341,7 @@
             <tr v-if="exitForm.goal2">
               <td>{{ exitForm.goal2 }}</td>
               <td v-for="option in exitForm.progressMade.goalTwoProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalTwoProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalTwoProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalTwoProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -348,7 +349,7 @@
             <tr v-if="exitForm.goal3">
               <td>{{ exitForm.goal3 }}</td>
               <td v-for="option in exitForm.progressMade.goalThreeProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalThreeProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalThreeProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalThreeProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -356,7 +357,7 @@
             <tr v-if="exitForm.goal4">
               <td>{{ exitForm.goal4 }}</td>
               <td v-for="option in exitForm.progressMade.goalFourProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFourProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalFourProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFourProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -364,7 +365,7 @@
             <tr v-if="exitForm.goal5">
               <td>{{ exitForm.goal5 }}</td>
               <td v-for="option in exitForm.progressMade.goalFiveProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFiveProgressSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalFiveProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFiveProgressSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -378,7 +379,7 @@
   <!-- Goals Connection Table -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">For each goal listed above, please pick the option that best describes the connection between your progress and this course.</p>
+      <p :class="{'text-custom-red': isGoalConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each goal listed, please pick the option that best describes the connection between your progress and this course.</p>
     </v-col>
   </v-row>
 
@@ -390,7 +391,7 @@
             <div v-if="exitForm.goal1">
               <div class="font-semibold italic">“{{ exitForm.goal1 }}”</div>
               <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
-              <v-radio-group v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalOneExperienceConnection"
                   :label="option.xs_label"
@@ -402,7 +403,7 @@
             <div v-if="exitForm.goal2">
               <div class="font-semibold italic">“{{ exitForm.goal2 }}”</div>
               <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
-              <v-radio-group v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalTwoExperienceConnection"
                   :label="option.xs_label"
@@ -415,7 +416,7 @@
               <div class="font-semibold italic">“{{ exitForm.goal3 }}”</div>
               
               <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
-              <v-radio-group v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalThreeExperienceConnection"
                   :label="option.xs_label"
@@ -428,7 +429,7 @@
               <div class="font-semibold italic">“{{ exitForm.goal4 }}”</div>
               
               <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
-              <v-radio-group v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalFourExperienceConnection"
                   :label="option.xs_label"
@@ -441,7 +442,7 @@
               <div class="font-semibold italic">“{{ exitForm.goal5 }}”</div>
               
               <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
-              <v-radio-group v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" color="custom-red">
+              <v-radio-group v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalFiveExperienceConnection"
                   :label="option.xs_label"
@@ -472,7 +473,7 @@
             <tr v-if="exitForm.goal1">
               <td>{{ exitForm.goal1 }}</td>
               <td v-for="option in exitForm.progressMade.goalOneExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalOneExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -480,7 +481,7 @@
             <tr v-if="exitForm.goal2">
               <td>{{ exitForm.goal2 }}</td>
               <td v-for="option in exitForm.progressMade.goalTwoExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalTwoExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -488,7 +489,7 @@
             <tr v-if="exitForm.goal3">
               <td>{{ exitForm.goal3 }}</td>
               <td v-for="option in exitForm.progressMade.goalThreeExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalThreeExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -496,7 +497,7 @@
             <tr v-if="exitForm.goal4">
               <td>{{ exitForm.goal4 }}</td>
               <td v-for="option in exitForm.progressMade.goalFourExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFourExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -504,7 +505,7 @@
             <tr v-if="exitForm.goal5">
               <td>{{ exitForm.goal5 }}</td>
               <td v-for="option in exitForm.progressMade.goalFiveExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFiveExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -531,7 +532,7 @@
           <v-checkbox
             v-model="exitForm.goalIssues.goals[index].checked"
             density="compact"
-            color="custom-red"
+            
             :label="goal"
             outlined
           ></v-checkbox>
@@ -588,7 +589,7 @@
             :indeterminate="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"  
             :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
             density="compact"
-            color="custom-red"
+            
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal2"
@@ -600,7 +601,7 @@
             :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
             @change="updateContribution(activity.activityID, 'goalTwoContributions', $event)"
             density="compact"
-            color="custom-red"
+            
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal3"
@@ -612,7 +613,7 @@
             :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
             @change="updateContribution(activity.activityID, 'goalThreeContributions', $event)"
             density="compact"
-            color="custom-red"
+            
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal4"
@@ -624,7 +625,7 @@
             :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
             @change="updateContribution(activity.activityID, 'goalFourContributions', $event)"
             density="compact"
-            color="custom-red"
+            
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal5"
@@ -636,7 +637,7 @@
             :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
             @change="updateContribution(activity.activityID, 'goalFiveContributions', $event)"
             density="compact"
-            color="custom-red"
+            
           ></v-checkbox>
           <v-checkbox
             :id="`${activity.activityID}-noGoals`"
@@ -645,7 +646,7 @@
             label="No Goals"
             @change="updateContribution(activity.activityID, 'noContributions', $event)"
             density="compact"
-            color="custom-red"
+            
           ></v-checkbox>
       </div>
     </v-col>
@@ -708,7 +709,7 @@
                   :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
                   @change="updateContribution(activity.activityID, 'goalOneContributions', $event)"
                   density="compact"
-                  color="custom-red"
+                  
                 ></v-checkbox>
               </td>
               <td>
@@ -720,7 +721,7 @@
                   :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
                   @change="updateContribution(activity.activityID, 'goalTwoContributions', $event)"
                   density="compact"
-                  color="custom-red"
+                  
                 ></v-checkbox>
               </td>
               <td>
@@ -732,7 +733,7 @@
                   :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)" 
                   @change="updateContribution(activity.activityID, 'goalThreeContributions', $event)"
                   density="compact"
-                  color="custom-red"
+                  
                 ></v-checkbox>
               </td>
               <td>
@@ -744,7 +745,7 @@
                   :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
                   @change="updateContribution(activity.activityID, 'goalFourContributions', $event)"
                   density="compact"
-                  color="custom-red"
+                  
                 ></v-checkbox>
               </td>
               <td>
@@ -756,7 +757,7 @@
                   :disabled="exitForm.activitiesContribution.noContributions.includes(activity.activityID)"
                   @change="updateContribution(activity.activityID, 'goalFiveContributions', $event)"
                   density="compact"
-                  color="custom-red"
+                  
                 ></v-checkbox>
               </td>
               <td>
@@ -766,7 +767,7 @@
                   v-model="exitForm.activitiesContribution.noContributions"
                   @change="updateContribution(activity.activityID, 'noContributions', $event.target.checked)"
                   density="compact"
-                  color="custom-red"
+                  
                 ></v-checkbox>
               </td>
             </tr>
@@ -810,7 +811,7 @@
         <v-col cols="12">
           <div>
             <div class="font-weight-black">Enroll in another Data & Society Course</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" color="custom-red">
+            <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" >
               <v-radio
                 v-for="option in exitForm.likelihoodOf.enrollAnotherCourse"
                 :label="option.label"
@@ -821,7 +822,7 @@
           </div>
           <div>
             <div class="font-weight-black">Complete the Data & Society minor</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" color="custom-red">
+            <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" >
               <v-radio
                 v-for="option in exitForm.likelihoodOf.completeMinor"
                 :label="option.label"
@@ -832,7 +833,7 @@
           </div>
           <div>
             <div class="font-weight-black">Complete the Data & Society minor</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" color="custom-red">
+            <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" >
               <v-radio
                 v-for="option in exitForm.likelihoodOf.recommendCourse"
                 :label="option.label"
@@ -843,7 +844,7 @@
           </div>
           <div>
             <div class="font-weight-black">Complete the Data & Society minor</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" color="custom-red">
+            <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" >
               <v-radio
                 v-for="option in exitForm.likelihoodOf.pursueCareer"
                 :label="option.label"
@@ -874,7 +875,7 @@
             <tr>
               <td>Enroll in another Data & Society Course</td>
               <td v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" >
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -882,7 +883,7 @@
             <tr>
               <td>Complete the Data & Society minor</td>
               <td v-for="option in exitForm.likelihoodOf.completeMinor" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" >
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -890,7 +891,7 @@
             <tr>
               <td>Recommend this course to a friend</td>
               <td v-for="option in exitForm.likelihoodOf.recommendCourse" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" >
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -898,7 +899,7 @@
             <tr>
               <td>Pursue a career in Data Science</td>
               <td v-for="option in exitForm.likelihoodOf.pursueCareer" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" color="custom-red">
+                <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" >
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -913,7 +914,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>problem solving</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.problemSolving" color="custom-red">
+      <v-radio-group v-model="exitForm.generalGrowth.problemSolving" >
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -924,7 +925,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>effective communication</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication" color="custom-red">
+      <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication" >
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -935,7 +936,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>teamwork</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.teamwork" color="custom-red">
+      <v-radio-group v-model="exitForm.generalGrowth.teamwork" >
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -946,7 +947,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>cultural humility</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.culturalHumility" color="custom-red">
+      <v-radio-group v-model="exitForm.generalGrowth.culturalHumility" >
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -957,7 +958,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>ethical decision making</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking" color="custom-red">
+      <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking" >
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -968,7 +969,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility" color="custom-red">
+      <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility" >
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -1047,13 +1048,15 @@
     </v-col>
   </v-row>
 
-
+  </v-form>
   </v-container>
 </template>
   
 <script>
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   data() {
@@ -1261,7 +1264,9 @@ export default {
           supportOthers: "",
           comments: ""
         }
-      }
+      },
+      formSubmitted: false,
+      requiredRule: value => !!value || 'Information is required.',
     };
   },
   mounted() {
@@ -1271,9 +1276,18 @@ export default {
     this.fetchExperienceData();
   },
   computed:{
-    isSpecificExperience() {
-    // return this.specificIDs.includes(this.exitForm.experience._id);
-  },
+    isAspirationProgressInvalid() {
+      return !this.exitForm.progressMade.aspirationOneProgressSelected || !this.exitForm.progressMade.aspirationTwoProgressSelected || !this.exitForm.progressMade.aspirationThreeProgressSelected;
+    },
+    isAspirationConnectionInvalid() {
+      return !this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || !this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || !this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected
+    },
+    isGoalProgressInvalid() {
+      return !this.exitForm.progressMade.goalOneProgressSelected || !this.exitForm.progressMade.goalTwoProgressSelected || !this.exitForm.progressMade.goalThreeProgressSelected || !this.exitForm.progressMade.goalFourProgressSelected || !this.exitForm.progressMade.goalFiveProgressSelected
+    },
+    isGoalConnectionInvalid() {
+      return !this.exitForm.progressMade.goalOneExperienceConnectionSelected || !this.exitForm.progressMade.goalTwoExperienceConnectionSelected || !this.exitForm.progressMade.goalThreeExperienceConnectionSelected || !this.exitForm.progressMade.goalFourExperienceConnectionSelected || !this.exitForm.progressMade.goalFiveExperienceConnectionSelected
+    },
   },
   async created() {
   // this.specificIDs = await this.fetchSpecificExperienceIDs();
@@ -1386,80 +1400,91 @@ export default {
         this.handleError(error);
       }
     },
-
     async handleSubmitForm() {
-  const user = useLoggedInUserStore();
-  const token = user.token;
-  const apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exitForms/";
+      this.formSubmitted = true;
+      const validationResponse = await this.$refs.exitForm.validate();
+      console.log('validationResponse: ', validationResponse);
+      if (validationResponse.valid) {
+        console.log('form is valid');
+        return;
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        const apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exitForms/";
 
-  const exitFormData = {
-    semester: this.exitForm.semester,
-    experienceID: this.exitForm.experience._id,
-    goalSettingFormID: this.exitForm.goalSettingFormID,
-    exitForm: {
-      progressMade: {
-        aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected,
-      aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected,
-      aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected,
-      aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected,
-      aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected,
-      aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected,
-        goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected,
-        goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected,
-        goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected,
-        goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected,
-        goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected,
-        goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected,
-        goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected,
-        goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected,
-        goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected,
-        goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected,
-      },
-      goalIssues: {
-      goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
-      issuesDescription: this.exitForm.goalIssues.issuesDescription
-    },
-      activitiesContribution: {
-        goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
-        goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
-        goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
-        goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
-        goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
-        noContributions:this.exitForm.activitiesContribution.noContributions,
-      },
-      experienceContributions: this.exitForm.experienceContributions,
-      likelihoodOf: {
-        enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected,
-        completeMinor: this.exitForm.likelihoodOf.completeMinorSelected,
-        recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected,
-        pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected,
-    },
-      generalGrowth: {
-        problemSolving: this.exitForm.generalGrowth.problemSolving,
-        effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
-        teamwork: this.exitForm.generalGrowth.teamwork,
-        culturalHumility: this.exitForm.generalGrowth.culturalHumility,
-        ethicalDecisionMaking: this.exitForm.generalGrowth.ethicalDecisionMaking,
-        professionalResponsibility: this.exitForm.generalGrowth.professionalResponsibility
-      },
-      openEnded: {
-        biggestLessons: this.exitForm.openEnded.biggestLessons,
-        supportOthers: this.exitForm.openEnded.supportOthers,
-        comments: this.exitForm.openEnded.comments
-      }
-    }
-  };
+        const exitFormData = {
+          semester: this.exitForm.semester,
+          experienceID: this.exitForm.experience._id,
+          goalSettingFormID: this.exitForm.goalSettingFormID,
+          exitForm: {
+            progressMade: {
+              aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected,
+            aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected,
+            aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected,
+            aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected,
+            aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected,
+            aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected,
+              goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected,
+              goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected,
+              goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected,
+              goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected,
+              goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected,
+              goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected,
+              goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected,
+              goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected,
+              goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected,
+              goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected,
+            },
+            goalIssues: {
+            goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
+            issuesDescription: this.exitForm.goalIssues.issuesDescription
+          },
+            activitiesContribution: {
+              goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
+              goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
+              goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
+              goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
+              goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
+              noContributions:this.exitForm.activitiesContribution.noContributions,
+            },
+            experienceContributions: this.exitForm.experienceContributions,
+            likelihoodOf: {
+              enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected,
+              completeMinor: this.exitForm.likelihoodOf.completeMinorSelected,
+              recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected,
+              pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected,
+          },
+            generalGrowth: {
+              problemSolving: this.exitForm.generalGrowth.problemSolving,
+              effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
+              teamwork: this.exitForm.generalGrowth.teamwork,
+              culturalHumility: this.exitForm.generalGrowth.culturalHumility,
+              ethicalDecisionMaking: this.exitForm.generalGrowth.ethicalDecisionMaking,
+              professionalResponsibility: this.exitForm.generalGrowth.professionalResponsibility
+            },
+            openEnded: {
+              biggestLessons: this.exitForm.openEnded.biggestLessons,
+              supportOthers: this.exitForm.openEnded.supportOthers,
+              comments: this.exitForm.openEnded.comments
+            }
+          }
+        };
 
-  try {
-    const response = await axios.post(apiURL, exitFormData, {
-      headers: { token }
-    });
-    alert("Exit form has been successfully submitted.");
-    this.$router.push('/exitFormsAvailable');
-  } catch (error) {
-    this.handleError(error);
-  }
-}
+        try {
+          const response = await axios.post(apiURL, exitFormData, {
+            headers: { token }
+          });
+          alert("Exit form has been successfully submitted.");
+          this.$router.push('/exitFormsAvailable');
+        } catch (error) {
+          this.handleError(error);
+        }
+      } else {
+        toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete'
+          });
+      };
+    },
   }
 };
 </script>
