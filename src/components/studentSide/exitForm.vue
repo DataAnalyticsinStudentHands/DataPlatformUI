@@ -2,7 +2,7 @@
 <template>
 
 
-Exit Form: {{ exitForm }}
+<!-- Exit Form: {{ exitForm }} -->
 
 
 
@@ -830,6 +830,10 @@ Exit Form: {{ exitForm }}
 
       <!-- Data & Society likelihood questions -->
 
+    <!-- If Experience is not Data & Society, hide -->
+    dataAndSociety: {{ dataAndSociety }}
+    <div v-if="dataAndSociety">
+
     <!-- Mobile View -->
     <div class="d-sm-none">
       <v-row>
@@ -890,60 +894,61 @@ Exit Form: {{ exitForm }}
 
 
 
-    <!-- Non-Mobile View -->  
-    <v-row class="d-none d-sm-inline">
-      <v-row>
+      <!-- Non-Mobile View -->  
+      <v-row class="d-none d-sm-inline">
+        <v-row>
+          <v-col cols="12">
+            <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> Use the scale provided to rate your likelihood of taking the actions listed:</p>
+          </v-col>
+        </v-row>
         <v-col cols="12">
-          <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> Use the scale provided to rate your likelihood of taking the actions listed:</p>
-        </v-col>
-      </v-row>
-      <v-col cols="12">
-      <v-card>
-        <v-table>
-          <thead>
-            <tr>
-              <th></th>
-              <th v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">{{ option.label }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Enroll in another Data & Society Course</td>
-              <td v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.enrollAnotherCourseSelected && formSubmitted) ? 'Please select one.' : ''">
-                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
-                </v-radio-group>
-              </td>
-            </tr>
-            <tr>
-              <td>Complete the Data & Society minor</td>
-              <td v-for="option in exitForm.likelihoodOf.completeMinor" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.completeMinorSelected && formSubmitted) ? 'Please select one.' : ''">
-                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
-                </v-radio-group>
-              </td>
-            </tr>
-            <tr>
-              <td>Recommend this course to a friend</td>
-              <td v-for="option in exitForm.likelihoodOf.recommendCourse" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.recommendCourseSelected && formSubmitted) ? 'Please select one.' : ''">
-                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
-                </v-radio-group>
-              </td>
-            </tr>
-            <tr>
-              <td>Pursue a career in Data Science</td>
-              <td v-for="option in exitForm.likelihoodOf.pursueCareer" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.pursueCareerSelected && formSubmitted) ? 'Please select one.' : ''">
-                  <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
-                </v-radio-group>
-              </td>
-            </tr>
-          </tbody>
-        </v-table>
-      </v-card>
-    </v-col>
-  </v-row>
+        <v-card>
+          <v-table>
+            <thead>
+              <tr>
+                <th></th>
+                <th v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">{{ option.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Enroll in another Data & Society Course</td>
+                <td v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">
+                  <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.enrollAnotherCourseSelected && formSubmitted) ? 'Please select one.' : ''">
+                    <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                  </v-radio-group>
+                </td>
+              </tr>
+              <tr>
+                <td>Complete the Data & Society minor</td>
+                <td v-for="option in exitForm.likelihoodOf.completeMinor" :key="option.id">
+                  <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.completeMinorSelected && formSubmitted) ? 'Please select one.' : ''">
+                    <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                  </v-radio-group>
+                </td>
+              </tr>
+              <tr>
+                <td>Recommend this course to a friend</td>
+                <td v-for="option in exitForm.likelihoodOf.recommendCourse" :key="option.id">
+                  <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.recommendCourseSelected && formSubmitted) ? 'Please select one.' : ''">
+                    <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                  </v-radio-group>
+                </td>
+              </tr>
+              <tr>
+                <td>Pursue a career in Data Science</td>
+                <td v-for="option in exitForm.likelihoodOf.pursueCareer" :key="option.id">
+                  <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.pursueCareerSelected && formSubmitted) ? 'Please select one.' : ''">
+                    <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                  </v-radio-group>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 
   <!-- Growth -->
   <v-row>
@@ -1312,6 +1317,7 @@ export default {
         // Otherwise, check if the value is present
         return !!value || 'Information is required.';
       },
+      dataAndSociety: false,
     };
   },
   mounted() {
@@ -1515,6 +1521,9 @@ export default {
       axios.get(apiURL)
         .then((response) => {
           this.exitForm.experience = response.data;
+          if (this.exitForm.experience.experienceCategory === 'Data & Society') {
+            this.dataAndSociety = true;
+          };
         })
         .catch((error) => {
           this.handleError(error);
