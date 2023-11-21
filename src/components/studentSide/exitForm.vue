@@ -516,11 +516,10 @@
     </v-col>
   </v-row>
 
-
 <!-- Goal Barriers List -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">Please select which goal(s) you faced barriers to achieving this semester.</p>
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGoalIssuesInvalid }">Please select which goal(s) you faced barriers to achieving this semester.</p>
       <!-- List of goals from the student's input -->
       <v-list density="compact">
         <v-list-item
@@ -532,14 +531,35 @@
           <v-checkbox
             v-model="exitForm.goalIssues.goals[index].checked"
             density="compact"
-            
+            :disabled="exitForm.goalIssues.goals[5].checked"
+            :indeterminate="exitForm.goalIssues.goals[5].checked"
             :label="goal"
             outlined
+          ></v-checkbox>
+        </v-list-item>
+        <v-list-item
+          density="compact"
+          class="ma-0 pa-0"
+        >
+          <v-checkbox
+            v-model="exitForm.goalIssues.goals[5].checked"
+            @change="handleNoneSelected"
+            density="compact"
+            label="None"
+            outlined
+            :error-messages="goalIssuesErrorMessage"
           ></v-checkbox>
         </v-list-item>
       </v-list>
     </v-col>
   </v-row>
+  <!-- Dummy text field for Group validation -->
+  <v-text-field
+    v-show="false"
+    :rules="goalIssuesRules"
+  ></v-text-field>
+
+  
 
   <!-- Describe Goal Barriers -->
 
@@ -570,7 +590,7 @@
 
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8 mb-2">
+      <p class="font-weight-black text-h8 mb-2" :class="{'text-custom-red': isGoalActivityProgressMobileInvalidTitle && formSubmitted}">
         For each activity listed, check the boxes for goals that the activity helped you make progress towards. If the activity did not contribute to any of your goals, select "no goals".
       </p>
     </v-col>
@@ -648,6 +668,12 @@
             density="compact"
             
           ></v-checkbox>
+          <!-- Dummy Text Fields for Group Validation -->
+          <v-text-field
+            v-show="false"
+            :rules="[() => validateGoalActivityProgress(activity)]"
+          ></v-text-field>
+          <p class="text-sm text-custom-red mb-3 pt-0" v-if="!isGoalActivityProgressMobileInvalid[activity.activityID] && formSubmitted">At least one checkbox must be selected per Activity.</p>
       </div>
     </v-col>
   </v-row>
@@ -677,7 +703,7 @@
 
     <v-row>
       <v-col cols="12">
-        <p class="font-weight-black text-h8 mb-2">
+        <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isGoalActivityProgressInvalid && formSubmitted }">
           For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".
         </p>
       </v-col>
@@ -770,9 +796,15 @@
                   
                 ></v-checkbox>
               </td>
+              <!-- Dummy Text Fields for Group Validation -->
+              <v-text-field
+                v-show="false"
+                :rules="[() => validateGoalActivityProgress(activity)]"
+              ></v-text-field>
             </tr>
           </tbody>
         </v-table>
+        <p class="text-sm text-custom-red" v-if="isGoalActivityProgressInvalid && formSubmitted">At least one checkbox must be selected per Activity.</p>
       </v-col>
     </v-row>
   </div>
@@ -780,7 +812,7 @@
   <!-- Experience contribution to Graduate/Professional Goals -->
   <v-row class="mt-5">
     <v-col cols="12">
-      <p class="font-weight-black text-h8 mb-2">
+      <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red' : isExperienceContributionGradProfInvalid && formSubmitted}">
         How did this experience contribute to your graduate/professional goals?
       </p>
     </v-col>
@@ -794,24 +826,25 @@
         label="Contribution Description"
         rows="4"
         class="mt-0"
+        :rules="[requiredRule]"
       ></v-textarea>
     </v-col>
   </v-row>
 
       <!-- Data & Society likelihood questions -->
-      <v-row>
-      <v-col cols="12">
-        <p class="font-weight-black text-h8"> Use the scale provided to rate your likelihood of taking the actions listed:</p>
-      </v-col>
-    </v-row>
 
     <!-- Mobile View -->
     <div class="d-sm-none">
       <v-row>
         <v-col cols="12">
+          <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> Use the scale provided to rate your likelihood of taking the actions listed:</p>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
           <div>
             <div class="font-weight-black">Enroll in another Data & Society Course</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" >
+            <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.enrollAnotherCourse"
                 :label="option.label"
@@ -822,7 +855,7 @@
           </div>
           <div>
             <div class="font-weight-black">Complete the Data & Society minor</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" >
+            <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.completeMinor"
                 :label="option.label"
@@ -833,7 +866,7 @@
           </div>
           <div>
             <div class="font-weight-black">Complete the Data & Society minor</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" >
+            <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.recommendCourse"
                 :label="option.label"
@@ -844,7 +877,7 @@
           </div>
           <div>
             <div class="font-weight-black">Complete the Data & Society minor</div>
-            <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" >
+            <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.pursueCareer"
                 :label="option.label"
@@ -861,7 +894,12 @@
 
 
     <!-- Non-Mobile View -->  
-    <v-row class="d-none d-sm-flex">
+    <v-row class="d-none d-sm-inline">
+      <v-row>
+        <v-col cols="12">
+          <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> Use the scale provided to rate your likelihood of taking the actions listed:</p>
+        </v-col>
+      </v-row>
       <v-col cols="12">
       <v-card>
         <v-table>
@@ -875,7 +913,7 @@
             <tr>
               <td>Enroll in another Data & Society Course</td>
               <td v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" >
+                <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.enrollAnotherCourseSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -883,7 +921,7 @@
             <tr>
               <td>Complete the Data & Society minor</td>
               <td v-for="option in exitForm.likelihoodOf.completeMinor" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" >
+                <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.completeMinorSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -891,7 +929,7 @@
             <tr>
               <td>Recommend this course to a friend</td>
               <td v-for="option in exitForm.likelihoodOf.recommendCourse" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" >
+                <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.recommendCourseSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -899,7 +937,7 @@
             <tr>
               <td>Pursue a career in Data Science</td>
               <td v-for="option in exitForm.likelihoodOf.pursueCareer" :key="option.id">
-                <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" >
+                <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.pursueCareerSelected && formSubmitted) ? 'Please select one.' : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -913,8 +951,8 @@
   <!-- Growth -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>problem solving</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.problemSolving" >
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProblemSolvingInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>problem solving</u>.</p>
+      <v-radio-group v-model="exitForm.generalGrowth.problemSolving" :rules="[requiredRule]">
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -924,8 +962,8 @@
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>effective communication</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication" >
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEffCommInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>effective communication</u>.</p>
+      <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication" :rules="[requiredRule]">
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -935,8 +973,8 @@
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>teamwork</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.teamwork" >
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthTeamworkInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>teamwork</u>.</p>
+      <v-radio-group v-model="exitForm.generalGrowth.teamwork" :rules="[requiredRule]">
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -946,8 +984,8 @@
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>cultural humility</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.culturalHumility" >
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthCulHumInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>cultural humility</u>.</p>
+      <v-radio-group v-model="exitForm.generalGrowth.culturalHumility" :rules="[requiredRule]">
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -957,8 +995,8 @@
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>ethical decision making</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking" >
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEthicsInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>ethical decision making</u>.</p>
+      <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking" :rules="[requiredRule]">
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -968,8 +1006,8 @@
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
-      <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility" >
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProfResInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
+      <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility" :rules="[requiredRule]">
         <v-radio label="No growth" value="No growth"></v-radio>
         <v-radio label="A little growth" value="A little growth"></v-radio>
         <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
@@ -981,7 +1019,7 @@
   <!-- Biggest Lessons and Key Takeaways -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8 mb-2">
+      <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isBiggestLessonsInvalid && formSubmitted }">
         What are the biggest lessons and key takeaways you gained from this class and will carry with you moving forward?
       </p>
     </v-col>
@@ -995,6 +1033,7 @@
         dense
         label="Lessons/Takeaways"
         rows="4"
+        :rules="[requiredRule]"
       ></v-textarea>
     </v-col>
   </v-row>
@@ -1002,7 +1041,7 @@
   <!-- Engage and Support -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8 mb-2">
+      <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isSupportOthersInvalid && formSubmitted }">
         Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?
       </p>
     </v-col>
@@ -1016,6 +1055,7 @@
         dense
         label="Engage/Support"
         rows="4"
+        :rules="[requiredRule]"
       ></v-textarea>
     </v-col>
   </v-row>
@@ -1200,6 +1240,7 @@ export default {
             { id: 3, label: "Goal 3", checked: false },
             { id: 4, label: "Goal 4", checked: false },
             { id: 5, label: "Goal 5", checked: false },
+            { id: 6, label: "No Goals", checked: false },
           ],
           issuesDescription: ""
         },
@@ -1266,7 +1307,14 @@ export default {
         }
       },
       formSubmitted: false,
-      requiredRule: value => !!value || 'Information is required.',
+      requiredRule: value => {
+        // If form has not been submitted, pass validation
+        if (!this.formSubmitted) {
+          return true;
+        }
+        // Otherwise, check if the value is present
+        return !!value || 'Information is required.';
+      },
     };
   },
   mounted() {
@@ -1287,6 +1335,82 @@ export default {
     },
     isGoalConnectionInvalid() {
       return !this.exitForm.progressMade.goalOneExperienceConnectionSelected || !this.exitForm.progressMade.goalTwoExperienceConnectionSelected || !this.exitForm.progressMade.goalThreeExperienceConnectionSelected || !this.exitForm.progressMade.goalFourExperienceConnectionSelected || !this.exitForm.progressMade.goalFiveExperienceConnectionSelected
+    },
+    goalIssuesRules() {
+      return [
+        () => this.exitForm.goalIssues.goals.some(goal => goal.checked) || 'At least one must be selected.'
+      ];
+    },
+    goalIssuesErrorMessage() {
+      const ruleResult = this.goalIssuesRules[0]();
+      if (this.formSubmitted && typeof ruleResult === 'string') {
+        return ruleResult;
+      }
+      return '';
+    },
+    isGoalIssuesInvalid() {
+      return this.goalIssuesErrorMessage.length > 0;
+    },
+    isGoalActivityProgressInvalid() {
+      return this.exitForm.experienceActivities.some(activity => {
+        const activityID = activity.activityID;
+        const isAnyChecked = Object.values(this.exitForm.activitiesContribution).some(contributions => 
+          contributions.includes(activityID)
+        );
+        return !isAnyChecked;
+      })
+    },
+    isGoalActivityProgressMobileInvalid() {
+      let validity = {};
+      this.exitForm.experienceActivities.forEach(activity => {
+        const activityID = activity.activityID;
+        const isAnyChecked = [
+          this.exitForm.activitiesContribution.goalOneContributions,
+          this.exitForm.activitiesContribution.goalTwoContributions,
+          this.exitForm.activitiesContribution.goalThreeContributions,
+          this.exitForm.activitiesContribution.goalFourContributions,
+          this.exitForm.activitiesContribution.goalFiveContributions,
+          this.exitForm.activitiesContribution.noContributions
+        ].some(contributions => contributions.includes(activityID));
+
+        // Set the validity for each activity
+        validity[activityID] = isAnyChecked;
+      });
+      return validity;
+    },
+    isGoalActivityProgressMobileInvalidTitle() {
+      // Check if any activity is invalid
+      return Object.values(this.isGoalActivityProgressMobileInvalid).includes(false);
+    },
+    isExperienceContributionGradProfInvalid() {
+      return !this.exitForm.experienceContributions || this.exitForm.experienceContributions.trim() === '';
+    },
+    isLikelihoodInvalid() {
+      return !this.exitForm.likelihoodOf.enrollAnotherCourseSelected || !this.exitForm.likelihoodOf.completeMinorSelected || !this.exitForm.likelihoodOf.recommendCourseSelected || !this.exitForm.likelihoodOf.pursueCareerSelected;
+    },
+    isGrowthProblemSolvingInvalid() {
+      return !this.exitForm.generalGrowth.problemSolving;
+    },
+    isGrowthEffCommInvalid() {
+      return !this.exitForm.generalGrowth.effectiveCommunication;
+    },
+    isGrowthTeamworkInvalid() {
+      return !this.exitForm.generalGrowth.teamwork;
+    },
+    isGrowthCulHumInvalid() {
+      return !this.exitForm.generalGrowth.culturalHumility;
+    },
+    isGrowthEthicsInvalid() {
+      return !this.exitForm.generalGrowth.ethicalDecisionMaking;
+    },
+    isGrowthProfResInvalid() {
+      return !this.exitForm.generalGrowth.professionalResponsibility;
+    },
+    isBiggestLessonsInvalid() {
+      return !this.exitForm.openEnded.biggestLessons;
+    },
+    isSupportOthersInvalid() {
+      return !this.exitForm.openEnded.supportOthers;
     },
   },
   async created() {
@@ -1481,9 +1605,27 @@ export default {
       } else {
         toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
+            toastClassName: 'Toastify__toast--delete',
+            limit: 1
           });
       };
+    },
+    handleNoneSelected() {
+      if (this.exitForm.goalIssues.goals[5].checked) {
+        this.exitForm.goalIssues.goals.forEach((goal, index) => {
+          if (index !== 5) {
+            goal.checked = false;
+          }
+        })
+      }
+    },
+    validateGoalActivityProgress(activity) {
+      // Check if at least one checkbox is selected for the activity
+      const activityID = activity.activityID;
+      const isAnyChecked = Object.values(this.exitForm.activitiesContribution).some(contributions => 
+        contributions.includes(activityID)
+      );
+      return isAnyChecked || 'At least one checkbox must be selected for each activity.';
     },
   }
 };
