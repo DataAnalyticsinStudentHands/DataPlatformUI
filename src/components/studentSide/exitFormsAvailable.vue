@@ -43,7 +43,8 @@
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
-import { DateTime } from "luxon";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   data() {
@@ -55,6 +56,12 @@ export default {
   mounted() {
     this.fetchCompletedExperiences();
     window.scrollTo(0, 0);
+    if (this.$route.params.toastType) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+        position: this.$route.params.toastPosition,
+        toastClassName: this.$route.params.toastCSS
+      });
+    }
   },
   methods: {
     fetchCompletedExperiences() {

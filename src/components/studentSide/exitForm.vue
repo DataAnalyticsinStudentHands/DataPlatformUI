@@ -2,7 +2,7 @@
 <template>
 
 
-<!-- Exit Form: {{ exitForm }} -->
+Exit Form: {{ exitForm }}
 
 
 
@@ -523,7 +523,7 @@
       <!-- List of goals from the student's input -->
       <v-list density="compact">
         <v-list-item
-          v-for="(goal, index) in [exitForm.goal1, exitForm.goal2, exitForm.goal3, exitForm.goal4, exitForm.goal5]"
+          v-for="(goal, index) in existingGoals"
           :key="index"
           density="compact"
           class="ma-0 pa-0"
@@ -701,25 +701,21 @@
     </v-col>
   </v-row>
 
-    <v-row>
-      <v-col cols="12">
-        <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isGoalActivityProgressInvalid && formSubmitted }">
-          For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".
-        </p>
-      </v-col>
-    </v-row>
+      <v-row>
+        <v-col cols="12">
+          <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isGoalActivityProgressInvalid && formSubmitted }">
+            For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".
+          </p>
+        </v-col>
+      </v-row>
 
-    <v-row>
+  <v-row>
       <v-col cols="12">
         <v-table>
           <thead>
             <tr>
               <th></th>
-              <th>Goal 1</th>
-              <th>Goal 2</th>
-              <th>Goal 3</th>
-              <th>Goal 4</th>
-              <th>Goal 5</th>
+              <th v-for="(goal, index) in existingGoals" :key="index">Goal {{ index + 1 }}</th>
               <th>No Goals</th>
             </tr>
           </thead>
@@ -762,7 +758,7 @@
                   
                 ></v-checkbox>
               </td>
-              <td>
+              <td v-show="existingGoals.length >= 4">
                 <v-checkbox
                   :id="`${activity.activityID}-goal4`"
                   :value="activity.activityID"
@@ -774,7 +770,7 @@
                   
                 ></v-checkbox>
               </td>
-              <td>
+              <td v-show="existingGoals.length >= 5">
                 <v-checkbox
                   :id="`${activity.activityID}-goal5`"
                   :value="activity.activityID"
@@ -807,6 +803,7 @@
         <p class="text-sm text-custom-red" v-if="isGoalActivityProgressInvalid && formSubmitted">At least one checkbox must be selected per Activity.</p>
       </v-col>
     </v-row>
+
   </div>
 
   <!-- Experience contribution to Graduate/Professional Goals -->
@@ -1325,16 +1322,53 @@ export default {
   },
   computed:{
     isAspirationProgressInvalid() {
-      return !this.exitForm.progressMade.aspirationOneProgressSelected || !this.exitForm.progressMade.aspirationTwoProgressSelected || !this.exitForm.progressMade.aspirationThreeProgressSelected;
+      // Check the first two aspirations for validity as they are required.
+      const isAspirationOneInvalid = !this.exitForm.progressMade.aspirationOneProgressSelected;
+      const isAspirationTwoInvalid = !this.exitForm.progressMade.aspirationTwoProgressSelected;
+      
+      // Check if the third aspiration exists. If it doesn't, don't validate it.
+      const isAspirationThreeInvalid = this.exitForm.aspiration3 && !this.exitForm.progressMade.aspirationThreeProgressSelected;
+
+      // The form is invalid if the first two are invalid or if the third one is invalid when it exists.
+      return isAspirationOneInvalid || isAspirationTwoInvalid || isAspirationThreeInvalid;
     },
     isAspirationConnectionInvalid() {
-      return !this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || !this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || !this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected
+      const isAspirationOneConnectionInvalid = !this.exitForm.progressMade.aspirationOneExperienceConnectionSelected;
+      const isAspirationTwoConnectionInvalid = !this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected;
+
+      const isAspirationThreeConnectionInvalid = this.exitForm.aspiration3 && !this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected;
+
+      return isAspirationOneConnectionInvalid || isAspirationTwoConnectionInvalid || isAspirationThreeConnectionInvalid;
     },
     isGoalProgressInvalid() {
-      return !this.exitForm.progressMade.goalOneProgressSelected || !this.exitForm.progressMade.goalTwoProgressSelected || !this.exitForm.progressMade.goalThreeProgressSelected || !this.exitForm.progressMade.goalFourProgressSelected || !this.exitForm.progressMade.goalFiveProgressSelected
+      const goalProgressProperties = this.existingGoals.map((_, index) => {
+        const goalNumber = (index + 1).toString();
+        const suffix = goalNumber === '1' ? 'One'
+                      : goalNumber === '2' ? 'Two'
+                      : goalNumber === '3' ? 'Three'
+                      : goalNumber === '4' ? 'Four'
+                      : 'Five';
+        return `goal${suffix}ProgressSelected`;
+      });
+
+      return goalProgressProperties.some(progressProperty => {
+        return !this.exitForm.progressMade[progressProperty];
+      });
     },
     isGoalConnectionInvalid() {
-      return !this.exitForm.progressMade.goalOneExperienceConnectionSelected || !this.exitForm.progressMade.goalTwoExperienceConnectionSelected || !this.exitForm.progressMade.goalThreeExperienceConnectionSelected || !this.exitForm.progressMade.goalFourExperienceConnectionSelected || !this.exitForm.progressMade.goalFiveExperienceConnectionSelected
+      const goalConnectionProperties = this.existingGoals.map((_, index) => {
+        const goalNumber = (index + 1).toString();
+        const suffix = goalNumber === '1' ? 'One'
+                      : goalNumber === '2' ? 'Two'
+                      : goalNumber === '3' ? 'Three'
+                      : goalNumber === '4' ? 'Four'
+                      : 'Five';
+        return `goal${suffix}ExperienceConnectionSelected`;
+      });
+
+      return goalConnectionProperties.some(connectionProperty => {
+        return !this.exitForm.progressMade[connectionProperty];
+      });
     },
     goalIssuesRules() {
       return [
@@ -1352,13 +1386,28 @@ export default {
       return this.goalIssuesErrorMessage.length > 0;
     },
     isGoalActivityProgressInvalid() {
+      // Generate an array of contribution property names based on existing goals
+      const goalContributionProperties = this.existingGoals.map((_, index) => {
+        const goalNumber = index + 1;
+        const suffix = goalNumber === 1 ? 'One'
+                      : goalNumber === 2 ? 'Two'
+                      : goalNumber === 3 ? 'Three'
+                      : goalNumber === 4 ? 'Four'
+                      : 'Five';
+        return `goal${suffix}Contributions`;
+      });
+
       return this.exitForm.experienceActivities.some(activity => {
         const activityID = activity.activityID;
-        const isAnyChecked = Object.values(this.exitForm.activitiesContribution).some(contributions => 
-          contributions.includes(activityID)
-        );
+        
+        // Check if the activity contributes to any of the active goals or "None"
+        const isAnyChecked = goalContributionProperties.some(prop => 
+          this.exitForm.activitiesContribution[prop].includes(activityID)
+        ) || this.exitForm.activitiesContribution.noContributions.includes(activityID);
+        
+        // If no checkboxes are checked for the activity, return true (invalid)
         return !isAnyChecked;
-      })
+      });
     },
     isGoalActivityProgressMobileInvalid() {
       let validity = {};
@@ -1411,6 +1460,16 @@ export default {
     },
     isSupportOthersInvalid() {
       return !this.exitForm.openEnded.supportOthers;
+    },
+    existingGoals() {
+      // Filter out empty, null, or undefined goals
+      return [
+        this.exitForm.goal1, 
+        this.exitForm.goal2, 
+        this.exitForm.goal3, 
+        this.exitForm.goal4, 
+        this.exitForm.goal5
+      ].filter(goal => goal);
     },
   },
   async created() {
@@ -1530,7 +1589,7 @@ export default {
       console.log('validationResponse: ', validationResponse);
       if (validationResponse.valid) {
         console.log('form is valid');
-        return;
+        // return;
         const user = useLoggedInUserStore();
         const token = user.token;
         const apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exitForms/";
@@ -1542,25 +1601,25 @@ export default {
           exitForm: {
             progressMade: {
               aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected,
-            aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected,
-            aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected,
-            aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected,
-            aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected,
-            aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected,
+              aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected,
+              aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
+              aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected,
+              aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected,
+              aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
               goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected,
               goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected,
               goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected,
-              goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected,
-              goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected,
+              goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
+              goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
               goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected,
               goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected,
               goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected,
-              goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected,
-              goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected,
+              goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
+              goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
             },
             goalIssues: {
-            goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
-            issuesDescription: this.exitForm.goalIssues.issuesDescription
+              goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
+              issuesDescription: this.exitForm.goalIssues.issuesDescription
           },
             activitiesContribution: {
               goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
@@ -1594,11 +1653,18 @@ export default {
         };
 
         try {
-          const response = await axios.post(apiURL, exitFormData, {
+          await axios.post(apiURL, exitFormData, {
             headers: { token }
           });
-          alert("Exit form has been successfully submitted.");
-          this.$router.push('/exitFormsAvailable');
+          this.$router.push({ 
+              name: 'exitFormsAvailable',
+              params: {
+                toastType: 'success',
+                toastMessage: 'Exit Form Submitted!',
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--create'
+            }
+          });
         } catch (error) {
           this.handleError(error);
         }
