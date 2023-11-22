@@ -71,7 +71,6 @@ export const useLoggedInUserStore = defineStore({
 
         // If user is a Student, fetch Registered Experiences
         if (response.data.userRole === 'Student') {
-          console.log('student');
           await this.fetchRegisteredExperiences();
         }
         
@@ -217,13 +216,11 @@ export const useLoggedInUserStore = defineStore({
             exitFormsReleased: exitFormReleaseDate <= today, // Compare exitFormReleaseDate with today
           });
         }
-        console.log('exitFormsReleased: ', this.exitFormsReleased);
       } catch (error) {
         this.handleError(error);
       }
     },  
     async fetchRegisteredExperiences() {
-      console.log('fetchRegisteredExperiences hit');
       const token = localStorage.getItem("token");
       const url = `${apiURL}/studentSideData/registeredExperiences`;
   
@@ -232,14 +229,13 @@ export const useLoggedInUserStore = defineStore({
         if (response.data && response.data.experiences) {
           // Update the registeredExperiences state
           this.registeredExperiences = response.data.experiences;
-          console.log('this.registeredExperiences: ', this.registeredExperiences);
           this.registrationExists = true;
         } else {
           this.registrationExists = false;
           this.registeredExperiences = [];
         }
       } catch (error) {
-        console.error('Error fetching registered experiences: ', error);
+        this.handleError(error);
       }
     },  
     async registerExperiences(experienceIDs) {
@@ -269,16 +265,11 @@ export const useLoggedInUserStore = defineStore({
         await this.fetchRegisteredExperiences();
       } catch (error) {
         // Handle error
-        console.error('Error registering experiences: ', error);
-        toast.error('Error registering experiences. Please contact an administrator.', {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete'
-        });
+        this.handleError(error);
       }
     },
     async handleError(error) {
-      console.log('handle Error HIT');
-      console.log(error);
+      // console.log(error);
       toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',

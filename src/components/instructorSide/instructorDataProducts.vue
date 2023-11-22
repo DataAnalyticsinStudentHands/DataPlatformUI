@@ -91,13 +91,10 @@
           // Fetch JSON data from the API endpoint
           const response = await axios.get(import.meta.env.VITE_ROOT_API +'/studentSideData/exitForms/all', { headers: { token } });
           const jsonData = response.data;
-          console.log('jsonData: ', jsonData);
   
           // Convert JSON to CSV format
           const csvData = this.convertExitFormToCSV(jsonData);
 
-          console.log('csvData: ', csvData);
-  
           // Create a Blob containing the CSV data
           const blob = new Blob([csvData], { type: 'text/csv' });
   
@@ -351,7 +348,6 @@
   
 
   convertExitFormToCSV(jsonData) {
-    console.log('convertExitFormToCSV hit');
     // Define the mapping from JSON variable names to CSV variable names
     const renameMap = {
         "_id": "exit_form_id",

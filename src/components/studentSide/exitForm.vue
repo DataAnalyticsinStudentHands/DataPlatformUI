@@ -1520,13 +1520,11 @@ export default {
 
     fetchExperienceData() {
       const experienceID = this.$route.params.id;
-      console.log('experienceID: ', experienceID);
       const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/experience/${experienceID}`;
 
       axios.get(apiURL)
         .then((response) => {
           this.exitForm.experience = response.data;
-          console.log('this.exitForm.experience: ', this.exitForm.experience);
           if (this.exitForm.experience.experienceCategory === 'Data & Society') {
             this.dataAndSociety = true;
           };
@@ -1537,7 +1535,6 @@ export default {
     },
 
     fetchExperienceActivities() {
-      console.log('fetchExperienceActivities hit')
       const experienceID = this.$route.params.id;
       const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/experience/${experienceID}/activities`;
 
@@ -1555,28 +1552,21 @@ export default {
     },
 
     fetchGoalSettingFormData() {
-      console.log('fetchGoalSettingFormData hit');
       const user = useLoggedInUserStore();
       const token = user.token;
       const experienceID = this.$route.params.id; // Use experienceID from route params
-
-      console.log('experienceID: ', experienceID);
 
       const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${experienceID}`;
 
       axios.get(apiURL, { headers: { token } })
         .then((resp) => {
-          console.log('resp.data: ', resp.data);
-          console.log('resp.data._id: ', resp.data._id);
           this.goalFormExists = resp.data.goalFormExists;
 
           if (this.goalFormExists) {
-            console.log('Goal form exists');
             const goalFormData = resp.data.goalForm;
 
             // Set the goal setting form ID
             this.exitForm.goalSettingFormID = resp.data._id;
-            console.log('this.exitForm.goalSettingFormID: ', this.exitForm.goalSettingFormID);
 
             // Update aspirations
             this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
@@ -1610,9 +1600,7 @@ export default {
     async handleSubmitForm() {
       this.formSubmitted = true;
       const validationResponse = await this.$refs.exitForm.validate();
-      console.log('validationResponse: ', validationResponse);
       if (validationResponse.valid) {
-        console.log('form is valid');
         // return;
         const user = useLoggedInUserStore();
         const token = user.token;

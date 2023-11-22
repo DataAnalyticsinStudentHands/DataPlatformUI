@@ -221,7 +221,6 @@ export default {
         }
     },
     async mounted() {
-      console.log('mounted');
       this.fetchExperiences();
     },
     computed: {
@@ -271,19 +270,14 @@ export default {
             return this.selectedExperiences.some(selectedExp => selectedExp._id === experience._id);
         },
         async fetchExperiences() {
-          console.log('fetchExperiences hit');
           const user = useLoggedInUserStore();
           let token = user.token;
-          console.log('token: ', token)
           let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experiencesWithActivities/';
-          console.log('apiURL: ', apiURL)
 
           try {
             const response = await axios.get(apiURL, { headers: { token } });
-            console.log('response.data: ', response.data);
             this.allExperiences = response.data;
           } catch (error) {
-            console.log('fetchExperiences error in method')
             this.handleError(error);
           }
         },
