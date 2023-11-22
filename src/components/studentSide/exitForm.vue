@@ -1668,6 +1668,8 @@ export default {
           await axios.post(apiURL, exitFormData, {
             headers: { token }
           });
+          const store = useLoggedInUserStore();
+          store.checkFormCompletion();
           this.$router.push({ 
               name: 'exitFormsAvailable',
               params: {
