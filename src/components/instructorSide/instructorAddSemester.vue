@@ -40,6 +40,13 @@
             </tr>
           </tbody>
         </v-table>
+
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field type="date" v-model="semester.exitFormReleaseDate" label="Exit Form Release Date"></v-text-field>
+          </v-col>
+        </v-row>
+
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
         <v-btn @click=$router.back() style="margin-left: 10px;">
@@ -61,6 +68,7 @@ export default {
         semesterName: "",
         semesterStartDate: "",
         semesterEndDate: "",
+        exitFormReleaseDate: "", 
       },
       experiences: [],
       selectedExperiences: [],
@@ -90,7 +98,8 @@ export default {
       if (
         !this.semester.semesterName ||
         !this.semester.semesterStartDate ||
-        !this.semester.semesterEndDate
+        !this.semester.semesterEndDate ||
+        !this.semester.exitFormReleaseDate
       ) {
         this.errorMessage = "Please fill in all fields.";
         return;
@@ -105,6 +114,7 @@ export default {
           semesterName: this.semester.semesterName,
           semesterStartDate: this.semester.semesterStartDate,
           semesterEndDate: this.semester.semesterEndDate,
+          exitFormReleaseDate: this.semester.exitFormReleaseDate,
           experiences: this.selectedExperiences, 
         }, { headers: { token } })
         .then(() => {

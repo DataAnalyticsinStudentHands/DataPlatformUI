@@ -432,7 +432,7 @@ const routes = [
     {
       path: '/studentDashboard',
       name: 'studentDashboard',
-      component: () => import('../components/studentSide/studentDashboard.vue'),
+      component: () => import('../components/studentSide/studentDash/studentDashboard.vue'),
       beforeEnter: (to, from, next) => {
         // Use the Pinia store
         const userStore = useLoggedInUserStore();

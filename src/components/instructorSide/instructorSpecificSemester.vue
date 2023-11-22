@@ -40,6 +40,11 @@
           </tr>
         </tbody>
       </v-table>
+      <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field type="date" v-model="semester.exitFormReleaseDate" label="Exit Form Release Date"></v-text-field>
+          </v-col>
+        </v-row>
       <div style="text-align:left;">
         <v-btn style="text-align:center;" @click="handleUpdateForm" class="mr-4">
           Update
@@ -70,6 +75,7 @@ export default {
         semesterStartDate: '',
         semesterEndDate: '',
         semesterStatus: false,
+        exitFormReleaseDate: "", 
         experiences: [],
       },
       selectedExperiences: [],
@@ -103,6 +109,9 @@ export default {
             .plus({ days: 1 })
             .toISODate();
           this.semester.semesterStatus = data.semesterStatus;
+          this.semester.exitFormReleaseDate = DateTime.fromISO(data.exitFormReleaseDate)
+            .plus({ days: 1 })
+            .toISODate();
           this.selectedExperiences = data.experiences;
         })
         .catch((error) => {
@@ -130,7 +139,8 @@ export default {
       const updatedSemester = {
         semesterName: this.semester.semesterName,
         semesterStartDate: this.semester.semesterStartDate,
-        semesterEndDate:this.semester.semesterEndDate,
+        semesterEndDate: this.semester.semesterEndDate,
+        exitFormReleaseDate: this.semester.exitFormReleaseDate,
         experiences: this.selectedExperiences,
       };
       let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/semesters`;

@@ -23,6 +23,10 @@ export const useLoggedInUserStore = defineStore({
       loading: false,
       semesterName: "",
       currentActivityId: null,
+      exitFormsReleased: false,
+      exitFormCompletion: {},
+      registrationExists: false,
+      registeredExperiences: [],
     }
   },
   getters: { //getting the roles
@@ -64,6 +68,12 @@ export const useLoggedInUserStore = defineStore({
         await this.getFullName();
 
         await this.getCurrentSemester();
+
+        // If user is a Student, fetch Registered Experiences
+        if (response.data.userRole === 'Student') {
+          console.log('student');
+          await this.fetchRegisteredExperiences();
+        }
         
         
         }
@@ -95,6 +105,10 @@ export const useLoggedInUserStore = defineStore({
         goalSettingFormCompletion: {},
         loading: false,
         currentActivityId: null,
+        exitFormsReleased: false,
+        exitFormCompletion: {},
+        registrationExists: false,
+        registeredExperiences: [],
       });
 
       // Clear the token from localStorage
@@ -165,6 +179,7 @@ export const useLoggedInUserStore = defineStore({
             hasCompletedEntryForm: response.data.hasCompletedEntryForm,
             hasRegisteredExperiences: response.data.hasRegisteredExperiences,
             goalSettingFormCompletion: response.data.goalSettingFormCompletion,
+            exitFormCompletion: response.data.exitFormCompletion,
           });
         }
       } catch (error) {
@@ -194,13 +209,81 @@ export const useLoggedInUserStore = defineStore({
         });
         
         if (response && response.data) {
+          const today = new Date(); // Define today's date
+          const exitFormReleaseDate = new Date(response.data.exitFormReleaseDate); // Convert the exitFormReleaseDate to a Date object
+    
           this.$patch({
-            semesterName: response.data.semesterName
+            semesterName: response.data.semesterName,
+            exitFormsReleased: exitFormReleaseDate <= today, // Compare exitFormReleaseDate with today
           });
         }
+        console.log('exitFormsReleased: ', this.exitFormsReleased);
       } catch (error) {
-          this.handleError(error)
+        this.handleError(error);
       }
+    },  
+    async fetchRegisteredExperiences() {
+      console.log('fetchRegisteredExperiences hit');
+      const token = localStorage.getItem("token");
+      const url = `${apiURL}/studentSideData/registeredExperiences`;
+  
+      try {
+        const response = await axios.get(url, { headers: { token } });
+        if (response.data && response.data.experiences) {
+          // Update the registeredExperiences state
+          this.registeredExperiences = response.data.experiences;
+          console.log('this.registeredExperiences: ', this.registeredExperiences);
+          this.registrationExists = true;
+        } else {
+          this.registrationExists = false;
+          this.registeredExperiences = [];
+        }
+      } catch (error) {
+        console.error('Error fetching registered experiences: ', error);
+      }
+    },  
+    async registerExperiences(experienceIDs) {
+      const token = localStorage.getItem('token');
+      const method = this.registrationExists ? 'put' : 'post';
+      const url = `${apiURL}/studentSideData/registerExperiences`;
+  
+      try {
+        await axios({
+          method,
+          url,
+          headers: { token },
+          data: { experienceIDs },
+        });
+  
+        // Update the store's state
+        this.registrationExists = true;
+        this.registeredExperiences = experienceIDs;
+  
+        // Additional logic if needed
+        toast.success('Experiences Registered!', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--create'
+        });
+  
+        await this.checkFormCompletion();
+        await this.fetchRegisteredExperiences();
+      } catch (error) {
+        // Handle error
+        console.error('Error registering experiences: ', error);
+        toast.error('Error registering experiences. Please contact an administrator.', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete'
+        });
+      }
+    },
+    async handleError(error) {
+      console.log('handle Error HIT');
+      console.log(error);
+      toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          limit: 1,
+      });
     },
     persist: {
       storage: sessionStorage

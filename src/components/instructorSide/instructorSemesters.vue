@@ -2,7 +2,7 @@
 
 <template>
   <main class="">
-    <center>
+    <div class="text-center">
       <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem">
         <router-link class="" to="/instructorSemesters">Semesters</router-link> |
         <router-link class="" to="/instructorExperiences">Experiences</router-link> |
@@ -30,7 +30,7 @@
       </v-btn>
       <br><br>
       <v-text-field v-model="searchTerm" placeholder="Search by semester name or date ranges"></v-text-field>
-    </center>
+    </div>
 
     <div v-if="loading" justify="center" align="center">
       <v-progress-circular indeterminate></v-progress-circular>

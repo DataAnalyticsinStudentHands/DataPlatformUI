@@ -40,6 +40,8 @@
     </v-row>
 
     <!-- Aspirations -->
+    <div v-if="goalFormExists">
+
     <v-row dense>
       <v-col cols="12">
         <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know whether you feel you made progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.</p>
@@ -806,6 +808,8 @@
 
   </div>
 
+  </div>
+
   <!-- Experience contribution to Graduate/Professional Goals -->
   <v-row class="mt-5">
     <v-col cols="12">
@@ -831,7 +835,6 @@
       <!-- Data & Society likelihood questions -->
 
     <!-- If Experience is not Data & Society, hide -->
-    dataAndSociety: {{ dataAndSociety }}
     <div v-if="dataAndSociety">
 
     <!-- Mobile View -->
@@ -1130,30 +1133,30 @@ export default {
         ],
         progressMade: {
           aspirationOneProgressResults: [
-            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress", checked: false }
           ],
           aspirationTwoProgressResults: [
-            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress", checked: false }
           ],
           aspirationThreeProgressResults: [
-            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress", checked: false }
           ],
           aspirationOneProgressSelected: "",
           aspirationTwoProgressSelected:"",
           aspirationThreeProgressSelected: "",
           aspirationOneExperienceConnection: [
-            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course.", checked: false },
-            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course.",  checked: false },
-            { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course.",  checked: false }
+            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course", checked: false },
+            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course",  checked: false },
+            { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course",  checked: false }
           ],
           aspirationTwoExperienceConnection: [
             { id: 1, label: "The progress I made towards this aspiration was largely due to this course",  xs_label: "Largely due to this course.", checked: false },
@@ -1169,34 +1172,34 @@ export default {
           aspirationTwoExperienceConnectionSelected: null,
           aspirationThreeExperienceConnectionSelected: null,
           goalOneProgressResults: [
-            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
           ],
           goalTwoProgressResults: [
-            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
           ],
           goalThreeProgressResults: [
-            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
           ],
           goalFourProgressResults: [
-            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
           ],
           goalFiveProgressResults: [
-            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress.", checked: false },
-            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress.", checked: false },
-            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress.", checked: false },
-            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress.", checked: false }
+            { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+            { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+            { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+            { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
           ],
           goalOneProgressSelected: null,
           goalTwoProgressSelected: null,
@@ -1204,29 +1207,29 @@ export default {
           goalFourProgressSelected: null,
           goalFiveProgressSelected: null,
           goalOneExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
           ],
           goalTwoExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
           ],
           goalThreeExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
           ],
           goalFourExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
           ],
           goalFiveExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
           ],
           goalOneExperienceConnectionSelected: null,
           goalTwoExperienceConnectionSelected: null,
@@ -1318,13 +1321,14 @@ export default {
         return !!value || 'Information is required.';
       },
       dataAndSociety: false,
+      goalFormExists: false,
     };
   },
   mounted() {
-    this.fetchGoalSettingFormData();
-    this.fetchGoalFormActivities();
     this.fetchSemester();
     this.fetchExperienceData();
+    this.fetchExperienceActivities();
+    this.fetchGoalSettingFormData();
   },
   computed:{
     isAspirationProgressInvalid() {
@@ -1515,12 +1519,14 @@ export default {
 },
 
     fetchExperienceData() {
-      const goalFormID = this.$route.params.id;
-      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}/experiencedata`;
+      const experienceID = this.$route.params.id;
+      console.log('experienceID: ', experienceID);
+      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/experience/${experienceID}`;
 
       axios.get(apiURL)
         .then((response) => {
           this.exitForm.experience = response.data;
+          console.log('this.exitForm.experience: ', this.exitForm.experience);
           if (this.exitForm.experience.experienceCategory === 'Data & Society') {
             this.dataAndSociety = true;
           };
@@ -1529,9 +1535,11 @@ export default {
           this.handleError(error);
         });
     },
-    fetchGoalFormActivities() {
-      const goalFormID = this.$route.params.id;
-      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}/activities`;
+
+    fetchExperienceActivities() {
+      console.log('fetchExperienceActivities hit')
+      const experienceID = this.$route.params.id;
+      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/experience/${experienceID}/activities`;
 
       axios.get(apiURL)
         .then((resp) => {
@@ -1547,19 +1555,29 @@ export default {
     },
 
     fetchGoalSettingFormData() {
+      console.log('fetchGoalSettingFormData hit');
       const user = useLoggedInUserStore();
       const token = user.token;
-      const goalFormID = this.$route.params.id;
-      console.log('goalFormID: ', goalFormID);
-      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${goalFormID}`;
+      const experienceID = this.$route.params.id; // Use experienceID from route params
+
+      console.log('experienceID: ', experienceID);
+
+      const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${experienceID}`;
 
       axios.get(apiURL, { headers: { token } })
         .then((resp) => {
-          this.exitForm.goalSettingFormID=resp.data._id;
+          console.log('resp.data: ', resp.data);
+          console.log('resp.data._id: ', resp.data._id);
+          this.goalFormExists = resp.data.goalFormExists;
 
-          const goalFormData = resp.data?.goalForm;
+          if (this.goalFormExists) {
+            console.log('Goal form exists');
+            const goalFormData = resp.data.goalForm;
 
-          if (goalFormData) {
+            // Set the goal setting form ID
+            this.exitForm.goalSettingFormID = resp.data._id;
+            console.log('this.exitForm.goalSettingFormID: ', this.exitForm.goalSettingFormID);
+
             // Update aspirations
             this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
             this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
@@ -1570,9 +1588,6 @@ export default {
             this.exitForm.goal3 = goalFormData.goals?.goalThree;
             this.exitForm.goal4 = goalFormData.goals?.goalFour;
             this.exitForm.goal5 = goalFormData.goals?.goalFive;
-
-          } else {
-            this.handleError("Goal form data not found in the response.");
           }
         })
         .catch((error) => {
@@ -1609,20 +1624,20 @@ export default {
           goalSettingFormID: this.exitForm.goalSettingFormID,
           exitForm: {
             progressMade: {
-              aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected,
-              aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected,
+              aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
+              aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected || "No aspiration",
               aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
-              aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected,
-              aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected,
+              aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
+              aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
               aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
-              goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected,
-              goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected,
-              goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected,
+              goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected || "No goal",
+              goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected || "No goal",
+              goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected || "No goal",
               goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
               goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
-              goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected,
-              goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected,
-              goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected,
+              goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
+              goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
+              goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
               goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
               goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
             },

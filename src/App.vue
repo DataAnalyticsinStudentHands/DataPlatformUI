@@ -79,7 +79,7 @@
             >Student Entry Form</v-list-item>
             <v-list-item 
               :active="activeLink === 'goalSettingForm'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && !user.exitFormsReleased"
               to="goalSettingForm"
               prepend-icon="mdi-file-document"
               value="goalSettingForm"
@@ -87,7 +87,7 @@
             >Goal Setting Form</v-list-item>
             <v-list-item 
               :active="activeLink === 'exitFormsAvailable'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.exitFormsReleased"
               to="exitFormsAvailable"
               prepend-icon="mdi-file-document"
               value="exitFormsAvailable"

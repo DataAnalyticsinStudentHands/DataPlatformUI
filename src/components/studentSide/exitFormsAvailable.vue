@@ -1,11 +1,9 @@
 <!-- /exitFormsAvailable -->
 <template>
   <main class="">
-    <center>
       <br>
-      <p class="font-weight-black text-h6">Exit Forms</p>
+      <p class="font-weight-black text-h6 text-center">Exit Forms</p>
       <br>
-    </center>
     <div style="display: flex; justify-content: center;">
       <div style="max-height: 400px; overflow-y: auto;">
         <v-table style="width: 100%">
@@ -19,16 +17,16 @@
             </tr>
           </thead>
           <tbody>
-            <template v-if="completedExperiences !== undefined && completedExperiences.length === 0">
+            <template v-if="experiences !== undefined && experiences.length === 0">
               <tr>
                 <td colspan="5" class="text-center">No Exit Forms available.</td>
               </tr>
             </template>
             <template v-else>
-              <tr v-for="(experience, index) in completedExperiences" :key="experience.goalFormID">
+              <tr v-for="(experience, index) in experiences" :key="experience.experienceID">
                 <td></td>
-                <td class="text-left" @click="createExitForm(experience.goalFormID, index)">{{ experience.experienceName }}</td>
-                <td class="text-left" @click="createExitForm(experience.goalFormID, index)">{{ experience.exitFormCreated ? 'Complete' : 'Incomplete' }}</td>
+                <td class="text-left" @click="createExitForm(experience)">{{ experience.experienceName }}</td>
+                <td class="text-left" @click="createExitForm(experience)">{{ experience.exitFormCreated ? 'Complete' : 'Incomplete' }}</td>
                 <td></td>
                 <td></td>
               </tr>
@@ -49,12 +47,12 @@ import 'vue3-toastify/dist/index.css';
 export default {
   data() {
     return {
-      completedExperiences: [],
+      experiences: [],
       searchTerm: "",
     };
   },
   mounted() {
-    this.fetchCompletedExperiences();
+    this.fetchExperiences();
     window.scrollTo(0, 0);
     if (this.$route.params.toastType) {
       toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
@@ -64,7 +62,7 @@ export default {
     }
   },
   methods: {
-    fetchCompletedExperiences() {
+    fetchExperiences() {
       const user = useLoggedInUserStore();
       const token = user.token;
       const apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/completedExperiences";
@@ -72,16 +70,23 @@ export default {
       axios
         .get(apiURL, { headers: { token } })
         .then((resp) => {
-          this.completedExperiences = resp.data;
+          this.experiences = resp.data;
         })
         .catch((error) => {
           this.handleError(error);
         });
     },
 
-    createExitForm(goalSettingFormID, index) {
-      this.$router.push({ name: "exitForm", params: { id: goalSettingFormID } });
+    createExitForm(experience) {
+      this.$router.push({ 
+        name: "exitForm", 
+        params: { 
+          id: experience.experienceID
+        } 
+      });
     },
+
+
   },
 };
 </script>
