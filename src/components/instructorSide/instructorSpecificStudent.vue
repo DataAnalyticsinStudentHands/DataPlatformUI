@@ -35,6 +35,7 @@
               <p style="margin: 0;">{{ languagePreferenceValue }}</p>
             </v-col>
           </v-row>
+          <div v-if="studentData">
         <br><p class="font-weight-black text-h6">Demographics Information</p>
         <v-row>
             <v-col cols="12" md="6">
@@ -233,6 +234,7 @@
                 <p style="margin: 0;">{{ this.studentData.specializedDegCert.professionalDesignOther }}</p>
               </v-col>
             </v-row> 
+          </div>
       </v-container>
   </v-form>
 </template>
@@ -257,7 +259,7 @@ beforeMount() {
       let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
       const resp = await axios.get(url + `/${this.$route.params.userID}`, { headers: { token }});
       this.userData = resp.data.userData;
-      this.studentData = resp.data.studentData.studentInformation;
+      this.studentData = resp.data.studentData?.studentInformation;
     } catch (error) {
       this.handleError('Error fetching student information:', error);
     }

@@ -16,6 +16,9 @@
             <v-tab value="goalForms">
               Goal Form Monitor
             </v-tab>
+            <v-tab value="pending">
+              Pending Monitor
+            </v-tab>
           </v-tabs>
 
           <v-row>
@@ -37,6 +40,11 @@
             <StudentsWithoutGoalForms />
           </div>
 
+          <!-- Content for Pending Status -->
+          <div v-if="tab === 'pending'">
+            <PendingStudents />
+          </div>
+
         </v-col>
       </v-row>
     </v-container>
@@ -45,11 +53,13 @@
   <script>
   import StudentsWithoutGoalForms from './studentsWithoutGoalForms.vue';
   import StudentsWithoutEntryForms from './studentsWithoutEntryForms.vue';
+  import PendingStudents from './pendingStudents.vue';
   
   export default {
     components: {
       StudentsWithoutGoalForms,
       StudentsWithoutEntryForms,
+      PendingStudents
     },
     data() {
       return {

@@ -85,13 +85,6 @@
     mounted() {
       this.fetchExperiences();
     },
-    watch: {
-        selectedExperience(newVal, oldVal) {
-        if (newVal !== oldVal) {
-            this.fetchStudentsWithoutGoalForm(newVal);
-        }
-        }
-    },
     computed: {
       formattedExperiences() {
         return this.experiences.map(experience => ({
@@ -151,6 +144,7 @@
   </script>
   
   <style scoped>
+
 
 .v-field__input > input[size="1"] {
   background-color: transparent;
