@@ -98,6 +98,7 @@ export default {
 
             if (res.status === 200) {
                 await store.verifyExistingAcc(res.data);
+                await store.getFullName();
                 store.isLoggedIn = true;
                 // Navigate to the appropriate dashboard based on the user's role
                 if (store.role === 'Instructor') {

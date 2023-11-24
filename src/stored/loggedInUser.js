@@ -160,7 +160,7 @@ export const useLoggedInUserStore = defineStore({
       }
 
       // Fetch the full name of the user
-      await this.getFullName();
+      // await this.getFullName();
     },
     async verifyFromRegistration() {
 
