@@ -10,13 +10,13 @@
             centered 
             grow
             density="comfortable"
-            slider-color="red-800"
+            slider-color="custom-red"
           >
             <v-tab @click="changeRoute('/login')" value="login">
-              <span class="font-semibold text-red-800">{{ $t('Login') }}</span>
+              <span class="font-semibold text-custom-red">{{ $t('Login') }}</span>
             </v-tab>
             <v-tab @click="changeRoute('/register')" value="register">
-              <span class="font-semibold text-red-800">{{$t('Register')}}</span>
+              <span class="font-semibold text-custom-red">{{$t('Register')}}</span>
             </v-tab>
           </v-tabs>
           <v-row class="mb-n4 align-center justify-end">
@@ -27,7 +27,7 @@
                 v-model="language"
                 inset
                 hide-details
-                color="red-800"
+                color="custom-red"
                 @change="changeLanguage"
                 label="ES"
                 class="switch-container"
@@ -110,7 +110,7 @@ export default {
         // After successful login, check if the user has completed forms
         await this.store.checkFormCompletion();
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
     changeRoute(payload) {

@@ -74,7 +74,7 @@ export default {
           this.activities = activities.filter((activity) => activity.activityStatus === true);
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
 
@@ -102,7 +102,7 @@ export default {
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
   },

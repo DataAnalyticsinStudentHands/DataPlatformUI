@@ -2,7 +2,7 @@
     <v-card-text>
         <v-row>
             <v-col cols="12" class="pb-0">
-                <h2 class="font-bold text-2xl text-red-700 tracking-widest">
+                <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                     {{$t('Please Verify Your Email')}}
                 </h2>
             </v-col>
@@ -30,7 +30,7 @@
                                     :loading="loading"
                                     type="submit" 
                                     block 
-                                    class="mt-3 bg-red-700 text-white rounded"
+                                    class="mt-3 bg-custom-red text-white rounded"
                                 >{{$t('Submit')}}</v-btn>
                             </v-col>
                        </v-row>
@@ -98,6 +98,7 @@ export default {
 
             if (res.status === 200) {
                 await store.verifyExistingAcc(res.data);
+                await store.getFullName();
                 store.isLoggedIn = true;
                 // Navigate to the appropriate dashboard based on the user's role
                 if (store.role === 'Instructor') {
@@ -131,7 +132,7 @@ export default {
                             autoClose: false,
                         });
                     } catch (error) {
-                        console.log(error);
+                        this.handleError(error);
                     }
                 } else if (err.response.data.title === 'Invalid code') {
                     toast.error(this.$t('Invalid code.'), {

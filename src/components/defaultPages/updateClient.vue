@@ -119,7 +119,7 @@ export default {
         .then(() => {
           alert("Update has been saved.");
           this.$router.back().catch((error) => {
-            console.log(error);
+            this.handleError(error);
           });
         });
     },

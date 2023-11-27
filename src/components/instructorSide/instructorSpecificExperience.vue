@@ -38,12 +38,12 @@
         </tbody>
       </v-table>
     </div>
-    <div style="text-align: right;">
-      <v-btn @click=$router.back() style="margin-right: 10px;">
+    <div style="text-align: left;">
+      <v-btn style="text-align: center;" @click="updateExperience" class="ml-4 mr-4">Update</v-btn>
+      <v-btn @click=$router.back()>
           Cancel
         </v-btn>
 
-      <v-btn style="text-align: center;" @click="updateExperience">Update</v-btn>
 
     </div>
 
@@ -67,9 +67,9 @@ export default {
     };
   },
 
-  beforeMount() {
+  mounted() {
     window.scrollTo(0, 0);
-    this.fetchExperienceData(); // Fetch experience data before component is mounted
+    this.fetchExperienceData(); // Fetch experience data when component is mounted
     this.fetchActivityData(); // Fetch activities after experience data
   },
 
@@ -91,7 +91,7 @@ export default {
           this.selectedActivities = experience.activities;
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
 
@@ -106,7 +106,7 @@ export default {
           this.activities = activities.filter((activity) => activity.activityStatus === true);
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
 
@@ -135,7 +135,7 @@ export default {
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
     

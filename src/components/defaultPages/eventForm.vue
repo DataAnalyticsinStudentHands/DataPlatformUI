@@ -292,7 +292,7 @@ export default {
             this.checkedServices = [];
           })
           .catch((error) => {
-            console.log(error);
+            this.handleError(error);
           });
       }
     },

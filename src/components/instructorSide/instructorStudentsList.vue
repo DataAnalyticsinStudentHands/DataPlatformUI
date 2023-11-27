@@ -170,7 +170,7 @@ export default {
       window.scrollTo(0, 0);
     } catch (error) {
       // Handle any errors that occur during the fetch operations
-      console.error('Error:', error);
+      this.handleError('Error:', error);
     }
   },
 
@@ -229,13 +229,13 @@ export default {
           this.fetchStudentData();
           this.fetchIncompletedStudentData();
 
-          toast.error(message, {
+          toast.success(message, {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
+            toastClassName: 'Toastify__toast--create'
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
     
@@ -279,7 +279,7 @@ activateStudents() {
       });
     })
     .catch((error) => {
-      console.log(error);
+      this.handleError(error);
     });
 },
 
@@ -315,7 +315,7 @@ activateStudents() {
         const resp = await axios.get(apiURL, { headers: { token } });
         this.studentListRaw = resp.data.data;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
 
@@ -328,7 +328,7 @@ activateStudents() {
         const resp = await axios.get(apiURL, { headers: { token } });
         this.userListRaw = resp.data.userData;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       } finally {
         useLoggedInUserStore().stopLoading();
       }

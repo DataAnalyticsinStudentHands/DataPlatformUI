@@ -335,6 +335,45 @@ const routes = [
       }
     },
     {
+      path: '/instructorProgressMonitorContainer',
+      name: 'instructorProgressMonitorContainer',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/instructorProgressMonitorContainer.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/studentsWithoutGoalForms',
+      name: 'studentsWithoutGoalForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutGoalForms.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/studentsWithoutEntryForms',
+      name: 'studentsWithoutEntryForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutEntryForms.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/studentEntryForm',
       name: 'studentEntryForm',
       props: true,
@@ -393,7 +432,7 @@ const routes = [
     {
       path: '/studentDashboard',
       name: 'studentDashboard',
-      component: () => import('../components/studentSide/studentDashboard.vue'),
+      component: () => import('../components/studentSide/studentDash/studentDashboard.vue'),
       beforeEnter: (to, from, next) => {
         // Use the Pinia store
         const userStore = useLoggedInUserStore();

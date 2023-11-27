@@ -39,7 +39,7 @@
               />
               <span class="text-black" v-if="v$.newPassword.$error">
                 <p
-                  class="text-red-700"
+                  class="text-custom-red"
                   v-for="error of v$.newPassword.$errors"
                   :key="error.$uid"
                 >
@@ -88,7 +88,7 @@
           <button
             @click="activateAccount"
             type="submit"
-            class="bg-red-700 text-white rounded"
+            class="bg-custom-red text-white rounded"
           >
             Reset Password
           </button>

@@ -22,17 +22,17 @@
       
       <br><br>
 
-      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateActivities" v-if="selectedActivities.length > 0">
+      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateActivities" v-if="selectedActivities.length > 0 && !showInactive">
         Deactivate
       </v-btn>
 
-      <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0">
+      <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0 && showInactive">
         Activate
       </v-btn>
       
       <br><br>
 
-      <!-- Add the search input field -->
+      <!-- Search input field -->
       <v-text-field
         v-model="searchQuery"
         label="Search by activity name"
@@ -41,6 +41,20 @@
         outlined
         dense
       ></v-text-field><br>
+
+      <!-- Search by Experiences-->
+      <v-autocomplete
+        v-model="selectedExperiences"
+        :items="experiences"
+        item-title="experienceName"
+        item-value="_id"
+        label="Filter by Experience"
+        multiple
+        chips
+        single-line
+        clearable
+        return-object
+      ></v-autocomplete><br>
 
     </center>
     <div v-if="loading" justify="center" align="center">
@@ -54,7 +68,6 @@
             <tr>
               <th class="text-left"></th>
               <th class="text-left">Activity Name</th>
-              <th class="text-left">Status</th>
               <th></th>
               <th></th>
             </tr>
@@ -78,7 +91,6 @@
               </td>
 
               <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityName }}</td>
-              <td class="text-left" @click="editActivity(activity._id)">{{ activity.activityStatus ? 'Active' : 'Inactive' }}</td>
 
               <td></td>
               <td></td>
@@ -105,17 +117,20 @@ export default {
       selectedActivities: [],
       searchQuery: '',
       hoverId: null,
+      experiences: [],
+      selectedExperiences: [],
     };
   },
 
   mounted() {
     useLoggedInUserStore().startLoading();
-    this.fetchActivityData()
+    this.fetchActivityData();
+    this.fetchExperienceData()
     .then(() => {
       useLoggedInUserStore().stopLoading();
     })
     .catch((error) => {
-      console.log(error)
+      this.handleError(error)
       useLoggedInUserStore().stopLoading();
     });
 
@@ -137,8 +152,24 @@ export default {
         const resp = await axios.get(apiURL, { headers: { token } });
         this.activityData = resp.data;
       } catch (error) {
-        console.log(error);
-        throw error
+        this.handleError(error);
+        throw error;
+      }
+    },
+
+    async fetchExperienceData() {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/active/";
+        const resp = await axios.get(apiURL, {headers: { token }});
+        this.experiences = resp.data.map(exp => ({
+          _id: exp._id,
+          experienceName: exp.experienceName
+        }));
+      } catch (error) {
+        this.handleError(error);
+        throw error;
       }
     },
 
@@ -147,11 +178,14 @@ export default {
     },
 
     editActivity(activityID) {
-      this.$router.push({ name: "instructorSpecificActivity", params: { id: activityID } });
+      const store = useLoggedInUserStore();
+      store.currentActivityId = activityID;
+      this.$router.push({ name: "instructorSpecificActivity" });
     },
 
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+      this.selectedActivities = [];
     },
 
     deactivateActivities() {
@@ -169,13 +203,13 @@ export default {
           const message = (this.selectedActivities.length === 1 ? 'Activity' : 'Activities') + ' deactivated!'
           this.selectedActivities = [];
           this.fetchActivityData();
-          toast.error(message, {
+          toast.success(message, {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
+            toastClassName: 'Toastify__toast--create'
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
 
@@ -200,7 +234,7 @@ export default {
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     }
     
@@ -209,16 +243,29 @@ export default {
   computed: {
     filteredActivityData() {
       const query = this.searchQuery.toLowerCase().trim();
-      if (this.showInactive) {
-        return this.activityData.filter(
-          (activity) =>
-            !activity.activityStatus && activity.activityName.toLowerCase().includes(query)
-        );
-      } else {
-        return this.activityData.filter((activity) =>
-          activity.activityStatus && activity.activityName.toLowerCase().includes(query)
+
+      // Show only active/inactie activities based on toggle
+      let filteredData = this.activityData.filter((activity) => 
+        this.showInactive ? !activity.activityStatus : activity.activityStatus
+      );
+
+      // If there is a search query, further filter the data
+      if (query) {
+        filteredData = filteredData.filter((activity) => 
+          activity.activityName.toLowerCase().includes(query)
         );
       }
+
+      // If an Experience is selected, filter the data
+      if (this.selectedExperiences && this.selectedExperiences.length) {
+        filteredData = filteredData.filter((activity) => 
+          activity.experiences && activity.experiences.some((exp) =>
+            this.selectedExperiences.map(e => e._id).includes(exp._id)
+          )
+        );
+      }
+
+      return filteredData;
     },
     loading() {
       const store = useLoggedInUserStore()
@@ -230,6 +277,18 @@ export default {
 </script>
 
 <style>
+.v-field__input > input[size="1"] {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.v-field__input > input[size="1"]::before,
+.v-field__input > input[size="1"]::after {
+  display: none;
+}
+
 #contentNavbar .nav-link.router-link-exact-active {
   background-color: #eee;
 }

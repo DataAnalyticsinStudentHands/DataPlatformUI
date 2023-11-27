@@ -255,11 +255,11 @@ export default {
           this.email = response.data.email;
           this.sendNewCode();
         } else {
-          console.error('Error:', error);
+          this.handleError('Error:', error);
           this.newCodeLoading = false;
         }
       } catch (error) {
-        console.error('Error:', error);
+        this.handleError('Error:', error);
         this.newCodeLoading = false;
       }
     },

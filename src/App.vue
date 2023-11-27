@@ -79,7 +79,7 @@
             >Student Entry Form</v-list-item>
             <v-list-item 
               :active="activeLink === 'goalSettingForm'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && !user.exitFormsReleased"
               to="goalSettingForm"
               prepend-icon="mdi-file-document"
               value="goalSettingForm"
@@ -87,7 +87,7 @@
             >Goal Setting Form</v-list-item>
             <v-list-item 
               :active="activeLink === 'exitFormsAvailable'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.exitFormsReleased"
               to="exitFormsAvailable"
               prepend-icon="mdi-file-document"
               value="exitFormsAvailable"
@@ -165,22 +165,34 @@
       </v-navigation-drawer>
 
       <v-app-bar 
-        scroll-target="#main"
-        scroll-behavior="hide"
-        scroll-threshold="10"
-        style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
-      >
-        <v-btn 
-          v-if="!drawer"
-          icon 
-          @click="drawer = true; rail = false"
-        >
-          <v-icon>mdi-menu</v-icon>
-        </v-btn>
-        <template v-slot:append>
-          <h1 class="mr-10 text-2xl text-white">Engaged Data</h1>
-        </template>
-      </v-app-bar>
+  scroll-target="#main"
+  style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+>
+  <v-btn 
+    v-if="!drawer"
+    icon 
+    @click="drawer = true; rail = false"
+  >
+    <v-icon>mdi-menu</v-icon>
+  </v-btn>
+
+  <!-- Placeholder for left side content -->
+  <v-spacer></v-spacer>
+
+  <!-- Advertisement text -->
+  <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
+    Developed by Data Analytics in Student Hands for Engaged Data
+  </span>
+
+  <!-- Spacer to push content to the sides -->
+  <!-- <v-spacer></v-spacer> -->
+
+  <!-- Organization Name on the right -->
+  <h1 class="text-2xl text-white mr-10">{{ organizationName }}</h1>
+</v-app-bar>
+
+
+
 
 
     <v-main id="main" style="min-height: 300px;" class="main-content">
@@ -307,6 +319,7 @@ export default {
     .main-content {
         overflow-y: auto;
         height: 100vh;
+        padding-bottom: 5vh;
     }
 
 </style>

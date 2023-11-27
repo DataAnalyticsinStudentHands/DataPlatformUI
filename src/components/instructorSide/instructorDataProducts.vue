@@ -1,20 +1,44 @@
-<!-- '/instructorDataProducts' -->
 <template>
-    <div>
-      <br>
-
-      <v-btn @click="downloadEntryDataAsCSV">Download Student Entry Forms as CSV</v-btn>
-
-      <br>
-      <br>
-
-      <v-btn @click="downloadAllGoalDataAsCSV">Download Student Goal Setting Forms as CSV for <b>All</b> Semesters</v-btn>
-
-      <br>
-      <br>
-      <v-btn @click="downloadAllExitDataAsCSV">Download Student Exit Forms as CSV for <b>All</b> Semesters</v-btn>
-    </div>
+    <v-container>
+      <v-row>
+        <v-col cols="12">
+          <v-btn text outlined class="mb-2" @click="downloadEntryDataAsCSV">
+            <span class="button-text">Download Student Entry Forms as CSV</span>
+          </v-btn>
+        </v-col>
+      </v-row>
+  
+      <v-row class="mb-2">
+        <v-col cols="12">
+          <v-btn text outlined @click="downloadAllGoalDataAsCSV">
+            <span class="button-text">Download Student Goal Setting Forms as CSV</span>
+          </v-btn>
+        </v-col>
+      </v-row>
+  
+      <v-row>
+        <v-col cols="12">
+          <v-btn text outlined @click="downloadAllExitDataAsCSV">
+            <span class="button-text">Download Student Exit Forms as CSV</span>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
   </template>
+  
+  <style>
+    .button-text {
+      white-space: normal; /* Ensures text wraps */
+      line-height: 1.4; /* Adjust line height for better readability when text wraps */
+    }
+  
+    @media (max-width: 600px) { /* Adjust this media query as needed for your xs breakpoint */
+      .button-text {
+        font-size: 0.875rem; /* Smaller font size for xs screens */
+      }
+    }
+  </style>
+  
   
   <script>
   import axios from 'axios';
@@ -55,7 +79,7 @@
               URL.revokeObjectURL(url);
               document.body.removeChild(link);
           } catch (error) {
-              console.error('Error downloading data:', error);
+              this.handleError('Error downloading data:', error);
           }
       },
   
@@ -70,7 +94,7 @@
   
           // Convert JSON to CSV format
           const csvData = this.convertExitFormToCSV(jsonData);
-  
+
           // Create a Blob containing the CSV data
           const blob = new Blob([csvData], { type: 'text/csv' });
   
@@ -86,7 +110,7 @@
           URL.revokeObjectURL(url);
           document.body.removeChild(link);
         } catch (error) {
-          console.error('Error downloading data:', error);
+          this.handleError(error);
         }
       },
   
@@ -116,7 +140,7 @@
           URL.revokeObjectURL(url);
           document.body.removeChild(link);
         } catch (error) {
-          console.error('Error downloading data:', error);
+          this.handleError('Error downloading data:', error);
         }
       },
   
@@ -132,9 +156,9 @@
     
       // Rename headers for CSV output
       const renameMap = {
-          "_id": "id_form",
-          "organizationID": "id_organization",
-          "userID": "id_user",
+          "_id": "goal_id",
+          "organizationID": "org_id",
+          "userID": "user_id",
           "semester": "semester",
           "experienceID": "experience",
           "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
@@ -245,9 +269,9 @@
   
       // Rename headers for CSV output
       const renameMap = {
-          "_id": "id_form", 
-          "organizationID": "id_organization", 
-          "userID": "id_user", 
+          "_id": "entry_id", 
+          "organizationID": "org_id", 
+          "userID": "user_id", 
           "studentInformation.cityOrigin": "place_of_origin",
           "studentInformation.primaryLanguage": "primary_language",
           "studentInformation.otherLanguages": "other_languages",
@@ -322,67 +346,39 @@
   
   
   
-  
-  
-  
-      convertExitFormToCSV(jsonData) {
-    // Create the CSV header row
-    const header = this.getCSVHeader(jsonData[0]);
-    const headerRow = header.join(',');
-  
-    // Add an extra row with custom text for Aspiration 1 and Aspiration 2
-    const customText1 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 1';
-    const customText2 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 2';
-    const customText3 = 'For each aspiration listed above, please pick the option that best describes the progress you made. - Aspiration 3';
-    const customText4 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Aspiration 1';
-    const customText5 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Aspiration 2';
-    const customText6 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Aspiration 3';
-    const customText7 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 1';
-    const customText8 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 2';
-    const customText9 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 3';
-    const customText10 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 4';
-    const customText11 = 'For each goal listed above, please pick the option that best describes the progress you made. - Goal 5';
-    const customText12 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 1';
-    const customText13 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 2';
-    const customText14 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 3';
-    const customText15 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 4';
-    const customText16 = 'For each goal listed above, please pick the option that best describes the connection between your progress and this course. - Goal 5';
-    const customText17 = 'For one of the goals you selected above, please describe what those barriers were and what strategies you employed to overcome those barriers in 3-4 sentences.';
-    const customText18 = 'Use the scale provided to rate your likelihood of taking the actions listed - Enroll in another Data & Society Course';
-    const customText19 = 'Use the scale provided to rate your likelihood of taking the actions listed - Complete the Data & Society minor';
-    const customText20 = 'Use the scale provided to rate your likelihood of taking the actions listed - Recommend this course to a friend';
-    const customText21 = 'Use the scale provided to rate your likelihood of taking the actions listed - Pursue a career in Data Science';
-    const customText22 = 'Please indicate how much growth you experienced during your program in the area of problem solving.';
-    const customText23 = 'Please indicate how much growth you experienced during your program in the area of effective communication.';
-    const customText24 = 'Please indicate how much growth you experienced during your program in the area of teamwork.';
-    const customText25 = 'Please indicate how much growth you experienced during your program in the area of cultural humility.';
-    const customText26 = 'Please indicate how much growth you experienced during your program in the area of ethical decision making.';
-    const customText27 = 'Please indicate how much growth you experienced during your program in the area of professional responsibility.';
-    const customText28 = 'What are the biggest lessons and key takeaways you gained from this class and will carry with you moving forward?';
-    const customText29 = 'Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?';
-    const customText30 = 'Use this space to provide any other comments or recommendations you would like to share.';
-    const customText31 = 'How did this experience contribute to your graduate/professional goals?';
-    const customText32 = 'Please select which goal(s) you faced barriers to achieving this semester.';
-    const customText33 = 'How did this experience contribute to your graduate/professional goals?';
-    const customText34 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 1';
-    const customText35 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 2';
-    const customText36 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 3';
-    const customText37 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 4';
-    const customText38 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - Goal 5';
-    const customText39 = 'For each activity listed below, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals". - No goals';
-    const extraRowCSV = ['"' + customText1 + '","' + customText2 + '","' + customText3 +'","' + customText4 +'","' + customText5 +'","' + customText6 +'","' + customText7 +'","' + customText8 +'","' + customText9 +'","' + customText10 +'","' + customText11 +'","' + customText12 +'","' + customText13 +'","' + customText14 +'","' + customText15 +'","' + customText16 +'","'  +  customText17 +'","'  +customText18 +'","' + customText19 +'","' + customText20 +'","' + customText21 +'","' + customText22 +'","' + customText23 +'","' + customText24 +'","' + customText25 +'","' + customText26 +'","' + customText27 +'","' + customText28 +'","' + customText29 +'","' + customText30 +'","' + customText31  +'","' + '","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' +'","' + customText32 + customText33 +'","' + customText34 +'","' + customText35 +'","' + customText36 +'","' + customText37 +'","' + customText38 +'","'  + customText39 +'","' + '"'];
-  
+
+  convertExitFormToCSV(jsonData) {
+    // Define the mapping from JSON variable names to CSV variable names
+    const renameMap = {
+        "_id": "exit_form_id",
+        "organizationID": "org_id",
+        "userID": "user_id",
+        "goalSettingFormID": "goal_id",
+        "semester": "semester",
+        "createdAt": "created_at",
+        "updatedAt": "updated_at",
+        // Continue mapping other fields as needed...
+        // Default to the original variable names if not provided in the renameMap
+    };
+
+    // Extract headers
+    const originalHeader = this.getExitFormCSVHeader();
+    const renamedHeader = originalHeader.map(h => renameMap[h] || h); // Use renameMap, default to original name if not found
+    const headerRow = renamedHeader.join(',');
+
     // Create the CSV data rows
-    const dataRows = jsonData.map((item) => {
-      const values = this.getCSVRowValues(item, header);
-      return values.join(',');
+    const dataRows = jsonData.map(item => {
+        const values = this.getExitFormCSVRowValues(item, originalHeader);
+        // Directly join the values without mapping to new field names
+        return values.join(',');
     });
-  
-    // Combine all rows including the extra row and data rows
-    const csvContent = [headerRow, ...extraRowCSV, ...dataRows].join('\n');
-  
+
+
+    // Combine header row and data rows to form the final CSV content
+    const csvContent = [headerRow, ...dataRows].join('\n');
+
     return csvContent;
-  },
+    },
   
   
   
@@ -731,6 +727,142 @@
   
       return values;
   },
+
+  getExitFormCSVHeader() {
+        // Manually ordered headers based on the exit form document structure
+        const ordered_headers = [
+            "_id",
+            "organizationID",
+            "userID",
+            "semester",
+            "experienceID._id",
+            "goalSettingFormID",
+            "exitForm.progressMade.aspirationOneProgressResults",
+            "exitForm.progressMade.aspirationTwoProgressResults",
+            "exitForm.progressMade.aspirationThreeProgressResults",
+            "exitForm.progressMade.aspirationOneExperienceConnection",
+            "exitForm.progressMade.aspirationTwoExperienceConnection",
+            "exitForm.progressMade.aspirationThreeExperienceConnection",
+            "exitForm.progressMade.goalOneProgressResults",
+            "exitForm.progressMade.goalTwoProgressResults",
+            "exitForm.progressMade.goalThreeProgressResults",
+            "exitForm.progressMade.goalFourProgressResults",
+            "exitForm.progressMade.goalFiveProgressResults",
+            "exitForm.progressMade.goalOneExperienceConnection",
+            "exitForm.progressMade.goalTwoExperienceConnection",
+            "exitForm.progressMade.goalThreeExperienceConnection",
+            "exitForm.progressMade.goalFourExperienceConnection",
+            "exitForm.progressMade.goalFiveExperienceConnection",
+            "exitForm.goalIssues.goals",
+            "exitForm.goalIssues.issuesDescription",
+            "exitForm.activitiesContribution.goalOneContributions",
+            "exitForm.activitiesContribution.goalTwoContributions",
+            "exitForm.activitiesContribution.goalThreeContributions",
+            "exitForm.activitiesContribution.goalFourContributions",
+            "exitForm.activitiesContribution.goalFiveContributions",
+            "exitForm.activitiesContribution.noContributions",
+            "exitForm.likelihoodOf.enrollAnotherCourse",
+            "exitForm.likelihoodOf.completeMinor",
+            "exitForm.likelihoodOf.recommendCourse",
+            "exitForm.likelihoodOf.pursueCareer",
+            "exitForm.generalGrowth.problemSolving",
+            "exitForm.generalGrowth.effectiveCommunication",
+            "exitForm.generalGrowth.teamwork",
+            "exitForm.generalGrowth.culturalHumility",
+            "exitForm.generalGrowth.ethicalDecisionMaking",
+            "exitForm.generalGrowth.professionalResponsibility",
+            "exitForm.openEnded.biggestLessons",
+            "exitForm.openEnded.supportOthers",
+            "exitForm.openEnded.comments",
+            "exitForm.experienceContributions",
+            "createdAt",
+            "updatedAt",
+            "__v",
+            // Include any other fields that are relevant for the CSV export
+        ];
+        return ordered_headers;
+    },
+
+    getExitFormCSVRowValues(obj, header) {
+        const values = [];
+        
+        header.forEach((field) => {
+            let value = obj;
+            const pathKeys = field.split('.');
+            pathKeys.forEach((key) => {
+                if (value && typeof value === 'object' && key in value) {
+                    value = value[key];
+                } else {
+                    value = value ? value : '';
+                }
+            });
+
+            // Apply transformation based on fields
+            switch(field) {
+                case "exitForm.progressMade.aspirationOneProgressResults":
+                case "exitForm.progressMade.aspirationTwoProgressResults":
+                case "exitForm.progressMade.aspirationThreeProgressResults":
+                    value = this.transformAspirationProgress(value);
+                    break;
+                case "exitForm.progressMade.aspirationOneExperienceConnection":
+                case "exitForm.progressMade.aspirationTwoExperienceConnection":
+                case "exitForm.progressMade.aspirationThreeExperienceConnection":
+                    value = this.transformAspirationConnection(value);
+                    break;
+                case "exitForm.progressMade.goalOneProgressResults":
+                case "exitForm.progressMade.goalTwoProgressResults":
+                case "exitForm.progressMade.goalThreeProgressResults":
+                case "exitForm.progressMade.goalFourProgressResults":
+                case "exitForm.progressMade.goalFiveProgressResults":
+                    value = this.transformGoalProgress(value);
+                    break;
+                case "exitForm.progressMade.goalOneExperienceConnection":
+                case "exitForm.progressMade.goalTwoExperienceConnection":
+                case "exitForm.progressMade.goalThreeExperienceConnection":
+                case "exitForm.progressMade.goalFourExperienceConnection":
+                case "exitForm.progressMade.goalFiveExperienceConnection":
+                    value = this.transformGoalConnection(value);
+                    break;
+                case "exitForm.goalIssues.goals":
+                    value = this.transformGoalIssues(value);
+                    break;
+                case "exitForm.generalGrowth.problemSolving":
+                case "exitForm.generalGrowth.effectiveCommunication":
+                case "exitForm.generalGrowth.teamwork":
+                case "exitForm.generalGrowth.culturalHumility":
+                case "exitForm.generalGrowth.ethicalDecisionMaking":
+                case "exitForm.generalGrowth.professionalResponsibility":
+                    value = this.transformGrowthValue(value);
+                    break;
+                case "exitForm.likelihoodOf.enrollAnotherCourse":
+                case "exitForm.likelihoodOf.completeMinor":
+                case "exitForm.likelihoodOf.recommendCourse":
+                case "exitForm.likelihoodOf.pursueCareer":
+                    value = this.transformLikelihoodValue(value);
+                    break;
+            }
+
+            // Handle arrays
+            if (Array.isArray(value)) {
+                value = value.join(', ');
+            }
+
+            // Convert to string and handle special characters
+            if (value) {
+                value = value.toString().replace(/\r?\n|\r/g, ' ').replace(/"/g, '""');
+                if (value.includes(',')) {
+                    value = `"${value}"`;
+                }
+            }
+
+            values.push(value);
+        });
+
+        return values;
+    },
+
+
+
   
   
   transformYesNoToBinary(value) {
@@ -768,6 +900,73 @@
                 return value; // Return original value if it doesn't match any cases
         }
     },
+
+    transformAspirationProgress(value) {
+        const map = {
+            "I made lots of progress towards this aspiration": "3",
+            "I made some progress towards this aspiration": "2",
+            "I made little progress towards this aspiration": "1",
+            "I did not make progress towards this aspiration": "0"
+        };
+        return map[value] || value;
+    },
+
+    transformAspirationConnection(value) {
+        const map = {
+            "The progress I made towards this aspiration was largely due to this course": "2",
+            "The progress I made towards this aspiration was partly due to this course": "1",
+            "The progress I made towards this aspiration was not due to this course": "0"
+        };
+        return map[value] || value;
+    },
+
+    transformGoalProgress(value) {
+        const map = {
+            "I made lots of progress towards this goal": "3",
+            "I made some progress towards this goal": "2",
+            "I made little progress towards this goal": "1",
+            "I did not make progress towards this goal": "0"
+        };
+        return map[value] || value;
+    },
+
+    transformGoalConnection(value) {
+        const map = {
+            "The progress I made towards this goal was largely due to this course": "2",
+            "The progress I made towards this goal was partly due to this course": "1",
+            "The progress I made towards this goal was not due to this course": "0"
+        };
+        return map[value] || value;
+    },
+
+    transformGoalIssues(value) {
+        // Map for transforming goal descriptions
+        const goalMap = {
+            "Goal 1": "1",
+            "Goal 2": "2",
+            "Goal 3": "3",
+            "Goal 4": "4",
+            "Goal 5": "5",
+            "No Goals": "No Goals"
+        };
+
+        // Transform each goal in the array
+        return value.map(goal => goalMap[goal] || goal);
+    },
+
+    transformLikelihoodValue(value) {
+        const likelihoodMap = {
+            "Extremely likely": "4",
+            "Somewhat likely": "3",
+            "Neutral likely/unlikely": "2",
+            "Somewhat unlikely": "1",
+            "Extremely unlikely": "0"
+        };
+        return likelihoodMap[value] || value;
+    },
+
+
+
   
   
   

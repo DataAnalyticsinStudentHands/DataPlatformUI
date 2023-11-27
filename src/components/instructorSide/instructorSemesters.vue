@@ -2,13 +2,15 @@
 
 <template>
   <main class="">
-    <center>
+    <div class="text-center">
       <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem">
         <router-link class="" to="/instructorSemesters">Semesters</router-link> |
         <router-link class="" to="/instructorExperiences">Experiences</router-link> |
         <router-link class="" to="/instructorActivities">Activities</router-link>
       </h2>
-      <p class="font-weight-black text-h6">Semesters</p>
+      <p class="font-weight-black text-h6">
+        {{ showInactive ? 'Inactive' : 'Active' }} Semesters
+      </p>
       <br><v-btn style="text-align:center; margin-right:2rem;">
         <router-link class="" to="/instructorAddSemester">Add New Semester</router-link>
       </v-btn>
@@ -19,16 +21,16 @@
 
       <br><br>
 
-      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateSemesters" v-if="selectedSemesters.length > 0">
+      <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateSemesters" v-if="selectedSemesters.length > 0 && !showInactive">
         Deactivate
       </v-btn>
 
-      <v-btn style="text-align:center" @click="activateSemesters" v-if="selectedSemesters.length > 0">
+      <v-btn style="text-align:center" @click="activateSemesters" v-if="selectedSemesters.length > 0 && showInactive">
         Activate
       </v-btn>
       <br><br>
       <v-text-field v-model="searchTerm" placeholder="Search by semester name or date ranges"></v-text-field>
-    </center>
+    </div>
 
     <div v-if="loading" justify="center" align="center">
       <v-progress-circular indeterminate></v-progress-circular>
@@ -41,7 +43,6 @@
               <th class="text-left column-margin"></th>
               <th class="text-left column-margin">Semester</th>
               <th class="text-left column-margin">Date Ranges</th>
-              <th class="text-left column-margin">Status</th>
               <th></th>
               <th></th>
             </tr>
@@ -63,7 +64,6 @@
               <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterName }}</td>
 
               <td class="text-left" @click="editSemester(semester._id)">{{ formatDate(semester.semesterStartDate) + " to " + formatDate(semester.semesterEndDate) }}</td>
-              <td class="text-left" @click="editSemester(semester._id)">{{ semester.semesterStatus ? 'Active' : 'Inactive' }}</td>
               <td></td>
               <td></td>
             </tr>
@@ -104,7 +104,7 @@ export default {
         useLoggedInUserStore().stopLoading();
       })
       .catch((error) => {
-        console.error(error);
+        this.handleError(error);
         useLoggedInUserStore().stopLoading();
       });
     window.scrollTo(0, 0);
@@ -135,7 +135,7 @@ export default {
         const resp = await axios.get(apiURL, { headers: { token } });
         this.semesterData = resp.data;
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
         throw error;
       }
     },
@@ -143,6 +143,7 @@ export default {
 
     toggleShowInactive() {
       this.showInactive = !this.showInactive;
+      this.selectedSemesters = [];
     },
 
     deactivateSemesters() {
@@ -160,13 +161,13 @@ export default {
           const message = (this.selectedSemesters.length === 1 ? 'Semester' : 'Semesters') + ' deactivated!'
           this.selectedSemesters = [];
           this.fetchSemesterData();
-          toast.error(message, {
+          toast.success(message, {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
+            toastClassName: 'Toastify__toast--create'
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
     
@@ -192,7 +193,7 @@ export default {
           
         })
         .catch((error) => {
-          console.log(error);
+          this.handleError(error);
         });
     },
   },

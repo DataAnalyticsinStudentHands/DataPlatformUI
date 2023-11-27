@@ -69,7 +69,7 @@
             this.languagePreference = this.userData.languagePreference;
           })
           .catch((error) => {
-            console.error(error);
+            this.handleError(error);
           })
           .finally(() => {
             useLoggedInUserStore().stopLoading();
@@ -77,7 +77,7 @@
 
         window.scrollTo(0, 0);
       } catch (error) {
-        console.error('Error:', error);
+        this.handleError('Error:', error);
         useLoggedInUserStore().stopLoading();
       }
     },
@@ -110,7 +110,7 @@
           });
         })
         .catch((error) => {
-            console.log(error);
+            this.handleError(error);
         });
       }
     }

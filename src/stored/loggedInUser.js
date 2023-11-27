@@ -22,6 +22,11 @@ export const useLoggedInUserStore = defineStore({
       goalSettingFormCompletion: {},
       loading: false,
       semesterName: "",
+      currentActivityId: null,
+      exitFormsReleased: false,
+      exitFormCompletion: {},
+      registrationExists: false,
+      registeredExperiences: [],
     }
   },
   getters: { //getting the roles
@@ -63,6 +68,11 @@ export const useLoggedInUserStore = defineStore({
         await this.getFullName();
 
         await this.getCurrentSemester();
+
+        // If user is a Student, fetch Registered Experiences
+        if (response.data.userRole === 'Student') {
+          await this.fetchRegisteredExperiences();
+        }
         
         
         }
@@ -74,7 +84,7 @@ export const useLoggedInUserStore = defineStore({
             type: 'error',
           };
         } else {
-            console.log(error);
+            this.handleError(error);
         }
       }
     },
@@ -93,6 +103,11 @@ export const useLoggedInUserStore = defineStore({
         hasRegisteredExperiences: false,
         goalSettingFormCompletion: {},
         loading: false,
+        currentActivityId: null,
+        exitFormsReleased: false,
+        exitFormCompletion: {},
+        registrationExists: false,
+        registeredExperiences: [],
       });
 
       // Clear the token from localStorage
@@ -114,7 +129,7 @@ export const useLoggedInUserStore = defineStore({
           })
         }
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
     }
     },
     async verifyExistingAcc(responseData) {
@@ -145,7 +160,7 @@ export const useLoggedInUserStore = defineStore({
       }
 
       // Fetch the full name of the user
-      await this.getFullName();
+      // await this.getFullName();
     },
     async verifyFromRegistration() {
 
@@ -163,10 +178,11 @@ export const useLoggedInUserStore = defineStore({
             hasCompletedEntryForm: response.data.hasCompletedEntryForm,
             hasRegisteredExperiences: response.data.hasRegisteredExperiences,
             goalSettingFormCompletion: response.data.goalSettingFormCompletion,
+            exitFormCompletion: response.data.exitFormCompletion,
           });
         }
       } catch (error) {
-        console.log(error);
+        this.handleError(error);
       }
     },
     setTokenHeader(token) {
@@ -192,13 +208,73 @@ export const useLoggedInUserStore = defineStore({
         });
         
         if (response && response.data) {
+          const today = new Date(); // Define today's date
+          const exitFormReleaseDate = new Date(response.data.exitFormReleaseDate); // Convert the exitFormReleaseDate to a Date object
+    
           this.$patch({
-            semesterName: response.data.semesterName
+            semesterName: response.data.semesterName,
+            exitFormsReleased: exitFormReleaseDate <= today, // Compare exitFormReleaseDate with today
           });
         }
       } catch (error) {
-          console.log(error)
+        this.handleError(error);
       }
+    },  
+    async fetchRegisteredExperiences() {
+      const token = localStorage.getItem("token");
+      const url = `${apiURL}/studentSideData/registeredExperiences`;
+  
+      try {
+        const response = await axios.get(url, { headers: { token } });
+        if (response.data && response.data.experiences) {
+          // Update the registeredExperiences state
+          this.registeredExperiences = response.data.experiences;
+          this.registrationExists = true;
+        } else {
+          this.registrationExists = false;
+          this.registeredExperiences = [];
+        }
+      } catch (error) {
+        this.handleError(error);
+      }
+    },  
+    async registerExperiences(experienceIDs) {
+      const token = localStorage.getItem('token');
+      const method = this.registrationExists ? 'put' : 'post';
+      const url = `${apiURL}/studentSideData/registerExperiences`;
+  
+      try {
+        await axios({
+          method,
+          url,
+          headers: { token },
+          data: { experienceIDs },
+        });
+  
+        // Update the store's state
+        this.registrationExists = true;
+        this.registeredExperiences = experienceIDs;
+  
+        // Additional logic if needed
+        toast.success('Experiences Registered!', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--create'
+        });
+  
+        await this.checkFormCompletion();
+        await this.fetchRegisteredExperiences();
+      } catch (error) {
+        // Handle error
+        this.handleError(error);
+      }
+    },
+    async handleError(error) {
+      // console.log(error);
+      toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          limit: 1,
+      });
     },
     persist: {
       storage: sessionStorage
