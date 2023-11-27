@@ -20,6 +20,9 @@
             <v-tab value="goalForms">
               Goal Form Monitor
             </v-tab>
+            <v-tab value="exitForms">
+              Exit Form Monitor
+            </v-tab>
             <v-tab value="pending">
               Pending Monitor
             </v-tab>
@@ -33,6 +36,11 @@
           <!-- Content for Goal Form Monitor -->
           <div v-if="tab === 'goalForms'">
             <StudentsWithoutGoalForms />
+          </div>
+
+          <!-- Content for Exit Form Monitor -->
+          <div v-if="tab === 'exitForms'">
+            <StudentsWithoutExitForms />
           </div>
 
           <!-- Content for Pending Status -->
@@ -49,12 +57,14 @@
   import StudentsWithoutGoalForms from './studentsWithoutGoalForms.vue';
   import StudentsWithoutEntryForms from './studentsWithoutEntryForms.vue';
   import PendingStudents from './pendingStudents.vue';
+  import StudentsWithoutExitForms from './studentsWithoutExitForms.vue';
   
   export default {
     components: {
       StudentsWithoutGoalForms,
       StudentsWithoutEntryForms,
-      PendingStudents
+      PendingStudents,
+      StudentsWithoutExitForms
     },
     data() {
       return {
