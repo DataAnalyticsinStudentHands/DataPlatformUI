@@ -4,8 +4,9 @@
       <v-row>
         <v-col cols="12">
             <v-card>
-                <v-card-title>
-                Goal Form Completion Tracker
+                <v-card-title class="pa-4 d-flex justify-space-between align-center">
+                  Goal Form Completion Tracker
+                  <progress-monitor-csv-downloader v-if="selectedExperience && studentsWithoutGoalForm.length" :data="studentsWithoutGoalForm" :file-name="csvFileName" />
                 </v-card-title>
                 
                 <v-card-subtitle class="text-h6">
@@ -50,7 +51,7 @@
                         @mouseleave="hoverId = null"
                         @click="navigateToProfile(student.userID)"
                     >
-                        <td class="text-left">{{ student.fullName }}</td>
+                        <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left">{{ student.email }}</td>
                         <td class="text-left">{{ student.pronouns.map(p => p.label).join(', ') }}</td>
                         <td class="text-left">{{ student.majors.join(', ') }}</td>
@@ -71,6 +72,7 @@
   import axios from 'axios';
   import 'vue3-toastify/dist/index.css';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
   
   export default {
     name: "StudentsWithoutGoalForms",
@@ -80,7 +82,23 @@
         experiences: [],
         studentsWithoutGoalForm: [],
         hoverId: null,
+        csvFileName: 'no_goal_form.csv'
       };
+    },
+    components: {
+      'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
+    },
+    watch: {
+      selectedExperience(newVal) {
+        if (newVal) {
+          // Find the selected experience object by its ID
+          const selectedObj = this.experiences.find(experience => experience.experienceID === newVal);
+          // Update the file name using the experience name from the selected object
+          this.csvFileName = `no_goal_form_${selectedObj.experienceName}.csv`;
+        } else {
+          this.csvFileName = 'no_goal_form.csv';
+        }
+      },
     },
     mounted() {
       this.fetchExperiences();
@@ -138,6 +156,9 @@
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
+      },
+      formatFullName(firstName, lastName) {
+          return `${firstName} ${lastName}`;
       },
     },
   };

@@ -3,8 +3,13 @@
       <v-row>
         <v-col cols="12">
           <v-card>
-            <v-card-title>
+            <v-card-title class="pa-4 d-flex justify-space-between align-center">
               Exit Form Completion Tracker
+              <progress-monitor-csv-downloader
+                v-if="selectedExperience && studentsWithoutExitForm.length"
+                :data="studentsWithoutExitForm"
+                :file-name="csvFileName"
+              />
             </v-card-title>
             <v-card-subtitle class="text-h6">
               Select an Experience
@@ -37,7 +42,7 @@
                 </thead>
                 <tbody>
                   <tr
-                    v-for="student in studentsWithExitForm"
+                    v-for="student in studentsWithoutExitForm"
                     :key="student._id"
                     :class="{ 'hoverRow': hoverId === student._id }"
                     @mouseenter="hoverId = student._id"
@@ -54,11 +59,13 @@
         </v-col>
       </v-row>
     </v-container>
+    {{ experiences }}
   </template>
   
   <script>
   import axios from 'axios';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
   
   export default {
     name: "StudentsWithoutEntryForms",
@@ -66,9 +73,25 @@
       return {
         selectedExperience: null,
         experiences: [],
-        studentsWithExitForm: [],
+        studentsWithoutExitForm: [],
         hoverId: null,
+        csvFileName: 'students_without_exit_form.csv'
       };
+    },
+    components: {
+      'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
+    },
+    watch: {
+      selectedExperience(newVal) {
+        if (newVal) {
+          // Find the selected experience object by its ID
+          const selectedObj = this.experiences.find(experience => experience.experienceID === newVal);
+          // Update the file name using the experience name from the selected object
+          this.csvFileName = `no_exit_form_${selectedObj.experienceName}.csv`;
+        } else {
+          this.csvFileName = 'no_exit_form.csv';
+        }
+      },
     },
     mounted() {
       this.fetchExperiences();
@@ -83,12 +106,13 @@
     },
     methods: {
       updateExperienceID(selected) {
+        console.log('selected: ', selected);
         if (!selected) {
           this.selectedExperience = null;
           return;
         }
         this.selectedExperience = selected;
-        this.fetchStudentsWithExitForm(selected);
+        this.fetchstudentsWithoutExitForm(selected);
       },
       async fetchExperiences() {
         const user = useLoggedInUserStore();
@@ -106,14 +130,14 @@
           this.handleError(error);
         }
       },
-      async fetchStudentsWithExitForm(experienceID) {
+      async fetchstudentsWithoutExitForm(experienceID) {
         const user = useLoggedInUserStore();
         let token = user.token;
         let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/studentsPendingExitForm?experienceID=${experienceID}`;
   
         try {
           const response = await axios.get(url, { headers: { token } });
-          this.studentsWithExitForm = response.data;
+          this.studentsWithoutExitForm = response.data;
         } catch (error) {
           this.handleError(error);
         }
