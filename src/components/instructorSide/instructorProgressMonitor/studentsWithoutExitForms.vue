@@ -75,7 +75,7 @@
         experiences: [],
         studentsWithoutExitForm: [],
         hoverId: null,
-        csvFileName: 'students_without_exit_form.csv'
+        csvFileName: 'no_exit_form.csv'
       };
     },
     components: {
