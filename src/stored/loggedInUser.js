@@ -41,7 +41,6 @@ export const useLoggedInUserStore = defineStore({
         const response = await axios.post(`${apiURL}/userdata/login`, {email, password});
         if (response) {
           this.$patch({
-            isLoggedIn: true,
             role: response.data.userRole,
             userId: response.data.userID,
             token: response.data.token,
@@ -56,26 +55,32 @@ export const useLoggedInUserStore = defineStore({
 
           let token = localStorage.getItem("token");
 
-        // If userStatus is 'Pending', update unverified and token fields
-        if (response.data.userStatus === 'Pending') {
+          // If userStatus is 'Pending', update unverified and token fields
+          if (response.data.userStatus === 'Pending') {
+            this.$patch({
+              isLoggedIn: false,
+              unverified: true,
+              token: response.data.token
+            });
+            return;
+          }
+
+          await this.getFullName();
+
+          // Check if the user is either an Instructor or a Student
+          if (response.data.userRole === 'Instructor' || response.data.userRole === 'Student') {
+            await this.getCurrentSemester();
+
+            // Additional check for the Student role
+            if (response.data.userRole === 'Student') {
+              await this.fetchRegisteredExperiences();
+            }
+          }
+
+          // Officially log the user in
           this.$patch({
-            isLoggedIn: false,
-            unverified: true,
-            token: response.data.token
+            isLoggedIn: true,
           });
-          return;
-        }
-
-        await this.getFullName();
-
-        await this.getCurrentSemester();
-
-        // If user is a Student, fetch Registered Experiences
-        if (response.data.userRole === 'Student') {
-          await this.fetchRegisteredExperiences();
-        }
-        
-        
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {

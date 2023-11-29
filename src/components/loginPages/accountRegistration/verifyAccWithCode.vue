@@ -111,6 +111,8 @@ export default {
                     } else {
                     this.$router.push("/studentEntryForm");
                     }
+                } else if (store.role === 'Basic') {
+                    this.$router.push("/dashboard");
                 } else {
                     this.$router.push("/");
                 }
