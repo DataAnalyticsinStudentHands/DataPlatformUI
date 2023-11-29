@@ -11,33 +11,67 @@
               Students who have Registered this Semester, but have not completed the Entry Form.
             </v-card-subtitle>
 
+            <!-- Pagination Controls -->
+            <v-row justify="space-between">
+              <v-col cols="auto">
+                <v-text-field
+                  v-model="itemsPerPage"
+                  type="number"
+                  min="1"
+                  label="Students per page:"
+                  dense
+                  outlined
+                  @change="currentPage = 1"
+                ></v-text-field>
+              </v-col>
+              
+              <v-col cols="auto">
+                <v-pagination
+                  v-model="currentPage"
+                  :length="totalPaginationLength"
+                  :total-visible="10"
+                ></v-pagination>
+              </v-col>
+            </v-row>
+
+
+
             <!-- Loading Wheel -->
             <div v-if="loading" class="d-flex justify-center align-center">
                 <v-progress-circular indeterminate color="primary"></v-progress-circular>
             </div>
-            <!-- Table -->
+            
             <div v-else style="display: flex; justify-content: center;" class="table-container">
-              <v-table style="width: 95%;">
-                <thead>
-                  <tr>
-                    <th class="text-left">Name</th>
-                    <th class="text-left">Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="student in studentsWithoutEntryForm"
-                    :key="student._id"
-                    :class="{ 'hoverRow': hoverId === student._id }"
-                    @mouseenter="hoverId = student._id"
-                    @mouseleave="hoverId = null"
-                    @click="navigateToProfile(student._id)"
-                  >
-                    <td class="text-left">{{ student.firstName }} {{ student.lastName }}</td>
-                    <td class="text-left">{{ student.email }}</td>
-                  </tr>
-                </tbody>
-              </v-table>
+
+
+
+              <v-row>
+                <v-col cols="12">
+
+                  <!-- Table -->
+                  <v-table style="width: 95%;">
+                    <thead>
+                      <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Email</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="student in paginatedStudentsWithoutEntryForm"
+                        :key="student._id"
+                        :class="{ 'hoverRow': hoverId === student._id }"
+                        @mouseenter="hoverId = student._id"
+                        @mouseleave="hoverId = null"
+                        @click="navigateToProfile(student._id)"
+                      >
+                        <td class="text-left">{{ student.firstName }} {{ student.lastName }}</td>
+                        <td class="text-left">{{ student.email }}</td>
+                      </tr>
+                    </tbody>
+                  </v-table>
+                </v-col>
+              </v-row>
             </div>
           </v-card>
         </v-col>
@@ -57,6 +91,8 @@
         studentsWithoutEntryForm: [],
         hoverId: null,
         loading: false,
+        currentPage: 1,
+        itemsPerPage: 10,
       };
     },
     components: {
@@ -64,6 +100,19 @@
     },
     mounted() {
       this.fetchStudentsWithoutEntryForm();
+    },
+    computed: {
+      paginatedStudentsWithoutEntryForm() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.studentsWithoutEntryForm.slice(start, end);
+      },
+      totalPaginationLength() {
+        return Math.ceil(this.studentsWithoutEntryForm.length / this.itemsPerPage);
+      },
+      totalPaginationLength() {
+        return Math.ceil(this.studentsWithoutEntryForm.length / this.itemsPerPage);
+      },
     },
     methods: {
       async fetchStudentsWithoutEntryForm() {

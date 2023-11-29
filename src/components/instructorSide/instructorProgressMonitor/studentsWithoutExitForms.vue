@@ -29,6 +29,28 @@
                   ></v-autocomplete>
                 </v-col>
               </v-row>
+                <!-- Pagination Controls -->
+                <v-row justify="space-between">
+                  <v-col cols="auto">
+                    <v-text-field
+                      v-model="itemsPerPage"
+                      type="number"
+                      min="1"
+                      label="Students per page:"
+                      dense
+                      outlined
+                      @change="currentPage = 1"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="auto">
+                    <v-pagination
+                      v-model="currentPage"
+                      :length="totalPaginationLength"
+                      :total-visible="10"
+                    ></v-pagination>
+                  </v-col>
+                </v-row>
             </v-container>
   
             <!-- Table -->
@@ -42,7 +64,7 @@
                 </thead>
                 <tbody>
                   <tr
-                    v-for="student in studentsWithoutExitForm"
+                    v-for="student in paginatedStudentsWithoutExitForm"
                     :key="student._id"
                     :class="{ 'hoverRow': hoverId === student._id }"
                     @mouseenter="hoverId = student._id"
@@ -59,7 +81,6 @@
         </v-col>
       </v-row>
     </v-container>
-    {{ experiences }}
   </template>
   
   <script>
@@ -75,7 +96,9 @@
         experiences: [],
         studentsWithoutExitForm: [],
         hoverId: null,
-        csvFileName: 'no_exit_form.csv'
+        csvFileName: 'no_exit_form.csv',
+        currentPage: 1,
+        itemsPerPage: 10,
       };
     },
     components: {
@@ -102,6 +125,14 @@
           text: `${experience.experienceCategory}: ${experience.experienceName}`,
           value: experience.experienceID
         }));
+      },
+      paginatedStudentsWithoutExitForm() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.studentsWithoutExitForm.slice(start, end);
+      },
+      totalPaginationLength() {
+        return Math.ceil(this.studentsWithoutExitForm.length / this.itemsPerPage);
       },
     },
     methods: {

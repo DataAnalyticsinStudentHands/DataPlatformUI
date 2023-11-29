@@ -27,6 +27,28 @@
                     ></v-autocomplete>
                     </v-col>
                 </v-row>
+                <!-- Pagination Controls -->
+                <v-row justify="space-between">
+                  <v-col cols="auto">
+                    <v-text-field
+                      v-model="itemsPerPage"
+                      type="number"
+                      min="1"
+                      label="Students per page:"
+                      dense
+                      outlined
+                      @change="currentPage = 1"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="auto">
+                    <v-pagination
+                      v-model="currentPage"
+                      :length="totalPaginationLength"
+                      :total-visible="10"
+                    ></v-pagination>
+                  </v-col>
+                </v-row>
                 </v-container>
         
                 <!-- Table -->
@@ -44,7 +66,7 @@
                     </thead>
                     <tbody>
                     <tr
-                        v-for="student in studentsWithoutGoalForm"
+                        v-for="student in paginatedStudentsWithoutGoalForm"
                         :key="student.userID"
                         :class="{ 'hoverRow': hoverId === student.userID }"
                         @mouseenter="hoverId = student.userID"
@@ -82,7 +104,9 @@
         experiences: [],
         studentsWithoutGoalForm: [],
         hoverId: null,
-        csvFileName: 'no_goal_form.csv'
+        csvFileName: 'no_goal_form.csv',
+        currentPage: 1,
+        itemsPerPage: 10,
       };
     },
     components: {
@@ -109,6 +133,14 @@
           text: `${experience.experienceCategory}: ${experience.experienceName}`,
           value: experience.experienceID
         }));
+      },
+      paginatedStudentsWithoutGoalForm() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.studentsWithoutGoalForm.slice(start, end);
+      },
+      totalPaginationLength() {
+        return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
       },
     },
     methods: {

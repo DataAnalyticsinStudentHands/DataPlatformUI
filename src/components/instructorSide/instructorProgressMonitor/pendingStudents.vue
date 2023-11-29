@@ -10,6 +10,29 @@
             <v-card-subtitle class="pa-4 text-h6">
               Students with Pending Status
             </v-card-subtitle>
+
+                <!-- Pagination Controls -->
+                <v-row justify="space-between">
+                  <v-col cols="auto">
+                    <v-text-field
+                      v-model="itemsPerPage"
+                      type="number"
+                      min="1"
+                      label="Students per page:"
+                      dense
+                      outlined
+                      @change="currentPage = 1"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="auto">
+                    <v-pagination
+                      v-model="currentPage"
+                      :length="totalPaginationLength"
+                      :total-visible="10"
+                    ></v-pagination>
+                  </v-col>
+                </v-row>
   
             <!-- Loading Wheel -->
             <div v-if="loading" class="d-flex justify-center align-center">
@@ -27,7 +50,7 @@
                 </thead>
                 <tbody>
                   <tr 
-                    v-for="student in pendingStudents" 
+                    v-for="student in paginatedPendingStudents" 
                     :key="student._id"
                     :class="{ 'hoverRow': hoverId === student._id }"
                     @mouseenter="hoverId = student._id"
@@ -58,6 +81,8 @@
         pendingStudents: [],
         loading: false,
         hoverId: null,
+        currentPage: 1,
+        itemsPerPage: 10,
       };
     },
     components: {
@@ -65,6 +90,16 @@
     },
     mounted() {
       this.fetchPendingStudents();
+    },
+    computed: {
+      paginatedPendingStudents() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.pendingStudents.slice(start, end);
+      },
+      totalPaginationLength() {
+        return Math.ceil(this.pendingStudents.length / this.itemsPerPage);
+      },
     },
     methods: {
       async fetchPendingStudents() {
