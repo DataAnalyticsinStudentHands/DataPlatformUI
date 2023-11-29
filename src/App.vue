@@ -1,45 +1,232 @@
 <template>
   <v-app>
     <v-layout class="rounded">
-
-      <nav-bar
+      <v-navigation-drawer
         v-model="drawer"
+        color="#c8102e"
         :rail="rail"
-        :activeLink="activeLink"
-        :isMdAndUp="isMdAndUp"
-        :userRole="user.role"
-        @logout="handleLogout"
-        @update:rail="rail = $event"
-    ></nav-bar>
+        @click="rail = false"
+        class="sidebar"
+        :permanent="isMdAndUp"
+        :temporary="!isMdAndUp"
+      >
+        <div v-if="rail">
+          <v-list-item
+            lines="two"
+          >
+            <v-btn
+              size="large"
+              variant="text"
+              icon="mdi-menu"
+              @click="rail = !rail"
+              class="text-white"
+            ></v-btn>
+          </v-list-item>
+        </div>
+        <div v-else>
+          <v-list-item
+            v-if="loggedIn"
+            lines="two"
+            prepend-avatar="@/assets/DanPersona.svg"
+            :title="fullName"
+            subtitle="Logged in"
+            class="text-white"
+          >
+            <template v-slot:append>
+              <v-btn
+                variant="text"
+                size="small"
+                icon="mdi-arrow-expand-left"
+                @click.stop="sidebarToggle"
+              ></v-btn>
+            </template>
+          </v-list-item>
 
+        <v-list density="compact" nav class="text-white">
+          <!-- <div v-if="!user.isLoggedIn">
+            <v-list-item 
+              :active="activeLink === 'Login'"
+              to="login"
+              prepend-icon="mdi-login"
+              value="Login"
+              class=" tracking-wider "
+            >Login
+            <template v-slot:append>
+              <v-btn
+                variant="text"
+                size="small"
+                icon="mdi-arrow-expand-left"
+                @click.stop.prevent="sidebarToggle"
+              ></v-btn>
+            </template>
+          </v-list-item>
+          </div> -->
+          <div v-if="user.isLoggedIn && user.getRole === 'Student'">
+            <v-list-item 
+              :active="activeLink === 'studentDashboard'"
+              to="studentDashboard"
+              prepend-icon="mdi-view-dashboard"
+              value="studentDashboard"
+              class=" tracking-wider "
+            >Student Dashboard</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'studentEntryForm'"
+              v-if="!user.hasCompletedEntryForm"
+              to="studentEntryForm"
+              prepend-icon="mdi-file-document"
+              value="studentEntryForm"
+              class=" tracking-wider "
+            >Student Entry Form</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'goalSettingForm'"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && !user.exitFormsReleased"
+              to="goalSettingForm"
+              prepend-icon="mdi-file-document"
+              value="goalSettingForm"
+              class=" tracking-wider "
+            >Goal Setting Form</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'exitFormsAvailable'"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.exitFormsReleased"
+              to="exitFormsAvailable"
+              prepend-icon="mdi-file-document"
+              value="exitFormsAvailable"
+              class=" tracking-wider "
+            >Exit Forms</v-list-item>
+          </div>
+          <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
+            <v-list-item 
+              :active="activeLink === 'instructorDash'"
+              to="instructorDash"
+              prepend-icon="mdi-view-dashboard"
+              value="instructorDash"
+              class=" tracking-wider "
+            >Dashboard</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'instructorDataProducts'"
+              to="instructorDataProducts"
+              prepend-icon="mdi-view-dashboard"
+              value="instructorDataProducts"
+              class=" tracking-wider"
+            >Data Products</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'instructorStudentsList'"
+              to="instructorStudentsList"
+              prepend-icon="mdi-account"
+              value="instructorStudentsList"
+              class=" tracking-wider"
+            >Students</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'instructorSemesters'"
+              to="instructorSemesters"
+              prepend-icon="mdi-school"
+              value="instructorSemesters"
+              class=" tracking-wider"
+            >Semesters, Experiences, Activities</v-list-item>
+          </div>
+          <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
+            <v-list-item 
+              :active="activeLink === 'dashboard'"
+              to="/dashboard"
+              prepend-icon="mdi-view-dashboard"
+              class="tracking-wider"
+            >Dashboard</v-list-item>
 
+            <v-list-item 
+              :active="activeLink === 'intakeform'"
+              to="/intakeform"
+              prepend-icon="mdi-account-plus-outline"
+              class="tracking-wider"
+            >Client Intake Form</v-list-item>
+
+            <v-list-item 
+              :active="activeLink === 'eventform'"
+              to="/eventform"
+              prepend-icon="mdi-calendar-plus"
+              class="tracking-wider"
+            >Create Event</v-list-item>
+
+            <v-list-item 
+              :active="activeLink === 'findclient'"
+              to="/findclient"
+              prepend-icon="mdi-account-search-outline"
+              class="tracking-wider"
+            >Find Client</v-list-item>
+
+            <v-list-item 
+              :active="activeLink === 'findEvents'"
+              to="/findEvents"
+              prepend-icon="mdi-calendar-search"
+              class="tracking-wider"
+            >Find Event</v-list-item>
+          </div>
+
+          <div v-if="user.isLoggedIn">
+            <v-list-item>
+              <hr> <!-- Horizontal line -->
+            </v-list-item>
+            <v-list-item 
+              :active="activeLink === 'profile'"
+              v-if="user.getRole === 'Student'"
+              to="profile"
+              prepend-icon="mdi-account"
+              value="profile"
+              class=" tracking-wider "
+            >Profile</v-list-item>
+            <v-list-item
+              :active="activeLink === 'User Data Update Form'"
+              to="updateUserInformation"
+              prepend-icon="mdi-cog"
+              value="User Data Update Form"
+              class=" tracking-wider "
+            >Update User Information</v-list-item>
+            <v-list-item
+              :active="activeLink === 'Password Reset'"
+              to="updatePassword"
+              prepend-icon="mdi-cog"
+              value="Password Reset"
+              class=" tracking-wider "
+            >Update Password</v-list-item>
+            <v-list-item
+              :active="activeLink === 'Login'"
+              to="login"
+              prepend-icon="mdi-logout"
+              value="Login"
+              class=" tracking-wider "
+              @click="handleLogout"
+            >Logout</v-list-item>
+          </div>
+        </v-list>
+
+      </div>
+      </v-navigation-drawer>
 
       <v-app-bar 
-        scroll-target="#main"
-        style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
-      >
-        <v-btn 
-          v-if="!drawer && user.role"
-          icon 
-          @click="drawer = true; rail = false"
-        >
-          <v-icon>mdi-menu</v-icon>
-        </v-btn>
+  scroll-target="#main"
+  style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+>
+  <v-btn 
+    v-if="!drawer"
+    icon 
+    @click="drawer = true; rail = false"
+  >
+    <v-icon>mdi-menu</v-icon>
+  </v-btn>
 
-        <!-- Placeholder for left side content -->
-        <v-spacer></v-spacer>
+  <!-- Placeholder for left side content -->
+  <v-spacer></v-spacer>
 
-        <!-- Advertisement text -->
-        <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
-          Developed by Data Analytics in Student Hands
-        </span>
+  <!-- Advertisement text -->
+  <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
+    Developed by Data Analytics in Student Hands for Engaged Data
+  </span>
 
-        <!-- Spacer to push content to the sides -->
-        <!-- <v-spacer></v-spacer> -->
+  <!-- Spacer to push content to the sides -->
+  <!-- <v-spacer></v-spacer> -->
 
-        <!-- Organization Name on the right -->
-        <h1 class="text-2xl text-white mr-10">{{ orgName }}</h1>
-      </v-app-bar>
+  <!-- Organization Name on the right -->
+  <h1 class="text-2xl text-white mr-10">{{ user.orgName }}</h1>
+</v-app-bar>
 
 
 
@@ -55,15 +242,11 @@
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
-import { computed, onMounted } from 'vue';
-import NavBar from './components/defaultPages/navBar.vue'; // Import the NavBar component
 
 export default {
   name: "App",
-  components: {
-    NavBar // Register the NavBar component
-  },
   data() {
     return {
       showElement: useLoggedInUserStore().isLoggedIn === false,
@@ -74,31 +257,6 @@ export default {
       drawer: null,
     };
   },
-  setup() {
-    const userStore = useLoggedInUserStore();
-
-    console.log('User Role:', userStore.role);
-    
-    // Computed property for orgName
-    const orgName = computed(() => userStore.orgName);
-
-    // Async function to fetch organization data
-    const fetchOrgData = async () => {
-      let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-      try {
-        const response = await axios.get(apiURL, { headers: { token: userStore.token } });
-        userStore.setOrgName(response.data);
-      } catch (error) {
-        console.error("Error fetching organization data:", error);
-      }
-    };
-
-    // Call fetchOrgData on component mount
-    onMounted(fetchOrgData);
-
-    // Return the reactive properties that the template can access
-    return { user: userStore, orgName };
-  },
   watch: {
     $route(to, from) {
       this.activeLink = to.name;
@@ -107,6 +265,10 @@ export default {
   computed: {
     isMdAndUp() {
       return this.$vuetify.display.mdAndUp;
+    },
+    fullName() {
+      const store = useLoggedInUserStore();
+      return (store.firstName.trim() + ' ' + store.lastName.trim());
     },
     loggedIn() {
       const store = useLoggedInUserStore();
@@ -155,20 +317,45 @@ export default {
       }
     }
   },
+  beforeMount() {
+  },
+  setup() {
+    // function that checks if a user is logged in
+    const user = useLoggedInUserStore();
+    return { user };
+  },
+  created() {
+    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
+    const user = useLoggedInUserStore();
+    axios
+      .get(apiURL, {
+        headers: { token: user.token },
+      })
+      .then((resp) => {
+        user.setOrgName(resp.data);
+      });
+  },
 };
 </script>
 <style scoped>
-  #_container {
-    background-color: #c8102e;
-    color: white;
-    padding: 18px;
-  }
+#_container {
+  background-color: #c8102e;
+  color: white;
+  padding: 18px;
+}
 
-  .main-content {
-      overflow-y: auto;
-      height: 100vh;
-      padding-bottom: 5vh;
-  }
+.sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .main-content {
+        overflow-y: auto;
+        height: 100vh;
+        padding-bottom: 5vh;
+    }
 
 </style>
-

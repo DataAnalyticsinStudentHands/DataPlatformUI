@@ -95,6 +95,7 @@ export default {
     const store = useLoggedInUserStore();
 
     const appName = computed(() => {
+      console.log('store.orgName: ', store.orgName);
       return store.orgName === 'Data & Society' ? 'Engaged Data' : store.orgName;
     });
 
