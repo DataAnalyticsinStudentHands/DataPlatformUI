@@ -3,8 +3,9 @@
       <v-row>
         <v-col cols="12">
           <v-card>
-            <v-card-title class="pa-4">
+            <v-card-title class="pa-4 d-flex justify-space-between align-center">
               Pending Students Monitor
+              <progress-monitor-csv-downloader v-if="pendingStudents" :data="pendingStudents" file-name="pending_students.csv" />
             </v-card-title>
             <v-card-subtitle class="pa-4 text-h6">
               Students with Pending Status
@@ -48,6 +49,7 @@
   <script>
   import axios from 'axios';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
   
   export default {
     name: "PendingStudents",
@@ -57,6 +59,9 @@
         loading: false,
         hoverId: null,
       };
+    },
+    components: {
+      'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
     },
     mounted() {
       this.fetchPendingStudents();

@@ -3,8 +3,9 @@
       <v-row>
         <v-col cols="12">
           <v-card>
-            <v-card-title class="pa-4">
+            <v-card-title class="pa-4 d-flex justify-space-between align-center">
               Students Without Entry Form
+              <progress-monitor-csv-downloader v-if="studentsWithoutEntryForm" :data="studentsWithoutEntryForm" file-name="students_without_entry_form.csv" />
             </v-card-title>
             <v-card-subtitle class="pa-4 text-h6">
               Students who have Registered this Semester, but have not completed the Entry Form.
@@ -47,6 +48,7 @@
   <script>
   import axios from 'axios';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
   
   export default {
     name: "StudentsWithoutEntryForms",
@@ -56,6 +58,9 @@
         hoverId: null,
         loading: false,
       };
+    },
+    components: {
+      'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
     },
     mounted() {
       this.fetchStudentsWithoutEntryForm();

@@ -372,6 +372,19 @@ const routes = [
       }
     },
     {
+      path: '/studentsWithoutExitForms',
+      name: 'studentsWithoutExitForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutExitForms.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/studentEntryForm',
       name: 'studentEntryForm',
       props: true,
