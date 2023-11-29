@@ -115,7 +115,7 @@
               {{ item.data.userData.email }}
             </td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
-              {{ listCheckedOptions(item.data.studentInformation.pronouns) }}
+              {{ item.data.studentInformation.pronouns.join(", ") }}
             </td>
             <td v-else></td>
             <td v-if="item.type === 'student'" @click="editStudent(item.data.userID)" class="text-left">
@@ -292,12 +292,6 @@ activateStudents() {
         ? combinedMinorsList.join(", ")
         : "None";
     },
-    listCheckedOptions(pronounsList) {
-      return pronounsList
-        .filter((item) => item.checked === true)
-        .map((item) => item.label)
-        .join(", ");
-    },
     
     editStudent(userID) {
       this.$router.push({
@@ -386,7 +380,6 @@ activateStudents() {
     },
   },
   computed: {
-
     filteredStudentData() {
       const searchStudent = this.searchStudent.toLowerCase();
 
