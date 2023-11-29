@@ -2,6 +2,7 @@
   <v-app>
     <v-layout class="rounded">
       <v-navigation-drawer
+        v-if="user.isLoggedIn"
         v-model="drawer"
         color="#c8102e"
         :rail="rail"
@@ -206,7 +207,7 @@
   style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
 >
   <v-btn 
-    v-if="!drawer"
+    v-if="user.isLoggedIn && !drawer"
     icon 
     @click="drawer = true; rail = false"
   >
@@ -253,7 +254,7 @@ export default {
       displayEntry: [],
       firstTimeLoginTF: null,
       activeLink: this.$route.name,
-      rail: false,
+      rail: this.isMdAndUp,
       drawer: null,
     };
   },

@@ -73,6 +73,7 @@ export const useLoggedInUserStore = defineStore({
 
             // Additional check for the Student role
             if (response.data.userRole === 'Student') {
+              await this.checkFormCompletion();
               await this.fetchRegisteredExperiences();
             }
           }

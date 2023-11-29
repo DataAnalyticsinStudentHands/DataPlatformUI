@@ -137,8 +137,6 @@ export default {
           if (this.store.role === 'Instructor') {
             this.$router.push("/instructorDash");
           } else if (this.store.role === 'Student') {
-            // After successful verification, check if the student has completed forms
-            await this.store.checkFormCompletion();
             if (this.store.hasCompletedEntryForm) {
               this.$router.push("/studentDashboard");
             } else {
