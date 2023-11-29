@@ -27,6 +27,7 @@ export const useLoggedInUserStore = defineStore({
       exitFormCompletion: {},
       registrationExists: false,
       registeredExperiences: [],
+      orgName: "",
     }
   },
   getters: { //getting the roles
@@ -275,6 +276,9 @@ export const useLoggedInUserStore = defineStore({
           toastClassName: 'Toastify__toast--delete',
           limit: 1,
       });
+    },
+    setOrgName(name) {
+      this.orgName = name;
     },
     persist: {
       storage: sessionStorage

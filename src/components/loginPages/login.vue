@@ -2,7 +2,7 @@
   <div>
     <v-card-text>
       <h2 class="font-bold text-2xl text-custom-red tracking-widest text-center mt-3 mb-5">
-          {{$t('Welcome to Engaged Data')}}
+          {{$t('Welcome to')}} {{ appName }}
       </h2>
 
       <!-- Login form -->
@@ -65,6 +65,8 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import axios from 'axios'
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { computed } from 'vue';
+
 
 export default {
   name: "LoginForm",
@@ -85,14 +87,21 @@ export default {
                 return true;
             }
         ],
-        requiredRule: [v => !!v || this.$t('This field is required')]
+        requiredRule: [v => !!v || this.$t('This field is required')],
+        appName: "",
       };
   },
   setup() {
-    const store = useLoggedInUserStore()
+    const store = useLoggedInUserStore();
+
+    const appName = computed(() => {
+      return store.orgName === 'Data & Society' ? 'Engaged Data' : store.orgName;
+    });
+
     return {
       store,
-    }
+      appName
+    };
   },
   mounted() {
     if (this.$route.params.toastType) {

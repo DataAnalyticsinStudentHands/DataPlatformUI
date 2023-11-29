@@ -165,31 +165,31 @@
       </v-navigation-drawer>
 
       <v-app-bar 
-  scroll-target="#main"
-  style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
->
-  <v-btn 
-    v-if="!drawer"
-    icon 
-    @click="drawer = true; rail = false"
-  >
-    <v-icon>mdi-menu</v-icon>
-  </v-btn>
+        scroll-target="#main"
+        style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+      >
+        <v-btn 
+          v-if="!drawer"
+          icon 
+          @click="drawer = true; rail = false"
+        >
+          <v-icon>mdi-menu</v-icon>
+        </v-btn>
 
-  <!-- Placeholder for left side content -->
-  <v-spacer></v-spacer>
+        <!-- Placeholder for left side content -->
+        <v-spacer></v-spacer>
 
-  <!-- Advertisement text -->
-  <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
-    Developed by Data Analytics in Student Hands for Engaged Data
-  </span>
+        <!-- Advertisement text -->
+        <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
+          Developed by Data Analytics in Student Hands
+        </span>
 
-  <!-- Spacer to push content to the sides -->
-  <!-- <v-spacer></v-spacer> -->
+        <!-- Spacer to push content to the sides -->
+        <!-- <v-spacer></v-spacer> -->
 
-  <!-- Organization Name on the right -->
-  <h1 class="text-2xl text-white mr-10">{{ organizationName }}</h1>
-</v-app-bar>
+        <!-- Organization Name on the right -->
+        <h1 class="text-2xl text-white mr-10">{{ orgName }}</h1>
+      </v-app-bar>
 
 
 
@@ -205,21 +205,43 @@
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
-import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import { computed, onMounted } from 'vue';
 
 export default {
   name: "App",
   data() {
     return {
       showElement: useLoggedInUserStore().isLoggedIn === false,
-      organizationName: "",
       displayEntry: [],
       firstTimeLoginTF: null,
       activeLink: this.$route.name,
       rail: false,
       drawer: null,
     };
+  },
+  setup() {
+    const userStore = useLoggedInUserStore();
+    
+    // Computed property for orgName
+    const orgName = computed(() => userStore.orgName);
+
+    // Async function to fetch organization data
+    const fetchOrgData = async () => {
+      let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
+      try {
+        const response = await axios.get(apiURL, { headers: { token: userStore.token } });
+        userStore.setOrgName(response.data);
+      } catch (error) {
+        console.error("Error fetching organization data:", error);
+      }
+    };
+
+    // Call fetchOrgData on component mount
+    onMounted(fetchOrgData);
+
+    // Return the reactive properties that the template can access
+    return { user: userStore, orgName };
   },
   watch: {
     $route(to, from) {
@@ -280,24 +302,6 @@ export default {
         this.drawer = !this.drawer;
       }
     }
-  },
-  beforeMount() {
-  },
-  setup() {
-    // function that checks if a user is logged in
-    const user = useLoggedInUserStore();
-    return { user };
-  },
-  created() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-    const user = useLoggedInUserStore();
-    axios
-      .get(apiURL, {
-        headers: { token: user.token },
-      })
-      .then((resp) => {
-        this.organizationName = resp.data;
-      });
   },
 };
 </script>

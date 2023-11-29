@@ -6,9 +6,7 @@ import { useLoggedInUserStore } from '../stored/loggedInUser';
 const routes = [
     {
       path: '/',
-      // name: 'Home',
-      // props: true,
-      // component: () => import('../components/loginPages/login.vue')
+      name: 'Home',
       redirect: '/login'
       
   },
