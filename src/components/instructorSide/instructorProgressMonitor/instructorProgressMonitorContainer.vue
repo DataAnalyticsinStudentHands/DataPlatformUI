@@ -5,6 +5,10 @@
             <p class="font-weight-black text-h5 text--primary text-center">
             Student Progress Monitor
             </p>
+            <v-btn @click=$router.back() class="mt-4">
+              <v-icon left>mdi-arrow-left</v-icon>
+              Go Back
+            </v-btn>
         </v-col>
         </v-row>
       <v-row>
@@ -20,15 +24,6 @@
               Pending Monitor
             </v-tab>
           </v-tabs>
-
-          <v-row>
-                <v-col cols="12">            
-                    <v-btn @click=$router.back() class="mt-4">
-                    <v-icon left>mdi-arrow-left</v-icon>
-                    Go Back
-                    </v-btn>
-                </v-col>
-            </v-row>
 
           <!-- Content for Entry Form Monitor -->
           <div v-if="tab === 'entryForms'">

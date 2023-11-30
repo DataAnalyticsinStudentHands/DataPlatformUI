@@ -11,14 +11,14 @@
     <!-- Title -->
     <v-row dense>
       <v-col cols="12">
-        <p class="font-weight-black text-h5 text--primary">Exit Form</p>
+        <p class="font-weight-black text-h5 text--primary">{{$t('Exit Form')}}</p>
       </v-col>
     </v-row>
 
     <!-- Current Semester -->
     <v-row dense>
       <v-col cols="12">
-        <p class="font-weight-black text-h8">Current Semester:</p>
+        <p class="font-weight-black text-h8">{{$t('Current Semester:')}}</p>
       </v-col>
     </v-row>
     <v-row dense>
@@ -30,7 +30,7 @@
     <!-- Experience -->
     <v-row dense>
       <v-col cols="12">
-        <p class="font-weight-black text-h8">Experience:</p>
+        <p class="font-weight-black text-h8">{{$t('Experience:')}}</p>
       </v-col>
     </v-row>
     <v-row dense>
@@ -44,7 +44,7 @@
 
     <v-row dense>
       <v-col cols="12">
-        <p class="font-weight-black text-h8">At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know whether you feel you made progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.</p>
+        <p class="font-weight-black text-h8">{{$t('At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know about your progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.')}}</p>
       </v-col>
     </v-row>
     <v-row dense>
@@ -53,7 +53,7 @@
           <template v-for="(aspiration, index) in [exitForm.aspiration1, exitForm.aspiration2, exitForm.aspiration3]">
             <v-list-item v-if="aspiration" :key="index">
               <v-list-item-title>
-                <span class="font-weight-black"> Aspiration {{ index + 1 }}: </span>
+                <span class="font-weight-black"> {{$t('Aspiration')}} {{ index + 1 }}: </span>
               </v-list-item-title>
               {{ aspiration }}
             </v-list-item>
@@ -65,7 +65,7 @@
     <!-- Aspirations Progress Table -->
     <v-row>
       <v-col cols="12">
-        <p :class="{'text-custom-red': isAspirationProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each aspiration listed, please pick the option that best describes the progress you made.</p>
+        <p :class="{'text-custom-red': isAspirationProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
       </v-col>
     </v-row>
 
@@ -77,7 +77,7 @@
           <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.aspirationOneProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -88,7 +88,7 @@
           <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected"  :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.aspirationTwoProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -99,7 +99,7 @@
           <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected"  :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.aspirationThreeProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -117,14 +117,14 @@
           <thead>
             <tr>
               <th></th>
-              <th v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id" class="text-center">{{ option.label }}</th>
+              <th v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id" class="text-center">{{ $t(option.label) }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="exitForm.aspiration1">
               <td>{{ exitForm.aspiration1 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationOneProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationOneProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationOneProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -132,7 +132,7 @@
             <tr v-if="exitForm.aspiration2">
               <td>{{ exitForm.aspiration2 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationTwoProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationTwoProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationTwoProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -140,7 +140,7 @@
             <tr v-if="exitForm.aspiration3">
               <td>{{ exitForm.aspiration3 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationThreeProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationThreeProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationThreeProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -154,7 +154,7 @@
   <!-- Aspirations Connection Table -->
   <v-row>
     <v-col cols="12">
-      <p :class="{'text-custom-red': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each aspiration listed, please pick the option that best describes the connection between your progress and this course.</p>
+      <p :class="{'text-custom-red': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
     </v-col>
   </v-row>
 
@@ -165,11 +165,11 @@
         <v-col cols="12">
             <div v-if="exitForm.aspiration1">
               <div class="font-semibold italic">“{{ exitForm.aspiration1 }}”</div>
-              <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
+              <p class="text-caption text-gray-500">{{$t('The progress I made towards this aspiration was...')}}</p>
               <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected"  :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.aspirationOneExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -177,11 +177,11 @@
             </div>
             <div v-if="exitForm.aspiration2">
               <div class="font-semibold italic">“{{ exitForm.aspiration2 }}”</div>
-              <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
+              <p class="text-caption text-gray-500">{{$t('The progress I made towards this aspiration was...')}}</p>
               <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected"  :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -190,11 +190,11 @@
             <div v-if="exitForm.aspiration3">
               <div class="font-semibold italic">“{{ exitForm.aspiration3 }}”</div>
               
-              <p class="text-caption text-gray-500">The progress I made towards this aspiration was...</p>
+              <p class="text-caption text-gray-500">{{$t('The progress I made towards this aspiration was...')}}</p>
               <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected"  :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -215,14 +215,14 @@
           <thead>
             <tr>
               <th></th>
-              <th v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id" class="text-center">{{ option.label }}</th>
+              <th v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id" class="text-center">{{ $t(option.label) }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="exitForm.aspiration1">
               <td>{{ exitForm.aspiration1 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationOneExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationOneExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationOneExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -230,7 +230,7 @@
             <tr v-if="exitForm.aspiration2">
               <td>{{ exitForm.aspiration2 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationTwoExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationTwoExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationTwoExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -238,7 +238,7 @@
             <tr v-if="exitForm.aspiration3">
               <td>{{ exitForm.aspiration3 }}</td>
               <td v-for="option in exitForm.progressMade.aspirationThreeExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationThreeExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected"  :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.aspirationThreeExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -252,9 +252,9 @@
   <!-- Goals Progress Table -->
   <v-row>
     <v-col cols="12">
-      <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">At the beginning of the semester, we asked you to share three goals for your participation in this course. Now we would like to know whether you feel you made progress towards these goals and which activities from the course contributed to your progress.</p>
+      <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('At the beginning of the semester, we asked you to share three goals for your participation in this course. Now we would like to know about your progress towards these goals and which activities from the course contributed to your progress.')}}</p>
 
-      <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each goal listed below, please pick the option that best describes the progress you made.</p>
+      <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
     </v-col>
   </v-row>
   
@@ -266,7 +266,7 @@
           <v-radio-group v-model="exitForm.progressMade.goalOneProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalOneProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -277,7 +277,7 @@
           <v-radio-group v-model="exitForm.progressMade.goalTwoProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalTwoProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -288,7 +288,7 @@
           <v-radio-group v-model="exitForm.progressMade.goalThreeProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalThreeProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -299,7 +299,7 @@
           <v-radio-group v-model="exitForm.progressMade.goalFourProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalFourProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -310,7 +310,7 @@
           <v-radio-group v-model="exitForm.progressMade.goalFiveProgressSelected" :rules="[requiredRule]">
             <v-radio
               v-for="option in exitForm.progressMade.goalFiveProgressResults"
-              :label="option.xs_label"
+              :label="$t(option.xs_label)"
               :key="option.id"
               :value="option.label"
             ></v-radio>
@@ -328,14 +328,14 @@
           <thead>
             <tr>
               <th></th>
-              <th v-for="option in exitForm.progressMade.goalOneProgressResults" :key="option.id" class="text-center">{{ option.label }}</th>
+              <th v-for="option in exitForm.progressMade.goalOneProgressResults" :key="option.id" class="text-center">{{ $t(option.label) }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="exitForm.goal1">
               <td>{{ exitForm.goal1 }}</td>
               <td v-for="option in exitForm.progressMade.goalOneProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalOneProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalOneProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalOneProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalOneProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -343,7 +343,7 @@
             <tr v-if="exitForm.goal2">
               <td>{{ exitForm.goal2 }}</td>
               <td v-for="option in exitForm.progressMade.goalTwoProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalTwoProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalTwoProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalTwoProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalTwoProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -351,7 +351,7 @@
             <tr v-if="exitForm.goal3">
               <td>{{ exitForm.goal3 }}</td>
               <td v-for="option in exitForm.progressMade.goalThreeProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalThreeProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalThreeProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalThreeProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalThreeProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -359,7 +359,7 @@
             <tr v-if="exitForm.goal4">
               <td>{{ exitForm.goal4 }}</td>
               <td v-for="option in exitForm.progressMade.goalFourProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFourProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFourProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalFourProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFourProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -367,7 +367,7 @@
             <tr v-if="exitForm.goal5">
               <td>{{ exitForm.goal5 }}</td>
               <td v-for="option in exitForm.progressMade.goalFiveProgressResults" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFiveProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFiveProgressSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalFiveProgressSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFiveProgressSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -381,7 +381,7 @@
   <!-- Goals Connection Table -->
   <v-row>
     <v-col cols="12">
-      <p :class="{'text-custom-red': isGoalConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">For each goal listed, please pick the option that best describes the connection between your progress and this course.</p>
+      <p :class="{'text-custom-red': isGoalConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
     </v-col>
   </v-row>
 
@@ -392,11 +392,11 @@
         <v-col cols="12">
             <div v-if="exitForm.goal1">
               <div class="font-semibold italic">“{{ exitForm.goal1 }}”</div>
-              <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
+              <p class="text-caption text-gray-500">{{$t('The progress I made towards this goal was...')}}</p>
               <v-radio-group v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalOneExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -404,11 +404,11 @@
             </div>
             <div v-if="exitForm.goal2">
               <div class="font-semibold italic">“{{ exitForm.goal2 }}”</div>
-              <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
+              <p class="text-caption text-gray-500">{{$t('The progress I made towards this goal was...')}}</p>
               <v-radio-group v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalTwoExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -417,11 +417,11 @@
             <div v-if="exitForm.goal3">
               <div class="font-semibold italic">“{{ exitForm.goal3 }}”</div>
               
-              <p class="text-caption text-gray-500">The progress I made towards this goal was...</p>
+              <p class="text-caption text-gray-500">{{$t('The progress I made towards this goal was...')}}</p>
               <v-radio-group v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalThreeExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -434,7 +434,7 @@
               <v-radio-group v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalFourExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -447,7 +447,7 @@
               <v-radio-group v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" :rules="[requiredRule]">
                 <v-radio
                   v-for="option in exitForm.progressMade.goalFiveExperienceConnection"
-                  :label="option.xs_label"
+                  :label="$t(option.xs_label)"
                   :key="option.id"
                   :value="option.label"
                 ></v-radio>
@@ -468,14 +468,14 @@
           <thead>
             <tr>
               <th></th>
-              <th v-for="option in exitForm.progressMade.goalOneExperienceConnection" :key="option.id" class="text-center">{{ option.label }}</th>
+              <th v-for="option in exitForm.progressMade.goalOneExperienceConnection" :key="option.id" class="text-center">{{ $t(option.label) }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="exitForm.goal1">
               <td>{{ exitForm.goal1 }}</td>
               <td v-for="option in exitForm.progressMade.goalOneExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalOneExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalOneExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalOneExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -483,7 +483,7 @@
             <tr v-if="exitForm.goal2">
               <td>{{ exitForm.goal2 }}</td>
               <td v-for="option in exitForm.progressMade.goalTwoExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalTwoExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalTwoExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalTwoExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -491,7 +491,7 @@
             <tr v-if="exitForm.goal3">
               <td>{{ exitForm.goal3 }}</td>
               <td v-for="option in exitForm.progressMade.goalThreeExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalThreeExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalThreeExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalThreeExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -499,7 +499,7 @@
             <tr v-if="exitForm.goal4">
               <td>{{ exitForm.goal4 }}</td>
               <td v-for="option in exitForm.progressMade.goalFourExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFourExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalFourExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFourExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -507,7 +507,7 @@
             <tr v-if="exitForm.goal5">
               <td>{{ exitForm.goal5 }}</td>
               <td v-for="option in exitForm.progressMade.goalFiveExperienceConnection" :key="option.id">
-                <v-radio-group v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFiveExperienceConnectionSelected && formSubmitted) ? 'Please select one.' : ''">
+                <v-radio-group v-model="exitForm.progressMade.goalFiveExperienceConnectionSelected" :rules="[requiredRule]" :error-messages="(!exitForm.progressMade.goalFiveExperienceConnectionSelected && formSubmitted) ? $t('Please select one.') : ''">
                   <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                 </v-radio-group>
               </td>
@@ -521,7 +521,7 @@
 <!-- Goal Barriers List -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGoalIssuesInvalid }">Please select which goal(s) you faced barriers to achieving this semester.</p>
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGoalIssuesInvalid }">{{$t('Please select which goal(s) you faced barriers to achieving this semester.')}}</p>
       <!-- List of goals from the student's input -->
       <v-list density="compact">
         <v-list-item
@@ -568,7 +568,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8 mb-2">
-        For one of the goals you selected above, please describe what those barriers were and what strategies you employed to overcome those barriers in 3-4 sentences.
+        {{$t('For one of the goals you selected above, please describe what those barriers were and what strategies you employed to overcome those barriers in 3-4 sentences.')}}
       </p>
     </v-col>
   </v-row>
@@ -579,7 +579,7 @@
         class="mt-0"
         outlined
         dense
-        label="Descriptions/Strategies"
+        :label="$t('Descriptions/Strategies')"
         rows="4"
       ></v-textarea>
     </v-col>
@@ -593,7 +593,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8 mb-2" :class="{'text-custom-red': isGoalActivityProgressMobileInvalidTitle && formSubmitted}">
-        For each activity listed, check the boxes for goals that the activity helped you make progress towards. If the activity did not contribute to any of your goals, select "no goals".
+        {{$t("For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select 'no goals'.")}}
       </p>
     </v-col>
   </v-row>
@@ -604,7 +604,7 @@
         <div class="font-weight-black">{{ activity.activityName }}</div>
           <v-checkbox
             v-if="exitForm.goal1"
-            :label="`Goal 1: ${exitForm.goal1}`"
+            :label="`${$t('Goal 1')}: ${exitForm.goal1}`"
             :id="`${activity.activityID}-goal1`"
             :value="activity.activityID"
             v-model="exitForm.activitiesContribution.goalOneContributions"
@@ -615,7 +615,7 @@
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal2"
-            :label="`Goal 2: ${exitForm.goal2}`"
+            :label="`${$t('Goal 2')}: ${exitForm.goal2}`"
             :id="`${activity.activityID}-goal2`"
             :value="activity.activityID"
             v-model="exitForm.activitiesContribution.goalTwoContributions"
@@ -627,7 +627,7 @@
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal3"
-            :label="`Goal 3: ${exitForm.goal3}`"
+            :label="`${$t('Goal 3')}: ${exitForm.goal3}`"
             :id="`${activity.activityID}-goal3`"
             :value="activity.activityID"
             v-model="exitForm.activitiesContribution.goalThreeContributions"
@@ -639,7 +639,7 @@
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal4"
-            :label="`Goal 4: ${exitForm.goal4}`"
+            :label="`${$t('Goal 4')}: ${exitForm.goal4}`"
             :id="`${activity.activityID}-goal4`"
             :value="activity.activityID"
             v-model="exitForm.activitiesContribution.goalFourContributions"
@@ -651,7 +651,7 @@
           ></v-checkbox>
           <v-checkbox
             v-if="exitForm.goal5"
-            :label="`Goal 5: ${exitForm.goal5}`"
+            :label="`${$t('Goal 5')}: ${exitForm.goal5}`"
             :id="`${activity.activityID}-goal5`"
             :value="activity.activityID"
             v-model="exitForm.activitiesContribution.goalFiveContributions"
@@ -665,17 +665,16 @@
             :id="`${activity.activityID}-noGoals`"
             :value="activity.activityID"
             v-model="exitForm.activitiesContribution.noContributions"
-            label="No Goals"
+            :label="$t('No Goals')"
             @change="updateContribution(activity.activityID, 'noContributions', $event)"
             density="compact"
-            
           ></v-checkbox>
           <!-- Dummy Text Fields for Group Validation -->
           <v-text-field
             v-show="false"
             :rules="[() => validateGoalActivityProgress(activity)]"
           ></v-text-field>
-          <p class="text-sm text-custom-red mb-3 pt-0" v-if="!isGoalActivityProgressMobileInvalid[activity.activityID] && formSubmitted">At least one checkbox must be selected per Activity.</p>
+          <p class="text-sm text-custom-red mb-3 pt-0" v-if="!isGoalActivityProgressMobileInvalid[activity.activityID] && formSubmitted">{{$t('At least one checkbox must be selected for each activity.')}}</p>
       </div>
     </v-col>
   </v-row>
@@ -686,7 +685,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8 mb-2">
-        Below is a list of your goals from the beginning of the semester:
+        {{$t('Below is a list of your goals from the beginning of the semester:')}}
       </p>
     </v-col>
   </v-row>
@@ -695,7 +694,7 @@
       <v-list density="compact">
         <template v-for="(goal, index) in [exitForm.goal1, exitForm.goal2, exitForm.goal3, exitForm.goal4, exitForm.goal5]">
           <v-list-item v-if="goal" :key="index">
-            <span class="font-weight-black text-center">Goal {{ index + 1 }}: </span>
+            <span class="font-weight-black text-center">{{$t('Goal')}} {{ index + 1 }}: </span>
             {{ goal }}
           </v-list-item>
         </template>
@@ -706,7 +705,7 @@
       <v-row>
         <v-col cols="12">
           <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isGoalActivityProgressInvalid && formSubmitted }">
-            For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select "no goals".
+            {{$t("For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select 'no goals'.")}}
           </p>
         </v-col>
       </v-row>
@@ -717,8 +716,8 @@
           <thead>
             <tr>
               <th></th>
-              <th v-for="(goal, index) in existingGoals" :key="index">Goal {{ index + 1 }}</th>
-              <th>No Goals</th>
+              <th v-for="(goal, index) in existingGoals" :key="index">{{$t('Goal')}} {{ index + 1 }}</th>
+              <th>{{$t('No Goals')}}</th>
             </tr>
           </thead>
           <tbody>
@@ -802,7 +801,7 @@
             </tr>
           </tbody>
         </v-table>
-        <p class="text-sm text-custom-red" v-if="isGoalActivityProgressInvalid && formSubmitted">At least one checkbox must be selected per Activity.</p>
+        <p class="text-sm text-custom-red" v-if="isGoalActivityProgressInvalid && formSubmitted">{{$t('At least one checkbox must be selected for each activity.')}}</p>
       </v-col>
     </v-row>
 
@@ -814,7 +813,7 @@
   <v-row class="mt-5">
     <v-col cols="12">
       <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red' : isExperienceContributionGradProfInvalid && formSubmitted}">
-        How did this experience contribute to your graduate/professional goals?
+        {{$t('How did this experience contribute to your graduate/professional goals?')}}
       </p>
     </v-col>
   </v-row>
@@ -824,7 +823,7 @@
         v-model="exitForm.experienceContributions"
         outlined
         dense
-        label="Contribution Description"
+        :label="$t('Contribution Description')"
         rows="4"
         class="mt-0"
         :rules="[requiredRule]"
@@ -841,50 +840,50 @@
     <div class="d-sm-none">
       <v-row>
         <v-col cols="12">
-          <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> Use the scale provided to rate your likelihood of taking the actions listed:</p>
+          <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
           <div>
-            <div class="font-weight-black">Enroll in another Data & Society Course</div>
+            <div class="font-weight-black">{{$t('Enroll in another Data & Society Course')}}</div>
             <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.enrollAnotherCourse"
-                :label="option.label"
+                :label="$t(option.label)"
                 :key="option.id"
                 :value="option.label"
               ></v-radio>
             </v-radio-group>
           </div>
           <div>
-            <div class="font-weight-black">Complete the Data & Society minor</div>
+            <div class="font-weight-black">{{$t('Complete the Data & Society minor')}}</div>
             <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.completeMinor"
-                :label="option.label"
+                :label="$t(option.label)"
                 :key="option.id"
                 :value="option.label"
               ></v-radio>
             </v-radio-group>
           </div>
           <div>
-            <div class="font-weight-black">Complete the Data & Society minor</div>
+            <div class="font-weight-black">{{$t('Pursue a career in Data Science')}}</div>
             <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.recommendCourse"
-                :label="option.label"
+                :label="$t(option.label)"
                 :key="option.id"
                 :value="option.label"
               ></v-radio>
             </v-radio-group>
           </div>
           <div>
-            <div class="font-weight-black">Complete the Data & Society minor</div>
+            <div class="font-weight-black">{{$t('Pursue a career in Data Science')}}</div>
             <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" :rules="[requiredRule]">
               <v-radio
                 v-for="option in exitForm.likelihoodOf.pursueCareer"
-                :label="option.label"
+                :label="$t(option.label)"
                 :key="option.id"
                 :value="option.label"
               ></v-radio>
@@ -901,7 +900,7 @@
       <v-row class="d-none d-sm-inline">
         <v-row>
           <v-col cols="12">
-            <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> Use the scale provided to rate your likelihood of taking the actions listed:</p>
+            <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
           </v-col>
         </v-row>
         <v-col cols="12">
@@ -910,38 +909,38 @@
             <thead>
               <tr>
                 <th></th>
-                <th v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">{{ option.label }}</th>
+                <th v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">{{ $t(option.label) }}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Enroll in another Data & Society Course</td>
+                <td>{{$t('Enroll in another Data & Society Course')}}</td>
                 <td v-for="option in exitForm.likelihoodOf.enrollAnotherCourse" :key="option.id">
-                  <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.enrollAnotherCourseSelected && formSubmitted) ? 'Please select one.' : ''">
+                  <v-radio-group v-model="exitForm.likelihoodOf.enrollAnotherCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.enrollAnotherCourseSelected && formSubmitted) ? $t('Please select one.') : ''">
                     <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                   </v-radio-group>
                 </td>
               </tr>
               <tr>
-                <td>Complete the Data & Society minor</td>
+                <td>{{$t('Complete the Data & Society minor')}}</td>
                 <td v-for="option in exitForm.likelihoodOf.completeMinor" :key="option.id">
-                  <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.completeMinorSelected && formSubmitted) ? 'Please select one.' : ''">
+                  <v-radio-group v-model="exitForm.likelihoodOf.completeMinorSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.completeMinorSelected && formSubmitted) ? $t('Please select one.') : ''">
                     <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                   </v-radio-group>
                 </td>
               </tr>
               <tr>
-                <td>Recommend this course to a friend</td>
+                <td>{{$t('Recommend this course to a friend')}}</td>
                 <td v-for="option in exitForm.likelihoodOf.recommendCourse" :key="option.id">
-                  <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.recommendCourseSelected && formSubmitted) ? 'Please select one.' : ''">
+                  <v-radio-group v-model="exitForm.likelihoodOf.recommendCourseSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.recommendCourseSelected && formSubmitted) ? $t('Please select one.') : ''">
                     <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                   </v-radio-group>
                 </td>
               </tr>
               <tr>
-                <td>Pursue a career in Data Science</td>
+                <td>{{$t('Pursue a career in Data Science')}}</td>
                 <td v-for="option in exitForm.likelihoodOf.pursueCareer" :key="option.id">
-                  <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.pursueCareerSelected && formSubmitted) ? 'Please select one.' : ''">
+                  <v-radio-group v-model="exitForm.likelihoodOf.pursueCareerSelected" :rules="[requiredRule]" :error-messages="(!exitForm.likelihoodOf.pursueCareerSelected && formSubmitted) ? $t('Please select one.') : ''">
                     <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
                   </v-radio-group>
                 </td>
@@ -956,56 +955,56 @@
   <!-- Growth -->
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProblemSolvingInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>problem solving</u>.</p>
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProblemSolvingInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('problem solving')}}</u>.</p>
       <v-radio-group v-model="exitForm.generalGrowth.problemSolving" :rules="[requiredRule]">
-        <v-radio label="No growth" value="No growth"></v-radio>
-        <v-radio label="A little growth" value="A little growth"></v-radio>
-        <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-        <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+        <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+        <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+        <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+        <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
       </v-radio-group>
     </v-col>
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEffCommInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>effective communication</u>.</p>
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEffCommInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('effective communication')}}</u>.</p>
       <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication" :rules="[requiredRule]">
-        <v-radio label="No growth" value="No growth"></v-radio>
-        <v-radio label="A little growth" value="A little growth"></v-radio>
-        <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-        <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+        <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+        <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+        <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+        <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
       </v-radio-group>
     </v-col>
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthTeamworkInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>teamwork</u>.</p>
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthTeamworkInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('teamwork')}}</u>.</p>
       <v-radio-group v-model="exitForm.generalGrowth.teamwork" :rules="[requiredRule]">
-        <v-radio label="No growth" value="No growth"></v-radio>
-        <v-radio label="A little growth" value="A little growth"></v-radio>
-        <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-        <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+        <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+        <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+        <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+        <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
       </v-radio-group>
     </v-col>
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthCulHumInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>cultural humility</u>.</p>
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthCulHumInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('cultural humility')}}</u>.</p>
       <v-radio-group v-model="exitForm.generalGrowth.culturalHumility" :rules="[requiredRule]">
-        <v-radio label="No growth" value="No growth"></v-radio>
-        <v-radio label="A little growth" value="A little growth"></v-radio>
-        <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-        <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+        <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+        <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+        <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+        <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
       </v-radio-group>
     </v-col>
   </v-row>
   <v-row>
     <v-col cols="12">
-      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEthicsInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>ethical decision making</u>.</p>
+      <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEthicsInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('ethical decision making')}}</u>.</p>
       <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking" :rules="[requiredRule]">
-        <v-radio label="No growth" value="No growth"></v-radio>
-        <v-radio label="A little growth" value="A little growth"></v-radio>
-        <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-        <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+        <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+        <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+        <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+        <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
       </v-radio-group>
     </v-col>
   </v-row>
@@ -1013,10 +1012,10 @@
     <v-col cols="12">
       <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProfResInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
       <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility" :rules="[requiredRule]">
-        <v-radio label="No growth" value="No growth"></v-radio>
-        <v-radio label="A little growth" value="A little growth"></v-radio>
-        <v-radio label="A moderate amount of growth" value="A moderate amount of growth"></v-radio>
-        <v-radio label="A lot of growth" value="A lot of growth"></v-radio>
+        <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+        <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+        <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+        <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
       </v-radio-group>
     </v-col>
   </v-row>
@@ -1025,7 +1024,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isBiggestLessonsInvalid && formSubmitted }">
-        What are the biggest lessons and key takeaways you gained from this class and will carry with you moving forward?
+        {{$t('What are the biggest lessons and key takeaways you gained from this class and will carry with you moving forward?')}}
       </p>
     </v-col>
   </v-row>
@@ -1036,7 +1035,7 @@
         class="mt-0"
         outlined
         dense
-        label="Lessons/Takeaways"
+        :label="$t('Lessons/Takeaways')"
         rows="4"
         :rules="[requiredRule]"
       ></v-textarea>
@@ -1047,7 +1046,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isSupportOthersInvalid && formSubmitted }">
-        Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?
+        {{$t('Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?')}}
       </p>
     </v-col>
   </v-row>
@@ -1058,7 +1057,7 @@
         class="mt-0"
         outlined
         dense
-        label="Engage/Support"
+        :label="$t('Engage/Support')"
         rows="4"
         :rules="[requiredRule]"
       ></v-textarea>
@@ -1069,7 +1068,7 @@
   <v-row>
     <v-col cols="12">
       <p class="font-weight-black text-h8 mb-2">
-        Use this space to provide any other comments or recommendations you would like to share.
+        {{$t('Use this space to provide any other comments or recommendations you would like to share.')}}
       </p>
     </v-col>
   </v-row>
@@ -1080,7 +1079,7 @@
         class="mt-0"
         outlined
         dense
-        label="Comments/Recommendations"
+        :label="$t('Comments/Recommendations')"
         rows="4"
       ></v-textarea>
     </v-col>
@@ -1154,9 +1153,9 @@ export default {
           aspirationTwoProgressSelected:"",
           aspirationThreeProgressSelected: "",
           aspirationOneExperienceConnection: [
-            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course",  checked: false },
-            { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course",  checked: false }
+            { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course.",  checked: false },
+            { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course.",  checked: false }
           ],
           aspirationTwoExperienceConnection: [
             { id: 1, label: "The progress I made towards this aspiration was largely due to this course",  xs_label: "Largely due to this course.", checked: false },
@@ -1207,29 +1206,29 @@ export default {
           goalFourProgressSelected: null,
           goalFiveProgressSelected: null,
           goalOneExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
           ],
           goalTwoExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
           ],
           goalThreeExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
           ],
           goalFourExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
           ],
           goalFiveExperienceConnection: [
-            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course", checked: false },
-            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course", checked: false },
-            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course", checked: false }
+            { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+            { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+            { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
           ],
           goalOneExperienceConnectionSelected: null,
           goalTwoExperienceConnectionSelected: null,
@@ -1318,7 +1317,7 @@ export default {
           return true;
         }
         // Otherwise, check if the value is present
-        return !!value || 'Information is required.';
+        return !!value || this.$t('Information is required.');
       },
       dataAndSociety: false,
       goalFormExists: false,
@@ -1329,6 +1328,16 @@ export default {
     this.fetchExperienceData();
     this.fetchExperienceActivities();
     this.fetchGoalSettingFormData();
+    // Translations
+    const loggedInUserStore = useLoggedInUserStore();
+
+    if (loggedInUserStore.languagePreference === "Spanish") {
+      // Set to Spanish
+      this.$i18n.locale = "es";
+    } else {
+      // Default to English
+      this.$i18n.locale = "en";
+    }
   },
   computed:{
     isAspirationProgressInvalid() {
@@ -1382,7 +1391,7 @@ export default {
     },
     goalIssuesRules() {
       return [
-        () => this.exitForm.goalIssues.goals.some(goal => goal.checked) || 'At least one must be selected.'
+        () => this.exitForm.goalIssues.goals.some(goal => goal.checked) || this.$t('Please select one.')
       ];
     },
     goalIssuesErrorMessage() {
@@ -1705,7 +1714,7 @@ export default {
       const isAnyChecked = Object.values(this.exitForm.activitiesContribution).some(contributions => 
         contributions.includes(activityID)
       );
-      return isAnyChecked || 'At least one checkbox must be selected for each activity.';
+      return isAnyChecked || this.$t('At least one checkbox must be selected for each activity.');
     },
   }
 };
