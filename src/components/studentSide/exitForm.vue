@@ -1534,7 +1534,7 @@ export default {
       axios.get(apiURL)
         .then((response) => {
           this.exitForm.experience = response.data;
-          if (this.exitForm.experience.experienceCategory === 'Data & Society') {
+          if (this.exitForm.experience.experienceCategory === 'Data & Society' || this.exitForm.experience.experienceCategory === 'Minor Data & Society') {
             this.dataAndSociety = true;
           };
         })
