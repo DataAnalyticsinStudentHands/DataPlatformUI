@@ -102,6 +102,8 @@
 import useVuelidate from "@vuelidate/core";
 import { minLength, required } from "@vuelidate/validators";
 import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
 export default {
   name: "VerifyAccount",
   created() {
@@ -155,6 +157,7 @@ export default {
       const isFormCorrect = await this.v$.$validate();
       this.chechConfirmPassword();
       if (isFormCorrect && this.isConfirmPasswordValid) {
+        const store = useLoggedInUserStore();
         let user = {
           code: this.code,
           newPassword: this.newPassword,
@@ -164,7 +167,7 @@ export default {
           import.meta.env.VITE_ROOT_API + `/userdata/updatePasswordForm`;
         axios
           .put(apiURL, user, {
-            headers: { token: localStorage.getItem("token") },
+            headers: { token: store.token },
           })
           .then(
             (res) => {
@@ -174,18 +177,32 @@ export default {
                 this.loginLink = " Login";
                 this.error = "";
                 // Show the success message and navigate to the dashboard
-                this.$router.push({ 
-                  name: 'studentDashboard',
-                  params: {
-                    toastType: 'success',
-                    toastMessage: 'Password successfully reset!',
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--create'
-                  }
-                });
+                if (store.role === 'Student') {
+                  this.$router.push({ 
+                    name: 'studentDashboard',
+                    params: {
+                      toastType: 'success',
+                      toastMessage: 'Password successfully reset!',
+                      toastPosition: 'top-right',
+                      toastCSS: 'Toastify__toast--create'
+                    }
+                  });
+                } else if (store.role === 'Instructor') {
+                  this.$router.push({ 
+                    name: 'instructorDash',
+                    params: {
+                      toastType: 'success',
+                      toastMessage: 'Password successfully reset!',
+                      toastPosition: 'top-right',
+                      toastCSS: 'Toastify__toast--create'
+                    }
+                  });
+                }
+
               }
             },
             (err) => {
+              console.log('error');
               this.error = err.response.data.error;
               this.success = "";
               toast.error('An error occurred. Please try again later.', {
