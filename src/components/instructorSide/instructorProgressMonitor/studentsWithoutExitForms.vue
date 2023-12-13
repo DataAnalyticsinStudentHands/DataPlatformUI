@@ -29,6 +29,15 @@
                   ></v-autocomplete>
                 </v-col>
               </v-row>
+
+              <v-row v-if="selectedExperience">
+                <v-col cols="12">
+                  <div class="text-h6 pa-4">
+                    Total Students: {{ totalStudentsCount }}
+                  </div>
+                </v-col>
+              </v-row>
+
                 <!-- Pagination Controls -->
                 <v-row justify="space-between">
                   <v-col cols="auto">
@@ -134,6 +143,9 @@
       totalPaginationLength() {
         return Math.ceil(this.studentsWithoutExitForm.length / this.itemsPerPage);
       },
+      totalStudentsCount() {
+        return this.studentsWithoutExitForm.length;
+      },
     },
     methods: {
       updateExperienceID(selected) {
@@ -188,5 +200,12 @@
     background-color: #f0f0f0;
     cursor: pointer;
   }
+
+  :deep(.v-autocomplete input[type="text"]:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important; /* Update this line if you have a different border style */
+  background-color: transparent !important;
+}
   </style>
   

@@ -24,9 +24,19 @@
                         item-value="value"
                         clearable
                         @update:modelValue="updateExperienceID"
+                        active
                     ></v-autocomplete>
                     </v-col>
                 </v-row>
+
+                <v-row v-if="selectedExperience">
+                <v-col cols="12">
+                  <div class="text-h6 pa-4">
+                    Total Students: {{ totalStudentsCount }}
+                  </div>
+                </v-col>
+              </v-row>
+
                 <!-- Pagination Controls -->
                 <v-row justify="space-between">
                   <v-col cols="auto">
@@ -142,6 +152,9 @@
       totalPaginationLength() {
         return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
       },
+      totalStudentsCount() {
+        return this.studentsWithoutGoalForm.length;
+      },
     },
     methods: {
       updateExperienceID(selected) {
@@ -198,22 +211,16 @@
   
   <style scoped>
 
-
-.v-field__input > input[size="1"] {
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-  outline: none;
-}
-
-.v-field__input > input[size="1"]::before,
-.v-field__input > input[size="1"]::after {
-  display: none;
-}
-
 .hoverRow {
   background-color: #f0f0f0; /* light grey background */
   cursor: pointer;
+}
+
+:deep(.v-autocomplete input[type="text"]:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important; /* Update this line if you have a different border style */
+  background-color: transparent !important;
 }
 
 

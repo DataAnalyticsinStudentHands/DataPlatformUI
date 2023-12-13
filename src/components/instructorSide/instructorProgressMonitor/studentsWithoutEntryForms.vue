@@ -11,6 +11,14 @@
               Students who have Registered this Semester, but have not completed the Entry Form.
             </v-card-subtitle>
 
+            <v-row>
+              <v-col cols="12">
+                <div class="text-h6 pa-4">
+                  Total Students: {{ totalStudentsCount }}
+                </div>
+              </v-col>
+            </v-row>
+
             <!-- Pagination Controls -->
             <v-row justify="space-between">
               <v-col cols="auto">
@@ -112,6 +120,9 @@
       },
       totalPaginationLength() {
         return Math.ceil(this.studentsWithoutEntryForm.length / this.itemsPerPage);
+      },
+      totalStudentsCount() {
+        return this.studentsWithoutEntryForm.length;
       },
     },
     methods: {
