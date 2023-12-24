@@ -107,7 +107,7 @@ export default {
             email: this.email,
             code: this.code,
         };
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verifyExisting`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verifyWithEmail`;
         try {
             const res = await axios.put(apiURL, user);
 

@@ -164,7 +164,7 @@ export default {
           error: this.error,
         };
         let apiURL =
-          import.meta.env.VITE_ROOT_API + `/userdata/updatePasswordForm`;
+          import.meta.env.VITE_ROOT_API + `/userdata/passwordReset/loggedIn`;
         axios
           .put(apiURL, user, {
             headers: { token: store.token },
