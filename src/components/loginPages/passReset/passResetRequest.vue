@@ -81,7 +81,7 @@ export default {
                     email: this.email,
                     error: this.error,
                 };
-                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/resetPassword`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/passwordReset/initiate`;
 
                 try {
                     const response = await axios.put(apiURL, user);

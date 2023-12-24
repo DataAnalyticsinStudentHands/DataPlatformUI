@@ -69,12 +69,11 @@ export const useLoggedInUserStore = defineStore({
 
           // Check if the user is either an Instructor or a Student
           if (response.data.userRole === 'Instructor' || response.data.userRole === 'Student') {
-            await this.getCurrentSemester();
 
             // Additional check for the Student role
             if (response.data.userRole === 'Student') {
               await this.checkFormCompletion();
-              await this.fetchRegisteredExperiences();
+              // await this.fetchRegisteredExperiences();
             }
           }
 
@@ -176,16 +175,14 @@ export const useLoggedInUserStore = defineStore({
       this.languagePreference = langPref;
     },
     async checkFormCompletion() {
+      console.log('checkFormCompletion hit');
       try {
-        const response = await axios.get(`${apiURL}/studentSideData/studentChecklist`, {
+        const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }
         });
         if (response && response.data) {
           this.$patch({
-            hasCompletedEntryForm: response.data.hasCompletedEntryForm,
-            hasRegisteredExperiences: response.data.hasRegisteredExperiences,
-            goalSettingFormCompletion: response.data.goalSettingFormCompletion,
-            exitFormCompletion: response.data.exitFormCompletion,
+            hasCompletedEntryForm: response.data.formCompleted
           });
         }
       } catch (error) {
@@ -208,25 +205,6 @@ export const useLoggedInUserStore = defineStore({
     stopLoading() {
       this.loading = false;
     },
-    async getCurrentSemester() {
-      try {
-        const response = await axios.get(`${apiURL}/studentSideData/goalForms/semester`, {
-          headers: { token: this.token }
-        });
-        
-        if (response && response.data) {
-          const today = new Date(); // Define today's date
-          const exitFormReleaseDate = new Date(response.data.exitFormReleaseDate); // Convert the exitFormReleaseDate to a Date object
-    
-          this.$patch({
-            semesterName: response.data.semesterName,
-            exitFormsReleased: exitFormReleaseDate <= today, // Compare exitFormReleaseDate with today
-          });
-        }
-      } catch (error) {
-        this.handleError(error);
-      }
-    },  
     async fetchRegisteredExperiences() {
       const token = localStorage.getItem("token");
       const url = `${apiURL}/studentSideData/registeredExperiences`;
@@ -268,7 +246,7 @@ export const useLoggedInUserStore = defineStore({
           toastClassName: 'Toastify__toast--create'
         });
   
-        await this.checkFormCompletion();
+        // await this.checkFormCompletion();
         await this.fetchRegisteredExperiences();
       } catch (error) {
         // Handle error

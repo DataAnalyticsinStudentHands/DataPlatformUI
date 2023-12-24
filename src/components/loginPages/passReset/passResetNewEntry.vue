@@ -157,7 +157,7 @@ export default {
                     password: this.newPassword,
                 };
 
-                let apiURL = import.meta.env.VITE_ROOT_API + `/userData/resetPassNew`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userData/passwordReset/update`;
 
                 try {
                     const response = await axios.put(apiURL, dataToSend, {

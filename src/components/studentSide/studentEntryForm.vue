@@ -1181,7 +1181,7 @@ export default {
     async submitCompletedForm() {
       const user = useLoggedInUserStore()
       let token = user.token
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
       
       try {
         // Submit the entry form
