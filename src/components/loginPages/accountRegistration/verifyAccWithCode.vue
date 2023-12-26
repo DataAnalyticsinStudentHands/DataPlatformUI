@@ -54,7 +54,7 @@ export default {
   props: ["id"],
   data() {
     return {
-      code: null,
+      code: "",
       loading: false,
       userID: null,
       rules: [
