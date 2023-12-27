@@ -129,24 +129,13 @@ import { toast } from 'vue3-toastify';
 
 export default {
   name: "TestEntryDemo",
+  props: {
+      studentInformation: Object,
+  },
   emits: ['form-valid', 'form-invalid', 'scroll-to-error', 'validation-change'],
   data() {
     return {
       formSubmitted: false,
-      studentInformation: {
-        cityOrigin: '',
-        primaryLanguage: '',
-        otherLanguages: '',
-        pronouns: [
-          { id: 1, label: "She/her/hers", checked: false },
-          { id: 2, label: "He/him/his", checked: false },
-          { id: 3, label: "They/them/theirs", checked: false },
-          { id: 4, label: "Ze/Zir/Zirs", checked: false },
-          { id: 5, label: "Other", checked: false },
-          { id: 6, label: "Prefer not to answer", checked: false },
-        ],
-        otherPronouns: '',
-      },
       hoveredCheckboxID: null,
       showErrorBanner: false,
       otherPronounsRules: [

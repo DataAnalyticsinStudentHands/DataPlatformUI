@@ -334,47 +334,13 @@ import { toast } from 'vue3-toastify';
 
 export default {
     name: 'testEntryEnrolled',
+    props: {
+        studentInformation: Object,
+    },
     emits: ['form-valid', 'form-invalid', 'scroll-to-error', 'validation-change'],
     data() {
         return {
             formSubmitted: false,
-            studentInformation: {
-                enrolledUHInfo: {
-                    uhStatus: '',
-                    uhEmail: '',
-                    peopleSoftID: '',
-                    expectedGraduationYear: '',
-                    livingOnCampus: '',
-                    honorsCollegeStatus: '',
-                    honorsCollegeAffiliated: [
-                        { id: 1, label: "Senior Honors Thesis", checked: false },
-                        { id: 2, label: "Honors Mentorship Program", checked: false },
-                        { id: 3, label: "Honors Club Theatre", checked: false },
-                        { id: 4, label: "Honors Dodgeball Society", checked: false },
-                        { id: 5, label: "Student Governing Board", checked: false },
-                        { id: 6, label: "Bonner Leaders Program", checked: false },
-                        { id: 7, label: "Hobby/Leland/Harris Fellow", checked: false },
-                        { id: 8, label: "Mellon Research Scholars", checked: false },
-                        { id: 9, label: "Speech & Debate", checked: false },
-                        { id: 10, label: "Model Arab League, Model UN, etc.", checked: false },
-                        { id: 11, label: "Honors Ambassadors", checked: false },
-                        { id: 12, label: "Other", checked: false },
-                    ],
-                    honorsCollegeAffiliatedOther: '',
-                    majors: [], 
-                    honorsMinors: [],
-                    otherMinors: []
-                    },
-                    hichInfo: {
-                    hichStatus: '',
-                    hichHistoryStatus: ''
-                    },
-                    communityServiceInfo: {
-                    serviceStatus: '',
-                    serviceHistoryDesc: '',
-                    serviceOrgsOutsideUH: ''
-                }
-            },
             majors: [],
             minors: [],
             uhEmailRules: [
