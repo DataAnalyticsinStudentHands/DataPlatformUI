@@ -7,15 +7,14 @@
     <v-container>
 
       <p 
-      :class="{'error-text': isGraduateProfessionalSchoolGoalsInvalid}"
       class="font-weight-black text-h6">{{$t('Graduate/Professional School Goals')}}</p>
         <v-col cols="12" md="10">
           <p 
-          :class="{'error-text': isProgramGradProStatusValid}"
+          :class="{'error-text': isProgramGradProStatusInvalid}"
           class="font-weight-black text-h8">{{ $t('Do you currently plan to pursue graduate or professional (e.g. medical, law) school?') }}</p>
           <v-radio-group 
           ref="programGradProStatusField"
-          :class="{'error-text': isProgramGradProStatusValid}"
+          :class="{'error-text': isProgramGradProStatusInvalid}"
           v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"
           :rules="programGradProStatusRules">
             <v-radio :label="$t('Yes')" value="Yes" v-model="studentInformation.graduateProfessionalSchool.programGradProStatus"></v-radio>
@@ -25,12 +24,12 @@
         <transition name="slide-y-transition">
         <v-col cols="12" md="10" v-if="studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes'">
           <p 
-            :class="{'error-text': formSubmitted && isProgramGradProTypeInvalid}"
+            ref="programGradProTypeField"
+            :class="{'error-text': formSubmitted && isProgramGradProTypeAllInvalid}"
             class="font-weight-black text-h8">{{$t('If you are planning to pursue graduate school, what type of program?')}}</p>
           <div>
             <div v-for="programType in studentInformation.graduateProfessionalSchool.programGradProType" :key="programType.id">
               <v-checkbox 
-                ref="programGradProTypeField"
                 v-model="programType.checked" :label="$t(programType.label)"
                 density="compact"
                 class="ma-0 pa-0" hide-details="true"
@@ -83,12 +82,12 @@
         <transition name="slide-y-transition">
         <v-col cols="12" md="10" v-if="studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes'">
           <p 
-          :class="{'error-text': formSubmitted && isSpecializedDegCertTypeInvalid}"
+            ref="specializedDegCertTypeField"
+          :class="{'error-text': formSubmitted && isSpecializedDegCertTypeAllInvalid}"
           class="font-weight-black text-h8">{{$t('If you are planning to pursue a specialized degree / certificate program, what type of program?')}}</p>
           <div>
             <div v-for="specializedType in studentInformation.specializedDegCert.specializedDegCertType" :key="specializedType.id">
               <v-checkbox 
-              ref="specializedDegCertTypeField"
               v-model="specializedType.checked" 
               :label="$t(specializedType.label)"
               density="compact"
@@ -100,7 +99,6 @@
                 <v-col cols="12" md="10">
                   <transition name="slide-y-transition">
                   <v-text-field 
-                  ref="professionalDesignOtherField"
                   v-show="specializedType.id === 6 && specializedType.checked" :label="$t('Please specify')" v-model="studentInformation.specializedDegCert.professionalDesignOther"
                   :rules="professionalDesignOtherRules"
                   ></v-text-field>
@@ -114,6 +112,7 @@
       </transition>
     </v-container>
   </v-form>
+  
 
 <v-btn
     v-if="hasValidationErrors"
@@ -218,45 +217,57 @@ export default {
         },
     },
     computed: {
-        isGraduateProfessionalSchoolGoalsInvalid() {
-            if (!this.formSubmitted) return false;
-
-            const isPhDTextboxValid = this.phDTextboxRules[0](this.studentInformation.graduateProfessionalSchool.phDTextbox);
-
-            // Check if the rule returned a string (indicating an error message)
-            const isPhDTextboxInvalid = typeof isPhDTextboxValid === 'string';
-
-            const isMastersTextboxValid = this.masterTextboxRules[0](this.studentInformation.graduateProfessionalSchool.masterTextbox);
-
-            // Check if the rule returned a string (indicating an error message)
-            const isMastersTextboxInValid = typeof isMastersTextboxValid === 'string';
-            
-            const isOtherTextboxValid = this.otherTextboxRules[0](this.studentInformation.graduateProfessionalSchool.otherTextbox);
-
-            // Check if the rule returned a string (indicating an error message)
-            const isOtherTextboxInValid = typeof isOtherTextboxValid === 'string';
-            
-            const isProfessionalDesignOtherValid = this.professionalDesignOtherRules[0](this.studentInformation.specializedDegCert.professionalDesignOther);
-
-            // Check if the rule returned a string (indicating an error message)
-            const isProfessionalDesignOtherInValid = typeof isProfessionalDesignOtherValid === 'string';
-
-            return this.isProgramGradProStatusValid || this.isSpecializedDegCertStatusInvalid || isPhDTextboxInvalid || isMastersTextboxInValid || isOtherTextboxInValid || isProfessionalDesignOtherInValid;
-        },
-        isProgramGradProStatusValid() {
+        isProgramGradProStatusInvalid() {
             if (!this.formSubmitted) return false;
             const rule = v => !!v || this.$t('Information is required');
+            // Here, if the rule returns true, it means the input is valid, hence 'false' is returned for 'invalid'.
+            // Conversely, if the rule returns false (meaning the input is invalid), 'true' is returned for 'invalid'.
             return rule(this.studentInformation.graduateProfessionalSchool.programGradProStatus) !== true;
         },
+
         isProgramGradProTypeInvalid() {
             if (!this.formSubmitted || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
-                return ''
-            };
+                return '';
+            }
 
-            //Check if at least one checkbox is checked
-            if (!this.studentInformation.graduateProfessionalSchool.programGradProType.some(type => type.checked)) {
+            // Check if at least one checkbox is checked
+            const isAnyCheckboxChecked = this.studentInformation.graduateProfessionalSchool.programGradProType.some(type => type.checked);
+            if (!isAnyCheckboxChecked) {
                 return this.$t('Information is required.');
             }
+        },
+        isProgramGradProTypeAllInvalid() {
+            if (!this.formSubmitted || this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'No') {
+                return '';
+            }
+
+            // Check if at least one checkbox is checked
+            const isAnyCheckboxChecked = this.studentInformation.graduateProfessionalSchool.programGradProType.some(type => type.checked);
+            if (!isAnyCheckboxChecked) {
+                return this.$t('Information is required.');
+            }
+
+            // Validate PhD text field if it's shown
+            const isPhDTextboxValid = this.phDTextboxRules.every(rule => rule(this.studentInformation.graduateProfessionalSchool.phDTextbox) === true);
+            const isPhDTextboxShown = this.studentInformation.graduateProfessionalSchool.programGradProType[3].checked;
+            if (isPhDTextboxShown && !isPhDTextboxValid) {
+                return this.$t("If 'PhD' is selected, please specify.");
+            }
+
+            // Validate Master's text field if it's shown
+            const isMasterTextboxValid = this.masterTextboxRules.every(rule => rule(this.studentInformation.graduateProfessionalSchool.masterTextbox) === true);
+            const isMasterTextboxShown = this.studentInformation.graduateProfessionalSchool.programGradProType[6].checked;
+            if (isMasterTextboxShown && !isMasterTextboxValid) {
+                return this.$t("If 'Master's' is selected, please specify.");
+            }
+
+            // Validate Other text field if it's shown
+            const isOtherTextboxValid = this.otherTextboxRules.every(rule => rule(this.studentInformation.graduateProfessionalSchool.otherTextbox) === true);
+            const isOtherTextboxShown = this.studentInformation.graduateProfessionalSchool.programGradProType[7].checked;
+            if (isOtherTextboxShown && !isOtherTextboxValid) {
+                return this.$t("If 'Other' is selected, please specify.");
+            }
+
             return '';
         },
         isSpecializedDegCertStatusInvalid() {
@@ -266,18 +277,43 @@ export default {
         },
         isSpecializedDegCertTypeInvalid() {
             if (!this.formSubmitted || this.studentInformation.specializedDegCert.specializedDegCertStatus === "No") {
-                return ''
+                return '';
             }
 
             // Check if at least one checkbox is checked
             if (!this.studentInformation.specializedDegCert.specializedDegCertType.some(type => type.checked)) {
-                return this.$t('Information is required.')
-            };
+                return this.$t('Information is required.');
+            }
+
             return '';
         },
+
+        isSpecializedDegCertTypeAllInvalid() {
+            if (!this.formSubmitted || this.studentInformation.specializedDegCert.specializedDegCertStatus === "No") {
+                return '';
+            }
+
+            // Check if at least one checkbox is checked
+            const isAnyCheckboxChecked = this.studentInformation.specializedDegCert.specializedDegCertType.some(type => type.checked);
+            if (!isAnyCheckboxChecked) {
+                return this.$t('Information is required.');
+            }
+
+            // Validate Other's text field if it's shown
+            const isOtherTextboxShown = this.studentInformation.specializedDegCert.specializedDegCertType[5].checked;
+            const isOtherValid = this.professionalDesignOtherRules.every(rule => rule(this.studentInformation.specializedDegCert.professionalDesignOther) === true);
+            console.log('isOtherValid: ', isOtherValid);
+            console.log('isOtherTextboxShown: ', isOtherTextboxShown);
+            if (isOtherTextboxShown && !isOtherValid) {
+                return this.$t("If 'Other' is selected, please specify.");
+            }
+
+            return '';
+        },
+
         hasValidationErrors() {
             if (!this.formSubmitted) return false;
-                return this.isGraduateProfessionalSchoolGoalsInvalid || this.isProgramGradProStatusValid || this.isProgramGradProTypeInvalid || this.isSpecializedDegCertStatusInvalid || this.isSpecializedDegCertTypeInvalid;
+                return this.isProgramGradProStatusInvalid || this.isProgramGradProTypeInvalid || this.isProgramGradProTypeAllInvalid || this.isSpecializedDegCertStatusInvalid || this.isSpecializedDegCertTypeInvalid || this.isSpecializedDegCertTypeAllInvalid;
         },
     },
     methods: {
@@ -305,13 +341,14 @@ export default {
                 'otherTextboxField',
                 'specializedDegCertStatusField',
                 'specializedDegCertTypeField',
-                'professionalDesignOtherField',
             ];
 
             for (let i = 0; i < errorFields.length; i++) {
                 if (this.isFieldInvalid(errorFields[i])) {
-                    // Emit the error field reference to the parent component
-                    this.$emit('scroll-to-error', this.$refs[errorFields[i]]);
+                    // Emit the actual DOM element or component reference
+                    const ref = this.$refs[errorFields[i]];
+                    const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                    this.$emit('scroll-to-error', element);
                     break;
                 }
             }
@@ -319,21 +356,26 @@ export default {
         isFieldInvalid(fieldRef) {
             switch (fieldRef) {
                 case 'programGradProStatusField':
-                    return this.isProgramGradProStatusValid;
+                    console.log('case programGradProStatusField')
+                    return this.isProgramGradProStatusInvalid;
                 case 'programGradProTypeField':
-                    return this.isProgramGradProTypeInvalid;
+                    console.log('case programGradProTypeField')
+                    return this.isProgramGradProTypeAllInvalid;
                 case 'phDTextboxField':
-                    return this.phDTextboxRules.some(rule => typeof rule(this.studentInformation.graduateProfessionalSchool.phDTextbox) === 'string');
+                    console.log('case phDTextboxField')
+                return this.isProgramGradProTypeInvalid;
                 case 'masterTextboxField':
-                    return this.masterTextboxRules.some(rule => typeof rule(this.studentInformation.graduateProfessionalSchool.masterTextbox) === 'string');
+                    console.log('case masterTextboxField')
+                return this.isProgramGradProTypeInvalid;
                 case 'otherTextboxField':
-                    return this.otherTextboxRules.some(rule => typeof rule(this.studentInformation.graduateProfessionalSchool.otherTextbox) === 'string');
+                    console.log('case otherTextboxField')
+                return this.isProgramGradProTypeInvalid;
                 case 'specializedDegCertStatusField':
+                    console.log('case specializedDegCertStatusField')
                     return this.isSpecializedDegCertStatusInvalid;
                 case 'specializedDegCertTypeField':
-                    return this.isSpecializedDegCertTypeInvalid;
-                case 'professionalDesignOtherField':
-                    return this.professionalDesignOtherRules.some(rule => typeof rule(this.studentInformation.specializedDegCert.professionalDesignOther) === 'string');
+                    console.log('case specializedDegCertTypeField')
+                    return this.isSpecializedDegCertTypeAllInvalid;
                 default:
                     return false;
             }

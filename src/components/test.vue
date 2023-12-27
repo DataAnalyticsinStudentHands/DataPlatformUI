@@ -1,6 +1,6 @@
 <template> <!-- Start of the Student Entry Form template -->
 
-    <v-container style="width: 90%; margin: 0 auto;"> <!-- Container for the form title and description -->
+    <v-container style="width: 100%; margin: 0 auto;"> <!-- Container for the form title and description -->
       <div style="display: flex; align-items: center;">
         <p class="font-weight-black text-h5 text--primary">
           {{ $t('Student Entry Form') }}
@@ -47,9 +47,12 @@
                 <v-stepper
                     :alt-labels="showAltLabels"
                     v-model="currentStep"
+                    :mobile="$vuetify.display.xs"
+                    :flat="$vuetify.display.xs"
                 >
                     <v-stepper-header>
                         <v-stepper-item
+                            ref="step0"
                             title="Demographics"
                             icon="mdi-account"
                             value="0"
@@ -59,6 +62,7 @@
                         <v-divider></v-divider>
 
                         <v-stepper-item
+                            ref="step1"
                             title="Degree Program"
                             icon="mdi-school"
                             value="1"
@@ -68,6 +72,7 @@
                         <v-divider></v-divider>
 
                         <v-stepper-item
+                            ref="step2"
                             title="Graduate/Professional"
                             icon="mdi-account-school"
                             value="2"
@@ -77,13 +82,17 @@
                         <v-divider></v-divider>
 
                         <v-stepper-item
+                            ref="step3"
                             title="Review"
                             icon="mdi-check-bold"
                             value="3"
                         ></v-stepper-item>
                     </v-stepper-header>
+                    <div id="progress-bar" :style="{ width: progressBarWidth }"></div>
 
-                    <v-stepper-window>
+                    <!-- Non-Mobile View -->
+                    <v-container class="ma-0 pa-0">
+                    <v-stepper-window v-if="$vuetify.display.smAndUp">
                         <v-stepper-window-item value="0">
                         <test-entry-demo 
                             ref="testEntryDemoRef"
@@ -118,13 +127,55 @@
                             <test-entry-review
                                 ref="testEntryReview"
                                 :studentInformation="studentInformation"
-                                @form-valid="handleFormValid"
-                                @form-invalid="handleFormInvalid('review')"
-                                @scroll-to-error="handleScrollToError"
-                                @validation-change="handleValidationChange('review', $event)"
+                                @change-step="currentStep = $event"
                             ></test-entry-review>
                         </v-stepper-window-item>
                     </v-stepper-window>
+                </v-container>
+
+                <!-- Mobile View with Vuetify Slide Transition -->
+                <v-container v-if="$vuetify.display.xs" class="pa-0 ma-0">
+                    <v-scroll-x-reverse-transition group hide-on-leave>
+                    <div v-show="currentStep === 0" key="step0">
+                        <test-entry-demo 
+                            ref="testEntryDemoRef"
+                            :studentInformation="studentInformation"
+                            @form-valid="handleFormValid"
+                            @form-invalid="handleFormInvalid('demo')"
+                            @scroll-to-error="handleScrollToError"
+                            @validation-change="handleValidationChange('demo', $event)"
+                        ></test-entry-demo>
+                    </div>
+                    <div v-show="currentStep === 1" key="step1">
+                        <test-entry-enrolled
+                            ref="testEntryEnrolledRef"
+                            :studentInformation="studentInformation"
+                            @form-valid="handleFormValid"
+                            @form-invalid="handleFormInvalid('enrolled')"
+                            @scroll-to-error="handleScrollToError"
+                            @validation-change="handleValidationChange('enrolled', $event)"
+                        ></test-entry-enrolled>
+                    </div>
+                    <div v-show="currentStep === 2" key="step2">
+                        <test-entry-grad-prof
+                            ref="testEntryGradProfRef"
+                            :studentInformation="studentInformation"
+                            @form-valid="handleFormValid"
+                            @form-invalid="handleFormInvalid('gradprof')"
+                            @scroll-to-error="handleScrollToError"
+                            @validation-change="handleValidationChange('gradprof', $event)"
+                        ></test-entry-grad-prof>
+                    </div>
+                    <div v-show="currentStep === 3" key="step3">
+                        <test-entry-review
+                            ref="testEntryReview"
+                            :studentInformation="studentInformation"
+                            @change-step="currentStep = $event"
+                        ></test-entry-review>
+                    </div>
+                    </v-scroll-x-reverse-transition>
+                </v-container>
+
                     <v-row justify="space-between" class="ma-1">
                         <v-col cols="auto">
                             <v-btn 
@@ -137,15 +188,31 @@
                             </v-btn>
                         </v-col>
                         <v-col cols="auto">
-                            <v-btn type="submit" @click="triggerValidation" class="btn">{{$t('Next')}}</v-btn>
+                            <!-- Conditional rendering for Submit Form button -->
+                            <v-btn 
+                                v-if="currentStep === 3" 
+                                type="submit" 
+                                @click="submitForm" 
+                                class="btn"
+                            >
+                                {{$t('Submit Form')}}
+                            </v-btn>
+                            <!-- Next button for other steps -->
+                            <v-btn 
+                                v-else 
+                                type="submit" 
+                                @click="triggerValidation" 
+                                class="btn"
+                            >
+                                {{$t('Next')}}
+                            </v-btn>
                         </v-col>
                     </v-row>
                 </v-stepper>
-                currentStep {{ currentStep  }}
             </v-col>
         </v-row>
     </v-container>
-    {{ studentInformation }}
+    <!-- {{ studentInformation }} -->
 </template>
 
 <script>
@@ -153,6 +220,10 @@ import TestEntryDemo from './testEntryDemo.vue';
 import testEntryEnrolled from './testEntryEnrolled.vue';
 import testEntryGradProf from './testEntryGradProf.vue';
 import testEntryReview from './testEntryReview.vue';
+
+
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import axios from 'axios';
 
 export default {
     name: "test",
@@ -250,13 +321,20 @@ export default {
     },
     computed: {
         showAltLabels() {
-            if (this.$vuetify.display.mdAndUp) {
+            if (this.$vuetify.display.mdAndUp || this.$vuetify.display.xs) {
                 console.log('mdAndUp')
                 return false;
             } else {
                 return true;
             }
-        }
+        },
+        progressBarWidth() {
+            const stepWidth = 25; // Assuming each step is 25% of the total width
+            return `${stepWidth * (this.currentStep + 1)}%`;
+        },
+        uHStudentCheck() {
+            return this.studentInformation.enrolledUHInfo.uhStatus === 'Yes';
+        },
     },
     methods: {
         triggerValidation() {
@@ -308,14 +386,147 @@ export default {
                 this.gradProfError = !isValid;
             }
         },
-        handleScrollToError(errorFieldRef) {
-            const element = errorFieldRef.$el ? errorFieldRef.$el : errorFieldRef;
-            console.log('element: ', element);
-            if (element) {
+        handleScrollToError(element) {
+            if (element && element.scrollIntoView) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         },
+        async submitForm() {
+            console.log("Form submission triggered");
+            console.log('before cleanup: ', this.studentInformation);
+            this.cleanupFormData();
+            console.log('cleaned up data: ', this.studentInformation);
+
+            const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
+
+            try {
+                const user = useLoggedInUserStore();
+                // const token = user.token;
+                const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE3MDM0NzI1Mzk2NDUiLCJ1c2VyUm9sZSI6IlN0dWRlbnQiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzY3OTk5NiwiZXhwIjoxNzAzNjkxOTk2fQ.b-Wj1n_CC2CdCW9OXZDiGYFAZLO1lyWtZuE-V8W8pqs'
+
+                const response = await axios.post(apiURL, {
+                    studentInformation: this.studentInformation
+                }, {
+                    headers: { token }
+                });
+
+                console.log(response.data)
+            } catch (error) {
+                console.error('Error submitting form: ', error);
+            }
+        },
+        cleanupFormData() {
+            // Check condition for "Other" pronouns
+            const otherPronoun = this.studentInformation.pronouns.find(p => p.id === 5);
+            const isOtherPronounChecked = otherPronoun ? otherPronoun.checked : false;
+
+            if (!isOtherPronounChecked) {
+                this.studentInformation.otherPronouns = '';
+            }
+
+            // Check condition for UH student
+            //Check condition for "honorsCollegeAffiliated"
+            const honorsCollegeAffiliatedCheck = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated[11].checked === true;
+
+            if (!this.uHStudentCheck) {
+                this.studentInformation.enrolledUHInfo.uhEmail = '';
+                this.studentInformation.enrolledUHInfo.peopleSoftID = '';
+                this.studentInformation.enrolledUHInfo.expectedGraduationYear = '';
+                this.studentInformation.enrolledUHInfo.livingOnCampus = '';
+                this.studentInformation.enrolledUHInfo.honorsCollegeStatus = '';
+                this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated = [
+                { id: 1, label: "Senior Honors Thesis", checked: false },
+                { id: 2, label: "Honors Mentorship Program", checked: false },
+                { id: 3, label: "Honors Club Theatre", checked: false },
+                { id: 4, label: "Honors Dodgeball Society", checked: false },
+                { id: 5, label: "Student Governing Board", checked: false },
+                { id: 6, label: "Bonner Leaders Program", checked: false },
+                { id: 7, label: "Hobby/Leland/Harris Fellow", checked: false },
+                { id: 8, label: "Mellon Research Scholars", checked: false },
+                { id: 9, label: "Speech & Debate", checked: false },
+                { id: 10, label: "Model Arab League, Model UN, etc.", checked: false },
+                { id: 11, label: "Honors Ambassadors", checked: false },
+                { id: 12, label: "Other", checked: false },
+                ],
+                this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
+                this.studentInformation.enrolledUHInfo.majors = [];
+                this.studentInformation.enrolledUHInfo.honorsMinors = [];
+                this.studentInformation.enrolledUHInfo.otherMinors = [];
+                this.studentInformation.hichInfo.hichStatus = '';
+                this.studentInformation.hichInfo.hichHistoryStatus = '';
+            } else if (this.uHStudentCheck && !honorsCollegeAffiliatedCheck) {
+                this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
+            }
+            
+            //Check condition for "serviceStatus"
+            const serviceStatusCheck = this.studentInformation.communityServiceInfo.serviceStatus === 'Yes';
+            if (!serviceStatusCheck) {
+                this.studentInformation.communityServiceInfo.serviceHistoryDesc = '';
+                this.studentInformation.communityServiceInfo.serviceOrgsOutsideUH = '';
+            }
+
+            //Check condition for programGradProStatus
+            const phDTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 4);
+            const isphDTextboxChecked = phDTextboxFind ? phDTextboxFind.checked : false;
+
+            const masterTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 7);
+            const isMasterTextboxChecked = masterTextboxFind ? masterTextboxFind.checked : false;
+
+            const otherTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 8);
+            const isOtherTextboxChecked = otherTextboxFind ? otherTextboxFind.checked : false;
+
+            const programGradProStatusCheck = this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes';
+
+            if(!programGradProStatusCheck) {
+                this.studentInformation.graduateProfessionalSchool.programGradProType.forEach(item => {
+                    item.checked = false;
+                });
+                this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
+                this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
+                this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
+            } else {
+                if (!isphDTextboxChecked) {
+                this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
+                }
+                if (!isMasterTextboxChecked) {
+                this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
+                }
+                if (!isOtherTextboxChecked) {
+                this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
+                }
+            }
+
+            //Check condition for specializedDegCertStatus
+            const specializedDegCertStatusCheck = this.studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes';
+
+
+            const professionalDesignOtherFind = this.studentInformation.specializedDegCert.specializedDegCertType.find(p => p.id === 6);
+
+            const isProfessionalDesignOtherChecked = professionalDesignOtherFind ?professionalDesignOtherFind.checked : false;
+
+
+            if (!specializedDegCertStatusCheck) {
+                this.studentInformation.specializedDegCert.specializedDegCertType.forEach(item => {
+                item.checked = false;
+                });
+                this.studentInformation.specializedDegCert.professionalDesignOther = '';
+            } else {
+                if (!isProfessionalDesignOtherChecked) {
+                this.studentInformation.specializedDegCert.professionalDesignOther = '';
+                }
+            }
+            },
     }
 
 }
 </script>
+
+<style scoped>
+#progress-bar {
+  height: 4px;
+  background-color: #c8102e;
+  transition: width 0.3s ease;
+}
+
+
+</style>

@@ -234,7 +234,7 @@
 
 
     <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content">
-      <router-view @showDashboard="showDashboard" id="scroll-target"></router-view>
+      <router-view></router-view>
     </v-main>
   </v-layout>
   </v-app>
@@ -277,9 +277,6 @@ export default {
     }
   },
   methods: {
-    showDashboard() {
-      this.showElement = true;
-    },
     async handleLogout() {
       const store = useLoggedInUserStore();
       

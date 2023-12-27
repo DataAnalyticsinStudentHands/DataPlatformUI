@@ -4,7 +4,7 @@
     @submit.prevent="handleValidations"
 >
     <v-container style="width: 100%; margin: 0 auto;">
-        <v-row class="mb-4">
+        <v-row class="">
         <v-col cols="12">
     </v-col>
 
@@ -15,9 +15,9 @@
 
     </v-row>
         <p 
-        class="font-weight-black text-h6 mb-2">{{ $t('Demographics Information') }}</p>
+        class="font-weight-black text-h6 mb-4">{{ $t('Demographics Information') }}</p>
         <p 
-        class="font-weight-black">{{ $t('Where are you from? (Ie, place(s) you call home)') }}</p>
+        class="font-weight-black mb-2">{{ $t('Where are you from? (Ie, place(s) you call home)') }}</p>
         <v-row class="mb-4">
         <v-col cols="12" md="6">
             <v-text-field 
@@ -209,15 +209,20 @@ export default {
       }
     },
     scrollToErrorField() {
-        const errorFields = ['otherPronounsField']; // Add more refs as needed
-        for (let i = 0; i < errorFields.length; i++) {
-            if (this.isFieldInvalid(errorFields[i])) {
-                // Emit the error field reference to the parent component
-                this.$emit('scroll-to-error', this.$refs[errorFields[i]]);
-                break;
+            const errorFields = [
+                'otherPronounsField'
+            ];
+
+            for (let i = 0; i < errorFields.length; i++) {
+                if (this.isFieldInvalid(errorFields[i])) {
+                    // Emit the actual DOM element or component reference
+                    const ref = this.$refs[errorFields[i]];
+                    const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                    this.$emit('scroll-to-error', element);
+                    break;
+                }
             }
-        }
-    },
+        },
 
     isFieldInvalid(fieldRef) {
         // Add logic to determine if a field is invalid based on its ref

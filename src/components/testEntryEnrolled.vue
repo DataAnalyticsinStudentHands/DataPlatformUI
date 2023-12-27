@@ -73,7 +73,6 @@
             </v-col>
           </v-row>
         <p 
-        :class="{'error-text': isEducationalBackgroundAndGoalsInvalid}"
         class="font-weight-black text-h6">{{$t('Educational Background and Goals')}}</p>
           <v-row>
             <v-col cols="12" md="7">
@@ -96,6 +95,8 @@
         <v-row>
           <v-col cols="12" md="7">
           <p 
+            ref="honorsCollegeAffiliatedField"
+            :class="{'error-text': isHonorsCollegeAffiliatedInvalid}"
             class="font-weight-black text-h8">
                 {{ $t('Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?') }}
             </p>
@@ -126,9 +127,6 @@
           </div>
         </v-col>
       </v-row>
-
-
-
           <v-row>
               <v-col cols="12" md="7">
                     <p 
@@ -179,7 +177,6 @@
             </v-col>
           </v-row>
           <p 
-          :class="{'error-text': isOtherEngagementValid}"
           class="font-weight-black text-h6">{{$t('Other Engagement')}}</p>
           <v-row>
             <v-col cols="12" md="7">
@@ -525,18 +522,26 @@ export default {
             // Return true if either input is invalid
             return isUHEmailInvalid || isPeopleSoftIDInvalid;
         },
-        isEducationalBackgroundAndGoalsInvalid() {
-            // if user is not UH Student, skip validation
-            if (!this.uHStudentCheck) return false;
-
-            return this.isHonorsCollegeStatusInvalid || this.isHonorsCollegeAffiliatedOtherInvalid || this.isMajorsInvalid || this.isHonorsMinorsInvalid;
-        },
         isHonorsCollegeStatusInvalid() {
             // if user is not UH Student, skip validation
             if (!this.uHStudentCheck) return false;
             const rule = v => !!v || this.$t('Information is required');
             return rule(this.studentInformation.enrolledUHInfo.honorsCollegeStatus) !== true;
         },
+        isHonorsCollegeAffiliatedInvalid() {
+          // If the user is not a UH student, validation is automatically passed
+          if (!this.uHStudentCheck) return false;
+
+          // Find the "Other" affiliated type
+          const otherAffiliatedType = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated.find(affiliatedType => affiliatedType.id === 12);
+
+          // Check if "Other" is selected and if the affiliated other text field is empty
+          if (otherAffiliatedType && otherAffiliatedType.checked && !this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther) {
+              return true; // Invalid if "Other" is selected and the text field is empty
+          }
+
+          return false; // Valid in all other cases
+      },
         honorsCollegeStatusErrorMessage() {
             if (this.uHStudentCheck) {
                 // Evaluate the validation rule
@@ -567,13 +572,6 @@ export default {
             // Check the validation rule for the minors
             return this.honorsMinorsRules[0](this.studentInformation.enrolledUHInfo.honorsMinors) !== true;
         },
-        isOtherEngagementValid() {
-            // if user is not UH Student, skip validation
-            if (!this.uHStudentCheck) return false;
-
-            // Check serviceStatus validation
-            return this.isServiceStatusInvalid || this.isServiceHistoryDescInvalid;
-        },
         isServiceStatusInvalid() {
             if (!this.formSubmitted) return false;
             const rule = v => !!v || this.$t('Information is required');
@@ -587,7 +585,7 @@ export default {
         },
         hasValidationErrors() {
             if (!this.formSubmitted) return false;
-                return this.isUhStatusInvalid || this.isEnrolledUHInfoInvalid || this.isEducationalBackgroundAndGoalsInvalid || this.isHonorsCollegeStatusInvalid || this.isMajorsInvalid || this.isHonorsMinorsInvalid || this.isOtherEngagementValid || this.isServiceStatusInvalid || this.isServiceHistoryDescInvalid;
+                return this.isUhStatusInvalid || this.isEnrolledUHInfoInvalid || this.isHonorsCollegeStatusInvalid || this.isHonorsCollegeAffiliatedInvalid || this.isMajorsInvalid || this.isHonorsMinorsInvalid || this.isServiceStatusInvalid || this.isServiceHistoryDescInvalid;
         },
     },
     methods: {
@@ -613,6 +611,7 @@ export default {
                 'uhEmailField',
                 'peopleSoftIDField',
                 'honorsCollegeStatusField',
+                'honorsCollegeAffiliatedField',
                 'honorsCollegeAffiliatedOtherField',
                 'majorsField',
                 'honorsMinorsRef',
@@ -624,8 +623,11 @@ export default {
 
             for (let i = 0; i < errorFields.length; i++) {
                 if (this.isFieldInvalid(errorFields[i])) {
-                    // Emit the error field reference to the parent component
-                    this.$emit('scroll-to-error', this.$refs[errorFields[i]]);
+                    // Emit the actual DOM element or component reference
+                    const ref = this.$refs[errorFields[i]];
+                    const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                    console.log('element: ', element);
+                    this.$emit('scroll-to-error', element);
                     break;
                 }
             }
@@ -635,25 +637,27 @@ export default {
                 case 'uhStatusField':
                     return this.isUhStatusInvalid;
                 case 'uhEmailField':
-                    return this.isEnrolledUHInfoInvalid || this.isUhEmailInvalid;
+                    return this.isEnrolledUHInfoInvalid;
                 case 'peopleSoftIDField':
-                    return this.isEnrolledUHInfoInvalid || this.isPeopleSoftIDInvalid;
+                    return this.isEnrolledUHInfoInvalid;
                 case 'honorsCollegeStatusField':
-                    return this.isEnrolledUHInfoInvalid || this.isHonorsCollegeStatusInvalid;
+                    return this.isHonorsCollegeStatusInvalid;
+                case 'honorsCollegeAffiliatedField':
+                    return this.isHonorsCollegeAffiliatedInvalid;
                 case 'honorsCollegeAffiliatedOtherField':
-                    return this.isEnrolledUHInfoInvalid || this.isHonorsCollegeAffiliatedOtherInvalid;
+                    return this.isHonorsCollegeAffiliatedOtherInvalid;
                 case 'majorsField':
-                    return this.isEnrolledUHInfoInvalid || this.isMajorsInvalid;
+                    return this.isMajorsInvalid;
                 case 'honorsMinorsRef':
-                    return this.isEnrolledUHInfoInvalid || this.isHonorsMinorsInvalid;
+                    return this.isHonorsMinorsInvalid;
                 case 'serviceStatusField':
-                    return this.isOtherEngagementValid || this.isServiceStatusInvalid;
+                    return this.isServiceStatusInvalid;
                 case 'serviceStatusFieldTwo':
-                    return this.isOtherEngagementValid || this.isServiceStatusInvalid;
+                    return this.isServiceStatusInvalid;
                 case 'serviceHistoryDescFieldTwo':
-                    return this.isOtherEngagementValid || this.isServiceHistoryDescInvalid;
+                    return this.isServiceHistoryDescInvalid;
                 case 'serviceHistoryDescField':
-                    return this.isOtherEngagementValid || this.isServiceHistoryDescInvalid;
+                    return this.isServiceHistoryDescInvalid;
                 default:
                     return false;
             }
