@@ -40,6 +40,7 @@
     {{ $t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.") }}
   </p>
 </v-container>
+
   <v-form 
   ref="form"
   @submit.prevent="handleValidations">

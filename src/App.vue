@@ -233,8 +233,8 @@
 
 
 
-    <v-main id="main" style="min-height: 300px;" class="main-content">
-      <router-view @showDashboard="showDashboard"></router-view>
+    <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content">
+      <router-view @showDashboard="showDashboard" id="scroll-target"></router-view>
     </v-main>
   </v-layout>
   </v-app>
@@ -255,6 +255,7 @@ export default {
       activeLink: this.$route.name,
       rail: this.isMdAndUp,
       drawer: null,
+      scrollPosition: 0,
     };
   },
   watch: {
@@ -315,10 +316,29 @@ export default {
       } else {
         this.drawer = !this.drawer;
       }
-    }
+    },
+    handleScroll(event) {
+    // Your scroll handling logic
+    this.scrollPosition = event.target.scrollTop;
   },
-  beforeMount() {
   },
+  mounted() {
+    // Access the root DOM element of the v-main Vue component
+    const mainContentEl = this.$refs.mainContent.$el;
+    mainContentEl.addEventListener('scroll', this.handleScroll);
+  },
+
+  beforeUnmount() {
+    const mainContentEl = this.$refs.mainContent.$el;
+    mainContentEl.removeEventListener('scroll', this.handleScroll);
+  },
+
+  provide() {
+    return {
+      scrollPosition: this.scrollPosition
+    };
+  },
+
   setup() {
     // function that checks if a user is logged in
     const user = useLoggedInUserStore();

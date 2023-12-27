@@ -11,7 +11,7 @@ button {
 .hide {
     display: none;
 }
-
+html { overflow-y: auto !important  }
 
 /* Creating - Green Color Scheme */
 .Toastify__toast--create {
