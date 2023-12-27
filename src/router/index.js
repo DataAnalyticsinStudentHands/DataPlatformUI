@@ -7,7 +7,7 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/test'
+      redirect: '/login'
     },
     {
       path: '/test',
@@ -393,7 +393,7 @@ const routes = [
       path: '/studentEntryForm',
       name: 'studentEntryForm',
       props: true,
-      component: () => import('../components/studentSide/studentEntryForm.vue'),
+      component: () => import('../components/studentSide/studentEntryForm/entryFormMain.vue'),
       beforeEnter: (to, from, next) => {
         // Use the Pinia store
         const userStore = useLoggedInUserStore();
@@ -402,7 +402,7 @@ const routes = [
         } else {
           next();
         }
-      }
+      },
     },
     {
       path: '/goalSettingForm',

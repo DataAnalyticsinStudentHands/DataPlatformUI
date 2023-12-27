@@ -559,7 +559,7 @@
   </v-form>
 
 
-  <!-- // First time user v-dialog -->
+  <!-- First time user v-dialog -->
   <v-dialog v-model="showNewUserDialog" width="500">
   <v-card>
     <v-card-title class="font-weight-bold">
@@ -567,7 +567,7 @@
     </v-card-title>
     
     <v-card-text>
-      {{$t('We are happy to have you. Your first task is to complete the Student Entry Form!')}}
+      {{$t('We are happy to have you! Your first task is to complete the Student Entry Form.')}}
     </v-card-text>
 
     <v-card-actions>

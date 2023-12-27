@@ -94,41 +94,41 @@
                     <v-container class="ma-0 pa-0">
                     <v-stepper-window v-if="$vuetify.display.smAndUp">
                         <v-stepper-window-item value="0">
-                        <test-entry-demo 
-                            ref="testEntryDemoRef"
+                        <entry-form-demo
+                            ref="EntryFormDemoRef"
                             :studentInformation="studentInformation"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('demo')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('demo', $event)"
-                        ></test-entry-demo>
+                        ></entry-form-demo>
                         </v-stepper-window-item>
                         <v-stepper-window-item value="1">
-                            <test-entry-enrolled
-                                ref="testEntryEnrolledRef"
+                            <entry-form-enrolled
+                                ref="EntryFormEnrolledRef"
                                 :studentInformation="studentInformation"
                                 @form-valid="handleFormValid"
                                 @form-invalid="handleFormInvalid('enrolled')"
                                 @scroll-to-error="handleScrollToError"
                                 @validation-change="handleValidationChange('enrolled', $event)"
-                            ></test-entry-enrolled>
+                            ></entry-form-enrolled>
                         </v-stepper-window-item>
                         <v-stepper-window-item value="2">
-                            <test-entry-grad-prof
-                                ref="testEntryGradProfRef"
+                            <entry-form-grad-prof
+                                ref="EntryFormGradProfRef"
                                 :studentInformation="studentInformation"
                                 @form-valid="handleFormValid"
                                 @form-invalid="handleFormInvalid('gradprof')"
                                 @scroll-to-error="handleScrollToError"
                                 @validation-change="handleValidationChange('gradprof', $event)"
-                            ></test-entry-grad-prof>
+                            ></entry-form-grad-prof>
                         </v-stepper-window-item>
                         <v-stepper-window-item value="3">
-                            <test-entry-review
-                                ref="testEntryReview"
+                            <entry-form-review
+                                ref="EntryFormReview"
                                 :studentInformation="studentInformation"
                                 @change-step="currentStep = $event"
-                            ></test-entry-review>
+                            ></entry-form-review>
                         </v-stepper-window-item>
                     </v-stepper-window>
                 </v-container>
@@ -137,41 +137,41 @@
                 <v-container v-if="$vuetify.display.xs" class="pa-0 ma-0">
                     <v-scroll-x-reverse-transition group hide-on-leave>
                     <div v-show="currentStep === 0" key="step0">
-                        <test-entry-demo 
-                            ref="testEntryDemoRef"
+                        <entry-form-demo
+                            ref="EntryFormDemoRef"
                             :studentInformation="studentInformation"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('demo')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('demo', $event)"
-                        ></test-entry-demo>
+                        ></entry-form-demo>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
-                        <test-entry-enrolled
-                            ref="testEntryEnrolledRef"
+                        <entry-form-enrolled
+                            ref="EntryFormEnrolledRef"
                             :studentInformation="studentInformation"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('enrolled')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('enrolled', $event)"
-                        ></test-entry-enrolled>
+                        ></entry-form-enrolled>
                     </div>
                     <div v-show="currentStep === 2" key="step2">
-                        <test-entry-grad-prof
-                            ref="testEntryGradProfRef"
+                        <entry-form-grad-prof
+                            ref="EntryFormGradProfRef"
                             :studentInformation="studentInformation"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('gradprof')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('gradprof', $event)"
-                        ></test-entry-grad-prof>
+                        ></entry-form-grad-prof>
                     </div>
                     <div v-show="currentStep === 3" key="step3">
-                        <test-entry-review
-                            ref="testEntryReview"
+                        <entry-form-review
+                            ref="EntryFormReview"
                             :studentInformation="studentInformation"
                             @change-step="currentStep = $event"
-                        ></test-entry-review>
+                        ></entry-form-review>
                     </div>
                     </v-scroll-x-reverse-transition>
                 </v-container>
@@ -212,14 +212,53 @@
             </v-col>
         </v-row>
     </v-container>
-    <!-- {{ studentInformation }} -->
+      <!-- First time user v-dialog -->
+    <v-dialog v-model="showNewUserDialog" width="500">
+    <v-card>
+        <v-card-title class="font-weight-bold">
+        {{$t('Welcome In!')}}
+        </v-card-title>
+        
+        <v-card-text>
+        {{$t('We are happy to have you! Your first task is to complete the Student Entry Form.')}}
+        </v-card-text>
+
+        <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn text="Close" @click="showNewUserDialog = false"></v-btn>
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
+
+        <!-- Confirmation Dialog -->
+        <v-dialog v-model="dialog" persistent max-width="500px">
+            <v-card>
+                <v-card-title class="text-h5">
+                    Confirm Navigation
+                </v-card-title>
+                <v-card-text>
+                    <p>Are you sure you want to leave? <strong>Unsaved changes will be lost.</strong></p>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn text @click="cancelLeave">
+                        <v-icon left>mdi-cancel</v-icon> Cancel
+                    </v-btn>
+                    <v-btn color="red darken-2" text @click="confirmLeave">
+                        <v-icon left>mdi-check-circle</v-icon> Yes, Leave
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+
 </template>
 
 <script>
-import TestEntryDemo from './testEntryDemo.vue';
-import testEntryEnrolled from './testEntryEnrolled.vue';
-import testEntryGradProf from './testEntryGradProf.vue';
-import testEntryReview from './testEntryReview.vue';
+import EntryFormDemo from './EntryFormDemo.vue';
+import EntryFormEnrolled from './EntryFormEnrolled.vue';
+import EntryFormGradProf from './EntryFormGradProf.vue';
+import EntryFormReview from './EntryFormReview.vue';
 
 
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -228,10 +267,10 @@ import axios from 'axios';
 export default {
     name: "test",
     components: {
-        TestEntryDemo,
-        testEntryEnrolled,
-        testEntryGradProf,
-        testEntryReview
+        EntryFormDemo,
+        EntryFormEnrolled,
+        EntryFormGradProf,
+        EntryFormReview
     },
 
     data() {
@@ -316,8 +355,19 @@ export default {
                     ],
                     professionalDesignOther: '',
                 }
-            }
+            },
+            showNewUserDialog: false,
+            dialog: false,
+            nextFunction: null,
         }
+    },
+    mounted() {
+        this.originalStudentInformation = this.deepClone(this.studentInformation);
+        const loggedInUserStore = useLoggedInUserStore();
+            // Check the hasCompletedEntryForm state
+            if (!loggedInUserStore.hasCompletedEntryForm) {
+                this.showNewUserDialog = true; // Open the dialog if the condition is met
+            }
     },
     computed: {
         showAltLabels() {
@@ -351,18 +401,18 @@ export default {
         },
         triggerDemoValidation() {
             console.log('triggerDemoValidation')
-            if (this.$refs.testEntryDemoRef) {
-                this.$refs.testEntryDemoRef.handleValidations();
+            if (this.$refs.EntryFormDemoRef) {
+                this.$refs.EntryFormDemoRef.handleValidations();
             }
         },
         triggerDegreeValidation() {
-            if (this.$refs.testEntryEnrolledRef) {
-                this.$refs.testEntryEnrolledRef.handleValidations();
+            if (this.$refs.EntryFormEnrolledRef) {
+                this.$refs.EntryFormEnrolledRef.handleValidations();
             }
         },
         triggerGradProfValidation() {
-            if (this.$refs.testEntryGradProfRef) {
-                this.$refs.testEntryGradProfRef.handleValidations();
+            if (this.$refs.EntryFormGradProfRef) {
+                this.$refs.EntryFormGradProfRef.handleValidations();
             }
         },
         handleFormValid() {
@@ -486,13 +536,13 @@ export default {
                 this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
             } else {
                 if (!isphDTextboxChecked) {
-                this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
+                    this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
                 }
                 if (!isMasterTextboxChecked) {
-                this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
+                    this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
                 }
                 if (!isOtherTextboxChecked) {
-                this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
+                    this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
                 }
             }
 
@@ -507,16 +557,45 @@ export default {
 
             if (!specializedDegCertStatusCheck) {
                 this.studentInformation.specializedDegCert.specializedDegCertType.forEach(item => {
-                item.checked = false;
+                    item.checked = false;
                 });
                 this.studentInformation.specializedDegCert.professionalDesignOther = '';
             } else {
                 if (!isProfessionalDesignOtherChecked) {
-                this.studentInformation.specializedDegCert.professionalDesignOther = '';
+                    this.studentInformation.specializedDegCert.professionalDesignOther = '';
                 }
             }
             },
+            confirmLeave() {
+                this.dialog = false;
+                if (this.nextFunction) {
+                    this.nextFunction();
+                    this.nextFunction = null; // Clear the stored next function
+                }
+            },
+            cancelLeave() {
+                this.dialog = false;
+            },
+            // Conditions to check if dialog should appear asking if user is sure they want to navigate out
+            deepClone(obj) {
+                return JSON.parse(JSON.stringify(obj));
+            },
+
+            isObjectEqual(obj1, obj2) {
+                return JSON.stringify(obj1) === JSON.stringify(obj2);
+            },
+    },
+    beforeRouteLeave(to, from, next) {
+        if (!this.isObjectEqual(this.studentInformation, this.originalStudentInformation)) {
+            this.nextFunction = next;
+            this.dialog = true;
+            // Don't call next here
+        } else {
+            next(); // Proceed with navigation
+        }
     }
+
+
 
 }
 </script>
