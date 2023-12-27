@@ -255,7 +255,7 @@ export default {
       activeLink: this.$route.name,
       rail: this.isMdAndUp,
       drawer: null,
-      scrollPosition: 0,
+      // scrollPosition: 0,
     };
   },
   watch: {
@@ -317,10 +317,10 @@ export default {
         this.drawer = !this.drawer;
       }
     },
-    handleScroll(event) {
-    // Your scroll handling logic
-    this.scrollPosition = event.target.scrollTop;
-  },
+  //   handleScroll(event) {
+  //   // scroll handling logic
+  //   this.scrollPosition = event.target.scrollTop;
+  // },
   },
   mounted() {
     // Access the root DOM element of the v-main Vue component
@@ -333,11 +333,11 @@ export default {
     mainContentEl.removeEventListener('scroll', this.handleScroll);
   },
 
-  provide() {
-    return {
-      scrollPosition: this.scrollPosition
-    };
-  },
+  // provide() {
+  //   return {
+  //     scrollPosition: this.scrollPosition
+  //   };
+  // },
 
   setup() {
     // function that checks if a user is logged in

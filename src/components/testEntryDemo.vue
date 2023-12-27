@@ -3,7 +3,7 @@
     ref="form"
     @submit.prevent="handleValidations"
 >
-    <v-container style="width: 90%; margin: 0 auto;">
+    <v-container style="width: 100%; margin: 0 auto;">
         <v-row class="mb-4">
         <v-col cols="12">
     </v-col>
@@ -81,7 +81,6 @@
                     <div v-show="isOtherPronounChecked">
                     <v-text-field 
                         ref="otherPronounsField"
-                        id="otherPronounsField"
                         :class="{'error-text': isOtherPronounsInvalid}"
                         :placeholder="$t('Please specify')" 
                         v-model="studentInformation.otherPronouns" 
@@ -115,7 +114,7 @@
   @click="scrollToErrorField"
   color="error"
   icon
-  class="error-banner pa-1 fixed-button"
+  class="pa-1 fixed-button"
   elevation="4"
   size="small"
 >
@@ -130,8 +129,7 @@ import { toast } from 'vue3-toastify';
 
 export default {
   name: "TestEntryDemo",
-  inject: ['scrollPosition'],
-  emits: ['form-valid', 'form-invalid'],
+  emits: ['form-valid', 'form-invalid', 'scroll-to-error', 'validation-change'],
   data() {
     return {
       formSubmitted: false,
@@ -184,6 +182,11 @@ export default {
             }
         }
     },
+    isOtherPronounsInvalid(newVal, oldVal) {
+        if (newVal !== oldVal) {
+            this.$emit('validation-change', { isValid: !newVal });
+        }
+    },
   },
   computed: {
     isOtherPronounChecked() {
@@ -219,18 +222,20 @@ export default {
     scrollToErrorField() {
         const errorFields = ['otherPronounsField']; // Add more refs as needed
         for (let i = 0; i < errorFields.length; i++) {
-        const field = this.$refs[errorFields[i]];
-        if (field && this.isFieldInvalid(errorFields[i])) {
-            field.focus();
-            field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            break;
-        }
+            if (this.isFieldInvalid(errorFields[i])) {
+                // Emit the error field reference to the parent component
+                this.$emit('scroll-to-error', this.$refs[errorFields[i]]);
+                break;
+            }
         }
     },
+
     isFieldInvalid(fieldRef) {
         // Add logic to determine if a field is invalid based on its ref
         if (fieldRef === 'otherPronounsField') return this.isOtherPronounsInvalid;
+        // Include other fields if necessary
     },
+
   },
 };
 </script>

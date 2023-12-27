@@ -62,6 +62,7 @@
                             title="Degree Program"
                             icon="mdi-school"
                             value="1"
+                            :error="degreeError"
                         ></v-stepper-item>
 
                         <v-divider></v-divider>
@@ -83,13 +84,23 @@
 
                     <v-stepper-window>
                         <v-stepper-window-item value="0">
-                            <test-entry-demo 
-                                ref="testEntryDemoRef"
-                                @form-valid="handleFormValid"
-                                @form-invalid="handleFormInvalid('demo')"
-                            ></test-entry-demo>
+                        <test-entry-demo 
+                            ref="testEntryDemoRef"
+                            @form-valid="handleFormValid"
+                            @form-invalid="handleFormInvalid('demo')"
+                            @scroll-to-error="handleScrollToError"
+                            @validation-change="handleValidationChange('demo', $event)"
+                        ></test-entry-demo>
                         </v-stepper-window-item>
-                        <v-stepper-window-item value="1"></v-stepper-window-item>
+                        <v-stepper-window-item value="1">
+                            <test-entry-enrolled
+                                ref="testEntryEnrolledRef"
+                                @form-valid="handleFormValid"
+                                @form-invalid="handleFormInvalid('enrolled')"
+                                @scroll-to-error="handleScrollToError"
+                                @validation-change="handleValidationChange('enrolled', $event)"
+                            ></test-entry-enrolled>
+                        </v-stepper-window-item>
                         <v-stepper-window-item value="2"></v-stepper-window-item>
                         <v-stepper-window-item value="3"></v-stepper-window-item>
                     </v-stepper-window>
@@ -105,7 +116,7 @@
                             </v-btn>
                         </v-col>
                         <v-col cols="auto">
-                            <v-btn type="submit" @click="triggerDemoValidation" class="btn">{{$t('Next')}}</v-btn>
+                            <v-btn type="submit" @click="triggerValidation" class="btn">{{$t('Next')}}</v-btn>
                         </v-col>
                     </v-row>
                 </v-stepper>
@@ -117,17 +128,20 @@
 
 <script>
 import TestEntryDemo from './testEntryDemo.vue';
+import testEntryEnrolled from './testEntryEnrolled.vue';
 
 export default {
     name: "test",
     components: {
         TestEntryDemo,
+        testEntryEnrolled
     },
 
     data() {
         return {
             currentStep: 0,
-            demoError: false
+            demoError: false,
+            degreeError: false,
         }
     },
     computed: {
@@ -141,9 +155,25 @@ export default {
         }
     },
     methods: {
+        triggerValidation() {
+            console.log('triggerValidation')
+            console.log(this.currentStep)
+            if (this.currentStep === 0) {
+                console.log('currentStep === 0')
+                this.triggerDemoValidation();
+            } else if (this.currentStep === 1) {
+                this.triggerDegreeValidation();
+            }
+        },
         triggerDemoValidation() {
+            console.log('triggerDemoValidation')
             if (this.$refs.testEntryDemoRef) {
                 this.$refs.testEntryDemoRef.handleValidations();
+            }
+        },
+        triggerDegreeValidation() {
+            if (this.$refs.testEntryEnrolledRef) {
+                this.$refs.testEntryEnrolledRef.handleValidations();
             }
         },
         handleFormValid() {
@@ -152,6 +182,22 @@ export default {
         handleFormInvalid(section) {
             if (section === 'demo') {
                 this.demoError = true;
+            } else if (section === 'degree') {
+                this.degreeError = true;
+            }
+        },
+        handleValidationChange(section, { isValid }) {
+            if (section === 'demo') {
+                this.demoError = !isValid;
+            } else if (section === 'enrolled') {
+                this.degreeError = !isValid;
+            }
+        },
+        handleScrollToError(errorFieldRef) {
+            const element = errorFieldRef.$el ? errorFieldRef.$el : errorFieldRef;
+            console.log('element: ', element);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         },
     }
