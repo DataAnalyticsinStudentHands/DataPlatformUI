@@ -242,10 +242,10 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text @click="cancelLeave">
-                        <v-icon left>mdi-cancel</v-icon> Cancel
+                        Cancel
                     </v-btn>
                     <v-btn color="red darken-2" text @click="confirmLeave">
-                        <v-icon left>mdi-check-circle</v-icon> Yes, Leave
+                        Yes, Leave
                     </v-btn>
                 </v-card-actions>
             </v-card>

@@ -35,7 +35,7 @@
             <v-col>
                 <v-card>
                     <v-card-title>
-                        <v-row class="d-flex">
+                        <v-row class="d-flex justify-start">
                             <!-- Search -->
                             <v-col md="6">
                                 <v-text-field
@@ -84,12 +84,35 @@
                                 </v-text-field>
                             </v-col>
 
-                            <!-- Actions Menu -->
-                            <v-col class="align-self-center">
+                            
+                            <v-col md="4" class="d-flex align-center">
+                                <!-- Data View Menu -->
                                 <v-menu>
                                     <template v-slot:activator="{ props }">
                                         <v-btn 
-                                            text="Actions" 
+                                            text="Data View" 
+                                            v-bind="props"
+                                            elevation="1"
+                                            class="mr-4"
+                                        ></v-btn>
+                                    </template>
+
+                                    <v-list>
+                                        <v-list-item
+                                            v-for="item in dataViewMenuItems"
+                                            :key="item"
+                                            @click="console.log('action menu')"
+                                        >
+                                            <v-list-item-title>{{ item }}</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
+
+                                <!-- Row Actions Menu -->
+                                <v-menu>
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn 
+                                            text="Row Actions" 
                                             v-bind="props"
                                             elevation="1"
                                         ></v-btn>
@@ -97,7 +120,7 @@
 
                                     <v-list>
                                         <v-list-item
-                                            v-for="item in actionMenuItems"
+                                            v-for="item in rowActionsMenuItems"
                                             :key="item"
                                             @click="console.log('action menu')"
                                         >
@@ -107,6 +130,29 @@
                                 </v-menu>
                             </v-col>
 
+                            <!-- Data View Menu
+                            <v-col md="2" class="d-flex align-center pl-0">
+                                <v-menu>
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn 
+                                            text="Data View" 
+                                            v-bind="props"
+                                            elevation="1"
+                                        ></v-btn>
+                                    </template>
+
+                                    <v-list>
+                                        <v-list-item
+                                            v-for="item in dataViewMenuItems"
+                                            :key="item"
+                                            @click="console.log('action menu')"
+                                        >
+                                            <v-list-item-title>{{ item }}</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
+                            </v-col> -->
+
 
                             <!-- Add New Experience Button -->
                             <v-col md="2" class="text-end align-self-center">
@@ -114,6 +160,7 @@
                                     @click="console.log('Add New Experience')"
                                     elevation="1"
                                     prepend-icon="mdi-plus"
+                                    color="#c8102e"
                                 >
                                     Add New
                                 </v-btn>
@@ -250,7 +297,7 @@ Filtered Experience Data:
                 sortable: true
             },
             { 
-                title: 'Edit', 
+                title: '', 
                 value: 'edit',
                 align: 'end',
                 sortable: false 
@@ -262,7 +309,8 @@ Filtered Experience Data:
         searchCriteria: [],
         selectedChips: [],
         filteredExperienceData: [],
-        actionMenuItems: ['Option 1', 'Option 2', 'Option 3'],
+        rowActionsMenuItems: ['Activate', 'Deactivate', 'Delete'],
+        dataViewMenuItems: ['Sort', 'Filter', 'Aggregate'],
       };
     },
   
@@ -296,7 +344,7 @@ Filtered Experience Data:
         try {
             const user = useLoggedInUserStore();
             //   let token = user.token;
-            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzg1NzY4OCwiZXhwIjoxNzAzODY5Njg4fQ.1U64zStR1kEo4YR9LxcVJLJjEt4ANY5tB8cAv9xYu18'
+            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzg2OTgxNywiZXhwIjoxNzAzODgxODE3fQ.oAzuZulHhqHHJDoTL-BGT8gwmFiA_3DRmoTeje5MQKA'
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const resp = await axios.get(apiURL, { headers: { token } });
             this.experienceData = resp.data.map(item => ({
@@ -306,7 +354,6 @@ Filtered Experience Data:
             this.filteredExperienceData = [...this.experienceData];
         } catch (error) {
           this.handleError(error);
-          throw error
         }
       },
 
