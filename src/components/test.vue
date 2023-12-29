@@ -36,16 +36,54 @@
                 <v-card>
                     <v-card-title>
                         <v-row>
+                            <!-- Search -->
                             <v-col cols="5">
                                 <v-text-field
                                     v-model="experienceSearch"
-                                    prepend-inner-icon="mdi-magnify"
                                     density="comfortable"
-                                    label="Search All Text Columns"
+                                    :label=searchLabel
                                     flat
                                     hide-details
                                     variant="solo-filled"
-                                ></v-text-field>
+                                >
+                                    <!-- Prepend Icon with Menu -->
+                                    <template v-slot:prepend-inner="{ blur }">
+                                    <v-menu>
+                                        <template v-slot:activator="{ props }">
+                                        <div
+                                            v-bind="props"
+                                            class="pointer-cursor"
+                                            @click.stop
+                                        >
+                                            <v-icon>mdi-magnify</v-icon>
+                                            <v-icon>mdi-chevron-down</v-icon>
+                                        </div>
+                                        </template>
+
+                                        <v-list>
+                                        <v-list-item
+                                            v-for="item in searchMenuItems"
+                                            :key="item"
+                                            @click="console.log(item)"
+                                        >
+                                            <v-list-item-title>{{ item }}</v-list-item-title>
+                                        </v-list-item>
+                                        </v-list>
+                                    </v-menu>
+                                    </template>
+                                </v-text-field>
+                            </v-col>
+
+
+                            <!-- Add New Experience Button -->
+                            <v-col cols="7" class="text-end align-self-center">
+                                <v-btn 
+                                    @click="console.log('Add New Experience')"
+                                    elevation="1"
+                                    prepend-icon="mdi-plus"
+                                >
+                                    Add New Experience
+                                </v-btn>
                             </v-col>
                         </v-row>
                     </v-card-title>
@@ -81,12 +119,16 @@
                             </v-icon>
                         </template>
                     </v-data-table>
-                    <!-- Skeleton Loader Add - Afterwards -->
+
+
+                    <!-- Skeleton Loader Add Afterwards -->
                     <!-- <v-data-table :loading="!loading" :items="experienceData">
                         <template v-slot:loading>
                         <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
                     </v-data-table> -->
+
+
                 </v-card>
             </v-col>
         </v-row>
@@ -229,6 +271,8 @@
             },
         ],
         experienceSearch: "",
+        searchMenuItems: ['Option 1', 'Option 2', 'Option 3'],
+        searchLabel: "Search All Text Columns",
       };
     },
   
@@ -257,7 +301,7 @@
         try {
           const user = useLoggedInUserStore();
         //   let token = user.token;
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgxOTM3MiwiZXhwIjoxNzAzODMxMzcyfQ.o1DMNBNoukaM4p5aOnDwIDdfMyIHgo8s0qjebLcBog8'
+        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgyNzU2NywiZXhwIjoxNzAzODM5NTY3fQ._JinVkUPOIdnLaNDoJqMWsXL-3EfU_4rQORi_rwYDyI'
           let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
           const resp = await axios.get(apiURL, { headers: { token } });
           this.experienceData = resp.data;
@@ -284,7 +328,7 @@
       deactivateExperiences() {
         const user = useLoggedInUserStore();
         // let token = user.token;
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgxOTM3MiwiZXhwIjoxNzAzODMxMzcyfQ.o1DMNBNoukaM4p5aOnDwIDdfMyIHgo8s0qjebLcBog8'
+        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgyNzU2NywiZXhwIjoxNzAzODM5NTY3fQ._JinVkUPOIdnLaNDoJqMWsXL-3EfU_4rQORi_rwYDyI'
         const updateStatus = { experienceStatus: false };
   
         const promises = this.selectedExperiences.map((experienceID) => {
@@ -312,7 +356,7 @@
       activateExperiences() {
         const user = useLoggedInUserStore();
         // let token = user.token;
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgxOTM3MiwiZXhwIjoxNzAzODMxMzcyfQ.o1DMNBNoukaM4p5aOnDwIDdfMyIHgo8s0qjebLcBog8'
+        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgyNzU2NywiZXhwIjoxNzAzODM5NTY3fQ._JinVkUPOIdnLaNDoJqMWsXL-3EfU_4rQORi_rwYDyI'
         const updateStatus = { experienceStatus: true };
   
         const promises = this.selectedExperiences.map((experienceID) => {
@@ -374,7 +418,7 @@
   };
   </script>
   
-  <style>
+  <style scoped>
   #contentNavbar .nav-link.router-link-exact-active {
     background-color: #eee;
   }
@@ -395,5 +439,18 @@
       background-color: rgb(200, 201, 205);
       transition: background-color 0.3s ease-in-out;
     }
+
+.pointer-cursor {
+    cursor: pointer;
+}
+
+
+:deep(.v-text-field input[type="text"]:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important; /* Update this line if you have a different border style */
+  background-color: transparent !important;
+}
+
   </style>
   
