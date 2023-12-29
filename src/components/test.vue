@@ -1,532 +1,399 @@
-<template> <!-- Start of the Student Entry Form template -->
-
-    <v-container style="width: 100%; margin: 0 auto;"> <!-- Container for the form title and description -->
-      <div style="display: flex; align-items: center;">
-        <p class="font-weight-black text-h5 text--primary">
-          {{ $t('Student Entry Form') }}
-        </p>
-          <v-dialog width="500">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                size="x-small"
-                class="pb-2"
-                variant="text"
-                icon="mdi-help-circle-outline"
-                flat
-                v-bind="props"
-              >
-              </v-btn>
-            </template>
-    
-            <template v-slot:default="{ isActive }">
-              <v-card :title="$t('Student Entry Form')">
-                <v-card-text>
-                  {{$t('This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.')}}
-                </v-card-text>
-    
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-    
-                  <v-btn
-                    text="Close"
-                    @click="isActive.value = false"
-                  ></v-btn>
-                </v-card-actions>
-              </v-card>
-            </template>
-          </v-dialog>
-      </div>
-      <p class="text-subtitle-1">
-        {{ $t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.") }}
-      </p>
-    </v-container>
-
+<!--'/instructorExperiences' this page will only show experiences-->
+<template>
     <v-container>
+        <!-- Tabs for Navigation -->
         <v-row>
             <v-col>
-                <v-stepper
-                    :alt-labels="showAltLabels"
-                    v-model="currentStep"
-                    :mobile="$vuetify.display.xs"
-                    :flat="$vuetify.display.xs"
+                <v-tabs
+                    fixed-tabs
                 >
-                    <v-stepper-header>
-                        <v-stepper-item
-                            ref="step0"
-                            title="Demographics"
-                            icon="mdi-account"
-                            value="0"
-                            :error="demoError"
-                        ></v-stepper-item>
-
-                        <v-divider></v-divider>
-
-                        <v-stepper-item
-                            ref="step1"
-                            title="Degree Program"
-                            icon="mdi-school"
-                            value="1"
-                            :error="degreeError"
-                        ></v-stepper-item>
-
-                        <v-divider></v-divider>
-
-                        <v-stepper-item
-                            ref="step2"
-                            title="Graduate/Professional"
-                            icon="mdi-account-school"
-                            value="2"
-                            :error="gradProfError"
-                        ></v-stepper-item>
-
-                        <v-divider></v-divider>
-
-                        <v-stepper-item
-                            ref="step3"
-                            title="Review"
-                            icon="mdi-check-bold"
-                            value="3"
-                        ></v-stepper-item>
-                    </v-stepper-header>
-                    <div id="progress-bar" :style="{ width: progressBarWidth }"></div>
-
-                    <!-- Non-Mobile View -->
-                    <v-container class="ma-0 pa-0">
-                    <v-stepper-window v-if="$vuetify.display.smAndUp">
-                        <v-stepper-window-item value="0">
-                        <test-entry-demo 
-                            ref="testEntryDemoRef"
-                            :studentInformation="studentInformation"
-                            @form-valid="handleFormValid"
-                            @form-invalid="handleFormInvalid('demo')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('demo', $event)"
-                        ></test-entry-demo>
-                        </v-stepper-window-item>
-                        <v-stepper-window-item value="1">
-                            <test-entry-enrolled
-                                ref="testEntryEnrolledRef"
-                                :studentInformation="studentInformation"
-                                @form-valid="handleFormValid"
-                                @form-invalid="handleFormInvalid('enrolled')"
-                                @scroll-to-error="handleScrollToError"
-                                @validation-change="handleValidationChange('enrolled', $event)"
-                            ></test-entry-enrolled>
-                        </v-stepper-window-item>
-                        <v-stepper-window-item value="2">
-                            <test-entry-grad-prof
-                                ref="testEntryGradProfRef"
-                                :studentInformation="studentInformation"
-                                @form-valid="handleFormValid"
-                                @form-invalid="handleFormInvalid('gradprof')"
-                                @scroll-to-error="handleScrollToError"
-                                @validation-change="handleValidationChange('gradprof', $event)"
-                            ></test-entry-grad-prof>
-                        </v-stepper-window-item>
-                        <v-stepper-window-item value="3">
-                            <test-entry-review
-                                ref="testEntryReview"
-                                :studentInformation="studentInformation"
-                                @change-step="currentStep = $event"
-                            ></test-entry-review>
-                        </v-stepper-window-item>
-                    </v-stepper-window>
-                </v-container>
-
-                <!-- Mobile View with Vuetify Slide Transition -->
-                <v-container v-if="$vuetify.display.xs" class="pa-0 ma-0">
-                    <v-scroll-x-reverse-transition group hide-on-leave>
-                    <div v-show="currentStep === 0" key="step0">
-                        <test-entry-demo 
-                            ref="testEntryDemoRef"
-                            :studentInformation="studentInformation"
-                            @form-valid="handleFormValid"
-                            @form-invalid="handleFormInvalid('demo')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('demo', $event)"
-                        ></test-entry-demo>
-                    </div>
-                    <div v-show="currentStep === 1" key="step1">
-                        <test-entry-enrolled
-                            ref="testEntryEnrolledRef"
-                            :studentInformation="studentInformation"
-                            @form-valid="handleFormValid"
-                            @form-invalid="handleFormInvalid('enrolled')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('enrolled', $event)"
-                        ></test-entry-enrolled>
-                    </div>
-                    <div v-show="currentStep === 2" key="step2">
-                        <test-entry-grad-prof
-                            ref="testEntryGradProfRef"
-                            :studentInformation="studentInformation"
-                            @form-valid="handleFormValid"
-                            @form-invalid="handleFormInvalid('gradprof')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('gradprof', $event)"
-                        ></test-entry-grad-prof>
-                    </div>
-                    <div v-show="currentStep === 3" key="step3">
-                        <test-entry-review
-                            ref="testEntryReview"
-                            :studentInformation="studentInformation"
-                            @change-step="currentStep = $event"
-                        ></test-entry-review>
-                    </div>
-                    </v-scroll-x-reverse-transition>
-                </v-container>
-
-                    <v-row justify="space-between" class="ma-1">
-                        <v-col cols="auto">
-                            <v-btn 
-                            type="button" 
-                            @click="currentStep = Math.max(currentStep - 1, 0)" 
-                            class="btn"
-                            :disabled="currentStep === 0"
-                            >
-                            {{$t('Previous')}}
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="auto">
-                            <!-- Conditional rendering for Submit Form button -->
-                            <v-btn 
-                                v-if="currentStep === 3" 
-                                type="submit" 
-                                @click="submitForm" 
-                                class="btn"
-                            >
-                                {{$t('Submit Form')}}
-                            </v-btn>
-                            <!-- Next button for other steps -->
-                            <v-btn 
-                                v-else 
-                                type="submit" 
-                                @click="triggerValidation" 
-                                class="btn"
-                            >
-                                {{$t('Next')}}
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-stepper>
+                    <v-tab>
+                        <!-- <router-link to="/instructorSemesters">Semesters</router-link> -->
+                        Sessions
+                    </v-tab>
+                    <v-tab>
+                        <!-- <router-link to="/instructorExperiences">Experiences</router-link> -->
+                        Experiences
+                    </v-tab>
+                    <v-tab>
+                        <!-- <router-link to="/instructorActivities">Activities</router-link> -->
+                        Activities
+                    </v-tab>
+                </v-tabs>
             </v-col>
         </v-row>
+
+        <v-row>
+            <v-col>
+                <div class="d-flex justify-center font-weight-black text-h6">
+                    {{  showInactive ? 'Inactive' : 'Active' }} Experiences
+                </div>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <v-col>
+                <v-card>
+                    <v-card-title>
+                        <v-row>
+                            <v-col cols="5">
+                                <v-text-field
+                                    v-model="experienceSearch"
+                                    prepend-inner-icon="mdi-magnify"
+                                    density="comfortable"
+                                    label="Search All Text Columns"
+                                    flat
+                                    hide-details
+                                    variant="solo-filled"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-card-title>
+                    <v-data-table
+                        :headers="dynamicExperienceHeaders"
+                        :items="experienceData"
+                        item-key="_id"
+                        item-value="_id"
+                        show-select
+                        v-model="selectedExperiences"
+                    >
+                        <template v-if="$vuetify.display.mdAndUp" v-slot:item.actions="{ item }">
+                            <v-icon
+                                v-if="isSingleSelection"
+                                size="small"
+                                class="me-2"
+                                @click="console.log('edit item')"
+                            >
+                                mdi-pencil
+                            </v-icon>
+                            <v-icon
+                                size="small"
+                                class="me-2"
+                                @click="console.log('deactivate item')"
+                            >
+                                mdi-minus-circle-outline
+                            </v-icon>
+                            <v-icon
+                                size="small"
+                                @click="console.log('delete item')"
+                            >
+                                mdi-delete
+                            </v-icon>
+                        </template>
+                    </v-data-table>
+                    <!-- Skeleton Loader Add - Afterwards -->
+                    <!-- <v-data-table :loading="!loading" :items="experienceData">
+                        <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                        </template>
+                    </v-data-table> -->
+                </v-card>
+            </v-col>
+        </v-row>
+
+
     </v-container>
-    <!-- {{ studentInformation }} -->
-</template>
-
-<script>
-import TestEntryDemo from './testEntryDemo.vue';
-import testEntryEnrolled from './testEntryEnrolled.vue';
-import testEntryGradProf from './testEntryGradProf.vue';
-import testEntryReview from './testEntryReview.vue';
 
 
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
-import axios from 'axios';
 
-export default {
-    name: "test",
-    components: {
-        TestEntryDemo,
-        testEntryEnrolled,
-        testEntryGradProf,
-        testEntryReview
-    },
 
+    <br><br><br><br><br><br><br><br><br>
+
+    {{ experienceData }}
+
+
+
+
+
+
+
+
+
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+
+
+    <main>
+      <div><center>
+        <br>
+        <h2>
+          <router-link to="/instructorSemesters">Semesters</router-link> |
+          <router-link to="/instructorExperiences">Experiences</router-link> |
+          <router-link to="/instructorActivities">Activities</router-link>
+        </h2><br>
+        <p class="font-weight-black text-h6">
+          {{ showInactive ? 'Inactive' : 'Active' }} Experiences
+        </p>
+  
+        <br><v-btn style="text-align:center; margin-right:2rem;">
+          <router-link to="/instructorAddExperience">Add New Experience</router-link>
+        </v-btn>
+  
+        <v-btn @click="toggleShowInactive">
+          {{ showInactive ? 'Show Active Experiences' : 'Show Inactive Experiences' }}
+        </v-btn>
+        
+        <br><br>
+  
+        <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0 && !showInactive" style="text-align:center; margin-right:2rem;">
+          Deactivate
+        </v-btn>
+  
+        <v-btn @click="activateExperiences" v-if="selectedExperiences.length > 0 && showInactive">
+          Activate
+        </v-btn>
+        
+        <br><br>
+        <v-text-field
+          v-model="searchQuery"
+          label="Search by experience category or name"
+          solo-inverted
+          hide-details
+          outlined
+          dense
+        ></v-text-field>
+        <br></center>
+      </div>
+      <div v-if="loading" justify="center" align="center">
+        <v-progress-circular indeterminate></v-progress-circular>
+      </div>
+      <div v-else style="display: flex; justify-content: center;">
+    <div style="max-height: 400px; overflow-y: auto;">
+        <v-table style="width: 100%">
+          <thead>
+            <tr>
+              <th class="text-left"></th>
+              <th class="text-left">Experience Category</th>
+              <th class="text-left">Experience Name</th>
+            <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="experience in filteredExperienceData" 
+              :key="experience._id"
+              :style="{ cursor: 'pointer' }"
+              :class="{ 'hoverRow': hoverId === experience._id}"
+              @mouseenter="hoverId = experience._id"
+              @mouseleave="hoverId = null"
+              >
+  
+              <td class="text-left">
+                <input type="checkbox" v-model="selectedExperiences" :value="experience._id" style="outline: 2px solid #808080; margin-right: 10px;">
+              </td>
+  
+              <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceCategory }}</td>
+              <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceName }}</td>
+  
+            </tr>
+          </tbody>
+        </v-table></div>
+      </div>
+    </main>
+  </template>
+  
+  <script>
+  import { toast } from 'vue3-toastify';
+  import 'vue3-toastify/dist/index.css';
+  import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import axios from "axios";
+  import { DateTime } from "luxon";
+  
+  export default {
     data() {
-        return {
-            currentStep: 0,
-            demoError: false,
-            degreeError: false,
-            gradProfError: false,
-            studentInformation: {
-                cityOrigin: '',
-                primaryLanguage: '',
-                otherLanguages: '',
-                pronouns: [
-                    { id: 1, label: "She/her/hers", checked: false },
-                    { id: 2, label: "He/him/his", checked: false },
-                    { id: 3, label: "They/them/theirs", checked: false },
-                    { id: 4, label: "Ze/Zir/Zirs", checked: false },
-                    { id: 5, label: "Other", checked: false },
-                    { id: 6, label: "Prefer not to answer", checked: false },
-                ],
-                otherPronouns: '',
-                enrolledUHInfo: {
-                    uhStatus: '',
-                    uhEmail: '',
-                    peopleSoftID: '',
-                    expectedGraduationYear: '',
-                    livingOnCampus: '',
-                    honorsCollegeStatus: '',
-                    honorsCollegeAffiliated: [
-                        { id: 1, label: "Senior Honors Thesis", checked: false },
-                        { id: 2, label: "Honors Mentorship Program", checked: false },
-                        { id: 3, label: "Honors Club Theatre", checked: false },
-                        { id: 4, label: "Honors Dodgeball Society", checked: false },
-                        { id: 5, label: "Student Governing Board", checked: false },
-                        { id: 6, label: "Bonner Leaders Program", checked: false },
-                        { id: 7, label: "Hobby/Leland/Harris Fellow", checked: false },
-                        { id: 8, label: "Mellon Research Scholars", checked: false },
-                        { id: 9, label: "Speech & Debate", checked: false },
-                        { id: 10, label: "Model Arab League, Model UN, etc.", checked: false },
-                        { id: 11, label: "Honors Ambassadors", checked: false },
-                        { id: 12, label: "Other", checked: false },
-                    ],
-                    honorsCollegeAffiliatedOther: '',
-                    majors: [], 
-                    honorsMinors: [],
-                    otherMinors: []
-                    },
-                    hichInfo: {
-                        hichStatus: '',
-                        hichHistoryStatus: ''
-                    },
-                    communityServiceInfo: {
-                        serviceStatus: '',
-                        serviceHistoryDesc: '',
-                        serviceOrgsOutsideUH: ''
-                },
-                graduateProfessionalSchool: {
-                    programGradProStatus: '',
-                    programGradProType: [
-                        { id: 1, label: "MD/DO", checked: false },
-                        { id: 2, label: "Physician Assistant: PA", checked: false },
-                        { id: 3, label: "Nursing: MSN, DNP", checked: false },
-                        { id: 4, label: "PhD", checked: false },
-                        { id: 5, label: "DrPH", checked: false },
-                        { id: 6, label: "Law: JD", checked: false },
-                        { id: 7, label: "Master's: MPH, MBA, MA, MS, MEd, etc", checked: false },
-                        { id: 8, label: "Other", checked: false },
-                    ],
-                    phDTextbox: '',
-                    masterTextbox: '',
-                    otherTextbox: '',
-                },
-                specializedDegCert: {
-                    specializedDegCertStatus: '',
-                    specializedDegCertType: [
-                        { id: 1, label: "Nursing: PRN, RN, CNA, etc", checked: false },
-                        { id: 2, label: "Social Work: LSW/LCSW", checked: false },
-                        { id: 3, label: "Business: Certified Public Accountant (CPA, Licensed Public Accountant (LPA), Certified Financial Planner (CFP)", checked: false },
-                        { id: 4, label: "Engineering/Technology: Professional Engineer (PE), Certified Technology Specialist (CTS), etc", checked: false },
-                        { id: 5, label: "Project Management: Certified Associate in Project Management (CAPM), Project Management Professional (PMP)", checked: false },
-                        { id: 6, label: "Other Professional Designation", checked: false }
-                    ],
-                    professionalDesignOther: '',
-                }
-            }
-        }
+      return {
+        experienceData: [],
+        showInactive: false,
+        selectedExperiences: [],
+        searchQuery: '',
+        hoverId: null,
+        experienceHeaders: [
+            {
+                title: 'Experience Category',
+                value: 'experienceCategory',
+                align: 'start',
+                sortable: true
+            },
+            {
+                title: 'Experience Name',
+                value: 'experienceName',
+                align: 'start',
+                sortable: true
+            },
+            { 
+                title: 'Actions', 
+                value: 'actions', 
+                sortable: false 
+            },
+        ],
+        experienceSearch: "",
+      };
     },
-    computed: {
-        showAltLabels() {
-            if (this.$vuetify.display.mdAndUp || this.$vuetify.display.xs) {
-                console.log('mdAndUp')
-                return false;
-            } else {
-                return true;
-            }
-        },
-        progressBarWidth() {
-            const stepWidth = 25; // Assuming each step is 25% of the total width
-            return `${stepWidth * (this.currentStep + 1)}%`;
-        },
-        uHStudentCheck() {
-            return this.studentInformation.enrolledUHInfo.uhStatus === 'Yes';
-        },
+  
+    mounted() {
+      useLoggedInUserStore().startLoading();
+      this.fetchExperienceData()
+      .then(() => {
+        useLoggedInUserStore().stopLoading();
+      })
+      .catch(() => {
+        this.handleError(error);
+        useLoggedInUserStore().stopLoading();
+      });
+  
+      window.scrollTo(0, 0);
+      if (this.$route.params.toastType) {
+        toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+          position: this.$route.params.toastPosition,
+          toastClassName: this.$route.params.toastCSS
+        });
+      }
     },
     methods: {
-        triggerValidation() {
-            console.log('triggerValidation')
-            console.log(this.currentStep)
-            if (this.currentStep === 0) {
-                console.log('currentStep === 0')
-                this.triggerDemoValidation();
-            } else if (this.currentStep === 1) {
-                this.triggerDegreeValidation();
-            } else if (this.currentStep === 2) {
-                this.triggerGradProfValidation();
-            }
-        },
-        triggerDemoValidation() {
-            console.log('triggerDemoValidation')
-            if (this.$refs.testEntryDemoRef) {
-                this.$refs.testEntryDemoRef.handleValidations();
-            }
-        },
-        triggerDegreeValidation() {
-            if (this.$refs.testEntryEnrolledRef) {
-                this.$refs.testEntryEnrolledRef.handleValidations();
-            }
-        },
-        triggerGradProfValidation() {
-            if (this.$refs.testEntryGradProfRef) {
-                this.$refs.testEntryGradProfRef.handleValidations();
-            }
-        },
-        handleFormValid() {
-            this.currentStep++;
-        },
-        handleFormInvalid(section) {
-            if (section === 'demo') {
-                this.demoError = true;
-            } else if (section === 'degree') {
-                this.degreeError = true;
-            } else if (section === 'gradprof') {
-                this.gradProfError = true;
-            }
-        },
-        handleValidationChange(section, { isValid }) {
-            if (section === 'demo') {
-                this.demoError = !isValid;
-            } else if (section === 'enrolled') {
-                this.degreeError = !isValid;
-            } else if (section === 'gradprof') {
-                this.gradProfError = !isValid;
-            }
-        },
-        handleScrollToError(element) {
-            if (element && element.scrollIntoView) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        },
-        async submitForm() {
-            console.log("Form submission triggered");
-            console.log('before cleanup: ', this.studentInformation);
-            this.cleanupFormData();
-            console.log('cleaned up data: ', this.studentInformation);
-
-            const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
-
-            try {
-                const user = useLoggedInUserStore();
-                // const token = user.token;
-                const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE3MDM0NzI1Mzk2NDUiLCJ1c2VyUm9sZSI6IlN0dWRlbnQiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzcwNzIxOCwiZXhwIjoxNzAzNzE5MjE4fQ.oldsGGx5grqFCkq8RODWgvuCc6_fXlJfeo0P0gBqPwA'
-
-                const response = await axios.post(apiURL, {
-                    studentInformation: this.studentInformation
-                }, {
-                    headers: { token }
-                });
-
-                console.log(response.data)
-            } catch (error) {
-                console.error('Error submitting form: ', error);
-            }
-        },
-        cleanupFormData() {
-            // Check condition for "Other" pronouns
-            const otherPronoun = this.studentInformation.pronouns.find(p => p.id === 5);
-            const isOtherPronounChecked = otherPronoun ? otherPronoun.checked : false;
-
-            if (!isOtherPronounChecked) {
-                this.studentInformation.otherPronouns = '';
-            }
-
-            // Check condition for UH student
-            //Check condition for "honorsCollegeAffiliated"
-            const honorsCollegeAffiliatedCheck = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated[11].checked === true;
-
-            if (!this.uHStudentCheck) {
-                this.studentInformation.enrolledUHInfo.uhEmail = '';
-                this.studentInformation.enrolledUHInfo.peopleSoftID = '';
-                this.studentInformation.enrolledUHInfo.expectedGraduationYear = '';
-                this.studentInformation.enrolledUHInfo.livingOnCampus = '';
-                this.studentInformation.enrolledUHInfo.honorsCollegeStatus = '';
-                this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated = [
-                { id: 1, label: "Senior Honors Thesis", checked: false },
-                { id: 2, label: "Honors Mentorship Program", checked: false },
-                { id: 3, label: "Honors Club Theatre", checked: false },
-                { id: 4, label: "Honors Dodgeball Society", checked: false },
-                { id: 5, label: "Student Governing Board", checked: false },
-                { id: 6, label: "Bonner Leaders Program", checked: false },
-                { id: 7, label: "Hobby/Leland/Harris Fellow", checked: false },
-                { id: 8, label: "Mellon Research Scholars", checked: false },
-                { id: 9, label: "Speech & Debate", checked: false },
-                { id: 10, label: "Model Arab League, Model UN, etc.", checked: false },
-                { id: 11, label: "Honors Ambassadors", checked: false },
-                { id: 12, label: "Other", checked: false },
-                ],
-                this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
-                this.studentInformation.enrolledUHInfo.majors = [];
-                this.studentInformation.enrolledUHInfo.honorsMinors = [];
-                this.studentInformation.enrolledUHInfo.otherMinors = [];
-                this.studentInformation.hichInfo.hichStatus = '';
-                this.studentInformation.hichInfo.hichHistoryStatus = '';
-            } else if (this.uHStudentCheck && !honorsCollegeAffiliatedCheck) {
-                this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
-            }
+  
+      async fetchExperienceData() {
+        try {
+          const user = useLoggedInUserStore();
+        //   let token = user.token;
+        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgxOTM3MiwiZXhwIjoxNzAzODMxMzcyfQ.o1DMNBNoukaM4p5aOnDwIDdfMyIHgo8s0qjebLcBog8'
+          let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
+          const resp = await axios.get(apiURL, { headers: { token } });
+          this.experienceData = resp.data;
+        } catch (error) {
+          this.handleError(error);
+          throw error
+        }
+      },
+  
+  
+      formatDate(datetimeDB) {
+        return DateTime.fromISO(datetimeDB).toFormat("MM-dd-yyyy");
+      },
+  
+      editExperience(experienceID) {
+        this.$router.push({ name: "instructorSpecificExperience", params: { id: experienceID } });
+      },
+  
+      toggleShowInactive() {
+        this.showInactive = !this.showInactive;
+        this.selectedExperiences = [];
+      },
+  
+      deactivateExperiences() {
+        const user = useLoggedInUserStore();
+        // let token = user.token;
+        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgxOTM3MiwiZXhwIjoxNzAzODMxMzcyfQ.o1DMNBNoukaM4p5aOnDwIDdfMyIHgo8s0qjebLcBog8'
+        const updateStatus = { experienceStatus: false };
+  
+        const promises = this.selectedExperiences.map((experienceID) => {
+          let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/${experienceID}`;
+          return axios.put(apiURL, updateStatus, { headers: { token } });
+        });
+  
+        Promise.all(promises)
+          .then(() => {
+            const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' deactivated!'
+            this.selectedExperiences = [];
+            this.fetchExperienceData();
+  
+            toast.success(message, {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--create'
+              });
+            })
             
-            //Check condition for "serviceStatus"
-            const serviceStatusCheck = this.studentInformation.communityServiceInfo.serviceStatus === 'Yes';
-            if (!serviceStatusCheck) {
-                this.studentInformation.communityServiceInfo.serviceHistoryDesc = '';
-                this.studentInformation.communityServiceInfo.serviceOrgsOutsideUH = '';
-            }
-
-            //Check condition for programGradProStatus
-            const phDTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 4);
-            const isphDTextboxChecked = phDTextboxFind ? phDTextboxFind.checked : false;
-
-            const masterTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 7);
-            const isMasterTextboxChecked = masterTextboxFind ? masterTextboxFind.checked : false;
-
-            const otherTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 8);
-            const isOtherTextboxChecked = otherTextboxFind ? otherTextboxFind.checked : false;
-
-            const programGradProStatusCheck = this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes';
-
-            if(!programGradProStatusCheck) {
-                this.studentInformation.graduateProfessionalSchool.programGradProType.forEach(item => {
-                    item.checked = false;
-                });
-                this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
-                this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
-                this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
-            } else {
-                if (!isphDTextboxChecked) {
-                this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
-                }
-                if (!isMasterTextboxChecked) {
-                this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
-                }
-                if (!isOtherTextboxChecked) {
-                this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
-                }
-            }
-
-            //Check condition for specializedDegCertStatus
-            const specializedDegCertStatusCheck = this.studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes';
-
-
-            const professionalDesignOtherFind = this.studentInformation.specializedDegCert.specializedDegCertType.find(p => p.id === 6);
-
-            const isProfessionalDesignOtherChecked = professionalDesignOtherFind ?professionalDesignOtherFind.checked : false;
-
-
-            if (!specializedDegCertStatusCheck) {
-                this.studentInformation.specializedDegCert.specializedDegCertType.forEach(item => {
-                item.checked = false;
-                });
-                this.studentInformation.specializedDegCert.professionalDesignOther = '';
-            } else {
-                if (!isProfessionalDesignOtherChecked) {
-                this.studentInformation.specializedDegCert.professionalDesignOther = '';
-                }
-            }
-            },
+          .catch((error) => {
+            this.handleError(error);
+          });
+      },
+  
+      activateExperiences() {
+        const user = useLoggedInUserStore();
+        // let token = user.token;
+        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgxOTM3MiwiZXhwIjoxNzAzODMxMzcyfQ.o1DMNBNoukaM4p5aOnDwIDdfMyIHgo8s0qjebLcBog8'
+        const updateStatus = { experienceStatus: true };
+  
+        const promises = this.selectedExperiences.map((experienceID) => {
+          let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/${experienceID}`;
+          return axios.put(apiURL, updateStatus, { headers: { token } });
+        });
+  
+        Promise.all(promises)
+          .then(() => {
+            const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' activated!'
+            this.selectedExperiences = [];
+            this.fetchExperienceData();
+            toast.success(message, {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--create'
+            });
+          })
+          .catch((error) => {
+            this.handleError(error);
+          });
+      },
+  
+    },
+  
+    computed: {
+      filteredExperienceData() {
+        const query = this.searchQuery.toLowerCase().trim();
+        if (this.showInactive) {
+          return this.experienceData.filter(
+            (experience) =>
+              !experience.experienceStatus &&
+              (experience.experienceCategory.toLowerCase().includes(query) ||
+                experience.experienceName.toLowerCase().includes(query))
+          );
+        } else {
+          return this.experienceData.filter(
+            (experience) =>
+              experience.experienceStatus &&
+              (experience.experienceCategory.toLowerCase().includes(query) ||
+                experience.experienceName.toLowerCase().includes(query))
+          );
+        }
+      },
+      loading() {
+        const store = useLoggedInUserStore()
+        return store.loading;
+      },
+      isSingleSelection() {
+        return this.selectedExperiences.length <= 1;
+      },
+      dynamicExperienceHeaders() {
+        // Filter out the Actions column if the screen size is smaller than medium
+        return this.$vuetify.display.mdAndUp
+            ? this.experienceHeaders
+            : this.experienceHeaders.filter(header => header.value !== 'actions');
+        }
     }
-
-}
-</script>
-
-<style scoped>
-#progress-bar {
-  height: 4px;
-  background-color: #c8102e;
-  transition: width 0.3s ease;
-}
-
-
-</style>
+  
+  };
+  </script>
+  
+  <style>
+  #contentNavbar .nav-link.router-link-exact-active {
+    background-color: #eee;
+  }
+  
+  /* Medium Devices, Desktops */
+  @media only screen and (min-width: 992px) {
+    #contentNavbar .nav-item {
+      border: 3px solid black;
+      border-right: none;
+    }
+  
+    #contentNavbar .nav-item:last-child {
+      border: 1px solid black;
+    }
+  }
+  
+  .hoverRow {
+      background-color: rgb(200, 201, 205);
+      transition: background-color 0.3s ease-in-out;
+    }
+  </style>
+  
