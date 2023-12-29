@@ -118,6 +118,12 @@
                                 mdi-delete
                             </v-icon>
                         </template>
+
+                        <template v-slot:item.experienceStatus="{ value }">
+                            <v-chip :color="getColor(value)">
+                                {{ value }}
+                            </v-chip>
+                        </template>
                     </v-data-table>
 
 
@@ -264,9 +270,15 @@
                 align: 'start',
                 sortable: true
             },
+            {
+                title: 'Status',
+                value: 'experienceStatus',
+                sortable: true
+            },
             { 
                 title: 'Actions', 
-                value: 'actions', 
+                value: 'actions',
+                align: 'end',
                 sortable: false 
             },
         ],
@@ -378,6 +390,10 @@
             this.handleError(error);
           });
       },
+      getColor(status) {
+            if (status === 'false') return 'red'
+            else return 'green'
+        },
   
     },
   
@@ -412,7 +428,8 @@
         return this.$vuetify.display.mdAndUp
             ? this.experienceHeaders
             : this.experienceHeaders.filter(header => header.value !== 'actions');
-        }
+        },
+
     }
   
   };
