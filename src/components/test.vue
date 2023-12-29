@@ -26,7 +26,7 @@
         <v-row>
             <v-col>
                 <div class="d-flex justify-center font-weight-black text-h6">
-                    {{  showInactive ? 'Inactive' : 'Active' }} Experiences
+                    Experiences
                 </div>
             </v-col>
         </v-row>
@@ -35,9 +35,9 @@
             <v-col>
                 <v-card>
                     <v-card-title>
-                        <v-row>
+                        <v-row class="d-flex">
                             <!-- Search -->
-                            <v-col cols="5">
+                            <v-col md="6">
                                 <v-text-field
                                     v-model="experienceSearch"
                                     density="comfortable"
@@ -45,10 +45,13 @@
                                     flat
                                     hide-details
                                     variant="solo-filled"
+                                    @keyup.enter="addSearchChip"
                                 >
                                     <!-- Prepend Icon with Menu -->
-                                    <template v-slot:prepend-inner="{ blur }">
-                                    <v-menu>
+                                    <template v-slot:prepend-inner>
+                                    <v-menu 
+                                        location="bottom"
+                                    >
                                         <template v-slot:activator="{ props }">
                                         <div
                                             v-bind="props"
@@ -64,70 +67,121 @@
                                         <v-list-item
                                             v-for="item in searchMenuItems"
                                             :key="item"
-                                            @click="console.log(item)"
+                                            @click="updateSearchCriteria(item)"
                                         >
                                             <v-list-item-title>{{ item }}</v-list-item-title>
                                         </v-list-item>
                                         </v-list>
                                     </v-menu>
                                     </template>
+
+                                    <template v-slot:append-inner>
+                                        <div class="pointer-cursor mr-3" @click="addSearchChip">
+                                            <v-icon>mdi-chevron-right</v-icon>
+                                        </div>
+                                    </template>
+
                                 </v-text-field>
+                            </v-col>
+
+                            <!-- Actions Menu -->
+                            <v-col class="align-self-center">
+                                <v-menu>
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn 
+                                            text="Actions" 
+                                            v-bind="props"
+                                            elevation="1"
+                                        ></v-btn>
+                                    </template>
+
+                                    <v-list>
+                                        <v-list-item
+                                            v-for="item in actionMenuItems"
+                                            :key="item"
+                                            @click="console.log('action menu')"
+                                        >
+                                            <v-list-item-title>{{ item }}</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
                             </v-col>
 
 
                             <!-- Add New Experience Button -->
-                            <v-col cols="7" class="text-end align-self-center">
+                            <v-col md="2" class="text-end align-self-center">
                                 <v-btn 
                                     @click="console.log('Add New Experience')"
                                     elevation="1"
                                     prepend-icon="mdi-plus"
                                 >
-                                    Add New Experience
+                                    Add New
                                 </v-btn>
                             </v-col>
                         </v-row>
+
+                        <!-- Search Chips -->
+                        <!-- <v-row v-if="selectedChips.length > 0"> -->
+                        <v-row v-if="searchCriteria.length" dense>
+                            <v-col>
+                                <v-chip-group
+                                    v-model="selectedChips"
+                                    column
+                                    multiple
+                                >
+                                        <v-chip
+                                            v-for="(criteria, index) in searchCriteria"
+                                            :key="index"
+                                            @click="selectChip(index)"
+                                            filter
+                                            variant="outlined"
+                                            class="ma-2"
+                                        >
+                                            {{  criteria.category + '="' + criteria.term + '"' }}
+                                            <v-icon 
+                                                end
+                                                @click.stop="removeChip(index)"
+                                            >mdi-close</v-icon>
+                                        </v-chip>
+                                </v-chip-group>
+                            </v-col>
+                        </v-row>
                     </v-card-title>
+
+
                     <v-data-table
-                        :headers="dynamicExperienceHeaders"
-                        :items="experienceData"
+                        :headers="experienceHeaders"
+                        :items="filteredExperienceData"
                         item-key="_id"
                         item-value="_id"
                         show-select
                         v-model="selectedExperiences"
                     >
-                        <template v-if="$vuetify.display.mdAndUp" v-slot:item.actions="{ item }">
-                            <v-icon
-                                v-if="isSingleSelection"
+                        <!-- Slot for Edit Column -->
+                        <template v-slot:item.edit="{ item }">
+                            <v-btn
+                                @click="console.log('edit experience')"
+                                icon="mdi-pencil"
+                                variant="text" 
                                 size="small"
-                                class="me-2"
-                                @click="console.log('edit item')"
-                            >
-                                mdi-pencil
-                            </v-icon>
-                            <v-icon
-                                size="small"
-                                class="me-2"
-                                @click="console.log('deactivate item')"
-                            >
-                                mdi-minus-circle-outline
-                            </v-icon>
-                            <v-icon
-                                size="small"
-                                @click="console.log('delete item')"
-                            >
-                                mdi-delete
-                            </v-icon>
+                            ></v-btn>
                         </template>
 
-                        <template v-slot:item.experienceStatus="{ value }">
-                            <v-chip :color="getColor(value)">
-                                {{ value }}
+                        <!-- Slot for Experience Status Column -->
+                        <template v-slot:item.experienceStatus="{ item }">
+                            <v-chip :color="getStatusColor(item.experienceStatus)">
+                                {{ getStatusText(item.experienceStatus) }}
                             </v-chip>
+                        </template>
+
+                        <!-- Slot for Activities Column -->
+                        <template v-slot:item.activities="{ item }">
+                            <div>{{ item.activitiesCount }}</div>
                         </template>
                     </v-data-table>
 
 
-                    <!-- Skeleton Loader Add Afterwards -->
+                    <!-- Skeleton Loader - Add Afterwards -->
                     <!-- <v-data-table :loading="!loading" :items="experienceData">
                         <template v-slot:loading>
                         <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
@@ -138,116 +192,29 @@
                 </v-card>
             </v-col>
         </v-row>
-
-
     </v-container>
 
-
+    <br><br><br><br><br><br><br><br><br>
 
 
     <br><br><br><br><br><br><br><br><br>
 
+
+Experience Data:
+<br>
     {{ experienceData }}
+<br>
+Filtered Experience Data:
+<br>
+    {{ filteredExperienceData }}
 
-
-
-
-
-
-
-
-
-
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-
-
-
-
-    <main>
-      <div><center>
-        <br>
-        <h2>
-          <router-link to="/instructorSemesters">Semesters</router-link> |
-          <router-link to="/instructorExperiences">Experiences</router-link> |
-          <router-link to="/instructorActivities">Activities</router-link>
-        </h2><br>
-        <p class="font-weight-black text-h6">
-          {{ showInactive ? 'Inactive' : 'Active' }} Experiences
-        </p>
+</template>
   
-        <br><v-btn style="text-align:center; margin-right:2rem;">
-          <router-link to="/instructorAddExperience">Add New Experience</router-link>
-        </v-btn>
-  
-        <v-btn @click="toggleShowInactive">
-          {{ showInactive ? 'Show Active Experiences' : 'Show Inactive Experiences' }}
-        </v-btn>
-        
-        <br><br>
-  
-        <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0 && !showInactive" style="text-align:center; margin-right:2rem;">
-          Deactivate
-        </v-btn>
-  
-        <v-btn @click="activateExperiences" v-if="selectedExperiences.length > 0 && showInactive">
-          Activate
-        </v-btn>
-        
-        <br><br>
-        <v-text-field
-          v-model="searchQuery"
-          label="Search by experience category or name"
-          solo-inverted
-          hide-details
-          outlined
-          dense
-        ></v-text-field>
-        <br></center>
-      </div>
-      <div v-if="loading" justify="center" align="center">
-        <v-progress-circular indeterminate></v-progress-circular>
-      </div>
-      <div v-else style="display: flex; justify-content: center;">
-    <div style="max-height: 400px; overflow-y: auto;">
-        <v-table style="width: 100%">
-          <thead>
-            <tr>
-              <th class="text-left"></th>
-              <th class="text-left">Experience Category</th>
-              <th class="text-left">Experience Name</th>
-            <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="experience in filteredExperienceData" 
-              :key="experience._id"
-              :style="{ cursor: 'pointer' }"
-              :class="{ 'hoverRow': hoverId === experience._id}"
-              @mouseenter="hoverId = experience._id"
-              @mouseleave="hoverId = null"
-              >
-  
-              <td class="text-left">
-                <input type="checkbox" v-model="selectedExperiences" :value="experience._id" style="outline: 2px solid #808080; margin-right: 10px;">
-              </td>
-  
-              <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceCategory }}</td>
-              <td class="text-left" @click="editExperience(experience._id)">{{ experience.experienceName }}</td>
-  
-            </tr>
-          </tbody>
-        </v-table></div>
-      </div>
-    </main>
-  </template>
-  
-  <script>
+<script>
   import { toast } from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
   import axios from "axios";
-  import { DateTime } from "luxon";
   
   export default {
     data() {
@@ -271,20 +238,31 @@
                 sortable: true
             },
             {
+                title: 'Activities',
+                value: 'activitiesCount',
+                align: 'center',
+                sortable: true
+            },
+            {
                 title: 'Status',
                 value: 'experienceStatus',
+                align: 'start',
                 sortable: true
             },
             { 
-                title: 'Actions', 
-                value: 'actions',
+                title: 'Edit', 
+                value: 'edit',
                 align: 'end',
                 sortable: false 
             },
         ],
         experienceSearch: "",
-        searchMenuItems: ['Option 1', 'Option 2', 'Option 3'],
-        searchLabel: "Search All Text Columns",
+        searchMenuItems: ['All Text Fields', 'Experience Category', 'Experience Name'],
+        searchLabel: 'Search All Text Fields',
+        searchCriteria: [],
+        selectedChips: [],
+        filteredExperienceData: [],
+        actionMenuItems: ['Option 1', 'Option 2', 'Option 3'],
       };
     },
   
@@ -307,156 +285,120 @@
         });
       }
     },
+    computed: {
+      loading() {
+        const store = useLoggedInUserStore()
+        return store.loading;
+      },
+    },
     methods: {
-  
       async fetchExperienceData() {
         try {
-          const user = useLoggedInUserStore();
-        //   let token = user.token;
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgyNzU2NywiZXhwIjoxNzAzODM5NTY3fQ._JinVkUPOIdnLaNDoJqMWsXL-3EfU_4rQORi_rwYDyI'
-          let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
-          const resp = await axios.get(apiURL, { headers: { token } });
-          this.experienceData = resp.data;
+            const user = useLoggedInUserStore();
+            //   let token = user.token;
+            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzg1NzY4OCwiZXhwIjoxNzAzODY5Njg4fQ.1U64zStR1kEo4YR9LxcVJLJjEt4ANY5tB8cAv9xYu18'
+            let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
+            const resp = await axios.get(apiURL, { headers: { token } });
+            this.experienceData = resp.data.map(item => ({
+                ...item,
+                activitiesCount: item.activities.length
+            }));
+            this.filteredExperienceData = [...this.experienceData];
         } catch (error) {
           this.handleError(error);
           throw error
         }
       },
-  
-  
-      formatDate(datetimeDB) {
-        return DateTime.fromISO(datetimeDB).toFormat("MM-dd-yyyy");
+
+      getStatusColor(status) {
+        return status ? 'green' : 'red'
       },
-  
-      editExperience(experienceID) {
-        this.$router.push({ name: "instructorSpecificExperience", params: { id: experienceID } });
+
+      getStatusText(status) {
+        return status ? 'Active' : 'Inactive'
       },
-  
-      toggleShowInactive() {
-        this.showInactive = !this.showInactive;
-        this.selectedExperiences = [];
+
+      updateSearchCriteria(selectedItem) {
+        this.searchLabel = 'Search ' + selectedItem;
       },
-  
-      deactivateExperiences() {
-        const user = useLoggedInUserStore();
-        // let token = user.token;
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgyNzU2NywiZXhwIjoxNzAzODM5NTY3fQ._JinVkUPOIdnLaNDoJqMWsXL-3EfU_4rQORi_rwYDyI'
-        const updateStatus = { experienceStatus: false };
-  
-        const promises = this.selectedExperiences.map((experienceID) => {
-          let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/${experienceID}`;
-          return axios.put(apiURL, updateStatus, { headers: { token } });
-        });
-  
-        Promise.all(promises)
-          .then(() => {
-            const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' deactivated!'
-            this.selectedExperiences = [];
-            this.fetchExperienceData();
-  
-            toast.success(message, {
-                position: 'top-right',
-                toastClassName: 'Toastify__toast--create'
-              });
-            })
-            
-          .catch((error) => {
-            this.handleError(error);
-          });
+
+      selectChip(index) {
+        const selectedIndex = this.selectedChips.indexOf(index);
+        if (selectedIndex >= 0) {
+            // If the chip is already selected, create a new array without this chip
+            this.selectedChips = this.selectedChips.filter(i => i !== index);
+        } else {
+            // If the chip is not selected, create a new array with this chip added
+            this.selectedChips = [...this.selectedChips, index];
+        }
+        // Call search
+        this.performSearch();
       },
-  
-      activateExperiences() {
-        const user = useLoggedInUserStore();
-        // let token = user.token;
-        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzgyNzU2NywiZXhwIjoxNzAzODM5NTY3fQ._JinVkUPOIdnLaNDoJqMWsXL-3EfU_4rQORi_rwYDyI'
-        const updateStatus = { experienceStatus: true };
-  
-        const promises = this.selectedExperiences.map((experienceID) => {
-          let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/${experienceID}`;
-          return axios.put(apiURL, updateStatus, { headers: { token } });
-        });
-  
-        Promise.all(promises)
-          .then(() => {
-            const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' activated!'
-            this.selectedExperiences = [];
-            this.fetchExperienceData();
-            toast.success(message, {
-                position: 'top-right',
-                toastClassName: 'Toastify__toast--create'
+
+      addSearchChip() {
+        if (this.experienceSearch) {
+            this.searchCriteria.push({
+                category: this.searchLabel.replace('Search ', ''),
+                term: this.experienceSearch
             });
-          })
-          .catch((error) => {
-            this.handleError(error);
-          });
-      },
-      getColor(status) {
-            if (status === 'false') return 'red'
-            else return 'green'
-        },
+            // Select the new chip by default
+            this.selectedChips.push(this.searchCriteria.length - 1);
+            // Clear the input field after adding the chip
+            this.experienceSearch = ''; 
+            // Call search
+            this.performSearch();
+        }
+    },
+
+    removeChip(index) {
+        this.searchCriteria.splice(index, 1);
+        // Update selectedChips to reflect the removal
+        this.selectedChips = this.selectedChips.filter(i => i !== index);
+        // Adjust the indexes of the remaining selected chips
+        this.selectedChips = this.selectedChips.map(i => i > index ? i - 1 : i);
+        // Call search
+        this.performSearch();
+    },
+
+    performSearch() {
+        let searchGroups = {};
+        this.selectedChips.forEach(index => {
+            let criteria = this.searchCriteria[index];
+            if (!searchGroups[criteria.category]) {
+                searchGroups[criteria.category] = [];
+            }
+            searchGroups[criteria.category].push(criteria.term.toLowerCase());
+        });
+
+        this.filteredExperienceData = this.experienceData.filter(item => {
+            return Object.keys(searchGroups).every(category => {
+                if (category === 'All Text Fields') {
+                    return searchGroups[category].every(term => 
+                        item.experienceCategory.toLowerCase().includes(term) || 
+                        item.experienceName.toLowerCase().includes(term)
+                    );
+                } else if (category === 'Experience Category') {
+                    return searchGroups[category].every(term => 
+                        item.experienceCategory.toLowerCase().includes(term)
+                    );
+                } else if (category === 'Experience Name') {
+                    return searchGroups[category].every(term => 
+                        item.experienceName.toLowerCase().includes(term)
+                    );
+                }
+                return true;
+            });
+        });
+    },
+
+
   
     },
-  
-    computed: {
-      filteredExperienceData() {
-        const query = this.searchQuery.toLowerCase().trim();
-        if (this.showInactive) {
-          return this.experienceData.filter(
-            (experience) =>
-              !experience.experienceStatus &&
-              (experience.experienceCategory.toLowerCase().includes(query) ||
-                experience.experienceName.toLowerCase().includes(query))
-          );
-        } else {
-          return this.experienceData.filter(
-            (experience) =>
-              experience.experienceStatus &&
-              (experience.experienceCategory.toLowerCase().includes(query) ||
-                experience.experienceName.toLowerCase().includes(query))
-          );
-        }
-      },
-      loading() {
-        const store = useLoggedInUserStore()
-        return store.loading;
-      },
-      isSingleSelection() {
-        return this.selectedExperiences.length <= 1;
-      },
-      dynamicExperienceHeaders() {
-        // Filter out the Actions column if the screen size is smaller than medium
-        return this.$vuetify.display.mdAndUp
-            ? this.experienceHeaders
-            : this.experienceHeaders.filter(header => header.value !== 'actions');
-        },
-
-    }
   
   };
   </script>
   
-  <style scoped>
-  #contentNavbar .nav-link.router-link-exact-active {
-    background-color: #eee;
-  }
-  
-  /* Medium Devices, Desktops */
-  @media only screen and (min-width: 992px) {
-    #contentNavbar .nav-item {
-      border: 3px solid black;
-      border-right: none;
-    }
-  
-    #contentNavbar .nav-item:last-child {
-      border: 1px solid black;
-    }
-  }
-  
-  .hoverRow {
-      background-color: rgb(200, 201, 205);
-      transition: background-color 0.3s ease-in-out;
-    }
-
+<style scoped>
 .pointer-cursor {
     cursor: pointer;
 }
