@@ -122,13 +122,13 @@
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('PeopleSoft ID')}}</label>
                 <p style="margin: 0;">{{ this.studentInformation.enrolledUHInfo?.peopleSoftID }}</p>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="3" v-if="this.studentInformation.enrolledUHInfo?.expectedGraduationYear">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Expected Graduation Date')}}</label>
                 <p style="margin: 0;">{{ this.studentInformation.enrolledUHInfo?.expectedGraduationYear }}</p>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="6" v-if="this.studentInformation.enrolledUHInfo?.livingOnCampus">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Do you live on or off campus?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentInformation.enrolledUHInfo?.livingOnCampus) }}</p>
               </v-col>
@@ -147,11 +147,11 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="10">
+              <v-col cols="12" md="10" v-if="honorsCollegeAffiliated">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?')}}</label>
                 <p style="margin: 0;">{{ honorsCollegeAffiliated }}</p>
               </v-col>
-              <v-col cols="11">
+              <v-col cols="11" v-if="this.studentInformation.enrolledUHInfo?.honorsCollegeAffiliatedOther">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Honors College Affiliation Information')}}</label>
                 <p style="margin: 0;">{{ this.studentInformation.enrolledUHInfo?.honorsCollegeAffiliatedOther }}</p>
               </v-col>
@@ -176,11 +176,11 @@
             </v-row>
             <br><p class="font-weight-black text-h7">{{getTranslation('Other Engagement')}}</p>
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="6" v-if="this.studentInformation.hichInfo?.hichStatus">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of Honors in Community Health (HICH)?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentInformation.hichInfo?.hichStatus) }}</p>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="6" v-if="this.studentInformation.hichInfo?.hichHistoryStatus">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentInformation.hichInfo?.hichHistoryStatus) }}</p>
               </v-col>
@@ -192,13 +192,13 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" v-if="this.studentInformation.communityServiceInfo?.serviceStatus">
+              <v-col cols="12" v-if="this.studentInformation.communityServiceInfo?.serviceHistoryDesc">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.')}}</label>
                 <p style="margin: 0;">{{ this.studentInformation.communityServiceInfo?.serviceHistoryDesc }}</p>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" v-if="this.studentInformation.communityServiceInfo?.serviceStatus">
+              <v-col cols="12" v-if="this.studentInformation.communityServiceInfo?.serviceOrgsOutsideUH">
                 <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of any community organizations outside the University?')}}</label>
                 <p style="margin: 0;">{{ this.studentInformation.communityServiceInfo?.serviceOrgsOutsideUH }}</p>
               </v-col>

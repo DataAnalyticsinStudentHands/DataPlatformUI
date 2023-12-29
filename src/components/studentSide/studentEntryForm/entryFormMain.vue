@@ -255,10 +255,10 @@
 </template>
 
 <script>
-import EntryFormDemo from './EntryFormDemo.vue';
-import EntryFormEnrolled from './EntryFormEnrolled.vue';
-import EntryFormGradProf from './EntryFormGradProf.vue';
-import EntryFormReview from './EntryFormReview.vue';
+import EntryFormDemo from './entryFormDemo.vue';
+import EntryFormEnrolled from './entryFormEnrolled.vue';
+import EntryFormGradProf from './entryFormGradProf.vue';
+import EntryFormReview from './entryFormReview.vue';
 
 
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -451,8 +451,7 @@ export default {
 
             try {
                 const user = useLoggedInUserStore();
-                // const token = user.token;
-                const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE3MDM0NzI1Mzk2NDUiLCJ1c2VyUm9sZSI6IlN0dWRlbnQiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzcwNzIxOCwiZXhwIjoxNzAzNzE5MjE4fQ.oldsGGx5grqFCkq8RODWgvuCc6_fXlJfeo0P0gBqPwA'
+                const token = user.token;
 
                 const response = await axios.post(apiURL, {
                     studentInformation: this.studentInformation
