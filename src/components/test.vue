@@ -86,6 +86,7 @@
 
                             
                             <v-col md="4" class="d-flex align-center">
+
                                 <!-- Data View Menu -->
                                 <v-menu>
                                     <template v-slot:activator="{ props }">
@@ -93,20 +94,93 @@
                                             text="Data View" 
                                             v-bind="props"
                                             elevation="1"
-                                            class="mr-4"
+                                            class="mr-lg-4 mr-md-2"
                                         ></v-btn>
                                     </template>
 
-                                    <v-list>
+                                    <v-list
+                                        density="compact"
+                                    >
                                         <v-list-item
                                             v-for="item in dataViewMenuItems"
-                                            :key="item"
-                                            @click="console.log('action menu')"
+                                            :key="item.title"
+                                            @click="handleDataViewMenuAction(item)"
                                         >
-                                            <v-list-item-title>{{ item }}</v-list-item-title>
+                                            <v-list-item-title>
+                                                <v-icon size="small">{{ item.icon }}</v-icon>
+                                                {{ item.title }}
+                                            </v-list-item-title>
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
+
+                                <!-- Sort Menu from Data View -->
+                                <v-dialog v-model="isSortDialogVisible" max-width="600">
+                                    <v-card>
+                                        <v-card-title>Sort Options</v-card-title>
+                                        <v-card-subtitle>
+                                            Please select the columns in the order you would like them sorted.
+                                        </v-card-subtitle>
+
+                                        <v-card-text>
+                                            <v-table
+                                                density="compact"
+                                            >
+                                                <template v-slot:default>
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-left">Select</th>
+                                                            <th class="text-left">Column</th>
+                                                            <th class="text-left">Sort Order</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="(column, index) in sortableColumns" :key="index">
+                                                            <td><v-checkbox v-model="column.selected" class="d-flex align-center"></v-checkbox></td>
+                                                            <td :class="{ 'text-grayed-out' : !column.selected }">
+                                                                {{ column.name }}
+                                                            </td>
+                                                            <td>
+                                                            <v-select
+                                                                :items="sortOrderOptions.map(option => option.label)"
+                                                                v-model="column.selectedSortOrder"
+                                                                :disabled="!column.selected"
+                                                                density="compact"
+                                                                hide-details
+                                                                >
+                                                                    <template v-slot:prepend-inner>
+                                                                        <v-icon>
+                                                                        {{ sortOrderOptions.find(option => option.label === column.selectedSortOrder)?.icon }}
+                                                                        </v-icon>
+                                                                    </template>
+                                                            </v-select>
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </template>
+                                            </v-table>
+                                            <!-- Chips for selected sort criteria -->
+                                                <v-chip 
+                                                    v-for="(criteria, index) in sortCriteria" 
+                                                    :key="index" 
+                                                    class="ma-2"
+                                                    color="blue lighten-4"
+                                                >
+                                                    {{ criteria.name }}
+                                                    <v-icon small class="ml-2">{{ criteria.icon }}</v-icon>
+                                                    {{ criteria.order }}
+                                                </v-chip>
+                                        </v-card-text>
+
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn color="blue darken-1" text @click="isSortDialogVisible = false">Close</v-btn>
+                                            <v-btn color="green" text @click="applySort">Sort</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-dialog>
+
 
                                 <!-- Row Actions Menu -->
                                 <v-menu>
@@ -121,38 +195,18 @@
                                     <v-list>
                                         <v-list-item
                                             v-for="item in rowActionsMenuItems"
-                                            :key="item"
+                                            :key="item.title"
                                             @click="console.log('action menu')"
                                         >
-                                            <v-list-item-title>{{ item }}</v-list-item-title>
+                                            <v-list-item-title>
+                                                <v-icon size="small">{{ item.icon }}</v-icon>
+                                                {{ item.title }}
+                                            </v-list-item-title>
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
+
                             </v-col>
-
-                            <!-- Data View Menu
-                            <v-col md="2" class="d-flex align-center pl-0">
-                                <v-menu>
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn 
-                                            text="Data View" 
-                                            v-bind="props"
-                                            elevation="1"
-                                        ></v-btn>
-                                    </template>
-
-                                    <v-list>
-                                        <v-list-item
-                                            v-for="item in dataViewMenuItems"
-                                            :key="item"
-                                            @click="console.log('action menu')"
-                                        >
-                                            <v-list-item-title>{{ item }}</v-list-item-title>
-                                        </v-list-item>
-                                    </v-list>
-                                </v-menu>
-                            </v-col> -->
-
 
                             <!-- Add New Experience Button -->
                             <v-col md="2" class="text-end align-self-center">
@@ -167,32 +221,45 @@
                             </v-col>
                         </v-row>
 
-                        <!-- Search Chips -->
-                        <!-- <v-row v-if="selectedChips.length > 0"> -->
-                        <v-row v-if="searchCriteria.length" dense>
+                        <!-- Chips Row -->
+                        <v-row v-if="showChipsRow" dense>
                             <v-col>
-                                <v-chip-group
-                                    v-model="selectedChips"
-                                    column
-                                    multiple
-                                >
-                                        <v-chip
-                                            v-for="(criteria, index) in searchCriteria"
-                                            :key="index"
-                                            @click="selectChip(index)"
-                                            filter
-                                            variant="outlined"
-                                            class="ma-2"
-                                        >
-                                            {{  criteria.category + '="' + criteria.term + '"' }}
-                                            <v-icon 
-                                                end
-                                                @click.stop="removeChip(index)"
-                                            >mdi-close</v-icon>
-                                        </v-chip>
+                                <!-- Search Chips -->
+                                <v-chip-group v-if="searchCriteria.length" v-model="selectedSearchChips" column multiple>
+                                    <v-chip
+                                        v-for="(criteria, index) in searchCriteria"
+                                        :key="index"
+                                        @click="selectSearchChip(index)"
+                                        filter
+                                        variant="outlined"
+                                        class="ma-2"
+                                    >
+                                        {{ criteria.category + '="' + criteria.term + '"' }}
+                                        <v-icon end @click.stop="removeSearchChip(index)">mdi-close</v-icon>
+                                    </v-chip>
                                 </v-chip-group>
+
+                                <!-- Sort Chips -->
+                                <v-chip-group v-if="sortChips.length" v-model="selectedSortChips" column multiple selected-class="text-primary">
+                                    <v-chip
+                                        v-for="(chip, index) in sortChips"
+                                        :key="index"
+                                        class="ma-2"
+                                        @click="selectSortChip(index)"
+                                    >
+                                        Sort {{ chip.name }} <v-icon small class="ml-2">{{ chip.icon }}</v-icon> {{ chip.order }}
+                                        <v-icon end @click.stop="removeSortChip(index)">mdi-close</v-icon>
+                                    </v-chip>
+                                </v-chip-group>
+
+
+
+
+
                             </v-col>
                         </v-row>
+
+
                     </v-card-title>
 
 
@@ -241,7 +308,24 @@
         </v-row>
     </v-container>
 
-    <br><br><br><br><br><br><br><br><br>
+    <br><br><br>
+
+    isSortDialogVisible: {{isSortDialogVisible  }}
+    <br>
+    sortableColumns: {{sortableColumns  }}
+    <br>
+    selectedSortColumn: {{selectedSortColumn  }}
+    <br>
+    sortOrder: {{sortOrder  }}
+    <br>
+    sortCriteria: {{ sortCriteria }}
+    <br>
+    sortOrderOptions: {{ sortOrderOptions }}
+    <br>
+    sortChips: {{ sortChips }}
+    <br>
+    selectedSortChips: {{ selectedSortChips }}
+    
 
 
     <br><br><br><br><br><br><br><br><br>
@@ -307,10 +391,34 @@ Filtered Experience Data:
         searchMenuItems: ['All Text Fields', 'Experience Category', 'Experience Name'],
         searchLabel: 'Search All Text Fields',
         searchCriteria: [],
-        selectedChips: [],
+        selectedSearchChips: [],
         filteredExperienceData: [],
-        rowActionsMenuItems: ['Activate', 'Deactivate', 'Delete'],
-        dataViewMenuItems: ['Sort', 'Filter', 'Aggregate'],
+        rowActionsMenuItems: [
+            { title: 'Activate', icon: 'mdi-toggle-switch' },
+            { title: 'Deactivate', icon: 'mdi-toggle-switch-off' },
+            { title: 'Delete', icon: 'mdi-delete' },
+        ],
+        dataViewMenuItems: [
+            { title: 'Sort', icon: 'mdi-sort' } ,
+            { title: 'Filter', icon: 'mdi-filter' } ,
+            { title: 'Aggregate', icon: 'mdi-chart-box' } ,
+        ],
+        isSortDialogVisible: false,
+        sortableColumns: [
+            { name: 'Experience Category', value: 'experienceCategory', selected: false, selectedSortOrder: 'Ascending' },
+            { name: 'Experience Name', value: 'experienceName', selected: false, selectedSortOrder: 'Ascending' },
+            { name: 'Activities', value: 'activitiesCount', selected: false, selectedSortOrder: 'Ascending' },
+            { name: 'Status', value: 'experienceStatus', selected: false, selectedSortOrder: 'Ascending' },
+        ],
+        selectedSortColumn: null,
+        sortOrder: 'asc',
+        sortCriteria: [],
+        sortOrderOptions: [
+            { label: 'Ascending', icon: 'mdi-sort-ascending' },
+            { label: 'Descending', icon: 'mdi-sort-descending' },
+        ],
+        sortChips: [], 
+        selectedSortChips: [],
       };
     },
   
@@ -333,18 +441,43 @@ Filtered Experience Data:
         });
       }
     },
+
+    watch: {
+        sortableColumns: {
+            deep: true,
+            handler() {
+                this.updateSortCriteriaChips();
+            }
+        }
+    },
+
     computed: {
       loading() {
         const store = useLoggedInUserStore()
         return store.loading;
       },
+
+    showChipsRow() {
+        return this.searchCriteria.length > 0 || this.sortChips.length > 0;
+    },
+
+
+
+
+
+
+
+
+
     },
     methods: {
       async fetchExperienceData() {
         try {
             const user = useLoggedInUserStore();
             //   let token = user.token;
-            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzg2OTgxNywiZXhwIjoxNzAzODgxODE3fQ.oAzuZulHhqHHJDoTL-BGT8gwmFiA_3DRmoTeje5MQKA'
+
+            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzkwNzExMCwiZXhwIjoxNzAzOTE5MTEwfQ.QYj_OL2RsHsEkUrp5HlmPPpGg2_-T7B5MTWpqbKQSJc'
+
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const resp = await axios.get(apiURL, { headers: { token } });
             this.experienceData = resp.data.map(item => ({
@@ -369,14 +502,14 @@ Filtered Experience Data:
         this.searchLabel = 'Search ' + selectedItem;
       },
 
-      selectChip(index) {
-        const selectedIndex = this.selectedChips.indexOf(index);
+      selectSearchChip(index) {
+        const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, create a new array without this chip
-            this.selectedChips = this.selectedChips.filter(i => i !== index);
+            this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
         } else {
             // If the chip is not selected, create a new array with this chip added
-            this.selectedChips = [...this.selectedChips, index];
+            this.selectedSearchChips = [...this.selectedSearchChips, index];
         }
         // Call search
         this.performSearch();
@@ -389,7 +522,7 @@ Filtered Experience Data:
                 term: this.experienceSearch
             });
             // Select the new chip by default
-            this.selectedChips.push(this.searchCriteria.length - 1);
+            this.selectedSearchChips.push(this.searchCriteria.length - 1);
             // Clear the input field after adding the chip
             this.experienceSearch = ''; 
             // Call search
@@ -397,19 +530,19 @@ Filtered Experience Data:
         }
     },
 
-    removeChip(index) {
+    removeSearchChip(index) {
         this.searchCriteria.splice(index, 1);
-        // Update selectedChips to reflect the removal
-        this.selectedChips = this.selectedChips.filter(i => i !== index);
+        // Update selectedSearchChips to reflect the removal
+        this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
         // Adjust the indexes of the remaining selected chips
-        this.selectedChips = this.selectedChips.map(i => i > index ? i - 1 : i);
+        this.selectedSearchChips = this.selectedSearchChips.map(i => i > index ? i - 1 : i);
         // Call search
         this.performSearch();
     },
 
     performSearch() {
         let searchGroups = {};
-        this.selectedChips.forEach(index => {
+        this.selectedSearchChips.forEach(index => {
             let criteria = this.searchCriteria[index];
             if (!searchGroups[criteria.category]) {
                 searchGroups[criteria.category] = [];
@@ -438,9 +571,83 @@ Filtered Experience Data:
         });
     },
 
-
-  
+    handleDataViewMenuAction(item) {
+        if (item.title === 'Sort') {
+            this.isSortDialogVisible = true;
+        } else {
+            console.log('action menu: ', item.title);
+        }
     },
+
+    updateSortCriteriaChips() {
+        this.sortCriteria = this.sortableColumns
+            .filter(column => column.selected)
+            .map(column => ({
+                name: column.name,
+                order: column.selectedSortOrder,
+                icon: this.sortOrderOptions.find(option => option.label === column.selectedSortOrder)?.icon
+            }));
+    },
+
+    selectSearchChip(index) {
+        const selectedIndex = this.selectedSearchChips.indexOf(index);
+        if (selectedIndex >= 0) {
+            // If the chip is already selected, create a new array without this chip
+            this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+        } else {
+            // If the chip is not selected, create a new array with this chip added
+            this.selectedSearchChips = [...this.selectedSearchChips, index];
+        }
+        // Call search
+        this.performSearch();
+      },
+
+      applySort() {
+            this.sortChips = this.sortableColumns
+                .filter(column => column.selected)
+                .map(column => ({
+                    name: column.name,
+                    order: column.selectedSortOrder,
+                    icon: this.sortOrderOptions.find(option => option.label === column.selectedSortOrder)?.icon
+                }));
+
+            // Initialize selectedSortChips to have all indices (i.e., all chips are active)
+            this.selectedSortChips = this.sortChips.map((_, index) => index);
+
+            this.isSortDialogVisible = false;
+        },
+
+
+        selectSortChip(index) {
+            if (this.selectedSortChips.includes(index)) {
+                // Remove the index if it's already selected
+                this.selectedSortChips = this.selectedSortChips.filter(i => i !== index);
+            } else {
+                // Add the index if it's not selected
+                this.selectedSortChips = [...this.selectedSortChips, index];
+            }
+        },
+
+
+
+    removeSortChip(index) {
+        this.sortChips.splice(index, 1);
+        // Perform any additional actions required after removing a sort chip
+    },
+
+
+
+
+
+},
+
+    filters: {
+        capitalize(value) {
+            if (!value) return '';
+            value = value.toString();
+            return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+    }
   
   };
   </script>
@@ -456,6 +663,10 @@ Filtered Experience Data:
   box-shadow: none !important;
   border: 1px solid transparent !important; /* Update this line if you have a different border style */
   background-color: transparent !important;
+}
+
+.text-grayed-out {
+    color: #aaa; /* Gray color */
 }
 
   </style>
