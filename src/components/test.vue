@@ -114,7 +114,7 @@
                                     </v-list>
                                 </v-menu>
 
-                                <!-- Sort Menu from Data View -->
+                                <!-- Sort Dialog Menu from Data View -->
                                 <v-dialog v-model="isSortDialogVisible" max-width="600">
                                     <v-card>
                                         <v-card-title>Sort Options</v-card-title>
@@ -165,7 +165,7 @@
                                                     v-for="(criteria, index) in sortCriteria" 
                                                     :key="index" 
                                                     class="ma-2"
-                                                    color="blue lighten-4"
+                                                    color="blue-darken-1"
                                                 >
                                                     {{ criteria.name }}
                                                     <v-icon small class="ml-2">{{ criteria.icon }}</v-icon>
@@ -176,10 +176,71 @@
                                         <v-card-actions>
                                             <v-spacer></v-spacer>
                                             <v-btn color="blue darken-1" text @click="isSortDialogVisible = false">Close</v-btn>
-                                            <v-btn color="green" text @click="applySort">Sort</v-btn>
+                                            <v-btn color="green" text @click="applySortChips">Sort</v-btn>
                                         </v-card-actions>
                                     </v-card>
                                 </v-dialog>
+
+                                <!-- Filter Dialog Menu -->
+                                <v-dialog v-model="isFilterDialogVisible" max-width="600">
+                                <v-card>
+                                    <v-card-title>Filter Options</v-card-title>
+                                    
+                                    <v-row>
+                                    <!-- Column Names List -->
+                                    <v-col cols="6">
+                                        <v-list dense>
+                                            <v-list-item
+                                                v-for="(header, index) in experienceHeaders"
+                                                :key="index"
+                                                @click="toggleColumnFilter(header.value)"
+                                            >
+                                                <v-list-item-title>{{ header.title }}</v-list-item-title>
+                                                <!-- Add a checkbox or icon to indicate if the column is filtered -->
+                                                <v-list-item-action>
+                                                <!-- Add your checkbox or icon here -->
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-col>
+
+                                    
+                                    
+                                    <!-- Filter Options for the selected column -->
+                                    <v-col cols="6">
+                                        <v-list dense v-if="selectedFilterColumn === 'experienceCategory'">
+                                            <v-list-item
+                                                v-for="(category, index) in uniqueExperienceCategories"
+                                                :key="index"
+                                                @click="console.log('filter category:', category)"
+                                            >
+                                                <v-list-item-title>{{ category }}</v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-col>
+                                    </v-row>
+
+                                    <!-- Add your filter options here based on the selected column -->
+                                    
+                                    <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    
+                                    <v-btn color="blue darken-1" text @click="isFilterDialogVisible = false">Close</v-btn>
+                                    <v-btn color="green" text @click="applyFilters">Apply</v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                                </v-dialog>
+
+
+
+
+
+
+
+
+
+
+
 
 
                                 <!-- Row Actions Menu -->
@@ -247,15 +308,10 @@
                                         class="ma-2"
                                         @click="selectSortChip(index)"
                                     >
-                                        Sort {{ chip.name }} <v-icon small class="ml-2">{{ chip.icon }}</v-icon> {{ chip.order }}
+                                        {{ chip.label }} <v-icon small class="ml-2">{{ chip.icon }}</v-icon> {{ chip.order }}
                                         <v-icon end @click.stop="removeSortChip(index)">mdi-close</v-icon>
                                     </v-chip>
                                 </v-chip-group>
-
-
-
-
-
                             </v-col>
                         </v-row>
 
@@ -266,10 +322,12 @@
                     <v-data-table
                         :headers="experienceHeaders"
                         :items="filteredExperienceData"
+                        v-model:sort-by="sortBy"
                         item-key="_id"
                         item-value="_id"
                         show-select
                         v-model="selectedExperiences"
+                        @update:sortBy="onTableHeaderSort"
                     >
                         <!-- Slot for Edit Column -->
                         <template v-slot:item.edit="{ item }">
@@ -307,6 +365,7 @@
             </v-col>
         </v-row>
     </v-container>
+
 
     <br><br><br>
 
@@ -419,14 +478,33 @@ Filtered Experience Data:
         ],
         sortChips: [], 
         selectedSortChips: [],
+        defaultSortCriteria: [
+            { value: 'experienceStatus', order: 'Descending' },
+            { value: 'experienceCategory', order: 'Ascending' },
+        ],
+        selectionOrder: [],
+        tableSortingOptions: {
+            page: 1,
+            itemsPerPage: 10,
+            sortBy: [],
+            sortDesc: [],
+        },
+        sortBy: [],
+        isFilterDialogVisible: false,
+        selectedFilterColumn: null,
+        uniqueExperienceCategories: [],
       };
     },
   
+
+
     mounted() {
       useLoggedInUserStore().startLoading();
       this.fetchExperienceData()
       .then(() => {
         useLoggedInUserStore().stopLoading();
+        // Apply default sorting after fetching data
+        this.applyDefaultSorting();
       })
       .catch(() => {
         this.handleError(error);
@@ -445,10 +523,21 @@ Filtered Experience Data:
     watch: {
         sortableColumns: {
             deep: true,
-            handler() {
-                this.updateSortCriteriaChips();
-            }
-        }
+            handler(newColumns) {
+            // Update the selection order based on the changes
+            newColumns.forEach(column => {
+                if (column.selected && !this.selectionOrder.includes(column.value)) {
+                // Add to the selection order if selected and not already in the array
+                this.selectionOrder.push(column.value);
+                } else if (!column.selected && this.selectionOrder.includes(column.value)) {
+                // Remove from the selection order if deselected
+                this.selectionOrder = this.selectionOrder.filter(value => value !== column.value);
+                }
+            });
+
+            this.updateSortCriteriaChips();
+            },
+        },
     },
 
     computed: {
@@ -476,7 +565,7 @@ Filtered Experience Data:
             const user = useLoggedInUserStore();
             //   let token = user.token;
 
-            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzkwNzExMCwiZXhwIjoxNzAzOTE5MTEwfQ.QYj_OL2RsHsEkUrp5HlmPPpGg2_-T7B5MTWpqbKQSJc'
+            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzkxOTQzNSwiZXhwIjoxNzAzOTMxNDM1fQ.wVdRY6WVTkDfsU2RdQsM1NkW6CaIfuiVk3mEU4Fjwpo'
 
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const resp = await axios.get(apiURL, { headers: { token } });
@@ -572,21 +661,13 @@ Filtered Experience Data:
     },
 
     handleDataViewMenuAction(item) {
-        if (item.title === 'Sort') {
-            this.isSortDialogVisible = true;
-        } else {
-            console.log('action menu: ', item.title);
-        }
-    },
-
-    updateSortCriteriaChips() {
-        this.sortCriteria = this.sortableColumns
-            .filter(column => column.selected)
-            .map(column => ({
-                name: column.name,
-                order: column.selectedSortOrder,
-                icon: this.sortOrderOptions.find(option => option.label === column.selectedSortOrder)?.icon
-            }));
+      if (item.title === 'Sort') {
+        this.isSortDialogVisible = true;
+      } else if (item.title === 'Filter') {
+        this.isFilterDialogVisible = true;
+      } else {
+        console.log('action menu: ', item.title);
+      }
     },
 
     selectSearchChip(index) {
@@ -602,38 +683,149 @@ Filtered Experience Data:
         this.performSearch();
       },
 
-      applySort() {
-            this.sortChips = this.sortableColumns
-                .filter(column => column.selected)
-                .map(column => ({
-                    name: column.name,
-                    order: column.selectedSortOrder,
-                    icon: this.sortOrderOptions.find(option => option.label === column.selectedSortOrder)?.icon
-                }));
+      applyDefaultSorting() {
+        this.filteredExperienceData.sort((a, b) => {
+            for (let criteria of this.defaultSortCriteria) {
+                let order = criteria.order === 'Ascending' ? 1 : -1;
+                let valueA = a[criteria.value];
+                let valueB = b[criteria.value];
+                if (valueA < valueB) return -1 * order;
+                if (valueA > valueB) return 1 * order;
+            }
+            return 0;
+        });
+    },
 
-            // Initialize selectedSortChips to have all indices (i.e., all chips are active)
-            this.selectedSortChips = this.sortChips.map((_, index) => index);
+    updateSortCriteriaChips() {
+        this.sortCriteria = this.selectionOrder.map(value => {
+            const column = this.sortableColumns.find(c => c.value === value);
+            return {
+                name: column.name,
+                order: column.selectedSortOrder,
+                icon: this.sortOrderOptions.find(option => option.label === column.selectedSortOrder)?.icon
+            };
+        }).filter(c => c); // Filter out any undefined entries (in case a column is not found)
+    },
 
-            this.isSortDialogVisible = false;
-        },
+
+    applySortChips() {
+        this.sortChips = this.selectionOrder
+        .map(columnValue => {
+            let column = this.sortableColumns.find(c => c.value === columnValue);
+            if (column && column.selected) {
+            return {
+                label: column.name,
+                value: column.value,
+                order: column.selectedSortOrder,
+                icon: this.sortOrderOptions.find(option => option.label === column.selectedSortOrder)?.icon
+            };
+            }
+            return null;
+        })
+        .filter(chip => chip !== null);
+
+        this.selectedSortChips = this.sortChips.map((_, index) => index);
+        this.isSortDialogVisible = false;
+        this.applySorting(); // Re-apply sorting
+    },
 
 
-        selectSortChip(index) {
-            if (this.selectedSortChips.includes(index)) {
-                // Remove the index if it's already selected
-                this.selectedSortChips = this.selectedSortChips.filter(i => i !== index);
+    selectSortChip(index) {
+        // Clear existing column header sorting
+        this.clearColumnSorting();
+        if (this.selectedSortChips.includes(index)) {
+            // Remove the index if it's already selected
+            this.selectedSortChips = this.selectedSortChips.filter(i => i !== index);
+        } else {
+            // Add the index if it's not selected
+            this.selectedSortChips = [...this.selectedSortChips, index];
+            // Reset the table's sorting state
+            this.resetTableSorting();
+        }
+        this.applySorting(); // Re-apply sorting
+    },
+
+        
+        applySorting() {
+            if (this.selectedSortChips.length > 0) {
+                this.filteredExperienceData.sort((a, b) => {
+                    for (let index of this.selectedSortChips) {
+                        let chip = this.sortChips[index];
+                        let order = chip.order === 'Ascending' ? 1 : -1;
+                        let valueA = a[chip.value];
+                        let valueB = b[chip.value];
+                        if (valueA < valueB) return -1 * order;
+                        if (valueA > valueB) return 1 * order;
+                    }
+                    return 0; // If equal or no criteria
+                });
             } else {
-                // Add the index if it's not selected
-                this.selectedSortChips = [...this.selectedSortChips, index];
+                // Apply default sorting
+                this.filteredExperienceData.sort((a, b) => {
+                    for (let criteria of this.defaultSortCriteria) {
+                        let order = criteria.order === 'Ascending' ? 1 : -1;
+                        let valueA = a[criteria.value];
+                        let valueB = b[criteria.value];
+                        if (valueA < valueB) return -1 * order;
+                        if (valueA > valueB) return 1 * order;
+                    }
+                    return 0;
+                })
             }
         },
 
 
+        resetTableSorting() {
+            this.tableSortingOptions = {
+                ...this.tableSortingOptions,
+                sortBy: [],
+                sortDesc: [],
+            };
+        },
 
-    removeSortChip(index) {
-        this.sortChips.splice(index, 1);
-        // Perform any additional actions required after removing a sort chip
-    },
+        removeSortChip(index) {
+            this.sortChips.splice(index, 1);
+            this.selectedSortChips = this.selectedSortChips.filter(i => i !== index);
+            this.applySorting(); // Re-apply sorting after removal
+        },
+
+        onTableHeaderSort() {
+            this.selectedSortChips = []; // Reset selected sort chips
+        },
+
+        clearColumnSorting() {
+            this.sortBy = []; // Reset the sorting state
+        },
+
+        toggleColumnFilter(column) {
+            if (column === 'experienceCategory') {
+                this.selectedFilterColumn = column;
+                this.uniqueExperienceCategories = this.getUniqueExperienceCategories();
+            } else {
+                this.selectedFilterColumn = null;
+            }
+        },
+
+        getUniqueExperienceCategories() {
+            const categories = new Set();
+            this.experienceData.forEach(item => {
+            categories.add(item.experienceCategory);
+            });
+            return Array.from(categories);
+        },
+
+
+        applyFilters() {
+            // Implement your filter logic here
+            // You can access filter values from data properties
+            // Close the filter dialog when filters are applied
+            this.isFilterDialogVisible = false;
+            // Call a function to update your filtered data based on the applied filters
+            // this.updateFilteredData();
+        },
+
+
+        
 
 
 

@@ -7,13 +7,13 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/test'
+      redirect: '/test2'
     },
     {
-      path: '/test',
-      name: 'test',
+      path: '/test2',
+      name: 'test2',
       props: true,
-      component: () => import('../components/test.vue')
+      component: () => import('../components/test2.vue')
     },
     {
       path: '/studentEntryFormUpdate',
@@ -219,6 +219,14 @@ const routes = [
         }
       }
     },
+
+    {
+        path: '/instructorDataManagement',
+        name: 'instructorDataManagement',
+        component: () => import('../components/instructorSide/instructorDataManagement/instructorDataManagementMain.vue')
+    },
+  
+
     {
       path: '/instructorSemesters',
       name: 'instructorSemesters',

@@ -118,12 +118,12 @@
               class=" tracking-wider"
             >Students</v-list-item>
             <v-list-item 
-              :active="activeLink === 'instructorSemesters'"
-              to="instructorSemesters"
+              :active="activeLink === 'instructorDataManagement'"
+              to="instructorDataManagement"
               prepend-icon="mdi-school"
-              value="instructorSemesters"
+              value="instructorDataManagement"
               class=" tracking-wider"
-            >Semesters, Experiences, Activities</v-list-item>
+            >Sessions, Experiences, Activities</v-list-item>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
             <v-list-item 
