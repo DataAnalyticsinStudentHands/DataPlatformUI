@@ -193,7 +193,7 @@
                                                 density="compact"
                                             >
                                                 <v-list-item
-                                                    v-for="(header, index) in experienceHeaders"
+                                                    v-for="(header, index) in filterableExperienceHeaders"
                                                     :key="index"
                                                     @click="toggleColumnFilter(header.value)"
                                                     :active="activeFilterColumn === header.value"
@@ -204,10 +204,11 @@
                                             </v-list>
                                         </v-col>
 
-                                        <div class="custom-divider"></div>
                                         
                                         <!-- Filter Options for the selected column -->
                                         <v-col>
+                                            <transition name="fade" mode="out-in" tag="div">
+                                            <!-- Experience Category Filter -->
                                             <div v-if="selectedFilterColumn === 'experienceCategory'">
                                                 <v-row>
                                                     <v-col>
@@ -216,6 +217,7 @@
                                                             label="Search Categories"
                                                             class="mr-5 mt-2"
                                                             hide-details
+                                                            variant="underlined"
                                                         ></v-text-field>
                                                     </v-col>
                                                 </v-row>
@@ -230,7 +232,7 @@
                                                                 >
                                                                     <v-checkbox
                                                                         density="compact"
-                                                                        v-model="selectedCategories"
+                                                                        v-model="selectedExperienceCategoriesFilter"
                                                                         :value="category"
                                                                         :label="category"
                                                                         @click.stop
@@ -242,6 +244,101 @@
                                                     </v-col>
                                                 </v-row>
                                             </div>
+
+                                            <!-- Experience Name Filter -->
+                                            <div v-else-if="selectedFilterColumn === 'experienceName'">
+                                                <v-row>
+                                                    <v-col>
+                                                        <v-text-field
+                                                            v-model="experienceNameFilterSearchQuery"
+                                                            label="Search Experience Names"
+                                                            class="mr-5 mt-2"
+                                                            hide-details
+                                                            variant="underlined"
+                                                        ></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row>
+                                                    <v-col>
+                                                        <div class="scrollable-list">
+                                                            <v-list density="compact">
+                                                                <v-list-item
+                                                                    v-for="(name, index) in filteredExperienceNames"
+                                                                    :key="index"
+                                                                    class="pa-0"
+                                                                >
+                                                                    <v-checkbox
+                                                                        density="compact"
+                                                                        v-model="selectedExperienceNamesFilter"
+                                                                        :value="name"
+                                                                        :label="name"
+                                                                        @click.stop
+                                                                        hide-details
+                                                                    ></v-checkbox>
+                                                                </v-list-item>
+                                                            </v-list>
+                                                        </div>
+                                                    </v-col>
+                                                </v-row>
+                                            </div>
+
+                                            <!-- Activities Filter -->
+                                            <div v-else-if="selectedFilterColumn === 'activitiesCount'">
+                                                <v-row>
+                                                    <v-col>
+                                                        <v-text-field
+                                                            v-model="activitiesNumberFilter"
+                                                            label="Filter by Number of Activities"
+                                                            type="number"
+                                                            class="mr-5 mt-2"
+                                                            hide-details
+                                                        ></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row>
+                                                    <v-col>
+                                                        <!-- Add Set Filter button here -->
+                                                        <v-btn @click="setActivitiesFilter">Set Filter</v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row>
+                                                    <v-col>
+                                                        <!-- Add v-autocomplete for another filter here -->
+                                                        <v-autocomplete
+                                                            v-model="activitiesSearchQuery"
+                                                            :items="activitiesAll"
+                                                            label="Another Filter"
+                                                            class="mr-5 mt-2"
+                                                            hide-details
+                                                            density="compact"
+                                                        ></v-autocomplete>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row>
+                                                    <v-col>
+                                                        <!-- Add Set Filter button for another filter here -->
+                                                        <v-btn @click="setAnotherFilter">Set Filter</v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                            </div>
+
+                                            <!-- Status Filter -->
+                                            <div v-else-if="selectedFilterColumn === 'experienceStatus'">
+                                                <v-row>
+                                                    <v-col>
+                                                        <v-select
+                                                            v-model="selectedStatusFilter"
+                                                            :items="experienceStatusOptions"
+                                                            label="Filter by Status"
+                                                            class="mr-5 mt-2"
+                                                            hide-details
+                                                        ></v-select>
+                                                    </v-col>
+                                                </v-row>
+                                            </div>
+                                            
+                                        </transition>
+
                                         </v-col>
 
                                         </v-row>
@@ -264,18 +361,6 @@
                                         </v-card-actions>
                                     </v-card>
                                 </v-dialog>
-
-
-
-
-
-
-
-
-
-
-
-
 
                                 <!-- Row Actions Menu -->
                                 <v-menu>
@@ -403,6 +488,12 @@
 
     <br><br><br>
 
+    filterableExperienceHeaders: {{ filterableExperienceHeaders }}
+    <br>
+
+    selectedFilterColumn: {{ selectedFilterColumn }}
+    <br>
+
     isSortDialogVisible: {{isSortDialogVisible  }}
     <br>
     sortableColumns: {{sortableColumns  }}
@@ -526,12 +617,22 @@ Filtered Experience Data:
         sortBy: [],
         isFilterDialogVisible: false,
         selectedFilterColumn: null,
-        uniqueExperienceCategories: [],
         activeFilterColumn: null,
-        selectedCategories: [],
+        selectedExperienceCategoriesFilter: [],
         experienceCategoryFilterSearchQuery: '',
+        selectedExperienceNamesFilter: [],
+        experienceNameFilterSearchQuery: '',
+        activitiesNumberFilter: null,
+        experienceStatusOptions: ['Active', 'Inactive'],
+        selectedStatusFilter: [],
+        activitiesSearchQuery: null,
+        activitiesAll: []
       };
     },
+
+
+
+
   
 
 
@@ -594,6 +695,22 @@ Filtered Experience Data:
         const searchLower = this.experienceCategoryFilterSearchQuery.toLowerCase();
         return this.uniqueExperienceCategories.filter(category => 
             category.toLowerCase().includes(searchLower)
+        );
+    },
+
+    uniqueExperienceCategories() {
+        const categories = new Set(this.experienceData.map(item => item.experienceCategory));
+        return Array.from(categories);
+    },
+
+    filterableExperienceHeaders() {
+        return this.experienceHeaders.filter(header => header.title !== '');
+    },
+
+    filteredExperienceNames() {
+        const searchLower = this.experienceNameFilterSearchQuery.toLowerCase();
+        return this.getUniqueExerienceNames().filter(name => 
+            name.toLowerCase().includes(searchLower)
         );
     },
 
@@ -837,23 +954,29 @@ Filtered Experience Data:
         },
 
         toggleColumnFilter(column) {
+            console.log('column: ', column);
             this.activeFilterColumn = column;
             if (column === 'experienceCategory') {
                 this.selectedFilterColumn = column;
-                this.uniqueExperienceCategories = this.getUniqueExperienceCategories();
+                this.experienceCategoryFilterSearchQuery = ''; // Reset the search query
+            } else if (column === 'experienceName') {
+                this.selectedFilterColumn = column;
+                this.experienceNameFilterSearchQuery = ''; // Reset the search query
+            } else if (column === 'activitiesCount') {
+                console.log('column is activitiesCount')
+                this.selectedFilterColumn = column;
+                this.activitiesNumberFilter = null; // Reset the activities filter
+            } else if (column === 'experienceStatus') {
+                this.selectedFilterColumn = column;
+                this.selectedStatusFilter = null; // Reset the status filter
             } else {
                 this.selectedFilterColumn = null;
             }
         },
 
-        getUniqueExperienceCategories() {
-            const categories = new Set();
-            this.experienceData.forEach(item => {
-            categories.add(item.experienceCategory);
-            });
-            return Array.from(categories);
-        },
-
+        setActivitiesFilter() {
+            console.log('set activities filter')
+        },     
 
         applyFilters() {
             // Implement your filter logic here
@@ -882,6 +1005,11 @@ Filtered Experience Data:
             // Implement what happens when a category is clicked.
             console.log('filter category:', category);
         },
+
+        getUniqueExerienceNames() {
+            const names = new Set(this.experienceData.map(item => item.experienceName));
+            return Array.from(names);
+        }
 
 
         
@@ -916,14 +1044,16 @@ Filtered Experience Data:
   background-color: transparent !important;
 }
 
-.text-grayed-out {
-    color: #aaa; /* Gray color */
+:deep(.v-select input[type="text"]:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
 }
 
-.custom-divider {
-  width: 1px;
-  background-color: #000; /* Or any color you prefer */
-  margin: 0 15px; /* Adjust spacing as needed */
+
+.text-grayed-out {
+    color: #aaa; /* Gray color */
 }
 
 .active-filter-item {
@@ -933,6 +1063,13 @@ Filtered Experience Data:
 .scrollable-list {
     max-height: 300px; /* Adjust the height as needed */
     overflow-y: auto;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
 }
   </style>
   
