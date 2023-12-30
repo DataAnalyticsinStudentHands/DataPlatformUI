@@ -182,53 +182,87 @@
                                 </v-dialog>
 
                                 <!-- Filter Dialog Menu -->
-                                <v-dialog v-model="isFilterDialogVisible" max-width="600">
-                                <v-card>
-                                    <v-card-title>Filter Options</v-card-title>
-                                    
-                                    <v-row>
-                                    <!-- Column Names List -->
-                                    <v-col cols="6">
-                                        <v-list dense>
-                                            <v-list-item
-                                                v-for="(header, index) in experienceHeaders"
-                                                :key="index"
-                                                @click="toggleColumnFilter(header.value)"
+                                <v-dialog v-model="isFilterDialogVisible" max-width="600" persistent>
+                                    <v-card>
+                                        
+                                        <v-row>
+                                        <!-- Column Names List -->
+                                        <v-col>
+                                            <v-card-title>Filter Options</v-card-title>
+                                            <v-list
+                                                density="compact"
                                             >
-                                                <v-list-item-title>{{ header.title }}</v-list-item-title>
-                                                <!-- Add a checkbox or icon to indicate if the column is filtered -->
-                                                <v-list-item-action>
-                                                <!-- Add your checkbox or icon here -->
-                                                </v-list-item-action>
-                                            </v-list-item>
-                                        </v-list>
-                                    </v-col>
+                                                <v-list-item
+                                                    v-for="(header, index) in experienceHeaders"
+                                                    :key="index"
+                                                    @click="toggleColumnFilter(header.value)"
+                                                    :active="activeFilterColumn === header.value"
+                                                    active-class="active-filter-item"
+                                                >
+                                                    <v-list-item-title>{{ header.title }}</v-list-item-title>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-col>
 
-                                    
-                                    
-                                    <!-- Filter Options for the selected column -->
-                                    <v-col cols="6">
-                                        <v-list dense v-if="selectedFilterColumn === 'experienceCategory'">
-                                            <v-list-item
-                                                v-for="(category, index) in uniqueExperienceCategories"
-                                                :key="index"
-                                                @click="console.log('filter category:', category)"
-                                            >
-                                                <v-list-item-title>{{ category }}</v-list-item-title>
-                                            </v-list-item>
-                                        </v-list>
-                                    </v-col>
-                                    </v-row>
+                                        <div class="custom-divider"></div>
+                                        
+                                        <!-- Filter Options for the selected column -->
+                                        <v-col>
+                                            <div v-if="selectedFilterColumn === 'experienceCategory'">
+                                                <v-row>
+                                                    <v-col>
+                                                        <v-text-field
+                                                            v-model="experienceCategoryFilterSearchQuery"
+                                                            label="Search Categories"
+                                                            class="mr-5 mt-2"
+                                                            hide-details
+                                                        ></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row>
+                                                    <v-col>
+                                                        <div class="scrollable-list">
+                                                            <v-list density="compact">
+                                                                <v-list-item
+                                                                    v-for="(category, index) in filteredCategories"
+                                                                    :key="index"
+                                                                    class="pa-0"
+                                                                >
+                                                                    <v-checkbox
+                                                                        density="compact"
+                                                                        v-model="selectedCategories"
+                                                                        :value="category"
+                                                                        :label="category"
+                                                                        @click.stop
+                                                                        hide-details
+                                                                    ></v-checkbox>
+                                                                </v-list-item>
+                                                            </v-list>
+                                                        </div>
+                                                    </v-col>
+                                                </v-row>
+                                            </div>
+                                        </v-col>
 
-                                    <!-- Add your filter options here based on the selected column -->
-                                    
-                                    <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    
-                                    <v-btn color="blue darken-1" text @click="isFilterDialogVisible = false">Close</v-btn>
-                                    <v-btn color="green" text @click="applyFilters">Apply</v-btn>
-                                    </v-card-actions>
-                                </v-card>
+                                        </v-row>
+
+                                        <!-- Add your filter options here based on the selected column -->
+                                        
+                                        <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        
+                                        <v-btn 
+                                            color="blue darken-1" 
+                                             
+                                            @click="closeFilterDialog"
+                                        >Close</v-btn>
+                                        <v-btn 
+                                            color="green" 
+                                             
+                                            @click="applyFilters"
+                                        >Apply</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
                                 </v-dialog>
 
 
@@ -493,6 +527,9 @@ Filtered Experience Data:
         isFilterDialogVisible: false,
         selectedFilterColumn: null,
         uniqueExperienceCategories: [],
+        activeFilterColumn: null,
+        selectedCategories: [],
+        experienceCategoryFilterSearchQuery: '',
       };
     },
   
@@ -550,13 +587,15 @@ Filtered Experience Data:
         return this.searchCriteria.length > 0 || this.sortChips.length > 0;
     },
 
-
-
-
-
-
-
-
+    filteredCategories() {
+        if (!this.experienceCategoryFilterSearchQuery) {
+            return this.uniqueExperienceCategories;
+        }
+        const searchLower = this.experienceCategoryFilterSearchQuery.toLowerCase();
+        return this.uniqueExperienceCategories.filter(category => 
+            category.toLowerCase().includes(searchLower)
+        );
+    },
 
     },
     methods: {
@@ -565,7 +604,7 @@ Filtered Experience Data:
             const user = useLoggedInUserStore();
             //   let token = user.token;
 
-            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzkxOTQzNSwiZXhwIjoxNzAzOTMxNDM1fQ.wVdRY6WVTkDfsU2RdQsM1NkW6CaIfuiVk3mEU4Fjwpo'
+            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzkzNTI5NSwiZXhwIjoxNzAzOTQ3Mjk1fQ.860N_8clyA3KFDg7IXz_kqvGGxyrbeOTScq1VzHYG7Y'
 
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const resp = await axios.get(apiURL, { headers: { token } });
@@ -798,6 +837,7 @@ Filtered Experience Data:
         },
 
         toggleColumnFilter(column) {
+            this.activeFilterColumn = column;
             if (column === 'experienceCategory') {
                 this.selectedFilterColumn = column;
                 this.uniqueExperienceCategories = this.getUniqueExperienceCategories();
@@ -822,6 +862,25 @@ Filtered Experience Data:
             this.isFilterDialogVisible = false;
             // Call a function to update your filtered data based on the applied filters
             // this.updateFilteredData();
+        },
+
+        closeFilterDialog() {
+            this.selectedFilterColumn = null;
+            this.activeFilterColumn = null;
+            this.isFilterDialogVisible = false;
+        },
+
+        applyFiltersAndClose() {
+            // Implement your filter logic here...
+
+            this.selectedFilterColumn = null;
+            this.activeFilterColumn = null; // Reset the active filter column
+            this.isFilterDialogVisible = false; // Close the dialog
+        },
+
+        toggleCategorySelection(category) {
+            // Implement what happens when a category is clicked.
+            console.log('filter category:', category);
         },
 
 
@@ -861,5 +920,19 @@ Filtered Experience Data:
     color: #aaa; /* Gray color */
 }
 
+.custom-divider {
+  width: 1px;
+  background-color: #000; /* Or any color you prefer */
+  margin: 0 15px; /* Adjust spacing as needed */
+}
+
+.active-filter-item {
+    background-color: #E0E0E0;
+}
+
+.scrollable-list {
+    max-height: 300px; /* Adjust the height as needed */
+    overflow-y: auto;
+}
   </style>
   

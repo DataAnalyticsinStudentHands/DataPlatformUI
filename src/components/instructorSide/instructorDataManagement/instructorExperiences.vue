@@ -42,13 +42,13 @@
                                       </template>
 
                                       <v-list>
-                                      <v-list-item
-                                          v-for="item in searchMenuItems"
-                                          :key="item"
-                                          @click="updateSearchCriteria(item)"
-                                      >
-                                          <v-list-item-title>{{ item }}</v-list-item-title>
-                                      </v-list-item>
+                                        <v-list-item
+                                            v-for="item in searchMenuItems"
+                                            :key="item"
+                                            @click="updateSearchCriteria(item)"
+                                        >
+                                            <v-list-item-title>{{ item }}</v-list-item-title>
+                                        </v-list-item>
                                       </v-list>
                                   </v-menu>
                                   </template>
