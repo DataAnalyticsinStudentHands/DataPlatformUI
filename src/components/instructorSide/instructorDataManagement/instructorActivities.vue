@@ -2,11 +2,7 @@
 <template>
   <main class="">
     <center>
-      <h2 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem">
-        <router-link class="" to="/instructorSemesters">Semesters</router-link> |
-        <router-link class="" to="/instructorExperiences">Experiences</router-link> |
-        <router-link class="" to="/instructorActivities">Activities</router-link>
-      </h2>
+      <br>
       <p class="font-weight-black text-h6">
         {{ showInactive ? 'Inactive' : 'Active' }} Activities
       </p>
@@ -136,12 +132,6 @@ export default {
     });
 
     window.scrollTo(0, 0);
-    if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-        position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
-      });
-    }
   },
 
   methods: {

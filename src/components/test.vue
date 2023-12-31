@@ -721,7 +721,7 @@ Filtered Experience Data:
             const user = useLoggedInUserStore();
             //   let token = user.token;
 
-            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzkzNTI5NSwiZXhwIjoxNzAzOTQ3Mjk1fQ.860N_8clyA3KFDg7IXz_kqvGGxyrbeOTScq1VzHYG7Y'
+            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwMzk1MjQ1OCwiZXhwIjoxNzAzOTY0NDU4fQ.MGRUbHPXpGd4dGIxnfBRPaB6GRh2iTog2-rSUuBWjIg'
 
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const resp = await axios.get(apiURL, { headers: { token } });

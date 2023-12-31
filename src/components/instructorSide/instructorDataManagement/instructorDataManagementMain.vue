@@ -23,8 +23,9 @@
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
 import instructorActivities from './instructorActivities.vue';
-import instructorExperiences from './instructorExperiences.vue';
+import instructorExperiences from '../instructorExperiences.vue';
 import instructorSessions from './instructorSessions.vue';
 
 export default {
@@ -35,14 +36,35 @@ export default {
     },
     data() {
         return {
-        tab: 0,
+            tab: 0,
         };
     },
+    watch: {
+      '$route': function() {
+        this.initializeComponent();
+      }
+    },
+    mounted() {
+      this.initializeComponent();
+    },
     methods: {
+        initializeComponent() {
+          // Handling route parameters
+          if (this.$route.params.activeTab) {
+            this.tab = parseInt(this.$route.params.activeTab);
+          };
+          // Handling toast messages
+          if (this.$route.params.toastType) {
+            toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+              position: this.$route.params.toastPosition,
+              toastClassName: this.$route.params.toastCSS,
+              limit: 1,
+            });
+          }
+        },
         selectTab(index) {
-        this.tab = index;
+          this.tab = index;
         }
     }
 };
 </script>
-  

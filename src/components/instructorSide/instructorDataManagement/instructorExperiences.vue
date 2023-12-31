@@ -490,12 +490,6 @@ export default {
     });
 
     window.scrollTo(0, 0);
-    if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-        position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
-      });
-    }
   },
 
   watch: {

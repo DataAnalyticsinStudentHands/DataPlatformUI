@@ -7,7 +7,7 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/test'
+      redirect: '/login'
     },
     {
       path: '/test',
@@ -225,14 +225,59 @@ const routes = [
         }
       }
     },
-
     {
         path: '/instructorDataManagement',
         name: 'instructorDataManagement',
-        component: () => import('../components/instructorSide/instructorDataManagement/instructorDataManagementMain.vue')
+        component: () => import('../components/instructorSide/instructorDataManagement/instructorDataManagementMain.vue'),
+        beforeEnter: (to, from, next) => {
+          const userStore = useLoggedInUserStore();
+          if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+            next('/error');
+          } else {
+            next();
+          }
+        }
     },
-  
-
+    {
+      path: '/instructorSessions',
+      name: 'instructorSessions',
+      props: true,
+      component: () => import('../components/instructorSide/instructorDataManagement/instructorSessions.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/instructorAddSession',
+      name: 'instructorAddSession',
+      component: () => import('../components/instructorSide/instructorAddSession.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/instructorSpecificSession',
+      name: 'instructorSpecificSession',
+      component: () => import('../components/instructorSide/instructorSpecificSession.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
     {
       path: '/instructorSemesters',
       name: 'instructorSemesters',
@@ -276,7 +321,7 @@ const routes = [
     {
       path: '/instructorExperiences',
       name: 'instructorExperiences',
-      component: () => import('../components/instructorSide/instructorExperiences.vue'),
+      component: () => import('../components/instructorSide/instructorDataManagement/instructorExperiences.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
         if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
