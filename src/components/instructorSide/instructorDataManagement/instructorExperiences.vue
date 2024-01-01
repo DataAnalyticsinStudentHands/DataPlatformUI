@@ -198,7 +198,7 @@
                                   </v-col>
                                   </v-row>
 
-                                  <!-- Add your filter options here based on the selected column -->
+                                  <!-- Add filter options here based on the selected column -->
                                   
                                   <v-card-actions>
                                   <v-spacer></v-spacer>
@@ -518,9 +518,9 @@ export default {
       return store.loading;
     },
 
-  showChipsRow() {
-      return this.searchCriteria.length > 0 || this.sortChips.length > 0;
-  },
+    showChipsRow() {
+        return this.searchCriteria.length > 0 || this.sortChips.length > 0;
+    },
 
 
 
@@ -641,19 +641,6 @@ export default {
       console.log('action menu: ', item.title);
     }
   },
-
-  selectSearchChip(index) {
-      const selectedIndex = this.selectedSearchChips.indexOf(index);
-      if (selectedIndex >= 0) {
-          // If the chip is already selected, create a new array without this chip
-          this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
-      } else {
-          // If the chip is not selected, create a new array with this chip added
-          this.selectedSearchChips = [...this.selectedSearchChips, index];
-      }
-      // Call search
-      this.performSearch();
-    },
 
     applyDefaultSorting() {
       this.filteredExperienceData.sort((a, b) => {
@@ -823,10 +810,10 @@ export default {
 
 
 :deep(.v-text-field input[type="text"]:focus) {
-outline: none !important;
-box-shadow: none !important;
-border: 1px solid transparent !important; /* Update this line if you have a different border style */
-background-color: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border: 1px solid transparent !important; /* Update this line if you have a different border style */
+    background-color: transparent !important;
 }
 
 .text-grayed-out {

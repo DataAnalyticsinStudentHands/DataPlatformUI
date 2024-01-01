@@ -1,7 +1,6 @@
 <!--'/instructorSpecificExperience' this page will only show experiences-->
 <template>
   <main>
-    <center>
       <v-container>
         <p class="font-weight-black text-h6"> Experience: {{originalExperienceCategory}}, {{ originalExperienceName }}</p>
         <br />
@@ -14,7 +13,6 @@
           </v-col>
         </v-row>
       </v-container>
-    </center>
     <div style="text-align: left;">
       <v-table style="width: 80%">
         <thead>
@@ -40,7 +38,7 @@
     </div>
     <div style="text-align: left;">
       <v-btn style="text-align: center;" @click="updateExperience" class="ml-4 mr-4">Update</v-btn>
-      <v-btn @click=$router.back()>
+      <v-btn @click="cancelAction">
           Cancel
         </v-btn>
 
@@ -55,7 +53,14 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 
 export default {
-  props:["id"],
+  name: 'SpecificExperience',
+  props: {
+    experience: Object,
+    isInDialog: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       originalExperienceCategory: "",
@@ -69,26 +74,40 @@ export default {
 
   mounted() {
     window.scrollTo(0, 0);
-    this.fetchExperienceData(); // Fetch experience data when component is mounted
-    this.fetchActivityData(); // Fetch activities after experience data
+    if (this.experience) {
+      // If experience is passed as a prop, initialize data with it
+      this.initializeData(this.experience);
+    } else {
+      // Otherwise fetch data based on router parameters
+      this.fetchExperienceData();
+    }
+    // Fetch Activity Data
+    this.fetchActivityData();
   },
 
   methods: {
 
+    initializeData(experience) {
+      this.originalExperienceCategory = experience.experienceCategory;
+      this.originalExperienceName = experience.experienceName;
+      this.experienceCategory = experience.experienceCategory;
+      this.experienceName = experience.experienceName;
+      this.selectedActivites = experience.activities.map(a => a._id);
+    },
+
     fetchExperienceData() {
-      // Fetch experience data from the backend
       const user = useLoggedInUserStore();
-      let token = user.token;
+      // const token = user.token;
+
+      const token = `
+      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
+      `
+
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.$route.params.id}`;
       axios
         .get(apiURL, { headers: { token } })
         .then((resp) => {
-          const experience = resp.data;
-          this.originalExperienceCategory = experience.experienceCategory;
-          this.originalExperienceName = experience.experienceName;
-          this.experienceCategory = experience.experienceCategory;
-          this.experienceName = experience.experienceName;
-          this.selectedActivities = experience.activities;
+          this.initializeData(resp.data);
         })
         .catch((error) => {
           this.handleError(error);
@@ -97,7 +116,12 @@ export default {
 
     fetchActivityData() {
       const user = useLoggedInUserStore();
-      let token = user.token;
+      // const token = user.token;
+
+      const token = `
+      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
+      `
+
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
       axios
         .get(apiURL, { headers: { token } })
@@ -111,33 +135,55 @@ export default {
     },
 
     updateExperience() {
+      console.log('updateExperience');
       // Handle update logic
       const user = useLoggedInUserStore();
-      let token = user.token;
+      // const token = user.token;
+
+      const experienceId = this.experience?._id || this.$route.params.id;
+
+      const token = `
+      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
+      `
       const updatedExperience = {
         experienceCategory: this.experienceCategory,
         experienceName: this.experienceName,
         activities: this.selectedActivities,
       };
-      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.$route.params.id}`;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceId}`;
       axios
         .put(apiURL, updatedExperience, { headers: { token } })
         .then(() => {
 
-          this.$router.push({ 
-              name: 'instructorExperiences',
-              params: {
-                toastType: 'info',
-                toastMessage: 'Experience updated!',
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--update'
-            }
-          });
+          if (this.isInDialog) {
+            // Close the dialog and optionall emit an event to parent
+            this.$emit('update-success');
+          } else {
+            this.$router.push({ 
+                name: 'instructorExperiences',
+                params: {
+                  toastType: 'info',
+                  toastMessage: 'Experience updated!',
+                  toastPosition: 'top-right',
+                  toastCSS: 'Toastify__toast--update'
+              }
+            });
+          }
         })
         .catch((error) => {
           this.handleError(error);
         });
     },
+
+    cancelAction() {
+      if (this.isInDialog) {
+        // Emit an event to close the dialog
+        this.$emit('close-dialog');
+      } else {
+        // Use router back for standalone use
+        this.$router.back();
+      }
+    }
     
   },
 };

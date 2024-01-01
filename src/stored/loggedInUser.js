@@ -28,6 +28,7 @@ export const useLoggedInUserStore = defineStore({
       registrationExists: false,
       registeredExperiences: [],
       orgName: "",
+      selectedSessionsDetails: [],
     }
   },
   getters: { //getting the roles
@@ -266,6 +267,9 @@ export const useLoggedInUserStore = defineStore({
     },
     persist: {
       storage: sessionStorage
+    },
+    updateSelectedSessionsDetails(sessions) {
+      this.selectedSessionsDetails = sessions;
     }
   },
 });

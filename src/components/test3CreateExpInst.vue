@@ -21,8 +21,8 @@
 
                         <v-stepper-item
                             ref="step1"
-                            title="Degree Program"
-                            icon="mdi-school"
+                            title="Choose Experiences"
+                            icon="mdi-earth"
                             value="1"
                             :error="degreeError"
                         ></v-stepper-item>
@@ -54,22 +54,18 @@
                         <v-stepper-window-item value="0">
                         <choose-sessions
                             ref="ChooseSessionsRef"
-                            :studentInformation="studentInformation"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('demo')"
-                            @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('demo', $event)"
                         ></choose-sessions>
                         </v-stepper-window-item>
                         <v-stepper-window-item value="1">
-                            <entry-form-enrolled
-                                ref="EntryFormEnrolledRef"
-                                :studentInformation="studentInformation"
+                            <choose-experiences
+                                ref="ChooseExperiencesRef"
                                 @form-valid="handleFormValid"
                                 @form-invalid="handleFormInvalid('enrolled')"
-                                @scroll-to-error="handleScrollToError"
                                 @validation-change="handleValidationChange('enrolled', $event)"
-                            ></entry-form-enrolled>
+                            ></choose-experiences>
                         </v-stepper-window-item>
                         <v-stepper-window-item value="2">
                             <entry-form-grad-prof
@@ -105,14 +101,14 @@
                         ></choose-sessions>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
-                        <entry-form-enrolled
-                            ref="EntryFormEnrolledRef"
+                        <choose-experiences
+                            ref="ChooseExperiencesRef"
                             :studentInformation="studentInformation"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('enrolled')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('enrolled', $event)"
-                        ></entry-form-enrolled>
+                        ></choose-experiences>
                     </div>
                     <div v-show="currentStep === 2" key="step2">
                         <entry-form-grad-prof
@@ -195,7 +191,7 @@
 
 <script>
 import ChooseSessions from './test3ChooseSessions.vue';
-import EntryFormEnrolled from '@/components/studentSide/studentEntryForm/entryFormEnrolled.vue';
+import ChooseExperiences from './test3ChooseExperiences.vue';
 import EntryFormGradProf from '@/components/studentSide/studentEntryForm/entryFormGradProf.vue';
 import EntryFormReview from '@/components/studentSide/studentEntryForm/entryFormReview.vue';
 
@@ -207,7 +203,7 @@ export default {
     name: "test3CreateExpInst",
     components: {
         ChooseSessions,
-        EntryFormEnrolled,
+        ChooseExperiences,
         EntryFormGradProf,
         EntryFormReview
     },
@@ -331,22 +327,22 @@ export default {
             console.log(this.currentStep)
             if (this.currentStep === 0) {
                 console.log('currentStep === 0')
-                this.triggerDemoValidation();
+                this.triggerChooseSessionsValidation();
             } else if (this.currentStep === 1) {
                 this.triggerDegreeValidation();
             } else if (this.currentStep === 2) {
                 this.triggerGradProfValidation();
             }
         },
-        triggerDemoValidation() {
+        triggerChooseSessionsValidation() {
             console.log('triggerDemoValidation')
             if (this.$refs.ChooseSessionsRef) {
                 this.$refs.ChooseSessionsRef.handleValidations();
             }
         },
         triggerDegreeValidation() {
-            if (this.$refs.EntryFormEnrolledRef) {
-                this.$refs.EntryFormEnrolledRef.handleValidations();
+            if (this.$refs.ChooseExperiencesRef) {
+                this.$refs.ChooseExperiencesRef.handleValidations();
             }
         },
         triggerGradProfValidation() {
