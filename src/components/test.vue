@@ -160,7 +160,7 @@
                                                     </tbody>
                                                 </template>
                                             </v-table>
-                                            <!-- Chips for selected sort criteria -->
+                                            <!-- Sort Chips Preview for selected sort criteria -->
                                                 <v-chip 
                                                     v-for="(criteria, index) in sortCriteria" 
                                                     :key="index" 
@@ -182,34 +182,33 @@
                                 </v-dialog>
 
                                 <!-- Filter Dialog Menu -->
-                                <v-dialog v-model="isFilterDialogVisible" max-width="600" persistent>
+                                <v-dialog v-model="isFilterDialogVisible" :width=filterDialogWidth persistent>
                                     <v-card>
-                                        
+                                        <v-card-item>
                                         <v-row>
-                                        <!-- Column Names List -->
-                                        <v-col>
-                                            <v-card-title>Filter Options</v-card-title>
-                                            <v-list
-                                                density="compact"
-                                            >
-                                                <v-list-item
-                                                    v-for="(header, index) in filterableExperienceHeaders"
-                                                    :key="index"
-                                                    @click="toggleColumnFilter(header.value)"
-                                                    :active="activeFilterColumn === header.value"
-                                                    active-class="active-filter-item"
+                                            <!-- Column Names List -->
+                                            <v-col>
+                                                <v-card-title>Filter Options</v-card-title>
+                                                <v-list
+                                                    density="compact"
                                                 >
-                                                    <v-list-item-title>{{ header.title }}</v-list-item-title>
-                                                </v-list-item>
-                                            </v-list>
-                                        </v-col>
+                                                    <v-list-item
+                                                        v-for="(header, index) in filterableExperienceHeaders"
+                                                        :key="index"
+                                                        @click="toggleColumnFilter(header)"
+                                                        :active="selectedFilterColumn?.value === header.value"
+                                                        active-class="active-filter-item"
+                                                    >
+                                                        <v-list-item-title>{{ header.title }}</v-list-item-title>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-col>
 
-                                        
                                         <!-- Filter Options for the selected column -->
                                         <v-col>
                                             <transition name="fade" mode="out-in" tag="div">
                                             <!-- Experience Category Filter -->
-                                            <div v-if="selectedFilterColumn === 'experienceCategory'">
+                                            <div v-if="selectedFilterColumn?.value === 'experienceCategory'">
                                                 <v-row>
                                                     <v-col>
                                                         <v-text-field
@@ -246,7 +245,7 @@
                                             </div>
 
                                             <!-- Experience Name Filter -->
-                                            <div v-else-if="selectedFilterColumn === 'experienceName'">
+                                            <div v-else-if="selectedFilterColumn?.value === 'experienceName'">
                                                 <v-row>
                                                     <v-col>
                                                         <v-text-field
@@ -283,31 +282,38 @@
                                             </div>
 
                                             <!-- Activities Filter -->
-                                            <div v-else-if="selectedFilterColumn === 'activitiesCount'">
+                                            <div v-else-if="selectedFilterColumn?.value === 'activitiesCount'">
                                                 <v-row>
                                                     <v-col>
+                                                        <v-checkbox
+                                                            v-model="isActivitiesNumberFilterEnabled"
+                                                            density="compact"
+                                                            label="Filter by # of Activities"
+                                                            hide-details
+                                                        ></v-checkbox>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-expand-transition>
+                                                <v-row class="mt-0" v-if="isActivitiesNumberFilterEnabled">
+                                                    <v-col class="pt-0">
                                                         <v-text-field
-                                                            v-model="activitiesNumberFilter"
-                                                            label="Filter by Number of Activities"
+                                                            v-model="positiveActivitiesNumberFilter"
+                                                            label="Enter a Number"
                                                             type="number"
+                                                            variant="solo-filled"
                                                             class="mr-5 mt-2"
                                                             hide-details
                                                         ></v-text-field>
                                                     </v-col>
                                                 </v-row>
-                                                <v-row>
-                                                    <v-col>
-                                                        <!-- Add Set Filter button here -->
-                                                        <v-btn @click="setActivitiesFilter">Set Filter</v-btn>
-                                                    </v-col>
-                                                </v-row>
+                                                </v-expand-transition>
                                                 <v-row>
                                                     <v-col>
                                                         <!-- Add v-autocomplete for another filter here -->
                                                         <v-autocomplete
                                                             v-model="activitiesSearchQuery"
                                                             :items="activitiesAll"
-                                                            label="Another Filter"
+                                                            label="Filter by Activity Name"
                                                             class="mr-5 mt-2"
                                                             hide-details
                                                             density="compact"
@@ -315,15 +321,15 @@
                                                     </v-col>
                                                 </v-row>
                                                 <v-row>
-                                                    <v-col>
+                                                    <v-col class="pt-0">
                                                         <!-- Add Set Filter button for another filter here -->
-                                                        <v-btn @click="setAnotherFilter">Set Filter</v-btn>
+                                                        <v-btn @click="console.log('set filter')">Set Filter</v-btn>
                                                     </v-col>
                                                 </v-row>
                                             </div>
 
                                             <!-- Status Filter -->
-                                            <div v-else-if="selectedFilterColumn === 'experienceStatus'">
+                                            <div v-else-if="selectedFilterColumn?.value === 'experienceStatus'">
                                                 <v-row>
                                                     <v-col>
                                                         <v-select
@@ -343,6 +349,24 @@
 
                                         </v-row>
 
+                                        <!-- Filter Chips Preview -->
+                                        <v-row>
+                                            <v-col>
+                                                <v-chip
+                                                    v-for="(criteria, index) in filterCriteria"
+                                                    :key="index"
+                                                    class="ma-2"
+                                                    color="light-green-darken-3"
+                                                >
+                                                    {{ criteria.filter.title }}
+                                                    <v-icon small class="ml-1">mdi-filter</v-icon>
+                                                    <span v-for="(item, itemIndex) in criteria.filterBy" :key="itemIndex" class="d-inline-block text-truncate" style="max-width: 150px;">
+                                                        {{ item }}<span v-if="itemIndex < criteria.filterBy.length - 1">&nbsp;,</span>
+                                                    </span>
+                                                </v-chip>
+                                            </v-col>
+                                        </v-row>
+
                                         <!-- Add your filter options here based on the selected column -->
                                         
                                         <v-card-actions>
@@ -359,6 +383,7 @@
                                             @click="applyFilters"
                                         >Apply</v-btn>
                                         </v-card-actions>
+                                    </v-card-item>
                                     </v-card>
                                 </v-dialog>
 
@@ -431,6 +456,12 @@
                                         <v-icon end @click.stop="removeSortChip(index)">mdi-close</v-icon>
                                     </v-chip>
                                 </v-chip-group>
+
+                                <!-- Filter Chips -->
+                                <v-chip-group
+                                
+                                >
+                                </v-chip-group>
                             </v-col>
                         </v-row>
 
@@ -486,7 +517,7 @@
     </v-container>
 
 
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br>
 
     filterableExperienceHeaders: {{ filterableExperienceHeaders }}
     <br>
@@ -525,6 +556,12 @@ Filtered Experience Data:
 
 </template>
   
+
+
+
+
+
+
 <script>
   import { toast } from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
@@ -617,7 +654,6 @@ Filtered Experience Data:
         sortBy: [],
         isFilterDialogVisible: false,
         selectedFilterColumn: null,
-        activeFilterColumn: null,
         selectedExperienceCategoriesFilter: [],
         experienceCategoryFilterSearchQuery: '',
         selectedExperienceNamesFilter: [],
@@ -625,8 +661,13 @@ Filtered Experience Data:
         activitiesNumberFilter: null,
         experienceStatusOptions: ['Active', 'Inactive'],
         selectedStatusFilter: [],
+        isActivitiesNumberFilterEnabled: false,
+        activitiesNumberFilter: null,
         activitiesSearchQuery: null,
-        activitiesAll: []
+        activitiesAll: [],
+        filterCriteria: [],
+        flterChips: [],
+        selectedFilterChips: [],
       };
     },
 
@@ -659,6 +700,7 @@ Filtered Experience Data:
     },
 
     watch: {
+        // Automatically add Sort Chips as Preview
         sortableColumns: {
             deep: true,
             handler(newColumns) {
@@ -675,6 +717,113 @@ Filtered Experience Data:
 
             this.updateSortCriteriaChips();
             },
+        },
+
+        // Automatically add Experience Category Filter Chips as Preview
+        selectedExperienceCategoriesFilter: {
+            deep: true,
+            handler(newVal) {
+                // Check if selectedFilterColumn is set to 'experienceCategory'
+                if (this.selectedFilterColumn?.value === 'experienceCategory') {
+                    // Find the existing filter object and its index for the selected filter column
+                    const existingFilterIndex = this.filterCriteria.findIndex(chip => chip.filter.value === this.selectedFilterColumn.value);
+
+                    if (existingFilterIndex !== -1) {
+                        // Check if there are no selected filters
+                        if (newVal.length === 0) {
+                            // Remove the filter chip since no filters are selected
+                            this.filterCriteria.splice(existingFilterIndex, 1);
+                        } else {
+                            // Update the existing filter object
+                            this.filterCriteria[existingFilterIndex].filterBy = newVal;
+                        }
+                    } else if (newVal.length > 0) {
+                        // Add a new filter object if there are selected filters
+                        this.filterCriteria.push({
+                            filter: this.selectedFilterColumn,
+                            filterBy: newVal
+                        });
+                    }
+                }
+                console.log('Updated filterCriteria: ', this.filterCriteria);
+            }
+        },
+
+        // Automatically Add Experience Name Filter Chips as preview
+        selectedExperienceNamesFilter: {
+            deep: true,
+            handler(newVal) {
+                // Check if selectedFilterColumn is set to 'experienceName'
+                if (this.selectedFilterColumn?.value === 'experienceName') {
+                    // Find the existing filter object and its index for the selected filter column
+                    const existingFilterIndex = this.filterCriteria.findIndex(chip => chip.filter.value === this.selectedFilterColumn.value);
+
+                    if (existingFilterIndex !== -1) {
+                        // Check if there are no selected filters
+                        if (newVal.length === 0) {
+                            // Remove the filter chip since no filters are selected
+                            this.filterCriteria.splice(existingFilterIndex, 1);
+                        } else {
+                            // Update the existing filter object
+                            this.filterCriteria[existingFilterIndex].filterBy = newVal;
+                        }
+                    } else if (newVal.length > 0) {
+                        // Add a new filter object if there are selected filters
+                        this.filterCriteria.push({
+                            filter: this.selectedFilterColumn,
+                            filterBy: newVal
+                        });
+                    }
+                }
+
+                console.log('Updated filterCriteria: ', this.filterCriteria);
+            }
+        },
+
+        // Automatically add Activity Filter Chips for Preview
+        positiveActivitiesNumberFilter(newVal) {
+            if (this.isActivitiesNumberFilterEnabled) {
+                if (newVal !== null && newVal !== '') {
+                    // If checkbox is checked and there's a valid number, add or update the filter chip
+                    const filterObject = {
+                        filter: { 
+                            title: "Number of Activities", 
+                            value: "activitiesCount"
+                        },
+                        filterBy: [newVal]
+                    };
+
+                    const existingFilterIndex = this.filterCriteria.findIndex(chip => chip.filter.value === 'activitiesCount');
+                    if (existingFilterIndex !== -1) {
+                        this.filterCriteria[existingFilterIndex] = filterObject;
+                    } else {
+                        this.filterCriteria.push(filterObject);
+                    }
+                } else {
+                    // If the number is cleared, remove the filter chip if it exists
+                    const index = this.filterCriteria.findIndex(chip => chip.filter.value === 'activitiesCount');
+                    if (index !== -1) {
+                        this.filterCriteria.splice(index, 1);
+                    }
+                }
+            } else {
+                // If checkbox is unchecked, remove the filter chip if it exists
+                const index = this.filterCriteria.findIndex(chip => chip.filter.value === 'activitiesCount');
+                if (index !== -1) {
+                    this.filterCriteria.splice(index, 1);
+                }
+            }
+        },
+
+        // Watch the "Filter by # of Activities Checkbox" to remove preview chip if needed
+        isActivitiesNumberFilterEnabled(newVal) {
+            if (!newVal) {
+                // Checkbox is unchecked, remove the filter chip if it exists
+                const index = this.filterCriteria.findIndex(chip => chip.filter.value === 'activitiesCount');
+                if (index !== -1) {
+                    this.filterCriteria.splice(index, 1);
+                }
+            }
         },
     },
 
@@ -714,6 +863,19 @@ Filtered Experience Data:
         );
     },
 
+    filterDialogWidth() {
+        return this.selectedFilterColumn?.value === 'experienceName' ? '1000' : '600';
+    },
+
+    positiveActivitiesNumberFilter: {
+        get() {
+            return Math.abs(this.activitiesNumberFilter);
+        },
+        set(value) {
+            this.activitiesNumberFilter = Math.abs(value);
+        }
+    },
+
     },
     methods: {
       async fetchExperienceData() {
@@ -721,7 +883,11 @@ Filtered Experience Data:
             const user = useLoggedInUserStore();
             //   let token = user.token;
 
-            let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDAwNjQxMSwiZXhwIjoxNzA0MDE4NDExfQ.Zf2ydIDE1P92i5K3vloBN6TX2KwZyhd92i1eOVvni98'
+            let token = `
+
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNzk2NiwiZXhwIjoxNzA0MTI5OTY2fQ.wUHlAL90DD7LYQT_78j7zOWRwLYjKjjtOc16zhqWKpw
+
+            `
 
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const resp = await axios.get(apiURL, { headers: { token } });
@@ -907,6 +1073,7 @@ Filtered Experience Data:
                 this.filteredExperienceData.sort((a, b) => {
                     for (let index of this.selectedSortChips) {
                         let chip = this.sortChips[index];
+                        console.log('chip: ', chip);
                         let order = chip.order === 'Ascending' ? 1 : -1;
                         let valueA = a[chip.value];
                         let valueB = b[chip.value];
@@ -940,10 +1107,27 @@ Filtered Experience Data:
         },
 
         removeSortChip(index) {
-            this.sortChips.splice(index, 1);
-            this.selectedSortChips = this.selectedSortChips.filter(i => i !== index);
-            this.applySorting(); // Re-apply sorting after removal
+            // Get the value of the column to be removed
+            const columnValueToRemove = this.sortChips[index].value;
+
+            // Update the selected property of the corresponding column in sortableColumns
+            this.sortableColumns = this.sortableColumns.map(column => {
+                if (column.value === columnValueToRemove) {
+                    return { ...column, selected: false };
+                }
+                return column;
+            });
+
+            // Create a new array for sortChips without the removed chip
+            this.sortChips = this.sortChips.filter((_, chipIndex) => chipIndex !== index);
+
+            // Rebuild selectedSortChips based on the updated sortChips
+            this.selectedSortChips = this.sortChips.map((_, newIndex) => newIndex);
+
+            // Re-apply sorting
+            this.applySorting();
         },
+
 
         onTableHeaderSort() {
             this.selectedSortChips = []; // Reset selected sort chips
@@ -955,18 +1139,17 @@ Filtered Experience Data:
 
         toggleColumnFilter(column) {
             console.log('column: ', column);
-            this.activeFilterColumn = column;
-            if (column === 'experienceCategory') {
+            if (column.value === 'experienceCategory') {
                 this.selectedFilterColumn = column;
                 this.experienceCategoryFilterSearchQuery = ''; // Reset the search query
-            } else if (column === 'experienceName') {
+            } else if (column.value === 'experienceName') {
                 this.selectedFilterColumn = column;
                 this.experienceNameFilterSearchQuery = ''; // Reset the search query
-            } else if (column === 'activitiesCount') {
+            } else if (column.value === 'activitiesCount') {
                 console.log('column is activitiesCount')
                 this.selectedFilterColumn = column;
                 this.activitiesNumberFilter = null; // Reset the activities filter
-            } else if (column === 'experienceStatus') {
+            } else if (column.value === 'experienceStatus') {
                 this.selectedFilterColumn = column;
                 this.selectedStatusFilter = null; // Reset the status filter
             } else {
@@ -974,22 +1157,20 @@ Filtered Experience Data:
             }
         },
 
-        setActivitiesFilter() {
-            console.log('set activities filter')
-        },     
-
         applyFilters() {
-            // Implement your filter logic here
-            // You can access filter values from data properties
+            console.log('selectedFilterColumn:', this.selectedFilterColumn);
+            console.log('selectedExperienceCategoriesFilter: ', this.selectedExperienceCategoriesFilter);
+
+            console.log('this.filterCriteria: ', this.filterCriteria);
+
             // Close the filter dialog when filters are applied
-            this.isFilterDialogVisible = false;
+            // this.isFilterDialogVisible = false;
             // Call a function to update your filtered data based on the applied filters
             // this.updateFilteredData();
         },
 
         closeFilterDialog() {
             this.selectedFilterColumn = null;
-            this.activeFilterColumn = null;
             this.isFilterDialogVisible = false;
         },
 
@@ -997,7 +1178,6 @@ Filtered Experience Data:
             // Implement your filter logic here...
 
             this.selectedFilterColumn = null;
-            this.activeFilterColumn = null; // Reset the active filter column
             this.isFilterDialogVisible = false; // Close the dialog
         },
 
@@ -1071,5 +1251,6 @@ Filtered Experience Data:
 .fade-enter-from, .fade-leave-to {
     opacity: 0;
 }
+
   </style>
   

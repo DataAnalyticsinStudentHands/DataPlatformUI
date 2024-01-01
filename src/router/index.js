@@ -7,7 +7,7 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/test3CreateExpInst'
+      redirect: '/test'
     },
     {
       path: '/test',
