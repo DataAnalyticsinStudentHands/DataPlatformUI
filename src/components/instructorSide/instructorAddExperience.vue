@@ -92,8 +92,9 @@ export default {
         })
         .then(() => {
           this.$router.push({ 
-              name: 'instructorExperiences',
+              name: 'instructorDataManagement',
               params: {
+                activeTab: 1,
                 toastType: 'success',
                 toastMessage: 'Experience added!',
                 toastPosition: 'top-right',
