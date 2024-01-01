@@ -7,7 +7,7 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/login'
+      redirect: '/test3CreateExpInst'
     },
     {
       path: '/test',
@@ -20,6 +20,12 @@ const routes = [
       name: 'test2',
       props: true,
       component: () => import('../components/test2.vue')
+    },
+    {
+      path: '/test3CreateExpInst',
+      name: 'test3CreateExpInst',
+      props: true,
+      component: () => import('../components/test3CreateExpInst.vue')
     },
     {
       path: '/studentEntryFormUpdate',

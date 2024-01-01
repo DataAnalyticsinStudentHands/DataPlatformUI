@@ -111,7 +111,6 @@
       },
   
       async fetchSessionData() {
-        useLoggedInUserStore().startLoading();
         try {
           const user = useLoggedInUserStore();
           let token = user.token;
