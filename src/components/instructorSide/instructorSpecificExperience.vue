@@ -1,6 +1,18 @@
 <!--'/instructorSpecificExperience' this page will only show experiences-->
 <template>
   <main>
+  <!-- <br>
+  originalExperienceCategory: {{ originalExperienceCategory }}
+  <br>
+  originalExperienceName: {{ originalExperienceName }}
+  <br>
+  experienceCategory: {{ experienceCategory }}
+  <br>
+  experienceName: {{ experienceName }}
+  <br>
+  activities: {{ activities }}
+  <br>
+  selectedActivities: {{ selectedActivities }} -->
       <v-container>
         <p class="font-weight-black text-h6"> Experience: {{originalExperienceCategory}}, {{ originalExperienceName }}</p>
         <br />
@@ -46,6 +58,7 @@
     </div>
 
   </main>
+
 </template>
 
 <script>
@@ -73,35 +86,51 @@ export default {
   },
 
   mounted() {
+    console.log('instructorSpecificExperience mounted');
     window.scrollTo(0, 0);
-    if (this.experience) {
-      // If experience is passed as a prop, initialize data with it
-      this.initializeData(this.experience);
-    } else {
-      // Otherwise fetch data based on router parameters
-      this.fetchExperienceData();
-    }
-    // Fetch Activity Data
-    this.fetchActivityData();
+
+    this.loadData();
   },
 
   methods: {
 
+    async loadData() {
+      await this.fetchActivityData();
+
+      if (this.experience) {
+        // If experience is passed as a prop, initialize data with it
+        this.initializeData(this.experience);
+      } else {
+        console.log('fetch data based on router parameters')
+        // Otherwise fetch data based on router parameters
+        await this.fetchExperienceData();
+      }
+    },
+
     initializeData(experience) {
+      console.log('experience: ', experience);
       this.originalExperienceCategory = experience.experienceCategory;
       this.originalExperienceName = experience.experienceName;
       this.experienceCategory = experience.experienceCategory;
       this.experienceName = experience.experienceName;
-      this.selectedActivites = experience.activities.map(a => a._id);
+
+      // Filter and map activities related to the current experience
+      this.selectedActivities = this.activities
+        .filter(activity => 
+          activity.experiences.some(exp => exp._id === experience._id))
+        .map(activity => activity._id);
+
+      console.log('Selected Activities after initialization: ', this.selectedActivities);
     },
+
 
     fetchExperienceData() {
       const user = useLoggedInUserStore();
-      // const token = user.token;
+      const token = user.token;
 
-      const token = `
-      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
-      `
+      // const token = `
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
+      // `
 
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.$route.params.id}`;
       axios
@@ -114,37 +143,32 @@ export default {
         });
     },
 
-    fetchActivityData() {
+    async fetchActivityData() {
       const user = useLoggedInUserStore();
-      // const token = user.token;
-
-      const token = `
-      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
-      `
+      const token = user.token;
 
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
-      axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          const activities = resp.data;
-          this.activities = activities.filter((activity) => activity.activityStatus === true);
-        })
-        .catch((error) => {
-          this.handleError(error);
-        });
+      try {
+        const resp = await axios.get(apiURL, { headers: { token } });
+        const activities = resp.data;
+        console.log('activities: ', activities);
+        this.activities = activities.filter((activity) => activity.activityStatus === true);
+      } catch (error) {
+        this.handleError(error);
+      }
     },
 
     updateExperience() {
       console.log('updateExperience');
       // Handle update logic
       const user = useLoggedInUserStore();
-      // const token = user.token;
+      const token = user.token;
 
       const experienceId = this.experience?._id || this.$route.params.id;
 
-      const token = `
-      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
-      `
+      // const token = `
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
+      // `
       const updatedExperience = {
         experienceCategory: this.experienceCategory,
         experienceName: this.experienceName,
@@ -160,8 +184,9 @@ export default {
             this.$emit('update-success');
           } else {
             this.$router.push({ 
-                name: 'instructorExperiences',
+                name: 'instructorDataManagement',
                 params: {
+                  activeTab: 1,
                   toastType: 'info',
                   toastMessage: 'Experience updated!',
                   toastPosition: 'top-right',
