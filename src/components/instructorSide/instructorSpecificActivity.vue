@@ -118,32 +118,59 @@
           this.handleError(error);
         }
       },
-      handleUpdateForm() {
+
+      async handleUpdateForm() {
+        console.log('handleUpdateForm');
         const user = useLoggedInUserStore();
-        let token = user.token;
-        let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities`;
-  
-        // Update the form data
-        axios
-          .put(`${url}/${user.currentActivityId}`, this.activity, {
-            headers: { token },
-          })
-          .then(() => {
-            this.$router.push({ 
-              name: 'instructorDataManagement',
-              params: {
-                activeTab: 3,
-                toastType: 'info',
-                toastMessage: 'Activity updated!',
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--update'
-            }
-          });
-          });
+        const token = user.token;
+        const activityId = user.currentActivityId;
+
+        // Object for normal Activity update
+        const updatedActivity = {
+          activityName: this.activity.activityName,
+          activityStatus: this.activity.activityStatus,
+        };
+
+        let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${activityId}`;
+        let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${activityId}`;
+
+        try {
+          // Update the Activity
+          await axios.put(activityUpdateURL, updatedActivity, { headers: { token } });
+
+          // Update Experience Instances and capture response
+          const instanceUpdateResponse = await axios.put(experienceInstanceUpdateURL, { activityName: this.activity.activityName }, { headers: { token } });
+
+          // Determine the toast message
+          let toastMessage = 'Activity updated!';
+          if (instanceUpdateResponse.data && instanceUpdateResponse.data.updatedInstances && instanceUpdateResponse.data.updatedInstances.length > 0) {
+            toastMessage = 'Activity and related instances updated!';
+          }
+
+          // Handle successful update with appropriate toast message
+          this.handleUpdateSuccess(toastMessage);
+        } catch (error) {
+          this.handleError(error);
+        }
       },
+
+      handleUpdateSuccess(toastMessage) {
+        this.$router.push({
+          name: 'instructorDataManagement',
+          params: {
+            activeTab: 3,
+            toastType: 'info',
+            toastMessage: toastMessage,
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--update'
+          }
+        });
+      },
+
       editExperience(experienceID) {
         this.$router.push({ name: "instructorSpecificExperience", params: { id: experienceID } });
       },
+
     },
   };
   </script>

@@ -145,46 +145,75 @@ export default {
       }
     },
 
-    updateExperience() {
+    async updateExperience() {
       console.log('updateExperience');
-      // Handle update logic
       const user = useLoggedInUserStore();
       const token = user.token;
-
       const experienceId = this.experience?._id || this.$route.params.id;
 
-      // const token = `
-      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
-      // `
+      // Object for normal Experience update
       const updatedExperience = {
         experienceCategory: this.experienceCategory,
         experienceName: this.experienceName,
-        activities: this.selectedActivities,
+        activities: this.selectedActivities, // IDs only for updating the experience
       };
-      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceId}`;
-      axios
-        .put(apiURL, updatedExperience, { headers: { token } })
-        .then(() => {
 
-          if (this.isInDialog) {
-            // Close the dialog and optionall emit an event to parent
-            this.$emit('update-success');
-          } else {
-            this.$router.push({ 
-                name: 'instructorDataManagement',
-                params: {
-                  activeTab: 2,
-                  toastType: 'info',
-                  toastMessage: 'Experience updated!',
-                  toastPosition: 'top-right',
-                  toastCSS: 'Toastify__toast--update'
-              }
-            });
+      // Prepare activities data with id and name for Experience Instance update
+      const activitiesData = this.activities
+        .filter(activity => this.selectedActivities.includes(activity._id))
+        .map(activity => ({ id: activity._id, name: activity.activityName }));
+
+      const experienceInstanceUpdate = {
+        experience: {
+          category: this.experienceCategory,
+          name: this.experienceName,
+        },
+        activities: activitiesData,
+      };
+
+      let experienceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceId}`;
+      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience-update/${experienceId}`;
+
+      try {
+        // Update the Experience
+        await axios.put(experienceUpdateURL, updatedExperience, { headers: { token } });
+
+        // Update Experience Instances and capture response
+        const instanceUpdateResponse = await axios.put(experienceInstanceUpdateURL, experienceInstanceUpdate, { headers: { token } });
+
+        // Handle successful update
+        this.handleUpdateSuccess(instanceUpdateResponse.data);
+
+      } catch (error) {
+        console.log('error: ', error);
+        this.handleError(error);
+      }
+    },
+
+
+    
+    handleUpdateSuccess(instanceUpdateData) {
+      let successMessage = 'Experience updated!';
+
+      // Check if any instances were updated
+      if (instanceUpdateData.updatedInstances && instanceUpdateData.updatedInstances.length > 0) {
+        successMessage = 'Experience and related instances updated!';
+      }
+
+      if (this.isInDialog) {
+        this.$emit('update-success');
+      } else {
+        this.$router.push({
+          name: 'instructorDataManagement',
+          params: {
+            activeTab: 2,
+            toastType: 'info',
+            toastMessage: successMessage,
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--update'
           }
-        })
-        .catch((error) => {
-          this.handleError(error);
         });
+      }
     },
 
     cancelAction() {

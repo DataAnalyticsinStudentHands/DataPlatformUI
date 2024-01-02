@@ -1,6 +1,9 @@
 <template>
 <v-container>
-    <v-form>
+    <v-form
+        ref="form"
+        @submit.prevent="handleSubmitForm"
+    >
         <v-row>
             <v-col>
                 <p class="font-weight-black text-h6">New Experience Instances</p><br>
@@ -19,6 +22,7 @@
                     item-value="_id"
                     label="Please Select a Session"
                     v-model="selectedSessionID"
+                    :rules="sessionRules"
                 ></v-autocomplete>
             </v-col>
         </v-row>
@@ -35,6 +39,7 @@
                     item-value="_id"
                     label="Please Select an Experience"
                     v-model="selectedExperienceID"
+                    :rules="experienceRules"
                 ></v-autocomplete>
             </v-col>
         </v-row>
@@ -49,6 +54,7 @@
                     label="Exit Form Release Date"
                     type="date"
                     v-model="exitFormReleaseDate"
+                    :rules="dateRules"
                 ></v-text-field>
             </v-col>
         </v-row>
@@ -58,7 +64,7 @@
                 <v-btn @click="goBack" style="margin-left: 10px;">
                 Cancel
                 </v-btn>
-                <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
+                <v-btn style="text-align: center;" type="submit">Submit</v-btn>
             </v-col>
         </v-row>
     </v-form>
@@ -102,6 +108,7 @@ exitFormReleaseDate: {{ exitFormReleaseDate }}
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
 
 export default {
     name: 'instructorAddExperenceInstance',
@@ -115,6 +122,9 @@ export default {
             registrationStartDate: null,
             registrationEndDate: null,
             exitFormReleaseDate: null,
+            sessionRules: [v => !!v || 'Session is required'],
+            experienceRules: [v => !!v || 'Experience is required'],
+            dateRules: [v => !!v || 'Date is required'],
         }
     },
 
@@ -179,40 +189,53 @@ export default {
         },
 
         async handleSubmitForm() {
-            const user = useLoggedInUserStore();
-            let token = user.token;
+            // Validate the form before submission
+            const isValid = await this.$refs.form.validate();
+            if (isValid.valid) {
+                // Form is valid, proceed with submission
+                const user = useLoggedInUserStore();
+                let token = user.token;
 
-            // Fetch activities for the selected experience
-            const activities = await this.fetchActivitiesForExperience(this.selectedExperienceID);
+                // Fetch activities for the selected experience
+                const activities = await this.fetchActivitiesForExperience(this.selectedExperienceID);
 
-            // Construct the data object for the API call
-            const postData = {
-                experience: this.getSelectedExperience(),
-                sessionID: this.selectedSessionID,
-                activities: activities,
-                exitFormReleaseDate: this.exitFormReleaseDate
-            };
+                // Construct the data object for the API call
+                const postData = {
+                    experience: this.getSelectedExperience(),
+                    sessionID: this.selectedSessionID,
+                    activities: activities,
+                    exitFormReleaseDate: this.exitFormReleaseDate
+                };
 
-            console.log('postData: ', postData);
+                console.log('postData: ', postData);
 
-            try {
-                let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances`;
-                await axios.post(apiURL, postData, { headers: { token } })
-                    .then(() => {
-                        this.$router.push({ 
-                            name: 'instructorDataManagement',
-                            params: {
-                                activeTab: 1,
-                                toastType: 'success',
-                                toastMessage: 'Experience Instance added!',
-                                toastPosition: 'top-right',
-                                toastCSS: 'Toastify__toast--create'
-                            }
+                try {
+                    let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances`;
+                    await axios.post(apiURL, postData, { headers: { token } })
+                        .then(() => {
+                            this.$router.push({ 
+                                name: 'instructorDataManagement',
+                                params: {
+                                    activeTab: 1,
+                                    toastType: 'success',
+                                    toastMessage: 'Experience Instance added!',
+                                    toastPosition: 'top-right',
+                                    toastCSS: 'Toastify__toast--create'
+                                }
+                            });
                         });
-                    });
-            } catch (error) {
-                this.handleError(error);
+                } catch (error) {
+                    this.handleError(error);
+                }
+            } else {
+                console.log('Form is invalid');
+                toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+                    position: 'top-right',
+                    toastClassName: 'Toastify__toast--delete',
+                    multiple: false
+                });
             }
+
         },
 
         goBack() {

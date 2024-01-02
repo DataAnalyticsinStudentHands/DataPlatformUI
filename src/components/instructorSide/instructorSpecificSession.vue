@@ -54,38 +54,35 @@ import { DateTime } from "luxon";
       this.fetchSessionData();
     },
       methods: {
-        fetchSessionData(){
+        fetchSessionData() {
             const user = useLoggedInUserStore();
             let token = user.token;
             let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;
-            console.log('url: ', url);
             axios
                 .get(`${url}/${this.$route.params.id}`, {
-                headers: { token },
+                    headers: { token },
                 })
                 .then((resp) => {
-                    console.log('resp.data: ', resp.data);
                     let data = resp.data;
-                    console.log('data: ', data);
-                    console.log('this.session: ', this.session);
                     this.session.originalSessionName = data.sessionName;
                     this.session.sessionName = data.sessionName;
-                    this.session.sessionPeriod.startDate = DateTime.fromISO(data.sessionPeriod.startDate);
-                    this.session.sessionPeriod.endDate = DateTime.fromISO(data.sessionPeriod.endDate);
+                    // Format the dates to 'yyyy-MM-dd'
+                    this.session.sessionPeriod.startDate = DateTime.fromISO(data.sessionPeriod.startDate).toFormat('yyyy-MM-dd');
+                    this.session.sessionPeriod.endDate = DateTime.fromISO(data.sessionPeriod.endDate).toFormat('yyyy-MM-dd');
                 })
                 .catch((error) => {
-                    console.log('error: ', error);
                     this.handleError(error);
                 });
-            },
+        },
+
             handleUpdateForm() {
-                const user = useLoggedInUserStore();
+              const user = useLoggedInUserStore();
                 let token = user.token;
                 const updatedSession = {
                     sessionName: this.session.sessionName,
                     sessionPeriod: {
-                        startDate: DateTime.fromISO(this.session.sessionPeriod.startDate).toISO(),
-                        endDate: DateTime.fromISO(this.session.sessionPeriod.endDate).toISO()
+                        startDate: DateTime.fromFormat(this.session.sessionPeriod.startDate, 'yyyy-MM-dd').toISO(),
+                        endDate: DateTime.fromFormat(this.session.sessionPeriod.endDate, 'yyyy-MM-dd').toISO()
                     },
                 };
                 let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;

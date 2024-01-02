@@ -42,9 +42,9 @@
             <thead>
               <tr>
                 <th class="text-left"></th>
+                <th class="text-left">Session Name</th>
                 <th class="text-left">Experience Category</th>
                 <th class="text-left">Experience Name</th>
-                <th class="text-left">Session Name</th>
                 <th class="text-left">Exit Form Release Date</th>
               </tr>
             </thead>
@@ -65,9 +65,9 @@
                     hide-details
                     ></v-checkbox>
                 </td>
+                <td class="text-left" @click="editInstance(instance._id)">{{ instance.session.name }}</td>
                 <td class="text-left" @click="editInstance(instance._id)">{{ instance.experience.category }}</td>
                 <td class="text-left" @click="editInstance(instance._id)">{{ instance.experience.name }}</td>
-                <td class="text-left" @click="editInstance(instance._id)">{{ instance.session.name }}</td>
                 <td class="text-left" @click="editInstance(instance._id)">{{ formatDate(instance.exitFormReleaseDate) }}</td>
               </tr>
             </tbody>
