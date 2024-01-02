@@ -1,18 +1,5 @@
-<!--'/instructorSpecificExperience' this page will only show experiences-->
 <template>
   <main>
-  <!-- <br>
-  originalExperienceCategory: {{ originalExperienceCategory }}
-  <br>
-  originalExperienceName: {{ originalExperienceName }}
-  <br>
-  experienceCategory: {{ experienceCategory }}
-  <br>
-  experienceName: {{ experienceName }}
-  <br>
-  activities: {{ activities }}
-  <br>
-  selectedActivities: {{ selectedActivities }} -->
       <v-container>
         <p class="font-weight-black text-h6"> Experience: {{originalExperienceCategory}}, {{ originalExperienceName }}</p>
         <br />
@@ -186,7 +173,7 @@ export default {
             this.$router.push({ 
                 name: 'instructorDataManagement',
                 params: {
-                  activeTab: 1,
+                  activeTab: 2,
                   toastType: 'info',
                   toastMessage: 'Experience updated!',
                   toastPosition: 'top-right',

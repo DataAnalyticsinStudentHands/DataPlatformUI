@@ -18,10 +18,10 @@
           </v-row>
   
           <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-          <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
           <v-btn @click=$router.back() style="margin-left: 10px;">
             Cancel
           </v-btn>
+          <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
         </v-container>
       </v-form>
     </main>

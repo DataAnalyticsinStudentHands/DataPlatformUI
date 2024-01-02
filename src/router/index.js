@@ -285,6 +285,32 @@ const routes = [
       }
     },
     {
+      path: '/instructorAddExperienceInstance',
+      name: 'instructorAddExperienceInstance',
+      component: () => import('../components/instructorSide/instructorAddExperienceInstance.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/instructorSpecificExperienceInstance',
+      name: 'instructorSpecificExperienceInstance',
+      component: () => import('../components/instructorSide/instructorSpecificExperienceInstance.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/instructorSemesters',
       name: 'instructorSemesters',
       props: true,

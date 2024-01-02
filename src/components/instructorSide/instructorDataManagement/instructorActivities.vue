@@ -1,7 +1,7 @@
 <!--'/instructorActivities' this page will only show experiences-->
 <template>
   <main class="">
-    <center>
+    <div class="text-center">
       <br>
       <p class="font-weight-black text-h6">
         {{ showInactive ? 'Inactive' : 'Active' }} Activities
@@ -52,7 +52,7 @@
         return-object
       ></v-autocomplete><br>
 
-    </center>
+    </div>
     <div v-if="loading" justify="center" align="center">
       <v-progress-circular indeterminate></v-progress-circular>
     </div>

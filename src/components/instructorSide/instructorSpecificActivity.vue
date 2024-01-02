@@ -132,7 +132,7 @@
             this.$router.push({ 
               name: 'instructorDataManagement',
               params: {
-                activeTab: 2,
+                activeTab: 3,
                 toastType: 'info',
                 toastMessage: 'Activity updated!',
                 toastPosition: 'top-right',

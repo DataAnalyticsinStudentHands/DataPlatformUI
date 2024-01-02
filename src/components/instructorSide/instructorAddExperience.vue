@@ -33,10 +33,10 @@
             </tr>
           </tbody>
         </v-table>
-        <v-btn type="submit">Submit</v-btn>
         <v-btn @click=$router.back() style="margin-left: 10px;">
           Cancel
         </v-btn>
+        <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
       </v-container>
     </v-form>
   </main>
@@ -94,7 +94,7 @@ export default {
           this.$router.push({ 
               name: 'instructorDataManagement',
               params: {
-                activeTab: 1,
+                activeTab: 2,
                 toastType: 'success',
                 toastMessage: 'Experience added!',
                 toastPosition: 'top-right',

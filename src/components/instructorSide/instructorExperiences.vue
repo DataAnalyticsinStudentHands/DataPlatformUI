@@ -1,13 +1,7 @@
 <!--'/instructorExperiences' this page will only show experiences-->
 <template>
   <main>
-    <div><center>
-      <!-- <br> -->
-      <!-- <h2>
-        <router-link to="/instructorSemesters">Semesters</router-link> |
-        <router-link to="/instructorExperiences">Experiences</router-link> |
-        <router-link to="/instructorActivities">Activities</router-link>
-      </h2> -->
+    <div class="text-center">
       <br>
       <p class="font-weight-black text-h6">
         {{ showInactive ? 'Inactive' : 'Active' }} Experiences
@@ -40,7 +34,7 @@
         outlined
         dense
       ></v-text-field>
-      <br></center>
+      <br>
     </div>
     <div v-if="loading" justify="center" align="center">
       <v-progress-circular indeterminate></v-progress-circular>

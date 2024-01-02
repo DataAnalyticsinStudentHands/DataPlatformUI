@@ -10,11 +10,10 @@
               </v-col>
             </v-row>
 
-          <v-btn @click="handleSubmitForm">Submit</v-btn>
-
-          <v-btn @click=$router.back() style="margin-left: 10px;">
-            Cancel
-          </v-btn>
+            <v-btn @click=$router.back() style="margin-left: 10px;">
+              Cancel
+            </v-btn>
+            <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
         </v-container>
       </v-form>
     </main>
@@ -53,7 +52,7 @@
         .catch((error) => {
           this.handleError(error);
         });
-      }
+      },
     }
 
   }
