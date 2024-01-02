@@ -311,22 +311,23 @@
                                                     <v-col>
                                                         <!-- Add v-autocomplete for another filter here -->
                                                         <v-autocomplete
-                                                            v-model="activitiesSearchQuery"
-                                                            :items="activitiesAll"
+                                                            v-model="activitiesNameFilter"
+                                                            :items="activeActivityData"
+                                                            item-title="activityName"
+                                                            item-value="_id"
                                                             label="Filter by Activity Name"
-                                                            class="mr-5 mt-2"
+                                                            class="mr-5 mt-2 custom-autocomplete"
                                                             hide-details
                                                             density="compact"
+                                                            clearable
+                                                            chips
+                                                            multiple
+                                                            :menu-props="{ maxHeight: '200px', maxWidth: '250px' }"
                                                         ></v-autocomplete>
                                                     </v-col>
                                                 </v-row>
-                                                <v-row>
-                                                    <v-col class="pt-0">
-                                                        <!-- Add Set Filter button for another filter here -->
-                                                        <v-btn @click="console.log('set filter')">Set Filter</v-btn>
-                                                    </v-col>
-                                                </v-row>
                                             </div>
+
 
                                             <!-- Status Filter -->
                                             <div v-else-if="selectedFilterColumn?.value === 'experienceStatus'">
@@ -458,10 +459,24 @@
                                 </v-chip-group>
 
                                 <!-- Filter Chips -->
-                                <v-chip-group
-                                
-                                >
+                                <v-chip-group v-if="filterChips.length" v-model="selectedFilterChips" column multiple>
+                                    <v-chip
+                                        v-for="(criteria, index) in filterChips"
+                                        :key="index"
+                                        class="ma-2"
+                                        color="light-green-darken-3"
+                                        outlined
+                                    >
+                                        {{ criteria.filter.title }}: 
+                                        <v-icon small class="ml-1">mdi-filter</v-icon>
+                                        <span v-for="(item, itemIndex) in criteria.filterBy" :key="itemIndex" class="d-inline-block text-truncate" style="max-width: 150px;">
+                                            {{ item }}<span v-if="itemIndex < criteria.filterBy.length - 1">, </span>
+                                        </span>
+                                        <!-- You can add logic to handle chip removal if necessary -->
+                                    </v-chip>
                                 </v-chip-group>
+
+
                             </v-col>
                         </v-row>
 
@@ -515,6 +530,13 @@
             </v-col>
         </v-row>
     </v-container>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    filterChips: {{ filterChips }}
+    <br>
+    selectedFilterChips: {{ selectedFilterChips }}
+    <br>
+    filteredExperienceData: {{ filteredExperienceData }}
 
 
     <br><br><br><br><br><br><br>
@@ -572,6 +594,7 @@ Filtered Experience Data:
     data() {
       return {
         experienceData: [],
+        activeActivityData: [],
         showInactive: false,
         selectedExperiences: [],
         searchQuery: '',
@@ -663,10 +686,10 @@ Filtered Experience Data:
         selectedStatusFilter: [],
         isActivitiesNumberFilterEnabled: false,
         activitiesNumberFilter: null,
-        activitiesSearchQuery: null,
+        activitiesNameFilter: null,
         activitiesAll: [],
         filterCriteria: [],
-        flterChips: [],
+        filterChips: [],
         selectedFilterChips: [],
       };
     },
@@ -680,6 +703,7 @@ Filtered Experience Data:
     mounted() {
       useLoggedInUserStore().startLoading();
       this.fetchExperienceData()
+      this.fetchActiveActivityData()
       .then(() => {
         useLoggedInUserStore().stopLoading();
         // Apply default sorting after fetching data
@@ -780,7 +804,7 @@ Filtered Experience Data:
             }
         },
 
-        // Automatically add Activity Filter Chips for Preview
+        // Automatically add Activity Number Filter Chips for Preview
         positiveActivitiesNumberFilter(newVal) {
             if (this.isActivitiesNumberFilterEnabled) {
                 if (newVal !== null && newVal !== '') {
@@ -825,6 +849,71 @@ Filtered Experience Data:
                 }
             }
         },
+
+        // Watch the "Filter by Activity Name" to add or remove preview chips as needed
+        activitiesNameFilter(newVal, oldVal) {
+            // Convert newVal IDs to corresponding activity names
+            const newActivityNames = newVal.map(id => 
+                this.activeActivityData.find(activity => activity._id === id)?.activityName
+            ).filter(name => name); // Filter out undefined values
+
+            // Convert oldVal IDs to corresponding activity names (if oldVal is not null)
+            const oldActivityNames = oldVal ? oldVal.map(id => 
+                this.activeActivityData.find(activity => activity._id === id)?.activityName
+            ).filter(name => name) : [];
+
+            // Find existing filter chip index for activities
+            const existingFilterIndex = this.filterCriteria.findIndex(chip => chip.filter.value === 'activities');
+
+            // Add or update filter chip for activities if newActivityNames is not empty
+            if (newActivityNames.length > 0) {
+                const filterObject = {
+                    filter: { 
+                        title: "Activities", 
+                        value: "activities"
+                    },
+                    filterBy: newActivityNames
+                };
+
+                if (existingFilterIndex !== -1) {
+                    this.filterCriteria[existingFilterIndex] = filterObject;
+                } else {
+                    this.filterCriteria.push(filterObject);
+                }
+            } else if (existingFilterIndex !== -1) {
+                // Remove the activities filter chip if newActivityNames is empty
+                this.filterCriteria.splice(existingFilterIndex, 1);
+            }
+        },
+
+        // Watch the "Filter by Status" to add or remove preview chips as needed
+        selectedStatusFilter(newVal) {
+            // Find existing filter chip index for status
+            const existingFilterIndex = this.filterCriteria.findIndex(chip => chip.filter.value === 'experienceStatus');
+
+            // Add or update filter chip for status if newVal is not empty
+            if (newVal) {
+                const filterObject = {
+                    filter: { 
+                        title: "Status", 
+                        value: "experienceStatus"
+                    },
+                    filterBy: [newVal]
+                };
+
+                if (existingFilterIndex !== -1) {
+                    this.filterCriteria[existingFilterIndex] = filterObject;
+                } else {
+                    this.filterCriteria.push(filterObject);
+                }
+            } else if (existingFilterIndex !== -1) {
+                // Remove the status filter chip if newVal is empty
+                this.filterCriteria.splice(existingFilterIndex, 1);
+            }
+        },
+
+
+
     },
 
     computed: {
@@ -834,7 +923,7 @@ Filtered Experience Data:
       },
 
     showChipsRow() {
-        return this.searchCriteria.length > 0 || this.sortChips.length > 0;
+        return this.searchCriteria.length > 0 || this.sortChips.length > 0 || this.filterChips.length > 0;
     },
 
     filteredCategories() {
@@ -864,7 +953,13 @@ Filtered Experience Data:
     },
 
     filterDialogWidth() {
-        return this.selectedFilterColumn?.value === 'experienceName' ? '1000' : '600';
+        if (this.selectedFilterColumn?.value === 'experienceName') {
+            return '1000';
+        } else if (this.selectedFilterColumn?.value === 'activitiesCount') {
+            return '800';
+        } else {
+            return '600';
+        }
     },
 
     positiveActivitiesNumberFilter: {
@@ -881,11 +976,11 @@ Filtered Experience Data:
       async fetchExperienceData() {
         try {
             const user = useLoggedInUserStore();
-            //   let token = user.token;
+            //   const token = user.token;
 
             let token = `
 
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNzk2NiwiZXhwIjoxNzA0MTI5OTY2fQ.wUHlAL90DD7LYQT_78j7zOWRwLYjKjjtOc16zhqWKpw
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDIwNzEzNSwiZXhwIjoxNzA0MjE5MTM1fQ.zw1Y9usQc7iaQuw69BGPa7MHarPAKmkJK2568SVn20I
 
             `
 
@@ -899,7 +994,28 @@ Filtered Experience Data:
         } catch (error) {
           this.handleError(error);
         }
-      },
+    },
+
+    async fetchActiveActivityData() {
+        try {
+            const user = useLoggedInUserStore();
+            // const token = user.token;
+
+            let token = `
+            
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDIwNzEzNSwiZXhwIjoxNzA0MjE5MTM1fQ.zw1Y9usQc7iaQuw69BGPa7MHarPAKmkJK2568SVn20I
+
+            `
+            let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/activities/active/"
+            const resp = await axios.get(apiURL, { headers: { token } });
+            this.activeActivityData = resp.data;
+        } catch (error) {
+            console.log('error: ', error);
+            this.handleError(error);
+        }
+    },
+
+
 
       getStatusColor(status) {
         return status ? 'green' : 'red'
@@ -1163,10 +1279,14 @@ Filtered Experience Data:
 
             console.log('this.filterCriteria: ', this.filterCriteria);
 
+            this.filterChips = [...this.filterCriteria];
+            this.selectedFilterChips = this.filterChips.map((_, index) => index);
+
+            // Apply the filters to the data
+            this.applyFiltersToData();
+
             // Close the filter dialog when filters are applied
-            // this.isFilterDialogVisible = false;
-            // Call a function to update your filtered data based on the applied filters
-            // this.updateFilteredData();
+            this.isFilterDialogVisible = false;
         },
 
         closeFilterDialog() {
@@ -1189,7 +1309,49 @@ Filtered Experience Data:
         getUniqueExerienceNames() {
             const names = new Set(this.experienceData.map(item => item.experienceName));
             return Array.from(names);
-        }
+        },
+
+        applyFiltersToData() {
+            let filteredData = this.filteredExperienceData;
+
+            // Apply each filter chip
+            this.filterChips.forEach(filterChip => {
+                const filterValue = filterChip.filter.value;
+                const filterBy = filterChip.filterBy;
+
+                switch(filterValue) {
+                    case 'experienceStatus':
+                        filteredData = filteredData.filter(item =>
+                            filterBy.includes(item.experienceStatus ? 'Active' : 'Inactive')
+                        );
+                        break;
+                    case 'experienceName':
+                        filteredData = filteredData.filter(item => 
+                            filterBy.includes(item.experienceName)
+                        );
+                        break;
+                    case 'experienceCategory':
+                        filteredData = filteredData.filter(item => 
+                            filterBy.includes(item.experienceCategory)
+                        );
+                        break;
+                    case 'activitiesCount':
+                        filteredData = filteredData.filter(item => 
+                            filterBy.includes(item.activities.length)
+                        );
+                        break;
+                    case 'activities':
+                        filteredData = filteredData.filter(item => 
+                            item.activities.some(activity => filterBy.includes(activity))
+                        );
+                        break;
+                }
+            });
+
+            // Update the filteredExperienceData
+            this.filteredExperienceData = filteredData;
+        },
+
 
 
         
@@ -1252,5 +1414,10 @@ Filtered Experience Data:
     opacity: 0;
 }
 
-  </style>
-  
+/* White box in "Filter by Activity Name v-autocomplete" */
+.custom-autocomplete :deep(input[type='text']) {
+    background-color: transparent !important;
+}
+
+
+</style>
