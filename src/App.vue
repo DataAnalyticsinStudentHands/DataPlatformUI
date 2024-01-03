@@ -278,6 +278,7 @@ export default {
   },
   methods: {
     async handleLogout() {
+      console.log('logout App.vue')
       const store = useLoggedInUserStore();
       
       await store.logout();

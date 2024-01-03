@@ -96,6 +96,7 @@ export const useLoggedInUserStore = defineStore({
       }
     },
     logout(reset = false) {
+      console.log('logout Pinia')
       // Reset value after user log out
       this.$patch({
         userId: "",

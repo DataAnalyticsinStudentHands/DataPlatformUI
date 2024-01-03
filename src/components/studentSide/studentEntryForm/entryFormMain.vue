@@ -385,6 +385,10 @@ export default {
         uHStudentCheck() {
             return this.studentInformation.enrolledUHInfo.uhStatus === 'Yes';
         },
+        isUserLoggedIn() {
+            const store = useLoggedInUserStore();
+            return store.isLoggedIn;
+        },
     },
     methods: {
         triggerValidation() {
@@ -585,6 +589,13 @@ export default {
             },
     },
     beforeRouteLeave(to, from, next) {
+        // If the user is logged out, allow navigation without confirmation
+        if (!this.isUserLoggedIn) {
+            next();
+            return;
+        }
+
+        // If there are unsaved changes and user is still logged in
         if (!this.isObjectEqual(this.studentInformation, this.originalStudentInformation)) {
             this.nextFunction = next;
             this.dialog = true;
@@ -592,7 +603,8 @@ export default {
         } else {
             next(); // Proceed with navigation
         }
-    }
+    },
+
 
 
 
