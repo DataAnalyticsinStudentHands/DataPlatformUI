@@ -436,25 +436,6 @@ data() {
       studentData: [],
   };
 },
-beforeMount() {
-  const user = useLoggedInUserStore();
-  let token = user.token;
-  let userGivenID = user.userId;
-  let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
-
-//   useLoggedInUserStore().startLoading();
-//   try {
-//     axios.get(url + `/${userGivenID}`, { headers: { token },})
-//       .then((resp) => {
-//         this.userData = resp.data.userData;
-//         this.studentData = resp.data.studentData?.studentInformation;
-//         useLoggedInUserStore().stopLoading();
-//       });
-//   } catch (error) {
-//     this.handleError('Error:', error);
-//     useLoggedInUserStore().stopLoading();
-//   } 
-},
 
 computed: {
   checkedPronouns() {

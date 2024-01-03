@@ -74,7 +74,7 @@ export const useLoggedInUserStore = defineStore({
             // Additional check for the Student role
             if (response.data.userRole === 'Student') {
               await this.checkFormCompletion();
-              // await this.fetchRegisteredExperiences();
+              await this.fetchRegisteredExperiences();
             }
           }
 
@@ -182,11 +182,17 @@ export const useLoggedInUserStore = defineStore({
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }
         });
+
         if (response && response.data) {
           this.$patch({
-            hasCompletedEntryForm: response.data.formCompleted
+            hasCompletedEntryForm: response.data.entryFormCompleted,
+            hasRegisteredExperiences: response.data.hasRegisteredExperiences
           });
+
+          console.log('hasCompletedEntryForm: ', this.hasCompletedEntryForm);
+          console.log('hasRegisteredExperiences: ', this.hasRegisteredExperiences);
         }
+
       } catch (error) {
         this.handleError(error);
       }
@@ -209,13 +215,13 @@ export const useLoggedInUserStore = defineStore({
     },
     async fetchRegisteredExperiences() {
       const token = localStorage.getItem("token");
-      const url = `${apiURL}/studentSideData/registeredExperiences`;
-  
+      const url = `${apiURL}/studentSideData/registered-experiences`;
+    
       try {
         const response = await axios.get(url, { headers: { token } });
-        if (response.data && response.data.experiences) {
-          // Update the registeredExperiences state
-          this.registeredExperiences = response.data.experiences;
+        if (response.data && response.data.length > 0) {
+          // Directly assign the response data to registeredExperiences
+          this.registeredExperiences = response.data;
           this.registrationExists = true;
         } else {
           this.registrationExists = false;
@@ -224,39 +230,49 @@ export const useLoggedInUserStore = defineStore({
       } catch (error) {
         this.handleError(error);
       }
-    },  
-    async registerExperiences(experienceIDs) {
-      const token = localStorage.getItem('token');
-      const method = this.registrationExists ? 'put' : 'post';
-      const url = `${apiURL}/studentSideData/registerExperiences`;
-  
+    },     
+    async updateRegisteredExperiences(selectedExperiences) {
+      const token = this.token;
+      const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
+      const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
+    
       try {
-        await axios({
-          method,
-          url,
-          headers: { token },
-          data: { experienceIDs },
-        });
-  
-        // Update the store's state
-        this.registrationExists = true;
-        this.registeredExperiences = experienceIDs;
-  
-        // Additional logic if needed
+        // Determine experiences to register and to deregister
+        const experiencesToRegister = selectedExperiences.filter(se => 
+          !this.registeredExperiences.some(re => re.experienceInstance.id === se._id));
+        const experiencesToDeregister = this.registeredExperiences.filter(re => 
+          !selectedExperiences.some(se => se._id === re.experienceInstance.id));
+    
+        // Register new experiences
+        if (experiencesToRegister.length > 0) {
+          console.log('registerUrl: ', registerUrl);
+          await axios.post(registerUrl, {
+            expInstanceIDs: experiencesToRegister.map(e => e._id)
+          }, { headers: { token } });
+        }
+    
+        // Deregister experiences
+        if (experiencesToDeregister.length > 0) {
+          console.log('deregisterUrl: ', deregisterUrl);
+          await axios.delete(deregisterUrl, {
+            headers: { token },
+            data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
+          });
+        }
+    
+        // Fetch updated registered experiences
+        await this.fetchRegisteredExperiences();
         toast.success('Experiences Registered!', {
           position: 'top-right',
           toastClassName: 'Toastify__toast--create'
         });
-  
-        // await this.checkFormCompletion();
-        await this.fetchRegisteredExperiences();
+    
       } catch (error) {
-        // Handle error
         this.handleError(error);
       }
-    },
+    },    
     async handleError(error) {
-      // console.log(error);
+      console.log(error);
       toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',

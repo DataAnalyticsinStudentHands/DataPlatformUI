@@ -20,7 +20,7 @@
       
       <v-col v-if="hasCompletedEntryForm" cols="12" md="5" class="align-start">
 
-      <!-- <StudentExperienceRegistration /> -->
+      <StudentExperienceRegistration />
 
       </v-col>
     </v-row>

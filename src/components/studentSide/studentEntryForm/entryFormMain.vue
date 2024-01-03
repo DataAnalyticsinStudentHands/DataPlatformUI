@@ -359,6 +359,7 @@ export default {
             showNewUserDialog: false,
             dialog: false,
             nextFunction: null,
+            formSubmitSuccess: false,
         }
     },
     mounted() {
@@ -445,28 +446,34 @@ export default {
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         },
-        async submitForm() {
-            console.log("Form submission triggered");
-            console.log('before cleanup: ', this.studentInformation);
-            this.cleanupFormData();
-            console.log('cleaned up data: ', this.studentInformation);
-
+        submitForm() {
+            const user = useLoggedInUserStore();
+            const token = user.token;
             const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
 
-            try {
-                const user = useLoggedInUserStore();
-                const token = user.token;
+            axios.post(apiURL, {
+                studentInformation: this.studentInformation
+            }, {
+                headers: { token }
+            }).then(response => {
+                console.log(response.data);
+                this.formSubmitSuccess = true;
 
-                const response = await axios.post(apiURL, {
-                    studentInformation: this.studentInformation
-                }, {
-                    headers: { token }
+                user.checkFormCompletion();
+
+                // Show the success message and navigate to the dashboard
+                this.$router.push({ 
+                    name: 'studentDashboard',
+                    params: {
+                        toastType: 'success',
+                        toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
+                        toastPosition: 'top-right',
+                        toastCSS: 'Toastify__toast--create'
+                    }
                 });
-
-                console.log(response.data)
-            } catch (error) {
+            }).catch(error => {
                 console.error('Error submitting form: ', error);
-            }
+            });
         },
         cleanupFormData() {
             // Check condition for "Other" pronouns
@@ -590,7 +597,7 @@ export default {
     },
     beforeRouteLeave(to, from, next) {
         // If the user is logged out, allow navigation without confirmation
-        if (!this.isUserLoggedIn) {
+        if (!this.isUserLoggedIn || this.formSubmitSuccess) {
             next();
             return;
         }
