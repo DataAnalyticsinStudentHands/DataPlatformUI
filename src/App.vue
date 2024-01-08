@@ -343,8 +343,12 @@ export default {
     return { user };
   },
   created() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
     const user = useLoggedInUserStore();
+    console.log('Entry Form Completed:', user.hasCompletedEntryForm);
+    console.log('Registered Experiences:', user.hasRegisteredExperiences);
+    console.log('Exit Forms Released:', user.exitFormsReleased);
+    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
+    // const user = useLoggedInUserStore();
     axios
       .get(apiURL, {
         headers: { token: user.token },

@@ -459,22 +459,25 @@ export default {
                 console.log(response.data);
                 this.formSubmitSuccess = true;
 
+                // Directly check the form completion status
                 user.checkFormCompletion();
 
                 // Show the success message and navigate to the dashboard
                 this.$router.push({ 
-                    name: 'studentDashboard',
-                    params: {
-                        toastType: 'success',
-                        toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--create'
-                    }
+                name: 'studentDashboard',
+                params: {
+                    toastType: 'success',
+                    toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                }
                 });
             }).catch(error => {
                 console.error('Error submitting form: ', error);
             });
-        },
+            },
+
+
         cleanupFormData() {
             // Check condition for "Other" pronouns
             const otherPronoun = this.studentInformation.pronouns.find(p => p.id === 5);

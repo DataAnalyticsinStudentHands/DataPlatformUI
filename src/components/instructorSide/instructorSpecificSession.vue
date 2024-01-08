@@ -25,7 +25,7 @@
         </v-container>
       </v-form>
     </main>
-    {{ session }}
+    <!-- {{ session }} -->
   </template>
   
   <script>

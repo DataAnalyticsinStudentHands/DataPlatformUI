@@ -197,6 +197,8 @@
         </v-list>
         </v-card>
 
+        <!-- {{ registeredExperiences }} -->
+
 </template>
 
 <script>
@@ -300,7 +302,6 @@ export default {
             this.dialog = false;
         },
         isSelected(experience) {
-            console.log('this.selectedExperiences: ', this.selectedExperiences)
             // Check if the experience is already selected based on its ID
             return this.selectedExperiences.some(selectedExp => selectedExp._id === experience._id);
         },

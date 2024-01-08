@@ -980,7 +980,7 @@ Filtered Experience Data:
 
             let token = `
 
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDIwNzEzNSwiZXhwIjoxNzA0MjE5MTM1fQ.zw1Y9usQc7iaQuw69BGPa7MHarPAKmkJK2568SVn20I
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDMxMTA3NSwiZXhwIjoxNzA0MzIzMDc1fQ.MCLldjZBIbDtqLh9wVisWlVuJulA3ssM7OTpkdZpO6c
 
             `
 
@@ -1003,7 +1003,7 @@ Filtered Experience Data:
 
             let token = `
             
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDIwNzEzNSwiZXhwIjoxNzA0MjE5MTM1fQ.zw1Y9usQc7iaQuw69BGPa7MHarPAKmkJK2568SVn20I
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDMxMTEwOSwiZXhwIjoxNzA0MzIzMTA5fQ.QrixBa4jtDCTGMUAxXK_8iEIoVjvbn7m_VrqIFL3Ekw
 
             `
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/activities/active/"

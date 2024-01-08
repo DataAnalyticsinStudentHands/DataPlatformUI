@@ -75,20 +75,19 @@
                 :class="isGoalFormCompleted(experience._id) ? 'light-green-bg' : 'light-red-bg'"
             >
                 <span :class="isGoalFormCompleted(experience._id) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
-                    {{ isGoalFormCompleted(experience._id) ? 'Completed' : 'Complete' }} Goal Setting Form for 
+                    {{ isGoalFormCompleted(experience._id) ? 'Completed Goal Setting Form for' : 'Complete Goal Setting Form for' }}
+                    <!-- Conditionally render router-link or plain text based on completion status -->
+                    <router-link 
+                        v-if="!isGoalFormCompleted(experience._id)"
+                        :to="{ name: 'goalSettingForm', params: { id: experience._id } }" 
+                        class="text-blue-600 underline hover:text-blue-800"
+                    >
+                        {{ experience.experienceInstance.name }}
+                    </router-link>
+                    <span v-else class="text-green-800">
+                        {{ experience.experienceInstance.name }}
+                    </span>
                 </span> 
-                <!-- Conditionally render router-link or plain text based on completion status -->
-                <router-link 
-                    v-if="!isGoalFormCompleted(experience._id)"
-                    :to="{ name: 'goalSettingForm', params: { id: experience._id } }" 
-                    class="text-blue-600 underline hover:text-blue-800"
-                >
-                    {{ experience.experienceName }}
-                </router-link>
-                <!-- Render plain text if form is completed -->
-                <span v-else class="text-green-800">
-                    {{ experience.experienceName }}
-                </span>
             </v-list-item>
        </v-list-group>
 
@@ -173,8 +172,8 @@ export default {
         }
     },
     methods: {
-        isGoalFormCompleted(experienceId) {
-            return this.goalSettingFormCompletion && this.goalSettingFormCompletion[experienceId];
+        isGoalFormCompleted(registrationId) {
+            return this.goalSettingFormCompletion[registrationId];
         },
         isExitFormCompleted(experienceId) {
             return this.exitFormCompletion && this.exitFormCompletion[experienceId];

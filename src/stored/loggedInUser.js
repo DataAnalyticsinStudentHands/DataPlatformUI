@@ -25,7 +25,6 @@ export const useLoggedInUserStore = defineStore({
       currentActivityId: null,
       exitFormsReleased: false,
       exitFormCompletion: {},
-      registrationExists: false,
       registeredExperiences: [],
       orgName: "",
       selectedSessionsDetails: [],
@@ -114,7 +113,6 @@ export const useLoggedInUserStore = defineStore({
         currentActivityId: null,
         exitFormsReleased: false,
         exitFormCompletion: {},
-        registrationExists: false,
         registeredExperiences: [],
       });
 
@@ -184,13 +182,18 @@ export const useLoggedInUserStore = defineStore({
         });
 
         if (response && response.data) {
+          console.log('Received goalSettingFormCompletion: ', response.data.goalSettingFormCompletion);
           this.$patch({
             hasCompletedEntryForm: response.data.entryFormCompleted,
-            hasRegisteredExperiences: response.data.hasRegisteredExperiences
+            hasRegisteredExperiences: response.data.hasRegisteredExperiences,
+            goalSettingFormCompletion: response.data.goalSettingFormCompletion,
           });
+
+          
 
           console.log('hasCompletedEntryForm: ', this.hasCompletedEntryForm);
           console.log('hasRegisteredExperiences: ', this.hasRegisteredExperiences);
+          console.log('goalSettingFormStatus: ', this.goalSettingFormCompletion);
         }
 
       } catch (error) {
@@ -222,9 +225,9 @@ export const useLoggedInUserStore = defineStore({
         if (response.data && response.data.length > 0) {
           // Directly assign the response data to registeredExperiences
           this.registeredExperiences = response.data;
-          this.registrationExists = true;
+          this.hasRegisteredExperiences = true;
         } else {
-          this.registrationExists = false;
+          this.hasRegisteredExperiences = false;
           this.registeredExperiences = [];
         }
       } catch (error) {
