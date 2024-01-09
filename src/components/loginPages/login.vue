@@ -17,12 +17,20 @@
 
         <v-text-field
           :label="$t('Password:')"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           v-model="password"
           :rules="requiredRule"
           required
           prepend-icon="mdi-lock"
-        ></v-text-field>
+        >
+          <template v-slot:append-inner>
+            <v-icon
+              @click="showPassword = !showPassword"
+            >
+              mdi-eye
+            </v-icon>
+          </template>
+        </v-text-field>
       </v-form>
 
       <v-row>
@@ -89,6 +97,7 @@ export default {
         ],
         requiredRule: [v => !!v || this.$t('This field is required')],
         appName: "",
+        showPassword: false,
       };
   },
   setup() {
@@ -188,7 +197,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .no-select {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Safari */
@@ -197,5 +206,30 @@ export default {
     -ms-user-select: none;       /* Internet Explorer/Edge */
     user-select: none;           /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
 }
+
+[type='text']:focus, 
+[type='email']:focus, 
+[type='url']:focus, 
+[type='password']:focus, 
+[type='number']:focus, 
+[type='date']:focus, 
+[type='datetime-local']:focus, 
+[type='month']:focus, 
+[type='search']:focus, 
+[type='tel']:focus, 
+[type='time']:focus, 
+[type='week']:focus, 
+[multiple]:focus, 
+textarea:focus, 
+select:focus {
+    outline: none !important;
+    --tw-ring-color: transparent !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    box-shadow: none !important;
+    border-color: currentColor !important;
+}
+
+
 
 </style>

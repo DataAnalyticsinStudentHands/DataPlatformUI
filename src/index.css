@@ -43,6 +43,89 @@ html { overflow-y: auto !important  }
     background-color: #721c24 !important; /* Dark red */
 }
 
+/* Tailwind and Vuetify misconfiguration - text fields show a blue outline without this code */
+[type='text']:focus, 
+[type='email']:focus, 
+[type='url']:focus, 
+[type='password']:focus, 
+[type='number']:focus, 
+[type='date']:focus, 
+[type='datetime-local']:focus, 
+[type='month']:focus, 
+[type='search']:focus, 
+[type='tel']:focus, 
+[type='time']:focus, 
+[type='week']:focus, 
+[multiple]:focus, 
+textarea:focus, 
+select:focus {
+    outline: none !important;
+    --tw-ring-offset-color: transparent !important;
+    --tw-ring-color: transparent !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    box-shadow: none !important;
+    border-color: currentColor !important;
+}
+
+/* Tailwind and Vuetify misconfiguration - text fields show a white background without this code */
+[type='text']:focus, 
+[type='email']:focus, 
+[type='url']:focus, 
+[type='password']:focus, 
+[type='number']:focus, 
+[type='date']:focus, 
+[type='datetime-local']:focus, 
+[type='month']:focus, 
+[type='search']:focus, 
+[type='tel']:focus, 
+[type='time']:focus, 
+[type='week']:focus, 
+[multiple]:focus, 
+textarea:focus, 
+select:focus {
+    background-color: transparent !important; 
+}
+
+/* Overrides the background color for input fields when they are not focused */
+[type='text'], 
+[type='email'], 
+[type='url'], 
+[type='password'], 
+[type='number'], 
+[type='date'], 
+[type='datetime-local'], 
+[type='month'], 
+[type='search'], 
+[type='tel'], 
+[type='time'], 
+[type='week'], 
+[multiple], 
+textarea, 
+select {
+    background-color: transparent !important; /* Set to transparent or any color you prefer */
+}
+
+/* Ensures that the background color remains the same even after the user interacts with the input */
+[type='text'].v-field__input, 
+[type='email'].v-field__input, 
+[type='url'].v-field__input, 
+[type='password'].v-field__input, 
+[type='number'].v-field__input, 
+[type='date'].v-field__input, 
+[type='datetime-local'].v-field__input, 
+[type='month'].v-field__input, 
+[type='search'].v-field__input, 
+[type='tel'].v-field__input, 
+[type='time'].v-field__input, 
+[type='week'].v-field__input, 
+[multiple].v-field__input, 
+textarea.v-field__input, 
+select.v-field__input {
+    background-color: transparent !important; 
+}
+
+
 
 /* Sample Code for Toast Alerts
       toast.success('Created Successfully!', {
