@@ -3,20 +3,20 @@
       <div class="text-center">
         <br>
         <p class="font-weight-black text-h6">
-          {{ showInactive ? 'Inactive' : 'Active' }} Sessions
+          {{ showInactive ? 'Archived' : '' }} Sessions
         </p>
         <br><v-btn style="text-align:center; margin-right:2rem;">
           <router-link class="" to="/instructorAddSession">Add New Session</router-link>
         </v-btn>
   
         <v-btn style="text-align:center" @click="toggleShowInactive">
-          {{ showInactive ? 'Show Active Sessions' : 'Show Inactive Sessions' }}
+          {{ showInactive ? 'Show Sessions' : 'Show Archived Sessions' }}
         </v-btn>     
   
         <br><br>
   
         <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateSessions" v-if="selectedSessions.length > 0 && !showInactive">
-          Deactivate
+          Archive
         </v-btn>
   
         <v-btn style="text-align:center" @click="activateSessions" v-if="selectedSessions.length > 0 && showInactive">
@@ -144,7 +144,7 @@
             await axios.put(apiURL, updateStatus, { headers: { token } });
           }
 
-          toast.success(this.selectedSessions.length === 1 ? 'Session deactivated!' : 'Sessions deactivated!', {
+          toast.success(this.selectedSessions.length === 1 ? 'Session archived!' : 'Sessions archived!', {
             position: 'top-right',
             toastClassName: 'Toastify__toast--create'
           });

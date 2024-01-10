@@ -3,13 +3,13 @@
     <v-row>
         <v-col>
             <p class="d-flex justify-center font-weight-black text-h6 mb-4">
-                Please Assign Experiences to {{ singleSession ? 'Session' : 'Sessions' }}
+                Assign Experiences to {{ singleSession ? 'Session' : 'Sessions' }}
             </p>
         </v-col>
     </v-row>
     <v-row>
         <v-col>
-            <v-card>
+            <v-card flat>
                 <v-card-title>
                     <v-row class="d-flex justify-start">
                         <v-col md="6">
@@ -144,12 +144,20 @@
                       </template> -->
                   </v-data-table>
             </v-card>
+            <v-divider :thickness="4" class="my-divider"></v-divider>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col>
+            <p class="d-flex justify-center font-weight-black text-h6 mb-4">
+                {{ singleSession ? 'Session' : 'Sessions' }}
+            </p>
         </v-col>
     </v-row>
     <v-row v-for="session in selectedSessions" :key="session._id">
       <!-- Column for Full-width Card -->
       <v-col cols="12">
-        <v-card>
+        <v-card flat>
           <v-row>
             <!-- Column for Session Information -->
             <v-col cols="4">
@@ -161,7 +169,7 @@
               </v-card-text>
             </v-col>
             <!-- Column for Experience Chips -->
-            <v-col cols="8">
+            <v-col cols="8" class="mt-2">
                 <div v-if="session.experienceIDs && session.experienceIDs.length > 0">
                     <v-chip
                         v-for="experience in mapExperienceData(session.experienceIDs)"
@@ -190,8 +198,9 @@
                 Clear Experiences
             </v-btn>
         </v-card-actions>
-
         </v-card>
+        <v-divider :thickness="2" class="my-divider"></v-divider>
+
       </v-col>
     </v-row>
 </v-container>
@@ -199,29 +208,28 @@
 <!-- Dialog for quick update -->
 <v-dialog v-model="showEditDialog" max-width="600px">
     <v-card
-        width="700"
+        width="600"
     >
         <edit-experience
             :experience="currentExperience"
             :isInDialog="true"
             @update-success="handleUpdateSuccess"
+            @close-dialog="closeEditDialog"
         ></edit-experience>
     <br>
     </v-card>
 </v-dialog>
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 selectedSessionName: {{ selectedSessionName }}
 <br>
 selectedExperiences: {{ selectedExperiences }}
 <br>
 selectedSessions: {{ selectedSessions }}
-
-
-
-
 <br><br><br><br><br><br>
 experienceData: {{ experienceData }}
+selectedSessions: {{ selectedSessions }} -->
+
 </template>
     
 <script>
@@ -273,6 +281,7 @@ export default {
             selectedSessionName: 'Select a Session',
             showChooseSessionMenu: false,
             selectedSessionExperienceIDs: [],
+            attemptedNavigation: false,
             
         }
     },
@@ -300,7 +309,7 @@ export default {
 
         selectedSessions() {
             const user = useLoggedInUserStore();
-            return user.selectedSessionsDetails;
+            return user.experienceInstanceCreationDetails;
         },
 
         isAddToSessionDisabled() {
@@ -332,11 +341,11 @@ export default {
     methods: {
         async fetchExperiences() {
             const user = useLoggedInUserStore();
-            // const token = user.token;
+            const token = user.token;
 
-            const token = `
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDgzNDUxMSwiZXhwIjoxNzA0ODQ2NTExfQ._eErIYblbUPvbZnbOw4D9UyYTevmUr_qP5PHq3wBl50
-            `
+            // const token = `
+            // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDkwMTAxMSwiZXhwIjoxNzA0OTEzMDExfQ.SUQ85YKLSpgJpHDLW_3ptzNoSAOgnXk6SdWIn1mlewc
+            // `
 
             try {
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/active`;
@@ -457,6 +466,7 @@ export default {
         },
 
         handleAddToSession() {
+            // Existing code for adding experiences to sessions
             if (this.singleSession) {
                 const session = this.selectedSessions[0];
                 session.experienceIDs = [...new Set([...session.experienceIDs || [], ...this.selectedExperiences])];
@@ -476,11 +486,30 @@ export default {
                 }
             }
 
-            // Update the filtered data based on the added experiences
-            this.updateFilteredData();
+            // New code for updating sessions with detailed experience data
+            this.selectedSessions.forEach(session => {
+                if (session.experienceIDs) {
+                    session.experiences = session.experienceIDs.map(id => {
+                        const experience = this.experienceData.find(exp => exp._id === id);
+                        return {
+                            id: experience._id,
+                            category: experience.experienceCategory,
+                            name: experience.experienceName
+                        };
+                    });
+                }
+            });
 
+            // Update the Pinia store with the modified sessions
+            const userStore = useLoggedInUserStore();
+            userStore.updateexperienceInstanceCreationDetails(this.selectedSessions);
+
+            // Rest of the existing code for resetting and checking validation state
+            this.updateFilteredData();
             this.selectedExperiences = [];
+            this.checkAndUpdateValidationState();
         },
+
 
         updateFilteredData() {
             // Update the selectedSessionExperienceIDs based on the updated selectedSessions
@@ -515,6 +544,9 @@ export default {
                 // Update the filtered data based on the cleared experiences
                 this.updateFilteredData();
             }
+
+            // Check and emit validation state after clearing experiences
+            this.checkAndUpdateValidationState();
         },
 
 
@@ -552,24 +584,51 @@ export default {
                     this.updateFilteredData();
                 }
             }
+
+            // Check and emit validation state after clearing experiences
+            this.checkAndUpdateValidationState();
+        },
+
+        checkAndUpdateValidationState() {
+            // Check if each session has at least one experience
+            const isEverySessionValid = this.selectedSessions.every(session => 
+                session.experienceIDs && session.experienceIDs.length > 0
+            );
+
+            // Emit the validation change event
+            this.$emit('validation-change', { isValid: isEverySessionValid });
+        },
+
+        closeEditDialog() {
+            this.showEditDialog = false;
         },
 
         async handleValidations() {
-            console.log('handleValidations called')
+            console.log('handleValidations called');
             this.formSubmitted = true;
-            const { valid } = await this.$refs.form.validate();
-            if (valid) {
+
+            // Use the same check logic
+            this.checkAndUpdateValidationState();
+
+            // Check if each session has at least one experience
+            const isEverySessionValid = this.selectedSessions.every(session => 
+                session.experienceIDs && session.experienceIDs.length > 0
+            );
+
+            if (isEverySessionValid) {
                 console.log('form is valid!');
                 this.$emit('form-valid');
             } else {
+                console.log('form is invalid. Some sessions do not have experiences assigned.');
                 this.$emit('form-invalid');
-                toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+                toast.error(this.$t("Please assign at least one experience to each session."), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete',
                     multiple: false
                 });
             }
         },
+
     }
 }
 </script>
@@ -585,6 +644,10 @@ export default {
     box-shadow: none !important;
     border: 1px solid transparent !important; /* Update this line if you have a different border style */
     background-color: transparent !important;
+}
+
+.my-divider {
+    border-color: black !important; /* Ensures overriding of default styles */
 }
 
 </style>

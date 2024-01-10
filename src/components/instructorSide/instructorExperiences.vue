@@ -4,7 +4,7 @@
     <div class="text-center">
       <br>
       <p class="font-weight-black text-h6">
-        {{ showInactive ? 'Inactive' : 'Active' }} Experiences
+        {{ showInactive ? 'Archived' : '' }} Experiences
       </p>
 
       <br><v-btn style="text-align:center; margin-right:2rem;">
@@ -12,13 +12,13 @@
       </v-btn>
 
       <v-btn @click="toggleShowInactive">
-        {{ showInactive ? 'Show Active Experiences' : 'Show Inactive Experiences' }}
+        {{ showInactive ? 'Show Experiences' : 'Show Archived Experiences' }}
       </v-btn>
       
       <br><br>
 
       <v-btn @click="deactivateExperiences" v-if="selectedExperiences.length > 0 && !showInactive" style="text-align:center; margin-right:2rem;">
-        Deactivate
+        Archive
       </v-btn>
 
       <v-btn @click="activateExperiences" v-if="selectedExperiences.length > 0 && showInactive">
@@ -146,7 +146,7 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' deactivated!'
+          const message = (this.selectedExperiences.length === 1 ? 'Experience' : 'Experiences') + ' archived!'
           this.selectedExperiences = [];
           this.fetchExperienceData();
 

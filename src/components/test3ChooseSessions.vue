@@ -273,11 +273,11 @@ export default {
             useLoggedInUserStore().startLoading();
             try {
                 const user = useLoggedInUserStore();
-                // let token = user.token;
+                let token = user.token;
 
-                let token = `
-                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDgzNDUxMSwiZXhwIjoxNzA0ODQ2NTExfQ._eErIYblbUPvbZnbOw4D9UyYTevmUr_qP5PHq3wBl50
-                `
+                // let token = `
+                // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDkwMTAxMSwiZXhwIjoxNzA0OTEzMDExfQ.SUQ85YKLSpgJpHDLW_3ptzNoSAOgnXk6SdWIn1mlewc
+                // `
             
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/active`;
                 const resp = await axios.get(apiURL, { headers: { token } });
@@ -302,7 +302,7 @@ export default {
 
             // Update the Pinia store with the full details
             const user = useLoggedInUserStore();
-            user.updateSelectedSessionsDetails(selectedFullDetails);
+            user.updateexperienceInstanceCreationDetails(selectedFullDetails);
         },
         
         isSelected(sessionID) {

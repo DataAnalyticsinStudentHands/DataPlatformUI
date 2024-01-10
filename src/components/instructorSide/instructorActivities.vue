@@ -8,7 +8,7 @@
         <router-link class="" to="/instructorActivities">Activities</router-link>
       </h2>
       <p class="font-weight-black text-h6">
-        {{ showInactive ? 'Inactive' : 'Active' }} Activities
+        {{ showInactive ? 'Archived' : 'Active' }} Activities
       </p>
       <br>
 
@@ -17,13 +17,13 @@
       </v-btn>
       
       <v-btn style="text-align:center" @click="toggleShowInactive">
-        {{ showInactive ? 'Show Active Activities' : 'Show Inactive Activities' }}
+        {{ showInactive ? 'Show Active Activities' : 'Show Archived Activities' }}
       </v-btn>
       
       <br><br>
 
       <v-btn style="text-align:center; margin-right:2rem;" @click="deactivateActivities" v-if="selectedActivities.length > 0 && !showInactive">
-        Deactivate
+        Archive
       </v-btn>
 
       <v-btn style="text-align:center" @click="activateActivities" v-if="selectedActivities.length > 0 && showInactive">
@@ -200,7 +200,7 @@ export default {
 
       Promise.all(promises)
         .then(() => {
-          const message = (this.selectedActivities.length === 1 ? 'Activity' : 'Activities') + ' deactivated!'
+          const message = (this.selectedActivities.length === 1 ? 'Activity' : 'Activities') + ' archived!'
           this.selectedActivities = [];
           this.fetchActivityData();
           toast.success(message, {

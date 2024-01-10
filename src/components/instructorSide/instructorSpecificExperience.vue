@@ -38,8 +38,8 @@
     <div style="text-align: left;">
       <v-btn style="text-align: center;" @click="updateExperience" class="ml-4 mr-4">Update</v-btn>
       <v-btn @click="cancelAction">
-          Cancel
-        </v-btn>
+        Cancel
+      </v-btn>
 
 
     </div>
@@ -116,7 +116,7 @@ export default {
       const token = user.token;
 
       // const token = `
-      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDExNTQyNiwiZXhwIjoxNzA0MTI3NDI2fQ.Bssn6Sj3Jo7fzkZS870qsKaGHPfv3YIvZ8cCWKQaXRQ
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDg3NTcxOCwiZXhwIjoxNzA0ODg3NzE4fQ.1GbBbYs6cRiwpHjkAm97mWJ2Gk-Ksl8VXyEySueiTOk
       // `
 
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.$route.params.id}`;
@@ -134,6 +134,11 @@ export default {
       const user = useLoggedInUserStore();
       const token = user.token;
 
+      // const token = `
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDg3NTcxOCwiZXhwIjoxNzA0ODg3NzE4fQ.1GbBbYs6cRiwpHjkAm97mWJ2Gk-Ksl8VXyEySueiTOk
+      // `
+
+
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
       try {
         const resp = await axios.get(apiURL, { headers: { token } });
@@ -148,7 +153,13 @@ export default {
     async updateExperience() {
       console.log('updateExperience');
       const user = useLoggedInUserStore();
-      const token = user.token;
+      // const token = user.token;
+
+      
+      const token = `
+      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDg3NTcxOCwiZXhwIjoxNzA0ODg3NzE4fQ.1GbBbYs6cRiwpHjkAm97mWJ2Gk-Ksl8VXyEySueiTOk
+      `
+
       const experienceId = this.experience?._id || this.$route.params.id;
 
       // Object for normal Experience update

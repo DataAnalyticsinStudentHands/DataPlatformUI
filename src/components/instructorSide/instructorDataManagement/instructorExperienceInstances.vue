@@ -3,21 +3,21 @@
       <div class="text-center">
         <br>
         <p class="font-weight-black text-h6">
-          {{ showInactive ? 'Inactive' : 'Active' }} Experience Instances
+          {{ showInactive ? 'Archived' : '' }} Experience Instances
         </p>
   
         <br><v-btn style="text-align:center; margin-right:2rem;">
-          <router-link to="/instructorAddExperienceInstance">Add New Instance</router-link>
+          <router-link to="/test3CreateExpInst">Add New Instance</router-link>
         </v-btn>
   
         <v-btn @click="toggleShowInactive">
-          {{ showInactive ? 'Show Active Instances' : 'Show Inactive Instances' }}
+          {{ showInactive ? 'Show Instances' : 'Show Archived Instances' }}
         </v-btn>
 
         <v-row class="d-flex justify-center mt-5">
 
           <v-btn @click="deactivateInstances" v-if="selectedInstances.length > 0 && !showInactive" class="align-center" style="text-align:center; margin-right:2rem;">
-            Deactivate
+            Archive
           </v-btn>
 
         <v-btn @click="activateInstances" v-if="selectedInstances.length > 0 && showInactive" style="text-align:center; margin-right:2rem;">
@@ -78,7 +78,7 @@
     </main>
 
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    experienceInstancesData: {{ experienceInstancesData }}
+    <!-- experienceInstancesData: {{ experienceInstancesData }} -->
   </template>
   
   <script>
@@ -165,7 +165,7 @@
           const response = await axios.put(apiURL, payload, { headers: { token } });
 
           const message = this.selectedInstances.length === 1 ? 'Instance' : 'Instances';
-          toast.success(`${message} ${status ? 'activated!' : 'deactivated!'}`, {
+          toast.success(`${message} ${status ? 'activated!' : 'archived!'}`, {
               position: 'top-right',
               toastClassName: 'Toastify__toast--create'
           });

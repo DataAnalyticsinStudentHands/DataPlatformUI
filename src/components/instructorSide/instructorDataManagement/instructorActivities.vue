@@ -4,7 +4,7 @@
     <div class="text-center">
       <br>
       <p class="font-weight-black text-h6">
-        {{ showInactive ? 'Inactive' : 'Active' }} Activities
+        {{ showInactive ? 'Archived' : '' }} Activities
       </p>
       <br>
 
@@ -13,7 +13,7 @@
       </v-btn>
       
       <v-btn style="text-align:center" @click="toggleShowInactive">
-        {{ showInactive ? 'Show Active Activities' : 'Show Inactive Activities' }}
+        {{ showInactive ? 'Show Activities' : 'Show Archived Activities' }}
       </v-btn>
       
       <br><br>

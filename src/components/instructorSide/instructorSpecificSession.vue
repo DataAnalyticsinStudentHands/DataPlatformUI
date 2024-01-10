@@ -1,33 +1,32 @@
 <template>
-    <main>
-      <v-form @submit.prevent="handleUpdateForm">
-        <v-container>
-          <p class="font-weight-black text-h6">Update Session</p><br>
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-text-field v-model="session.sessionName" label="Session Name"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-text-field type="date" v-model="session.sessionPeriod.startDate" label="Session Start Date"></v-text-field>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field type="date" v-model="session.sessionPeriod.endDate" label="Session End Date"></v-text-field>
-            </v-col>
-          </v-row>
-  
-          <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-          <v-btn style="text-align: center;" @click="handleUpdateForm">Submit</v-btn>
-          <v-btn @click=$router.back() style="margin-left: 10px;">
-            Cancel
-          </v-btn>
-        </v-container>
-      </v-form>
-    </main>
-    <!-- {{ session }} -->
-  </template>
-  
+<main>
+  <v-form @submit.prevent="handleUpdateForm">
+    <v-container>
+      <p class="font-weight-black text-h6">Update Session</p><br>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-text-field v-model="session.sessionName" label="Session Name"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-text-field type="date" v-model="session.sessionPeriod.startDate" label="Session Start Date"></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field type="date" v-model="session.sessionPeriod.endDate" label="Session End Date"></v-text-field>
+        </v-col>
+      </v-row>
+
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <v-btn style="text-align: center;" @click="handleUpdateForm">Submit</v-btn>
+      <v-btn @click=$router.back() style="margin-left: 10px;">
+        Cancel
+      </v-btn>
+    </v-container>
+  </v-form>
+</main>
+</template>
+
   <script>
   import axios from "axios";
 import { DateTime } from "luxon";
