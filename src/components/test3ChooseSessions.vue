@@ -16,9 +16,6 @@
                 :title="session.sessionName" 
                 :color="isSelected(session._id) ? 'light-green-accent-1' : ''" 
             >
-                <template v-slot:append>
-                    <v-icon v-show="isSelected(session._id)">mdi-check-bold</v-icon>
-                </template>
                 <v-card-text>
                     <div>Start Date: {{ new Date(session.sessionPeriod.startDate).toLocaleDateString() }}</div>
                     <div>End Date: {{ new Date(session.sessionPeriod.endDate).toLocaleDateString() }}</div>
@@ -279,7 +276,7 @@ export default {
                 // let token = user.token;
 
                 let token = `
-                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDEwNjY4NiwiZXhwIjoxNzA0MTE4Njg2fQ.DvPLGomaGLDsYwzjCs9TbeI8lflr3KOtGs0rXRuHBiE 
+                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDgzNDUxMSwiZXhwIjoxNzA0ODQ2NTExfQ._eErIYblbUPvbZnbOw4D9UyYTevmUr_qP5PHq3wBl50
                 `
             
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/active`;

@@ -31,7 +31,7 @@
 
                         <v-stepper-item
                             ref="step2"
-                            title="Graduate/Professional"
+                            title="Exit Form Release"
                             icon="mdi-account-school"
                             value="2"
                             :error="gradProfError"
@@ -386,7 +386,13 @@ export default {
 
             try {
                 const user = useLoggedInUserStore();
-                const token = user.token;
+                // const token = user.token;
+
+                const token = `
+                
+                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDgzNDUxMSwiZXhwIjoxNzA0ODQ2NTExfQ._eErIYblbUPvbZnbOw4D9UyYTevmUr_qP5PHq3wBl50
+                
+                `
 
                 const response = await axios.post(apiURL, {
                     studentInformation: this.studentInformation

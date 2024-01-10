@@ -2,7 +2,9 @@
 <v-container>
     <v-row>
         <v-col>
-            <p class="d-flex justify-center font-weight-black text-h6 mb-4">Please Choose One or More Experiences</p>
+            <p class="d-flex justify-center font-weight-black text-h6 mb-4">
+                Please Assign Experiences to {{ singleSession ? 'Session' : 'Sessions' }}
+            </p>
         </v-col>
     </v-row>
     <v-row>
@@ -54,6 +56,38 @@
                                 </template>
                             </v-text-field>
                         </v-col>
+                        <!-- Choose Session button -->
+                        <v-col cols="3" class="align-self-center">
+                            <v-menu
+                                v-model="showChooseSessionMenu" 
+                                offset-y
+                                :disabled="singleSession"
+                            >
+                                <template v-slot:activator="{ props }">
+                                    <v-btn 
+                                        v-bind="props"
+                                    >
+                                        {{ singleSession ? selectedSessions[0].sessionName : selectedSessionName}}
+                                    </v-btn>
+                                </template>
+                                <v-list>
+                                    <v-list-item
+                                        v-for="session in selectedSessions"
+                                        :key="session._id"
+                                        @click="chooseSession(session)"
+                                    >
+                                        <v-list-item-title>{{ session.sessionName }}</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </v-col>
+                        <!-- Add To Session button -->
+                        <v-col cols="3" class="text-end align-self-center">
+                            <v-btn 
+                                :disabled="isAddToSessionDisabled"
+                                @click="handleAddToSession"
+                            >Add to Session</v-btn>
+                        </v-col>
                     </v-row>
 
                     <!-- Chips Row -->
@@ -92,6 +126,7 @@
                       item-value="_id"
                       show-select
                       v-model="selectedExperiences"
+                      disabled
                   >
                       <!-- Slot for Edit Column -->
                       <template v-slot:item.edit="{ item }">
@@ -104,35 +139,64 @@
                       </template>
 
                       <!-- Slot for Activities Column -->
-                      <template v-slot:item.activities="{ item }">
+                      <!-- <template v-slot:item.activities="{ item }">
                           <div>{{ item.activitiesCount }}</div>
-                      </template>
+                      </template> -->
                   </v-data-table>
             </v-card>
         </v-col>
     </v-row>
-    <v-row>
-      <!-- Column for Session Cards -->
-      <v-col cols="6">
-        <v-row v-for="session in selectedSessions" :key="session._id">
-          <v-col cols="12">
-            <v-card flat>
+    <v-row v-for="session in selectedSessions" :key="session._id">
+      <!-- Column for Full-width Card -->
+      <v-col cols="12">
+        <v-card>
+          <v-row>
+            <!-- Column for Session Information -->
+            <v-col cols="4">
               <v-card-title>{{ session.sessionName }}</v-card-title>
               <v-card-text>
                 Start Date: {{ new Date(session.sessionPeriod.startDate).toLocaleDateString() }}
                 <br>
                 End Date: {{ new Date(session.sessionPeriod.endDate).toLocaleDateString() }}
               </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+            </v-col>
+            <!-- Column for Experience Chips -->
+            <v-col cols="8">
+                <div v-if="session.experienceIDs && session.experienceIDs.length > 0">
+                    <v-chip
+                        v-for="experience in mapExperienceData(session.experienceIDs)"
+                        :key="experience._id"
+                        class="ma-1"
+                        color="blue-darken-3"
+                    >
+                        {{ experience.experienceName }}
+                        <v-icon
+                            end
+                            @click.stop="removeSessionExperienceChip(experience._id, session._id)"
+                        >mdi-delete</v-icon>
+                    </v-chip>
+                </div>
+            </v-col>
+          </v-row>
+          <v-card-actions
+            v-if="session.experienceIDs && session.experienceIDs.length > 0"
+          >
+          <!-- Clear Experiences Button -->
+            <v-btn
+                color="red darken-1"
+                text
+                @click="clearSessionExperiences(session._id)"
+            >
+                Clear Experiences
+            </v-btn>
+        </v-card-actions>
+
+        </v-card>
       </v-col>
     </v-row>
-
 </v-container>
-<br><br><br><br><br>
-    {{ selectedSessions }}
 
+<!-- Dialog for quick update -->
 <v-dialog v-model="showEditDialog" max-width="600px">
     <v-card
         width="700"
@@ -145,6 +209,15 @@
     <br>
     </v-card>
 </v-dialog>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+selectedSessionName: {{ selectedSessionName }}
+<br>
+selectedExperiences: {{ selectedExperiences }}
+<br>
+selectedSessions: {{ selectedSessions }}
+
+
 
 
 <br><br><br><br><br><br>
@@ -187,12 +260,6 @@ export default {
                     align: 'start',
                     sortable: true
                 },
-                {
-                    title: 'Activities',
-                    value: 'activitiesCount',
-                    align: 'center',
-                    sortable: true
-                },
                 { 
                     title: '', 
                     value: 'edit',
@@ -203,7 +270,9 @@ export default {
             filteredExperienceData: [],     
             selectedExperiences: [],
             showEditDialog: false,
-            selectedExperience: null,
+            selectedSessionName: 'Select a Session',
+            showChooseSessionMenu: false,
+            selectedSessionExperienceIDs: [],
             
         }
     },
@@ -232,7 +301,33 @@ export default {
         selectedSessions() {
             const user = useLoggedInUserStore();
             return user.selectedSessionsDetails;
-        }
+        },
+
+        isAddToSessionDisabled() {
+            // When there is only one session, it should be automatically selected,
+            // so the check for 'Select a Session' is unnecessary.
+            if (this.singleSession) {
+                return this.selectedExperiences.length === 0;
+            } else {
+                return this.selectedSessionName === 'Select a Session' || this.selectedExperiences.length === 0;
+            }
+        },
+
+        sessionExperienceChips() {
+            const chips = {};
+            this.experienceData.forEach(experience => {
+                chips[experience._id] = {
+                    experienceCategory: experience.experienceCategory,
+                    experienceName: experience.experienceName
+                };
+            });
+            console.log("sessionExperienceChips computed:", chips);
+            return chips;
+        },
+
+        singleSession() {
+            return this.selectedSessions.length === 1;
+        },
     },
     methods: {
         async fetchExperiences() {
@@ -240,7 +335,7 @@ export default {
             // const token = user.token;
 
             const token = `
-                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiIxODE3MDM0NzI1MDAxMjIiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDEwNjY4NiwiZXhwIjoxNzA0MTE4Njg2fQ.DvPLGomaGLDsYwzjCs9TbeI8lflr3KOtGs0rXRuHBiE
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDgzNDUxMSwiZXhwIjoxNzA0ODQ2NTExfQ._eErIYblbUPvbZnbOw4D9UyYTevmUr_qP5PHq3wBl50
             `
 
             try {
@@ -300,6 +395,15 @@ export default {
         },
 
         performSearch() {
+            // Update the selectedSessionExperienceIDs if there is only one session
+            if (this.singleSession) {
+                this.selectedSessionExperienceIDs = this.selectedSessions[0].experienceIDs || [];
+            }
+
+            let sessionFilteredData = this.selectedSessionExperienceIDs.length > 0
+                ? this.experienceData.filter(item => !this.selectedSessionExperienceIDs.includes(item._id))
+                : [...this.experienceData];
+
             let searchGroups = {};
             this.selectedSearchChips.forEach(index => {
                 let criteria = this.searchCriteria[index];
@@ -307,9 +411,9 @@ export default {
                     searchGroups[criteria.category] = [];
                 }
                 searchGroups[criteria.category].push(criteria.term.toLowerCase());
-            })
+            });
 
-            this.filteredExperienceData = this.experienceData.filter(item => {
+            this.filteredExperienceData = sessionFilteredData.filter(item => {
                 return Object.keys(searchGroups).every(category => {
                     if (category === 'All Text Fields') {
                         return searchGroups[category].every(term =>
@@ -325,8 +429,8 @@ export default {
                         );
                     }
                     return true;
-                })
-            })
+                });
+            });
         },
 
         editExperience(experience) {
@@ -343,6 +447,111 @@ export default {
             })
             // Refetch Experiences
             this.fetchExperiences();
+        },
+
+        chooseSession(session) {
+            this.selectedSessionName = session.sessionName;
+            this.selectedSessionExperienceIDs = session.experienceIDs || [];
+            console.log("Session selected:", session);
+            this.performSearch();
+        },
+
+        handleAddToSession() {
+            if (this.singleSession) {
+                const session = this.selectedSessions[0];
+                session.experienceIDs = [...new Set([...session.experienceIDs || [], ...this.selectedExperiences])];
+                toast.success(`Experiences added to ${session.sessionName}!`, {
+                    position: 'top-right',
+                    toastClassName: 'Toastify__toast--create'
+                });
+            } else {
+                const sessionIndex = this.selectedSessions.findIndex(session => session.sessionName === this.selectedSessionName);
+                if (sessionIndex !== -1) {
+                    const existingExperienceIDs = this.selectedSessions[sessionIndex].experienceIDs || [];
+                    this.selectedSessions[sessionIndex].experienceIDs = [...new Set([...existingExperienceIDs, ...this.selectedExperiences])];
+                    toast.success(`Experiences added to ${this.selectedSessionName}!`, {
+                        position: 'top-right',
+                        toastClassName: 'Toastify__toast--create'
+                    });
+                }
+            }
+
+            // Update the filtered data based on the added experiences
+            this.updateFilteredData();
+
+            this.selectedExperiences = [];
+        },
+
+        updateFilteredData() {
+            // Update the selectedSessionExperienceIDs based on the updated selectedSessions
+            if (this.singleSession) {
+                this.selectedSessionExperienceIDs = this.selectedSessions[0].experienceIDs || [];
+            } else {
+                const selectedSession = this.selectedSessions.find(session => session.sessionName === this.selectedSessionName);
+                this.selectedSessionExperienceIDs = selectedSession ? selectedSession.experienceIDs || [] : [];
+            }
+
+            this.performSearch();
+        },
+
+
+        resetSessionSelection() {
+            // Reset the selected session name and selectedExperiences
+            this.selectedSessionName = 'Select a Session';
+            this.selectedExperiences = [];
+        },
+
+
+        clearSessionExperiences(sessionID) {
+            const sessionIndex = this.selectedSessions.findIndex(session => session._id === sessionID);
+            if (sessionIndex !== -1) {
+                // Clear the experiences from the session
+                this.selectedSessions[sessionIndex].experienceIDs = [];
+                toast.info(`Experiences cleared from ${this.selectedSessions[sessionIndex].sessionName}!`, {
+                    position: 'top-right',
+                    toastClassName: 'Toastify__toast--update'
+                });
+
+                // Update the filtered data based on the cleared experiences
+                this.updateFilteredData();
+            }
+        },
+
+
+
+
+        mapExperienceData(experienceIDs) {
+        return experienceIDs.map(id => {
+            if (this.sessionExperienceChips[id]) {
+            return {
+                _id: id,
+                ...this.sessionExperienceChips[id]
+            };
+            }
+            return null;
+        }).filter(e => e !== null);
+        },
+
+
+        removeSessionExperienceChip(experienceID, sessionID) {
+            console.log('removeSessionExperienceChip');
+            console.log('experienceID: ', experienceID);
+            console.log('sessionID: ', sessionID);
+            // Find the session by its ID
+            const sessionIndex = this.selectedSessions.findIndex(session => session._id === sessionID);
+            if (sessionIndex !== -1) {
+                // Remove the experience ID from the session's experienceIDs array
+                const experienceIndex = this.selectedSessions[sessionIndex].experienceIDs.indexOf(experienceID);
+                if (experienceIndex !== -1) {
+                    this.selectedSessions[sessionIndex].experienceIDs.splice(experienceIndex, 1);
+
+                    // Update the selectedSessionExperienceIDs
+                    this.selectedSessionExperienceIDs = this.selectedSessions[sessionIndex].experienceIDs || [];
+
+                    // Update the filtered data
+                    this.updateFilteredData();
+                }
+            }
         },
 
         async handleValidations() {
