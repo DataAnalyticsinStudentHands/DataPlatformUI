@@ -3,17 +3,17 @@
     <v-row>
       <v-col>
         <v-tabs v-model="tab" fixed-tabs>
-          <v-tab @click="selectTab(0)">Sessions</v-tab>
-          <v-tab @click="selectTab(1)">Experience Slots</v-tab>
+          <v-tab @click="selectTab(0)">Experience Slots</v-tab>
+          <v-tab @click="selectTab(1)">Sessions</v-tab>
           <v-tab @click="selectTab(2)">Experiences</v-tab>
           <v-tab @click="selectTab(3)">Activities</v-tab>
         </v-tabs>
   
         <div v-if="tab === 0">
-          <instructor-sessions />
+          <instructor-experience-instances />
         </div>
         <div v-if="tab === 1">
-          <instructor-experience-instances />
+          <instructor-sessions />
         </div>
         <div v-if="tab === 2">
           <instructor-experiences />

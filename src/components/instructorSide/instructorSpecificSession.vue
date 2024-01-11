@@ -91,7 +91,7 @@ import { DateTime } from "luxon";
                     this.$router.push({ 
                         name: 'instructorDataManagement',
                         params: {
-                            activeTab: 0,
+                            activeTab: 1,
                             toastType: 'info',
                             toastMessage: 'Session updated!',
                             toastPosition: 'top-right',

@@ -216,7 +216,7 @@ export default {
                             this.$router.push({ 
                                 name: 'instructorDataManagement',
                                 params: {
-                                    activeTab: 1,
+                                    activeTab: 0,
                                     toastType: 'success',
                                     toastMessage: 'Experience Instance added!',
                                     toastPosition: 'top-right',
@@ -242,7 +242,7 @@ export default {
             this.$router.push({
                 name: 'instructorDataManagement',
                 params: {
-                    activeTab: 1,
+                    activeTab: 0,
                 }
             });
         },
