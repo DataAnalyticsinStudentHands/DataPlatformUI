@@ -4,7 +4,7 @@
     <v-row>
         <v-col>
             <p class="d-flex justify-center font-weight-black text-h6">
-                Sessions
+                {{ viewArchivedSessions ? "Archived" : "" }} Sessions
             </p>
         </v-col>
     </v-row>
@@ -63,25 +63,25 @@
                         <v-col class="d-flex justify-end align-self-center">
                             <v-btn 
                                 v-if="!selectedSessions.length"
-                                @click="console.log('View Archived Sessions')"
+                                @click="toggleArchivedSessions"
                                 elevation="1"
-                                append-icon="mdi-archive"
+                                :append-icon="viewArchivedSessions ? '' : 'mdi-archive'"
                             >
-                                View Archive
+                                {{ viewArchivedSessions ? 'View Sessions' : 'View Archive' }}
                             </v-btn>
                             <v-btn 
                                 v-else
-                                @click="console.log('Archive Sessions')"
+                                @click="handleArchiveSessions"
                                 elevation="1"
                                 append-icon="mdi-archive"
                             >
-                                Archive {{ selectedSessions.length === 1 ? "Session" : "Sessions" }}
+                                {{ viewArchivedSessions ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }} 
                             </v-btn>
                         </v-col>
                         <!-- Add New Session Button -->
                         <v-col class="d-flex justify-end align-self-center">
                             <v-btn 
-                                @click="console.log('Add New Session')"
+                                @click="handleAddNewSession"
                                 elevation="1"
                                 prepend-icon="mdi-plus"
                                 color="#c8102e"
@@ -277,8 +277,8 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-
-<!-- <br>
+<!-- 
+<br>
 dialogEndDate: {{ dialogEndDate }}
 <br>
 
@@ -299,6 +299,7 @@ filteredSessionData:
 searchCriteria:
 <br>
 {{ searchCriteria }} -->
+
 </template>
   
 <script>
@@ -364,6 +365,7 @@ data() {
         dialogEndDate: false,
         selectedEndDate: new Date(),
         endDateFilterType: "On",
+        viewArchivedSessions: false,
 
 
 
@@ -377,6 +379,7 @@ mounted() {
     this.fetchSessionData()
     .then(() => {
         useLoggedInUserStore().stopLoading();
+        this.performSearch();
     })
     .catch((error) => {
         this.handleError(error);
@@ -490,12 +493,13 @@ methods: {
             // let token = user.token;
 
             const token = `
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNTAyNzg4NiwiZXhwIjoxNzA1MDM5ODg2fQ.AxV6M0imjxbY9qdQh-UASQXeiy71bw0ESDjAG3zex2M
+                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNTA2NDI0NSwiZXhwIjoxNzA1MDc2MjQ1fQ.HLfxH2iSGYBVEua2WIHGJGMA4apj1pOzW3mgoJAuqxM
             `
             let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/`;
             const resp = await axios.get(apiURL, { headers: { token } });
             this.sessionData = resp.data;
             this.filteredSessionData = [...this.sessionData];
+            this.performSearch();
         } catch (error) {
             this.handleError(error);
             throw error;
@@ -504,6 +508,7 @@ methods: {
 
     editSession(session) {
         console.log("Edit Session: ", session);
+        this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
     },
 
     formatDate(datetimeDB) {
@@ -583,6 +588,15 @@ methods: {
         });
 
         this.filteredSessionData = this.sessionData.filter(item => {
+            // Check if item should be included based on sessionStatus
+            if (this.viewArchivedSessions && item.sessionStatus === false) {
+                // Continue with other criteria checks for archived items
+            } else if (!this.viewArchivedSessions && item.sessionStatus === true) {
+                // Continue with other criteria checks for active items
+            } else {
+                // Exclude the item if sessionStatus doesn't match
+                return false;
+            }
             return Object.keys(searchGroups).every(category => {
                 console.log('category: ', category);
                 if (category === "Session Name") {
@@ -789,6 +803,49 @@ methods: {
     formatDateMethod(date) {
         return DateTime.fromJSDate(date).toFormat('MM-dd-yyyy');
     },
+
+    toggleArchivedSessions() {
+        this.viewArchivedSessions = !this.viewArchivedSessions;
+        this.performSearch();
+    },
+
+    async handleArchiveSessions() {
+        try {
+            const user = useLoggedInUserStore();
+            // const token = user.token;
+            const token = `
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNTA2NDI0NSwiZXhwIjoxNzA1MDc2MjQ1fQ.HLfxH2iSGYBVEua2WIHGJGMA4apj1pOzW3mgoJAuqxM
+            `
+            const updateStatus = { sessionStatus: this.viewArchivedSessions };
+
+            console.log('updateStatus: ', updateStatus);
+
+            for (const session of this.selectedSessions) {
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${session._id}`;
+                await axios.put(apiURL, updateStatus, { headers: { token }})
+                    .then(() => {
+                        toast.success(
+                            (this.selectedSessions.length === 1 ? "Session " : "Sessions ") +
+                            (this.viewArchivedSessions ? "Restored!" : "Archived!"), {
+                                position: "top-right",
+                                toastClassName: "Toastify__toast--create",
+                                multiple: false
+                        });
+                    });
+            }
+        } catch (error) {
+            this.handleError(error);
+        } finally {
+            this.selectedSessions = [];
+            await this.fetchSessionData();
+        }
+    },
+
+    handleAddNewSession() {
+        this.$router.push({ name: "instructorAddSession" });
+    },
+
+
 },
 };
 </script>

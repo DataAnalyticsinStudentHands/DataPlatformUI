@@ -7,13 +7,19 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/test_SessionsManagement'
+      redirect: '/test_ExperiencesManagement'
     },
     {
       path: '/test_SessionsManagement',
       name: 'SessionsManagement',
       props: true,
       component: () => import('../components/test_SessionsManagement.vue')
+    },
+    {
+      path: '/test_ExperiencesManagement',
+      name: 'ExperiencesManagement',
+      props: true,
+      component: () => import('../components/test_ExperiencesManagement.vue')
     },
     {
       path: '/test',
