@@ -81,6 +81,7 @@
                         <!-- Add New Session Button -->
                         <v-col class="d-flex justify-end align-self-center">
                             <v-btn
+                                @click="handleAddNewExperience"
                                 elevation="1"
                                 prepend-icon="mdi-plus"
                                 color="#c8102e"
@@ -273,10 +274,7 @@ methods: {
     async fetchExperienceData() {
         try {
             const user = useLoggedInUserStore();
-            // const token = user.token;
-            const token = `
-                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNTA3ODg5MiwiZXhwIjoxNzA1MDkwODkyfQ.hLe6v5pqVu2Bfxbf0AeAZP1izlMMivmx7BYsDHD_GQ4
-            `
+            const token = user.token;
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const response = await axios.get(apiURL, { headers: { token } });
             this.experienceData = response.data;
@@ -398,11 +396,7 @@ methods: {
     async handleArchiveExperiences() {
         try {
             const user = useLoggedInUserStore();
-            // const token = user.token;
-
-            const token = `
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNTA3ODg5MiwiZXhwIjoxNzA1MDkwODkyfQ.hLe6v5pqVu2Bfxbf0AeAZP1izlMMivmx7BYsDHD_GQ4
-            `
+            const token = user.token;
             const updateStatus = { experienceStatus: this.viewArchivedExperiences };
 
             for (const experience of this.selectedExperiences) {
@@ -453,6 +447,10 @@ methods: {
             .filter(criteria => criteria.category === "Activity Name")
             .map(criteria => criteria.term.toLowerCase());
         return activityNameTerms.some(term => activityName.toLowerCase().includes(term));
+    },
+
+    handleAddNewExperience() {
+        this.$router.push({ name: "instructorAddExperience" });
     },
 }
 

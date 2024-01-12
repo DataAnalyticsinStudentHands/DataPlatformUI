@@ -30,7 +30,7 @@
 import { toast } from 'vue3-toastify';
 import instructorActivities from './instructorActivities.vue';
 import instructorExperienceInstances from './instructorExperienceInstances.vue';
-import instructorExperiences from '@/components/instructorSide/instructorExperiences.vue';
+import instructorExperiences from './instructorExperiences.vue';
 import instructorSessions from './instructorSessions.vue';
 
 export default {

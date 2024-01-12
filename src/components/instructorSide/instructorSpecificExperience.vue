@@ -36,10 +36,11 @@
       </v-table>
     </div>
     <div style="text-align: left;">
-      <v-btn style="text-align: center;" @click="updateExperience" class="ml-4 mr-4">Update</v-btn>
-      <v-btn @click="cancelAction">
+      <v-btn @click="cancelAction" class="ml-4 mr-4">
         Cancel
       </v-btn>
+      <v-btn style="text-align: center;" @click="updateExperience">Update</v-btn>
+
 
 
     </div>

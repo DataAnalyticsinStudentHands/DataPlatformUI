@@ -7,7 +7,13 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/test_ExperiencesManagement'
+      redirect: '/login'
+    },
+    {
+      path: '/test_ActivitiesManagement',
+      name: 'ActivitiesManagement',
+      props: true,
+      component: () => import('../components/test_ActivitiesManagement.vue')
     },
     {
       path: '/test_SessionsManagement',

@@ -33,10 +33,10 @@
             </tr>
           </tbody>
         </v-table>
-        <v-btn @click=$router.back() style="margin-left: 10px;">
+        <v-btn @click="$router.push({ name: 'instructorDataManagement', params: { activeTab: 2 } })">
           Cancel
         </v-btn>
-        <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
+        <v-btn style="text-align: center; margin-left: 10px;" @click="handleSubmitForm">Submit</v-btn>
       </v-container>
     </v-form>
   </main>
