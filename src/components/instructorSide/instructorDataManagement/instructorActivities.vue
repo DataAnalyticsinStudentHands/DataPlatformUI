@@ -14,7 +14,8 @@
                   <!-- Top Management Row -->
                   <v-card-title>
                       <v-row class="d-flex justify-start">
-                          <v-col cols="6">
+                         <!-- Search Field for sm Screens and Up -->
+                          <v-col lg="6" md="6" sm="6" class="d-none d-sm-flex justify-start">
                               <!-- Search Field -->
                               <v-text-field
                                   v-model="activitySearch"
@@ -57,8 +58,14 @@
                                   </template>
                               </v-text-field>
                           </v-col>
+                          <!-- Search Field for xs Screens -->
+
+
+
+
+                          <v-spacer class="d-none d-sm-flex"></v-spacer>
                           <!-- View Archived Activites Button -->
-                          <v-col class="d-flex justify-end align-self-center">
+                          <v-col lg="auto" md="4" sm="auto" class="d-none d-sm-flex justify-end align-self-center">
                               <v-btn
                                   v-if="!selectedActivities.length"
                                   @click="toggleArchivedActivities"
@@ -73,18 +80,24 @@
                                   elevation="1"
                                   :append-icon="viewArchivedActivities ? 'mdi-restore' : 'mdi-archive'"
                               >
-                                  {{ viewArchivedActivities ? "Restore" : "Archive" }} {{ selectedActivities.length === 1 ? "Activity" : "Activities" }}
+                                <span class="d-none d-md-flex">
+                                    {{ viewArchivedActivities ? "Restore" : "Archive" }} {{ selectedActivities.length === 1 ? "Activity" : "Activities" }}
+                                </span>
+                                <span class="d-none d-sm-flex d-md-none">
+                                    {{ viewArchivedActivities ? "Restore" : "Archive" }} 
+                                </span>
                               </v-btn>
                           </v-col>
                           <!-- Add New Activity Button -->
-                          <v-col class="d-flex justify-end align-self-center">
+                          <v-col lg="auto" md="2" sm="2" class="d-none d-sm-flex justify-end align-self-center">
                               <v-btn
                                   @click="handleAddNewActivity"
                                   elevation="1"
                                   prepend-icon="mdi-plus"
                                   color="#c8102e"
                               >
-                                  Add New Activity
+                                <span class="d-none d-lg-flex">Add New Activity</span>
+                                <span class="d-none d-sm-flex d-lg-none">New</span>
                               </v-btn>
                           </v-col>
                       </v-row>

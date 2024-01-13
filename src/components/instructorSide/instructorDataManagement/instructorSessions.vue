@@ -13,8 +13,9 @@
             <v-card flat>
                 <!-- Top Management Row -->
                 <v-card-title>
-                    <v-row class="d-flex justify-start">
-                        <v-col cols="6">
+                    <v-row>
+                        <!-- Search Fields for sm Screens and Up -->
+                        <v-col lg="6" md="6" sm="6" class="d-none d-sm-flex justify-start">
                             <!-- Search Fields -->
                             <v-text-field
                                 v-model="sessionSearch"
@@ -59,8 +60,19 @@
                                 </template>
                             </v-text-field>
                         </v-col>
-                        <!-- View Archived Sessions Button -->
-                        <v-col class="d-flex justify-end align-self-center">
+                        <!-- Search Fields for xs Screens -->
+                        <v-col class="d-none d-flex d-sm-none justify-start">
+                            <v-btn 
+                                icon 
+                                variant="text"
+                                @click="xsdialogSearch = true"
+                            >
+                                <v-icon>mdi-magnify</v-icon>
+                            </v-btn>
+                        </v-col>
+                        <v-spacer class="d-none d-sm-flex"></v-spacer>
+                        <!-- View Archived Sessions Button for sm Screens and Up-->
+                        <v-col lg="auto" md="4" sm="auto" class="d-none d-sm-flex justify-end align-self-center">
                             <v-btn 
                                 v-if="!selectedSessions.length"
                                 @click="toggleArchivedSessions"
@@ -75,18 +87,42 @@
                                 elevation="1"
                                 :append-icon="viewArchivedSessions ? 'mdi-restore' : 'mdi-archive'"
                             >
-                                {{ viewArchivedSessions ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }} 
+                                <span class="d-none d-md-flex">
+                                    {{ viewArchivedSessions ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }}
+                                </span>
+                                <span class="d-none d-sm-flex d-md-none">
+                                    {{ viewArchivedSessions ? "Restore" : "Archive" }}
+                                </span>
                             </v-btn>
                         </v-col>
-                        <!-- Add New Session Button -->
-                        <v-col class="d-flex justify-end align-self-center">
+                        <!-- View Archived Sessions Button for xs Screens -->
+                        <v-col class="d-none d-flex d-sm-none justify-end">
+                            <v-btn
+                                icon
+                                variant="text"
+                                @click="selectedSessions.length ? handleArchiveSessions() : toggleArchivedSessions()"
+                            >
+                                <v-icon>
+                                    {{ selectedSessions.length ? (viewArchivedSessions ? 'mdi-restore' : 'mdi-archive') : 'mdi-archive' }}
+                                </v-icon>
+                            </v-btn>
+                        </v-col>
+                        <!-- Add New Session Button for sm Screens and Up -->
+                        <v-col lg="auto" md="2" sm="2" class="d-none d-sm-flex justify-end align-self-center">
                             <v-btn 
                                 @click="handleAddNewSession"
                                 elevation="1"
                                 prepend-icon="mdi-plus"
                                 color="#c8102e"
                             >
-                                Add New Session
+                                <span class="d-none d-lg-flex">Add New Session</span>
+                                <span class="d-none d-sm-flex d-lg-none">New</span>
+                            </v-btn>
+                        </v-col>
+                        <!-- Add New Session Button for xs Screens -->
+                        <v-col sm="2" class="d-none d-flex d-sm-none justify-end align-self-center">
+                            <v-btn elevation="2" color="#c8102e" @click="handleAddNewSession">
+                                <v-icon>mdi-plus</v-icon>
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -277,6 +313,130 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
+
+<!-- Dialog for Search Fields for xs Screens -->
+<v-dialog
+    v-model="xsdialogSearch"
+    width="100%"
+    persistent
+>
+    <v-card>
+        <v-card-title>
+            <v-row>
+                <v-col>
+                    Select a Filter:
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-select
+                        v-model="xsSearchFilterSelection"
+                        :items="['Session Name', 'Start Date', 'End Date']"
+                    ></v-select>
+                </v-col>
+            </v-row>
+        </v-card-title>
+        <v-card-item v-if="xsSearchFilterSelection === 'Session Name'">
+            <v-row>
+                <v-col>
+                    <v-text-field
+                        v-model="sessionSearch"
+                        density="comfortable"
+                        :label="searchLabel"
+                        flat
+                        hide-details
+                        clearable
+                        variant="solo-filled"
+                    >
+                    </v-text-field>
+                </v-col>
+            </v-row>
+        </v-card-item>
+        <v-card-item v-if="xsSearchFilterSelection === 'Start Date'">
+            <v-row>
+                <v-col>
+                    <v-select
+                        v-model="startDateFilterType"
+                        :items="['On', 'Before', 'After', 'Between']"
+                        label="Filter Type"
+                        outlined
+                        density="comfortable"
+                        hide-details
+                    ></v-select>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-text-field
+                        v-if="startDateFilterType !== 'Between'"
+                        type="date"
+                        v-model="selectedStartDate"
+                    ></v-text-field>
+                    <v-text-field
+                        v-if="startDateFilterType === 'Between'"
+                        type="date"
+                        v-model="beginningDateRange"
+                    ></v-text-field>
+                    <v-text-field
+                        v-if="startDateFilterType === 'Between'"
+                        type="date"
+                        v-model="endDateRange"
+                    ></v-text-field>
+                </v-col>
+            </v-row>
+        </v-card-item>
+        <v-card-item v-if="xsSearchFilterSelection === 'End Date'">
+            <v-row>
+                <v-col>
+                    <v-select
+                        v-model="endDateFilterType"
+                        :items="['On', 'Before', 'After', 'Between']"
+                        label="Filter Type"
+                        outlined
+                        density="comfortable"
+                        hide-details
+                    ></v-select>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-text-field
+                        v-if="endDateFilterType !== 'Between'"
+                        type="date"
+                        v-model="selectedEndDate"
+                    ></v-text-field>
+                    <v-text-field
+                        v-if="endDateFilterType === 'Between'"
+                        type="date"
+                        v-model="beginningDateRange"
+                    ></v-text-field>
+                    <v-text-field
+                        v-if="endDateFilterType === 'Between'"
+                        type="date"
+                        v-model="endDateRange"
+                    ></v-text-field>
+                </v-col>
+            </v-row>
+        </v-card-item>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="xsCancelSearchDialog">Cancel</v-btn>
+            <v-btn 
+                v-if="xsSearchFilterSelection === 'Start Date'"
+                color="primary"
+                :disabled="!canApplyStartDates"
+                @click="xsApplySearchFilters"
+            >Apply</v-btn>
+            <v-btn 
+                v-else
+                color="primary"
+                :disabled="!canApplyEndDates"
+                @click="xsApplySearchFilters"
+            >Apply</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
+
 <!-- 
 <br>
 dialogEndDate: {{ dialogEndDate }}
@@ -301,7 +461,7 @@ searchCriteria:
 {{ searchCriteria }} -->
 
 </template>
-    
+
 <script>
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -366,6 +526,8 @@ data() {
         selectedEndDate: new Date(),
         endDateFilterType: "On",
         viewArchivedSessions: false,
+        xsdialogSearch: false,
+        xsSearchFilterSelection: null,
 
 
 
@@ -665,6 +827,7 @@ methods: {
             }
         } else {
             this.selectedStartDate = date;
+            console.log('this.selectedStartDate in handleStartDateSelection: ', this.selectedStartDate);
         }
     },
 
@@ -689,6 +852,7 @@ methods: {
 
         // Handle different date filter types
         if (this.startDateFilterType === 'On' && this.selectedStartDate) {
+            console.log('this.selectedStartDate in submitStartDate: ', this.selectedStartDate);
             this.createStartDateChip('=', this.selectedStartDate);
         } else if (this.startDateFilterType === 'Before' && this.selectedStartDate) {
             this.createStartDateChip('<', this.selectedStartDate);
@@ -837,6 +1001,48 @@ methods: {
     handleAddNewSession() {
         this.$router.push({ name: "instructorAddSession" });
     },
+
+    xsCancelSearchDialog() {
+        this.xsdialogSearch = false;
+        this.xsSearchFilterSelection = null;
+    },
+
+    xsApplySearchFilters() {
+    if (this.xsSearchFilterSelection === "Session Name") {
+        this.addSearchChip();
+    } else if (this.xsSearchFilterSelection === "Start Date" || this.xsSearchFilterSelection === "End Date") {
+        const isStartDate = this.xsSearchFilterSelection === "Start Date";
+        let dateFilterType = isStartDate ? this.startDateFilterType : this.endDateFilterType;
+        let selectedDate = isStartDate ? this.selectedStartDate : this.selectedEndDate;
+        let handleDateSelection = isStartDate ? this.handleStartDateSelection : this.handleEndDateSelection;
+        let submitDate = isStartDate ? this.submitStartDate : this.submitEndDate;
+        let createChipMethod = isStartDate ? this.createStartDateChip : this.createEndDateChip;
+
+        if (dateFilterType !== 'Between') {
+            // For 'On', 'Before', and 'After' filters
+            let parsedDate = DateTime.fromISO(selectedDate).toJSDate();
+            handleDateSelection(parsedDate);
+            submitDate(parsedDate);
+        } else {
+            // For 'Between' filter - Split into two chips
+            if (this.beginningDateRange && this.endDateRange) {
+                let parsedStartDate = DateTime.fromISO(this.beginningDateRange).toJSDate();
+                let parsedEndDate = DateTime.fromISO(this.endDateRange).toJSDate();
+                createChipMethod('>', parsedStartDate); // Date After {date1}
+                createChipMethod('<', parsedEndDate);   // Date Before {date2}
+            }
+        }
+    }
+    this.xsdialogSearch = false;
+    this.sessionSearch = "";
+    this.xsSearchFilterSelection = null;
+}
+
+
+
+
+
+
 
 
 },

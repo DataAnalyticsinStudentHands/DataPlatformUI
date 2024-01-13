@@ -14,7 +14,7 @@
                 <!-- Top Management Row -->
                 <v-card-title>
                     <v-row class="d-flex justify-start">
-                        <v-col cols="6">
+                        <v-col lg="6" md="6" sm="6" class="d-none d-sm-flex justify-start">
                             <!-- Search Field -->
                             <v-text-field
                                 v-model="experienceSearch"
@@ -59,8 +59,9 @@
                                 </template>
                             </v-text-field>
                         </v-col>
+                        <v-spacer class="d-none d-sm-flex"></v-spacer>
                         <!-- View Archived Experiences Button -->
-                        <v-col class="d-flex justify-end align-self-center">
+                        <v-col lg="auto" md="4" sm="auto" class="d-none d-sm-flex justify-end align-self-center">
                             <v-btn
                                 v-if="!selectedExperiences.length"
                                 @click="toggleArchivedExperiences"
@@ -75,18 +76,24 @@
                                 elevation="1"
                                 :append-icon="viewArchivedExperiences ? 'mdi-restore' : 'mdi-archive'"
                             >
-                                {{ viewArchivedExperiences ? "Restore" : "Archive" }} {{ selectedExperiences.length === 1 ? "Experience" : "Experiences" }}
+                                <span class="d-none d-md-flex">
+                                    {{ viewArchivedExperiences ? "Restore" : "Archive" }} {{ selectedExperiences.length === 1 ? "Experience" : "Experiences" }}
+                                </span>
+                                <span class="d-none d-sm-flex d-md-none">
+                                    {{ viewArchivedExperiences ? "Restore" : "Archive" }}
+                                </span>
                             </v-btn>
                         </v-col>
                         <!-- Add New Experience Button -->
-                        <v-col class="d-flex justify-end align-self-center">
+                        <v-col lg="auto" md="2" class="d-none d-sm-flex justify-end align-self-center">
                             <v-btn
                                 @click="handleAddNewExperience"
                                 elevation="1"
                                 prepend-icon="mdi-plus"
                                 color="#c8102e"
                             >
-                                Add New Experience
+                                <span class="d-none d-lg-flex">Add New Experience</span>
+                                <span class="d-none d-sm-flex d-lg-none">New</span>
                             </v-btn>
                         </v-col>
                     </v-row>
