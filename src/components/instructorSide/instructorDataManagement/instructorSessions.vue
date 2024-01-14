@@ -27,7 +27,7 @@
                                 variant="solo-filled"
                                 @keyup.enter="addSearchChip"
                             >
-                                <!-- Search Menu Icons -->
+                                <!-- Search Menu Icons for sm Screens and Up -->
                                 <template v-slot:prepend-inner>
                                     <v-menu
                                         location="bottom"
@@ -228,7 +228,6 @@
                         :title="sessionStartDateTitle"
                         show-adjacent-months
                         color="red-darken-2"
-                        text="Hello"
                         @update:modelValue="handleStartDateSelection"
                     >
                         <template v-slot:header>
@@ -248,7 +247,7 @@
             <v-spacer></v-spacer>
             <v-btn text @click="cancelSelectStartDate">Cancel</v-btn>
             <v-btn 
-                color="primary"
+                color="#c8102e"
                 :disabled="!canApplyStartDates"
                 @click="submitStartDate"
             >Apply</v-btn>
@@ -306,7 +305,7 @@
             <v-spacer></v-spacer>
             <v-btn text @click="cancelSelectEndDate">Cancel</v-btn>
             <v-btn 
-                color="primary"
+                color="#c8102e"
                 :disabled="!canApplyEndDates"
                 @click="submitEndDate"
             >Apply</v-btn>
@@ -423,13 +422,13 @@
             <v-btn text @click="xsCancelSearchDialog">Cancel</v-btn>
             <v-btn 
                 v-if="xsSearchFilterSelection === 'Start Date'"
-                color="primary"
+                color="#c8102e"
                 :disabled="!canApplyStartDates"
                 @click="xsApplySearchFilters"
             >Apply</v-btn>
             <v-btn 
                 v-else
-                color="primary"
+                color="#c8102e"
                 :disabled="!canApplyEndDates"
                 @click="xsApplySearchFilters"
             >Apply</v-btn>

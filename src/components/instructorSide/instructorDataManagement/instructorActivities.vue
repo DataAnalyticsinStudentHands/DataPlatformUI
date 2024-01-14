@@ -229,7 +229,7 @@
               <v-spacer></v-spacer>
               <v-btn text @click="cancelDialogExperienceCategory">Cancel</v-btn>
               <v-btn 
-                  color="primary"
+                  color="#c8102e"
                   :disabled="!selectedExperienceCategories.length"
                   @click="submitExperienceCategory"
               >Apply</v-btn>
@@ -266,7 +266,7 @@
               <v-spacer></v-spacer>
               <v-btn text @click="cancelDialogExperienceName">Cancel</v-btn>
               <v-btn 
-                  color="primary"
+                  color="#c8102e"
                   @click="submitExperienceName"
               >Apply</v-btn>
           </v-card-actions>

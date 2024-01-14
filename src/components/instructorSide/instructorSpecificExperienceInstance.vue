@@ -3,7 +3,7 @@
     <v-form>
         <v-row>
             <v-col>
-                <p class="font-weight-black text-h6">New Experience Instances</p><br>
+                <p class="font-weight-black text-h6">Experience Instance</p><br>
             </v-col>
         </v-row>
 

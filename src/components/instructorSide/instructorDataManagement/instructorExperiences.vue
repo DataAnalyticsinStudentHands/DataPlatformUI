@@ -277,7 +277,7 @@ computed: {
     },
 
     showChipsRow() {
-        return this.searchCriteria.length > 0
+        return this.searchCriteria.length > 0;
     },
 },
 methods: {
