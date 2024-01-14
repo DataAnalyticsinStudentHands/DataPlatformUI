@@ -178,8 +178,6 @@ export default {
     },
 
     editActivity(activityID) {
-      const store = useLoggedInUserStore();
-      store.currentActivityId = activityID;
       this.$router.push({ name: "instructorSpecificActivity" });
     },
 

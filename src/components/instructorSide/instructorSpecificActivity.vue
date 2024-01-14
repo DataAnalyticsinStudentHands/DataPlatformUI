@@ -90,7 +90,6 @@
         try {
           const store = useLoggedInUserStore();
           let token = store.token;
-          let activityId = store.currentActivityId;
           let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${activityId}`;
           const response = await axios.get(apiURL, { headers: { token }});
           this.activity = {
@@ -99,8 +98,6 @@
             activityStatus: response.data.activityStatus,
           };
           this.originalActivityName = response.data.activityName;
-          // Update the store with the currentActivityId
-          store.currentActivityId = activityId;
         } catch (error) {
           this.handleError(error);
         }
@@ -110,7 +107,6 @@
         try {
           const store = useLoggedInUserStore();
           let token = store.token;
-          let activityId = store.currentActivityId;
           let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/active/${activityId}`;
           const response = await axios.get(apiURL, { headers: { token }});
           this.experiences = response.data;
@@ -123,7 +119,6 @@
         console.log('handleUpdateForm');
         const user = useLoggedInUserStore();
         const token = user.token;
-        const activityId = user.currentActivityId;
 
         // Object for normal Activity update
         const updatedActivity = {

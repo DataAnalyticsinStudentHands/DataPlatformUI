@@ -1,249 +1,250 @@
+<!--'/instructorAddExperience' this page will only show experiences-->
 <template>
   <main>
+    <v-form @submit.prevent="handleSubmitForm">
       <v-container>
-        <p class="font-weight-black text-h6"> Experience: {{originalExperienceCategory}}, {{ originalExperienceName }}</p>
-        <br />
+        <p class="font-weight-black text-h6">New Experience</p>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experienceCategory" label="Experience Category"></v-text-field>
+            <v-text-field v-model="experience.experienceCategory" label="Experience Category"></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experienceName" label="Experience Name"></v-text-field>
+            <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="6">
+            <v-card flat>
+              <v-card-title>
+                <v-row>
+                  <v-col>
+                    Selected Activities
+                  </v-col>
+                </v-row>
+              </v-card-title>
+              <v-list class="scrollable-list">
+                <v-list-item
+                  v-for="activity in selectedActivities"
+                  :key="activity._id"
+                >
+                <v-row>
+                  <v-col cols="10">
+                    {{ activity.activityName }}
+                  </v-col>
+                  <v-col>
+                    <v-icon
+                      @click.stop="removeSelectedActivity(activity)"
+                      class="mdi-close"
+                    >
+                      mdi-close
+                    </v-icon>
+                  </v-col>
+                </v-row>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+          <v-col>
+            <v-card
+              flat
+              title="Add Activities"
+            >
+              <template v-slot:text>
+                <v-text-field
+                  v-model="activitySearch"
+                  label="Search"
+                  prepend-inner-icon="mdi-magnify"
+                  single-line
+                  variant="outlined"
+                  hide-details
+                ></v-text-field>
+              </template>
+              <v-data-table
+                :headers="activityHeaders"
+                :items="activities"
+                item-value="_id"
+                items-per-page="-1"
+                class="scrollable-table"
+                hover
+              >
+                <template v-slot:body="{ items }">
+                  <template v-for="item in items" :key="item._id">
+                    <tr
+                      @click="selectActivity(item)"
+                      @mouseover="hoveredItem = item._id"
+                      @mouseleave="hoveredItem = null"
+                      class="pointer-cursor activity-row"
+                    >
+                      <td>
+                        <div class="activity-content">
+                          {{ item.activityName }}
+                          <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
+                        </div>
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+                <template v-slot:bottom>
+
+                </template>
+              </v-data-table>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn @click="$router.push({ name: 'instructorDataManagement', params: { activeTab: 2 } })">
+              Cancel
+            </v-btn>
+            <v-btn style="text-align: center; margin-left: 10px;" @click="handleSubmitForm">Submit</v-btn>
           </v-col>
         </v-row>
       </v-container>
-    <div style="text-align: left;">
-      <v-table style="width: 80%">
-        <thead>
-          <tr>
-            <th class="text-left"></th>
-            <th class="text-left">Activity Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="activity in activities" :key="activity._id">
-            <td class="text-left">
-              <input
-                type="checkbox"
-                v-model="selectedActivities"
-                :value="activity._id"
-                style="outline: 2px solid #808080; margin-right: 10px;"
-              />
-            </td>
-            <td class="text-left">{{ activity.activityName }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-    </div>
-    <div style="text-align: left;">
-      <v-btn @click="cancelAction" class="ml-4 mr-4">
-        Cancel
-      </v-btn>
-      <v-btn style="text-align: center;" @click="updateExperience">Update</v-btn>
-
-
-
-    </div>
-
+    </v-form>
   </main>
-
 </template>
 
 <script>
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
-  name: 'SpecificExperience',
-  props: {
-    experience: Object,
-    isInDialog: {
-      type: Boolean,
-      default: false
-    }
-  },
   data() {
     return {
-      originalExperienceCategory: "",
-      originalExperienceName: "",
-      experienceCategory: "",
-      experienceName: "",
+      experience: {
+        experienceCategory: '',
+        experienceName: '',
+      },
       activities: [],
+      originalActivities: [],
+      activityHeaders: [
+        {
+          title: "Activity Name",
+          value: "activityName",
+          key: "activityName",
+          align: "start",
+          sortable: true
+        }
+      ],
       selectedActivities: [],
+      activitySearch: "",
+      hoveredItem: null,
     };
   },
-
   mounted() {
-    console.log('instructorSpecificExperience mounted');
-    window.scrollTo(0, 0);
-
-    this.loadData();
+    const experienceID = this.$route.params.id;
+    if (experienceID) {
+      this.fetchExperienceData(experienceID);
+    }
   },
 
   methods: {
 
-    async loadData() {
-      await this.fetchActivityData();
-
-      if (this.experience) {
-        // If experience is passed as a prop, initialize data with it
-        this.initializeData(this.experience);
-      } else {
-        console.log('fetch data based on router parameters')
-        // Otherwise fetch data based on router parameters
-        await this.fetchExperienceData();
-      }
-    },
-
-    initializeData(experience) {
-      console.log('experience: ', experience);
-      this.originalExperienceCategory = experience.experienceCategory;
-      this.originalExperienceName = experience.experienceName;
-      this.experienceCategory = experience.experienceCategory;
-      this.experienceName = experience.experienceName;
-
-      // Filter and map activities related to the current experience
-      this.selectedActivities = this.activities
-        .filter(activity => 
-          activity.experiences.some(exp => exp._id === experience._id))
-        .map(activity => activity._id);
-
-      console.log('Selected Activities after initialization: ', this.selectedActivities);
-    },
-
-
-    fetchExperienceData() {
+    fetchExperienceData(experienceID) {
       const user = useLoggedInUserStore();
-      const token = user.token;
-
-      // const token = `
-      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDg3NTcxOCwiZXhwIjoxNzA0ODg3NzE4fQ.1GbBbYs6cRiwpHjkAm97mWJ2Gk-Ksl8VXyEySueiTOk
-      // `
-
-      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.$route.params.id}`;
+      let token = user.token;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
       axios
         .get(apiURL, { headers: { token } })
         .then((resp) => {
-          this.initializeData(resp.data);
+          const experienceData = resp.data;
+          this.experience = {
+            experienceCategory: experienceData.experienceCategory,
+            experienceName: experienceData.experienceName,
+          };
+
+          // Wait for the activities to be fetched before processing
+          this.fetchActivityData().then(() => {
+            this.selectedActivities = this.originalActivities.filter(a => experienceData.activities.includes(a._id));
+            this.activities = this.originalActivities.filter(a => !experienceData.activities.includes(a._id));
+          });
         })
         .catch((error) => {
           this.handleError(error);
         });
     },
 
+
     async fetchActivityData() {
       const user = useLoggedInUserStore();
-      const token = user.token;
-
-      // const token = `
-      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDg3NTcxOCwiZXhwIjoxNzA0ODg3NzE4fQ.1GbBbYs6cRiwpHjkAm97mWJ2Gk-Ksl8VXyEySueiTOk
-      // `
-
-
+      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
-      try {
-        const resp = await axios.get(apiURL, { headers: { token } });
-        const activities = resp.data;
-        console.log('activities: ', activities);
-        this.activities = activities.filter((activity) => activity.activityStatus === true);
-      } catch (error) {
-        this.handleError(error);
-      }
-    },
-
-    async updateExperience() {
-      console.log('updateExperience');
-      const user = useLoggedInUserStore();
-      // const token = user.token;
-
-      
-      const token = `
-      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTAyYjE5MC01MDBlLTExZWUtYmIzYy04NWUwMjgxZTljOGEiLCJ1c2VyUm9sZSI6Ikluc3RydWN0b3IiLCJvcmdJRCI6IjY0ZTNiN2Y0YWY2YmFlMzZiZjQyZDUxYiIsImlhdCI6MTcwNDg3NTcxOCwiZXhwIjoxNzA0ODg3NzE4fQ.1GbBbYs6cRiwpHjkAm97mWJ2Gk-Ksl8VXyEySueiTOk
-      `
-
-      const experienceId = this.experience?._id || this.$route.params.id;
-
-      // Object for normal Experience update
-      const updatedExperience = {
-        experienceCategory: this.experienceCategory,
-        experienceName: this.experienceName,
-        activities: this.selectedActivities, // IDs only for updating the experience
-      };
-
-      // Prepare activities data with id and name for Experience Instance update
-      const activitiesData = this.activities
-        .filter(activity => this.selectedActivities.includes(activity._id))
-        .map(activity => ({ id: activity._id, name: activity.activityName }));
-
-      const experienceInstanceUpdate = {
-        experience: {
-          category: this.experienceCategory,
-          name: this.experienceName,
-        },
-        activities: activitiesData,
-      };
-
-      let experienceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceId}`;
-      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience-update/${experienceId}`;
-
-      try {
-        // Update the Experience
-        await axios.put(experienceUpdateURL, updatedExperience, { headers: { token } });
-
-        // Update Experience Instances and capture response
-        const instanceUpdateResponse = await axios.put(experienceInstanceUpdateURL, experienceInstanceUpdate, { headers: { token } });
-
-        // Handle successful update
-        this.handleUpdateSuccess(instanceUpdateResponse.data);
-
-      } catch (error) {
-        console.log('error: ', error);
-        this.handleError(error);
-      }
-    },
-
-
-    
-    handleUpdateSuccess(instanceUpdateData) {
-      let successMessage = 'Experience updated!';
-
-      // Check if any instances were updated
-      if (instanceUpdateData.updatedInstances && instanceUpdateData.updatedInstances.length > 0) {
-        successMessage = 'Experience and related instances updated!';
-      }
-
-      if (this.isInDialog) {
-        this.$emit('update-success');
-      } else {
-        this.$router.push({
-          name: 'instructorDataManagement',
-          params: {
-            activeTab: 2,
-            toastType: 'info',
-            toastMessage: successMessage,
-            toastPosition: 'top-right',
-            toastCSS: 'Toastify__toast--update'
-          }
+      return axios // Return the axios promise here
+        .get(apiURL, { headers: { token } })
+        .then((resp) => {
+          const activities = resp.data;
+          this.activities = activities.filter((activity) => activity.activityStatus === true);
+          this.originalActivities = [...this.activities];
+        })
+        .catch((error) => {
+          this.handleError(error);
         });
-      }
     },
 
-    cancelAction() {
-      if (this.isInDialog) {
-        // Emit an event to close the dialog
-        this.$emit('close-dialog');
-      } else {
-        // Use router back for standalone use
-        this.$router.back();
+
+    handleSubmitForm() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      
+      // Get the experience ID
+      const experienceID = this.$route.params.id;
+
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
+      
+      axios
+        .put(apiURL, {
+          experienceCategory: this.experience.experienceCategory,
+          experienceName: this.experience.experienceName,
+          activities: this.selectedActivities.map(activity => activity._id),
+        }, {
+          headers: { token },
+        })
+        .then(() => {
+          this.$router.push({ 
+            name: 'instructorDataManagement',
+            params: {
+              activeTab: 2,
+              toastType: 'info',
+              toastMessage: 'Experience updated successfully!',
+              toastPosition: 'top-right',
+              toastCSS: 'Toastify__toast--update'
+            }
+          });
+        })
+        .catch((error) => {
+          this.handleError(error);
+        });
+    },
+
+
+    selectActivity(activity) {
+      // Add to selectedActivities
+      this.selectedActivities.push(activity);
+
+      // Remove from the activities list
+      this.activities = this.activities.filter(a => a._id !== activity._id);
+    },
+
+    removeSelectedActivity(activity) {
+      // Remove from selectedActivities
+      this.selectedActivities = this.selectedActivities.filter(a => a._id !== activity._id);
+
+      // Find original index in the originalActivities array
+      const originalIndex = this.originalActivities.findIndex(a => a._id === activity._id);
+
+      // Check if the activity is already in the activities list
+      const alreadyPresent = this.activities.some(a => a._id === activity._id);
+
+      // Re-insert at the original position if not present
+      if (!alreadyPresent && originalIndex !== -1) {
+        this.activities.splice(originalIndex, 0, activity);
       }
-    }
-    
+    },
   },
 };
 </script>
 
-
-<style>
+<style scoped>
 #contentNavbar .nav-link.router-link-exact-active {
   background-color: #eee;
 }
@@ -259,4 +260,65 @@ export default {
     border: 1px solid black;
   }
 }
+
+.pointer-cursor {
+    cursor: pointer;
+}
+
+.activity-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.mdi-close {
+  cursor: pointer;
+}
+
+.scrollable-table {
+    height: 300px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
+
+  /* Optional: Style to improve the appearance when scrolling */
+  .scrollable-table::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .scrollable-table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .scrollable-table::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  .scrollable-table::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .scrollable-list {
+    height: 370px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
+
+  /* Optional: Style to improve the appearance when scrolling */
+  .scrollable-list::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .scrollable-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .scrollable-list::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  .scrollable-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+
 </style>

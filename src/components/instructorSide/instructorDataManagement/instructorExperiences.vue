@@ -74,7 +74,7 @@
                                 v-else
                                 @click="handleArchiveExperiences"
                                 elevation="1"
-                                :append-icon="viewArchivedExperiences ? 'mdi-restore' : 'mdi-archive'"
+                                :append-icon="viewArchivedExperiences ? 'mdi-restore' : 'mdi-archive-plus'"
                             >
                                 <span class="d-none d-md-flex">
                                     {{ viewArchivedExperiences ? "Restore" : "Archive" }} {{ selectedExperiences.length === 1 ? "Experience" : "Experiences" }}

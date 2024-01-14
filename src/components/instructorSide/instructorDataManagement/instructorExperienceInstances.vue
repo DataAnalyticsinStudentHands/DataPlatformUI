@@ -75,7 +75,7 @@
                                   v-else
                                   @click="handleArchiveInstances"
                                   elevation="1"
-                                  :append-icon="viewArchivedInstances ? 'mdi-restore' : 'mdi-archive'"
+                                  :append-icon="viewArchivedInstances ? 'mdi-restore' : 'mdi-archive-plus'"
                               >
                                   <span class="d-none d-md-flex">
                                       {{ viewArchivedInstances ? "Restore" : "Archive" }} {{ selectedInstances === 1 ? "Instance" : "Instances" }}

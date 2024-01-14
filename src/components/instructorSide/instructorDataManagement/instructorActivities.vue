@@ -78,7 +78,7 @@
                                   v-else
                                   @click="handleArchiveActivities"
                                   elevation="1"
-                                  :append-icon="viewArchivedActivities ? 'mdi-restore' : 'mdi-archive'"
+                                  :append-icon="viewArchivedActivities ? 'mdi-restore' : 'mdi-archive-plus'"
                               >
                                 <span class="d-none d-md-flex">
                                     {{ viewArchivedActivities ? "Restore" : "Archive" }} {{ selectedActivities.length === 1 ? "Activity" : "Activities" }}

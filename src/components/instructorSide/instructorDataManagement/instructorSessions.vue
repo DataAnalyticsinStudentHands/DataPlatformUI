@@ -85,7 +85,7 @@
                                 v-else
                                 @click="handleArchiveSessions"
                                 elevation="1"
-                                :append-icon="viewArchivedSessions ? 'mdi-restore' : 'mdi-archive'"
+                                :append-icon="viewArchivedSessions ? 'mdi-restore' : 'mdi-archive-plus'"
                             >
                                 <span class="d-none d-md-flex">
                                     {{ viewArchivedSessions ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }}
@@ -103,7 +103,7 @@
                                 @click="selectedSessions.length ? handleArchiveSessions() : toggleArchivedSessions()"
                             >
                                 <v-icon>
-                                    {{ selectedSessions.length ? (viewArchivedSessions ? 'mdi-restore' : 'mdi-archive') : 'mdi-archive' }}
+                                    {{ selectedSessions.length ? (viewArchivedSessions ? 'mdi-restore' : 'mdi-archive-plus') : 'mdi-archive' }}
                                 </v-icon>
                             </v-btn>
                         </v-col>
