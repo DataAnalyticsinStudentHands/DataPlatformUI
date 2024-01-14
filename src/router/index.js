@@ -266,7 +266,7 @@ const routes = [
           } else {
             next();
           }
-        }
+        },
     },
     {
       path: '/instructorSessions',

@@ -27,6 +27,7 @@ export const useLoggedInUserStore = defineStore({
       registeredExperiences: [],
       orgName: "",
       experienceInstanceCreationDetails: [],
+      instructorDataManagementActiveTab: 0,
     }
   },
   getters: { //getting the roles

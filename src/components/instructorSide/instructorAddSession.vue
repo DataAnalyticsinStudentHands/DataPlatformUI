@@ -32,7 +32,7 @@
         </v-row>
 
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-        <v-btn @click="$router.push({ name: 'instructorDataManagement', params: { activeTab: 1 } })">
+        <v-btn @click="$router.back()">
           Cancel
         </v-btn>
         <v-btn style="text-align: center; margin-left: 10px;" type="submit">Submit</v-btn>

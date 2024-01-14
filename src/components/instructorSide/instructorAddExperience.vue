@@ -93,7 +93,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <v-btn @click="$router.push({ name: 'instructorDataManagement', params: { activeTab: 2 } })">
+            <v-btn @click="$router.back()">
               Cancel
             </v-btn>
             <v-btn style="text-align: center; margin-left: 10px;" @click="handleSubmitForm">Submit</v-btn>

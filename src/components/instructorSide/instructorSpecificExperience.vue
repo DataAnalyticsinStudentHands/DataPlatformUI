@@ -93,7 +93,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <v-btn @click="$router.push({ name: 'instructorDataManagement', params: { activeTab: 2 } })">
+            <v-btn @click="goBack()">
               Cancel
             </v-btn>
             <v-btn style="text-align: center; margin-left: 10px;" @click="handleSubmitForm">Submit</v-btn>
@@ -205,7 +205,7 @@ export default {
             params: {
               activeTab: 2,
               toastType: 'info',
-              toastMessage: 'Experience updated successfully!',
+              toastMessage: 'Experience Updated!',
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--update'
             }
@@ -240,6 +240,19 @@ export default {
         this.activities.splice(originalIndex, 0, activity);
       }
     },
+
+    goBack() {
+      if (this.$route.params.activityID) {
+        this.$router.push({
+          name: "instructorSpecificActivity",
+          params: {
+            id: this.$route.params.activityID
+          }
+        });
+      } else {
+        this.$router.back();
+      }
+    }
   },
 };
 </script>

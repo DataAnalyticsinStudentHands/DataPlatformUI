@@ -35,12 +35,10 @@
           </v-row>
         </v-container>
       <div style="text-align:left;">
-        <v-btn style="text-align:center;" @click="handleUpdateForm" class="ml-4 mr-4">Update</v-btn>
-        <v-btn @click=$router.back()>
+        <v-btn @click=goBack() class="ml-4 mr-4">
           Cancel
         </v-btn>
-
-        
+        <v-btn style="text-align:center;" @click="handleUpdateForm">Update</v-btn>
       </div>
     </main>
   </template>
@@ -81,6 +79,7 @@
     },
 
     mounted() {
+      console.log('route params: ', this.$route.params);
       this.fetchActivityData();
       this.fetchAssociatedExperiences();
     },
@@ -90,7 +89,7 @@
         try {
           const store = useLoggedInUserStore();
           let token = store.token;
-          let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${activityId}`;
+          let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${this.$route.params.id}`;
           const response = await axios.get(apiURL, { headers: { token }});
           this.activity = {
             ...this.activity,
@@ -107,7 +106,7 @@
         try {
           const store = useLoggedInUserStore();
           let token = store.token;
-          let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/active/${activityId}`;
+          let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/active/${this.$route.params.id}`;
           const response = await axios.get(apiURL, { headers: { token }});
           this.experiences = response.data;
         } catch (error) {
@@ -126,8 +125,8 @@
           activityStatus: this.activity.activityStatus,
         };
 
-        let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${activityId}`;
-        let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${activityId}`;
+        let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${this.$route.params.id}`;
+        let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${this.$route.params.id}`;
 
         try {
           // Update the Activity
@@ -163,8 +162,23 @@
       },
 
       editExperience(experienceID) {
-        this.$router.push({ name: "instructorSpecificExperience", params: { id: experienceID } });
+        this.$router.push({ 
+          name: "instructorSpecificExperience", 
+          params: { 
+            id: experienceID,
+            activityID: this.$route.params.id
+          } 
+        });
       },
+
+      goBack() {
+        this.$router.push({
+          name: "instructorDataManagement",
+          params: {
+            activeTab: 3
+          }
+        });
+      }
 
     },
   };

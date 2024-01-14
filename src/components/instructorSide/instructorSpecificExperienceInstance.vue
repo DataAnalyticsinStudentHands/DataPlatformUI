@@ -61,9 +61,6 @@
         </v-row>
     </v-form>
 </v-container>
-
-<br><br><br><br><br><br><br>
-sessionData: {{ sessionData }}
 </template>
 
 <script>

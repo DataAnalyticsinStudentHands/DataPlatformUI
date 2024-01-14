@@ -196,16 +196,6 @@
         </v-col>
     </v-row>
 </v-container>
-
-<br><br><br><br><br><br><br><br><br><br><br><br>
-<br>
-expandedExperiences: {{ expandedExperiences }}
-<br>
-selectedExperiences: {{ selectedExperiences }}
-<br>
-searchCriteria: {{ searchCriteria }}
-<br><br>
-experienceData: {{ experienceData }}
 </template>
 
 <script>

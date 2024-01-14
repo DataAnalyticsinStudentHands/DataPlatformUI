@@ -28,6 +28,8 @@
 
 <script>
 import { toast } from 'vue3-toastify';
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
 import instructorActivities from './instructorActivities.vue';
 import instructorExperienceInstances from './instructorExperienceInstances.vue';
 import instructorExperiences from './instructorExperiences.vue';
@@ -52,25 +54,41 @@ export default {
     },
     mounted() {
       this.initializeComponent();
+      this.loadActiveTab();
     },
     methods: {
-        initializeComponent() {
-          // Handling route parameters
-          if (this.$route.params.activeTab) {
-            this.tab = parseInt(this.$route.params.activeTab);
-          };
-          // Handling toast messages
-          if (this.$route.params.toastType) {
-            toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-              position: this.$route.params.toastPosition,
-              toastClassName: this.$route.params.toastCSS,
-              limit: 1,
-            });
-          }
-        },
+      initializeComponent() {
+        const store = useLoggedInUserStore();
+
+        // Check if there's an activeTab parameter in the route
+        if (this.$route.params.activeTab !== undefined) {
+          // If there is, use it and update the store
+          this.tab = parseInt(this.$route.params.activeTab);
+          store.instructorDataManagementActiveTab = this.tab;
+        } else {
+          // If not, load the tab from the store
+          this.tab = store.instructorDataManagementActiveTab;
+        }
+
+        // Handle toast messages
+        if (this.$route.params.toastType) {
+          toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+            position: this.$route.params.toastPosition,
+            toastClassName: this.$route.params.toastCSS,
+            limit: 1,
+          });
+        }
+      },
         selectTab(index) {
           this.tab = index;
-        }
+          const store = useLoggedInUserStore();
+          store.instructorDataManagementActiveTab  = index;
+        },
+        loadActiveTab() {
+          const store = useLoggedInUserStore();
+          this.tab = store.instructorDataManagementActiveTab !== undefined ? store.instructorDataManagementActiveTab : 0;
+          console.log('tab: ', this.tab);
+        },
     }
 };
 </script>
