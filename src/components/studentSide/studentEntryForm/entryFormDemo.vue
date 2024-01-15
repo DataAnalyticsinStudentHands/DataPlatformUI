@@ -5,8 +5,7 @@
     >
         <v-container style="width: 100%; margin: 0 auto;">
             <v-row class="">
-            <v-col cols="12">
-        </v-col>
+            <v-col cols="12"></v-col>
     
     
     
@@ -209,20 +208,20 @@
           }
         },
         scrollToErrorField() {
-                const errorFields = [
-                    'otherPronounsField'
-                ];
-    
-                for (let i = 0; i < errorFields.length; i++) {
-                    if (this.isFieldInvalid(errorFields[i])) {
-                        // Emit the actual DOM element or component reference
-                        const ref = this.$refs[errorFields[i]];
-                        const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
-                        this.$emit('scroll-to-error', element);
-                        break;
-                    }
+            const errorFields = [
+                'otherPronounsField'
+            ];
+
+            for (let i = 0; i < errorFields.length; i++) {
+                if (this.isFieldInvalid(errorFields[i])) {
+                    // Emit the actual DOM element or component reference
+                    const ref = this.$refs[errorFields[i]];
+                    const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                    this.$emit('scroll-to-error', element);
+                    break;
                 }
-            },
+            }
+        },
     
         isFieldInvalid(fieldRef) {
             // Add logic to determine if a field is invalid based on its ref

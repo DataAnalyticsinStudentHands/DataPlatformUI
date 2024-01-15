@@ -10,6 +10,12 @@ const routes = [
       redirect: '/login'
     },
     {
+      path: '/test_GoalSettingForm',
+      name: 'GoalSettingForm',
+      props: true,
+      component: () => import('../components/test_GoalSettingForm.vue')
+    },
+    {
       path: '/test_ExperienceInstancesManagement',
       name: 'ExperienceInstancesManagement',
       props: true,
@@ -522,7 +528,7 @@ const routes = [
     {
       path: '/goalSettingForm',
       name: 'goalSettingForm',
-      component: () => import('../components/studentSide/goalSettingForm.vue'),
+      component: () => import('../components/studentSide/goalSettingForm/goalFormMain.vue'),
       beforeEnter: (to, from, next) => {
         // Use the Pinia store
         const userStore = useLoggedInUserStore();

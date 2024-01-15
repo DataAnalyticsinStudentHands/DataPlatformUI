@@ -380,7 +380,7 @@ export default {
             }
         },
         progressBarWidth() {
-            const stepWidth = 25; // Assuming each step is 25% of the total width
+            const stepWidth = 25; // Each step is 25% of the total width
             return `${stepWidth * (this.currentStep + 1)}%`;
         },
         uHStudentCheck() {
