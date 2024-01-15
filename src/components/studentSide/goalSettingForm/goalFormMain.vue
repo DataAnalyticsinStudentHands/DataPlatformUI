@@ -253,7 +253,7 @@
                     <v-col cols="auto">
                         <!-- Conditional rendering for Submit Form button -->
                         <v-btn 
-                            v-if="currentStep === 3" 
+                            v-if="currentStep === 5" 
                             type="submit" 
                             @click="submitForm" 
                             class="btn"
@@ -445,6 +445,7 @@ methods: {
     },
     
     handleFormInvalid(section) {
+        console.log('handleFormInvalid section: ', section);
         if (section === "exp") {
             this.expError = true;
         } else if (section === "commRes") {
@@ -465,12 +466,15 @@ methods: {
     },
 
     handleValidationChange(section, { isValid }) {
+        console.log('handleValidationChange section: ', section);
+        console.log('handleValidationChange isValid: ', isValid);
         if (section === "exp") {
             this.expError = !isValid;
         } else if (section === "commRes") {
             this.commResError = !isValid;
         } else if (section === "growth") {
             this.growthError = !isValid;
+            console.log('growthError: ', this.growthError);
         } else if (section === "asp") {
             this.aspError = !isValid;
         } else if (section === "goals") {

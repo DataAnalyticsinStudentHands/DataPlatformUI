@@ -537,7 +537,7 @@ class="font-weight-black text-h6">{{$t('Growth')}}</p>
   </v-radio-group>
 </v-col>
 
-
+<!-- Aspirations -->
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isAspirationsInvalid}"
@@ -586,7 +586,7 @@ class="font-weight-black text-h6">{{$t('Growth')}}</p>
 
 
 
-
+<!-- Goals -->
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isGoalsInvalid}"
