@@ -518,7 +518,6 @@
     <v-icon>mdi-alert-circle</v-icon>
     <v-tooltip activator="parent" location="start">Jump to Error</v-tooltip>
 </v-btn>
-hasCompletedGoalForm: {{ hasCompletedGoalForm }}
 </template>
 
 <script>

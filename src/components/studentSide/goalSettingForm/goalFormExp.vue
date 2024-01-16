@@ -57,11 +57,6 @@
         </v-row>
     </v-container>
 </v-form>
-
-formattedExperiences: {{ formattedExperiences }}
-<br>
-selectedExperience: {{ selectedExperience }}
-<br> goalForm.experiences: {{ goalForm.experiences }}
 </template>
 
 <script>

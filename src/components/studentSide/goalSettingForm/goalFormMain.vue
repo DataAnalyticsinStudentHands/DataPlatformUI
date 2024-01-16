@@ -307,25 +307,6 @@
         </v-col>
     </v-row>
 </v-container>
-<br>
-hasCompletedGoalForm: {{ hasCompletedGoalForm }}
-<br>
-<br>
-goalSettingFormBackground: {{ goalSettingFormBackground }}
-<br>
-<br>
-foundDocumentId: {{ foundDocumentId }}
-<br>
-currentStep: {{ currentStep }}
-<br>
-allowedStepsForJump: {{ allowedStepsForJump }}
-<br>
-progressBarWidth: {{ progressBarWidth }}
-<!--
-goalForm.experienceID: {{ goalForm.experienceID }}
-<br>
-selectedExperience: {{ selectedExperience }}
--->
 </template>
 
 <script>

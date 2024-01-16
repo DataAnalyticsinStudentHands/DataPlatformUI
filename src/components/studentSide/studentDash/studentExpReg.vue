@@ -118,19 +118,21 @@
                           <template v-for="session in availableExperiencesForRegistration" :key="session.session.id">
                             <v-list-item-subtitle>{{ session.session.name }}</v-list-item-subtitle>
                             <v-list-item
-                              v-for="experience in session.availableExperiences"
-                              :key="experience._id"
-                              @click="toggleExperienceSelection(experience)"
-                              :class="isSelected(experience) ? 'light-red-bg' : ''"
+                                v-for="experience in session.availableExperiences"
+                                :key="experience._id"
+                                @click="isSelected(experience) ? null : toggleExperienceSelection(experience)"
+                                :class="isSelected(experience) ? 'selected-experience light-green-bg' : isSelectedForAddition(experience) ? 'light-red-bg' : ''"
                             >
-                              <v-list-item-title>{{ experience.experienceName }}</v-list-item-title>
-
-                              <!-- Add a check icon to show which items are selected -->
-                              <template v-slot:append>
-                                <v-icon v-if="isSelected(experience)">mdi-check</v-icon>
-                              </template>
+                                <v-row class="justify-center" no-gutters>
+                                    <v-col class="text-truncate">
+                                        <v-list-item-title>{{ experience.experienceName }}</v-list-item-title>
+                                    </v-col>
+                                    <v-col cols="auto">
+                                        <v-icon v-if="isSelected(experience)">mdi-check</v-icon>
+                                    </v-col>
+                                </v-row>
                             </v-list-item>
-                          </template>
+                        </template>
                         </v-list>
                       </v-col>
 
@@ -139,14 +141,14 @@
                       <v-col cols="12" md="2" class="text-center d-flex align-center justify-center">
                         <div>
                           <v-row class="mb-2">
-                              <v-btn @click="addAllToSelected">
-                                  <v-icon>mdi-chevron-double-right</v-icon>
-                              </v-btn>
+                            <v-btn @click="addSelectedToMyExperiences">
+                                <v-icon>mdi-chevron-right</v-icon>
+                            </v-btn>
                           </v-row>
                           <v-row>
-                              <v-btn @click="removeAllFromSelected">
-                                  <v-icon>mdi-chevron-double-left</v-icon>
-                              </v-btn>
+                            <v-btn @click="removeMarkedFromSelected">
+                                <v-icon>mdi-chevron-left</v-icon>
+                            </v-btn>
                           </v-row>
                         </div>
                       </v-col>
@@ -156,14 +158,15 @@
                         <v-list density="compact">
                           <v-list-subheader>My Experiences</v-list-subheader>
                           <v-list-item
-                              v-for="experience in selectedExperiences"
-                              :key="experience._id"
-                              @click="removeFromMyExperiences(experience)"
-                          >
-                              <v-list-item-title>
-                                  {{ experience.experienceName }}
-                              </v-list-item-title>
-                          </v-list-item>
+                                v-for="experience in selectedExperiences"
+                                :key="experience._id"
+                                @click="toggleRemovalSelection(experience)"
+                                :class="isMarkedForRemoval(experience) ? 'light-red-bg' : ''"
+                            >
+                                <v-list-item-title>
+                                    {{ experience.experienceName }}
+                                </v-list-item-title>
+                            </v-list-item>
                         </v-list>
                       </v-col>
 
@@ -216,6 +219,8 @@ export default {
             selectedListItem: null, 
             shouldShowTooltip: false,
             availableExperiencesForRegistration: [],
+            selectedExperienceIDs: [],
+            markedForRemovalIDs: [],
         }
     },
     watch: {
@@ -263,44 +268,67 @@ export default {
         },
     },
     methods: {
-        toggleExperienceSelection(experience) {
-          const index = this.selectedExperiences.findIndex(exp => exp._id === experience._id);
-          if (index !== -1) {
-            // Experience is already selected, so remove it
-            this.selectedExperiences.splice(index, 1);
+      toggleExperienceSelection(experience) {
+          const index = this.selectedExperienceIDs.indexOf(experience._id);
+          if (index === -1) {
+              this.selectedExperienceIDs.push(experience._id);
           } else {
-            // Add the experience to the selected list
-            this.selectedExperiences.push({
-              _id: experience._id,
-              experienceName: experience.experienceName,
-            });
+              this.selectedExperienceIDs.splice(index, 1);
           }
-        },
+      },
+      isSelectedForAddition(experience) {
+          return this.selectedExperienceIDs.includes(experience._id) && !this.isSelected(experience);
+      },
         removeFromMyExperiences(experience) {
             const index = this.selectedExperiences.findIndex(exp => exp._id === experience._id);
             if (index !== -1) {
                 this.selectedExperiences.splice(index, 1);
             }
         },
-        addAllToSelected() {
-          this.availableExperiencesForRegistration.forEach(session => {
-            session.availableExperiences.forEach(experience => {
-              if (!this.isSelected(experience)) {
-                this.selectedExperiences.push({
-                  _id: experience._id,
-                  experienceName: experience.experienceName,
+        addSelectedToMyExperiences() {
+            this.selectedExperienceIDs.forEach(selectedID => {
+                this.availableExperiencesForRegistration.forEach(session => {
+                    const experience = session.availableExperiences.find(exp => exp._id === selectedID);
+                    if (experience && !this.isSelected(experience)) {
+                        this.selectedExperiences.push({
+                            _id: experience._id,
+                            experienceName: experience.experienceName,
+                        });
+                    }
                 });
-              }
             });
-          });
+            // Clear the selectedExperienceIDs after adding them to selectedExperiences
+            this.selectedExperienceIDs = [];
         },
-        removeAllFromSelected() {
-            this.selectedExperiences = [];
+        toggleRemovalSelection(experience) {
+            const index = this.markedForRemovalIDs.indexOf(experience._id);
+            if (index === -1) {
+                this.markedForRemovalIDs.push(experience._id);
+            } else {
+                this.markedForRemovalIDs.splice(index, 1);
+            }
+        },
+        isMarkedForRemoval(experience) {
+            return this.markedForRemovalIDs.includes(experience._id);
+        },
+        removeMarkedFromSelected() {
+            this.markedForRemovalIDs.forEach(removalID => {
+                const index = this.selectedExperiences.findIndex(exp => exp._id === removalID);
+                if (index !== -1) {
+                    this.selectedExperiences.splice(index, 1);
+                }
+            });
+            this.markedForRemovalIDs = [];
         },
         clearSelectedExperiences() {
-            this.selectedExperiences = [];
+            // Clear the selections without affecting the registered experiences
+            this.selectedExperienceIDs = [];
+            this.markedForRemovalIDs = [];
+            
+            // Close the dialog
             this.dialog = false;
         },
+
         isSelected(experience) {
             // Check if the experience is already selected based on its ID
             return this.selectedExperiences.some(selectedExp => selectedExp._id === experience._id);
@@ -308,7 +336,7 @@ export default {
         saveExperiences() {
           const store = useLoggedInUserStore();
           store.updateRegisteredExperiences(this.selectedExperiences);
-          this.dialog = false; // Close the dialog
+          this.clearSelectedExperiences(); // Clear selections and Close the dialog
         },
         async fetchAvailableExperiencesForRegistration() {
           const user = useLoggedInUserStore();
@@ -371,4 +399,9 @@ export default {
     padding: 10px;
     font-style: italic;
 }
+
+.selected-experience {
+    cursor: default; /* Change cursor to indicate non-selectability */
+}
+
 </style>
