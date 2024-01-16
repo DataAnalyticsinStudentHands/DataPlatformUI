@@ -137,6 +137,7 @@
                         @validation-change="handleValidationChange('exp', $event)"
                         @update-selected-experience="handleSelectedExperience"
                         @update-found-document-id="foundDocumentId = $event"
+                        @update-hich-project="updateHichProject"
                     ></goal-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -206,6 +207,7 @@
                             @validation-change="handleValidationChange('exp', $event)"
                             @update-selected-experience="handleSelectedExperience"
                             @update-found-document-id="foundDocumentId = $event"
+                            @update-hich-project="updateHichProject"
                         ></goal-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
@@ -307,6 +309,7 @@
         </v-col>
     </v-row>
 </v-container>
+hichProject: {{ hichProject }}
 </template>
 
 <script>
@@ -345,6 +348,7 @@ data() {
         goalSettingFormBackground: null,
         isBackgroundEditActive: false,
         selectedExperience: null,
+        hichProject: [],
         goalForm: {
         experiences:[{
             experienceIDFromList:'',
@@ -495,6 +499,12 @@ computed: {
         const stepWidth = 16.66;
         return `${stepWidth * (this.currentStep + 1)}%`
     },
+
+    shouldIncludeHichProject() {
+        // Access the child component's computed property via a ref
+        // Ensure to handle cases where the child component or the computed property is not available
+        return this.$refs.GoalFormExpRef?.shouldShowHichCheckboxes && this.hichProject.length > 0;
+    }
 },
 methods: {
     async fetchLatestGoalSettingForm() {
@@ -504,6 +514,8 @@ methods: {
 
         try {
             const response = await axios.get(apiURL, { headers: { token } });
+
+            console.log('fetchLatestGoalSettingForm response.data: ', response.data);
 
             // Check if a goal setting form was found
             if (response.data.formFound) {
@@ -559,6 +571,12 @@ methods: {
     handleFormValid() {
         console.log('handleFormValid this.currentStep: ', this.currentStep);
         this.currentStep++;
+    },
+
+    updateHichProject(newVal) {
+        console.log('updateHichProject called: ', newVal);
+        this.hichProject = newVal;
+        console.log('updateHichProject this.hichProject: ', this.hichProject);
     },
     
     handleFormInvalid(section) {
@@ -835,7 +853,7 @@ methods: {
 
         const expRegistrationID = selectedExp.expRegistrationID;
 
-        const goalForm = {
+        const goalFormSubmission = {
             expRegistrationID,
             experienceID: this.selectedExperience.value,
             goalForm: {
@@ -880,8 +898,14 @@ methods: {
                 },
             },
         }
+        // Conditionally add hichProject if it should be included
+        if (this.shouldIncludeHichProject) {
+            goalFormSubmission.hichProject = this.hichProject;
+        }
+
+        console.log('goalFormSubmission: ', goalFormSubmission)
         axios
-        .post(apiURL, goalForm, { headers: { token } })
+        .post(apiURL, goalFormSubmission, { headers: { token } })
         .then(() => {
             const motivatingMessages = [
             "Goals successfully set! You're on the right track!",
@@ -924,7 +948,11 @@ methods: {
         console.log('this.foundDocumentId: ', this.foundDocumentId);
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
 
-        let updatedGoalForm = { goalForm: this.goalForm };
+        let updatedGoalForm = {
+            goalForm: this.goalForm,
+            // Conditionally add hichProject if it should be included
+            ...(this.shouldIncludeHichProject && { hichProject: this.hichProject })
+        };
 
         axios.put(apiURL, updatedGoalForm, { headers: { token } })
             .then(() => {

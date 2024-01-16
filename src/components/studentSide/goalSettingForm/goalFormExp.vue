@@ -55,6 +55,29 @@
                 </div>
             </v-col>
         </v-row>
+        <!-- HICH Projects -->
+        <v-fade-transition>
+            <v-row v-if="shouldShowHichCheckboxes">
+                <v-col cols="12">
+                    <p :class="{'error-text': isHICHProjectInvalid}" class="font-weight-black text-h8">
+                        {{$t('Please select which HICH Project you are involved in:')}}
+                    </p>
+
+                    <v-checkbox
+                        v-for="(item, index) in hichCheckboxItems"
+                        :key="index"
+                        :label="item"
+                        :value="item"
+                        v-model="hichProject"
+                        :class="{'error-text': isHICHProjectInvalid}"
+                        density="compact"
+                        class="ma-0 pa-0" 
+                        hide-details="true"
+                    ></v-checkbox>
+                    <div v-if="isHICHProjectInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
+                </v-col>
+            </v-row>
+        </v-fade-transition>
     </v-container>
 </v-form>
 </template>
@@ -69,7 +92,7 @@ name: "GoalFormExperiences",
 props: {
     goalForm: Object,
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project"],
 data() {
     return {
         formSubmitted: false,
@@ -84,6 +107,15 @@ data() {
       ],
       isLoadingExpCheck: false,
       experienceFoundWarning: null,
+      hichProject: [],
+      hichCheckboxItems: [
+        'BREATHE',
+        'WEAR',
+        'Operation Fusion',
+        'PEERS',
+        'Creative Care',
+        'Responsive Resourcing'
+        ],
     }
 },
 mounted() {
@@ -122,12 +154,22 @@ watch: {
       if (!newVal) {
         this.experienceFoundWarning = null;
       }
+
+        // Reset hichProject if shouldShowHichCheckboxes becomes false
+        if (!this.shouldShowHichCheckboxes) {
+            this.hichProject = [];
+        }
     },
 
-    isExperienceIDInvalid(newVal, oldVal) {
-        if (newVal !== oldVal) {
-            this.$emit("validation-change", { isValid: !newVal });
+    hasValidationErrors(newValue, oldValue) {
+        if (newValue !== oldValue) {
+            this.$emit('validation-change', { isValid: !newValue });
         }
+    },
+
+    hichProject(newVal) {
+        console.log('hichProject newVal: ', newVal);
+        this.$emit("update-hich-project", newVal);
     },
 },
 computed: {
@@ -141,6 +183,22 @@ computed: {
         text: `${experience.experienceCategory}: ${experience.experienceName}`,
         value: experience.experienceID
       }));
+    },
+
+    shouldShowHichCheckboxes() {
+        const experienceText = this.findExperienceText(this.selectedExperience);
+        return experienceText.includes('HICH - Project Volunteer') || experienceText.includes('HICH - Project Head');
+    },
+
+    isHICHProjectInvalid() {
+        if (!this.formSubmitted) return false;
+        // Return true if HICH Project checkboxes should be shown but no option is selected
+        return this.shouldShowHichCheckboxes && this.hichProject.length === 0;
+    },
+
+    hasValidationErrors() {
+        if (!this.formSubmitted) return false;
+        return this.isExperienceIDInvalid || this.isHICHProjectInvalid;
     },
 },
 methods: {
@@ -266,17 +324,35 @@ methods: {
     async handleValidations() {
         this.formSubmitted = true;
         const { valid } = await this.$refs.form.validate();
-        if (valid) {
-        console.log('form is valid!');
-        this.$emit('form-valid');
-        } else {
-        this.$emit('form-invalid');
-        toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: false
+
+        // Check for HICH Project selection if required
+        let hichProjectValid = true;
+        if (this.shouldShowHichCheckboxes && this.hichProject.length === 0) {
+            hichProjectValid = false;
+            toast.error(this.$t("Please select at least one HICH Project."), {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: false
             });
         }
+
+        if (valid && hichProjectValid) {
+            console.log('form is valid!');
+            this.$emit('form-valid');
+        } else {
+            this.$emit('form-invalid');
+            toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: false
+            });
+        }
+    },
+
+
+    findExperienceText(experienceID) {
+        const experience = this.formattedExperiences.find(exp => exp.value === experienceID);
+        return experience ? experience.text.trim() : '';
     },
 },
 }
