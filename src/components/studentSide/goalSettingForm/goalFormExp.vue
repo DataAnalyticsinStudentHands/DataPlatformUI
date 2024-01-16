@@ -61,6 +61,7 @@
 formattedExperiences: {{ formattedExperiences }}
 <br>
 selectedExperience: {{ selectedExperience }}
+<br> goalForm.experiences: {{ goalForm.experiences }}
 </template>
 
 <script>
@@ -252,9 +253,18 @@ methods: {
     },
 
     selectExperienceFromRouteParam() {
-        const experienceIdFromRoute = this.$route.params.id;
-        if (experienceIdFromRoute) {
-            this.selectedExperience = experienceIdFromRoute;
+        const experienceRegistrationIDFromRoute = this.$route.params.id;
+        console.log('experienceRegistrationIDFromRoute: ', experienceRegistrationIDFromRoute);
+        if (experienceRegistrationIDFromRoute) {
+            // Find the experience in the array that matches the expRegistrationID
+            const matchingExperience = this.goalForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
+
+            if (matchingExperience) {
+                // Set the selectedExperience to the experienceID of the matching experience
+                this.selectedExperience = matchingExperience.experienceID;
+            } else {
+                console.log('No matching experience found for the given expRegistrationID');
+            }
         }
     },    
 
