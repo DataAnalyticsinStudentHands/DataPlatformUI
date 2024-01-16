@@ -41,6 +41,7 @@
 </v-row>
 </div>
 
+<div v-if="isBackgroundEditActive">
 <!-- Background Title -->
 <v-row class="d-flex justify-center align-center">
     <!-- Empty Column for Space -->
@@ -211,6 +212,8 @@
         <p class="review-section-content">{{ $t(goalForm.researchExperience.leadershipOption) }}</p>
     </v-col>
 </v-row>
+
+</div>
 
 <!-- Growth Title -->
 <v-row class="d-flex justify-center align-center">
@@ -451,7 +454,8 @@ export default {
     name: "GoalFormReview",
     props: {
         selectedExperience: Object,
-        goalForm: Object
+        goalForm: Object,
+        isBackgroundEditActive: Boolean
     },
     emits: ["change-step"],
     computed: {

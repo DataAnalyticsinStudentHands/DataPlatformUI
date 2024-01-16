@@ -58,7 +58,9 @@
     </v-container>
 </v-form>
 
-<!-- formattedExperiences: {{ formattedExperiences }} -->
+formattedExperiences: {{ formattedExperiences }}
+<br>
+selectedExperience: {{ selectedExperience }}
 </template>
 
 <script>
@@ -71,7 +73,7 @@ name: "GoalFormExperiences",
 props: {
     goalForm: Object,
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id"],
 data() {
     return {
         formSubmitted: false,
@@ -189,7 +191,9 @@ methods: {
 
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
+        console.log('this.selectedExperience: ', this.selectedExperience);
         const experienceID = this.selectedExperience;
+        console.log('experienceID: ', experienceID);
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
@@ -202,20 +206,24 @@ methods: {
             }
             });
 
+            console.log('response: ', response.data);
+
             // If the document wasn't found
             if (response.data.documentFound === false) {
-            this.foundDocumentId = null;
-            this.experienceFoundWarning = false;
+                console.log('document wasnt found');
+                this.$emit('update-found-document-id', null);
+                this.experienceFoundWarning = false;
             return;
             }
 
             // If a document was found
             if (response.data && response.data.id) {
-            this.foundDocumentId = response.data.id;
-            this.experienceFoundWarning = true;
+                console.log('document was found');
+                this.$emit('update-found-document-id', response.data.id);
+                this.experienceFoundWarning = true;
             } else {
-            this.foundDocumentId = null;
-            this.experienceFoundWarning = false;
+                this.$emit('update-found-document-id', null);
+                this.experienceFoundWarning = false;
             }
         } catch (error) {
             this.handleError("An unexpected error occurred while checking for existing form:", error);

@@ -136,12 +136,15 @@
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('exp', $event)"
                         @update-selected-experience="handleSelectedExperience"
+                        @update-found-document-id="foundDocumentId = $event"
                     ></goal-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
                     <goal-form-comm-res
                         ref="GoalFormCommResRef"
                         :goalForm="goalForm"
+                        :hasCompletedGoalForm="hasCompletedGoalForm"
+                        :is-background-edit-active="isBackgroundEditActive"
                         @form-valid="handleFormValid"
                         @form-invalid="handleFormInvalid('commRes')"
                         @scroll-to-error="handleScrollToError"
@@ -182,6 +185,7 @@
                     <goal-form-review
                         ref="GoalFormReviewRef"
                         :selectedExperience="selectedExperience"
+                        :isBackgroundEditActive="isBackgroundEditActive"
                         :goalForm="goalForm"
                         @change-step="currentStep = $event"
                     ></goal-form-review>
@@ -201,12 +205,15 @@
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('exp', $event)"
                             @update-selected-experience="handleSelectedExperience"
+                            @update-found-document-id="foundDocumentId = $event"
                         ></goal-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
                         <goal-form-comm-res
                             ref="GoalFromCommRes"
                             :goalForm="goalForm"
+                            :hasCompletedGoalForm="hasCompletedGoalForm"
+                            :is-background-edit-active="isBackgroundEditActive"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('commRes')"
                             @scroll-to-error="handleScrollToError"
@@ -247,6 +254,7 @@
                         <goal-form-review
                             ref="GoalFormReviewRef"
                             :selectedExperience="selectedExperience"
+                            :isBackgroundEditActive="isBackgroundEditActive"
                             :goalForm="goalForm"
                             @change-step="currentStep = $event"
                         ></goal-form-review>
@@ -276,9 +284,14 @@
                         >
                             {{$t('Submit Form')}}
                         </v-btn>
+                        <!-- Edit and Looks Good! buttons for step 1 when form exists -->
+                        <template v-if="currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive">
+                            <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Edit</v-btn>
+                            <v-btn type="submit" @click="triggerValidation">Looks Good!</v-btn>
+                        </template>
                         <!-- Next button for other steps -->
                         <v-btn 
-                            v-else 
+                            v-else-if="currentStep !== 5" 
                             type="submit" 
                             @click="triggerValidation" 
                             class="btn"
@@ -289,10 +302,20 @@
                 </v-row>
 
 
+
             </v-stepper>
         </v-col>
     </v-row>
 </v-container>
+<br>
+hasCompletedGoalForm: {{ hasCompletedGoalForm }}
+<br>
+<br>
+goalSettingFormBackground: {{ goalSettingFormBackground }}
+<br>
+<br>
+foundDocumentId: {{ foundDocumentId }}
+<br>
 currentStep: {{ currentStep }}
 <br>
 allowedStepsForJump: {{ allowedStepsForJump }}
@@ -337,6 +360,9 @@ data() {
         aspError: false,
         goalsError: false,
         foundDocumentId: null,
+        hasCompletedGoalForm: false,
+        goalSettingFormBackground: null,
+        isBackgroundEditActive: false,
         selectedExperience: null,
         goalForm: {
         experiences:[{
@@ -347,7 +373,7 @@ data() {
         experienceID: null,
         communityEngagement: {
             communityEngagementExperiences: [
-            { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: true },
+            { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: false },
             { id: 2, label: "Political campaigns", checked: false },
             { id: 3, label: "Faith based organizations", checked: false },
             { id: 4, label: "Short-term volunteer opportunities (e.g. day of service events)", checked: false },
@@ -357,7 +383,7 @@ data() {
             ],
             communityEngagementExperiencesOther: '',
             previousEngagementExperiences: [
-            { id: 1, label: "Mentoring someone", checked: true },
+            { id: 1, label: "Mentoring someone", checked: false },
             { id: 2, label: "Volunteering at a community event (e.g. health fair)", checked: false },
             { id: 3, label: "Recruiting volunteers", checked: false },
             { id: 4, label: "Organizing a service project", checked: false },
@@ -369,7 +395,7 @@ data() {
             ],
             previousEngagementExperiencesOther: '',
             engagementActivitiesTools: [
-            { id: 1, label: "Social media", checked: true },
+            { id: 1, label: "Social media", checked: false },
             { id: 2, label: "Scheduling software (e.g. when is good, doodle)", checked: false },
             { id: 3, label: "Fundraising platforms", checked: false },
             { id: 4, label: "Survey tools", checked: false },
@@ -384,7 +410,7 @@ data() {
         researchExperience: {
             currentResearchExperience: [
             { id: 1, label: "Introduction to Statistics / Introduction to Biostatistics / Introduction to Research courses", checked: false },
-            { id: 2, label: "Advanced statistics and programming courses", checked: true },
+            { id: 2, label: "Advanced statistics and programming courses", checked: false },
             { id: 3, label: "HERE", checked: false },
             { id: 4, label: "SURF", checked: false },
             { id: 5, label: "PURS", checked: false },
@@ -394,7 +420,7 @@ data() {
             ],
             currentResearchExperienceOther: '',
             previousResearchExperience: [
-            { id: 1, label: "Designing your own research project", checked: true },
+            { id: 1, label: "Designing your own research project", checked: false },
             { id: 2, label: "Literature review", checked: false },
             { id: 3, label: "Data collection in a clinical setting", checked: false },
             { id: 4, label: "Data collection in a laboratory setting", checked: false },
@@ -406,7 +432,7 @@ data() {
             ],
             previousResearchExperienceOther: '',
             familiarTools: [
-            { id: 1, label: "Excel", checked: true },
+            { id: 1, label: "Excel", checked: false },
             { id: 2, label: "R", checked: false },
             { id: 3, label: "Python", checked: false },
             { id: 4, label: "STATA", checked: false },
@@ -420,7 +446,7 @@ data() {
             ],
             familiarToolOther: '',
             interestResearchService: [
-            { id: 1, label: "Education", checked: true },
+            { id: 1, label: "Education", checked: false },
             { id: 2, label: "Community Health", checked: false },
             { id: 3, label: "Mental Health", checked: false },
             { id: 4, label: "Incarceration / Criminal Justice", checked: false },
@@ -431,30 +457,33 @@ data() {
             { id: 9, label: "None of the above", checked: false }
             ],
             interestResearchServiceOther: '',
-            leadershipOption: 'Yes'
+            leadershipOption: ''
         },
         growthGoal: {
-            problemSolvingGoal: 'No growth',
-            effectiveCommunicationGoal: 'No growth',
-            teamworkGoal: 'No growth',
-            culturalHumilityGoal: 'No growth',
-            ethicalDecisionMakingGoal: 'No growth',
-            professionalResponsibilityGoal: 'No growth'
+            problemSolvingGoal: '',
+            effectiveCommunicationGoal: '',
+            teamworkGoal: '',
+            culturalHumilityGoal: '',
+            ethicalDecisionMakingGoal: '',
+            professionalResponsibilityGoal: ''
         },
         aspirations: {
-            aspirationOne: 'asd',
-            aspirationTwo: 'asd',
+            aspirationOne: '',
+            aspirationTwo: '',
             aspirationThree: '',
         },
         goals: {
-            goalOne: 'asd',
-            goalTwo: 'asd',
-            goalThree: 'asd',
+            goalOne: '',
+            goalTwo: '',
+            goalThree: '',
             goalFour: '',
             goalFive: '',
         }
         },
     }
+},
+created() {
+    this.fetchLatestGoalSettingForm();
 },
 watch: {
     currentStep(newVal) {
@@ -487,6 +516,65 @@ computed: {
     },
 },
 methods: {
+    async fetchLatestGoalSettingForm() {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/latest-goal-setting-form';
+
+        try {
+            const response = await axios.get(apiURL, { headers: { token } });
+
+            // Check if a goal setting form was found
+            if (response.data.formFound) {
+                this.hasCompletedGoalForm = true;
+                this.goalSettingFormBackground = response.data.goalSettingFormBackground;
+                this.updateGoalFormWithBackgroundData();
+            } else {
+                this.hasCompletedGoalForm = false;
+                this.goalSettingFormBackground = null;
+            }
+            console.log('Goal Setting Form Background: ', this.goalSettingFormBackground);
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    updateGoalFormWithBackgroundData() {
+        if (this.goalSettingFormBackground && this.goalSettingFormBackground.goalForm) {
+            const { communityEngagement, researchExperience } = this.goalSettingFormBackground.goalForm;
+
+            // Update communityEngagement
+            this.goalForm.communityEngagement = {
+                ...this.goalForm.communityEngagement,
+                communityEngagementExperiences: communityEngagement.communityEngagementExperiences,
+                communityEngagementExperiencesOther: communityEngagement.communityEngagementExperiencesOther,
+                previousEngagementExperiences: communityEngagement.previousEngagementExperiences,
+                previousEngagementExperiencesOther: communityEngagement.previousEngagementExperiencesOther,
+                engagementActivitiesTools: communityEngagement.engagementActivitiesTools,
+                engagementActivitiesToolOther: communityEngagement.engagementActivitiesToolOther,
+            };
+
+            // Update researchExperience
+            this.goalForm.researchExperience = {
+                ...this.goalForm.researchExperience,
+                currentResearchExperience: researchExperience.currentResearchExperience,
+                currentResearchExperienceOther: researchExperience.currentResearchExperienceOther,
+                previousResearchExperience: researchExperience.previousResearchExperience,
+                previousResearchExperienceOther: researchExperience.previousResearchExperienceOther,
+                familiarTools: researchExperience.familiarTools,
+                familiarToolOther: researchExperience.familiarToolOther,
+                interestResearchService: researchExperience.interestResearchService,
+                interestResearchServiceOther: researchExperience.interestResearchServiceOther,
+                leadershipOption: researchExperience.leadershipOption,
+            };
+        }
+    },
+
+    handleBackgroundEditClick() {
+        this.isBackgroundEditActive = true;
+    },
+
+
     handleFormValid() {
         console.log('handleFormValid this.currentStep: ', this.currentStep);
         this.currentStep++;
@@ -848,47 +936,42 @@ methods: {
         await user.checkFormCompletion();
     },
 
-    async handleUpdateForm() {    
+    async handleUpdateForm() {   
+        console.log('handleUpdateForm called');
         const user = useLoggedInUserStore();
         let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/' + this.foundDocumentId;
+        console.log('this.foundDocumentId: ', this.foundDocumentId);
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
 
-        const updatedGoalForm = {
-        goalForm: {
-            growthGoal: this.goalForm.growthGoal,
-            aspirations: this.goalForm.aspirations,
-            goals: this.goalForm.goals
-        }
-        };
+        let updatedGoalForm = { goalForm: this.goalForm };
 
-    axios
-        .put(apiURL, updatedGoalForm, { headers: { token } })
-        .then(() => {
-        const motivatingMessages = [
-            "Goals updated successfully! Keep pushing forward!",
-            "Great job updating your goals! Let's continue on this journey together!",
-            "Goals refreshed! Remember, every step counts towards achieving them.",
-            "You've adjusted your goals! Stay focused and you'll achieve them in no time.",
-            "Way to keep refining your vision! Remember, it's the journey that counts.",
-        ];
-        const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
-        
-        // Update pinia store
-        this.updateChecklistStore();
+        axios.put(apiURL, updatedGoalForm, { headers: { token } })
+            .then(() => {
+                const motivatingMessages = [
+                    "Goals updated successfully! Keep pushing forward!",
+                    "Great job updating your goals! Let's continue on this journey together!",
+                    "Goals refreshed! Remember, every step counts towards achieving them.",
+                    "You've adjusted your goals! Stay focused and you'll achieve them in no time.",
+                    "Way to keep refining your vision! Remember, it's the journey that counts.",
+                ];
+                const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+                
+                // Update pinia store
+                this.updateChecklistStore();
 
-        this.$router.push({ 
-                name: 'studentDashboard',
-                params: {
-                toastType: 'info',
-                toastMessage: randomMessage,
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--update'
-            }
+                this.$router.push({ 
+                        name: 'studentDashboard',
+                        params: {
+                        toastType: 'info',
+                        toastMessage: randomMessage,
+                        toastPosition: 'top-right',
+                        toastCSS: 'Toastify__toast--update'
+                    }
+                    });
+            })
+            .catch((error) => {
+                this.handleError(error);
             });
-        })
-        .catch((error) => {
-        this.handleError(error);
-        });
     },
 
 },
