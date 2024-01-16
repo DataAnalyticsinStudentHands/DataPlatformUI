@@ -58,7 +58,7 @@
     </v-container>
 </v-form>
 
-formattedExperiences: {{ formattedExperiences }}
+<!-- formattedExperiences: {{ formattedExperiences }} -->
 </template>
 
 <script>
@@ -159,6 +159,7 @@ methods: {
           experienceName: experience.experienceName,
           expRegistrationID: experience.expRegistrationID
         }));
+        console.log('this.goalForm.experiences: ', this.goalForm.experiences);
       } catch (error) {
         this.handleError(error);
       }

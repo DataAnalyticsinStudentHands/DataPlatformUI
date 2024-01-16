@@ -54,8 +54,10 @@
                         ref="step0"
                         title="Experience"
                         icon="mdi-hand-heart"
+                        edit-icon="mdi-hand-heart"
                         value="0"
                         :error="expError"
+                        :editable="checkJump(0)"
                     ></v-stepper-item>
                     
                     <v-divider></v-divider>
@@ -64,8 +66,10 @@
                         ref="step1"
                         title="Background"
                         icon="mdi-earth"
+                        edit-icon="mdi-earth"
                         value="1"
                         :error="commResError"
+                        :editable="checkJump(1)"
                     ></v-stepper-item>
                     
                     <v-divider></v-divider>
@@ -74,8 +78,10 @@
                         ref="step2"
                         title="Growth"
                         icon="mdi-sprout"
+                        edit-icon="mdi-sprout"
                         value="2"
                         :error="growthError"
+                        :editable="checkJump(2)"
                     ></v-stepper-item>
 
                     <v-divider></v-divider>
@@ -84,8 +90,10 @@
                         ref="step3"
                         title="Aspirations"
                         icon="mdi-image-filter-hdr"
+                        edit-icon="mdi-image-filter-hdr"
                         value="3"
                         :error="aspError"
+                        :editable="checkJump(3)"
                     ></v-stepper-item>
 
                     <v-divider></v-divider>
@@ -94,8 +102,10 @@
                         ref="step4"
                         title="Goals"
                         icon="mdi-flag-variant"
+                        edit-icon="mdi-flag-variant"
                         value="4"
                         :error="goalsError"
+                        :editable="checkJump(4)"
                     ></v-stepper-item>
 
                     <v-divider></v-divider>
@@ -104,7 +114,9 @@
                         ref="step5"
                         title="Review"
                         icon="mdi-check-bold"
+                        edit-icon="mdi-check-bold"
                         value="5"
+                        :editable="checkJump(5)"
                     ></v-stepper-item>
                 </v-stepper-header>
 
@@ -248,7 +260,7 @@
                         <v-btn
                             v-if="currentStep !== 0"
                             type="button" 
-                            @click="currentStep = Math.max(currentStep - 1, 0)" 
+                            @click="handlePreviousClick"
                             class="btn"
                         >
                         {{$t('Previous')}}
@@ -259,7 +271,7 @@
                         <v-btn 
                             v-if="currentStep === 5" 
                             type="submit" 
-                            @click="submitForm" 
+                            @click="submitFormCleanup" 
                             class="btn"
                         >
                             {{$t('Submit Form')}}
@@ -281,12 +293,23 @@
         </v-col>
     </v-row>
 </v-container>
+currentStep: {{ currentStep }}
+<br>
+allowedStepsForJump: {{ allowedStepsForJump }}
+<br>
+progressBarWidth: {{ progressBarWidth }}
+<!--
 goalForm.experienceID: {{ goalForm.experienceID }}
 <br>
 selectedExperience: {{ selectedExperience }}
+-->
 </template>
 
 <script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import axios from "axios";
+import { toast } from 'vue3-toastify';
+
 import GoalFormExp from './goalFormExp.vue';
 import GoalFormCommRes from './goalFormCommRes.vue';
 import GoalFormGrowth from './goalFormGrowth.vue';
@@ -307,11 +330,13 @@ components: {
 data() {
     return {
         currentStep: 0,
+        allowedStepsForJump: [0],
         expError: false,
         commResError: false,
         growthError: false,
         aspError: false,
         goalsError: false,
+        foundDocumentId: null,
         selectedExperience: null,
         goalForm: {
         experiences:[{
@@ -431,6 +456,21 @@ data() {
         },
     }
 },
+watch: {
+    currentStep(newVal) {
+        console.log('watch function before: currentStep: ', this.currentStep);
+        console.log('watch function before: typeof currentStep: ', typeof this.currentStep);
+        // Convert newVal to a number and update currentStep
+        this.currentStep = Number(newVal);
+        console.log('watch function after: currentStep: ', this.currentStep);
+        console.log('watch function after: typeof currentStep: ', typeof this.currentStep);
+
+        // Check if the converted currentStep is higher than the highest step in allowedStepsForJump
+        if (this.allowedStepsForJump.length === 0 || this.currentStep > Math.max(...this.allowedStepsForJump)) {
+            this.allowedStepsForJump.push(this.currentStep);
+        }
+    }
+},
 computed: {
     showAltLabels() {
         if (this.$vuetify.display.mdAndUp || this.$vuetify.display.xs) {
@@ -444,10 +484,11 @@ computed: {
     progressBarWidth() {
         const stepWidth = 16.66;
         return `${stepWidth * (this.currentStep + 1)}%`
-    }
+    },
 },
 methods: {
     handleFormValid() {
+        console.log('handleFormValid this.currentStep: ', this.currentStep);
         this.currentStep++;
     },
     
@@ -490,8 +531,7 @@ methods: {
     },
 
     triggerValidation() {
-        console.log('triggerValidation')
-        console.log('currentStep: ', this.currentStep)
+        console.log('triggerValidation currentStep: ', this.currentStep);
         if (this.currentStep === 0) {
             this.triggerExpValidation();
         } else if (this.currentStep === 1) {
@@ -541,9 +581,316 @@ methods: {
         console.log('handleSelectedExperience - experienceID: ', this.experienceID);
     },
 
-    submitForm() {
-        console.log('Submit Form');
+    stepVisited(step) {
+        if (!this.visitedSteps.includes(step)) {
+            this.visitedSteps.push(step);
+        }
+    },
+
+    checkJump(step) {
+        // Check if the current step is valid
+        const isCurrentStepValid = this.isStepValid(this.currentStep);
+
+        // Allow jump if the step is allowed and the current step is valid
+        return isCurrentStepValid && this.allowedStepsForJump.includes(step);
+    },
+
+    isStepValid(step) {
+        switch(step) {
+            case 0: return !this.expError;
+            case 1: return !this.commResError;
+            case 2: return !this.growthError;
+            case 3: return !this.aspError;
+            case 4: return !this.goalsError;
+            default: return true;
+        }
+    },
+
+    handlePreviousClick() {
+        // Check if the current step has errors
+        if (this.isStepValid(this.currentStep)) {
+            // Navigate to the previous step if there are no errors
+            this.currentStep = Math.max(this.currentStep - 1, 0);
+        } else {
+            // Show the toast error message
+            toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: false
+            });
+        }
+    },
+
+    submitFormCleanup() {
+        // Check condition for "Other" text fields
+        const isOtherCommunityEngagementExperiencesChecked = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.id === 6)?.checked || false;
+
+        if (!isOtherCommunityEngagementExperiencesChecked) {
+        this.goalForm.communityEngagement.communityEngagementExperiencesOther = '';
+        }
+
+        const isOtherPreviousEngagementExperienceChecked = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8)?.checked || false;
+
+        if (!isOtherPreviousEngagementExperienceChecked) {
+        this.goalForm.communityEngagement.previousEngagementExperiencesOther = '';
+        }
+
+        const isOtherEngagementActivitiesToolsChecked = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.id === 8)?.checked || false;
+
+        if (!isOtherEngagementActivitiesToolsChecked) {
+        this.goalForm.communityEngagement.engagementActivitiesToolOther= '';
+        }
+
+        const isOtherCurrentResearchExperienceChecked = this.goalForm.researchExperience.currentResearchExperience.find(p => p.id === 7)?.checked || false;
+
+        if (!isOtherCurrentResearchExperienceChecked) {
+        this.goalForm.researchExperience.currentResearchExperienceOther= '';
+        }
+
+        const isOtherPreviousResearchExperienceChecked = this.goalForm.researchExperience.previousResearchExperience.find(p => p.id === 8)?.checked || false;
+
+        if (!isOtherPreviousResearchExperienceChecked) {
+        this.goalForm.researchExperience.previousResearchExperienceOther= '';
+        }
+
+        const isOtherFamiliarToolsChecked = this.goalForm.researchExperience.familiarTools.find(p => p.id === 10)?.checked || false;
+
+        if (!isOtherFamiliarToolsChecked) {
+        this.goalForm.researchExperience.familiarToolOther= '';
+        }
+
+        const isInterestResearchServiceChecked = this.goalForm.researchExperience.interestResearchService.find(p => p.id === 8)?.checked || false;
+
+        if (!isInterestResearchServiceChecked) {
+        this.goalForm.researchExperience.interestResearchServiceOther= '';
+        }
+
+        //Check conditions for having not filled out form previously for semester (nested dependencies)
+        if (this.isGoalSettingFormFilled === 'Yes') {
+        this.goalForm.communityEngagement.communityEngagementExperiences.forEach(experience => {
+            experience.checked = false;
+        });
+        this.goalForm.communityEngagement.communityEngagementExperiencesOther = '';
+        
+        this.goalForm.communityEngagement.previousEngagementExperiences.forEach(experience => {
+            experience.checked = false;
+        });
+        this.goalForm.communityEngagement.previousEngagementExperiencesOther = '';
+        
+        this.goalForm.communityEngagement.engagementActivitiesTools.forEach(experience => {
+            experience.checked = false;
+        });
+        this.goalForm.communityEngagement.engagementActivitiesToolOther = '';
+        
+        this.goalForm.researchExperience.currentResearchExperience.forEach(experience => {
+            experience.checked = false;
+        });
+        this.goalForm.researchExperience.currentResearchExperienceOther = '';
+        
+        this.goalForm.researchExperience.previousResearchExperience.forEach(experience => {
+            experience.checked = false;
+        });
+        this.goalForm.researchExperience.previousResearchExperienceOther = '';
+        
+        this.goalForm.researchExperience.familiarTools.forEach(experience => {
+            experience.checked = false;
+        });
+        this.goalForm.researchExperience.familiarToolOther = '';
+        
+        this.goalForm.researchExperience.interestResearchService.forEach(experience => {
+            experience.checked = false;
+        });
+        this.goalForm.researchExperience.interestResearchServiceOther = '';
+        
+        this.goalForm.researchExperience.leadershipOption = '';
     }
+
+    // Ensure that aspirations and goals are in order
+
+    // Extract the aspirations from the goalForm
+        const aspirationsArray = [
+            this.goalForm.aspirations.aspirationOne,
+            this.goalForm.aspirations.aspirationTwo,
+            this.goalForm.aspirations.aspirationThree
+        ];
+
+        // Filter out empty aspirations
+        const filledAspirations = aspirationsArray.filter(aspiration => aspiration && aspiration.trim() !== '');
+
+        // Reset the aspirations in the goalForm
+        this.goalForm.aspirations.aspirationOne = filledAspirations[0] || '';
+        this.goalForm.aspirations.aspirationTwo = filledAspirations[1] || '';
+        this.goalForm.aspirations.aspirationThree = filledAspirations[2] || '';
+
+        // Extract the goals from the goalForm
+        const goalsArray = [
+            this.goalForm.goals.goalOne,
+            this.goalForm.goals.goalTwo,
+            this.goalForm.goals.goalThree,
+            this.goalForm.goals.goalFour,
+            this.goalForm.goals.goalFive
+        ];
+
+        // Filter out empty goals
+        const filledGoals = goalsArray.filter(goal => goal && goal.trim() !== '');
+
+        // Reset the goals in the goalForm
+        this.goalForm.goals.goalOne = filledGoals[0] || '';
+        this.goalForm.goals.goalTwo = filledGoals[1] || '';
+        this.goalForm.goals.goalThree = filledGoals[2] || '';
+        this.goalForm.goals.goalFour = filledGoals[3] || '';
+        this.goalForm.goals.goalFive = filledGoals[4] || '';
+
+        // After cleaning up the data, check whether to update or create
+        if (this.foundDocumentId) {
+            this.handleUpdateForm();
+        } else {
+            // If previously filled document wasn't found, create new document
+            this.handleSubmitForm();
+            
+        }
+    },
+
+    handleSubmitForm() {
+        console.log('Submit Form');
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
+
+        console.log('this.selectedExperience.value: ', this.selectedExperience.value);
+
+        console.log('submitForm: this.goalForm.experiences: ', this.goalForm.experiences);
+
+        // Find the expRegistrationID corresponding to the selected experience
+        const selectedExp = this.goalForm.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
+
+        const expRegistrationID = selectedExp.expRegistrationID;
+
+        const goalForm = {
+            expRegistrationID,
+            experienceID: this.selectedExperience.value,
+            goalForm: {
+                communityEngagement: {
+                    communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
+                    communityEngagementExperiencesOther: this.goalForm.communityEngagement.communityEngagementExperiencesOther,
+                    previousEngagementExperiences: this.goalForm.communityEngagement.previousEngagementExperiences,
+                    previousEngagementExperiencesOther: this.goalForm.communityEngagement.previousEngagementExperiencesOther,
+                    engagementActivitiesTools: this.goalForm.communityEngagement.engagementActivitiesTools,
+                    engagementActivitiesToolOther: this.goalForm.communityEngagement.engagementActivitiesToolOther,
+                },
+                researchExperience: {
+                    currentResearchExperience: this.goalForm.researchExperience.currentResearchExperience,
+                    currentResearchExperienceOther: this.goalForm.researchExperience.currentResearchExperienceOther,
+                    previousResearchExperience: this.goalForm.researchExperience.previousResearchExperience,
+                    previousResearchExperienceOther: this.goalForm.researchExperience.previousResearchExperienceOther,
+                    familiarTools: this.goalForm.researchExperience.familiarTools,
+                    familiarToolOther: this.goalForm.researchExperience.familiarToolOther,
+                    interestResearchService: this.goalForm.researchExperience.interestResearchService,
+                    interestResearchServiceOther: this.goalForm.researchExperience.interestResearchServiceOther,
+                    leadershipOption: this.goalForm.researchExperience.leadershipOption,
+                },
+                growthGoal: {
+                    problemSolvingGoal: this.goalForm.growthGoal.problemSolvingGoal,
+                    effectiveCommunicationGoal: this.goalForm.growthGoal.effectiveCommunicationGoal,
+                    teamworkGoal: this.goalForm.growthGoal.teamworkGoal,
+                    culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
+                    ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
+                    professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
+                },
+                aspirations: {
+                    aspirationOne: this.goalForm.aspirations.aspirationOne,
+                    aspirationTwo: this.goalForm.aspirations.aspirationTwo,
+                    aspirationThree: this.goalForm.aspirations.aspirationThree,
+                },
+                goals: {
+                    goalOne: this.goalForm.goals.goalOne,
+                    goalTwo: this.goalForm.goals.goalTwo,
+                    goalThree: this.goalForm.goals.goalThree,
+                    goalFour: this.goalForm.goals.goalFour,
+                    goalFive: this.goalForm.goals.goalFive,
+                },
+            },
+        }
+        axios
+        .post(apiURL, goalForm, { headers: { token } })
+        .then(() => {
+            const motivatingMessages = [
+            "Goals successfully set! You're on the right track!",
+            "Great job setting your goals! Let's make them happen!",
+            "Goals locked in! Believe in yourself and you'll achieve them.",
+            "You've set your goals! Now, let's conquer them together!",
+            "Your goals are set! Keep pushing forward and you'll achieve them.",
+            "Way to go! Every goal you set brings you one step closer to success.",
+            ];
+            const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+
+            // Update pinia store
+            this.updateChecklistStore();
+
+        
+            this.$router.push({ 
+                name: 'studentDashboard',
+                params: {
+                    toastType: 'success',
+                    toastMessage: this.$t(randomMessage),
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                }
+            });
+        })
+        .catch((error) => {
+            this.handleError(error);
+        });
+    },
+
+    async updateChecklistStore() {
+        const user = useLoggedInUserStore();
+        await user.checkFormCompletion();
+    },
+
+    async handleUpdateForm() {    
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/' + this.foundDocumentId;
+
+        const updatedGoalForm = {
+        goalForm: {
+            growthGoal: this.goalForm.growthGoal,
+            aspirations: this.goalForm.aspirations,
+            goals: this.goalForm.goals
+        }
+        };
+
+    axios
+        .put(apiURL, updatedGoalForm, { headers: { token } })
+        .then(() => {
+        const motivatingMessages = [
+            "Goals updated successfully! Keep pushing forward!",
+            "Great job updating your goals! Let's continue on this journey together!",
+            "Goals refreshed! Remember, every step counts towards achieving them.",
+            "You've adjusted your goals! Stay focused and you'll achieve them in no time.",
+            "Way to keep refining your vision! Remember, it's the journey that counts.",
+        ];
+        const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+        
+        // Update pinia store
+        this.updateChecklistStore();
+
+        this.$router.push({ 
+                name: 'studentDashboard',
+                params: {
+                toastType: 'info',
+                toastMessage: randomMessage,
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--update'
+            }
+            });
+        })
+        .catch((error) => {
+        this.handleError(error);
+        });
+    },
+
 },
 
 }

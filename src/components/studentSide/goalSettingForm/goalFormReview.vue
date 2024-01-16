@@ -443,8 +443,6 @@
 
 </v-container>
 </v-form>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<p>Selected Experience: {{ selectedExperience }}</p>
 </template>
 
 
