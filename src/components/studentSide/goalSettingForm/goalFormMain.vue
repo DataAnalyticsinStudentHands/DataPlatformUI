@@ -62,7 +62,7 @@
 
                     <v-stepper-item
                         ref="step1"
-                        title="Community/Research"
+                        title="Background"
                         icon="mdi-earth"
                         value="1"
                         :error="commResError"

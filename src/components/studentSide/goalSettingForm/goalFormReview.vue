@@ -2,14 +2,80 @@
 <v-form disabled>
 <v-container>
 <!-- Section: Selected Experience -->
+
+<div class="review-section">
 <v-row>
-    <v-col cols="12">
-    <div class="review-section">
-        <h3 class="review-section-title">{{ $t('Selected Experience') }}</h3>
-        <p class="review-section-content">{{ selectedExperience?.text }}</p>
-    </div>
+    <v-col cols="10" class="pb-0">
+        <h3 class="review-section-title">
+            {{ $t('Selected Experience') }}
+            <!-- Mobile View Edit Button -->
+            <v-btn v-if="$vuetify.display.xs"
+                icon
+                size="small"
+                variant="text"
+                @click="emitStepChange(0)"
+                class="pb-2"
+            >
+                <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+        </h3>
+    </v-col>
+    <!-- Non-Mobile View Edit Button -->
+    <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
+        <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(0)"
+        >
+        <v-icon>mdi-pencil</v-icon>
+        </v-btn>
     </v-col>
 </v-row>
+<v-row>
+    <v-col cols="10" class="pt-0">
+        <p class="review-section-content pl-3">
+            {{ selectedExperience?.text }}
+        </p>
+    </v-col>
+</v-row>
+</div>
+
+<!-- Background Title -->
+<v-row class="d-flex justify-center align-center">
+    <!-- Empty Column for Space -->
+    <v-col sm="1" class="d-none d-sm-flex"></v-col>
+    <v-col cols="1" class="d-sm-none"></v-col>
+    <!-- Title Column -->
+    <v-col cols="10" class="pb-0">
+        <h2 class="section-title text-center">
+            {{ $t('Background') }}
+        </h2>
+    </v-col>
+    <v-col cols="1" class="d-sm-none">
+        <!-- Mobile View Edit Button -->
+        <v-btn v-if="$vuetify.display.xs"
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(1)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+    <!-- Non-Mobile View Edit Button -->
+    <v-col cols="1" class="d-none d-sm-flex">
+        <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(1)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+</v-row>
+
 
 <!-- Section: Community Engagement Experiences -->
 <v-row>
@@ -146,6 +212,234 @@
     </v-col>
 </v-row>
 
+<!-- Growth Title -->
+<v-row class="d-flex justify-center align-center">
+    <!-- Empty Column for Space -->
+    <v-col sm="1" class="d-none d-sm-flex"></v-col>
+    <v-col cols="1" class="d-sm-none"></v-col>
+    <!-- Title Column -->
+    <v-col cols="10" class="pb-0">
+        <h2 class="section-title text-center">
+            {{ $t('Growth Goals') }}
+        </h2>
+    </v-col>
+    <v-col cols="1" class="d-sm-none">
+        <!-- Mobile View Edit Button -->
+        <v-btn v-if="$vuetify.display.xs"
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(2)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+    <!-- Non-Mobile View Edit Button -->
+    <v-col cols="1" class="d-none d-sm-flex">
+        <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(2)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+</v-row>
+
+<!-- Problem Solving Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Problem Solving Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('problem solving') }}</u>.
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.problemSolvingGoal) }}</p>
+    </v-col>
+</v-row>
+
+<!-- Effective Communication Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Effective Communication Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('effective communication.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.effectiveCommunicationGoal) }}</p>
+    </v-col>
+</v-row>
+
+<!-- Teamwork Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Teamwork Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('teamwork.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.teamworkGoal) }}</p>
+    </v-col>
+</v-row>
+
+<!-- Cultural Humility Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Cultural Humility Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('cultural humility.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.culturalHumilityGoal) }}</p>
+    </v-col>
+</v-row>
+
+
+<!-- Ethical Decision Making Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Ethical Decision Making Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('ethical decision making.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.ethicalDecisionMakingGoal) }}</p>
+    </v-col>
+</v-row>
+
+<!-- Professional Responsibility Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Professional Responsibility Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('professional responsibility.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.professionalResponsibilityGoal) }}</p>
+    </v-col>
+</v-row>
+
+
+<!-- Aspirations Title -->
+<v-row class="d-flex justify-center align-center">
+    <!-- Empty Column for Space -->
+    <v-col sm="1" class="d-none d-sm-flex"></v-col>
+    <v-col cols="1" class="d-sm-none"></v-col>
+    <!-- Title Column -->
+    <v-col cols="10" class="pb-0">
+        <h2 class="section-title text-center">
+            {{ $t('Aspirations') }}
+        </h2>
+    </v-col>
+    <v-col cols="1" class="d-sm-none">
+        <!-- Mobile View Edit Button -->
+        <v-btn v-if="$vuetify.display.xs"
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(3)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+    <!-- Non-Mobile View Edit Button -->
+    <v-col cols="1" class="d-none d-sm-flex">
+        <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(3)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+</v-row>
+
+
+<!-- Aspirations Section -->
+<v-row>
+    <v-col cols="12">
+        <p class="form-label">
+            {{$t('Please describe 2-3 long-term aspirations you may have.')}}
+            <br><br>
+            {{$t('Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.')}}
+        </p>
+        
+        <!-- Aspiration 1 -->
+        <h4 class="aspiration-title">{{ $t('Aspiration 1') }}</h4>
+        <p class="review-section-content pl-3">{{ $t(goalForm.aspirations.aspirationOne) }}</p>
+
+        <!-- Aspiration 2 -->
+        <h4 v-if="goalForm.aspirations.aspirationTwo" class="aspiration-title">{{ $t('Aspiration 2') }}</h4>
+        <p v-if="goalForm.aspirations.aspirationTwo" class="review-section-content pl-3">{{ $t(goalForm.aspirations.aspirationTwo) }}</p>
+
+        <!-- Aspiration 3 -->
+        <h4 v-if="goalForm.aspirations.aspirationThree" class="aspiration-title">{{ $t('Aspiration 3') }}</h4>
+        <p v-if="goalForm.aspirations.aspirationThree" class="review-section-content pl-3">{{ $t(goalForm.aspirations.aspirationThree) }}</p>
+    </v-col>
+</v-row>
+
+<!-- Goals Title -->
+<v-row class="d-flex justify-center align-center">
+    <!-- Empty Column for Space -->
+    <v-col sm="1" class="d-none d-sm-flex"></v-col>
+    <v-col cols="1" class="d-sm-none"></v-col>
+    <!-- Title Column -->
+    <v-col cols="10" class="pb-0">
+        <h2 class="section-title text-center">
+            {{ $t('Goals') }}
+        </h2>
+    </v-col>
+    <v-col cols="1" class="d-sm-none">
+        <!-- Mobile View Edit Button -->
+        <v-btn v-if="$vuetify.display.xs"
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(4)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+    <!-- Non-Mobile View Edit Button -->
+    <v-col cols="1" class="d-none d-sm-flex">
+        <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(4)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
+</v-row>
+
+<!-- Goals Section -->
+<v-row>
+    <v-col cols="12">
+        <p class="form-label">
+            {{$t('Please outline 3-5 goals that you have for this experience.')}}
+            <br><br>
+            {{$t('Goals are statements that describe what it means for an experience to be a success from your perspective,')}}
+        </p>
+        
+        <!-- Goal 1 -->
+        <h4 v-if="goalForm.goals.goalOne" class="goal-title">{{ $t('Goal 1') }}</h4>
+        <p v-if="goalForm.goals.goalOne" class="review-section-content pl-3">{{ $t(goalForm.goals.goalOne) }}</p>
+
+        <!-- Goal 2 -->
+        <h4 v-if="goalForm.goals.goalTwo" class="goal-title">{{ $t('Goal 2') }}</h4>
+        <p v-if="goalForm.goals.goalTwo" class="review-section-content pl-3">{{ $t(goalForm.goals.goalTwo) }}</p>
+
+        <!-- Goal 3 -->
+        <h4 v-if="goalForm.goals.goalThree" class="goal-title">{{ $t('Goal 3') }}</h4>
+        <p v-if="goalForm.goals.goalThree" class="review-section-content pl-3">{{ $t(goalForm.goals.goalThree) }}</p>
+
+        <!-- Goal 4 -->
+        <h4 v-if="goalForm.goals.goalFour" class="goal-title">{{ $t('Goal 4') }}</h4>
+        <p v-if="goalForm.goals.goalFour" class="review-section-content pl-3">{{ $t(goalForm.goals.goalFour) }}</p>
+
+        <!-- Goal 5 -->
+        <h4 v-if="goalForm.goals.goalFive" class="goal-title">{{ $t('Goal 5') }}</h4>
+        <p v-if="goalForm.goals.goalFive" class="review-section-content pl-3">{{ $t(goalForm.goals.goalFive) }}</p>
+    </v-col>
+</v-row>
+
 
 </v-container>
 </v-form>
@@ -161,7 +455,7 @@ export default {
         selectedExperience: Object,
         goalForm: Object
     },
-    emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change"],
+    emits: ["change-step"],
     computed: {
         processedCommunityEngagementExperiences() {
             const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.id === 7 && experience.checked);
@@ -254,8 +548,11 @@ export default {
         displayInterestResearchServiceOther() {
             return this.goalForm.researchExperience.interestResearchService.find(interest => interest.id === 8)?.checked;
         },
-
-        
+    },
+    methods: {
+        emitStepChange(stepNumber) {
+            this.$emit('change-step', stepNumber);
+        },
     },
 }
 </script>
@@ -271,7 +568,7 @@ export default {
 }
 
 .review-section-title {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -298,9 +595,31 @@ export default {
 
 .v-list-item {
     min-width: 0; /* Override minimum width */
-  }
+}
 
-  .v-list-item-title {
+.v-list-item-title {
     white-space: normal; /* Allow text to wrap */
-  }
+}
+
+.section-title {
+    font-size: 1.25rem; /* Adjusted for larger section titles */
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.aspiration-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.goal-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+
 </style>
