@@ -32,6 +32,7 @@
         :label="$t(engagementExperience.label)"
         :rules="communityEngagementExperiencesRules"
         :indeterminate="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
+        :disabled="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
     >
     </v-checkbox>
 
@@ -77,6 +78,7 @@
         v-model="previousExperience.checked"
         :rules="previousEngagementExperiencesRules"
         :indeterminate="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked"
+        :disabled="goalForm.communityEngagement.previousEngagementExperiences[goalForm.communityEngagement.previousEngagementExperiences.length - 1].checked && !previousExperience.checked"
       >
       </v-checkbox>
 
@@ -120,6 +122,7 @@
         :label="$t(activitiesTool.label)"
         :rules="engagementActivitiesToolsRules"
         :indeterminate="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked"
+        :disabled="goalForm.communityEngagement.engagementActivitiesTools[goalForm.communityEngagement.engagementActivitiesTools.length - 1].checked && !activitiesTool.checked"
     >
     </v-checkbox>
 
@@ -165,6 +168,7 @@
         :label="$t(currentExperience.label)"
         :rules="currentResearchExperienceRules"
         :indeterminate="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked"
+        :disabled="goalForm.researchExperience.currentResearchExperience[goalForm.researchExperience.currentResearchExperience.length - 1].checked && !currentExperience.checked"
     >
     </v-checkbox>
 
@@ -211,6 +215,7 @@
         :label="$t(previousExperience.label)"
         :rules="previousResearchExperienceRules"
         :indeterminate="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked"
+        :disabled="goalForm.researchExperience.previousResearchExperience[goalForm.researchExperience.previousResearchExperience.length - 1].checked && !previousExperience.checked"
     >
     </v-checkbox>
 
@@ -256,6 +261,7 @@
         :label="$t(familiarTool.label)"
         :rules="familiarToolsRules"
         :indeterminate="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked"
+        :disabled="goalForm.researchExperience.familiarTools[goalForm.researchExperience.familiarTools.length - 1].checked && !familiarTool.checked"
     >
     </v-checkbox>
 
@@ -301,6 +307,7 @@
         :label="$t(interest.label)"
         :rules="interestResearchServiceRules"
         :indeterminate="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked"
+        :disabled="goalForm.researchExperience.interestResearchService[goalForm.researchExperience.interestResearchService.length - 1].checked && !interest.checked"
     >
     </v-checkbox>
 
@@ -536,47 +543,56 @@ data() {
     }
 },
 watch: {
-    'goalForm.communityEngagement.communityEngagementExperiences': {
-      deep: true,
-      handler(newVal) {
-        // Find the last checkbox
-        const lastCheckbox = newVal[newVal.length - 1];
+  'goalForm.communityEngagement.communityEngagementExperiences': {
+    deep: true,
+    handler(newVal) {
+      // Find the last checkbox
+      const lastCheckbox = newVal[newVal.length - 1];
 
-        // If the last checkbox is checked, uncheck all other checkboxes
-        if (lastCheckbox && lastCheckbox.checked) {
-          newVal.forEach(engagementExperience => {
-            if (engagementExperience.id !== lastCheckbox.id) {
-              engagementExperience.checked = false;
-            }
-          });
-        }
+      // If the last checkbox is checked, uncheck all other checkboxes
+      if (lastCheckbox && lastCheckbox.checked) {
+        newVal.forEach(engagementExperience => {
+          if (engagementExperience.id !== lastCheckbox.id) {
+            engagementExperience.checked = false;
+          }
+        });
+      }
 
-        const otherExperience= newVal.find(exp => exp.id === 6);
-        if (otherExperience && otherExperience.checked && this.formSubmitted) {
-            this.$refs.otherExperienceRef[5].validate();
+      const otherExperience = newVal.find(exp => exp.id === 6);
+      if (otherExperience && otherExperience.checked && this.formSubmitted) {
+        // Use the dynamic ref name based on the id
+        const dynamicRef = this.$refs[`otherExperienceRef-${otherExperience.id}`];
+        if (dynamicRef && dynamicRef.length > 0) {
+          dynamicRef[0].validate();
         }
       }
-    },
-    'goalForm.communityEngagement.previousEngagementExperiences': {
-      deep: true,
-      handler(newVal) {
-        // Find the last checkbox
-        const lastCheckbox = newVal[newVal.length - 1];
+    }
+  },
+  'goalForm.communityEngagement.previousEngagementExperiences': {
+    deep: true,
+    handler(newVal) {
+      // Find the last checkbox
+      const lastCheckbox = newVal[newVal.length - 1];
 
-        // If the last checkbox is checked, uncheck all other checkboxes
-        if (lastCheckbox && lastCheckbox.checked) {
-          newVal.forEach(experience => {
-            if (experience.id !== lastCheckbox.id) {
-              experience.checked = false;
-            }
-          });
-        }
-        const previousExperience= newVal.find(exp => exp.id === 8);
-        if (previousExperience && previousExperience.checked && this.formSubmitted) {
-          this.$refs.previousEngagementExperiencesOtherRef[7].validate();
+      // If the last checkbox is checked, uncheck all other checkboxes
+      if (lastCheckbox && lastCheckbox.checked) {
+        newVal.forEach(experience => {
+          if (experience.id !== lastCheckbox.id) {
+            experience.checked = false;
+          }
+        });
+      }
+
+      const previousExperience = newVal.find(exp => exp.id === 8);
+      if (previousExperience && previousExperience.checked && this.formSubmitted) {
+        // Use the dynamic ref name based on the id
+        const dynamicRef = this.$refs[`previousEngagementExperiencesOtherRef-${previousExperience.id}`];
+        if (dynamicRef && dynamicRef.length > 0) {
+          dynamicRef[0].validate(); // Assuming there's only one element in the array
         }
       }
-    },
+    }
+  },
     'goalForm.communityEngagement.engagementActivitiesTools': {
       deep: true,
       handler(newVal) {
@@ -591,9 +607,14 @@ watch: {
             }
           });
         }
-        const engagementActivitiesTool= newVal.find(exp => exp.id === 8);
+
+        const engagementActivitiesTool = newVal.find(exp => exp.id === 8);
         if (engagementActivitiesTool && engagementActivitiesTool.checked && this.formSubmitted) {
-          this.$refs.engagementActivitiesToolOtherRef[7].validate();
+          // Use the dynamic ref name based on the id
+          const dynamicRef = this.$refs[`engagementActivitiesToolOtherRef-${engagementActivitiesTool.id}`];
+          if (dynamicRef && dynamicRef.length > 0) {
+            dynamicRef[0].validate();
+          }
         }
       }
     },
@@ -611,9 +632,14 @@ watch: {
             }
           });
         }
-        const researchExperience= newVal.find(exp => exp.id === 7);
+
+        const researchExperience = newVal.find(exp => exp.id === 7);
         if (researchExperience && researchExperience.checked && this.formSubmitted) {
-          this.$refs.currentResearchExperienceOtherRef[6].validate();
+          // Use the dynamic ref name based on the id
+          const dynamicRef = this.$refs[`currentResearchExperienceOtherRef-${researchExperience.id}`];
+          if (dynamicRef && dynamicRef.length > 0) {
+            dynamicRef[0].validate();
+          }
         }
       }
     },
@@ -631,9 +657,14 @@ watch: {
             }
           });
         }
-        const previousExperience= newVal.find(exp => exp.id === 8);
+
+        const previousExperience = newVal.find(exp => exp.id === 8);
         if (previousExperience && previousExperience.checked && this.formSubmitted) {
-          this.$refs.previousResearchExperienceOtherRef[7].validate();
+          // Use the dynamic ref name based on the id
+          const dynamicRef = this.$refs[`previousResearchExperienceOtherRef-${previousExperience.id}`];
+          if (dynamicRef && dynamicRef.length > 0) {
+            dynamicRef[0].validate(); 
+          }
         }
       }
     },
@@ -651,9 +682,14 @@ watch: {
             }
           });
         }
-        const familiarTool= newVal.find(exp => exp.id === 10);
+
+        const familiarTool = newVal.find(exp => exp.id === 10);
         if (familiarTool && familiarTool.checked && this.formSubmitted) {
-          this.$refs.familiarToolOtherRef[9].validate();
+          // Use the dynamic ref name based on the id
+          const dynamicRef = this.$refs[`familiarToolOtherRef-${familiarTool.id}`];
+          if (dynamicRef && dynamicRef.length > 0) {
+            dynamicRef[0].validate();
+          }
         }
       }
     },
@@ -671,9 +707,14 @@ watch: {
             }
           });
         }
-        const researchService= newVal.find(exp => exp.id === 8);
+
+        const researchService = newVal.find(exp => exp.id === 8);
         if (researchService && researchService.checked && this.formSubmitted) {
-          this.$refs.interestResearchServiceOtherRef[7].validate();
+          // Use the dynamic ref name based on the id
+          const dynamicRef = this.$refs[`interestResearchServiceOtherRef-${researchService.id}`];
+          if (dynamicRef && dynamicRef.length > 0) {
+            dynamicRef[0].validate(); 
+          }
         }
       }
     },

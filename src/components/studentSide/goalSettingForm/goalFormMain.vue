@@ -123,6 +123,7 @@
                         @form-invalid="handleFormInvalid('exp')"
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('exp', $event)"
+                        @update-selected-experience="handleSelectedExperience"
                     ></goal-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -168,6 +169,7 @@
                     <v-stepper-window-item value="5">
                     <goal-form-review
                         ref="GoalFormReviewRef"
+                        :selectedExperience="selectedExperience"
                         :goalForm="goalForm"
                         @change-step="currentStep = $event"
                     ></goal-form-review>
@@ -186,6 +188,7 @@
                             @form-invalid="handleFormInvalid('exp')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('exp', $event)"
+                            @update-selected-experience="handleSelectedExperience"
                         ></goal-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
@@ -231,6 +234,7 @@
                     <div v-show="currentStep === 5" key="step5">
                         <goal-form-review
                             ref="GoalFormReviewRef"
+                            :selectedExperience="selectedExperience"
                             :goalForm="goalForm"
                             @change-step="currentStep = $event"
                         ></goal-form-review>
@@ -277,7 +281,9 @@
         </v-col>
     </v-row>
 </v-container>
-
+goalForm.experienceID: {{ goalForm.experienceID }}
+<br>
+selectedExperience: {{ selectedExperience }}
 </template>
 
 <script>
@@ -306,6 +312,7 @@ data() {
         growthError: false,
         aspError: false,
         goalsError: false,
+        selectedExperience: null,
         goalForm: {
         experiences:[{
             experienceIDFromList:'',
@@ -315,7 +322,7 @@ data() {
         experienceID: null,
         communityEngagement: {
             communityEngagementExperiences: [
-            { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: false },
+            { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: true },
             { id: 2, label: "Political campaigns", checked: false },
             { id: 3, label: "Faith based organizations", checked: false },
             { id: 4, label: "Short-term volunteer opportunities (e.g. day of service events)", checked: false },
@@ -325,7 +332,7 @@ data() {
             ],
             communityEngagementExperiencesOther: '',
             previousEngagementExperiences: [
-            { id: 1, label: "Mentoring someone", checked: false },
+            { id: 1, label: "Mentoring someone", checked: true },
             { id: 2, label: "Volunteering at a community event (e.g. health fair)", checked: false },
             { id: 3, label: "Recruiting volunteers", checked: false },
             { id: 4, label: "Organizing a service project", checked: false },
@@ -337,7 +344,7 @@ data() {
             ],
             previousEngagementExperiencesOther: '',
             engagementActivitiesTools: [
-            { id: 1, label: "Social media", checked: false },
+            { id: 1, label: "Social media", checked: true },
             { id: 2, label: "Scheduling software (e.g. when is good, doodle)", checked: false },
             { id: 3, label: "Fundraising platforms", checked: false },
             { id: 4, label: "Survey tools", checked: false },
@@ -352,7 +359,7 @@ data() {
         researchExperience: {
             currentResearchExperience: [
             { id: 1, label: "Introduction to Statistics / Introduction to Biostatistics / Introduction to Research courses", checked: false },
-            { id: 2, label: "Advanced statistics and programming courses", checked: false },
+            { id: 2, label: "Advanced statistics and programming courses", checked: true },
             { id: 3, label: "HERE", checked: false },
             { id: 4, label: "SURF", checked: false },
             { id: 5, label: "PURS", checked: false },
@@ -362,7 +369,7 @@ data() {
             ],
             currentResearchExperienceOther: '',
             previousResearchExperience: [
-            { id: 1, label: "Designing your own research project", checked: false },
+            { id: 1, label: "Designing your own research project", checked: true },
             { id: 2, label: "Literature review", checked: false },
             { id: 3, label: "Data collection in a clinical setting", checked: false },
             { id: 4, label: "Data collection in a laboratory setting", checked: false },
@@ -374,7 +381,7 @@ data() {
             ],
             previousResearchExperienceOther: '',
             familiarTools: [
-            { id: 1, label: "Excel", checked: false },
+            { id: 1, label: "Excel", checked: true },
             { id: 2, label: "R", checked: false },
             { id: 3, label: "Python", checked: false },
             { id: 4, label: "STATA", checked: false },
@@ -388,7 +395,7 @@ data() {
             ],
             familiarToolOther: '',
             interestResearchService: [
-            { id: 1, label: "Education", checked: false },
+            { id: 1, label: "Education", checked: true },
             { id: 2, label: "Community Health", checked: false },
             { id: 3, label: "Mental Health", checked: false },
             { id: 4, label: "Incarceration / Criminal Justice", checked: false },
@@ -399,25 +406,25 @@ data() {
             { id: 9, label: "None of the above", checked: false }
             ],
             interestResearchServiceOther: '',
-            leadershipOption: ''
+            leadershipOption: 'Yes'
         },
         growthGoal: {
-            problemSolvingGoal: '',
-            effectiveCommunicationGoal: '',
-            teamworkGoal: '',
-            culturalHumilityGoal: '',
-            ethicalDecisionMakingGoal: '',
-            professionalResponsibilityGoal: ''
+            problemSolvingGoal: 'No growth',
+            effectiveCommunicationGoal: 'No growth',
+            teamworkGoal: 'No growth',
+            culturalHumilityGoal: 'No growth',
+            ethicalDecisionMakingGoal: 'No growth',
+            professionalResponsibilityGoal: 'No growth'
         },
         aspirations: {
-            aspirationOne: '',
-            aspirationTwo: '',
+            aspirationOne: 'asd',
+            aspirationTwo: 'asd',
             aspirationThree: '',
         },
         goals: {
-            goalOne: '',
-            goalTwo: '',
-            goalThree: '',
+            goalOne: 'asd',
+            goalTwo: 'asd',
+            goalThree: 'asd',
             goalFour: '',
             goalFive: '',
         }
@@ -526,7 +533,13 @@ methods: {
         if (this.$refs.GoalFormGoalsRef) {
             this.$refs.GoalFormGoalsRef.handleValidations();
         }
-    },   
+    },
+
+    handleSelectedExperience(value) {
+        this.selectedExperience = value;
+        console.log('handleSelectedExperience - selectedExperience: ', this.selectedExperience);
+        console.log('handleSelectedExperience - experienceID: ', this.experienceID);
+    },
 
     submitForm() {
         console.log('Submit Form');

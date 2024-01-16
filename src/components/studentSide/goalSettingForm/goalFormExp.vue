@@ -57,6 +57,8 @@
         </v-row>
     </v-container>
 </v-form>
+
+formattedExperiences: {{ formattedExperiences }}
 </template>
 
 <script>
@@ -69,7 +71,7 @@ name: "GoalFormExperiences",
 props: {
     goalForm: Object,
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience"],
 data() {
     return {
         formSubmitted: false,
@@ -222,16 +224,22 @@ methods: {
     },
 
     updateExperienceID(selected) {
-        // If the selected value is empty, set experienceID to null or an empty string and exit the method
         if (!selected) {
             this.goalForm.experienceID = null;
+            this.$emit("update-selected-experience", null); // Emit null if no experience is selected
             return;
         }
 
-        const experience = this.goalForm.experiences.find(exp => `${exp.experienceCategory}: ${exp.experienceName}` === selected);
-        if (experience) {
-            this.goalForm.experienceID = experience.experienceID;
-        }
+        // The selected variable already has the experienceID
+        console.log('selected: ', selected);
+        this.goalForm.experienceID = selected;
+        console.log('this.goalForm.experienceID: ', this.goalForm.experienceID);
+
+        // Find the text corresponding to the selected value
+        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
+
+        // Emit an object with both text and value
+        this.$emit("update-selected-experience", { text: selectedExperienceText, value: selected });
     },
 
     selectExperienceFromRouteParam() {
