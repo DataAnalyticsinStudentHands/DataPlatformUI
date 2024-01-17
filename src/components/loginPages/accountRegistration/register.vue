@@ -241,7 +241,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
                   toastClassName: 'Toastify__toast--delete'
                 });
               } else {
-                console.log(err);
+                this.handleError(err);
               }
             }
           ).finally(() => {

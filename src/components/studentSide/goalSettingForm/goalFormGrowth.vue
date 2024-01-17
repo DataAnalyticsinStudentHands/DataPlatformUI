@@ -237,11 +237,9 @@ computed: {
 },
 methods: {
     async handleValidations() {
-        console.log('handleValidations called')
         this.formSubmitted = true;
         const { valid } = await this.$refs.form.validate();
         if (valid) {
-            console.log('form is valid!');
             this.$emit('form-valid');
         } else {
             this.$emit('form-invalid');
@@ -268,7 +266,6 @@ methods: {
                 // Emit the actual DOM element or component reference
                 const ref = this.$refs[errorFields[i]];
                 const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
-                console.log('element: ', element);
                 this.$emit('scroll-to-error', element);
                 break;
             }

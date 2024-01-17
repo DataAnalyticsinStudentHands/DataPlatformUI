@@ -95,7 +95,6 @@ export const useLoggedInUserStore = defineStore({
       }
     },
     logout(reset = false) {
-      console.log('logout Pinia')
       // Reset value after user log out
       this.$patch({
         userId: "",
@@ -174,25 +173,17 @@ export const useLoggedInUserStore = defineStore({
       this.languagePreference = langPref;
     },
     async checkFormCompletion() {
-      console.log('checkFormCompletion hit');
       try {
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }
         });
 
         if (response && response.data) {
-          console.log('Received goalSettingFormCompletion: ', response.data.goalSettingFormCompletion);
           this.$patch({
             hasCompletedEntryForm: response.data.entryFormCompleted,
             hasRegisteredExperiences: response.data.hasRegisteredExperiences,
             goalSettingFormCompletion: response.data.goalSettingFormCompletion,
           });
-
-          
-
-          console.log('hasCompletedEntryForm: ', this.hasCompletedEntryForm);
-          console.log('hasRegisteredExperiences: ', this.hasRegisteredExperiences);
-          console.log('goalSettingFormStatus: ', this.goalSettingFormCompletion);
         }
 
       } catch (error) {
@@ -247,7 +238,6 @@ export const useLoggedInUserStore = defineStore({
     
         // Register new experiences
         if (experiencesToRegister.length > 0) {
-          console.log('registerUrl: ', registerUrl);
           await axios.post(registerUrl, {
             expInstanceIDs: experiencesToRegister.map(e => e._id)
           }, { headers: { token } });
@@ -255,7 +245,6 @@ export const useLoggedInUserStore = defineStore({
     
         // Deregister experiences
         if (experiencesToDeregister.length > 0) {
-          console.log('deregisterUrl: ', deregisterUrl);
           await axios.delete(deregisterUrl, {
             headers: { token },
             data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }

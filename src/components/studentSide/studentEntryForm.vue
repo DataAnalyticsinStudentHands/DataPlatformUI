@@ -845,7 +845,7 @@ export default {
         this.minors = data;
       })
       .catch(error => {
-        console.log('Error:', error);
+        this.handleError(error);
       });
 
     const loggedInUserStore = useLoggedInUserStore();

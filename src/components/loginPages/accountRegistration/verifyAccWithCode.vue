@@ -123,7 +123,6 @@ export default {
                 });
             }
         } catch (err) {
-            console.log('err: ', err);
             if (err.response && err.response.status === 401) {
                 if (err.response.data.title === 'Expired code') {
                     try {
@@ -143,7 +142,6 @@ export default {
                     });
                 }
             } else {
-                console.log(err);
                 toast.error(this.$t('An error has occured. Please try again.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
@@ -171,7 +169,7 @@ export default {
             }
         })
         .catch((err) => {
-            console.log(err);
+            this.handleError(err);
         });
     },
   }

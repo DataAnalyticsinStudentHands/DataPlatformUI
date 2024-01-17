@@ -664,7 +664,6 @@ methods: {
     },
 
     editSession(session) {
-        console.log("Edit Session: ", session);
         this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
     },
 
@@ -755,7 +754,6 @@ methods: {
                 return false;
             }
             return Object.keys(searchGroups).every(category => {
-                console.log('category: ', category);
                 if (category === "Session Name") {
                     return searchGroups[category].every(term =>
                         item.sessionName.toLowerCase().includes(term.toLowerCase())
@@ -782,10 +780,8 @@ methods: {
                         return true;
                     });
                 } else if (category === "End Date") {
-                    console.log('category is End Date');
                     return searchGroups[category].every(term => {
                         let sessionDate = new Date(item.sessionPeriod.endDate);
-                        console.log('sessionDate: ', sessionDate);
                         if (term.startsWith('<')) {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate < comparisonDate;
@@ -793,11 +789,8 @@ methods: {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate > comparisonDate;
                         } else if (term.startsWith('=')) {
-                            console.log('term.startsWith(=)')
                             let sessionDate = this.formatDateMethod(new Date(item.sessionPeriod.endDate));
-                            console.log('sessionDate: ', sessionDate);
                             const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
-                            console.log('comparisonDate: ', comparisonDate);
                             return sessionDate === comparisonDate;
                         } else if (term.startsWith('between')) {
                             let [startDateStr, endDateStr] = term.slice(8).split(' and ');
@@ -826,7 +819,6 @@ methods: {
             }
         } else {
             this.selectedStartDate = date;
-            console.log('this.selectedStartDate in handleStartDateSelection: ', this.selectedStartDate);
         }
     },
 
@@ -847,11 +839,9 @@ methods: {
     },
 
     submitStartDate() {
-        console.log("submitStartDate");
 
         // Handle different date filter types
         if (this.startDateFilterType === 'On' && this.selectedStartDate) {
-            console.log('this.selectedStartDate in submitStartDate: ', this.selectedStartDate);
             this.createStartDateChip('=', this.selectedStartDate);
         } else if (this.startDateFilterType === 'Before' && this.selectedStartDate) {
             this.createStartDateChip('<', this.selectedStartDate);
@@ -871,7 +861,6 @@ methods: {
     },
 
     submitEndDate() {
-        console.log("submitEndDate");
 
         // Handle different date filter types
         if (this.endDateFilterType === 'On' && this.selectedEndDate) {
@@ -974,7 +963,6 @@ methods: {
             const token = user.token;
             const updateStatus = { sessionStatus: this.viewArchivedSessions };
 
-            console.log('updateStatus: ', updateStatus);
 
             for (const session of this.selectedSessions) {
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${session._id}`;

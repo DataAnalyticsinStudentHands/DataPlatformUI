@@ -106,15 +106,12 @@ computed: {
 },
 methods: {
     async handleValidations() {
-        console.log('handleValidations called');
         this.formSubmitted = true;
 
         // Check the validity of the aspirations directly
         if (!this.isAspirationsInvalid) {
-            console.log('form is valid!');
             this.$emit('form-valid');
         } else {
-            console.log('form is invalid!');
             this.$emit('form-invalid');
             toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
                 position: 'top-right',

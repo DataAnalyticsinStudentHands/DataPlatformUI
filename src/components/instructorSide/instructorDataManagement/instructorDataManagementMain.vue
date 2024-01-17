@@ -87,7 +87,6 @@ export default {
         loadActiveTab() {
           const store = useLoggedInUserStore();
           this.tab = store.instructorDataManagementActiveTab !== undefined ? store.instructorDataManagementActiveTab : 0;
-          console.log('tab: ', this.tab);
         },
     }
 };

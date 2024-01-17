@@ -104,7 +104,6 @@ export default {
     const store = useLoggedInUserStore();
 
     const appName = computed(() => {
-      console.log('store.orgName: ', store.orgName);
       return store.orgName === 'Data & Society' ? 'Engaged Data' : store.orgName;
     });
 
@@ -188,7 +187,7 @@ export default {
         }
       })
       .catch((err) => {
-        console.log(err);
+        this.handleError(err);
       });
   },
 

@@ -79,7 +79,6 @@
     },
 
     mounted() {
-      console.log('route params: ', this.$route.params);
       this.fetchActivityData();
       this.fetchAssociatedExperiences();
     },
@@ -115,7 +114,6 @@
       },
 
       async handleUpdateForm() {
-        console.log('handleUpdateForm');
         const user = useLoggedInUserStore();
         const token = user.token;
 

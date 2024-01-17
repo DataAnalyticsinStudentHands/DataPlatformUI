@@ -49,7 +49,6 @@ import { DateTime } from "luxon";
     },
     created() {
       window.scrollTo(0, 0);
-      console.log('this.$route.params.id: ', this.$route.params.id);
       this.fetchSessionData();
     },
       methods: {

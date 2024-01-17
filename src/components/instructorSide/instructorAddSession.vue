@@ -99,7 +99,6 @@ export default {
           }
         });
       } else {
-        console.log('Form is invalid');
         toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete',

@@ -123,7 +123,6 @@ export default {
                 });
             }
         } catch (err) {
-            console.log('err: ', err.message);
             if (err.response.data.title === 'Invalid') {
                 toast.error(this.$t('Invalid Email or Code.'), {
                     position: 'top-right',
@@ -166,7 +165,7 @@ export default {
             }
         })
         .catch((err) => {
-            console.log(err);
+            this.handleError(err);
         });
     },
 

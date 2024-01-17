@@ -373,7 +373,6 @@ export default {
     computed: {
         showAltLabels() {
             if (this.$vuetify.display.mdAndUp || this.$vuetify.display.xs) {
-                console.log('mdAndUp')
                 return false;
             } else {
                 return true;
@@ -393,10 +392,7 @@ export default {
     },
     methods: {
         triggerValidation() {
-            console.log('triggerValidation')
-            console.log(this.currentStep)
             if (this.currentStep === 0) {
-                console.log('currentStep === 0')
                 this.triggerDemoValidation();
             } else if (this.currentStep === 1) {
                 this.triggerDegreeValidation();
@@ -405,7 +401,6 @@ export default {
             }
         },
         triggerDemoValidation() {
-            console.log('triggerDemoValidation')
             if (this.$refs.EntryFormDemoRef) {
                 this.$refs.EntryFormDemoRef.handleValidations();
             }
@@ -456,7 +451,6 @@ export default {
             }, {
                 headers: { token }
             }).then(response => {
-                console.log(response.data);
                 this.formSubmitSuccess = true;
 
                 // Directly check the form completion status
@@ -473,7 +467,7 @@ export default {
                 }
                 });
             }).catch(error => {
-                console.error('Error submitting form: ', error);
+                this.handleError(error);
             });
             },
 

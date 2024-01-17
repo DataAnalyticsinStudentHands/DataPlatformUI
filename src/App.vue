@@ -278,7 +278,6 @@ export default {
   },
   methods: {
     async handleLogout() {
-      console.log('logout App.vue')
       const store = useLoggedInUserStore();
       
       await store.logout();
@@ -344,9 +343,6 @@ export default {
   },
   created() {
     const user = useLoggedInUserStore();
-    console.log('Entry Form Completed:', user.hasCompletedEntryForm);
-    console.log('Registered Experiences:', user.hasRegisteredExperiences);
-    console.log('Exit Forms Released:', user.exitFormsReleased);
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
     // const user = useLoggedInUserStore();
     axios

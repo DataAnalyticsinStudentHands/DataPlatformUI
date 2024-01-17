@@ -302,8 +302,6 @@ export default {
             // Validate Other's text field if it's shown
             const isOtherTextboxShown = this.studentInformation.specializedDegCert.specializedDegCertType[5].checked;
             const isOtherValid = this.professionalDesignOtherRules.every(rule => rule(this.studentInformation.specializedDegCert.professionalDesignOther) === true);
-            console.log('isOtherValid: ', isOtherValid);
-            console.log('isOtherTextboxShown: ', isOtherTextboxShown);
             if (isOtherTextboxShown && !isOtherValid) {
                 return this.$t("If 'Other' is selected, please specify.");
             }
@@ -321,7 +319,6 @@ export default {
             this.formSubmitted = true;
             const { valid } = await this.$refs.form.validate();
             if (valid) {
-                console.log('form is valid!');
                 this.$emit('form-valid');
             } else {
                 this.$emit('form-invalid');
@@ -356,25 +353,18 @@ export default {
         isFieldInvalid(fieldRef) {
             switch (fieldRef) {
                 case 'programGradProStatusField':
-                    console.log('case programGradProStatusField')
                     return this.isProgramGradProStatusInvalid;
                 case 'programGradProTypeField':
-                    console.log('case programGradProTypeField')
                     return this.isProgramGradProTypeAllInvalid;
                 case 'phDTextboxField':
-                    console.log('case phDTextboxField')
                 return this.isProgramGradProTypeInvalid;
                 case 'masterTextboxField':
-                    console.log('case masterTextboxField')
                 return this.isProgramGradProTypeInvalid;
                 case 'otherTextboxField':
-                    console.log('case otherTextboxField')
                 return this.isProgramGradProTypeInvalid;
                 case 'specializedDegCertStatusField':
-                    console.log('case specializedDegCertStatusField')
                     return this.isSpecializedDegCertStatusInvalid;
                 case 'specializedDegCertTypeField':
-                    console.log('case specializedDegCertTypeField')
                     return this.isSpecializedDegCertTypeAllInvalid;
                 default:
                     return false;

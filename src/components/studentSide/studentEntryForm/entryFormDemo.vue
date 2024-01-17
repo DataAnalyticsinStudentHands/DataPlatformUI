@@ -210,7 +210,6 @@
           this.formSubmitted = true;
           const { valid } = await this.$refs.form.validate();
           if (valid) {
-            console.log('form is valid!');
             this.$emit('form-valid');
           } else {
             this.$emit('form-invalid');

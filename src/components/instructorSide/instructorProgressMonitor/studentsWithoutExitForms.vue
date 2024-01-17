@@ -149,7 +149,6 @@
     },
     methods: {
       updateExperienceID(selected) {
-        console.log('selected: ', selected);
         if (!selected) {
           this.selectedExperience = null;
           return;

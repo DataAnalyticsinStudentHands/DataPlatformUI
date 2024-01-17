@@ -473,12 +473,8 @@ created() {
 },
 watch: {
     currentStep(newVal) {
-        console.log('watch function before: currentStep: ', this.currentStep);
-        console.log('watch function before: typeof currentStep: ', typeof this.currentStep);
         // Convert newVal to a number and update currentStep
         this.currentStep = Number(newVal);
-        console.log('watch function after: currentStep: ', this.currentStep);
-        console.log('watch function after: typeof currentStep: ', typeof this.currentStep);
 
         // Check if the converted currentStep is higher than the highest step in allowedStepsForJump
         if (this.allowedStepsForJump.length === 0 || this.currentStep > Math.max(...this.allowedStepsForJump)) {
@@ -489,7 +485,6 @@ watch: {
 computed: {
     showAltLabels() {
         if (this.$vuetify.display.mdAndUp || this.$vuetify.display.xs) {
-            console.log('mdAndUp');
             return false;
         } else {
             return true;
@@ -516,8 +511,6 @@ methods: {
         try {
             const response = await axios.get(apiURL, { headers: { token } });
 
-            console.log('fetchLatestGoalSettingForm response.data: ', response.data);
-
             // Check if a goal setting form was found
             if (response.data.formFound) {
                 this.hasCompletedGoalForm = true;
@@ -527,7 +520,6 @@ methods: {
                 this.hasCompletedGoalForm = false;
                 this.goalSettingFormBackground = null;
             }
-            console.log('Goal Setting Form Background: ', this.goalSettingFormBackground);
         } catch (error) {
             this.handleError(error);
         }
@@ -570,18 +562,14 @@ methods: {
 
 
     handleFormValid() {
-        console.log('handleFormValid this.currentStep: ', this.currentStep);
         this.currentStep++;
     },
 
     updateHichProject(newVal) {
-        console.log('updateHichProject called: ', newVal);
         this.hichProject = newVal;
-        console.log('updateHichProject this.hichProject: ', this.hichProject);
     },
     
     handleFormInvalid(section) {
-        console.log('handleFormInvalid section: ', section);
         if (section === "exp") {
             this.expError = true;
         } else if (section === "commRes") {
@@ -602,15 +590,12 @@ methods: {
     },
 
     handleValidationChange(section, { isValid }) {
-        console.log('handleValidationChange section: ', section);
-        console.log('handleValidationChange isValid: ', isValid);
         if (section === "exp") {
             this.expError = !isValid;
         } else if (section === "commRes") {
             this.commResError = !isValid;
         } else if (section === "growth") {
             this.growthError = !isValid;
-            console.log('growthError: ', this.growthError);
         } else if (section === "asp") {
             this.aspError = !isValid;
         } else if (section === "goals") {
@@ -619,7 +604,6 @@ methods: {
     },
 
     triggerValidation() {
-        console.log('triggerValidation currentStep: ', this.currentStep);
         if (this.currentStep === 0) {
             this.triggerExpValidation();
         } else if (this.currentStep === 1) {
@@ -665,8 +649,6 @@ methods: {
 
     handleSelectedExperience(value) {
         this.selectedExperience = value;
-        console.log('handleSelectedExperience - selectedExperience: ', this.selectedExperience);
-        console.log('handleSelectedExperience - experienceID: ', this.experienceID);
     },
 
     stepVisited(step) {
@@ -840,15 +822,9 @@ methods: {
     },
 
     handleSubmitForm() {
-        console.log('Submit Form');
         const user = useLoggedInUserStore();
         const token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
-
-        console.log('this.selectedExperience.value: ', this.selectedExperience.value);
-
-        console.log('submitForm: this.goalForm.experiences: ', this.goalForm.experiences);
-
         // Find the expRegistrationID corresponding to the selected experience
         const selectedExp = this.goalForm.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
 
@@ -904,7 +880,6 @@ methods: {
             goalFormSubmission.hichProject = this.hichProject;
         }
 
-        console.log('goalFormSubmission: ', goalFormSubmission)
         axios
         .post(apiURL, goalFormSubmission, { headers: { token } })
         .then(() => {
@@ -943,10 +918,8 @@ methods: {
     },
 
     async handleUpdateForm() {   
-        console.log('handleUpdateForm called');
         const user = useLoggedInUserStore();
         let token = user.token;
-        console.log('this.foundDocumentId: ', this.foundDocumentId);
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
 
         let updatedGoalForm = {

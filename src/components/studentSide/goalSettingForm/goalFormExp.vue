@@ -146,8 +146,6 @@ mounted() {
 },
 watch: {
     selectedExperience(newVal, oldVal) {
-        console.log('selectedExperience newVal: ', newVal);
-        console.log('selectedExperience oldVal: ', oldVal);
       if (newVal && newVal !== oldVal) {
         this.checkExistingForm(newVal);
       }
@@ -168,7 +166,6 @@ watch: {
     },
 
     hichProject(newVal) {
-        console.log('hichProject newVal: ', newVal);
         this.$emit("update-hich-project", newVal);
     },
 },
@@ -215,7 +212,6 @@ methods: {
           experienceName: experience.experienceName,
           expRegistrationID: experience.expRegistrationID
         }));
-        console.log('this.goalForm.experiences: ', this.goalForm.experiences);
       } catch (error) {
         this.handleError(error);
       }
@@ -245,13 +241,10 @@ methods: {
 
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
-        console.log('this.selectedExperience: ', this.selectedExperience);
         const experienceID = this.selectedExperience;
-        console.log('experienceID: ', experienceID);
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
-        console.log('apiURL: ', apiURL);
 
         try {
             const response = await axios.get(apiURL + `${experienceID}`, {
@@ -260,11 +253,9 @@ methods: {
             }
             });
 
-            console.log('response: ', response.data);
 
             // If the document wasn't found
             if (response.data.documentFound === false) {
-                console.log('document wasnt found');
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
             return;
@@ -272,7 +263,6 @@ methods: {
 
             // If a document was found
             if (response.data && response.data.id) {
-                console.log('document was found');
                 this.$emit('update-found-document-id', response.data.id);
                 this.experienceFoundWarning = true;
             } else {
@@ -294,9 +284,7 @@ methods: {
         }
 
         // The selected variable already has the experienceID
-        console.log('selected: ', selected);
         this.goalForm.experienceID = selected;
-        console.log('this.goalForm.experienceID: ', this.goalForm.experienceID);
 
         // Find the text corresponding to the selected value
         const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
@@ -307,7 +295,6 @@ methods: {
 
     selectExperienceFromRouteParam() {
         const experienceRegistrationIDFromRoute = this.$route.params.id;
-        console.log('experienceRegistrationIDFromRoute: ', experienceRegistrationIDFromRoute);
         if (experienceRegistrationIDFromRoute) {
             // Find the experience in the array that matches the expRegistrationID
             const matchingExperience = this.goalForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
@@ -342,7 +329,6 @@ methods: {
         }
 
         if (valid && hichProjectValid) {
-            console.log('form is valid!');
             this.$emit('form-valid');
         } else {
             this.$emit('form-invalid');

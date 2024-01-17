@@ -7,61 +7,7 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/test_studentsList'
-    },
-    {
-      path: '/test_studentsList',
-      name: 'StudentsList',
-      props: true,
-      component: () => import('../components/test_studentsList.vue')
-    },
-    {
-      path: '/test_GoalSettingForm',
-      name: 'GoalSettingForm',
-      props: true,
-      component: () => import('../components/test_GoalSettingForm.vue')
-    },
-    {
-      path: '/test_ExperienceInstancesManagement',
-      name: 'ExperienceInstancesManagement',
-      props: true,
-      component: () => import('../components/test_ExperienceInstancesManagement.vue')
-    },
-    {
-      path: '/test_ActivitiesManagement',
-      name: 'ActivitiesManagement',
-      props: true,
-      component: () => import('../components/test_ActivitiesManagement.vue')
-    },
-    {
-      path: '/test_SessionsManagement',
-      name: 'SessionsManagement',
-      props: true,
-      component: () => import('../components/test_SessionsManagement.vue')
-    },
-    {
-      path: '/test_ExperiencesManagement',
-      name: 'ExperiencesManagement',
-      props: true,
-      component: () => import('../components/test_ExperiencesManagement.vue')
-    },
-    {
-      path: '/test',
-      name: 'test',
-      props: true,
-      component: () => import('../components/test.vue')
-    },
-    {
-      path: '/test2',
-      name: 'test2',
-      props: true,
-      component: () => import('../components/test2.vue')
-    },
-    {
-      path: '/test3CreateExpInst',
-      name: 'test3CreateExpInst',
-      props: true,
-      component: () => import('../components/test3CreateExpInst.vue')
+      redirect: '/login'
     },
     {
       path: '/studentEntryFormUpdate',

@@ -356,7 +356,6 @@ export default {
             }
             
             this.availableExperiencesForRegistration = response.data;
-            console.log('availableExperiencesForRegistration: ', this.availableExperiencesForRegistration);
           } catch (error) {
             this.handleError(error);
           }
@@ -371,7 +370,6 @@ export default {
               this.availableExperiencesForRegistration.forEach(session => {
                 session.availableExperiences.forEach(availableExp => {
                   if (availableExp._id === registeredExp.experienceInstance.id) {
-                    console.log('Match found');
                     newSelectedExperiences.push({
                       _id: availableExp._id,
                       experienceName: availableExp.experienceName,

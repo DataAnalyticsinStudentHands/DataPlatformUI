@@ -286,7 +286,6 @@ methods: {
     },
 
     editExperience(experience) {
-        console.log("Edit Experience: ", experience);
         this.$router.push({ name: "instructorSpecificExperience", params: {id: experience._id } });
     },
 
@@ -388,8 +387,7 @@ methods: {
         });
     },
 
-    toggleArchivedExperiences() {
-        console.log('toggleArchivedExperiences')        
+    toggleArchivedExperiences() {       
         this.viewArchivedExperiences = !this.viewArchivedExperiences;
         this.performFilter();
     },

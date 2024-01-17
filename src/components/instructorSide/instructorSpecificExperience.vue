@@ -217,8 +217,6 @@ export default {
           // Determine the toast message based on the response
           let toastMessage = 'Experience updated!';
           if (response.data && response.data.updatedInstances && response.data.updatedInstances.length > 0) {
-            console.log('response.data: ', response.data);
-            console.log('response.data.updatedInstances: ', response.data.updatedInstances);
             toastMessage = 'Experience and related instances updated!';
           }
 

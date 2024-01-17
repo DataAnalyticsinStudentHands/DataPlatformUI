@@ -212,7 +212,6 @@ export default {
             const noneSelected = this.selectedExperiences?.some(e => !e.exitFormReleaseDate) &&
                                 this.selectedExperiencesForExitFormReleaseDate.length === 0;
 
-            console.log("Button Disable Check - noExperiences:", noExperiences, "allHaveDates:", allHaveDates, "noneSelected:", noneSelected);
 
             return noExperiences || allHaveDates || noneSelected;
         },
@@ -262,7 +261,6 @@ export default {
             const user = useLoggedInUserStore();
             let token = user.token;
             let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/experience/` + experienceID;
-            console.log('apiURL', apiURL);
             try {
                 const response = await axios.get(apiURL, { headers: { token } });
                 return response.data;
@@ -292,9 +290,6 @@ export default {
 
                 this.showDatePicker = false;
                 this.selectedDate = null;
-
-                console.log("After setting date - selectedExperiences:", this.selectedExperiences);
-                console.log("After setting date - selectedExperiencesForExitFormReleaseDate:", this.selectedExperiencesForExitFormReleaseDate);
             }
         },
 
@@ -307,19 +302,15 @@ export default {
                 this.selectedExperiencesForExitFormReleaseDate = 
                     this.selectedExperiencesForExitFormReleaseDate.filter(id => id !== expId);
 
-                console.log("After removing date - selectedExperiences:", this.selectedExperiences);
-                console.log("After removing date - selectedExperiencesForExitFormReleaseDate:", this.selectedExperiencesForExitFormReleaseDate);
             }
         },
 
         async handleSubmitForm() {
-            console.log('handleSubmitForm');
 
             // Check if all selected experiences have an exit form release date
             if (this.selectedExperiences && this.selectedExperiences.length) {
                 const allExperiencesHaveDates = this.selectedExperiences.every(exp => exp.exitFormReleaseDate);
                 if (!allExperiencesHaveDates) {
-                    console.log('Not all experiences have an exit form release date.');
                     this.showExitFormError = true;
                     toast.error('Please set an exit form release date for all experiences.', {
                         position: 'top-right',
@@ -333,7 +324,6 @@ export default {
             // Validate the form before submission
             const isValid = await this.$refs.form.validate();
             if (!isValid.valid) {
-                console.log('Form is invalid');
                 toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete',
@@ -342,7 +332,6 @@ export default {
                 return;
             }
 
-            console.log('Form is valid, preparing data for submission.');
 
             // Prepare the experience data for the API call
             const experienceData = this.selectedExperiences.map(exp => ({
@@ -361,7 +350,6 @@ export default {
                 }, { headers: { token } });
 
                 // Handle response here, e.g., redirecting or displaying a success message
-                console.log('Experience instances created:', response.data);
                 this.$router.push({ 
                     name: 'instructorDataManagement',
                     params: {

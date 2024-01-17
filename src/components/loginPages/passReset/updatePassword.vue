@@ -202,7 +202,6 @@ export default {
               }
             },
             (err) => {
-              console.log('error');
               this.error = err.response.data.error;
               this.success = "";
               toast.error('An error occurred. Please try again later.', {

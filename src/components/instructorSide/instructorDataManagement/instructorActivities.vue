@@ -378,7 +378,6 @@ methods: {
     },
 
     editActivity(activity) {
-        console.log('Edit Activity: ', activity);
         this.$router.push({ name: "instructorSpecificActivity", params: {id: activity._id } });
     },
 

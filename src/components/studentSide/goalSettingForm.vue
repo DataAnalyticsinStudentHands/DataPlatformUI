@@ -1585,7 +1585,6 @@ export default {
     const user = useLoggedInUserStore();
     let token = user.token;
     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-filled-goal-setting-form/';
-      console.log('apiURL: ', apiURL);
 
     try {
       const response = await axios.get(apiURL, {
@@ -1605,13 +1604,11 @@ export default {
   },
 
   async checkExistingForm() {
-    console.log('checkExistingForm')
       this.isLoadingExpCheck = true;
       const experienceID = this.selectedExperience;
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
-      console.log('apiURL: ', apiURL);
 
       try {
         const response = await axios.get(apiURL + `${experienceID}`, {

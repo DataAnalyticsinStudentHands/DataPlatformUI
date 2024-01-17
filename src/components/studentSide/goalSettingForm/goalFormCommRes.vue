@@ -1085,11 +1085,9 @@ computed: {
 },
 methods: {
     async handleValidations() {
-        console.log('handleValidations called')
         this.formSubmitted = true;
         const { valid } = await this.$refs.form.validate();
         if (valid) {
-            console.log('form is valid!');
             this.$emit('form-valid');
         } else {
             this.$emit('form-invalid');
@@ -1122,8 +1120,6 @@ methods: {
 
         for (let i = 0; i < errorFields.length; i++) {
             if (this.isFieldInvalid(errorFields[i])) {
-                console.log('this.isFieldInvalid: ', this.isFieldInvalid(errorFields[i]));
-                console.log('errorFields[i]: ', errorFields[i]);
 
                 let ref;
                 switch (errorFields[i]) {
@@ -1156,7 +1152,6 @@ methods: {
 
                 if (ref) {
                     const element = ref.$el ? ref.$el : ref;
-                    console.log('element: ', element);
                     this.$emit('scroll-to-error', element);
                     break;
                 }
