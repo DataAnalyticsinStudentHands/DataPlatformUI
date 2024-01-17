@@ -185,27 +185,50 @@ export default {
     handleSubmitForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
-      
+
       // Get the experience ID
       const experienceID = this.$route.params.id;
+      let experienceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
+      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience-update/${experienceID}`;
 
-      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
-      
       axios
-        .put(apiURL, {
+        .put(experienceUpdateURL, {
           experienceCategory: this.experience.experienceCategory,
           experienceName: this.experience.experienceName,
           activities: this.selectedActivities.map(activity => activity._id),
-        }, {
-          headers: { token },
-        })
+        }, { headers: { token } })
         .then(() => {
+          // Prepare data for updating Experience Instances
+          const updateData = {
+            experience: {
+              category: this.experience.experienceCategory,
+              name: this.experience.experienceName,
+            },
+            activities: this.selectedActivities.map(activity => ({
+              id: activity._id,
+              name: activity.activityName
+            }))
+          };
+
+          // Update Experience Instances
+          return axios.put(experienceInstanceUpdateURL, updateData, { headers: { token } });
+        })
+        .then((response) => {
+          // Determine the toast message based on the response
+          let toastMessage = 'Experience updated!';
+          if (response.data && response.data.updatedInstances && response.data.updatedInstances.length > 0) {
+            console.log('response.data: ', response.data);
+            console.log('response.data.updatedInstances: ', response.data.updatedInstances);
+            toastMessage = 'Experience and related instances updated!';
+          }
+
+          // Redirect after successful update
           this.$router.push({ 
             name: 'instructorDataManagement',
             params: {
               activeTab: 2,
               toastType: 'info',
-              toastMessage: 'Experience Updated!',
+              toastMessage: toastMessage,
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--update'
             }
@@ -215,6 +238,8 @@ export default {
           this.handleError(error);
         });
     },
+
+
 
 
     selectActivity(activity) {
