@@ -3,7 +3,7 @@
   <main>
     <v-form @submit.prevent="handleSubmitForm">
       <v-container>
-        <p class="font-weight-black text-h6">New Experience</p>
+        <p class="font-weight-black text-h6">Experience: {{ experience.experienceName }}</p>
         <v-row>
           <v-col cols="12" md="6">
             <v-text-field v-model="experience.experienceCategory" label="Experience Category"></v-text-field>
@@ -91,17 +91,33 @@
             </v-card>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row class="pt-5">
           <v-col>
             <v-btn @click="goBack()">
               Cancel
             </v-btn>
-            <v-btn style="text-align: center; margin-left: 10px;" @click="handleSubmitForm">Submit</v-btn>
+            <v-btn style="text-align: center; margin-left: 10px;" @click="handleSubmitForm">Update</v-btn>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="auto" v-if="canExperienceBeDeleted">
+            <v-btn @click="showDeleteDialog = true">Delete</v-btn>
           </v-col>
         </v-row>
       </v-container>
     </v-form>
   </main>
+  <v-dialog v-model="showDeleteDialog" persistent width="auto">
+    <v-card>
+      <v-card-title class="headline">Confirm Delete</v-card-title>
+      <v-card-text>Are you sure you want to delete this experience?</v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="red-darken-1" text @click="showDeleteDialog = false">No</v-btn>
+        <v-btn color="green-darken-1" text @click="confirmDelete">Yes</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
 </template>
 
 <script>
@@ -129,18 +145,21 @@ export default {
       selectedActivities: [],
       activitySearch: "",
       hoveredItem: null,
+      canExperienceBeDeleted: false,
+      showDeleteDialog: false,
     };
   },
-  mounted() {
+  async mounted() {
     const experienceID = this.$route.params.id;
     if (experienceID) {
-      this.fetchExperienceData(experienceID);
+      await this.fetchExperienceData(experienceID);
+      await this.checkIfExperienceCanBeDeleted(experienceID);
     }
   },
 
   methods: {
 
-    fetchExperienceData(experienceID) {
+    async fetchExperienceData(experienceID) {
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
@@ -180,6 +199,51 @@ export default {
           this.handleError(error);
         });
     },
+
+    async checkIfExperienceCanBeDeleted(experienceID) {
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/can-be-deleted/${experienceID}`;
+        const response = await axios.get(apiURL, { headers: { token }});
+        this.canExperienceBeDeleted = response.data.canBeDeleted;
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    confirmDelete() {
+      // Call the delete method here
+      this.deleteExperience();
+      this.showDeleteDialog = false;
+    },
+
+
+    async deleteExperience() {
+      try {
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${this.$route.params.id}`;
+
+        await axios.delete(deleteURL, { headers: { token } });
+
+        // Navigate to the instructorDataManagement page with success message
+        this.$router.push({
+          name: 'instructorDataManagement',
+          params: {
+            activeTab: 2,
+            toastType: 'success',
+            toastMessage: 'Experience Deleted!',
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+          }
+        });
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+
 
 
     handleSubmitForm() {

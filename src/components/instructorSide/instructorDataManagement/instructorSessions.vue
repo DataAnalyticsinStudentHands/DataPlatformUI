@@ -963,19 +963,31 @@ methods: {
             const token = user.token;
             const updateStatus = { sessionStatus: this.viewArchivedSessions };
 
-
             for (const session of this.selectedSessions) {
-                const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${session._id}`;
-                await axios.put(apiURL, updateStatus, { headers: { token }})
-                    .then(() => {
-                        toast.success(
-                            (this.selectedSessions.length === 1 ? "Session " : "Sessions ") +
-                            (this.viewArchivedSessions ? "Restored!" : "Archived!"), {
-                                position: "top-right",
-                                toastClassName: "Toastify__toast--create",
-                                multiple: false
-                        });
-                    });
+                // Update Session Status
+                const sessionApiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${session._id}`;
+                // Update any associated Experience Instances
+                const expInstanceApiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-status-by-session`;
+
+                // Update session status
+                await axios.put(sessionApiURL, updateStatus, { headers: { token }});
+
+                // Update associated experience instances and get the response
+                const expInstanceUpdateStatus = { sessionID: session._id, status: this.viewArchivedSessions };
+                const expInstanceResponse = await axios.put(expInstanceApiURL, expInstanceUpdateStatus, { headers: { token }});
+
+                // Determine the toast message
+                const message = (this.selectedSessions.length === 1 ? "Session " : "Sessions ") +
+                                (this.viewArchivedSessions ? "Restored" : "Archived") +
+                                (expInstanceResponse.data.instancesUpdated ? " and Associated Experience Instances " : "") +
+                                (this.viewArchivedSessions ? "Restored!" : "Archived!");
+
+                // Display the toast message
+                toast.success(message, {
+                    position: "top-right",
+                    toastClassName: "Toastify__toast--create",
+                    multiple: false
+                });
             }
         } catch (error) {
             this.handleError(error);

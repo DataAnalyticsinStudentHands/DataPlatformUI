@@ -53,14 +53,30 @@
 
         <v-row>
             <v-col>
-                <v-btn @click="goBack" style="margin-left: 10px;">
+                <v-btn @click="goBack" style="margin-right: 10px;">
                 Cancel
                 </v-btn>
                 <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
             </v-col>
+            <v-spacer></v-spacer>
+            <v-col cols="auto" v-if="canExpInstanceBeDeleted">
+                <v-btn @click="showDeleteDialog = true">Delete</v-btn>
+            </v-col>
         </v-row>
     </v-form>
 </v-container>
+<!-- Delete Dialog -->
+<v-dialog v-model="showDeleteDialog" persistent width="auto">
+    <v-card>
+        <v-card-title class="headline">Confirm Delete</v-card-title>
+        <v-card-text>Are you sure you want to delete this experience instance?</v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="red darken-1" text @click="showDeleteDialog = false">No</v-btn>
+            <v-btn color="green darken-1" text @click="confirmDelete">Yes</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
 </template>
 
 <script>
@@ -76,11 +92,13 @@ export default {
             selectedSessionID: null,
             selectedExperienceID: null,
             exitFormReleaseDate: null,
+            canExpInstanceBeDeleted: false,
+            showDeleteDialog: false,
         }
     },
     created() {
-
         this.fetchExperienceInstance();
+        this.checkIfExpInstanceCanBeDeleted();
     },
     methods: {
         async fetchExperienceInstance() {
@@ -129,6 +147,52 @@ export default {
                 this.handleError(error);
             }
         },
+
+        async checkIfExpInstanceCanBeDeleted() {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            const instanceID = this.$route.params.id; // Get instance ID from route parameter
+            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/can-be-deleted/${instanceID}`;
+
+            try {
+                const response = await axios.get(url, { headers: { token } });
+                this.canExpInstanceBeDeleted = response.data.canBeDeleted;
+            } catch (error) {
+                this.handleError(error);
+            }
+        },
+
+        confirmDelete() {
+            this.deleteExpInstance();
+            this.showDeleteDialog = false;
+        },
+
+        async deleteExpInstance() {
+            const instanceID = this.$route.params.id; // Get instance ID from route parameter
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/delete/${instanceID}`;
+
+            try {
+                await axios.delete(url, { headers: { token } });
+
+                // Redirect to a different page or show a success message
+                this.$router.push({
+                    name: 'instructorDataManagement',
+                    params: {
+                        activeTab: 0,
+                        toastType: 'success',
+                        toastMessage: 'Experience Instance Deleted!',
+                        toastPosition: 'top-right',
+                        toastCSS: 'Toastify__toast--create'
+                    }
+                });
+            } catch (error) {
+                this.handleError(error);
+            }
+        },
+
+
 
         goBack() {
             this.$router.push({

@@ -184,8 +184,17 @@ export default {
 
     created() {
         this.fetchActiveSessions();
-        this.fetchActiveExperiences();
     },
+
+    watch: {
+        selectedSession(newVal, oldVal) {
+            if (newVal && newVal._id) {
+                this.fetchActiveExperiences(newVal._id);
+            } else {
+                this.experienceData = [];
+            }
+        }
+    },    
 
     computed: {
         groupedExperiences() {
@@ -232,17 +241,19 @@ export default {
             }
         },
 
-        async fetchActiveExperiences() {
+        async fetchActiveExperiences(sessionID) {
             useLoggedInUserStore().startLoading();
             try {
                 const user = useLoggedInUserStore();
                 let token = user.token;
 
-                let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/active`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/available-experiences-for-instance?sessionID=${sessionID}`;
                 const resp = await axios.get(apiURL, { headers: { token } });
                 this.experienceData = resp.data;
             } catch (error) {
                 this.handleError(error);
+            } finally {
+                useLoggedInUserStore().stopLoading();
             }
         },
 
