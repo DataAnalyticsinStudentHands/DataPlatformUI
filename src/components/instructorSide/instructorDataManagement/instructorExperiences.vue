@@ -462,11 +462,6 @@ methods: {
 
 <style scoped>
 
-.hoverRow {
-    background-color: rgb(200, 201, 205);
-    transition: background-color 0.3s ease-in-out;
-}
-
 
 .pointer-cursor {
     cursor: pointer;

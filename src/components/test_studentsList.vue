@@ -94,6 +94,7 @@
         hover
         return-object
         multi-sort
+        height="600"
         items-per-page="25"
         :items-per-page-options="dataTableItemsPerPageOptions"
       >
@@ -103,6 +104,10 @@
               <v-checkbox density="compact" class="d-flex"></v-checkbox>
             </td>
             <td>{{ formatName(item.firstName, item.lastName) }}</td>
+            <td>{{ item.email }}</td>
+            <td>{{ formatPronouns(item.studentInformation?.pronouns) }}</td>
+            <td>{{ formatMajors(item.studentInformation?.enrolledUHInfo?.majors) }}</td>
+            <td>{{ formatGraduationDate(item.studentInformation?.enrolledUHInfo?.expectedGraduationData) }}</td>
           </tr>
         </template>
       </v-data-table>
@@ -114,7 +119,7 @@
 </v-row>
 </v-container>
 <br><br><br><br><br>
-studentData: {{ studentData }}
+{{ studentData }}
 </template>
   
 
@@ -150,7 +155,31 @@ data() {
         value: "formattedName",
         align: "start",
         sortable: true,
-      }
+      },
+      {
+        title: "Email",
+        value: "email",
+        align: "start",
+        sortable: true,
+      },
+      {
+        title: "Pronouns",
+        value: "pronouns",
+        align: "start",
+        sortable: false, // Assuming you don't need to sort by pronouns
+      },
+      {
+        title: "Majors",
+        value: "majors",
+        align: "start",
+        sortable: true,
+      },
+      {
+        title: "Expected Graduation Date",
+        value: "expectedGraduationDate",
+        align: "start",
+        sortable: true,
+      },
     ],
     dataTableItemsPerPageOptions: [
       {value: 25, title: "25"},
@@ -185,6 +214,18 @@ methods: {
         import.meta.env.VITE_ROOT_API + `/instructorSideData/studentInformation/`;
       const resp = await axios.get(apiURL, { headers: { token } });
       this.studentData = resp.data.data;
+
+      // Sort the data: documents with 'studentInformation' first
+      this.studentData.sort((a, b) => {
+        if (a.studentInformation && !b.studentInformation) {
+          return -1; // 'a' comes first
+        }
+        if (!a.studentInformation && b.studentInformation) {
+          return 1; // 'b' comes first
+        }
+        return 0; // No change in order
+      });
+
       this.filteredStudentData = [...this.studentData];
     } catch (error) {
       this.handleError(error);
@@ -205,6 +246,41 @@ methods: {
     // Combine the names
     return `${formattedFirstName} ${formattedLastName}`;
   },
+  
+  formatPronouns(pronouns) {
+    if (!pronouns || pronouns.length === 0) {
+      return '';
+    }
+    return pronouns
+      .filter(p => p.checked)
+      .map(p => p.label)
+      .join(', ');
+  },
+
+
+  formatMajors(majors) {
+    if (!majors || majors.length === 0) {
+      return '';
+    }
+    return majors.join(', ');
+  },
+
+  formatGraduationDate(date) {
+    if (!date) {
+      return '';
+    }
+    const dateObj = new Date(date);
+    const formattedDate = dateObj.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    });
+    return formattedDate;
+  },
+
+
+
+
 
 },
 };
