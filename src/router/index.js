@@ -7,7 +7,13 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/login'
+      redirect: '/test_studentsList'
+    },
+    {
+      path: '/test_studentsList',
+      name: 'StudentsList',
+      props: true,
+      component: () => import('../components/test_studentsList.vue')
     },
     {
       path: '/test_GoalSettingForm',

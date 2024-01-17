@@ -104,6 +104,20 @@
             </div>
     
         </div>
+
+        <p class="font-weight-black text-h8 mt-4">{{ $t('Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?') }}</p>
+        <v-row>
+            <v-col cols="12" md="10">
+            <v-textarea v-model="studentInformation.commentsByStaff" :label="$t('Comments')"></v-textarea>
+            </v-col>
+        </v-row>
+        <p class="font-weight-black text-h8">{{ $t('Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?') }}</p>
+        <v-row>
+            <v-col cols="12" md="10">
+            <v-textarea v-model="studentInformation.issuesConcernsTriggers" :label="$t('Issues, Concerns, Triggers')"></v-textarea>
+            </v-col>
+        </v-row>
+
     
         </v-container>
     </v-form>  

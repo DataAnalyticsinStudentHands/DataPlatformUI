@@ -41,7 +41,7 @@
 </v-row>
 </div>
 
-<div v-if="isBackgroundEditActive">
+<div v-if="isBackgroundEditActive || !hasCompletedGoalForm">
 <!-- Background Title -->
 <v-row class="d-flex justify-center align-center">
     <!-- Empty Column for Space -->
@@ -455,6 +455,7 @@ export default {
     props: {
         selectedExperience: Object,
         goalForm: Object,
+        hasCompletedGoalForm: Boolean,
         isBackgroundEditActive: Boolean
     },
     emits: ["change-step"],

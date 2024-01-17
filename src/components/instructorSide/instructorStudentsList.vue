@@ -305,7 +305,7 @@ activateStudents() {
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL =
-          import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/`;
+          import.meta.env.VITE_ROOT_API + `/instructorSideData/studentInformation/`;
         const resp = await axios.get(apiURL, { headers: { token } });
         this.studentListRaw = resp.data.data;
       } catch (error) {
@@ -318,7 +318,7 @@ activateStudents() {
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL =
-          import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation/noEntryForms`;
+          import.meta.env.VITE_ROOT_API + `/instructorSideData/studentInformation/no-entry-forms`;
         const resp = await axios.get(apiURL, { headers: { token } });
         this.userListRaw = resp.data.userData;
       } catch (error) {

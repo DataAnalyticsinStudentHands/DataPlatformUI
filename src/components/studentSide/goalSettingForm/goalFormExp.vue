@@ -315,6 +315,11 @@ methods: {
             if (matchingExperience) {
                 // Set the selectedExperience to the experienceID of the matching experience
                 this.selectedExperience = matchingExperience.experienceID;
+                // Find the text corresponding to the selected value
+                const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+
+                // Emit an object with both text and value
+                this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience });
             } else {
                 console.log('No matching experience found for the given expRegistrationID');
             }

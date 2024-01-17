@@ -186,6 +186,7 @@
                     <goal-form-review
                         ref="GoalFormReviewRef"
                         :selectedExperience="selectedExperience"
+                        :hasCompletedGoalForm="hasCompletedGoalForm"
                         :isBackgroundEditActive="isBackgroundEditActive"
                         :goalForm="goalForm"
                         @change-step="currentStep = $event"
@@ -256,6 +257,7 @@
                         <goal-form-review
                             ref="GoalFormReviewRef"
                             :selectedExperience="selectedExperience"
+                            :hasCompletedGoalForm="hasCompletedGoalForm"
                             :isBackgroundEditActive="isBackgroundEditActive"
                             :goalForm="goalForm"
                             @change-step="currentStep = $event"
@@ -309,7 +311,6 @@
         </v-col>
     </v-row>
 </v-container>
-hichProject: {{ hichProject }}
 </template>
 
 <script>
