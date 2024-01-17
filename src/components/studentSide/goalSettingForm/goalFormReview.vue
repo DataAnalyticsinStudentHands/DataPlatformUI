@@ -40,6 +40,22 @@
     </v-col>
 </v-row>
 </div>
+<!-- Section: HichProject Items -->
+<div v-if="hichProject && hichProject.length > 0">
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('HICH Projects') }}</h3>
+            <v-list density="compact" class="pa-0">
+                <v-list-item v-for="item in hichProject" :key="item">
+                <v-list-item-title class="text-subtitle-2">
+                    {{ item }}
+                </v-list-item-title>
+                </v-list-item>
+            </v-list>
+        </v-col>
+    </v-row>
+</div>
+
 
 <div v-if="isBackgroundEditActive || !hasCompletedGoalForm">
 <!-- Background Title -->
@@ -456,7 +472,8 @@ export default {
         selectedExperience: Object,
         goalForm: Object,
         hasCompletedGoalForm: Boolean,
-        isBackgroundEditActive: Boolean
+        isBackgroundEditActive: Boolean,
+        hichProject: Array
     },
     emits: ["change-step"],
     computed: {

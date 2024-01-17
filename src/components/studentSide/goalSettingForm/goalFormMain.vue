@@ -188,6 +188,7 @@
                         :selectedExperience="selectedExperience"
                         :hasCompletedGoalForm="hasCompletedGoalForm"
                         :isBackgroundEditActive="isBackgroundEditActive"
+                        :hichProject="hichProject"
                         :goalForm="goalForm"
                         @change-step="currentStep = $event"
                     ></goal-form-review>
@@ -259,6 +260,7 @@
                             :selectedExperience="selectedExperience"
                             :hasCompletedGoalForm="hasCompletedGoalForm"
                             :isBackgroundEditActive="isBackgroundEditActive"
+                            :hichProject="hichProject"
                             :goalForm="goalForm"
                             @change-step="currentStep = $event"
                         ></goal-form-review>
