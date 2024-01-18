@@ -121,8 +121,6 @@
     </v-col>
   </v-row>
   </v-container>
-  <br><br><br><br><br>
-  {{ studentData }}
   </template>
     
   
