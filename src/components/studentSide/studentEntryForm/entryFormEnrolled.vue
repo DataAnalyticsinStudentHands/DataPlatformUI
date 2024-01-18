@@ -318,7 +318,7 @@
       size="small"
     >
       <v-icon>mdi-alert-circle</v-icon>
-      <v-tooltip activator="parent" location="start">Jump to Error</v-tooltip>
+      <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
     </v-btn>
     
     
@@ -340,6 +340,7 @@
                 formSubmitted: false,
                 majors: [],
                 minors: [],
+                jumpToErrorTooltip: false,
                 uhEmailRules: [
                     v => {
                         // If user is not a UH student, validation passes automatically
@@ -481,6 +482,11 @@
             hasValidationErrors(newValue, oldValue) {
                 if (newValue !== oldValue) {
                     this.$emit('validation-change', { isValid: !newValue });
+                }
+                if (newValue) {
+                    this.jumpToErrorTooltip = true;
+                } else {
+                    this.jumpToErrorTooltip = false;
                 }
             },
         },

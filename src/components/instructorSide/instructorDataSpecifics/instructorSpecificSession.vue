@@ -1,8 +1,8 @@
 <template>
 <main>
-  <v-form @submit.prevent="handleUpdateForm">
+  <v-form>
     <v-container>
-      <p class="font-weight-black text-h6">Session: {{ session.sessionName }}</p><br>
+      <p class="font-weight-black text-h6">Session: {{ session.originalSessionName }}</p><br>
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field v-model="session.sessionName" label="Session Name"></v-text-field>
@@ -23,11 +23,11 @@
           <v-btn @click="$router.back()">
             Cancel
           </v-btn>
-          <v-btn style="text-align: center; margin-left: 10px;" @click="handleUpdateForm" >Submit</v-btn>
+          <v-btn style="text-align: center; margin-left: 10px;" @click="checkAssociatedInstances('update')" :loading=updateLoading>Update</v-btn>
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto" v-if="canSessionBeDeleted">
-          <v-btn @click="showDeleteDialog = true">Delete</v-btn>
+          <v-btn @click="checkAssociatedInstances('delete')" :loading=deleteLoading>Delete</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -42,6 +42,58 @@
       <v-spacer></v-spacer>
       <v-btn color="red-darken-1" text @click="showDeleteDialog = false">No</v-btn>
       <v-btn color="green-darken-1" text @click="confirmDelete">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+<!-- Delete Dialog with Instances -->
+<v-dialog v-model="deleteDialogWithInstances" persistent width="auto">
+  <v-card>
+    <v-card-title>
+      <v-icon left>mdi-delete-alert</v-icon>
+      Confirm Delete
+    </v-card-title>
+    <v-card-text>
+      The following Experience Instances will be deleted:
+      <v-list density="compact">
+        <v-list-item v-for="instance in associatedInstances" :key="instance._id">
+          <v-list-item-title class="font-weight-bold">{{ session.originalSessionName }} - {{ instance.experience.name }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+      <div class="mt-3">
+        Are you sure you want to delete this Session?
+      </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="red-darken-1" text @click="deleteDialogWithInstances = false">No</v-btn>
+      <v-btn color="green-darken-1" text @click="deleteSession">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+<!-- Update Dialog -->
+<v-dialog v-model="updateDialog" persistent width="auto">
+  <v-card>
+    <v-card-title>
+      <v-icon left>mdi-update</v-icon>
+      Confirm Update
+    </v-card-title>
+    <v-card-text>
+      The following Experience Instances will be updated:
+      <v-list density="compact">
+          <v-list-item v-for="instance in associatedInstances" :key="instance._id">
+              <v-list-item-title class="font-weight-bold">{{ session.originalSessionName }} - {{ instance.experience.name }}</v-list-item-title>
+          </v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+      <div class="mt-3">
+        Are you sure you want to update this Session?
+      </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="red darken-1" text @click="updateDialog = false">No</v-btn>
+      <v-btn color="green darken-1" text @click="proceedWithUpdate">Yes</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
@@ -67,6 +119,11 @@ import { DateTime } from "luxon";
         errorMessage: "",
         canSessionBeDeleted: false,
         showDeleteDialog: false,
+        updateDialog: false,
+        updateLoading: false,
+        deleteLoading: false,
+        associatedInstances: [],
+        deleteDialogWithInstances: false,        
       };
     },
     created() {
@@ -108,6 +165,45 @@ import { DateTime } from "luxon";
             this.handleError(error);
           }
         }, 
+
+        async checkAssociatedInstances(action) {
+          console.log('checkAssociatedInstances called: ', action);
+          if (action === "update") {
+            this.updateLoading = true;
+          } else if (action === "delete") {
+            this.deleteLoading = true;
+          }
+
+          try {
+            const store = useLoggedInUserStore();
+            const token = store.token;
+            const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/session/${this.$route.params.id}`;
+            const checkResponse = await axios.get(checkURL, { headers: { token } });
+
+            if (action === "update") {
+              if (checkResponse.data.expInstancesFound) {
+                this.associatedInstances = checkResponse.data.instancesForSession;
+                this.updateDialog = true;
+              } else {
+                this.proceedWithUpdate();
+              }
+            } else if (action === "delete") {
+              if (checkResponse.data.expInstancesFound) {
+                this.associatedInstances = checkResponse.data.instancesForSession;
+                this.deleteDialogWithInstances = true;
+              } else {
+                this.confirmDelete();
+              }
+            }
+
+          } catch (error) {
+            console.log('error: ', error);
+            this.handleError(error);
+          } finally {
+            this.updateLoading = false;
+            this.deleteLoading = false;
+          }
+        },
         
         confirmDelete() {
           this.deleteSession();
@@ -138,7 +234,7 @@ import { DateTime } from "luxon";
         },        
 
 
-            handleUpdateForm() {
+          proceedWithUpdate() {
               const user = useLoggedInUserStore();
                 let token = user.token;
                 const updatedSession = {

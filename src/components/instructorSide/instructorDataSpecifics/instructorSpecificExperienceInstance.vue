@@ -3,7 +3,7 @@
     <v-form>
         <v-row>
             <v-col>
-                <p class="font-weight-black text-h6">Experience Instance</p><br>
+                <p class="font-weight-black text-h6">Experience Instance: {{ experienceData.experienceName }}</p><br>
             </v-col>
         </v-row>
 
@@ -35,6 +35,21 @@
                 ></v-text-field>
             </v-col>
         </v-row>
+
+        <v-row>
+            <p class="font-weight-black text-h7">Activities</p>
+        </v-row>
+
+        <v-row>
+            <v-col>
+                <v-list density="compact">
+                    <v-list-item v-for="activity in activities" :key="activity.id">
+                        <v-list-item-title>{{ activity.name }}</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+        </v-row>
+
 
 
         <v-row>
@@ -94,6 +109,8 @@ export default {
             exitFormReleaseDate: null,
             canExpInstanceBeDeleted: false,
             showDeleteDialog: false,
+            activities: [],
+            originalExpInstanceName: "",
         }
     },
     created() {
@@ -113,6 +130,7 @@ export default {
                 this.selectedSessionID = instanceData.sessionID;
                 this.selectedExperienceID = instanceData.experience.id;
                 this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10); // Format date as 'YYYY-MM-DD'
+                this.activities = instanceData.activities;
 
                 // Fetch session and experience details
                 this.fetchSessionDetails();

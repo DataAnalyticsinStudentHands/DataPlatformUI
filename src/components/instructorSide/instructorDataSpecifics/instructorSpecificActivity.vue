@@ -42,15 +42,16 @@
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="auto" v-if="canActivityBeDeleted">
-            <v-btn class="justify-end" @click="checkAssociatedInstances('delete')">Delete</v-btn>
+            <v-btn class="justify-end" @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
           </v-col>
         </v-row>
       </v-container>
   </main>
+
 <!-- Delete Dialog -->
 <v-dialog v-model="showDeleteDialog" persistent width="auto">
   <v-card>
-    <v-card-title class="headline">Confirm Delete</v-card-title>
+    <v-card-title>Confirm Delete</v-card-title>
     <v-card-text>
       Are you sure you want to delete this activity?
     </v-card-text>
@@ -65,13 +66,13 @@
 <!-- Update Dialog -->
 <v-dialog v-model="updateDialog" persistent width="auto">
   <v-card>
-    <v-card-title class="headline">
+    <v-card-title>
       <v-icon left>mdi-update</v-icon>
       Confirm Update
     </v-card-title>
     <v-card-text>
       The following Experience Instances will be updated:
-      <v-list dense>
+      <v-list density="compact">
           <v-list-item v-for="instance in associatedInstances" :key="instance._id">
               <v-list-item-title class="font-weight-bold">{{ instance.sessionName }} - {{ instance.experienceName }}</v-list-item-title>
           </v-list-item>
@@ -90,17 +91,16 @@
 </v-dialog>
 
 <!-- Delete Dialog with Instances -->
-<!-- Update Dialog -->
 <v-dialog v-model="deleteDialogWithInstances" persistent width="auto">
   <v-card>
-    <v-card-title class="headline">
+    <v-card-title>
       <v-icon left>mdi-delete-alert</v-icon>
       Confirm Delete
     </v-card-title>
     <v-card-text>
       The following Experience Instances will have this activity removed:
-      <v-list dense>
-          <v-list-item v-for="instance in associatedInstances" :key="instance._id" color="primary">
+      <v-list density="compact">
+          <v-list-item v-for="instance in associatedInstances" :key="instance._id">
               <v-list-item-title class="font-weight-bold">{{ instance.sessionName }} - {{ instance.experienceName }}</v-list-item-title>
           </v-list-item>
       </v-list>
@@ -142,6 +142,7 @@ export default {
       updateDialog: false,
       associatedInstances: [],
       deleteDialogWithInstances: false,
+      deleteLoading: false
     };
   },
 
@@ -182,12 +183,17 @@ export default {
     },
 
     async checkAssociatedInstances(action) {
-      this.updateLoading = true;
+      if (action === "update") {
+        this.updateLoading = true;
+      } else if (action === "delete") {
+        this.deleteLoading = true;
+      }
+      
 
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/active/${this.$route.params.id}`;
+        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${this.$route.params.id}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         console.log('checkResponse: ', checkResponse.data);
@@ -213,6 +219,7 @@ export default {
         this.handleError(error);
       } finally {
         this.updateLoading = false;
+        this.deleteLoading = false;
       }
     },
 

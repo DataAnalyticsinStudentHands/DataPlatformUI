@@ -132,7 +132,7 @@
       size="small"
     >
       <v-icon>mdi-alert-circle</v-icon>
-      <v-tooltip activator="parent" location="start">Jump to Error</v-tooltip>
+      <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
     </v-btn>
     
     </template>
@@ -163,6 +163,7 @@
                   return !!v || this.$t('If Other is selected, please specify pronouns.');
               },
           ],
+          jumpToErrorTooltip: false,
         };
       },
       watch: {
@@ -187,6 +188,11 @@
         isOtherPronounsInvalid(newVal, oldVal) {
             if (newVal !== oldVal) {
                 this.$emit('validation-change', { isValid: !newVal });
+            }
+            if (newVal) {
+            this.jumpToErrorTooltip = true;
+            } else {
+                this.jumpToErrorTooltip = false;
             }
         },
       },

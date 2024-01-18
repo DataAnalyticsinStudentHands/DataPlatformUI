@@ -516,7 +516,7 @@
     size="small"
 >
     <v-icon>mdi-alert-circle</v-icon>
-    <v-tooltip activator="parent" location="start">Jump to Error</v-tooltip>
+    <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
 </v-btn>
 </template>
 
@@ -542,6 +542,7 @@ data() {
         hoveredCheckboxID5: null,
         hoveredCheckboxID6: null,
         hoveredCheckboxID7: null,
+        jumpToErrorTooltip: false,
         communityEngagementExperiencesRules: [
             () => {
             if (!this.formSubmitted) {
@@ -879,6 +880,10 @@ watch: {
         if (newValue !== oldValue) {
             this.$emit('validation-change', { isValid: !newValue });
         }
+        if (newValue) {
+          this.jumpToErrorTooltip = true;
+        }
+        console.log('this.jumpToErrorTooltip: ', this.jumpToErrorTooltip);
     },
 },
 computed: {

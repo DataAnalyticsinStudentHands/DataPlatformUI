@@ -124,7 +124,7 @@
     size="small"
 >
     <v-icon>mdi-alert-circle</v-icon>
-    <v-tooltip activator="parent" location="start">Jump to Error</v-tooltip>
+    <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
 </v-btn>
 
 
@@ -143,6 +143,7 @@ export default {
     data() {
         return {
             formSubmitted: false,
+            jumpToErrorTooltip: false,
             programGradProStatusRules: [
                 v => {
                     return !!v || this.$t('Information is required.');
@@ -213,6 +214,11 @@ export default {
         hasValidationErrors(newValue, oldValue) {
             if (newValue !== oldValue) {
                 this.$emit('validation-change', { isValid: !newValue });
+            }
+            if (newValue) {
+                this.jumpToErrorTooltip = true;
+            } else {
+                this.jumpToErrorTooltip = false;
             }
         },
     },
