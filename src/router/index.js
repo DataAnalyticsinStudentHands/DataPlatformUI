@@ -293,46 +293,6 @@ const routes = [
       }
     },
     {
-      path: '/instructorSemesters',
-      name: 'instructorSemesters',
-      props: true,
-      component: () => import('../components/instructorSide/instructorSemesters.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
-          next('/error');
-        } else {
-          next();
-        }
-      }
-    },
-    {
-      path: '/instructorAddSemester',
-      name: 'instructorAddSemester',
-      component: () => import('../components/instructorSide/instructorAddSemester.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
-          next('/error');
-        } else {
-          next();
-        }
-      }
-    },
-    {
-      path: '/instructorSpecificSemester',
-      name: 'instructorSpecificSemester',
-      component: () => import('../components/instructorSide/instructorSpecificSemester.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
-          next('/error');
-        } else {
-          next();
-        }
-      }
-    },
-    {
       path: '/instructorExperiences',
       name: 'instructorExperiences',
       component: () => import('../components/instructorSide/instructorDataManagement/instructorExperiences.vue'),

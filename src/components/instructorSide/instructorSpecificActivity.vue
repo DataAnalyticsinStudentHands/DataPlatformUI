@@ -38,29 +38,85 @@
             <v-btn @click=goBack() class="mr-4">
               Cancel
             </v-btn>
-            <v-btn style="text-align:center;" @click="handleUpdateForm">Update</v-btn>
+            <v-btn style="text-align:center;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="auto" v-if="canActivityBeDeleted">
-            <v-btn class="justify-end" @click="showDeleteDialog = true">Delete</v-btn>
+            <v-btn class="justify-end" @click="checkAssociatedInstances('delete')">Delete</v-btn>
           </v-col>
         </v-row>
       </v-container>
   </main>
-  <!-- Delete Dialog -->
-  <v-dialog v-model="showDeleteDialog" persistent width="auto">
-    <v-card>
-      <v-card-title class="headline">Confirm Delete</v-card-title>
-      <v-card-text>
-        Are you sure you want to delete this activity?
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="red-darken-1" text @click="showDeleteDialog = false">No</v-btn>
-        <v-btn color="green-darken-1" text @click="confirmDelete">Yes</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+<!-- Delete Dialog -->
+<v-dialog v-model="showDeleteDialog" persistent width="auto">
+  <v-card>
+    <v-card-title class="headline">Confirm Delete</v-card-title>
+    <v-card-text>
+      Are you sure you want to delete this activity?
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="red-darken-1" text @click="showDeleteDialog = false">No</v-btn>
+      <v-btn color="green-darken-1" text @click="confirmDelete">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<!-- Update Dialog -->
+<v-dialog v-model="updateDialog" persistent width="auto">
+  <v-card>
+    <v-card-title class="headline">
+      <v-icon left>mdi-update</v-icon>
+      Confirm Update
+    </v-card-title>
+    <v-card-text>
+      The following Experience Instances will be updated:
+      <v-list dense>
+          <v-list-item v-for="instance in associatedInstances" :key="instance._id">
+              <v-list-item-title class="font-weight-bold">{{ instance.sessionName }} - {{ instance.experienceName }}</v-list-item-title>
+          </v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+      <div class="mt-3">
+        Are you sure you want to update this Activity?
+      </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="red darken-1" text @click="updateDialog = false">No</v-btn>
+      <v-btn color="green darken-1" text @click="proceedWithUpdate">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<!-- Delete Dialog with Instances -->
+<!-- Update Dialog -->
+<v-dialog v-model="deleteDialogWithInstances" persistent width="auto">
+  <v-card>
+    <v-card-title class="headline">
+      <v-icon left>mdi-delete-alert</v-icon>
+      Confirm Delete
+    </v-card-title>
+    <v-card-text>
+      The following Experience Instances will have this activity removed:
+      <v-list dense>
+          <v-list-item v-for="instance in associatedInstances" :key="instance._id" color="primary">
+              <v-list-item-title class="font-weight-bold">{{ instance.sessionName }} - {{ instance.experienceName }}</v-list-item-title>
+          </v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+      <div class="mt-3">
+        Are you sure you want to delete this Activity?
+      </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="red darken-1" text @click="deleteDialogWithInstances = false">No</v-btn>
+      <v-btn color="green darken-1" text @click="deleteActivity">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
 
 </template>
 
@@ -82,6 +138,10 @@ export default {
       hoverId: null,
       canActivityBeDeleted: false,
       showDeleteDialog: false,
+      updateLoading: false,
+      updateDialog: false,
+      associatedInstances: [],
+      deleteDialogWithInstances: false,
     };
   },
 
@@ -121,7 +181,42 @@ export default {
       }
     },
 
-    async handleUpdateForm() {
+    async checkAssociatedInstances(action) {
+      this.updateLoading = true;
+
+      try {
+        const store = useLoggedInUserStore();
+        let token = store.token;
+        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/active/${this.$route.params.id}`;
+        const checkResponse = await axios.get(checkURL, { headers: { token } });
+
+        console.log('checkResponse: ', checkResponse.data);
+
+        if (action === "update") {
+          if (checkResponse.data.expInstancesFound) {
+            this.associatedInstances = checkResponse.data.instancesData;
+            this.updateDialog = true;
+          } else {
+            this.proceedWithUpdate();
+          }
+        } else if (action === "delete") {
+          if (checkResponse.data.expInstancesFound) {
+            this.associatedInstances = checkResponse.data.instancesData;
+            this.deleteDialogWithInstances = true;
+          } else {
+            this.confirmDelete();
+          }
+        }
+
+
+      } catch (error) {
+        this.handleError(error);
+      } finally {
+        this.updateLoading = false;
+      }
+    },
+
+    async proceedWithUpdate() {
       const user = useLoggedInUserStore();
       const token = user.token;
 

@@ -10,7 +10,7 @@
               </v-col>
             </v-row>
 
-            <v-btn @click="$router.back()" style="margin-left: 10px;">
+            <v-btn @click="$router.back()" style="margin-right: 10px;">
               Cancel
             </v-btn>
             <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>

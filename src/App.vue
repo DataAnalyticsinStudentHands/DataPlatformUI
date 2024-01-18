@@ -123,7 +123,7 @@
               prepend-icon="mdi-school"
               value="instructorDataManagement"
               class=" tracking-wider"
-            >Sessions, Experiences, Activities</v-list-item>
+            >Data Management Console</v-list-item>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
             <v-list-item 
