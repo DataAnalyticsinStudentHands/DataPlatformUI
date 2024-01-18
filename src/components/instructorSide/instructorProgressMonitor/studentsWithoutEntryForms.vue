@@ -7,9 +7,6 @@
               Students Without Entry Form
               <progress-monitor-csv-downloader v-if="studentsWithoutEntryForm" :data="studentsWithoutEntryForm" file-name="students_without_entry_form.csv" />
             </v-card-title>
-            <v-card-subtitle class="pa-4 text-h6">
-              Students who have Registered this Semester, but have not completed the Entry Form.
-            </v-card-subtitle>
 
             <v-row>
               <v-col cols="12">
@@ -21,7 +18,7 @@
 
             <!-- Pagination Controls -->
             <v-row justify="space-between">
-              <v-col cols="auto">
+              <v-col cols="auto" class="ml-4">
                 <v-text-field
                   v-model="itemsPerPage"
                   type="number"
@@ -62,6 +59,7 @@
                       <tr>
                         <th class="text-left">Name</th>
                         <th class="text-left">Email</th>
+                        <th class="text-left">Account Creation Date</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -75,6 +73,7 @@
                       >
                         <td class="text-left">{{ student.firstName }} {{ student.lastName }}</td>
                         <td class="text-left">{{ student.email }}</td>
+                        <td class="text-left">{{ formatDate(student.createdAt) }}</td>
                       </tr>
                     </tbody>
                   </v-table>
@@ -91,6 +90,7 @@
   import axios from 'axios';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
   import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
+  import { DateTime } from "luxon";
   
   export default {
     name: "StudentsWithoutEntryForms",
@@ -130,7 +130,7 @@
         this.loading = true;
         const user = useLoggedInUserStore();
         let token = user.token;
-        let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/studentsWithoutEntryForm';
+        let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/students-without-entry-form';
   
         try {
           const response = await axios.get(url, { headers: { token } });
@@ -146,6 +146,9 @@
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
+      },
+      formatDate(date) {
+        return DateTime.fromISO(date).toFormat("MM/dd/yyyy")
       },
     },
   };

@@ -68,27 +68,19 @@
                     <tr>
                         <th class="text-left">Name</th>
                         <th class="text-left">Email</th>
-                        <th class="text-left">Pronouns</th>
-                        <th class="text-left">Major(s)</th>
-                        <th class="text-left">Minor</th>
-                        <th class="text-left">Expected Graduation Date</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr
                         v-for="student in paginatedStudentsWithoutGoalForm"
-                        :key="student.userID"
-                        :class="{ 'hoverRow': hoverId === student.userID }"
-                        @mouseenter="hoverId = student.userID"
+                        :key="student._id"
+                        :class="{ 'hoverRow': hoverId === student._id }"
+                        @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
-                        @click="navigateToProfile(student.userID)"
+                        @click="navigateToProfile(student._id)"
                     >
                         <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left">{{ student.email }}</td>
-                        <td class="text-left">{{ student.pronouns.map(p => p.label).join(', ') }}</td>
-                        <td class="text-left">{{ student.majors.join(', ') }}</td>
-                        <td class="text-left">{{ student.honorsMinors.join(', ') }}</td>
-                        <td class="text-left">{{ student.expectedGraduationDate }}</td>
                     </tr>
                     </tbody>
                 </v-table>
@@ -111,7 +103,7 @@
     data() {
       return {
         selectedExperience: null,
-        experiences: [],
+        expInstances: [],
         studentsWithoutGoalForm: [],
         hoverId: null,
         csvFileName: 'no_goal_form.csv',
@@ -126,7 +118,7 @@
       selectedExperience(newVal) {
         if (newVal) {
           // Find the selected experience object by its ID
-          const selectedObj = this.experiences.find(experience => experience.experienceID === newVal);
+          const selectedObj = this.expInstances.find(instance => instance.expInstanceID === newVal);
           // Update the file name using the experience name from the selected object
           this.csvFileName = `no_goal_form_${selectedObj.experienceName}.csv`;
         } else {
@@ -139,9 +131,9 @@
     },
     computed: {
       formattedExperiences() {
-        return this.experiences.map(experience => ({
-          text: `${experience.experienceCategory}: ${experience.experienceName}`,
-          value: experience.experienceID
+        return this.expInstances.map(instance => ({
+          text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
+          value: instance.expInstanceID
         }));
       },
       paginatedStudentsWithoutGoalForm() {
@@ -171,27 +163,29 @@
       async fetchExperiences() {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/activeSemesterExperiences/';
+        let apiURL = import.meta.env.VITE_ROOT_API + '/instructorSideData/experience-instances/active/';
   
         try {
           const response = await axios.get(apiURL, { headers: { token } });
-          this.experiences = response.data.map(experience => ({
-            experienceID: experience._id,
-            experienceCategory: experience.experienceCategory,
-            experienceName: experience.experienceName
+          this.expInstances = response.data.map(instance => ({
+            expInstanceID: instance._id,
+            sessionName: instance.session.name,
+            experienceCategory: instance.experience.category,
+            experienceName: instance.experience.name
           }));
         } catch (error) {
           this.handleError(error);
         }
       },
-      async fetchStudentsWithoutGoalForm(experienceID) {
+      async fetchStudentsWithoutGoalForm(expInstanceID) {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/studentsWithoutGoalForm?experienceID=${experienceID}`;
+        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${expInstanceID}`;
         
         try {
           const response = await axios.get(url, { headers: { token } });
           this.studentsWithoutGoalForm = response.data;
+          console.log('studentsWithoutGoalForm: ', this.studentsWithoutGoalForm);
         } catch (error) {
           this.handleError(error);
         }
