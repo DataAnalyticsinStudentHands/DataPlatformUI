@@ -276,7 +276,6 @@ export default {
     },
 
     async checkAssociatedInstances(action) {
-      console.log('checkAssociatedInstances called: ', action);
       if (action === "update") {
         this.updateLoading = true;
       } else if (action === "delete") {
@@ -306,7 +305,6 @@ export default {
         }
 
       } catch (error) {
-        console.log('error: ', error);
         this.handleError(error);
       } finally {
         this.updateLoading = false;

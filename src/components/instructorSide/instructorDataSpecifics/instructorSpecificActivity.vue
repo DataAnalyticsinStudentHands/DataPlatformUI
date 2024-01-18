@@ -196,8 +196,6 @@ export default {
         let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${this.$route.params.id}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
-        console.log('checkResponse: ', checkResponse.data);
-
         if (action === "update") {
           if (checkResponse.data.expInstancesFound) {
             this.associatedInstances = checkResponse.data.instancesData;
@@ -292,21 +290,17 @@ export default {
     },
 
     confirmDelete() {
-      console.log('confirmDelete called');
       this.deleteActivity();
       this.showDeleteDialog = false;
     },
 
     async deleteActivity() {
-      console.log('delete activity called')
       try {
         const user = useLoggedInUserStore();
         const token = user.token;
         let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${this.$route.params.id}`;
 
         await axios.delete(deleteURL, { headers: { token } });
-
-        console.log('delete activity ended')
 
         // Navigate to the instructorDataManagement page with success message
         this.$router.push({
@@ -320,7 +314,6 @@ export default {
           }
         });
       } catch (error) {
-        console.log('error: ', error);
         this.handleError(error);
       }
     },

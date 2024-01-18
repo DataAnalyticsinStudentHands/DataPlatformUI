@@ -138,6 +138,7 @@
                         @update-selected-experience="handleSelectedExperience"
                         @update-found-document-id="foundDocumentId = $event"
                         @update-hich-project="updateHichProject"
+                        @update-original-goal-form="updateOriginalGoalForm"
                     ></goal-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -210,6 +211,7 @@
                             @update-selected-experience="handleSelectedExperience"
                             @update-found-document-id="foundDocumentId = $event"
                             @update-hich-project="updateHichProject"
+                            @update-original-goal-form="updateOriginalGoalForm"
                         ></goal-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
@@ -313,6 +315,33 @@
         </v-col>
     </v-row>
 </v-container>
+<!-- Confirm Leave Dialog -->
+<v-dialog v-model="leaveDialog" persistent max-width="500px">
+    <v-card>
+        <v-card-title class="text-h5">
+            Confirm Navigation
+        </v-card-title>
+        <v-card-text>
+            <p>Are you sure you want to leave? <strong>Unsaved changes will be lost.</strong></p>
+        </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="cancelLeave">
+                Cancel
+            </v-btn>
+            <v-btn color="red darken-2" text @click="confirmLeave">
+                Yes, Leave
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
+this.goalForm: 
+<br>
+{{ this.goalForm }}
+<br><br><br><br><br><br>
+this.originalGoalForm: 
+<br>
+{{ this.originalGoalForm }}
 </template>
 
 <script>
@@ -352,6 +381,7 @@ data() {
         isBackgroundEditActive: false,
         selectedExperience: null,
         hichProject: [],
+        formSubmitSuccess: false,
         goalForm: {
         experiences:[{
             experienceIDFromList:'',
@@ -468,10 +498,13 @@ data() {
             goalFive: '',
         }
         },
+        originalGoalForm: {},
+        leaveDialog: false,
+        nextFunction: null,
     }
 },
-created() {
-    this.fetchLatestGoalSettingForm();
+async created() {
+    await this.fetchLatestGoalSettingForm();
 },
 watch: {
     currentStep(newVal) {
@@ -482,7 +515,7 @@ watch: {
         if (this.allowedStepsForJump.length === 0 || this.currentStep > Math.max(...this.allowedStepsForJump)) {
             this.allowedStepsForJump.push(this.currentStep);
         }
-    }
+    },
 },
 computed: {
     showAltLabels() {
@@ -502,7 +535,12 @@ computed: {
         // Access the child component's computed property via a ref
         // Ensure to handle cases where the child component or the computed property is not available
         return this.$refs.GoalFormExpRef?.shouldShowHichCheckboxes && this.hichProject.length > 0;
-    }
+    },
+
+    isUserLoggedIn() {
+        const store = useLoggedInUserStore();
+        return store.isLoggedIn;
+    },
 },
 methods: {
     async fetchLatestGoalSettingForm() {
@@ -569,6 +607,10 @@ methods: {
 
     updateHichProject(newVal) {
         this.hichProject = newVal;
+    },
+
+    updateOriginalGoalForm(newVal) {
+        this.originalGoalForm = this.deepClone(newVal);;
     },
     
     handleFormInvalid(section) {
@@ -885,6 +927,7 @@ methods: {
         axios
         .post(apiURL, goalFormSubmission, { headers: { token } })
         .then(() => {
+            this.formSubmitSuccess = true;
             const motivatingMessages = [
             "Goals successfully set! You're on the right track!",
             "Great job setting your goals! Let's make them happen!",
@@ -959,6 +1002,43 @@ methods: {
             });
     },
 
+    deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    },
+
+    isObjectEqual(obj1, obj2) {
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    },
+
+    cancelLeave() {
+        this.leaveDialog = false;
+    },
+
+    confirmLeave() {
+        this.dialog = false;
+        if (this.nextFunction) {
+            this.nextFunction();
+            this.nextFunction = null; // Clear the stored next function
+        }
+    },
+
+
+},
+
+beforeRouteLeave(to, from, next) {
+    // If the user is logged out, allow navigation without confirmation
+    if (!this.isUserLoggedIn || this.formSubmitSuccess) {
+        next();
+        return;
+    }
+
+    // If there are unsaved changes and user is still logged in
+    if (!this.isObjectEqual(this.goalForm, this.originalGoalForm)) {
+        this.nextFunction = next;
+        this.leaveDialog = true;
+    } else {
+        next(); // Proceed with navigation
+    }
 },
 
 }

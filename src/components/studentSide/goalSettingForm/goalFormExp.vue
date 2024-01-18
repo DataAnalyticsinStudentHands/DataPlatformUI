@@ -92,7 +92,7 @@ name: "GoalFormExperiences",
 props: {
     goalForm: Object,
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form"],
 data() {
     return {
         formSubmitted: false,
@@ -212,6 +212,7 @@ methods: {
           experienceName: experience.experienceName,
           expRegistrationID: experience.expRegistrationID
         }));
+        this.$emit("update-original-goal-form", this.goalForm);
       } catch (error) {
         this.handleError(error);
       }

@@ -167,7 +167,6 @@ import { DateTime } from "luxon";
         }, 
 
         async checkAssociatedInstances(action) {
-          console.log('checkAssociatedInstances called: ', action);
           if (action === "update") {
             this.updateLoading = true;
           } else if (action === "delete") {
@@ -197,7 +196,6 @@ import { DateTime } from "luxon";
             }
 
           } catch (error) {
-            console.log('error: ', error);
             this.handleError(error);
           } finally {
             this.updateLoading = false;

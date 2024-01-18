@@ -883,7 +883,6 @@ watch: {
         if (newValue) {
           this.jumpToErrorTooltip = true;
         }
-        console.log('this.jumpToErrorTooltip: ', this.jumpToErrorTooltip);
     },
 },
 computed: {

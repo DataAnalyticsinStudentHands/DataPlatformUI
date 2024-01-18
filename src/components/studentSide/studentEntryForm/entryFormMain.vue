@@ -360,15 +360,16 @@ export default {
             dialog: false,
             nextFunction: null,
             formSubmitSuccess: false,
+            originalStudentInformation: {},
         }
     },
     mounted() {
         this.originalStudentInformation = this.deepClone(this.studentInformation);
         const loggedInUserStore = useLoggedInUserStore();
-            // Check the hasCompletedEntryForm state
-            if (!loggedInUserStore.hasCompletedEntryForm) {
-                this.showNewUserDialog = true; // Open the dialog if the condition is met
-            }
+        // Check the hasCompletedEntryForm state
+        if (!loggedInUserStore.hasCompletedEntryForm) {
+            this.showNewUserDialog = true; // Open the dialog if the condition is met
+        }
     },
     computed: {
         showAltLabels() {
@@ -603,7 +604,6 @@ export default {
         if (!this.isObjectEqual(this.studentInformation, this.originalStudentInformation)) {
             this.nextFunction = next;
             this.dialog = true;
-            // Don't call next here
         } else {
             next(); // Proceed with navigation
         }
