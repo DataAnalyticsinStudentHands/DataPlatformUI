@@ -66,6 +66,7 @@
                 items-per-page="-1"
                 class="scrollable-table"
                 hover
+                :search="activitySearch"
               >
                 <template v-slot:body="{ items }">
                   <template v-for="item in items" :key="item._id">
