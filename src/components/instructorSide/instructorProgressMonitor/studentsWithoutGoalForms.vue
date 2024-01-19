@@ -68,6 +68,7 @@
                     <tr>
                         <th class="text-left">Name</th>
                         <th class="text-left">Email</th>
+                        <th class="text-left">Registration Date</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -81,6 +82,7 @@
                     >
                         <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left">{{ student.email }}</td>
+                        <td class="text-left">{{ formatDate(student.registrationDate) }}</td>
                     </tr>
                     </tbody>
                 </v-table>
@@ -94,9 +96,9 @@
   
   <script>
   import axios from 'axios';
-  import 'vue3-toastify/dist/index.css';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
   import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
+  import { DateTime } from "luxon";
   
   export default {
     name: "StudentsWithoutGoalForms",
@@ -171,7 +173,8 @@
             expInstanceID: instance._id,
             sessionName: instance.session.name,
             experienceCategory: instance.experience.category,
-            experienceName: instance.experience.name
+            experienceName: instance.experience.name,
+            registrationDate: instance.registrationDate
           }));
         } catch (error) {
           this.handleError(error);
@@ -185,7 +188,6 @@
         try {
           const response = await axios.get(url, { headers: { token } });
           this.studentsWithoutGoalForm = response.data;
-          console.log('studentsWithoutGoalForm: ', this.studentsWithoutGoalForm);
         } catch (error) {
           this.handleError(error);
         }
@@ -198,6 +200,9 @@
       },
       formatFullName(firstName, lastName) {
           return `${firstName} ${lastName}`;
+      },
+      formatDate(date) {
+        return DateTime.fromISO(date).toFormat("MM/dd/yyyy");
       },
     },
   };
