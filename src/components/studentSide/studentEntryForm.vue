@@ -470,6 +470,7 @@
           <div>
             <div v-for="programType in studentInformation.graduateProfessionalSchool.programGradProType" :key="programType.id">
               <v-checkbox 
+                ref="programGradProTypeField"
                 v-model="programType.checked" :label="$t(programType.label)"
                 density="compact"
                 class="ma-0 pa-0" hide-details="true"
@@ -558,7 +559,7 @@
   </v-form>
 
 
-  <!-- // First time user v-dialog -->
+  <!-- First time user v-dialog -->
   <v-dialog v-model="showNewUserDialog" width="500">
   <v-card>
     <v-card-title class="font-weight-bold">
@@ -566,7 +567,7 @@
     </v-card-title>
     
     <v-card-text>
-      {{$t('We are happy to have you. Your first task is to complete the Student Entry Form!')}}
+      {{$t('We are happy to have you! Your first task is to complete the Student Entry Form.')}}
     </v-card-text>
 
     <v-card-actions>
@@ -844,7 +845,7 @@ export default {
         this.minors = data;
       })
       .catch(error => {
-        console.log('Error:', error);
+        this.handleError(error);
       });
 
     const loggedInUserStore = useLoggedInUserStore();
@@ -1163,150 +1164,6 @@ export default {
   }
   },
   methods: {
-    async handleValidations() {
-      this.formSubmitted = true;
-      const { valid } = await this.$refs.form.validate()
-      if (valid) {
-        this.cleanupFormData();
-        this.submitCompletedForm();
-      } else {
-        toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete'
-          });
-        return;
-      }
-    },
-
-    async submitCompletedForm() {
-      const user = useLoggedInUserStore()
-      let token = user.token
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
-      
-      try {
-        // Submit the entry form
-        await axios.post(apiURL, { studentInformation: this.studentInformation}, { headers: { token } });
-
-        // After form submission, call the checkFormCompletion action to update the hasCompletedEntryForm state
-        await user.checkFormCompletion();
-        
-        // Show the success message and navigate to the dashboard
-        this.$router.push({ 
-          name: 'studentDashboard',
-          params: {
-            toastType: 'success',
-            toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
-            toastPosition: 'top-right',
-            toastCSS: 'Toastify__toast--create'
-          }
-        });
-
-      } catch (error) {
-        // Log the error if form submission fails
-        this.handleError(error);
-      }
-    },
-    cleanupFormData() {
-      // Check condition for "Other" pronouns
-      const otherPronoun = this.studentInformation.pronouns.find(p => p.id === 5);
-      const isOtherPronounChecked = otherPronoun ? otherPronoun.checked : false;
-
-      if (!isOtherPronounChecked) {
-        this.studentInformation.otherPronouns = '';
-      }
-
-      // Check condition for UH student
-      //Check condition for "honorsCollegeAffiliated"
-      const honorsCollegeAffiliatedCheck = this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated[11].checked === true;
-
-      if (!this.uHStudentCheck) {
-        this.studentInformation.enrolledUHInfo.uhEmail = '';
-        this.studentInformation.enrolledUHInfo.peopleSoftID = '';
-        this.studentInformation.enrolledUHInfo.expectedGraduationYear = '';
-        this.studentInformation.enrolledUHInfo.livingOnCampus = '';
-        this.studentInformation.enrolledUHInfo.honorsCollegeStatus = '';
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliated = [
-          { id: 1, label: "Senior Honors Thesis", checked: false },
-          { id: 2, label: "Honors Mentorship Program", checked: false },
-          { id: 3, label: "Honors Club Theatre", checked: false },
-          { id: 4, label: "Honors Dodgeball Society", checked: false },
-          { id: 5, label: "Student Governing Board", checked: false },
-          { id: 6, label: "Bonner Leaders Program", checked: false },
-          { id: 7, label: "Hobby/Leland/Harris Fellow", checked: false },
-          { id: 8, label: "Mellon Research Scholars", checked: false },
-          { id: 9, label: "Speech & Debate", checked: false },
-          { id: 10, label: "Model Arab League, Model UN, etc.", checked: false },
-          { id: 11, label: "Honors Ambassadors", checked: false },
-          { id: 12, label: "Other", checked: false },
-        ],
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
-        this.studentInformation.enrolledUHInfo.majors = [];
-        this.studentInformation.enrolledUHInfo.honorsMinors = [];
-        this.studentInformation.enrolledUHInfo.otherMinors = [];
-        this.studentInformation.hichInfo.hichStatus = '';
-        this.studentInformation.hichInfo.hichHistoryStatus = '';
-      } else if (this.uHStudentCheck && !honorsCollegeAffiliatedCheck) {
-        this.studentInformation.enrolledUHInfo.honorsCollegeAffiliatedOther = '';
-      }
-      
-      //Check condition for "serviceStatus"
-      const serviceStatusCheck = this.studentInformation.communityServiceInfo.serviceStatus === 'Yes';
-      if (!serviceStatusCheck) {
-        this.studentInformation.communityServiceInfo.serviceHistoryDesc = '';
-        this.studentInformation.communityServiceInfo.serviceOrgsOutsideUH = '';
-      }
-
-      //Check condition for programGradProStatus
-      const phDTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 4);
-      const isphDTextboxChecked = phDTextboxFind ? phDTextboxFind.checked : false;
-
-      const masterTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 7);
-      const isMasterTextboxChecked = masterTextboxFind ? masterTextboxFind.checked : false;
-
-      const otherTextboxFind = this.studentInformation.graduateProfessionalSchool.programGradProType.find(p => p.id === 8);
-      const isOtherTextboxChecked = otherTextboxFind ? otherTextboxFind.checked : false;
-
-      const programGradProStatusCheck = this.studentInformation.graduateProfessionalSchool.programGradProStatus === 'Yes';
-
-      if(!programGradProStatusCheck) {
-        this.studentInformation.graduateProfessionalSchool.programGradProType.forEach(item => {
-            item.checked = false;
-        });
-        this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
-        this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
-        this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
-      } else {
-        if (!isphDTextboxChecked) {
-          this.studentInformation.graduateProfessionalSchool.phDTextbox = '';
-        }
-        if (!isMasterTextboxChecked) {
-          this.studentInformation.graduateProfessionalSchool.masterTextbox = '';
-        }
-        if (!isOtherTextboxChecked) {
-          this.studentInformation.graduateProfessionalSchool.otherTextbox = '';
-        }
-      }
-
-      //Check condition for specializedDegCertStatus
-      const specializedDegCertStatusCheck = this.studentInformation.specializedDegCert.specializedDegCertStatus === 'Yes';
-
-
-      const professionalDesignOtherFind = this.studentInformation.specializedDegCert.specializedDegCertType.find(p => p.id === 6);
-
-      const isProfessionalDesignOtherChecked = professionalDesignOtherFind ?professionalDesignOtherFind.checked : false;
-
-
-      if (!specializedDegCertStatusCheck) {
-        this.studentInformation.specializedDegCert.specializedDegCertType.forEach(item => {
-          item.checked = false;
-        });
-        this.studentInformation.specializedDegCert.professionalDesignOther = '';
-      } else {
-        if (!isProfessionalDesignOtherChecked) {
-          this.studentInformation.specializedDegCert.professionalDesignOther = '';
-        }
-      }
-    },
   },
 }
 </script>

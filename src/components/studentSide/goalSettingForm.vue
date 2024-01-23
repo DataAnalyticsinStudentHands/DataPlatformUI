@@ -48,12 +48,6 @@
     <p class="text-subtitle-1">{{$t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
 
 <v-row dense>
-    <v-col cols="12" md="5">
-      <p class="font-weight-black text-h8">{{$t('Current Semester:')}}</p>
-      <v-text-field v-model="goalForm.semester" :label="$t('Semester')" readonly></v-text-field>
-    </v-col>
-</v-row>
-<v-row dense>
   <v-col cols="11" md="10">
     <div>
     <p 
@@ -543,7 +537,7 @@ class="font-weight-black text-h6">{{$t('Growth')}}</p>
   </v-radio-group>
 </v-col>
 
-
+<!-- Aspirations -->
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isAspirationsInvalid}"
@@ -592,7 +586,7 @@ class="font-weight-black text-h6">{{$t('Growth')}}</p>
 
 
 
-
+<!-- Goals -->
 <v-col cols="12" md="10">
   <p 
   :class="{'error-text': isGoalsInvalid}"
@@ -836,7 +830,6 @@ export default {
       selectedExperience: null,
       isGoalSettingFormFilled: null,
       goalForm: {
-        semester: '',
         experiences:[{
           experienceIDFromList:'',
           experienceCategory:'',
@@ -1556,7 +1549,6 @@ export default {
     loggedInUserStore.startLoading();
 
     try {
-      this.fetchSemester();
       this.fetchExperiences().then(() => {
         this.fetchHasFilledForm();
         this.selectExperienceFromRouteParam();
@@ -1571,39 +1563,28 @@ export default {
   },
 
   methods: {
-    async fetchSemester() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/semester';
-
-      try {
-        const response = await axios.get(apiURL, { headers: { token } });
-        this.goalForm.semester = response.data.semesterName;
-      } catch (error) {
-        this.handleError(error);
-      }
-    },
     async fetchExperiences() {
       const user = useLoggedInUserStore();
       let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/currentSemesterExperiences/';
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experiences/';
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });
         this.goalForm.experiences = response.data.map(experience => ({
-        experienceID: experience._id,
-        experienceCategory: experience.experienceCategory,
-        experienceName: experience.experienceName
-      }));
-        // this.goalForm.experiences = response.data;
+          experienceID: experience._id,
+          experienceCategory: experience.experienceCategory,
+          experienceName: experience.experienceName,
+          expRegistrationID: experience.expRegistrationID
+        }));
       } catch (error) {
         this.handleError(error);
       }
     },
+
   async fetchHasFilledForm() {
     const user = useLoggedInUserStore();
     let token = user.token;
-    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/hasFilledGoalSettingForm/';
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-filled-goal-setting-form/';
 
     try {
       const response = await axios.get(apiURL, {
@@ -1621,12 +1602,13 @@ export default {
       this.handleError("Error fetching form fill status:", error);
     }
   },
+
   async checkExistingForm() {
       this.isLoadingExpCheck = true;
       const experienceID = this.selectedExperience;
       const user = useLoggedInUserStore();
       let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/hasCompletedGSFforSemesterExperience/';
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
 
       try {
         const response = await axios.get(apiURL + `${experienceID}`, {
@@ -1656,6 +1638,7 @@ export default {
         this.isLoadingExpCheck = false; 
     }
   },
+
   updateExperienceID(selected) {
     // If the selected value is empty, set experienceID to null or an empty string and exit the method
     if (!selected) {
@@ -1864,10 +1847,14 @@ export default {
   async handleSubmitForm() {
     const user = useLoggedInUserStore();
     let token = user.token;
-    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/';
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/';
+
+  // Find the expRegistrationID corresponding to the selected experience
+  const selectedExperience = this.goalForm.experiences.find(exp => exp.experienceID === this.selectedExperience);
+  const expRegistrationID = selectedExperience ? selectedExperience.expRegistrationID : null;
 
     const goalForm = {
-      semester: this.goalForm.semester,
+      expRegistrationID,
       experienceID: this.selectedExperience,
       goalForm: {
         communityEngagement: {

@@ -550,8 +550,8 @@
           </v-col>
         </transition>
           <v-row>
-            <v-col cols="12" md="4">
-              <v-btn type="submit" methods="handleValidations" class="btn btn-success">{{$t('Submit Form')}}</v-btn>
+            <v-col cols="12" class="d-flex justify-end">
+              <v-btn type="submit" methods="handleValidations">{{$t('Submit Form')}}</v-btn>
             </v-col>
           </v-row>
       </v-container>
@@ -854,7 +854,7 @@
           this.minors = data;
         })
         .catch(error => {
-          console.log('Error:', error);
+          this.handleError(error);
         });
   
       const loggedInUserStore = useLoggedInUserStore();
@@ -1191,7 +1191,7 @@
       async submitCompletedForm() {
         const user = useLoggedInUserStore()
         let token = user.token
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entryForms/';
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
         
         try {
           // Submit the entry form

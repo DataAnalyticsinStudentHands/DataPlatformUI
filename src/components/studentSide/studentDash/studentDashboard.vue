@@ -22,7 +22,6 @@
 
       <StudentExperienceRegistration />
 
-
       </v-col>
     </v-row>
   </v-container>

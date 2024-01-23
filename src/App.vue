@@ -2,6 +2,7 @@
   <v-app>
     <v-layout class="rounded">
       <v-navigation-drawer
+        v-if="user.isLoggedIn"
         v-model="drawer"
         color="#c8102e"
         :rail="rail"
@@ -43,7 +44,7 @@
           </v-list-item>
 
         <v-list density="compact" nav class="text-white">
-          <div v-if="!user.isLoggedIn">
+          <!-- <div v-if="!user.isLoggedIn">
             <v-list-item 
               :active="activeLink === 'Login'"
               to="login"
@@ -60,7 +61,7 @@
               ></v-btn>
             </template>
           </v-list-item>
-          </div>
+          </div> -->
           <div v-if="user.isLoggedIn && user.getRole === 'Student'">
             <v-list-item 
               :active="activeLink === 'studentDashboard'"
@@ -117,13 +118,50 @@
               class=" tracking-wider"
             >Students</v-list-item>
             <v-list-item 
-              :active="activeLink === 'instructorSemesters'"
-              to="instructorSemesters"
+              :active="activeLink === 'instructorDataManagement'"
+              to="instructorDataManagement"
               prepend-icon="mdi-school"
-              value="instructorSemesters"
+              value="instructorDataManagement"
               class=" tracking-wider"
-            >Semesters, Experiences, Activities</v-list-item>
+            >Data Management Console</v-list-item>
           </div>
+          <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
+            <v-list-item 
+              :active="activeLink === 'dashboard'"
+              to="/dashboard"
+              prepend-icon="mdi-view-dashboard"
+              class="tracking-wider"
+            >Dashboard</v-list-item>
+
+            <v-list-item 
+              :active="activeLink === 'intakeform'"
+              to="/intakeform"
+              prepend-icon="mdi-account-plus-outline"
+              class="tracking-wider"
+            >Client Intake Form</v-list-item>
+
+            <v-list-item 
+              :active="activeLink === 'eventform'"
+              to="/eventform"
+              prepend-icon="mdi-calendar-plus"
+              class="tracking-wider"
+            >Create Event</v-list-item>
+
+            <v-list-item 
+              :active="activeLink === 'findclient'"
+              to="/findclient"
+              prepend-icon="mdi-account-search-outline"
+              class="tracking-wider"
+            >Find Client</v-list-item>
+
+            <v-list-item 
+              :active="activeLink === 'findEvents'"
+              to="/findEvents"
+              prepend-icon="mdi-calendar-search"
+              class="tracking-wider"
+            >Find Event</v-list-item>
+          </div>
+
           <div v-if="user.isLoggedIn">
             <v-list-item>
               <hr> <!-- Horizontal line -->
@@ -169,7 +207,7 @@
   style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
 >
   <v-btn 
-    v-if="!drawer"
+    v-if="user.isLoggedIn && !drawer"
     icon 
     @click="drawer = true; rail = false"
   >
@@ -188,15 +226,15 @@
   <!-- <v-spacer></v-spacer> -->
 
   <!-- Organization Name on the right -->
-  <h1 class="text-2xl text-white mr-10">{{ organizationName }}</h1>
+  <h1 class="text-2xl text-white mr-10">{{ user.orgName }}</h1>
 </v-app-bar>
 
 
 
 
 
-    <v-main id="main" style="min-height: 300px;" class="main-content">
-      <router-view @showDashboard="showDashboard"></router-view>
+    <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content">
+      <router-view></router-view>
     </v-main>
   </v-layout>
   </v-app>
@@ -205,7 +243,6 @@
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
-import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
 export default {
@@ -213,12 +250,12 @@ export default {
   data() {
     return {
       showElement: useLoggedInUserStore().isLoggedIn === false,
-      organizationName: "",
       displayEntry: [],
       firstTimeLoginTF: null,
       activeLink: this.$route.name,
-      rail: false,
+      rail: this.isMdAndUp,
       drawer: null,
+      // scrollPosition: 0,
     };
   },
   watch: {
@@ -240,9 +277,6 @@ export default {
     }
   },
   methods: {
-    showDashboard() {
-      this.showElement = true;
-    },
     async handleLogout() {
       const store = useLoggedInUserStore();
       
@@ -279,24 +313,44 @@ export default {
       } else {
         this.drawer = !this.drawer;
       }
-    }
+    },
+  //   handleScroll(event) {
+  //   // scroll handling logic
+  //   this.scrollPosition = event.target.scrollTop;
+  // },
   },
-  beforeMount() {
+  mounted() {
+    // Access the root DOM element of the v-main Vue component
+    const mainContentEl = this.$refs.mainContent.$el;
+    mainContentEl.addEventListener('scroll', this.handleScroll);
   },
+
+  beforeUnmount() {
+    const mainContentEl = this.$refs.mainContent.$el;
+    mainContentEl.removeEventListener('scroll', this.handleScroll);
+  },
+
+  // provide() {
+  //   return {
+  //     scrollPosition: this.scrollPosition
+  //   };
+  // },
+
   setup() {
     // function that checks if a user is logged in
     const user = useLoggedInUserStore();
     return { user };
   },
   created() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
     const user = useLoggedInUserStore();
+    let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
+    // const user = useLoggedInUserStore();
     axios
       .get(apiURL, {
         headers: { token: user.token },
       })
       .then((resp) => {
-        this.organizationName = resp.data;
+        user.setOrgName(resp.data);
       });
   },
 };
@@ -323,4 +377,3 @@ export default {
     }
 
 </style>
-

@@ -12,7 +12,7 @@
       <v-col md="3">
         <div v-if="!loading && completedEntryForm">
           <router-link to="/studentEntryFormUpdate">
-            <v-btn class="btn btn-success">{{getTranslation('Edit Information')}}</v-btn>
+            <v-btn>{{getTranslation('Edit Information')}}</v-btn>
           </router-link>
         </div>
       </v-col>

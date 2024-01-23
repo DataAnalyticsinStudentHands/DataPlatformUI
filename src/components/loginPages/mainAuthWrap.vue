@@ -66,7 +66,6 @@ import RegisterForm from "@/components/loginPages/accountRegistration/register.v
 
 export default {
   name: "mainAuthWrap",
-  emits: ["showDashboard"],
   components: {
     LoginForm,
     VerifyNew,

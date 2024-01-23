@@ -54,7 +54,7 @@ export default {
   props: ["id"],
   data() {
     return {
-      code: null,
+      code: "",
       loading: false,
       userID: null,
       rules: [
@@ -111,6 +111,8 @@ export default {
                     } else {
                     this.$router.push("/studentEntryForm");
                     }
+                } else if (store.role === 'Basic') {
+                    this.$router.push("/dashboard");
                 } else {
                     this.$router.push("/");
                 }
@@ -121,7 +123,6 @@ export default {
                 });
             }
         } catch (err) {
-            console.log('err: ', err);
             if (err.response && err.response.status === 401) {
                 if (err.response.data.title === 'Expired code') {
                     try {
@@ -141,7 +142,6 @@ export default {
                     });
                 }
             } else {
-                console.log(err);
                 toast.error(this.$t('An error has occured. Please try again.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
@@ -169,7 +169,7 @@ export default {
             }
         })
         .catch((err) => {
-            console.log(err);
+            this.handleError(err);
         });
     },
   }

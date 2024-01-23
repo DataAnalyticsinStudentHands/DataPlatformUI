@@ -1,7 +1,7 @@
 {
     "Login": "Inciar Sesión",
     "Register": "Registrarse",
-    "Welcome to Engaged Data": "Bienvenido a Engaged Data",
+    "Welcome to": "Bienvenido a",
     "Email:": "Correo electrónico:",
     "Password:": "Contraseña:",
     "Password": "Contraseña",
@@ -134,7 +134,7 @@
     "Oops! Error(s) detected. Please review and try again.": "¡Ups! Se detectó(ron) error(es). Por favor, revise y vuelva a intentarlo.",
     "Thank you for completing the Student Entry Form!": "¡Gracias por completar el Formulario de Inscripción para Estudiantes!",
     "Welcome In!": "¡Bienvenido!",
-    "We are happy to have you. Your first task is to complete the Student Entry Form!": "Estamos felices de tenerte. Tu primera tarea es completar el Formulario de Inscripción para Estudiantes.",
+    "We are happy to have you! Your first task is to complete the Student Entry Form.": "¡Estamos felices de tenerte! Tu primera tarea es completar el Formulario de Inscripción para Estudiantes.",
     "This entry form collects basic information about you, so that we can know you better! Some of this information will be shared with your instructor or experience leader. You can update this information at any time in your “profile”.": "Este formulario recopila información básica sobre ti, ¡para que podamos conocerte mejor! Parte de esta información será compartida con tu instructor o líder de experiencia. Puedes actualizar esta información en cualquier momento en tu “perfil”.",
     "Goal Setting Form": "Formulario de Establecimiento de Objetivos",
     "Current Semester:": "Semestre Actual",

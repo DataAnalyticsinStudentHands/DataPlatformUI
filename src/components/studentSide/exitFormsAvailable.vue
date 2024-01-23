@@ -1,8 +1,9 @@
 <!-- /exitFormsAvailable -->
 <template>
   <main class="">
-      <br>
+    <br>
       <p class="font-weight-black text-h6 text-center">Exit Forms</p>
+      <p class="text-subtitle-2 text-center text-grey-darken-2">Please select an Experience to Complete an Exit Form</p>
       <br>
     <div style="display: flex; justify-content: center;">
       <div style="max-height: 400px; overflow-y: auto;">
