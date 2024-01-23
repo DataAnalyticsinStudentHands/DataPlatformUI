@@ -335,13 +335,6 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-this.goalForm: 
-<br>
-{{ this.goalForm }}
-<br><br><br><br><br><br>
-this.originalGoalForm: 
-<br>
-{{ this.originalGoalForm }}
 </template>
 
 <script>
