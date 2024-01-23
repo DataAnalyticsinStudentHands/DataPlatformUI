@@ -251,7 +251,7 @@ export default {
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
-      return axios // Return the axios promise here
+      return axios
         .get(apiURL, { headers: { token } })
         .then((resp) => {
           const activities = resp.data;

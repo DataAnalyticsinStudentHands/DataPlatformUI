@@ -246,8 +246,8 @@ export default {
             try {
                 const user = useLoggedInUserStore();
                 let token = user.token;
-
-                let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/available-experiences-for-instance?sessionID=${sessionID}`;
+                
+                let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/available-experiences-for-session/${sessionID}`;
                 const resp = await axios.get(apiURL, { headers: { token } });
                 this.experienceData = resp.data;
             } catch (error) {
@@ -354,7 +354,7 @@ export default {
             try {
                 const user = useLoggedInUserStore();
                 const token = user.token;
-                let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances/multiple`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances`;
                 const response = await axios.post(apiURL, {
                     sessionID: this.selectedSession._id,
                     experienceData

@@ -13,7 +13,7 @@ const routes = [
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
-      component: () => import('../components/studentSide/studentEntryFormUpdate.vue')
+      component: () => import('../components/studentSide/studentEntryForm/studentEntryFormUpdate.vue')
     },
     {
       path: '/profile',

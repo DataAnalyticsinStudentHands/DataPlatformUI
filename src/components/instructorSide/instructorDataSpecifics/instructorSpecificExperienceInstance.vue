@@ -170,7 +170,7 @@ export default {
             const user = useLoggedInUserStore();
             const token = user.token;
             const instanceID = this.$route.params.id; // Get instance ID from route parameter
-            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/can-be-deleted/${instanceID}`;
+            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/can-be-deleted/${instanceID}`;
 
             try {
                 const response = await axios.get(url, { headers: { token } });
@@ -189,7 +189,7 @@ export default {
             const instanceID = this.$route.params.id; // Get instance ID from route parameter
             const user = useLoggedInUserStore();
             const token = user.token;
-            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/delete/${instanceID}`;
+            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/delete/${instanceID}`;
 
             try {
                 await axios.delete(url, { headers: { token } });

@@ -13,8 +13,6 @@ if (localStorage.getItem('token')) {
 import router from './router';
 import App from './App.vue';
 import './index.css';
-import screenSizeMixin from './responsiveDesign/responsive.js';
-import './responsiveDesign/responsiveStyles.css';
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
 // Import Spanish translation file
 import esTranslation from '@/assets/i18n/es.json';
@@ -72,8 +70,6 @@ const i18n = createI18n({
 
 
 const app = createApp(App);
-
-app.mixin(screenSizeMixin);
 
 app.mixin(handleErrorMixin);
 

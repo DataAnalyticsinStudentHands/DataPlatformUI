@@ -436,29 +436,6 @@
     </v-card>
 </v-dialog>
 
-<!-- 
-<br>
-dialogEndDate: {{ dialogEndDate }}
-<br>
-
-selectedStartDate: {{ selectedStartDate }}
-<br><br><br>
-sessionData:
-<br>
-{{ sessionData }}
-<br><br><br>
-selectedSessions:
-<br>
-{{ selectedSessions }}
-<br><br><br>
-filteredSessionData:
-<br>
-{{ filteredSessionData }}
-<br><br><br>
-searchCriteria:
-<br>
-{{ searchCriteria }} -->
-
 </template>
 
 <script>
