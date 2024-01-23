@@ -4,8 +4,9 @@
       <v-row>
         <v-col cols="12">
             <v-card>
-                <v-card-title>
-                Goal Form Completion Tracker
+                <v-card-title class="pa-4 d-flex justify-space-between align-center">
+                  Goal Form Completion Tracker
+                  <progress-monitor-csv-downloader v-if="selectedExperience && studentsWithoutGoalForm.length" :data="studentsWithoutGoalForm" :file-name="csvFileName" />
                 </v-card-title>
                 
                 <v-card-subtitle class="text-h6">
@@ -23,8 +24,40 @@
                         item-value="value"
                         clearable
                         @update:modelValue="updateExperienceID"
+                        active
                     ></v-autocomplete>
                     </v-col>
+                </v-row>
+
+                <v-row v-if="selectedExperience">
+                <v-col cols="12">
+                  <div class="text-h6 pa-4">
+                    Total Students: {{ totalStudentsCount }}
+                  </div>
+                </v-col>
+              </v-row>
+
+                <!-- Pagination Controls -->
+                <v-row justify="space-between">
+                  <v-col cols="auto">
+                    <v-text-field
+                      v-model="itemsPerPage"
+                      type="number"
+                      min="1"
+                      label="Students per page:"
+                      dense
+                      outlined
+                      @change="currentPage = 1"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="auto">
+                    <v-pagination
+                      v-model="currentPage"
+                      :length="totalPaginationLength"
+                      :total-visible="10"
+                    ></v-pagination>
+                  </v-col>
                 </v-row>
                 </v-container>
         
@@ -35,27 +68,21 @@
                     <tr>
                         <th class="text-left">Name</th>
                         <th class="text-left">Email</th>
-                        <th class="text-left">Pronouns</th>
-                        <th class="text-left">Major(s)</th>
-                        <th class="text-left">Minor</th>
-                        <th class="text-left">Expected Graduation Date</th>
+                        <th class="text-left">Registration Date</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr
-                        v-for="student in studentsWithoutGoalForm"
-                        :key="student.userID"
-                        :class="{ 'hoverRow': hoverId === student.userID }"
-                        @mouseenter="hoverId = student.userID"
+                        v-for="student in paginatedStudentsWithoutGoalForm"
+                        :key="student._id"
+                        :class="{ 'hoverRow': hoverId === student._id }"
+                        @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
-                        @click="navigateToProfile(student.userID)"
+                        @click="navigateToProfile(student._id)"
                     >
-                        <td class="text-left">{{ student.fullName }}</td>
+                        <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left">{{ student.email }}</td>
-                        <td class="text-left">{{ student.pronouns.map(p => p.label).join(', ') }}</td>
-                        <td class="text-left">{{ student.majors.join(', ') }}</td>
-                        <td class="text-left">{{ student.honorsMinors.join(', ') }}</td>
-                        <td class="text-left">{{ student.expectedGraduationDate }}</td>
+                        <td class="text-left">{{ formatDate(student.registrationDate) }}</td>
                     </tr>
                     </tbody>
                 </v-table>
@@ -69,28 +96,58 @@
   
   <script>
   import axios from 'axios';
-  import 'vue3-toastify/dist/index.css';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
+  import { DateTime } from "luxon";
   
   export default {
     name: "StudentsWithoutGoalForms",
     data() {
       return {
         selectedExperience: null,
-        experiences: [],
+        expInstances: [],
         studentsWithoutGoalForm: [],
         hoverId: null,
+        csvFileName: 'no_goal_form.csv',
+        currentPage: 1,
+        itemsPerPage: 10,
       };
+    },
+    components: {
+      'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
+    },
+    watch: {
+      selectedExperience(newVal) {
+        if (newVal) {
+          // Find the selected experience object by its ID
+          const selectedObj = this.expInstances.find(instance => instance.expInstanceID === newVal);
+          // Update the file name using the experience name from the selected object
+          this.csvFileName = `no_goal_form_${selectedObj.experienceName}.csv`;
+        } else {
+          this.csvFileName = 'no_goal_form.csv';
+        }
+      },
     },
     mounted() {
       this.fetchExperiences();
     },
     computed: {
       formattedExperiences() {
-        return this.experiences.map(experience => ({
-          text: `${experience.experienceCategory}: ${experience.experienceName}`,
-          value: experience.experienceID
+        return this.expInstances.map(instance => ({
+          text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
+          value: instance.expInstanceID
         }));
+      },
+      paginatedStudentsWithoutGoalForm() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.studentsWithoutGoalForm.slice(start, end);
+      },
+      totalPaginationLength() {
+        return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
+      },
+      totalStudentsCount() {
+        return this.studentsWithoutGoalForm.length;
       },
     },
     methods: {
@@ -108,23 +165,25 @@
       async fetchExperiences() {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/activeSemesterExperiences/';
+        let apiURL = import.meta.env.VITE_ROOT_API + '/instructorSideData/experience-instances/active/';
   
         try {
           const response = await axios.get(apiURL, { headers: { token } });
-          this.experiences = response.data.map(experience => ({
-            experienceID: experience._id,
-            experienceCategory: experience.experienceCategory,
-            experienceName: experience.experienceName
+          this.expInstances = response.data.map(instance => ({
+            expInstanceID: instance._id,
+            sessionName: instance.session.name,
+            experienceCategory: instance.experience.category,
+            experienceName: instance.experience.name,
+            registrationDate: instance.registrationDate
           }));
         } catch (error) {
           this.handleError(error);
         }
       },
-      async fetchStudentsWithoutGoalForm(experienceID) {
+      async fetchStudentsWithoutGoalForm(expInstanceID) {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/studentsWithoutGoalForm?experienceID=${experienceID}`;
+        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${expInstanceID}`;
         
         try {
           const response = await axios.get(url, { headers: { token } });
@@ -139,28 +198,28 @@
           params: { userID: userID },
         });
       },
+      formatFullName(firstName, lastName) {
+          return `${firstName} ${lastName}`;
+      },
+      formatDate(date) {
+        return DateTime.fromISO(date).toFormat("MM/dd/yyyy");
+      },
     },
   };
   </script>
   
   <style scoped>
 
-
-.v-field__input > input[size="1"] {
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-  outline: none;
-}
-
-.v-field__input > input[size="1"]::before,
-.v-field__input > input[size="1"]::after {
-  display: none;
-}
-
 .hoverRow {
   background-color: #f0f0f0; /* light grey background */
   cursor: pointer;
+}
+
+:deep(.v-autocomplete input[type="text"]:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important; /* Update this line if you have a different border style */
+  background-color: transparent !important;
 }
 
 

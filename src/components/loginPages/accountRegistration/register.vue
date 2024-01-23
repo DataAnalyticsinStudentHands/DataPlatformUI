@@ -87,28 +87,38 @@
                 <!-- Password and Confirm Password -->
                 <v-col cols="12" md="6">
                     <label for="password" class="block font-semibold">{{$t('Password')}}</label>
-                    <input 
-                    v-model="user.password"
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="••••••••"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required="" />
+                    <div class="relative">
+                      <input 
+                      v-model="user.password"
+                      :type="showPassword ? 'text' : 'password'"
+                      name="password"
+                      id="password"
+                      placeholder="••••••••"
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      required="" />
+                      <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                          <i @click="showPassword = !showPassword" class="mdi mdi-eye cursor-pointer"></i>
+                      </span>
+                    </div>
                     <span class="text-custom-red" v-if="v$.user.password.$error">
-                    <p v-for="error of v$.user.password.$errors" :key="error.$uid">{{ error.$message }}!</p>
+                      <p v-for="error of v$.user.password.$errors" :key="error.$uid">{{ error.$message }}!</p>
                     </span>
                 </v-col>
                 <v-col cols="12" md="6">
                     <label for="confirm-password" class="block font-semibold">{{$t('Confirm password')}}</label>
-                    <input 
-                    v-model="user.confirm_pasword"
-                    type="password"
-                    name="confirm-password"
-                    id="confirm-password"
-                    placeholder="••••••••"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required="" />
+                    <div class="relative">
+                      <input 
+                      v-model="user.confirm_pasword"
+                      :type="showConfirmPassword ? 'text' : 'password'"
+                      name="confirm-password"
+                      id="confirm-password"
+                      placeholder="••••••••"
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      required="" />
+                      <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                          <i @click="showConfirmPassword = !showConfirmPassword" class="mdi mdi-eye cursor-pointer"></i>
+                      </span>
+                    </div>
                 </v-col>
             </v-row>
             <v-row>
@@ -159,6 +169,8 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
         },
         errorr: "",
         loading: false,
+        showPassword: false,
+        showConfirmPassword: false,
       };
     },
     methods: {
@@ -229,7 +241,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
                   toastClassName: 'Toastify__toast--delete'
                 });
               } else {
-                console.log(err);
+                this.handleError(err);
               }
             }
           ).finally(() => {

@@ -3,12 +3,44 @@
       <v-row>
         <v-col cols="12">
           <v-card>
-            <v-card-title class="pa-4">
+            <v-card-title class="pa-4 d-flex justify-space-between align-center">
               Pending Students Monitor
+              <progress-monitor-csv-downloader v-if="pendingStudents" :data="pendingStudents" file-name="pending_students.csv" />
             </v-card-title>
             <v-card-subtitle class="pa-4 text-h6">
               Students with Pending Status
             </v-card-subtitle>
+
+            <v-row>
+              <v-col cols="12">
+                <div class="text-h6 pa-4">
+                  Total Students: {{ totalStudentsCount }}
+                </div>
+              </v-col>
+            </v-row>
+
+                <!-- Pagination Controls -->
+                <v-row justify="space-between">
+                  <v-col cols="auto">
+                    <v-text-field
+                      v-model="itemsPerPage"
+                      type="number"
+                      min="1"
+                      label="Students per page:"
+                      dense
+                      outlined
+                      @change="currentPage = 1"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="auto">
+                    <v-pagination
+                      v-model="currentPage"
+                      :length="totalPaginationLength"
+                      :total-visible="10"
+                    ></v-pagination>
+                  </v-col>
+                </v-row>
   
             <!-- Loading Wheel -->
             <div v-if="loading" class="d-flex justify-center align-center">
@@ -26,7 +58,7 @@
                 </thead>
                 <tbody>
                   <tr 
-                    v-for="student in pendingStudents" 
+                    v-for="student in paginatedPendingStudents" 
                     :key="student._id"
                     :class="{ 'hoverRow': hoverId === student._id }"
                     @mouseenter="hoverId = student._id"
@@ -48,6 +80,7 @@
   <script>
   import axios from 'axios';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
   
   export default {
     name: "PendingStudents",
@@ -56,10 +89,28 @@
         pendingStudents: [],
         loading: false,
         hoverId: null,
+        currentPage: 1,
+        itemsPerPage: 10,
       };
+    },
+    components: {
+      'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
     },
     mounted() {
       this.fetchPendingStudents();
+    },
+    computed: {
+      paginatedPendingStudents() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.pendingStudents.slice(start, end);
+      },
+      totalPaginationLength() {
+        return Math.ceil(this.pendingStudents.length / this.itemsPerPage);
+      },
+      totalStudentsCount() {
+        return this.pendingStudents.length;
+      },
     },
     methods: {
       async fetchPendingStudents() {

@@ -39,7 +39,6 @@
 
 
 <script>
-import { ref, onMounted } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";

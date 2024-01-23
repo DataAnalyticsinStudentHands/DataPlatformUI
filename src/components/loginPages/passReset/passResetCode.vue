@@ -95,7 +95,7 @@ export default {
                     confirmationCode: this.code 
                 };
 
-                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/resetPassWithCode`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/passwordReset/verifyCode`;
 
                 try {
                     const response = await axios.post(apiURL, requestData);

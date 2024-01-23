@@ -2,7 +2,7 @@
   <div>
     <v-card-text>
       <h2 class="font-bold text-2xl text-custom-red tracking-widest text-center mt-3 mb-5">
-          {{$t('Welcome to Engaged Data')}}
+          {{$t('Welcome to')}} {{ appName }}
       </h2>
 
       <!-- Login form -->
@@ -17,12 +17,20 @@
 
         <v-text-field
           :label="$t('Password:')"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           v-model="password"
           :rules="requiredRule"
           required
           prepend-icon="mdi-lock"
-        ></v-text-field>
+        >
+          <template v-slot:append-inner>
+            <v-icon
+              @click="showPassword = !showPassword"
+            >
+              mdi-eye
+            </v-icon>
+          </template>
+        </v-text-field>
       </v-form>
 
       <v-row>
@@ -65,6 +73,8 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import axios from 'axios'
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { computed } from 'vue';
+
 
 export default {
   name: "LoginForm",
@@ -85,14 +95,22 @@ export default {
                 return true;
             }
         ],
-        requiredRule: [v => !!v || this.$t('This field is required')]
+        requiredRule: [v => !!v || this.$t('This field is required')],
+        appName: "",
+        showPassword: false,
       };
   },
   setup() {
-    const store = useLoggedInUserStore()
+    const store = useLoggedInUserStore();
+
+    const appName = computed(() => {
+      return store.orgName === 'Data & Society' ? 'Engaged Data' : store.orgName;
+    });
+
     return {
       store,
-    }
+      appName
+    };
   },
   mounted() {
     if (this.$route.params.toastType) {
@@ -127,13 +145,13 @@ export default {
           if (this.store.role === 'Instructor') {
             this.$router.push("/instructorDash");
           } else if (this.store.role === 'Student') {
-            // After successful verification, check if the student has completed forms
-            await this.store.checkFormCompletion();
             if (this.store.hasCompletedEntryForm) {
               this.$router.push("/studentDashboard");
             } else {
               this.$router.push("/studentEntryForm");
             }
+          } else if (this.store.role === 'Basic') {
+            this.$router.push("/dashboard");
           } else {
             this.$router.push("/");
           }
@@ -169,7 +187,7 @@ export default {
         }
       })
       .catch((err) => {
-        console.log(err);
+        this.handleError(err);
       });
   },
 
@@ -178,7 +196,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .no-select {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Safari */
@@ -187,5 +205,30 @@ export default {
     -ms-user-select: none;       /* Internet Explorer/Edge */
     user-select: none;           /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
 }
+
+[type='text']:focus, 
+[type='email']:focus, 
+[type='url']:focus, 
+[type='password']:focus, 
+[type='number']:focus, 
+[type='date']:focus, 
+[type='datetime-local']:focus, 
+[type='month']:focus, 
+[type='search']:focus, 
+[type='tel']:focus, 
+[type='time']:focus, 
+[type='week']:focus, 
+[multiple]:focus, 
+textarea:focus, 
+select:focus {
+    outline: none !important;
+    --tw-ring-color: transparent !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    box-shadow: none !important;
+    border-color: currentColor !important;
+}
+
+
 
 </style>
