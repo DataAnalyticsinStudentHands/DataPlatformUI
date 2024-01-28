@@ -144,7 +144,7 @@
                                     class="ma-2"
                                 >
                                     <!-- Differentiate between 'Session Name' and 'Start Date' -->
-                                    <template v-if="criteria.category === 'Session Name'">
+                                    <template v-if="criteria.category === 'Session Name' || criteria.category === 'Experience Name' || criteria.category === 'Experience Category'">
                                         {{ criteria.category + `="` + criteria.term + `"` }}
                                     </template>
                                     <template v-else>
@@ -205,7 +205,7 @@
                                 <td :colspan="sessionHeaders.length" class="pa-0">
                                     <v-data-table
                                         :headers="instanceHeaders"
-                                        :items="item.instances"
+                                        :items="filteredInstances[item._id] || item.instances"
                                         item-value="experience.id"
                                         hover
                                         return-object
@@ -352,6 +352,63 @@
     </v-card>
 </v-dialog>
 
+<!-- Date Picker for Exit Form Release Date -->
+<v-dialog
+    v-model="dialogExitFormReleaseDate"
+    width="auto"
+    persistent
+>
+    <v-card>
+        <v-card-title>
+            <v-row>
+                <v-col>
+                    <v-select
+                        v-model="exitFormReleaseDateFilterType"
+                        :items="['On', 'Before', 'After', 'Between']"
+                        label="Filter Type"
+                        outlined
+                        density="comfortable"
+                        hide-details
+                    ></v-select>
+                </v-col>
+            </v-row>
+        </v-card-title>
+        <v-card-item>
+            <v-row>
+                <v-col cols="6">
+                    <v-date-picker
+                        v-model="selectedExitFormReleaseDate"
+                        elevation="24"
+                        :title="instanceExitFormReleaseDateTitle"
+                        show-adjacent-months
+                        color="red-darken-2"
+                        @update:modelValue="handleExitFormReleaseDateSelection"
+                    >
+                        <template v-slot:header>
+                            <div class="v-date-picker-header">
+                                <v-fade-transition>
+                                    <div :key="formattedSelectedExitFormReleaseDate" class="v-date-picker-header__content">
+                                        {{ formattedSelectedExitFormReleaseDate }}
+                                    </div>
+                                </v-fade-transition>
+                            </div>
+                        </template>
+                    </v-date-picker>
+                </v-col>
+            </v-row>
+        </v-card-item>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="cancelSelectExitFormReleaseDate">Cancel</v-btn>
+            <v-btn
+                color="#c8102e"
+                :disabled="!canApplyExitFormReleaseDates"
+                @click="submitExitFormReleaseDate"
+            >Apply</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
+
 <!-- Dialog for Search Fields for xs Screens -->
 <v-dialog
     v-model="xsdialogSearch"
@@ -475,6 +532,14 @@
     </v-card>
 </v-dialog>
 <br><br><br>
+filteredInstances:
+<br>
+{{ filteredInstances }}
+<br><br><br>
+filteredSessionData:
+<br>
+{{ filteredSessionData }}
+<br><br><br>
 sessionData:
 <br>
 {{ sessionData }}
@@ -523,8 +588,12 @@ data() {
         sessionSearch: "",
         searchLabel: "Search Session Name",
         searchMenuItems: [
-            "Start Date",
-            "End Date"
+            "Session Name",
+            "Session Start Date",
+            "Session End Date",
+            "Experience Category",
+            "Experience Name",
+            "Exit Form Release Date"
         ],
         sessionHeaders: [
             {
@@ -615,6 +684,10 @@ data() {
                 sortable: true,
             },
         ],
+        filteredInstances: {},
+        dialogExitFormReleaseDate: false,
+        exitFormReleaseDateFilterType: "On",
+        selectedExitFormReleaseDate: new Date(),
     };
 },
 async mounted() {
@@ -728,66 +801,48 @@ computed: {
         // In other cases, allow submission
         return true;
     },
-    filteredInstancesData() {
-        // If there are no search criteria or chips, filter only based on the viewArchivedInstances status
-        if (!this.searchCriteria.length || !this.selectedSearchChips.length) {
-            return this.instancesData.filter(item =>
-                this.viewArchivedSessions ? item.expInstanceStatus === false : item.expInstanceStatus === true
-            );
+    instanceExitFormReleaseDateTitle() {
+        switch (this.exitFormReleaseDateFilterType) {
+            case "On":
+                return "Release Date On";
+            case "After":
+                return "Release Date After";
+            case "Before":
+                return "Release Date Before";
+            case "Between":
+                return "Release Date Between";
+            default:
+                return "Release Date On";
         }
+    },
+    formattedSelectedExitFormReleaseDate() {
+        if (this.exitFormReleaseDateFilterType === "Between") {
+                let text = "";
+                if (this.beginningDateRange) {
+                    text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
+                }
 
-        const activeCriteria = this.selectedSearchChips.map(index => this.searchCriteria[index]);
+                if (this.beginningDateRange && this.endDateRange) {
+                    text += " to ";
+                    text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
+                }
 
-        return this.instancesData.filter(item => {
-            // First, filter based on archived status
-            if (this.viewArchivedSessions && item.expInstanceStatus !== false) {
-                return false;
-            } else if (!this.viewArchivedSessions && item.expInstanceStatus !== true) {
-                return false;
+                return text;
             }
 
-            return activeCriteria.every(criteria => {
-                const term = criteria.term.toLowerCase();
-                const releaseDate = new Date(item.exitFormReleaseDate);
-
-                switch (criteria.category) {
-                case "All Fields":
-                    return (
-                        item.session.name.toLowerCase().includes(term) ||
-                        item.experience.name.toLowerCase().includes(term) ||
-                        item.experience.category.toLowerCase().includes(term) ||
-                        this.formatDate(item.exitFormReleaseDate).includes(term)
-                    );
-                case "Session":
-                    return item.session.name.toLowerCase().includes(term);
-                case "Experience Name":
-                    return item.experience.name.toLowerCase().includes(term);
-                case "Experience Category":
-                    return item.experience.category.toLowerCase().includes(term);
-                case "Exit Form Release Date":
-                    if (term.startsWith('<')) {
-                        const comparisonDate = new Date(term.slice(2).trim());
-                        return releaseDate < comparisonDate;
-                    } else if (term.startsWith('>')) {
-                        const comparisonDate = new Date(term.slice(2).trim());
-                        return releaseDate > comparisonDate;
-                    } else if (term.startsWith('=')) {
-                        const formattedReleaseDate = this.formatDateForDatePicker(releaseDate);
-                        const comparisonDate = term.slice(2).trim();
-                        return formattedReleaseDate === comparisonDate;
-                    } else if (term.startsWith('between')) {
-                        let [startDateStr, endDateStr] = term.slice(8).split(' and ');
-                        let startDate = DateTime.fromFormat(startDateStr.trim(), 'MM-dd-yyyy').toJSDate();
-                        let endDate = DateTime.fromFormat(endDateStr.trim(), 'MM-dd-yyyy').toJSDate();
-                        return releaseDate >= startDate && releaseDate <= endDate;
-                    }
-                    return true;
-                default:
-                    return true;
-                }
-            });
-        });
+            return this.selectedExitFormReleaseDate
+                ? DateTime.fromJSDate(this.selectedExitFormReleaseDate).toFormat('MM-dd-yyyy')
+                : "";
     },
+    canApplyExitFormReleaseDates() {
+        if (this.exitFormReleaseDateFilterType === "Between") {
+                // Allow submission only if both beginning and end date ranes are selected
+                return this.beginningDateRange && this.endDateRange;
+            }
+            // In other cases, allow submission
+            return true;
+    },
+
 
 },
 methods: {
@@ -851,10 +906,14 @@ methods: {
     },
 
     updateSearchCriteria(item) {
-        if (item === "Start Date") {
+        if (item === "Session Start Date") {
             this.dialogStartDate = true;
-        } else if (item === "End Date") {
+        } else if (item === "Session End Date") {
             this.dialogEndDate = true;
+        } else if (item === "Exit Form Release Date") {
+            this.dialogExitFormReleaseDate = true;
+        } else {
+            this.searchLabel = "Search " + item;
         }
     },
 
@@ -867,13 +926,14 @@ methods: {
             // Select the new chip by default
             this.selectedSearchChips.push(this.searchCriteria.length - 1);
             // Clear the input field after adding the chip
-            this.experienceSearch = "";
+            this.sessionSearch = "";
             // Call search
             this.performFilter();
         }
     },
 
     selectSearchChip(index) {
+        console.log('select search chip called');
         const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, create a new array without this chip
@@ -906,7 +966,15 @@ methods: {
             searchGroups[criteria.category].push(criteria.term);
         });
 
+        console.log("Search groups:", searchGroups);
+
+
+        // Reset filtered instances
+        this.filteredInstances = {};
+
         this.filteredSessionData = this.sessionData.filter(item => {
+            // Create a deep copy of each session item
+            let sessionItem = JSON.parse(JSON.stringify(item));
             // Check if item should be included based on sessionStatus
             if (this.viewArchivedSessions && item.sessionStatus === false) {
                 // Continue with other criteria checks for archived items
@@ -916,14 +984,14 @@ methods: {
                 // Exclude the item if sessionStatus doesn't match
                 return false;
             }
-            return Object.keys(searchGroups).every(category => {
+            let matchesFilter = Object.keys(searchGroups).every(category => {
                 if (category === "Session Name") {
                     return searchGroups[category].every(term =>
-                        item.sessionName.toLowerCase().includes(term.toLowerCase())
+                        sessionItem.sessionName.toLowerCase().includes(term.toLowerCase())
                     );
-                } else if (category === "Start Date") {
+                } else if (category === "Session Start Date") {
                     return searchGroups[category].every(term => {
-                        let sessionDate = new Date(item.sessionPeriod.startDate);
+                        let sessionDate = new Date(sessionItem.sessionPeriod.startDate);
                         if (term.startsWith('<')) {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate < comparisonDate;
@@ -931,7 +999,7 @@ methods: {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate > comparisonDate;
                         } else if (term.startsWith('=')) {
-                            let sessionDate = this.formatDateMethod(new Date(item.sessionPeriod.startDate));
+                            let sessionDate = this.formatDateMethod(new Date(sessionItem.sessionPeriod.startDate));
                             const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
                             return sessionDate === comparisonDate;
                         } else if (term.startsWith('between')) {
@@ -942,9 +1010,9 @@ methods: {
                         }
                         return true;
                     });
-                } else if (category === "End Date") {
+                } else if (category === "Session End Date") {
                     return searchGroups[category].every(term => {
-                        let sessionDate = new Date(item.sessionPeriod.endDate);
+                        let sessionDate = new Date(sessionItem.sessionPeriod.endDate);
                         if (term.startsWith('<')) {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate < comparisonDate;
@@ -952,7 +1020,7 @@ methods: {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate > comparisonDate;
                         } else if (term.startsWith('=')) {
-                            let sessionDate = this.formatDateMethod(new Date(item.sessionPeriod.endDate));
+                            let sessionDate = this.formatDateMethod(new Date(sessionItem.sessionPeriod.endDate));
                             const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
                             return sessionDate === comparisonDate;
                         } else if (term.startsWith('between')) {
@@ -963,10 +1031,100 @@ methods: {
                         }
                         return true;
                     });
+                } else if (category === "Experience Name") {
+                    let experiencesMatch = searchGroups[category].every(term => {
+                        console.log("Before filtering instances in session", sessionItem._id, ":", sessionItem.instances);
+                        return sessionItem.instances.some(instance => {
+                            return instance.experience.name.toLowerCase().includes(term.toLowerCase());
+                        });
+                    })
+
+                    // If experiences match, filter instances within the session and update filteredInstances
+                    if (experiencesMatch) {
+                        let filteredInstancesForSession = sessionItem.instances.filter(instance => {
+                            return searchGroups[category].some(term => {
+                                return instance.experience.name.toLowerCase().includes(term.toLowerCase());
+                            });
+                        });
+                        // Update filteredInstances for the current session
+                        this.filteredInstances[sessionItem._id] = filteredInstancesForSession;
+                    }
+
+                    return experiencesMatch;
+                } else if (category === "Experience Category") {
+                    let experiencesMatch = searchGroups[category].every(term => {
+                        return sessionItem.instances.some(instance => {
+                            return instance.experience.category.toLowerCase().includes(term.toLowerCase());
+                        });
+                    })
+
+                    if (experiencesMatch) {
+                        let filteredInstancesForSession = sessionItem.instances.filter(instance => {
+                            return searchGroups[category].some(term => {
+                                return instance.experience.category.toLowerCase().includes(term.toLowerCase());
+                            });
+                        });
+                        this.filteredInstances[sessionItem._id] = filteredInstancesForSession;
+                    }
+                    return experiencesMatch;
+                } else if (category === "Exit Form Release Date") {
+                    let experiencesMatch = searchGroups[category].every(term => {
+                        return sessionItem.instances.some(instance => {
+                            let exitDate = new Date(instance.exitFormReleaseDate);
+                            if (term.startsWith('<')) {
+                                const comparisonDate = new Date(term.slice(2).trim());
+                                return exitDate < comparisonDate;
+                            } else if (term.startsWith('>')) {
+                                const comparisonDate = new Date(term.slice(2).trim());
+                                return exitDate > comparisonDate;
+                            } else if (term.startsWith('=')) {
+                                let exitDateFormatted = this.formatDateMethod(new Date(instance.exitFormReleaseDate));
+                                const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
+                                return exitDateFormatted === comparisonDate;
+                            } else if (term.startsWith('between')) {
+                                let [startDateStr, endDateStr] = term.slice(8).split(' and ');
+                                let startDate = DateTime.fromFormat(startDateStr, 'MM-dd-yyyy');
+                                let endDate = DateTime.fromFormat(endDateStr, 'MM-dd-yyyy');
+                                return exitDate >= startDate && exitDate <= endDate;
+                            }
+                            return true;
+                        });
+                    });
+
+                    if (experiencesMatch) {
+                        let filteredInstancesForSession = sessionItem.instances.filter(instance => {
+                            return searchGroups[category].some(term => {
+                                let exitDate = new Date(instance.exitFormReleaseDate);
+                                if (term.startsWith('<')) {
+                                    const comparisonDate = new Date(term.slice(2).trim());
+                                    return exitDate < comparisonDate;
+                                } else if (term.startsWith('>')) {
+                                    const comparisonDate = new Date(term.slice(2).trim());
+                                    return exitDate > comparisonDate;
+                                } else if (term.startsWith('=')) {
+                                    let exitDateFormatted = this.formatDateMethod(new Date(instance.exitFormReleaseDate));
+                                    const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
+                                    return exitDateFormatted === comparisonDate;
+                                } else if (term.startsWith('between')) {
+                                    let [startDateStr, endDateStr] = term.slice(8).split(' and ');
+                                    let startDate = DateTime.fromFormat(startDateStr, 'MM-dd-yyyy');
+                                    let endDate = DateTime.fromFormat(endDateStr, 'MM-dd-yyyy');
+                                    return exitDate >= startDate && exitDate <= endDate;
+                                }
+                                return true;
+                            });
+                        });
+                        this.filteredInstances[sessionItem._id] = filteredInstancesForSession;
+                    }
+                    return experiencesMatch;
                 }
+
                 return true;
             })
-        });
+            console.log("Filtered session data at end:", this.filteredSessionData);
+
+            return matchesFilter ? sessionItem : null;
+        }).filter(item => item !== null); // Filter out null values
     },
 
     handleStartDateSelection(date) {
@@ -998,6 +1156,22 @@ methods: {
             }
         } else {
             this.selectedEndDate = date;
+        }
+    },
+
+    handleExitFormReleaseDateSelection(date) {
+        if (this.exitFormReleaseDateFilterType === 'Between') {
+            if (!this.beginningDateRange || this.endDateRange) {
+                // If beginningDateRange is not set or endDateRange is already set,
+                // set the new date as the beginningDateRange and reset endDateRange
+                this.beginningDateRange = date;
+                this.endDateRange = null;
+            } else {
+                // Set the new date as the endDateRange
+                this.endDateRange = date;
+            }
+        } else {
+            this.selectedExitFormReleaseDate = date;
         }
     },
 
@@ -1045,6 +1219,27 @@ methods: {
         this.endDateFilterType = "On";
     },
 
+    submitExitFormReleaseDate() {
+        // Handle different date filter types
+        if (this.exitFormReleaseDateFilterType === 'On' && this.selectedExitFormReleaseDate) {
+            this.createExitFormReleaseDateChip('=', this.selectedExitFormReleaseDate);
+        } else if (this.exitFormReleaseDateFilterType === 'Before' && this.selectedExitFormReleaseDate) {
+            this.createExitFormReleaseDateChip('<', this.selectedExitFormReleaseDate);
+        } else if (this.exitFormReleaseDateFilterType === 'After' && this.selectedExitFormReleaseDate) {
+            this.createExitFormReleaseDateChip('>', this.selectedExitFormReleaseDate);
+        } else if (this.exitFormReleaseDateFilterType === 'Between' && this.beginningDateRange && this.endDateRange) {
+            // Format the dates
+            const formattedBeginningDate = this.formatDateForDatePicker(this.beginningDateRange);
+            const formattedEndDate = this.formatDateForDatePicker(this.endDateRange);
+            // Create a chip for the date range
+            this.createExitFormReleaseDateChip('between', `${formattedBeginningDate} and ${formattedEndDate}`);
+        }
+
+        this.dialogExitFormReleaseDate = false;
+        this.selectedExitFormReleaseDate = new Date();
+        this.exitFormReleaseDateFilterType = "On";
+    },
+
     cancelSelectStartDate() {
         this.dialogStartDate = false;
         this.startDateFilterType = "On";
@@ -1055,6 +1250,12 @@ methods: {
         this.dialogEndDate = false;
         this.endDateFilterType = "On";
         this.selectedEndDate = new Date();
+    },
+
+    cancelSelectExitFormReleaseDate() {
+        this.dialogExitFormReleaseDate = false;
+        this.exitFormReleaseDateFilterType = "On";
+        this.selectedExitFormReleaseDate = new Date();
     },
 
     createStartDateChip(operator, date) {
@@ -1071,7 +1272,7 @@ methods: {
 
         // Create the chip
         const startDateChip = {
-            category: 'Start Date',
+            category: 'Session Start Date',
             term: term
         };
 
@@ -1098,7 +1299,7 @@ methods: {
 
         // Create the chip
         const endDateChip = {
-            category: 'End Date',
+            category: 'Session End Date',
             term: term
         };
 
@@ -1107,6 +1308,33 @@ methods: {
         // Select the new chip by default
         this.selectedSearchChips.push(this.searchCriteria.length - 1);
         
+        // Call search
+        this.performFilter();
+    },
+
+    createExitFormReleaseDateChip(operator, date) {
+        let term = '';
+        if (operator === '=') {
+            term = `= ${this.formatDateForDatePicker(date)}`;  // Equals operator
+        } else if (operator === '<') {
+            term = `< ${this.formatDateForDatePicker(date)}`;  // Less than operator
+        } else if (operator === '>') {
+            term = `> ${this.formatDateForDatePicker(date)}`;  // More than operator
+        } else if (operator === 'between') {
+            term = `between ${date}`;  // Between operator
+        }
+
+        // Create the chip
+        const exitFormReleaseDateChip = {
+            category: 'Exit Form Release Date',
+            term: term
+        };
+
+        // Add the chip to the search criteria
+        this.searchCriteria.push(exitFormReleaseDateChip);
+        // Select the new chip by default
+        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+
         // Call search
         this.performFilter();
     },
@@ -1175,8 +1403,8 @@ methods: {
     xsApplySearchFilters() {
         if (this.xsSearchFilterSelection === "Session Name") {
             this.addSearchChip();
-        } else if (this.xsSearchFilterSelection === "Start Date" || this.xsSearchFilterSelection === "End Date") {
-            const isStartDate = this.xsSearchFilterSelection === "Start Date";
+        } else if (this.xsSearchFilterSelection === "Session Start Date" || this.xsSearchFilterSelection === "Session End Date") {
+            const isStartDate = this.xsSearchFilterSelection === "Session Start Date";
             let dateFilterType = isStartDate ? this.startDateFilterType : this.endDateFilterType;
             let selectedDate = isStartDate ? this.selectedStartDate : this.selectedEndDate;
             let handleDateSelection = isStartDate ? this.handleStartDateSelection : this.handleEndDateSelection;
