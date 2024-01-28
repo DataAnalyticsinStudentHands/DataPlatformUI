@@ -7,7 +7,13 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/login'
+      redirect: '/test'
+    },
+    {
+      path: '/test',
+      name: 'test',
+      props: true,
+      component: () => import('../components/testSessions.vue')
     },
     {
       path: '/studentEntryFormUpdate',
