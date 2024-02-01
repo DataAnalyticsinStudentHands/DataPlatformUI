@@ -11,9 +11,15 @@ const routes = [
     },
     {
       path: '/test',
-      name: 'test',
+      name: 'testSessions',
       props: true,
       component: () => import('../components/testSessions.vue')
+    },
+    {
+      path: '/test2',
+      name: 'testAddInstance',
+      props: true,
+      component: () => import('../components/testAddInstance.vue')
     },
     {
       path: '/studentEntryFormUpdate',

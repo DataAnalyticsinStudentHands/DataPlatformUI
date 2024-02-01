@@ -26,7 +26,7 @@
             v-model="goalForm.goals.goalOne"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"    
+            rows="3"    
         ></v-textarea>
 
         <v-textarea
@@ -34,7 +34,7 @@
             v-model="goalForm.goals.goalTwo"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -42,7 +42,7 @@
             v-model="goalForm.goals.goalThree"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -50,7 +50,7 @@
             v-model="goalForm.goals.goalFour"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -58,7 +58,7 @@
             v-model="goalForm.goals.goalFive"
             :error-messages="goalsErrorMessages"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
         
     </v-col>

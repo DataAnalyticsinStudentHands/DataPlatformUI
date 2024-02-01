@@ -28,7 +28,7 @@
             v-model="goalForm.aspirations.aspirationOne"
             :error="isAspirationsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
 
@@ -38,7 +38,7 @@
             v-model="goalForm.aspirations.aspirationTwo"
             :error="isAspirationsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -47,7 +47,7 @@
             v-model="goalForm.aspirations.aspirationThree"
             :error-messages="aspirationsErrorMessages"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
     </v-col>
 </v-container>

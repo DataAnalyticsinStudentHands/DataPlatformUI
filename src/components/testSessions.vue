@@ -175,37 +175,37 @@
                 >
                     <template v-slot:body="{ items }">
                         <template
-                            v-for="item in items"
-                            :key="item._id"
+                            v-for="(sessionItem, sessionIndex) in items"
+                            :key="sessionItem._id"
                         >
                             <tr
-                                @click="editSession(item)"
+                                @click="editSession(sessionItem)"
                                 class="pointer-cursor custom-hover"
                             >
                                 <td @click.stop>
-                                    <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
+                                    <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(sessionItem)"></v-checkbox>
                                 </td>
-                                <td>{{ item.sessionName }}</td>
-                                <td>{{ formatDate(item.sessionPeriod.startDate) }}</td>
-                                <td>{{ formatDate(item.sessionPeriod.endDate) }}</td>
+                                <td>{{ sessionItem.sessionName }}</td>
+                                <td>{{ formatDate(sessionItem.sessionPeriod.startDate) }}</td>
+                                <td>{{ formatDate(sessionItem.sessionPeriod.endDate) }}</td>
                                 <td @click.stop>
                                     <v-btn 
                                         icon 
                                         variant="text"
-                                        @click="toggleRowExpansion(item)"
+                                        @click="toggleRowExpansion(sessionItem)"
                                     >
                                         <v-icon>
-                                            {{ expandedSessions.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                                            {{ expandedSessions.includes(sessionItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                                         </v-icon>
                                     </v-btn>
                                 </td>
                             </tr>
-                            <tr v-if="expandedSessions.includes(item)" >
+                            <tr v-if="expandedSessions.includes(sessionItem)">
                                 <td class="pa-0"></td>
                                 <td :colspan="sessionHeaders.length" class="pa-0">
                                     <v-data-table
                                         :headers="instanceHeaders"
-                                        :items="filteredInstances[item._id] || item.instances"
+                                        :items="filteredInstances[sessionItem._id] || sessionItem.instances"
                                         item-value="experience.id"
                                         hover
                                         return-object
@@ -220,7 +220,15 @@
                                                 <td>{{ getActivityCount(item.activities) }}</td>
                                             </tr>
                                         </template>
-                                        <template v-slot:bottom></template>
+                                        <template v-slot:bottom>
+                                            <v-col class="d-flex justify-end mb-4">
+                                                <v-btn
+                                                    @click="handleAddExperience(sessionItem._id)"
+                                                    elevation="1"
+                                                    prepend-icon="mdi-plus"
+                                                >Add Experience</v-btn>
+                                            </v-col>
+                                        </template>
                                     </v-data-table>
                                 </td>
                             </tr>
@@ -531,7 +539,7 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 filteredInstances:
 <br>
 {{ filteredInstances }}
@@ -882,6 +890,7 @@ methods: {
     },
 
     editSession(session) {
+        console.log('session: ', session);
         this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
     },
 
@@ -1451,7 +1460,13 @@ methods: {
     },
 
     editInstance(instance) {
+        console.log('instance: ', instance);
         this.$router.push({ name: "instructorSpecificExperienceInstance", params: { id: instance._id } });
+    },
+
+    handleAddExperience(sessionID) {
+        console.log('item: ', sessionID);
+        this.$router.push({ name: "testAddInstance", params: { id: sessionID } });
     },
 
 
