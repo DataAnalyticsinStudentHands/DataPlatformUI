@@ -79,7 +79,7 @@
                       <td>
                         <div class="activity-content">
                           {{ item.activityName }}
-                          <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
+                          <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
                         </div>
                       </td>
                     </tr>

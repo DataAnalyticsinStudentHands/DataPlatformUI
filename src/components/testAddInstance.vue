@@ -90,7 +90,7 @@
                                                     </v-col>
                                                     <v-col>
                                                         <v-icon
-                                                            @click.stop="removeSelectedActivity(activity)"
+                                                            @click.stop="removeActivity(activity)"
                                                         >
                                                             mdi-close
                                                         </v-icon>
@@ -98,6 +98,51 @@
                                                 </v-row>
                                             </v-list-item>
                                         </v-list>
+                                    </v-card>
+                                </v-col>
+                                <v-col>
+                                    <v-card
+                                        flat
+                                        title="Add Activities"
+                                    >
+                                        <template v-slot:text>
+                                            <v-text-field
+                                                v-model="activitySearch"
+                                                label="Search"
+                                                prepend-inner-icon="mdi-magnify"
+                                                single-line
+                                                variant="outlined"
+                                                hide-details
+                                            ></v-text-field>
+                                        </template>
+                                        <v-data-table
+                                            :headers="activityHeaders"
+                                            :items="filteredActivityData"
+                                            item-value="_id"
+                                            items-per-page="-1"
+                                            class="scrollable-table"
+                                            hover
+                                            :search="activitySearch"
+                                        >
+                                            <template v-slot:body="{ items }">
+                                                <template v-for="item in items" :key="item._id">
+                                                    <tr
+                                                        @click="selectActivity(item)"
+                                                        @mouseover="hoveredItem = item._id"
+                                                        @mouseleave="hoveredItem = null"
+                                                        class="pointer-cursor activity-row"
+                                                    >
+                                                        <td>
+                                                            <div class="activity-content">
+                                                                {{ item.activityName }}
+                                                                <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </template>
+                                            <template v-slot:bottom></template>
+                                        </v-data-table>
                                     </v-card>
                                 </v-col>
                             </v-row>
@@ -272,7 +317,6 @@ export default {
             activitySearch: "",
             hoveredItem: null,
             selectedExperience: null,
-            selectedActivities: [],
         }
     },
 
@@ -311,14 +355,6 @@ export default {
             if (matchingExperience) {
                 this.selectedExperience = matchingExperience;
                 console.log('selectedExperience: ', matchingExperience);
-                
-                // Filter activityData to include only those activities that are part of the selected experience
-                this.selectedActivities = this.activityData.filter(activity => 
-                    matchingExperience.activities.includes(activity._id)
-                );
-            } else {
-                // Handle the case where no matching experience is found
-                this.selectedActivities = [];
             }
         }
     },    
@@ -351,6 +387,18 @@ export default {
 
             return noExperiences || allHaveDates || noneSelected;
         },
+
+        selectedActivities() {
+            return this.activityData.filter(activity => this.selectedExperience?.activities.includes(activity._id));
+        },
+
+        filteredActivityData() {
+            // Get IDs of selected activities
+            const selectedActivityIDs = this.selectedActivities.map(activity => activity._id);
+
+            // Filter activityData to exclude activities that are in selectedActivities
+            return this.activityData.filter(activity => !selectedActivityIDs.includes(activity._id));
+        }
     },
 
     methods: {
@@ -519,6 +567,23 @@ export default {
                     toastClassName: 'Toastify__toast--delete',
                     multiple: false
                 });
+            }
+        },
+
+        selectActivity(activity) {
+            this.selectedExperience.activities.push(activity._id)
+        },
+
+        removeActivity(activity) {
+            console.log('removeActivity called');
+            // Find the index of the activity's _id in the selectedExperience.activities array
+            const index = this.selectedExperience.activities.indexOf(activity._id);
+            console.log('index: ', index);
+            console.log('activity._id: ', activity._id);
+
+            // If the activity's _id is found in the array, remove it
+            if (index !== -1) {
+                this.selectedExperience.activities.splice(index, 1);
             }
         },
 
