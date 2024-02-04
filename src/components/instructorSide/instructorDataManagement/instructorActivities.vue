@@ -139,9 +139,10 @@
                     v-model="selectedActivities"
                     hover
                     return-object
-                    v-model:expanded="expandedActivities"
-                    show-expand
                 >
+                    <!-- Part of the above data table
+                    v-model:expanded="expandedActivities"
+                    show-expand -->
                     <template v-slot:body="{ items }">
                         <template
                             v-for="item in items"
@@ -155,16 +156,16 @@
                                     <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
                                 </td>
                                 <td>{{ item.activityName }}</td>
-                                <td @click.stop>
+                                <!-- <td @click.stop>
                                     <v-btn icon variant="text" @click="toggleRowExpansion(item)">
                                         <v-icon>
                                             {{ expandedActivities.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                                         </v-icon>
                                     </v-btn>
-                                </td>
+                                </td> -->
                             </tr>
                             <!-- Expanded row for experiences -->
-                            <tr v-if="expandedActivities.includes(item)">
+                            <!-- <tr v-if="expandedActivities.includes(item)">
                                 <td></td>
                                 <td :colspan="activityHeaders.length">
                                     <div class="experience-label">
@@ -188,7 +189,7 @@
                                         None
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> -->
                         </template>
                     </template>
                 </v-data-table>
@@ -308,10 +309,10 @@ data() {
                 sortable: true,
                 key: "activityName"
             },
-            {
-                title: "",
-                key: "data-table-expand"
-            }
+            // {
+            //     title: "",
+            //     key: "data-table-expand"
+            // }
         ],
         searchCriteria: [],
         selectedSearchChips: [],

@@ -12,7 +12,7 @@
             <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
           </v-col>
         </v-row>
-        <v-row>
+        <!-- <v-row>
           <v-col cols="6">
             <v-card flat>
               <v-card-title>
@@ -91,7 +91,7 @@
               </v-data-table>
             </v-card>
           </v-col>
-        </v-row>
+        </v-row> -->
         <v-row class="pt-5">
           <v-col>
             <v-btn @click="goBack()">

@@ -7,16 +7,22 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      redirect: '/login'
+      redirect: '/test'
     },
     {
       path: '/test',
+      name: 'testExitForm',
+      props: true,
+      component: () => import('../components/testExitForm.vue')
+    },
+    {
+      path: '/test2',
       name: 'testSessions',
       props: true,
       component: () => import('../components/testSessions.vue')
     },
     {
-      path: '/test2',
+      path: '/test3',
       name: 'testAddInstance',
       props: true,
       component: () => import('../components/testAddInstance.vue')

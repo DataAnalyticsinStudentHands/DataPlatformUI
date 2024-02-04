@@ -213,7 +213,7 @@
                                             items-per-page="-1"
                                         >
                                             <template v-slot:item="{ item }">
-                                                <tr class="pointer-cursor" @click="editInstance(item)">
+                                                <tr class="pointer-cursor font-italic" @click="editInstance(item)">
                                                     <td>{{ item.experience.category }}</td>
                                                     <td>{{ item.experience.name }}</td>
                                                     <td>{{ formatDate(item.exitFormReleaseDate) }}</td>
@@ -632,7 +632,7 @@
                     key: "sessionPeriod.endDate"
                 },
                 {
-                    title: "",
+                    title: "Experiences",
                     key: "data-table-expand"
                 },
             ],

@@ -41,13 +41,84 @@
         </v-row>
 
         <v-row>
-            <v-col>
-                <v-list density="compact">
-                    <v-list-item v-for="activity in activities" :key="activity.id">
-                        <v-list-item-title>{{ activity.name }}</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-            </v-col>
+          <v-col cols="6">
+            <v-card flat>
+              <v-card-title>
+                <v-row>
+                  <v-col>
+                    Selected Activities
+                  </v-col>
+                </v-row>
+              </v-card-title>
+              <v-list class="scrollable-list">
+                <v-list-item
+                  v-for="activity in selectedActivities"
+                  :key="activity._id"
+                >
+                <v-row>
+                  <v-col cols="10">
+                    {{ activity.activityName }}
+                  </v-col>
+                  <v-col>
+                    <v-icon
+                      @click.stop="removeActivity(activity)"
+                      class="mdi-close"
+                    >
+                      mdi-close
+                    </v-icon>
+                  </v-col>
+                </v-row>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+          <v-col>
+            <v-card
+              flat
+              title="Add Activities"
+            >
+              <template v-slot:text>
+                <v-text-field
+                  v-model="activitySearch"
+                  label="Search"
+                  prepend-inner-icon="mdi-magnify"
+                  single-line
+                  variant="outlined"
+                  hide-details
+                ></v-text-field>
+              </template>
+              <v-data-table
+                :headers="activityHeaders"
+                :items="filteredActivityData"
+                item-value="_id"
+                items-per-page="-1"
+                class="scrollable-table"
+                hover
+                :search="activitySearch"
+              >
+                <template v-slot:body="{ items }">
+                  <template v-for="item in items" :key="item._id">
+                    <tr
+                      @click="selectActivity(item)"
+                      @mouseover="hoveredItem = item._id"
+                      @mouseleave="hoveredItem = null"
+                      class="pointer-cursor activity-row"
+                    >
+                      <td>
+                        <div class="activity-content">
+                          {{ item.activityName }}
+                          <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
+                        </div>
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+                <template v-slot:bottom>
+
+                </template>
+              </v-data-table>
+            </v-card>
+          </v-col>
         </v-row>
 
 
@@ -97,6 +168,7 @@
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { setTransitionHooks } from "vue";
 
 export default {
     name: 'instructorSpecificExperienceInstance',
@@ -109,16 +181,49 @@ export default {
             exitFormReleaseDate: null,
             canExpInstanceBeDeleted: false,
             showDeleteDialog: false,
-            activities: [],
+            activityData: [],
             originalExpInstanceName: "",
+            selectedActivities: [],
+            originalActivities: [],
+            activitySearch: "",
+            activityHeaders: [
+                {
+                title: "Activity Name",
+                value: "activityName",
+                key: "activityName",
+                align: "start",
+                sortable: true
+                }
+            ],
+            hoveredItem: null,
         }
     },
-    created() {
+    async created() {
+        await this.fetchActivityData();
         this.fetchExperienceInstance();
         this.checkIfExpInstanceCanBeDeleted();
     },
+
+    computed: {
+        filteredActivityData() {
+            // Check if selectedActivities is not empty
+            if (this.selectedActivities && this.selectedActivities.length > 0) {
+                // Return activities from activityData not present in selectedActivities
+                return this.activityData.filter(activity => 
+                    !this.selectedActivities.some(selectedActivity => 
+                        selectedActivity._id === activity._id
+                    )
+                );
+            } else {
+                // If no activities are selected, return all activities
+                return this.activityData;
+            }
+        }
+    },
+    
     methods: {
         async fetchExperienceInstance() {
+            console.log('activityData beginning of fetchExperienceInstance: ', this.activityData);
             const instanceID = this.$route.params.id; // Get instance ID from route parameter
             const user = useLoggedInUserStore();
             let token = user.token;
@@ -127,10 +232,16 @@ export default {
             try {
                 const response = await axios.get(apiURL, { headers: { token } });
                 const instanceData = response.data;
+                console.log('instanceData: ', instanceData);
                 this.selectedSessionID = instanceData.sessionID;
                 this.selectedExperienceID = instanceData.experience.id;
                 this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10); // Format date as 'YYYY-MM-DD'
-                this.activities = instanceData.activities;
+
+                this.selectedActivities = this.activityData.filter(activity =>
+                    instanceData.activities.some(instanceActivity => instanceActivity.id === activity._id)
+                );
+
+                console.log('selectedActivities: ', this.selectedActivities);
 
                 // Fetch session and experience details
                 this.fetchSessionDetails();
@@ -161,6 +272,22 @@ export default {
             try {
                 const experienceResponse = await axios.get(experienceAPIURL, { headers: { token } });
                 this.experienceData = experienceResponse.data;
+            } catch (error) {
+                this.handleError(error);
+            }
+        },
+
+        async fetchActivityData() {
+            const user = useLoggedInUserStore();
+            let token = user.token;
+            let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
+
+            try {
+                const response = await axios.get(apiURL, { headers: { token } });
+                const activities = response.data;
+                this.activityData = activities.filter(activity => activity.activityStatus === true);
+                this.originalActivityData = [...this.activityData];
+                console.log('activityData: ', this.activityData);
             } catch (error) {
                 this.handleError(error);
             }
@@ -245,6 +372,76 @@ export default {
                 this.handleError(error);
             }
         },
+
+        selectActivity(activity) {
+            this.selectedActivities.push(activity)
+        },
+
+        removeActivity(activity) {
+            this.selectedActivities = this.selectedActivities.filter(selectedActivity => selectedActivity._id !== activity._id);
+        },
     }
 }
 </script>
+
+<style>
+.pointer-cursor {
+    cursor: pointer;
+}
+
+.activity-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.mdi-close {
+  cursor: pointer;
+}
+
+.scrollable-table {
+    height: 300px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
+
+  /* Optional: Style to improve the appearance when scrolling */
+  .scrollable-table::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .scrollable-table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .scrollable-table::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  .scrollable-table::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .scrollable-list {
+    height: 370px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
+
+  /* Optional: Style to improve the appearance when scrolling */
+  .scrollable-list::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .scrollable-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .scrollable-list::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  .scrollable-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+</style>

@@ -136,9 +136,10 @@
                     hover
                     return-object
                     multi-sort
-                    v-model:expanded="expandedExperiences"
-                    show-expand
                 >
+                    <!-- Part of the above data table -->
+                    <!-- v-model:expanded="expandedExperiences"
+                    show-expand -->
                     <template v-slot:body="{ items }">
                         <template 
                             v-for="item in items"
@@ -153,7 +154,7 @@
                                 </td>
                                 <td>{{ item.experienceCategory }}</td>
                                 <td>{{ item.experienceName }}</td>
-                                <td @click.stop>
+                                <!-- <td @click.stop>
                                     <v-btn icon variant="text"
                                         @click="toggleRowExpansion(item)"
                                     >
@@ -161,9 +162,9 @@
                                             {{ expandedExperiences.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                                         </v-icon>
                                     </v-btn>
-                                </td>
+                                </td> -->
                             </tr>
-                            <tr v-if="expandedExperiences.includes(item)">
+                            <!-- <tr v-if="expandedExperiences.includes(item)">
                                 <td></td>
                                 <td :colspan="experienceHeaders.length">
                                     <div class="activity-label">
@@ -184,7 +185,7 @@
                                         None
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> -->
                         </template>
                     </template>
                 </v-data-table>
@@ -239,10 +240,10 @@ data() {
                 sortable: true,
                 key: "experienceName"
             },
-            {
-                title: "",
-                key: "data-table-expand"
-            },
+            // {
+            //     title: "",
+            //     key: "data-table-expand"
+            // },
         ],
         experienceSearch: "",
         searchCriteria: [],
