@@ -219,7 +219,7 @@ import { DateTime } from "luxon";
             this.$router.push({
               name: 'instructorDataManagement',
               params: {
-                activeTab: 1,
+                activeTab: 0,
                 toastType: 'success',
                 toastMessage: 'Session Deleted!',
                 toastPosition: 'top-right',
@@ -249,7 +249,7 @@ import { DateTime } from "luxon";
                     this.$router.push({ 
                         name: 'instructorDataManagement',
                         params: {
-                            activeTab: 1,
+                            activeTab: 0,
                             toastType: 'info',
                             toastMessage: 'Session updated!',
                             toastPosition: 'top-right',

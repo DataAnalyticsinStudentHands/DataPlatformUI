@@ -270,7 +270,7 @@ export default {
       this.$router.push({
         name: 'instructorDataManagement',
         params: {
-          activeTab: 3,
+          activeTab: 2,
           toastType: 'info',
           toastMessage: toastMessage,
           toastPosition: 'top-right',
@@ -306,7 +306,7 @@ export default {
         this.$router.push({
           name: 'instructorDataManagement',
           params: {
-            activeTab: 3,
+            activeTab: 2,
             toastType: 'success',
             toastMessage: 'Activity Deleted!',
             toastPosition: 'top-right',
@@ -322,7 +322,7 @@ export default {
       this.$router.push({
         name: "instructorDataManagement",
         params: {
-          activeTab: 3
+          activeTab: 2
         }
       });
     },

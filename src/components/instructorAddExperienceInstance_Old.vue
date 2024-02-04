@@ -1,5 +1,4 @@
 <template>
-<div>
 <v-container>
     <v-form
         ref="form"
@@ -50,128 +49,17 @@
             </v-col>
         </v-row>
 
-        <v-row>
-            <p class="font-weight-black text-h7">Activities</p>
-        </v-row>
-
-        <v-row>
-            <v-col v-if="selectedExperiences && selectedExperiences.length">
-                <v-card>
-                    <v-tabs
-                        v-model="activitiesTab"
-                    >
-                        <v-tab
-                            v-for="experience in selectedExperiences"
-                            :key="experience._id"
-                            :value="experience._id"
-                        >
-                            {{ experience.experienceName }}
-                        </v-tab>
-                    </v-tabs>
-
-                    <v-card-text>
-                        <v-window>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-card flat>
-                                        <v-card-title>
-                                            <v-row>
-                                                <v-col>Selected Activities</v-col>
-                                            </v-row>
-                                        </v-card-title>
-                                        <v-list class="scrollable-list">
-                                            <v-list-item
-                                                v-for="activity in selectedActivities"
-                                                :key="activity._id"
-                                            >
-                                                <v-row>
-                                                    <v-col cols="10">
-                                                        {{ activity.activityName }}
-                                                    </v-col>
-                                                    <v-col>
-                                                        <v-icon
-                                                            @click.stop="removeActivity(activity)"
-                                                        >
-                                                            mdi-close
-                                                        </v-icon>
-                                                    </v-col>
-                                                </v-row>
-                                            </v-list-item>
-                                        </v-list>
-                                    </v-card>
-                                </v-col>
-                                <v-col>
-                                    <v-card
-                                        flat
-                                        title="Add Activities"
-                                    >
-                                        <template v-slot:text>
-                                            <v-text-field
-                                                v-model="activitySearch"
-                                                label="Search"
-                                                prepend-inner-icon="mdi-magnify"
-                                                single-line
-                                                variant="outlined"
-                                                hide-details
-                                            ></v-text-field>
-                                        </template>
-                                        <v-data-table
-                                            :headers="activityHeaders"
-                                            :items="filteredActivityData"
-                                            item-value="_id"
-                                            items-per-page="-1"
-                                            class="scrollable-table"
-                                            hover
-                                            :search="activitySearch"
-                                        >
-                                            <template v-slot:body="{ items }">
-                                                <template v-for="item in items" :key="item._id">
-                                                    <tr
-                                                        @click="selectActivity(item)"
-                                                        @mouseover="hoveredItem = item._id"
-                                                        @mouseleave="hoveredItem = null"
-                                                        class="pointer-cursor activity-row"
-                                                    >
-                                                        <td>
-                                                            <div class="activity-content">
-                                                                {{ item.activityName }}
-                                                                <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </template>
-                                            </template>
-                                            <template v-slot:bottom></template>
-                                        </v-data-table>
-                                    </v-card>
-                                </v-col>
-                            </v-row>
-                        </v-window>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-            <v-col v-if="!selectedExperiences || !selectedExperiences.length">
-                <p class="font-italic">Please Select an Experience</p>
-            </v-col>
-        </v-row>
-
-        <v-row>
-            <p class="font-weight-black text-h7">Exit Form Release Date</p>
-        </v-row>
         <!-- Main Row for Experiences and Button -->
         <v-row>
             <!-- Column for the Button -->
-            <v-col cols="12" md="4" v-if="selectedExperiences && selectedExperiences.length">
+            <v-col cols="12" md="4">
                 <v-btn 
+                    v-if="selectedExperiences && selectedExperiences.length"
                     @click="openDatePicker" 
                     :disabled="isSetDateButtonDisabled"
                 >
                     Set Exit Form Release Date
                 </v-btn>
-            </v-col>
-
-            <v-col cols="12" md="4" v-else>
-                <p class="font-italic">Please Select an Experience</p>
             </v-col>
 
 
@@ -214,6 +102,28 @@
                 </div>
             </v-col>
         </v-row>
+
+
+
+
+
+<!-- 
+        <v-row>
+            <p class="font-weight-black text-h7">Exit Form Release Date</p>
+        </v-row>
+
+        <v-row>
+            <v-col cols="6">
+                <v-text-field
+                    label="Exit Form Release Date"
+                    type="date"
+                    v-model="exitFormReleaseDate"
+                    :rules="dateRules"
+                ></v-text-field>
+            </v-col>
+        </v-row> 
+-->
+
         <v-row>
             <v-col>
                 <v-btn @click="goBack" style="margin-right: 10px;">
@@ -239,38 +149,10 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<br><br><br><br>
-<br><br><br><br>
-selectedExperience:
-<br>
-{{ selectedExperience }}
-<br><br><br><br>
-selectedExperiences:
-<br>
-{{ selectedExperiences }}
-<br><br><br><br>
-activitiesTab:
-<br>
-{{ activitiesTab }}
-<br><br><br><br>
-selectedActivities:
-<br>
-{{ selectedActivities }}
-<br><br><br><br>
-activityData:
-<br>
-{{ activityData }}
-<br><br><br><br>
-experienceData:
-<br>
-{{ experienceData }}
-</div>
 </template>
 
 
-
-
-    
+  
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
@@ -284,86 +166,32 @@ export default {
             sessionData: [],
             selectedSession: null,
             experienceData: [],
-            originalExperienceData: [],
             selectedExperiences: null,
             registrationStartDate: null,
             registrationEndDate: null,
             exitFormReleaseDate: null,
             sessionRules: [v => !!v || 'Session is required'],
             experienceRules: [
-                v => {
-                    
-                    if (!this.formSubmitted) return true;
-                    !!v && v.length > 0 || 'Experience is required'
-                }
+                v => !!v && v.length > 0 || 'Experience is required',
             ],
             dateRules: [v => !!v || 'Date is required'],
             selectedExperiencesForExitFormReleaseDate: [],
             showDatePicker: false,
             selectedDate: new Date(),
             showExitFormError: false,
-            activitiesTab: null,
-            activityData: [],
-            originalActivityData: [],
-            activityHeaders: [
-                {
-                title: "Activity Name",
-                value: "activityName",
-                key: "activityName",
-                align: "start",
-                sortable: true
-                }
-            ],
-            activitySearch: "",
-            hoveredItem: null,
-            selectedExperience: null,
         }
     },
 
     created() {
-        this.fetchActivityData();
-        this.fetchActiveSessions().then(() => {
-            if (this.$route.params.id) {
-                const matchingSession = this.sessionData.find(session => session._id === this.$route.params.id);
-                if (matchingSession) {
-                    this.selectedSession = matchingSession;
-                }
-            }
-        });
+        this.fetchActiveSessions();
     },
 
     watch: {
         selectedSession(newVal, oldVal) {
             if (newVal && newVal._id) {
-                this.selectedExperiences = [];
                 this.fetchActiveExperiences(newVal._id);
             } else {
                 this.experienceData = [];
-            }
-        },
-
-        selectedExperiences(newVal) {
-            console.log('selectedExperiences watch newVal: ', newVal);
-            if (newVal && newVal.length > 0) {
-                console.log('selectedExperiences first if')
-                this.activitiesTab = newVal[0]._id;
-            } else if (newVal.length === 0) {
-                console.log('selectedExperiences watch newVal.length === 0')
-                this.selectedExperience = {};
-                this.activitiesTab = null;
-            }
-        },
-        
-        activitiesTab(newVal) {
-            console.log('activitiesTab newVal: ', newVal);
-            // Find the experience that matches the newVal (which is the _id of the experience)
-            let matchingExperience = this.selectedExperiences.find(experience => experience._id === newVal);
-            if (matchingExperience) {
-                console.log('matching experience');
-                this.selectedExperience = matchingExperience;
-                console.log('selectedExperience: ', matchingExperience);
-            } else {
-                console.log('no matching experience');
             }
         }
     },    
@@ -396,18 +224,6 @@ export default {
 
             return noExperiences || allHaveDates || noneSelected;
         },
-
-        selectedActivities() {
-            return this.activityData.filter(activity => this.selectedExperience?.activities?.includes(activity._id));
-        },
-
-        filteredActivityData() {
-            // Get IDs of selected activities
-            const selectedActivityIDs = this.selectedActivities.map(activity => activity._id);
-
-            // Filter activityData to exclude activities that are in selectedActivities
-            return this.activityData.filter(activity => !selectedActivityIDs.includes(activity._id));
-        }
     },
 
     methods: {
@@ -415,9 +231,7 @@ export default {
             useLoggedInUserStore().startLoading();
             try {
                 const user = useLoggedInUserStore();
-                // let token = user.token;
-
-                let token = import.meta.env.VITE_TOKEN;
+                let token = user.token;
                 
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/active`;
                 const resp = await axios.get(apiURL, { headers: { token } });
@@ -427,41 +241,44 @@ export default {
             }
         },
 
-        fetchActivityData() {
-            const user = useLoggedInUserStore();
-            // let token = user.token;
-
-            let token = import.meta.env.VITE_TOKEN;
-
-            let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
-            axios
-                .get(apiURL, { headers: { token } })
-                .then((resp) => {
-                const activities = resp.data;
-                this.activityData = activities.filter((activity) => activity.activityStatus === true);
-                this.originalActivityData = [...this.activityData];
-                })
-                .catch((error) => {
-                    this.handleError(error);
-                });
-        },
-
         async fetchActiveExperiences(sessionID) {
             useLoggedInUserStore().startLoading();
             try {
                 const user = useLoggedInUserStore();
-                // let token = user.token;
-
-                let token = import.meta.env.VITE_TOKEN;
+                let token = user.token;
 
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/available-experiences-for-instance?sessionID=${sessionID}`;
                 const resp = await axios.get(apiURL, { headers: { token } });
                 this.experienceData = resp.data;
-                this.originalExperienceData = [...this.experienceData];
             } catch (error) {
                 this.handleError(error);
             } finally {
                 useLoggedInUserStore().stopLoading();
+            }
+        },
+
+        getSelectedExperience() {
+            const selectedExperience = this.experienceData.find(
+                experience => experience._id === this.selectedExperienceID
+            );
+            return {
+                id: selectedExperience?._id,
+                category: selectedExperience?.experienceCategory,
+                name: selectedExperience?.experienceName
+            };
+        },
+
+        async fetchActivitiesForExperience(experienceID) {
+            const user = useLoggedInUserStore();
+            let token = user.token;
+            let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/experience/` + experienceID;
+            try {
+                const response = await axios.get(apiURL, { headers: { token } });
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching activities:', error);
+                this.handleError(error);
+                return [];
             }
         },
 
@@ -536,10 +353,7 @@ export default {
             // API call
             try {
                 const user = useLoggedInUserStore();
-                // const token = user.token;
-
-                let token = import.meta.env.VITE_TOKEN;
-
+                const token = user.token;
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances/multiple`;
                 const response = await axios.post(apiURL, {
                     sessionID: this.selectedSession._id,
@@ -568,32 +382,6 @@ export default {
             }
         },
 
-        selectActivity(activity) {
-            this.selectedExperience.activities.push(activity._id)
-        },
-
-        removeActivity(activity) {
-            console.log('removeActivity called');
-            // Find the index of the activity's _id in the selectedExperience.activities array
-            const index = this.selectedExperience.activities.indexOf(activity._id);
-            console.log('index: ', index);
-            console.log('activity._id: ', activity._id);
-
-            // If the activity's _id is found in the array, remove it
-            if (index !== -1) {
-                this.selectedExperience.activities.splice(index, 1);
-            }
-        },
-
-
-
-
-
-
-
-
-        
-
 
         goBack() {
             this.$router.push({
@@ -612,65 +400,4 @@ export default {
 .error-text {
     color: red;
 }
-
-.pointer-cursor {
-    cursor: pointer;
-}
-
-.activity-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.mdi-close {
-  cursor: pointer;
-}
-
-.scrollable-table {
-    height: 300px; /* Adjust the height as needed */
-    overflow-y: auto;
-  }
-
-  /* Optional: Style to improve the appearance when scrolling */
-  .scrollable-table::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  .scrollable-table::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-
-  .scrollable-table::-webkit-scrollbar-thumb {
-    background: #888;
-  }
-
-  .scrollable-table::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-
-  .scrollable-list {
-    height: 370px; /* Adjust the height as needed */
-    overflow-y: auto;
-  }
-
-  /* Optional: Style to improve the appearance when scrolling */
-  .scrollable-list::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  .scrollable-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-
-  .scrollable-list::-webkit-scrollbar-thumb {
-    background: #888;
-  }
-
-  .scrollable-list::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-
-
 </style>

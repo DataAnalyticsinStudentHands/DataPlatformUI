@@ -331,7 +331,7 @@ export default {
         this.$router.push({
           name: 'instructorDataManagement',
           params: {
-            activeTab: 2,
+            activeTab: 1,
             toastType: 'success',
             toastMessage: 'Experience Deleted!',
             toastPosition: 'top-right',
@@ -388,7 +388,7 @@ export default {
           this.$router.push({ 
             name: 'instructorDataManagement',
             params: {
-              activeTab: 2,
+              activeTab: 1,
               toastType: 'info',
               toastMessage: toastMessage,
               toastPosition: 'top-right',
