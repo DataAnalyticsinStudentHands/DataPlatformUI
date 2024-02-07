@@ -11,6 +11,12 @@ const routes = [
     },
     {
       path: '/test',
+      name: 'testExitFormMain',
+      props: true,
+      component: () => import('../components/testExitForm/exitFormMain.vue')
+    },
+    {
+      path: '/test1',
       name: 'testExitForm',
       props: true,
       component: () => import('../components/testExitForm.vue')

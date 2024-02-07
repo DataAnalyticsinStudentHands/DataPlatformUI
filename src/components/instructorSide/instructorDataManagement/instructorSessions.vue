@@ -857,8 +857,7 @@
         async fetchSessionData() {
             try {
                 const user = useLoggedInUserStore();
-                // let token = user.token;
-                let token = import.meta.env.VITE_TOKEN;
+                let token = user.token;
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/`;
                 const resp = await axios.get(apiURL, { headers: { token } });
                 this.sessionData = resp.data;
@@ -876,8 +875,7 @@
         async fetchInstances() {
             useLoggedInUserStore().startLoading();
             const user = useLoggedInUserStore();
-            // const token = user.token;
-            const token = import.meta.env.VITE_TOKEN;
+            const token = user.token;
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experience-instances";
             try {
                 const response = await axios.get(apiURL, { headers: { token } });
@@ -1360,9 +1358,7 @@
         async handleArchiveSessions() {
             try {
                 const user = useLoggedInUserStore();
-                // const token = user.token;
-    
-                let token = import.meta.env.VITE_TOKEN;
+                const token = user.token;
     
                 const updateStatus = { sessionStatus: this.viewArchivedSessions };
     
@@ -1396,7 +1392,16 @@
                 this.handleError(error);
             } finally {
                 this.selectedSessions = [];
-                await this.fetchSessionData();
+                await this.fetchInstances();
+                await this.fetchSessionData()
+                    .then(() => {
+                        useLoggedInUserStore().stopLoading();
+                        this.performFilter();
+                    })
+                    .catch((error) => {
+                        this.handleError(error);
+                        useLoggedInUserStore().stopLoading();
+                    });
             }
         },
     
@@ -1466,7 +1471,7 @@
     
         handleAddExperience(sessionID) {
             console.log('item: ', sessionID);
-            this.$router.push({ name: "testAddInstance", params: { id: sessionID } });
+            this.$router.push({ name: "instructorAddExperienceInstance", params: { id: sessionID } });
         },
     
     

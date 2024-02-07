@@ -83,7 +83,7 @@ export default {
           this.$router.push({
             name: 'instructorDataManagement',
             params: {
-              activeTab: 1,
+              activeTab: 0,
               toastType: 'success',
               toastMessage: 'Session added!',
               toastPosition: 'top-right',

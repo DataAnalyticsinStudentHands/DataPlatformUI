@@ -321,6 +321,7 @@
         },
     
         created() {
+            console.log('instructorAddExperienceInstance created');
             this.fetchActivityData();
             this.fetchActiveSessions().then(() => {
                 if (this.$route.params.id) {
@@ -415,9 +416,7 @@
                 useLoggedInUserStore().startLoading();
                 try {
                     const user = useLoggedInUserStore();
-                    // let token = user.token;
-    
-                    let token = import.meta.env.VITE_TOKEN;
+                    let token = user.token;
                     
                     let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/active`;
                     const resp = await axios.get(apiURL, { headers: { token } });
@@ -429,9 +428,7 @@
     
             fetchActivityData() {
                 const user = useLoggedInUserStore();
-                // let token = user.token;
-    
-                let token = import.meta.env.VITE_TOKEN;
+                let token = user.token;
     
                 let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
                 axios
@@ -450,9 +447,7 @@
                 useLoggedInUserStore().startLoading();
                 try {
                     const user = useLoggedInUserStore();
-                    // let token = user.token;
-    
-                    let token = import.meta.env.VITE_TOKEN;
+                    let token = user.token;
     
                     let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/available-experiences-for-instance?sessionID=${sessionID}`;
                     const resp = await axios.get(apiURL, { headers: { token } });
@@ -536,9 +531,7 @@
                 // API call
                 try {
                     const user = useLoggedInUserStore();
-                    // const token = user.token;
-    
-                    let token = import.meta.env.VITE_TOKEN;
+                    const token = user.token;
     
                     let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances/multiple`;
                     const response = await axios.post(apiURL, {
