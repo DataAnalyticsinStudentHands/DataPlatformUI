@@ -264,6 +264,10 @@
     experienceData:
     <br>
     {{ experienceData }}
+    <br><br><br><br>
+    selectedSession:
+    <br>
+    {{ selectedSession }}
     </div>
     </template>
     
