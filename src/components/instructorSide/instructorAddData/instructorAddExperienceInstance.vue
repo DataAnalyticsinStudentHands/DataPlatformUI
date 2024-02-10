@@ -239,7 +239,7 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <br><br><br><br>
+    <!-- <br><br><br><br>
     <br><br><br><br>
     selectedExperience:
     <br>
@@ -267,7 +267,7 @@
     <br><br><br><br>
     selectedSession:
     <br>
-    {{ selectedSession }}
+    {{ selectedSession }} -->
     </div>
     </template>
     

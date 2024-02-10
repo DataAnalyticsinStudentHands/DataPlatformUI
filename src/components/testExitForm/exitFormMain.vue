@@ -338,10 +338,10 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<br><br><br><br>
+<!-- <br><br><br><br>
 exitForm:
 <br>
-{{ exitForm }}
+{{ exitForm }} -->
 </template>
 
 <script>
@@ -728,11 +728,17 @@ methods: {
                 this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
                 this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
                 // Update goals
-                this.exitForm.goal1 = goalFormData.goals?.goalOne;
-                this.exitForm.goal2 = goalFormData.goals?.goalTwo;
-                this.exitForm.goal3 = goalFormData.goals?.goalThree;
-                this.exitForm.goal4 = goalFormData.goals?.goalFour;
-                this.exitForm.goal5 = goalFormData.goals?.goalFive;
+                // this.exitForm.goal1 = goalFormData.goals?.goalOne;
+                // this.exitForm.goal2 = goalFormData.goals?.goalTwo;
+                // this.exitForm.goal3 = goalFormData.goals?.goalThree;
+                // this.exitForm.goal4 = goalFormData.goals?.goalFour;
+                // this.exitForm.goal5 = goalFormData.goals?.goalFive;
+                // DELETE ME
+                this.exitForm.goal1 = "I want to obtain comprehensive knowledge of community health, including social determinants of health, health disparities, and the importance of cultural competency."
+                this.exitForm.goal2 = "I want to develop practical skills essential for the role of a CHW, such as learning how to effectively communicate with diverse populations and navigating healthcare systems.";
+                this.exitForm.goal3 = "I want to enhance my employment opportunities in the public/community health field and learn about specific roles in the career.";
+                this.exitForm.goal4 = "I want to build a network in public health by connecting with peers, instructors, and community leaders to obtain valuable insights and opportunities for mentorship and collaboration.";
+                this.exitForm.goal5 = "I want to contribute to community empowerment and health equity to fulfill my passion for making a difference in my community and helping others.";
               }
           })
           .catch((error) => {
@@ -742,16 +748,45 @@ methods: {
 
       async fetchExperienceActivities() {
             // const experienceID = this.$route.params.id;
+            const token = import.meta.env.VITE_TOKEN;
             const experienceID = "1c2ac6b0-6911-11ee-acdd-43267c0573ee"
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/experience/${experienceID}/activities`;
 
-            axios.get(apiURL)
+            axios.get(apiURL, { headers: { token } })
             .then((resp) => {
                 // Update experience activities
-                this.exitForm.experienceActivities = resp.data.map((activity) => ({
-                activityID: activity._id,
-                activityName: activity.activityName
-                }));
+                // DELETE ME
+                this.exitForm.experienceActivities = 
+                [
+                    {
+                        "activityID": "061701356800973",
+                        "activityName": "Motivational Interviewing Role Play"
+                    },
+                    {
+                        "activityID": "501701357349009",
+                        "activityName": "Reading/Topic - Mapping/Needs Assessment/Grants"
+                    },
+                    {
+                        "activityID": "511701356844338",
+                        "activityName": "Reading/Topic - Maternal Health/Purple Crying"
+                    },
+                    {
+                        "activityID": "561701357366365",
+                        "activityName": "Reading/Topic - Cultural competency/cultural humility/implicit bias"
+                    },
+                    {
+                        "activityID": "681701357396485",
+                        "activityName": "Reading/Topic - Physical activity/mental health"
+                    },
+                    {
+                        "activityID": "861701356689564",
+                        "activityName": "Community Health Project"
+                    },
+                ]
+                // this.exitForm.experienceActivities = resp.data.map((activity) => ({
+                //     activityID: activity._id,
+                //     activityName: activity.activityName
+                // }));
             })
             .catch((error) => {
                 this.handleError(error);
