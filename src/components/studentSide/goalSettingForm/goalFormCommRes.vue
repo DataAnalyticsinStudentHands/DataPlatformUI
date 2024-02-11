@@ -161,7 +161,13 @@
     @submit.prevent="handleValidations"
 >
 <v-container>
-
+  <v-row>
+      <v-col>
+          <p 
+              class="font-weight-black text-h6"
+          >{{$t('Background')}}</p>
+      </v-col>
+  </v-row>
     <v-col cols="12" md="10">
   <p 
     :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"

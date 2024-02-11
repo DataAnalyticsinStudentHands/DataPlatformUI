@@ -4,6 +4,13 @@
     @submit.prevent="handleValidations"
 >
 <v-container>
+    <v-row>
+        <v-col>
+            <p 
+                class="font-weight-black text-h6"
+            >{{$t('Goals')}}</p>
+        </v-col>
+    </v-row>
     <!-- Goals -->
     <v-col cols="12" md="10">
         <p 
@@ -12,12 +19,19 @@
             <span
             >{{$t('Please outline 3-5 goals that you have for this experience.')}}</span> 
             <br><br>
-            {{$t('Goals are statements that describe what it means for an experience to be a success from your perspective,')}}<br>
-            {{$t('Examples:')}}<br>
+            {{$t('Goals are statements that describe what it means for an experience to be a success from your perspective,')}}<br><br>
+            {{$t('Examples:')}}<br><br>
             <ul>
-            <li>{{$t('“I want to connect with people working on cancer research”')}}</li>
-            <li>{{$t('“I want to research access to nutrition education in public schools”')}}</li>
-            <li>{{$t('“I want to develop my presentation skills”')}}</li>
+            <span class="text-subtitle-2 font-weight-black text-h8">
+                <li>{{$t('“In this class this semester, I want to develop my research and analytical skills by working on a research project that investigates access to nutrition education in public schools in the greater Houston area.”')}}</li>
+                <li><br></li>
+                <li>{{$t('“I want to analyze a large dataset and learn how to create visuals that effectively communicate my findings. This would allow me to build my technical skills which would help me at many stages of my career.”')}}</li>
+                <li><br></li>
+                <li>{{$t('“I would like to improve my presentation skills and how I communicate with instructors and my peers so that I feel less anxious in front of other people and become more concise in getting my point across.”')}}</li>
+                <li><br></li>
+                <li>{{$t('“I want to practice asking my peers and instructors for help when I feel stuck with my project, rather than trying to figure it out by myself.”')}}</li>
+                <li><br></li>
+            </span>
             </ul>
         </p>
 
@@ -26,7 +40,7 @@
             v-model="goalForm.goals.goalOne"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"    
+            rows="3"    
         ></v-textarea>
 
         <v-textarea
@@ -34,7 +48,7 @@
             v-model="goalForm.goals.goalTwo"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -42,7 +56,7 @@
             v-model="goalForm.goals.goalThree"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -50,7 +64,7 @@
             v-model="goalForm.goals.goalFour"
             :error="isGoalsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -58,7 +72,7 @@
             v-model="goalForm.goals.goalFive"
             :error-messages="goalsErrorMessages"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
         
     </v-col>
