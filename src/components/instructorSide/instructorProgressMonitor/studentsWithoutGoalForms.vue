@@ -10,7 +10,11 @@
                 </v-card-title>
                 
                 <v-card-subtitle class="text-h6">
-                Select an Experience
+                  <v-row>
+                    <v-col>
+                      Select an Experience
+                    </v-col>
+                  </v-row>
                 </v-card-subtitle>
         
                 <v-container>
@@ -23,10 +27,32 @@
                         item-title="text"
                         item-value="value"
                         clearable
-                        @update:modelValue="updateExperienceID"
                         active
                     ></v-autocomplete>
                     </v-col>
+                </v-row>
+
+                <v-row class="mt-0 mb-2">
+                  <v-col>
+                      <v-btn 
+                        class="mr-3"
+                        @click="completed = true"
+                        :active="completed"
+                      >Completed</v-btn>
+                      <v-btn
+                        @click="completed = false"
+                        :active="completed === false"
+                      >Uncompleted</v-btn>
+                  </v-col>
+                </v-row>
+
+                <v-row>
+                  <v-col>
+                    <v-btn
+                      @click="fetchStudents"
+                      :disabled="completed === null || !selectedExperience"
+                    >Fetch Students</v-btn>
+                  </v-col>
                 </v-row>
 
                 <v-row v-if="selectedExperience">
@@ -63,7 +89,7 @@
         
                 <!-- Table -->
                 <div style="display: flex; justify-content: center;">
-                <v-table style="width: 95%;">
+                <v-table v-if="paginatedStudentsWithoutGoalForm.length" style="width: 95%;">
                     <thead>
                     <tr>
                         <th class="text-left">Name</th>
@@ -86,12 +112,36 @@
                     </tr>
                     </tbody>
                 </v-table>
+                <v-table v-if="paginatedStudentsWithGoalForm.length" style="width: 95%;">
+                    <thead>
+                    <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Email</th>
+                        <th class="text-left">Registration Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        v-for="student in paginatedStudentsWithGoalForm"
+                        :key="student._id"
+                        :class="{ 'hoverRow': hoverId === student._id }"
+                        @mouseenter="hoverId = student._id"
+                        @mouseleave="hoverId = null"
+                        @click="navigateToProfile(student._id)"
+                    >
+                        <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
+                        <td class="text-left">{{ student.email }}</td>
+                        <td class="text-left">{{ formatDate(student.registrationDate) }}</td>
+                    </tr>
+                    </tbody>
+                </v-table>
                 </div>
         
             </v-card>
             </v-col>
         </v-row>
     </v-container>
+    {{ this.selectedExperience }}
   </template>
   
   <script>
@@ -111,6 +161,8 @@
         csvFileName: 'no_goal_form.csv',
         currentPage: 1,
         itemsPerPage: 10,
+        completed: null,
+        studentsWithGoalForm: [],
       };
     },
     components: {
@@ -143,6 +195,11 @@
         const end = this.currentPage * this.itemsPerPage;
         return this.studentsWithoutGoalForm.slice(start, end);
       },
+      paginatedStudentsWithGoalForm() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.studentsWithGoalForm.slice(start, end);
+      },
       totalPaginationLength() {
         return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
       },
@@ -151,17 +208,6 @@
       },
     },
     methods: {
-      updateExperienceID(selected) {
-        // If the selected value is empty, set selectedExperience to null and exit the method
-        if (!selected) {
-          this.selectedExperience = null;
-          return;
-        }
-  
-        // If a value is selected, set selectedExperience to the value of the selected experience
-        this.selectedExperience = selected;
-        this.fetchStudentsWithoutGoalForm(selected);
-      },
       async fetchExperiences() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -180,14 +226,39 @@
           this.handleError(error);
         }
       },
-      async fetchStudentsWithoutGoalForm(expInstanceID) {
+      async fetchStudents() {
+        console.log('fetchStudents called');
+        this.studentsWithGoalForm = [];
+        this.studentsWithoutGoalForm = [];
+        if (this.completed === true) {
+          console.log('this.completed is true')
+          await this.fetchStudentsWithGoalForm();
+        } else if (this.completed === false) {
+          console.log('this.completed is false')
+          await this.fetchStudentsWithoutGoalForm();
+        }
+      },
+      async fetchStudentsWithoutGoalForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${expInstanceID}`;
+        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${this.selectedExperience}`;
         
         try {
           const response = await axios.get(url, { headers: { token } });
           this.studentsWithoutGoalForm = response.data;
+        } catch (error) {
+          this.handleError(error);
+        }
+      },
+      async fetchStudentsWithGoalForm() {
+        console.log('fetchStudentsWithGoalForm called');
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-goal-form/${this.selectedExperience}`;
+        
+        try {
+          const response = await axios.get(url, { headers: { token } });
+          this.studentsWithGoalForm = response.data;
         } catch (error) {
           this.handleError(error);
         }
