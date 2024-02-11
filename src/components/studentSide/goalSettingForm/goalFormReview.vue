@@ -613,6 +613,12 @@ export default {
     margin-bottom: 10px;
 }
 
+.review-section-content, .form-label {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
 .form-label {
   font-weight: 500;
   margin-bottom: 5px;
