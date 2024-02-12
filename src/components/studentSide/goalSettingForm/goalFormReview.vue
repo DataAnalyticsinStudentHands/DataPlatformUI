@@ -2,7 +2,14 @@
 <v-form disabled>
 <v-container>
 <!-- Section: Selected Experience -->
-
+<v-row>
+    <v-col>
+        <p 
+            class="font-weight-black text-h6"
+        >{{$t('Review')}}</p>
+    </v-col>
+</v-row>
+<v-row><v-col></v-col></v-row>
 <div class="review-section">
 <v-row>
     <v-col cols="10" class="pb-0">
@@ -604,6 +611,12 @@ export default {
 .review-section-content {
     font-size: 1rem;
     margin-bottom: 10px;
+}
+
+.review-section-content, .form-label {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .form-label {

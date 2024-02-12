@@ -4,6 +4,13 @@
     @submit.prevent="handleValidations"
 >
     <v-container style="width: 100%; margin: 0 auto;">
+        <v-row>
+            <v-col>
+                <p 
+                    class="font-weight-black text-h6"
+                >{{$t('Experience')}}</p>
+            </v-col>
+        </v-row>
         <v-row></v-row>
         <v-col cols="12"></v-col>
         <v-row dense>
@@ -354,5 +361,20 @@ methods: {
 .error-text {
     color: rgb(176, 0, 32);
 }
+
+
+.section-title {
+    font-size: 1.25rem; /* Adjusted for larger section titles */
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+
+.review-section-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 
 </style>

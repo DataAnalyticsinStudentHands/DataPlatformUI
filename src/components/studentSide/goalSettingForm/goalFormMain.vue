@@ -46,13 +46,13 @@
             <v-stepper
                 :alt-labels="showAltLabels"
                 v-model="currentStep"
-                :mobile="$vuetify.display.sm"
+                :mobile="$vuetify.display.xs"
                 :flat="$vuetify.display.xs"
             >
                 <v-stepper-header>
                     <v-stepper-item
                         ref="step0"
-                        title="Experience"
+                        :title="$t('Experience')"
                         icon="mdi-hand-heart"
                         edit-icon="mdi-hand-heart"
                         value="0"
@@ -64,7 +64,7 @@
 
                     <v-stepper-item
                         ref="step1"
-                        title="Background"
+                        :title="$t('Background')"
                         icon="mdi-earth"
                         edit-icon="mdi-earth"
                         value="1"
@@ -76,7 +76,7 @@
 
                     <v-stepper-item
                         ref="step2"
-                        title="Growth"
+                        :title="$t('Growth')"
                         icon="mdi-sprout"
                         edit-icon="mdi-sprout"
                         value="2"
@@ -88,7 +88,7 @@
 
                     <v-stepper-item
                         ref="step3"
-                        title="Aspirations"
+                        :title="$t('Aspirations')"
                         icon="mdi-image-filter-hdr"
                         edit-icon="mdi-image-filter-hdr"
                         value="3"
@@ -100,7 +100,7 @@
 
                     <v-stepper-item
                         ref="step4"
-                        title="Goals"
+                        :title="$t('Goals')"
                         icon="mdi-flag-variant"
                         edit-icon="mdi-flag-variant"
                         value="4"
@@ -112,7 +112,7 @@
 
                     <v-stepper-item
                         ref="step5"
-                        title="Review"
+                        :title="$t('Review')"
                         icon="mdi-check-bold"
                         edit-icon="mdi-check-bold"
                         value="5"
@@ -216,7 +216,7 @@
                     </div>
                     <div v-show="currentStep === 1" key="step1">
                         <goal-form-comm-res
-                            ref="GoalFromCommRes"
+                            ref="GoalFormCommResRef"
                             :goalForm="goalForm"
                             :hasCompletedGoalForm="hasCompletedGoalForm"
                             :is-background-edit-active="isBackgroundEditActive"
@@ -293,13 +293,28 @@
                             {{$t('Submit Form')}}
                         </v-btn>
                         <!-- Edit and Looks Good! buttons for step 1 when form exists -->
-                        <template v-if="currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive">
+                        <template v-if="currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive && $vuetify.display.smAndUp">
                             <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Edit</v-btn>
                             <v-btn type="submit" @click="triggerValidation">Looks Good!</v-btn>
                         </template>
+                        <!-- Edit and Looks Good! buttons for step 1 when form exists, but for mobile -->
+                        <template v-if="currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive && $vuetify.display.xs">
+                            <!-- <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Editxs</v-btn>
+                            <v-btn type="submit" @click="triggerValidation">Looks Good!xs</v-btn> -->
+                            <v-row>
+                                <v-col>
+                                    <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Edit</v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col>
+                                    <v-btn type="submit" @click="triggerValidation">Looks Good!</v-btn> 
+                                </v-col>
+                            </v-row>
+                        </template>
                         <!-- Next button for other steps -->
                         <v-btn 
-                            v-else-if="currentStep !== 5" 
+                            v-else-if="currentStep !== 5 && !(currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive)" 
                             type="submit" 
                             @click="triggerValidation" 
                             class="btn"
@@ -641,6 +656,8 @@ methods: {
     },
 
     triggerValidation() {
+        console.log('trigger validation called');
+        console.log('this.currentStep: ', this.currentStep);
         if (this.currentStep === 0) {
             this.triggerExpValidation();
         } else if (this.currentStep === 1) {
@@ -661,7 +678,9 @@ methods: {
     },
 
     triggerCommResValidation() {
+        console.log('triggerCommResValidation')
         if (this.$refs.GoalFormCommResRef) {
+            console.log('this.$refs.GoalFormCommResRef')
             this.$refs.GoalFormCommResRef.handleValidations();
         }
     },
