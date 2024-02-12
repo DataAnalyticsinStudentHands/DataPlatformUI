@@ -52,7 +52,7 @@
                 <v-stepper-header>
                     <v-stepper-item
                         ref="step0"
-                        title="Experience"
+                        :title="$t('Experience')"
                         icon="mdi-hand-heart"
                         edit-icon="mdi-hand-heart"
                         value="0"
@@ -64,7 +64,7 @@
 
                     <v-stepper-item
                         ref="step1"
-                        title="Background"
+                        :title="$t('Background')"
                         icon="mdi-earth"
                         edit-icon="mdi-earth"
                         value="1"
@@ -76,7 +76,7 @@
 
                     <v-stepper-item
                         ref="step2"
-                        title="Growth"
+                        :title="$t('Growth')"
                         icon="mdi-sprout"
                         edit-icon="mdi-sprout"
                         value="2"
@@ -88,7 +88,7 @@
 
                     <v-stepper-item
                         ref="step3"
-                        title="Aspirations"
+                        :title="$t('Aspirations')"
                         icon="mdi-image-filter-hdr"
                         edit-icon="mdi-image-filter-hdr"
                         value="3"
@@ -100,7 +100,7 @@
 
                     <v-stepper-item
                         ref="step4"
-                        title="Goals"
+                        :title="$t('Goals')"
                         icon="mdi-flag-variant"
                         edit-icon="mdi-flag-variant"
                         value="4"
@@ -112,7 +112,7 @@
 
                     <v-stepper-item
                         ref="step5"
-                        title="Review"
+                        :title="$t('Review')"
                         icon="mdi-check-bold"
                         edit-icon="mdi-check-bold"
                         value="5"

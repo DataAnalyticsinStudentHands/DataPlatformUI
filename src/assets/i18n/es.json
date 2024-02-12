@@ -234,6 +234,7 @@
     "The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course.": "El proceso de establecimiento de objetivos nos ayuda a seguir adaptando clases y programas según las necesidades de nuestros estudiantes. Utilizamos sus comentarios para mejorar las clases y programas futuros. Establecer objetivos también te permite ser más intencional a medida que avanzas en la experiencia y te brinda la oportunidad de reflexionar al final del curso.",
     "Exit Form": "Encuesta Final",
     "Experience:": "Experiencia:",
+    "Experience": "Experiencia",
     "At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know about your progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.": "Al comienzo del semestre, le pedimos que compartiera dos o tres aspiraciones. Ahora nos gustaría saber sobre su progreso hacia estas aspiraciones. A continuación se muestra una lista de sus aspiraciones desde el comienzo del semestre.",
     "For each aspiration listed, please pick the option that best describes the progress you made.": "Para cada aspiración enumerada anteriormente, elija la opción que mejor describa el progreso que realizó.",
     "For each goal listed below, please pick the option that best describes the progress you made.": "Para cada objetivo enumerado a continuación, elija la opción que mejor describa el progreso que realizó.",
@@ -301,5 +302,13 @@
     "Demographics": "Demográfica",
     "Degree Program": "Programa de Estudios",
     "Graduate/Professional": "Graduado/Profesional",
-    "Review": "Revisar"
+    "Review": "Revisar",
+    "Background": "Antecedentes",
+    "Aspirations": "Aspiraciones",
+    "Goals": "Metas",
+    "“In this class this semester, I want to develop my research and analytical skills by working on a research project that investigates access to nutrition education in public schools in the greater Houston area.”": "“En esta clase este semestre, quiero desarrollar mis habilidades de investigación y análisis trabajando en un proyecto de investigación que investigue el acceso a la educación nutricional en las escuelas públicas del área metropolitana de Houston.”",
+    "“I want to analyze a large dataset and learn how to create visuals that effectively communicate my findings. This would allow me to build my technical skills which would help me at many stages of my career.”": "“Quiero analizar un gran conjunto de datos y aprender cómo crear visuales que comuniquen eficazmente mis hallazgos. Esto me permitiría construir mis habilidades técnicas, lo cual me ayudaría en muchas etapas de mi carrera.”",
+    "“I would like to improve my presentation skills and how I communicate with instructors and my peers so that I feel less anxious in front of other people and become more concise in getting my point across.”": "“Me gustaría mejorar mis habilidades de presentación y la forma en que me comunico con los instructores y mis compañeros para sentirme menos ansioso frente a otras personas y ser más conciso al transmitir mi mensaje.”",
+    "“I want to practice asking my peers and instructors for help when I feel stuck with my project, rather than trying to figure it out by myself.”": "“Quiero practicar el pedir ayuda a mis compañeros e instructores cuando me sienta atascado con mi proyecto, en lugar de intentar resolverlo por mí mismo.”",
+    "Growth Goals": "Metas de Crecimiento"
 }
