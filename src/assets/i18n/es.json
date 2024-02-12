@@ -59,6 +59,7 @@
     "Please check your email and follow the steps to verify your account.": "Por favor revisa tu correo electrónico y sigue los pasos para verificar tu cuenta.",
     "Invalid email or password.": "Correo electrónico o contraseña inválidos.",
     "Student Entry Form": "Formulario de Inscripción para Estudiantes",
+    "Your Student Entry Form": "Tu Formulario de Inscripción para Estudiantes",
     "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.": "Complete los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente más tarde.",
     "Demographics Information": "Información Demográfica",
     "Where are you from? (Ie, place(s) you call home)": "¿De dónde eres? (lugar(es) al que usted llama hogar)",
@@ -101,6 +102,7 @@
     "Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.": "Por favor describa brevemente cualquier oportunidad de servicio comunitario en la que participó. Incluya la organización y el alcance del servicio.",
     "Are you a member of any community organizations outside the University? Please list.": "¿Es usted miembro de alguna organización comunitaria fuera de la Universidad? Por favor enumere.",
     "Non-UH Students Only": "Solo Estudiantes No de UH",
+    "Non-UH Student's Information": "Información del Estudiante No de UH",
     "Graduate/Professional School Goals": "Objetivos de Posgrado/Escuela Profesional",
     "Do you currently plan to pursue graduate or professional (e.g. medical, law) school?": "¿Actualmente planea seguir una carrera de posgrado o profesional (por ejemplo, medicina, derecho)?",
     "If you are planning to pursue graduate school, what type of program?": "Si planea seguir una escuela de posgrado, ¿qué tipo de programa?",
@@ -295,5 +297,9 @@
     "Engage/Support": "Comprometerse/Apoyar",
     "Lessons/Takeaways": "Lecciones/Aprendizajes",
     "Contribution Description": "Descripción de la Contribución",
-    "Descriptions/Strategies": "Descripciones/Estrategias"
+    "Descriptions/Strategies": "Descripciones/Estrategias",
+    "Demographics": "Demográfica",
+    "Degree Program": "Programa de Estudios",
+    "Graduate/Professional": "Graduado/Profesional",
+    "Review": "Revisar"
 }
