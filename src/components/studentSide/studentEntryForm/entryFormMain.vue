@@ -373,11 +373,11 @@ export default {
 
         // Translations
         if (loggedInUserStore.languagePreference === "Spanish") {
-        // Set to Spanish
-        this.$i18n.locale = 'es';
+            // Set to Spanish
+            this.$i18n.locale = 'es';
         } else {
-        // Default to English
-        this.$i18n.locale = 'en';
+            // Default to English
+            this.$i18n.locale = 'en';
         }
     },
     computed: {

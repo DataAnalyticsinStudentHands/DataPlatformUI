@@ -51,7 +51,7 @@
                 label="PeopleSoft ID"
                 :rules="peopleSoftIDRules"></v-text-field>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="5">
                 <v-text-field 
                 type="date" 
                 v-model="studentInformation.enrolledUHInfo.expectedGraduationYear" 

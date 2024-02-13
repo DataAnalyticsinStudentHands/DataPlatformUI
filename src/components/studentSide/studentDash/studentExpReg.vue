@@ -10,7 +10,7 @@
           <v-list>
             <v-list-item>
                 <v-list-item-title class="flex-grow-1 text-center">
-                  <span class="font-weight-black text-base">My Experiences</span>
+                  <span class="font-weight-black text-base">{{$t('My Experiences')}}</span>
                   <v-dialog width="500">
                     <template v-slot:activator="{ props }">
                       <v-btn
@@ -25,16 +25,16 @@
                     </template>
 
                     <template v-slot:default="{ isActive }">
-                      <v-card title="Registered Experiences">
+                      <v-card :title="$t('Registered Experiences')">
                         <v-card-text>
-                          Experiences are courses, projects, research, and other opportunities for growth. Select the Experiences you are a part of!
+                          {{$t('Experiences are courses, projects, research, and other opportunities for growth. Select the Experiences you are a part of!')}}
                         </v-card-text>
 
                         <v-card-actions>
                           <v-spacer></v-spacer>
 
                           <v-btn
-                            text="Close"
+                            :text="$t('Close')"
                             @click="isActive.value = false"
                           ></v-btn>
                         </v-card-actions>
@@ -92,10 +92,10 @@
                           v-bind="props"
                           @click="openDialog"
                       >
-                          Add / Remove Experiences
+                          {{$t('Add / Remove Experiences')}}
                       </v-btn>
                   </template>
-                  <span>Register Here!</span>
+                  <span>{{$t('Register Here!')}}</span>
               </v-tooltip>
 
               <v-dialog
@@ -106,7 +106,7 @@
               >
                 <v-card>
                   <v-card-title>
-                    <span class="font-weight-black text-xl">Add / Remove Experiences - {{ semesterName }}</span>
+                    <span class="font-weight-black text-xl">{{$t('Add / Remove Experiences')}} - {{ semesterName }}</span>
                   </v-card-title>
                   <v-card-text>
                     <v-row>
@@ -156,7 +156,7 @@
                       <!-- My Experiences Column -->
                       <v-col cols="12" md="5">
                         <v-list density="compact">
-                          <v-list-subheader>My Experiences</v-list-subheader>
+                          <v-list-subheader>{{$t('My Experiences')}}</v-list-subheader>
                           <v-list-item
                                 v-for="experience in selectedExperiences"
                                 :key="experience._id"
@@ -180,14 +180,14 @@
                       variant="text"
                       @click="clearSelectedExperiences"
                     >
-                      Close
+                      {{$t('Close')}}
                     </v-btn>
                     <v-btn
                       color="blue-darken-1"
                       variant="text"
                       @click="saveExperiences"
                     >
-                      Save
+                      {{$t('Save')}}
                     </v-btn>
                   </v-card-actions>
                 </v-card>

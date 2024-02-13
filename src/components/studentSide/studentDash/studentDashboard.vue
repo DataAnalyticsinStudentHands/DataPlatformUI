@@ -5,7 +5,7 @@
   <div v-else>
   <main>
       <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">
-        Welcome {{ fullName }}
+        {{$t('Welcome')}} {{ fullName }}
       </h1>
     <v-container fluid style="width: 90%; margin: 0 auto;">
       <v-row>
@@ -48,11 +48,20 @@ export default {
   },
   async mounted() {
     if (this.$route.params.toastType) {
-            toast[this.$route.params.toastType](this.$route.params.toastMessage, {
-                position: this.$route.params.toastPosition,
-                toastClassName: this.$route.params.toastCSS
-            });
-        }
+        toast[this.$route.params.toastType](this.$route.params.toastMessage, {
+            position: this.$route.params.toastPosition,
+            toastClassName: this.$route.params.toastCSS
+        });
+    }
+    const loggedInUserStore = useLoggedInUserStore();
+    // Translations
+    if (loggedInUserStore.languagePreference === "Spanish") {
+      // Set to Spanish
+      this.$i18n.locale = 'es';
+    } else {
+      // Default to English
+      this.$i18n.locale = 'en';
+    }
   },
   computed: {
     loading() {
