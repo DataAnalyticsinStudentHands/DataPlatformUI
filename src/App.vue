@@ -69,7 +69,7 @@
               prepend-icon="mdi-view-dashboard"
               value="studentDashboard"
               class=" tracking-wider "
-            >Student Dashboard</v-list-item>
+            >{{$t('Student Dashboard')}}</v-list-item>
             <v-list-item 
               :active="activeLink === 'studentEntryForm'"
               v-if="!user.hasCompletedEntryForm"
@@ -85,7 +85,7 @@
               prepend-icon="mdi-file-document"
               value="goalSettingForm"
               class=" tracking-wider "
-            >Goal Setting Form</v-list-item>
+            >{{$t('Goal Setting Form')}}</v-list-item>
             <v-list-item 
               :active="activeLink === 'exitFormsAvailable'"
               v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.exitFormsReleased"
@@ -173,21 +173,21 @@
               prepend-icon="mdi-account"
               value="profile"
               class=" tracking-wider "
-            >Profile</v-list-item>
+            >{{$t('Profile')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'User Data Update Form'"
               to="updateUserInformation"
               prepend-icon="mdi-cog"
               value="User Data Update Form"
               class=" tracking-wider "
-            >Update User Information</v-list-item>
+            >{{$t('Update User Information')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Password Reset'"
               to="updatePassword"
               prepend-icon="mdi-cog"
               value="Password Reset"
               class=" tracking-wider "
-            >Update Password</v-list-item>
+            >{{$t('Update Password')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Login'"
               to="login"
@@ -195,7 +195,7 @@
               value="Login"
               class=" tracking-wider "
               @click="handleLogout"
-            >Logout</v-list-item>
+            >{{$t('Logout')}}</v-list-item>
           </div>
         </v-list>
 

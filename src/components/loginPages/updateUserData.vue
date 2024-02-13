@@ -3,7 +3,7 @@
   <main>
     <v-container style="width: 90%; margin: 0 auto;">
       <p class="font-weight-black text-h5 text--primary">User Information Update Form</p>
-      <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these detail again.</p>
+      <p class="text-subtitle-1">Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again.</p>
     </v-container>
     <div v-if="loading" class="loading-container">
       <v-progress-circular indeterminate></v-progress-circular>
