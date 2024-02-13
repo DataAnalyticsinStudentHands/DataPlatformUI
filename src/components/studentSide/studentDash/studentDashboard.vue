@@ -47,13 +47,14 @@ export default {
     };
   },
   async mounted() {
+    const loggedInUserStore = useLoggedInUserStore();
     if (this.$route.params.toastType) {
-        toast[this.$route.params.toastType](this.$route.params.toastMessage, {
+      console.log('loggedInUserStore.languagePreference: ', loggedInUserStore.languagePreference);
+        toast[this.$route.params.toastType](this.$t(this.$route.params.toastMessage), {
             position: this.$route.params.toastPosition,
             toastClassName: this.$route.params.toastCSS
         });
     }
-    const loggedInUserStore = useLoggedInUserStore();
     // Translations
     if (loggedInUserStore.languagePreference === "Spanish") {
       // Set to Spanish

@@ -61,8 +61,12 @@
           <template v-slot:activator="{ props }">
               <v-list-item v-bind="props">
                 <span :class="areAllGoalsSet ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
-                    {{ areAllGoalsSet ? $t('Completed Goal Setting Form') : $t('Complete Goal Setting Form') }}
-                    <span v-if="registeredExperiences.length > 1 && store.languagePreference === 'English'">s</span>
+                    <span v-if="registeredExperiences.length === 1">
+                        {{ areAllGoalsSet ? $t('Completed Goal Setting Form') : $t('Complete Goal Setting Form') }}
+                    </span>
+                    <span v-if="registeredExperiences.length > 1">
+                        {{ areAllGoalsSet ? $t('Completed Goal Setting Forms') : $t('Complete Goal Setting Forms') }}
+                    </span>
                 </span>
                   <template v-slot:append>
                       <v-icon :class="areAllGoalsSet ? 'text-green-800' : 'text-red-800'">{{ areAllGoalsSet ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>

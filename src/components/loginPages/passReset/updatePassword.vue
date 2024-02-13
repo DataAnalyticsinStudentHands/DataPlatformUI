@@ -13,7 +13,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">Current Password</label>
+              <label for="email" class="block">{{$t('Current Password')}}</label>
               <input
                 v-model="code"
                 type="password"
@@ -28,7 +28,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">New Password</label>
+              <label for="email" class="block">{{$t('New Password')}}</label>
               <input
                 v-model="newPassword"
                 type="password"
@@ -52,7 +52,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">Confirm New Password</label>
+              <label for="email" class="block">{{$t('Confirm New Password')}}</label>
               <input
                 v-model="confirmNewPassword"
                 type="Password"
@@ -90,7 +90,7 @@
             type="submit"
             class="bg-custom-red text-white rounded"
           >
-            Reset Password
+            {{$t('Reset Password')}}
           </button>
         </form>
       </div>

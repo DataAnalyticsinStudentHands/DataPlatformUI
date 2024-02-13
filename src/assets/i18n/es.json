@@ -330,8 +330,22 @@
     "Register Here!": "¡Regístrate Aquí!",
     "Complete Goal Setting Form": "Complete el Formulario de Establecimiento de Objetivos",
     "Completed Goal Setting Form": "Formulario de Establecimiento de Objetivos Completado",
+    "Complete Goal Setting Forms": "Complete los Formularios de Establecimiento de Objetivos",
+    "Completed Goal Setting Forms": "Formularios de Establecimiento de Objetivos Completados",
     "Complete Goal Setting Form for": "Complete el Formulario de Establecimiento de Objetivos para",
     "Completed Goal Setting Form for": "Formulario de Establecimiento de Objetivos Completado para",
     "Update User Information": "Actualizar Información del Usuario",
-    "Logout": "Cerrar Sesión"
+    "Logout": "Cerrar Sesión",
+    "User Information Update Form": "Formulario de Actualización de Información del Usuario",
+    "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again.": "Rellene los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente.",
+    "New First Name": "Nuevo Nombre",
+    "New Last Name": "Nuevo Apellido",
+    "New Email": "Nuevo Correo Electrónico",
+    "New Language Preference": "Preferencia de Nuevo Idioma",
+    "Please enter your password to confirm your changes:": "Por favor, ingrese su contraseña para confirmar sus cambios:",
+    "User Information updated!": "¡Información del Usuario actualizada!",
+    "Current Password": "Contraseña Actual",
+    "New Password": "Nueva Contraseña",
+    "Confirm New Password": "Confirmar Nueva Contraseña",
+    "Reset Password": "Restablecer Contraseña"
 }
