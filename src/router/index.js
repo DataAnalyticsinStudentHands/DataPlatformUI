@@ -199,6 +199,19 @@ const routes = [
       }
     },
     {
+      path: '/studentGoalFormViewer',
+      name: 'StudentGoalFormViewer',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentGoalFormViewer.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/instructorDataProducts',
       name: 'instructorDataProducts',
       component: () => import('../components/instructorSide/instructorDataProducts.vue'),

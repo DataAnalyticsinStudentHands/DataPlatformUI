@@ -124,14 +124,16 @@
                     <tr
                         v-for="student in paginatedStudentsWithGoalForm"
                         :key="student._id"
-                        :class="{ 'hoverRow': hoverId === student._id }"
                         @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
                         @click="navigateToProfile(student._id)"
                     >
-                        <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
-                        <td class="text-left">{{ student.email }}</td>
-                        <td class="text-left">{{ formatDate(student.registrationDate) }}</td>
+                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ formatFullName(student.firstName, student.lastName) }}</td>
+                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ student.email }}</td>
+                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ formatDate(student.registrationDate) }}</td>
+                        <td>
+                          <v-btn @click.stop="viewStudentGoalForm(student._id)">View Goal Form</v-btn>
+                        </td>
                     </tr>
                     </tbody>
                 </v-table>
@@ -141,7 +143,6 @@
             </v-col>
         </v-row>
     </v-container>
-    {{ this.selectedExperience }}
   </template>
   
   <script>
@@ -204,7 +205,13 @@
         return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
       },
       totalStudentsCount() {
-        return this.studentsWithoutGoalForm.length;
+        if (this.studentsWithoutGoalForm.length === 0) {
+          return this.studentsWithGoalForm.length;
+        } else if (this.studentsWithGoalForm.length === 0) {
+          return this.studentsWithoutGoalForm.length;
+        } else {
+          return null;
+        }
       },
     },
     methods: {
@@ -255,9 +262,12 @@
         const user = useLoggedInUserStore();
         let token = user.token;
         let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-goal-form/${this.selectedExperience}`;
+
+        console.log('url: ', url);
         
         try {
           const response = await axios.get(url, { headers: { token } });
+          console.log('response: ', response);
           this.studentsWithGoalForm = response.data;
         } catch (error) {
           this.handleError(error);
@@ -275,6 +285,17 @@
       formatDate(date) {
         return DateTime.fromISO(date).toFormat("MM/dd/yyyy");
       },
+      viewStudentGoalForm(studentID) {
+        console.log('viewStudentGoalForm');
+        console.log('studentID: ', studentID);
+        this.$router.push({
+          name: "StudentGoalFormViewer",
+          params: { 
+            studentID: studentID,
+            expInstanceID: this.selectedExperience
+          },
+        });
+      }
     },
   };
   </script>
