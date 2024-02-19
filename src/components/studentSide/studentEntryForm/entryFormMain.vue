@@ -258,7 +258,7 @@
 import EntryFormDemo from './entryFormDemo.vue';
 import EntryFormEnrolled from './entryFormEnrolled.vue';
 import EntryFormGradProf from './entryFormGradProf.vue';
-import EntryFormReview from './entryFormReview.vue';
+import EntryFormReview from './EntryFormReview.vue';
 
 
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
