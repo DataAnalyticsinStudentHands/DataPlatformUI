@@ -98,6 +98,7 @@
         
         axios.put(apiURL, {firstName: this.firstName, lastName: this.lastName, email: this.email, languagePreference: this.languagePreference, password: this.confirmPassword}, {headers: { token }})
         .then(() => {
+          console.log('this.languagePreference: ', this.languagePreference);
           user.setLanguagePreference(this.languagePreference);
           let toastMessage = "";
           if (user.languagePreference === 'English') {

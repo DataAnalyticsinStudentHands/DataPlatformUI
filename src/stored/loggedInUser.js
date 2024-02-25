@@ -171,6 +171,7 @@ export const useLoggedInUserStore = defineStore({
 
     },
     setLanguagePreference(langPref) {
+      console.log('pinia setLanguagePreference, langPref: ', langPref);
       this.languagePreference = langPref;
     },
     async checkFormCompletion() {
