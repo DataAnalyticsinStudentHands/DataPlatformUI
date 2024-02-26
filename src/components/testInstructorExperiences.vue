@@ -412,7 +412,6 @@ computed: {
                 sessionName
             });
         });
-        console.log('expandedData:', expandedData);
         return expandedData;
     }
 
@@ -451,14 +450,10 @@ methods: {
     async updateSearchCriteria(item) {
         if (item === "Activity") {
             await this.fetchActivityData();
-            console.log('dialogActivitySearch 1: ', this.dialogActivitySearch);
-            console.log('activityData: ', this.activityData);
             this.dialogActivitySearch = true;
-            console.log('dialogActivitySearch 2: ', this.dialogActivitySearch);
         } else {
             this.searchLabel = "Search " + item;
         }
-        console.log("dialogActivitySearch: ", this.dialogActivitySearch);
     },
 
     addSearchChip() {
@@ -477,14 +472,12 @@ methods: {
     },
 
     selectSearchChip(index) {
-        console.log('selectSearchChip: ', index);
+        console.log('selectSearchChip')
         const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
-            console.log('chip already selected')
             // If the chip is already selected, creae a new array without this chip
             this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
         } else {
-            console.log('chip not selected')
             // If the chip is not selected, create a new array with this chip added
             this.selectedSearchChips = [...this.selectedSearchChips, index]
         }
@@ -503,7 +496,7 @@ methods: {
     },
 
     performFilter() {
-        console.log('performFilter called');
+        console.log('performFilter')
         let searchGroups = {};
         this.selectedSearchChips.forEach(index => {
             let criteria = this.searchCriteria[index];
@@ -513,22 +506,31 @@ methods: {
             searchGroups[criteria.category].push(criteria.term.toLowerCase());
         });
 
+        console.log('searchCriteria: ', this.searchCriteria);
+        console.log('selectedSearchChips: ', this.selectedSearchChips);
+
         // Manually update activitySearchApplied based on current selectedSearchChips
         this.updateActivitySearchApplied();
 
-        console.log('this.selectedSearchChips: ', this.selectedSearchChips);
-
-        console.log('activityBasedExperiences: ', this.activityBasedExperiences);
-
-        console.log('this.activitySearchApplied: ', this.activitySearchApplied);
-
         if (this.activitySearchApplied && this.activityBasedExperiences.length) {
-            console.log('activitySearchApplied and activityBasedExperiences.length');
-            console.log('filteredExperienceData: ', this.filteredExperienceData);
-            console.log('activityBasedExperiences: ', this.activityBasedExperiences);
-            // Filter experiences based on activity-based experiences
-            const activityExperienceIDs = this.activityBasedExperiences.map(ae => ae.experienceID);
-            this.filteredExperienceData = this.experienceData.filter(experience => 
+            // Extract "Activity" terms from searchCriteria based on selectedSearchChips
+            const activityTerms = this.selectedSearchChips
+                .filter(index => this.searchCriteria[index]?.category === "Activity")
+                .map(index => this.searchCriteria[index].term.trim().toLowerCase());
+
+            console.log('activitySearchApplied && activityBasedExperiences.length');
+            console.log('searchCriteria:', this.searchCriteria);
+
+            // Filter experiences based on matching activity names
+            const filteredActivityBasedExperiences = this.activityBasedExperiences.filter(ae =>
+                activityTerms.includes(ae.activityName.trim().toLowerCase())
+            );
+            console.log('filteredActivityBasedExperiences: ', filteredActivityBasedExperiences);
+
+            // Use the filtered activities to determine which experiences to show
+            const activityExperienceIDs = filteredActivityBasedExperiences.map(ae => ae.experienceID);
+
+            this.filteredExperienceData = this.experienceData.filter(experience =>
                 activityExperienceIDs.includes(experience._id)
             );
         } else {
@@ -616,7 +618,6 @@ methods: {
             this.activityData = response.data.sort((a, b) => {
                 return a.activityName.localeCompare(b.activityName);
             });
-            console.log('this.activityData: ', this.activityData);
         } catch (error) {
             this.handleError(error);
         }
@@ -663,8 +664,6 @@ methods: {
         // Close the dialog
         this.dialogActivitySearch = false;
 
-        console.log('Updated searchCriteria and selectedSearchChips: ', this.searchCriteria, this.selectedSearchChips);
-
         this.performFilter();
     },
 
@@ -672,11 +671,8 @@ methods: {
 
     selectActivity(selectedActivity) {
         this.selectedActivities.push(selectedActivity);
-        console.log('selectedActivities: ', this.selectedActivities);
-        console.log('selectedActivity: ', selectedActivity);
         // Remove the selected activity from the activityData list
         this.activityData = this.activityData.filter(activity => activity._id !== selectedActivity._id);
-        console.log('activityData: ', this.activityData);
     },
 
     removeActivity(index) {
@@ -689,7 +685,6 @@ methods: {
     },
 
     async fetchExperiencesByActivity() {
-        console.log('this.selectedActivities: ', this.selectedActivities);
 
         // Extract activity IDs from selectedActivities
         const activityIDs = this.selectedActivities.map(activity => activity._id);
