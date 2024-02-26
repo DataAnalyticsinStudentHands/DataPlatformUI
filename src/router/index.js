@@ -11,9 +11,9 @@ const routes = [
     },
     {
       path: '/test',
-      name: 'testExitFormMain',
+      name: 'testInstructorExperiences',
       props: true,
-      component: () => import('../components/testExitForm/exitFormMain.vue')
+      component: () => import('../components/testInstructorExperiences.vue')
     },
     {
       path: '/studentEntryFormUpdate',

@@ -164,28 +164,6 @@
                                     </v-btn>
                                 </td> -->
                             </tr>
-                            <!-- <tr v-if="expandedExperiences.includes(item)">
-                                <td></td>
-                                <td :colspan="experienceHeaders.length">
-                                    <div class="activity-label">
-                                        <strong>Activities:</strong>
-                                    </div>
-                                    <div v-if="item.activities && item.activities.length" class="activities-grid">
-                                        <div v-for="(half, index) in [firstHalfActivities(item.activities), secondHalfActivities(item.activities)]" :key="index">
-                                            <v-list density="compact">
-                                                <v-list-item v-for="activity in half" :key="activity._id">
-                                                    <span :class="{ 'highlight-red': isActivityNameMatched(activity.activityName) }">
-                                                        {{ activity.activityName }}
-                                                    </span>
-                                                </v-list-item>
-                                            </v-list>
-                                        </div>
-                                    </div>
-                                    <div v-else class="font-italic pt-2 pl-2">
-                                        None
-                                    </div>
-                                </td>
-                            </tr> -->
                         </template>
                     </template>
                 </v-data-table>
@@ -216,7 +194,7 @@ data() {
             "All Fields",
             "Experience Category",
             "Experience Name",
-            "Activity Name"
+            "Activity"
         ],
         viewArchivedExperiences: false,
         experienceHeaders: [
@@ -303,6 +281,7 @@ methods: {
 
     updateSearchCriteria(item) {
         this.searchLabel = "Search " + item;
+        console.log("updateSearchCriteria: ", item);
     },
 
     addSearchChip() {
@@ -376,12 +355,8 @@ methods: {
                     return searchGroups[category].every(term =>
                         item.experienceName.toLowerCase().includes(term)
                     );
-                } else if (category === "Activity Name") {
-                    return searchGroups[category].every(term => {
-                        return item.activities.some(activity => {
-                            return activity.activityName.toLowerCase().includes(term);
-                        });
-                    });
+                } else if (category === "Activity") {
+                    console.log('Activity Selected');
                 }
                 return true;
             });
@@ -429,25 +404,6 @@ methods: {
         }
     },
 
-    firstHalfActivities(activities) {
-        const midpoint = Math.ceil(activities.length / 2);
-        return activities.slice(0, midpoint);
-    },
-
-    secondHalfActivities(activities) {
-        const midpoint = Math.ceil(activities.length / 2);
-        return activities.slice(midpoint);
-    },
-
-    isActivityNameMatched(activityName) {
-        // Check if any 'Activity Name' criteria are selected
-        const selectedActivityNameCriteria = this.searchCriteria
-            .filter((criteria, index) => this.selectedSearchChips.includes(index) && criteria.category === "Activity Name")
-            .map(criteria => criteria.term.toLowerCase());
-
-        return selectedActivityNameCriteria.some(term => activityName.toLowerCase().includes(term));
-    },
-
 
     handleAddNewExperience() {
         this.$router.push({ name: "instructorAddExperience" });
@@ -472,19 +428,8 @@ methods: {
     cursor: pointer;
 }
 
-.activities-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Creates two equal columns */
-    gap: 10px; /* Adjust the gap between columns as needed */
-}
-
 .highlight-red {
     color: #c8102e;
-}
-
-.activity-label {
-    margin-top: 10px; /* Adjust as per your design */
-    /* Additional styling if needed */
 }
 
 </style>

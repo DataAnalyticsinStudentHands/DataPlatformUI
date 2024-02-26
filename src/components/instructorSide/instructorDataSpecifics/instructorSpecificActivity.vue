@@ -10,7 +10,7 @@
             <v-text-field v-model="activity.activityName" label="Activity Name"></v-text-field>
           </v-col>
         </v-row>
-        <v-row>
+        <!-- <v-row>
           <v-col>
             <p class="font-weight-black text-h8">Associated Experiences</p>
             <v-table>
@@ -32,7 +32,7 @@
               </tbody>
             </v-table>
           </v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
           <v-col>
             <v-btn @click=goBack() class="mr-4">
@@ -148,7 +148,7 @@ export default {
 
   async mounted() {
     await this.fetchActivityData();
-    await this.fetchAssociatedExperiences();
+    // await this.fetchAssociatedExperiences();
     await this.checkIfActivityCanBeDeleted();
   },
 
@@ -170,17 +170,17 @@ export default {
       }
     },
 
-    async fetchAssociatedExperiences() {
-      try {
-        const store = useLoggedInUserStore();
-        let token = store.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/active/${this.$route.params.id}`;
-        const response = await axios.get(apiURL, { headers: { token }});
-        this.experiences = response.data;
-      } catch (error) {
-        this.handleError(error);
-      }
-    },
+    // async fetchAssociatedExperiences() {
+    //   try {
+    //     const store = useLoggedInUserStore();
+    //     let token = store.token;
+    //     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/active/${this.$route.params.id}`;
+    //     const response = await axios.get(apiURL, { headers: { token }});
+    //     this.experiences = response.data;
+    //   } catch (error) {
+    //     this.handleError(error);
+    //   }
+    // },
 
     async checkAssociatedInstances(action) {
       if (action === "update") {
@@ -279,15 +279,15 @@ export default {
       });
     },
 
-    editExperience(experienceID) {
-      this.$router.push({ 
-        name: "instructorSpecificExperience", 
-        params: { 
-          id: experienceID,
-          activityID: this.$route.params.id
-        } 
-      });
-    },
+    // editExperience(experienceID) {
+    //   this.$router.push({ 
+    //     name: "instructorSpecificExperience", 
+    //     params: { 
+    //       id: experienceID,
+    //       activityID: this.$route.params.id
+    //     } 
+    //   });
+    // },
 
     confirmDelete() {
       this.deleteActivity();
