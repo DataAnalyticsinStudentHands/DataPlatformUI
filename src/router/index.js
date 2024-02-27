@@ -11,9 +11,9 @@ const routes = [
     },
     {
       path: '/test',
-      name: 'testInstructorExperiences',
+      name: 'testInstructorActivities',
       props: true,
-      component: () => import('../components/testInstructorExperiences.vue')
+      component: () => import('../components/testInstructorActivities.vue')
     },
     {
       path: '/studentEntryFormUpdate',
