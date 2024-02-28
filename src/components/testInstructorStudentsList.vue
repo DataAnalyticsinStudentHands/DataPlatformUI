@@ -152,6 +152,63 @@
     </v-col>
 </v-row>
 </v-container>
+
+<!-- Date Picker for Graduation Date -->
+<v-dialog
+    v-model="dialogGraduationDate"
+    width="auto"
+    persistent
+>
+    <v-card>
+        <v-card-title>
+            <v-row>
+                <v-col>
+                    <v-select
+                        v-model="graduationDateFilterType"
+                        :items="['On', 'Before', 'After', 'Between']"
+                        label="Filter Type"
+                        outlined
+                        density="comfortable"
+                        hide-details
+                    ></v-select>
+                </v-col>
+            </v-row>
+        </v-card-title>
+        <v-card-item>
+            <v-row>
+                <v-col cols="6">
+                    <v-date-picker
+                        v-model="selectedGraduationDate"
+                        elevation="24"
+                        :title="graduationDateTitle"
+                        show-adjacent-months
+                        color="red-darken-2"
+                        @update:modelValue="handleGraduationDateSelection"
+                    >
+                        <template v-slot:header>
+                            <div class="v-date-picker-header">
+                                <v-fade-transition>
+                                    <div :key="formattedSelectedGraduationDate" class="v-date-picker-header__content">
+                                        {{ formattedSelectedGraduationDate }}
+                                    </div>
+                                </v-fade-transition>
+                            </div>
+                        </template>
+                    </v-date-picker>
+                </v-col>
+            </v-row>
+        </v-card-item>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="cancelSelectGraduationDate">Cancel</v-btn>
+            <v-btn 
+                color="#c8102e"
+                :disabled="!canApplyGraduationDates"
+                @click="submitGraduationDate"
+            >Apply</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
 </template>
     
 
@@ -159,6 +216,7 @@
 import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { DateTime } from "luxon";
 
 export default {
 data() {
@@ -224,11 +282,25 @@ data() {
         studentSearch: "",
         selectedSearchChips: [],
         searchCriteria: [],
+        dialogGraduationDate: false,
+        selectedGraduationDate: new Date(),
+        graduationDateFilterType: "On",
+        beginningDateRange: null,
+        endDateRange: null,
     };
 },
 
 mounted() {
     this.fetchStudentData();
+},
+
+watch: {
+    graduationDateFilterType(newVal) {
+        if (newVal === "Between") {
+            this.beginningDateRange = null;
+            this.endDateRange = null;
+        }
+    },
 },
 
 computed: {
@@ -238,6 +310,47 @@ computed: {
 
     showChipsRow() {
         return this.searchCriteria.length > 0;
+    },
+    formattedSelectedGraduationDate() {
+        if (this.graduationDateFilterType === "Between") {
+            let text = "";
+            if (this.beginningDateRange) {
+                text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
+            }
+
+            if (this.beginningDateRange && this.endDateRange) {
+                text += " to ";
+                text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
+            }
+
+            return text;
+        }
+
+        return this.selectedGraduationDate
+            ? DateTime.fromJSDate(this.selectedGraduationDate).toFormat('MM-dd-yyyy')
+            : "";
+    },
+    graduationDateTitle() {
+        switch (this.graduationDateFilterType) {
+            case "On":
+                return "Graduation Date On";
+            case "After":
+                return "Graduation Date After";
+            case "Before":
+                return "Graduation Date Before";
+            case "Between":
+                return "Graduation Date Between";
+            default:
+                return "Graduation Date On";
+        }
+    },
+    canApplyGraduationDates() {
+        if (this.graduationDateFilterType === "Between") {
+            // Allow submission only if both beginning and end date ranes are selected
+            return this.beginningDateRange && this.endDateRange;
+        }
+        // In other cases, allow submission
+        return true;
     },
 },
 
@@ -306,14 +419,10 @@ methods: {
     formatGraduationDate(date) {
     if (!date) {
         return '';
+    } else {
+        const formattedDate = DateTime.fromISO(date).toFormat('MM-dd-yyyy');
+        return formattedDate;
     }
-    const dateObj = new Date(date);
-    const formattedDate = dateObj.toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric'
-    });
-    return formattedDate;
     },
 
     viewStudent(student) {
@@ -324,8 +433,12 @@ methods: {
     },
 
     updateSearchCriteria(item) {
+    if (item === "Graduation Date") {
+        this.dialogGraduationDate = true;
+    } else {
         this.searchLabel = "Search " + item;
         console.log('this.searchLabel: ', this.searchLabel);
+    }
     },
 
     addSearchChip() {
@@ -405,9 +518,32 @@ methods: {
                     // Check if any combined minor includes the search term
                     return combinedMinors.some(minor => minor.toLowerCase().includes(lowerTerm));
                 });
+            } else if (category === "Graduation Date") {
+                return searchGroups[category].every(term => {
+                    const formattedGraduationDate = this.formatGraduationDate(student.studentInformation?.enrolledUHInfo?.expectedGraduationData);
+                    if (!formattedGraduationDate) {
+                        return false; // Skip if formatted graduation date is not valid or not present
+                    }
+
+                    if (term.startsWith('<')) {
+                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
+                        return formattedGraduationDate < comparisonDate;
+                    } else if (term.startsWith('>')) {
+                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
+                        return formattedGraduationDate > comparisonDate;
+                    } else if (term.startsWith('=')) {
+                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
+                        return formattedGraduationDate === comparisonDate;
+                    } else if (term.startsWith('between')) {
+                        let [startDateStr, endDateStr] = term.slice(8).split(' and ');
+                        return formattedGraduationDate >= startDateStr && formattedGraduationDate <= endDateStr;
+                    }
+                    return true; // If the term format is not recognized, do not exclude the student
+                });
             }
-                
-                return true;
+
+
+
             });
         });
     },
@@ -440,6 +576,81 @@ methods: {
     toggleArchivedStudents() {
         this.viewArchivedStudents = !this.viewArchivedStudents;
         this.performFilter();
+    },
+
+    handleGraduationDateSelection(date) {
+        if (this.graduationDateFilterType === 'Between') {
+            if (!this.beginningDateRange || this.endDateRange) {
+                // If beginningDateRange is not set or endDateRange is already set,
+                // set the new date as the beginningDateRange and reset endDateRange
+                this.beginningDateRange = date;
+                this.endDateRange = null;
+            } else {
+                // Set the new date as the endDateRange
+                this.endDateRange = date;
+            }
+        } else {
+            this.selectedGraduationDate = date;
+        }
+    },
+
+    submitGraduationDate() {
+        // Handle different date filter types
+        if (this.graduationDateFilterType === 'On' && this.selectedGraduationDate) {
+            this.createGraduationDateChip('=', this.selectedGraduationDate);
+        } else if (this.graduationDateFilterType === 'Before' && this.selectedGraduationDate) {
+            this.createGraduationDateChip('<', this.selectedGraduationDate);
+        } else if (this.graduationDateFilterType === 'After' && this.selectedGraduationDate) {
+            this.createGraduationDateChip('>', this.selectedGraduationDate);
+        } else if (this.graduationDateFilterType === 'Between' && this.beginningDateRange && this.endDateRange) {
+            // Format the dates
+            const formattedBeginningDate = this.formatDateMethod(this.beginningDateRange);
+            const formattedEndDate = this.formatDateMethod(this.endDateRange);
+            // Create a chip for the date range
+            this.createGraduationDateChip('between', `${formattedBeginningDate} and ${formattedEndDate}`);
+        }
+
+        this.dialogGraduationDate = false;
+        this.selectedGraduationDate = new Date();
+        this.graduationDateFilterType = "On";
+    },
+
+    createGraduationDateChip(operator, date) {
+        let term = '';
+        if (operator === '=') {
+            term = `= ${this.formatDateMethod(date)}`;  // Equals operator
+        } else if (operator === '<') {
+            term = `< ${this.formatDateMethod(date)}`;  // Less than operator
+        } else if (operator === '>') {
+            term = `> ${this.formatDateMethod(date)}`;  // More than operator
+        } else if (operator === 'between') {
+            term = `between ${date}`;  // Between operator
+        }
+
+        // Create the chip
+        const graduationDateChip = {
+            category: 'Graduation Date',
+            term: term
+        };
+
+        // Add the chip to the search criteria
+        this.searchCriteria.push(graduationDateChip);
+        console.log('searchCriteria: ', this.searchCriteria)
+        // Select the new chip by default
+        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+        
+        // Call search
+        this.performFilter();
+    },
+
+    formatDateMethod(date) {
+        return DateTime.fromJSDate(date).toFormat('MM-dd-yyyy');
+    },
+
+    cancelSelectGraduationDate() {
+        this.dialogGraduationDate = false;
+        this.graduationDateFilterType = "On";
+        this.selectedGraduationDate = new Date();
     },
 
 
