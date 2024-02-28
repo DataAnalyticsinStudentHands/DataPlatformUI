@@ -140,9 +140,6 @@
                     hover
                     return-object
                 >
-                    <!-- Part of the above data table
-                    v-model:expanded="expandedActivities"
-                    show-expand -->
                     <template v-slot:body="{ items }">
                         <template
                             v-for="item in items"
@@ -156,40 +153,39 @@
                                     <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
                                 </td>
                                 <td>{{ item.activityName }}</td>
-                                <!-- <td @click.stop>
-                                    <v-btn icon variant="text" @click="toggleRowExpansion(item)">
+                                <td
+                                    v-if="experienceNameSearchApplied"
+                                    @click.stop
+                                >
+                                    <v-btn 
+                                        icon 
+                                        variant="text"
+                                        @click="toggleRowExpansion(item)"
+                                    >
                                         <v-icon>
                                             {{ expandedActivities.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                                         </v-icon>
                                     </v-btn>
-                                </td> -->
-                            </tr>
-                            <!-- Expanded row for experiences -->
-                            <!-- <tr v-if="expandedActivities.includes(item)">
-                                <td></td>
-                                <td :colspan="activityHeaders.length">
-                                    <div class="experience-label">
-                                        <strong>Experiences:</strong>
-                                    </div>
-                                    <div v-if="item.experiences && item.experiences.length" class="experiences-grid">
-                                        <div v-for="(half, index) in [firstHalfExperiences(item.experiences), secondHalfExperiences(item.experiences)]" :key="index">
-                                            <v-list density="compact">
-                                                <v-list-item v-for="experience in half" :key="experience._id">
-                                                    <span :class="{
-                                                            'highlight-red': isExperienceNameMatched(experience.experienceName) || 
-                                                                            isExperienceCategoryMatched(experience.experienceCategory)
-                                                        }">
-                                                        {{ experience.experienceCategory }} - {{ experience.experienceName }}
-                                                    </span>
-                                                </v-list-item>
-                                            </v-list>
-                                        </div>
-                                    </div>
-                                    <div v-else class="font-italic pt-2 pl-2">
-                                        None
-                                    </div>
                                 </td>
-                            </tr> -->
+                            </tr>
+                            <!-- Expanded row for displaying experiences and sessions -->
+                            <tr v-if="expandedActivities.includes(item)">
+                                <td :colspan="activityHeaders.length" class="pa-0">
+                                    <v-container>
+                                        <!-- Iterate over activities object -->
+                                        <v-row v-for="(experience, experienceID) in prepareExpandedData[item._id]?.experiences || {}" :key="experienceID">
+                                            <v-col cols="12">
+                                                <strong>{{ experience.name }}</strong>
+                                                <ul>
+                                                    <li v-for="session in experience.sessions" :key="session.sessionID">
+                                                        {{ session.sessionName }}
+                                                    </li>
+                                                </ul>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                </td>
+                            </tr>
                         </template>
                     </template>
                 </v-data-table>
@@ -241,37 +237,89 @@
 <!-- Dialog for Filtering by Experience Name -->
 <v-dialog
     v-model="dialogExperienceName"
-    width="500"
+    width="1200"
     persistent
 >
-    <v-card>
-        <v-card-title>
-            Filter By Experience Name
-        </v-card-title>
-        <v-card-item>
-            <v-row>
-                <v-col>
-                    <v-autocomplete
-                        :items="uniqueExperienceNames"
-                        v-model="selectedExperienceNames"
-                        label="Experience Name"
-                        clearable
-                        chips
+<v-card>
+    <v-card-item>
+        <v-card
+                flat
+                title="Search Activities by Experiences"
+            >
+                <template v-slot:text>
+                <v-text-field
+                    v-model="experienceNameSearch"
+                    label="Search"
+                    prepend-inner-icon="mdi-magnify"
+                    single-line
+                    variant="outlined"
+                    hide-details
+                ></v-text-field>
+                <v-card-item v-if="selectedExperienceNames && selectedExperienceNames.length">
+                    <v-chip-group
+                        column
                         multiple
-                        return-object
-                    ></v-autocomplete>
-                </v-col>
-            </v-row>
-        </v-card-item>
-        <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="cancelDialogExperienceName">Cancel</v-btn>
-            <v-btn 
-                color="#c8102e"
-                @click="submitExperienceName"
-            >Apply</v-btn>
-        </v-card-actions>
-    </v-card>
+                    >
+                        <v-chip
+                            v-for="(experience, index) in selectedExperienceNames"
+                            :key="experience._id"
+                            @click="removeExperienceName(index)"
+                            class="ma-2"
+                        >
+                            {{ experience.experienceName }}
+                            <v-icon
+                                end
+                                @click.stop="removeExperienceName(index)"
+                            >mdi-close</v-icon>
+                        </v-chip>
+                    </v-chip-group>
+                </v-card-item>
+                </template>
+                <v-data-table
+                    :headers="experienceHeaders"
+                    :items="experienceData"
+                    item-value="_id"
+                    items-per-page="-1"
+                    class="scrollable-table"
+                    hover
+                    :search="experienceNameSearch"
+                    >
+                    <template v-slot:body="{ items }">
+                        <template v-for="item in items" :key="item._id">
+                            <tr
+                                @click="selectExperienceName(item)"
+                                @mouseover="hoveredItem = item._id"
+                                @mouseleave="hoveredItem = null"
+                                class="pointer-cursor"
+                            >
+                                <td>
+                                    <div class="experience-content">
+                                        {{ item.experienceCategory }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="experience-content">
+                                        {{ item.experienceName }}
+                                        <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
+                                        <v-icon v-else class="invisible-icon">mdi-plus</v-icon>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                    <template v-slot:bottom></template>
+                </v-data-table>
+        </v-card>
+    </v-card-item>
+    <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn text @click="cancelExperienceNameSearch">Cancel</v-btn>
+        <v-btn 
+            color="#c8102e"
+            @click="submitExperienceNameSearch"
+        >Apply</v-btn>
+    </v-card-actions>
+</v-card>
 </v-dialog>
 </template>
 
@@ -295,25 +343,6 @@ data() {
             "Experience Category",
             "Experience Name"
         ],
-        activityHeaders: [
-            {
-                title: "",
-                sortable: false,
-                align: "center",
-                width: "30px"
-            },
-            {
-                title: "Activity Name",
-                value: "activityName",
-                align: "start",
-                sortable: true,
-                key: "activityName"
-            },
-            // {
-            //     title: "",
-            //     key: "data-table-expand"
-            // }
-        ],
         searchCriteria: [],
         selectedSearchChips: [],
         dialogExperienceCategory: false,
@@ -321,6 +350,26 @@ data() {
         selectedExperienceCategories: [],
         selectedExperienceNames: [],
         expandedActivities: [],
+        experienceNameSearch: "",
+        experienceHeaders: [
+            {
+                title: "Experience Category",
+                value: "experienceCategory",
+                key: "experienceCategory",
+                align: "start",
+                sortable: true
+            },
+            {
+                title: "Experience Name",
+                value: "experienceName",
+                key: "experienceName",
+                align: "start",
+                sortable: true
+            }
+        ],
+        hoveredItem: null,
+        experienceBasedActivities: [],
+        experienceNameSearchApplied: false,
     }
 },
 mounted() {
@@ -334,6 +383,23 @@ mounted() {
             useLoggedInUserStore.stopLoading();
         });
 },
+watch: {
+    // Watch the searchCriteria and selectedSearchChips for changes
+    searchCriteria: {
+        handler() {
+            this.updateExperienceNameSearchApplied();
+        },
+        deep: true,
+        immediate: true
+    },
+    selectedSearchChips: {
+        handler() {
+            this.updateExperienceNameSearchApplied();
+        },
+        deep: true,
+        immediate: true
+    }
+},
 computed: {
     loading() {
         return useLoggedInUserStore().loading;
@@ -343,25 +409,54 @@ computed: {
         return this.searchCriteria.length > 0;
     },
 
-    uniqueExperienceCategories() {
-        const categories = new Set();
-        this.activityData.forEach(activity => {
-            activity.experiences.forEach(experience => {
-                categories.add(experience.experienceCategory);
+    activityHeaders() {
+        let headers = [
+            {
+                title: "",
+                sortable: false,
+                align: "center",
+                width: "30px"
+            },
+            {
+                title: "Activity Name",
+                value: "activityName",
+                align: "start",
+                sortable: true,
+                key: "activityName"
+            }
+        ];
+
+        // Conditionally add the expand column
+        if (this.experienceNameSearchApplied) {
+            headers.push({
+                title: "", // Adjust the title as needed
+                key: "data-table-expand"
+            });
+        }
+
+        return headers;
+    },
+    prepareExpandedData() {
+        const expandedData = {};
+        this.experienceBasedActivities.forEach(({ activityID, sessionID, sessionName, experienceID, experienceName }) => {
+            if (!expandedData[activityID]) {
+                expandedData[activityID] = { experiences: {} };
+            }
+            if (!expandedData[activityID].experiences[experienceID]) {
+                expandedData[activityID].experiences[experienceID] = {
+                    name: experienceName,
+                    sessions: []
+                };
+            }
+            expandedData[activityID].experiences[experienceID].sessions.push({
+                sessionID,
+                sessionName
             });
         });
-        return Array.from(categories);
+        console.log('expandedData: ', expandedData);
+        return expandedData;
     },
 
-    uniqueExperienceNames() {
-        const names = new Set();
-        this.activityData.forEach(activity => {
-            activity.experiences.forEach(experience => {
-                names.add(experience.experienceName);
-            });
-        });
-        return Array.from(names);
-    }
 },
 methods: {
     async fetchActivityData() {
@@ -393,10 +488,12 @@ methods: {
         }
     },
 
-    updateSearchCriteria(item) {
+    async updateSearchCriteria(item) {
+        console.log('updateSearchCriteria: ', item);
         if (item === "Experience Category") {
-            this.dialogExperienceCategory = true;
+            // this.dialogExperienceCategory = true;
         } else if (item === "Experience Name") {
+            this.fetchExperienceData();
             this.dialogExperienceName = true;
         }
     },
@@ -449,30 +546,48 @@ methods: {
             searchGroups[criteria.category].push(criteria.term.toLowerCase());
         });
 
-        this.filteredActivityData = this.activityData.filter(activity => {
-            // Check if the activity should be included based on activityStatus
-            if ((this.viewArchivedActivities && !activity.activityStatus) || 
-                (!this.viewArchivedActivities && activity.activityStatus)) {
-                // Filtering based on search criteria
-                return Object.keys(searchGroups).every(category => {
-                    if (category === "Activity Name") {
-                        return searchGroups[category].some(term =>
-                            activity.activityName.toLowerCase().includes(term)
-                        );
-                    } else if (category === "Experience Category") {
-                        return activity.experiences.some(exp =>
-                            searchGroups[category].includes(exp.experienceCategory.toLowerCase())
-                        );
-                    } else if (category === "Experience Name") {
-                        return activity.experiences.some(exp =>
-                            searchGroups[category].includes(exp.experienceName.toLowerCase())
-                        );
-                    }
-                    return true;
-                });
-            }
-            return false;
-        });
+
+        console.log('searchCriteria: ', this.searchCriteria);
+        console.log('selectedSearchChips: ', this.selectedSearchChips);
+
+        // Manually update activitySearchApplied based on current selectedSearchChips
+        this.updateExperienceNameSearchApplied();
+
+        if (this.experienceNameSearchApplied && this.experienceBasedActivities.length) {
+            const experienceNameTerms = this.selectedSearchChips
+                .filter(index => this.searchCriteria[index]?.category === "Experience Name")
+                .map(index => this.searchCriteria[index].term.trim().toLowerCase());
+            
+            // Filter experiences based on matching activity names
+            const filteredExperienceBasedActivities = this.experienceBasedActivities.filter(ea =>
+                experienceNameTerms.includes(ea.experienceName.trim().toLowerCase())
+            );
+
+            // Use the filtered activities to determine which experiences to show
+            const experienceActivityIDs = filteredExperienceBasedActivities.map(ea => ea.activityID);
+
+            this.filteredActivityData = this.activityData.filter(activity =>
+            experienceActivityIDs.includes(activity._id)
+            );
+        } else {
+            this.filteredActivityData = this.activityData.filter(activity => {
+                // Check if the activity should be included based on activityStatus
+                if ((this.viewArchivedActivities && !activity.activityStatus) || 
+                    (!this.viewArchivedActivities && activity.activityStatus)) {
+                    // Filtering based on search criteria
+                    return Object.keys(searchGroups).every(category => {
+                        if (category === "Activity Name") {
+                            return searchGroups[category].some(term =>
+                                activity.activityName.toLowerCase().includes(term)
+                            );
+                        }
+                        return true;
+                    });
+                }
+                return false;
+            });
+        }
+
     },
 
 
@@ -513,11 +628,6 @@ methods: {
         this.selectedExperienceCategories = [];
     },
 
-    cancelDialogExperienceName() {
-        this.dialogExperienceName = false;
-        this.selectedExperienceNames = [];
-    },
-
     submitExperienceCategory() {
         this.selectedExperienceCategories.forEach(category => {
             const chip = {
@@ -532,25 +642,6 @@ methods: {
         // Close the dialog and reset selectedExperienceCategories
         this.dialogExperienceCategory = false;
         this.selectedExperienceCategories = [];
-
-        // Call search
-        this.performFilter();
-    },
-
-    submitExperienceName() {
-        this.selectedExperienceNames.forEach(name => {
-            const chip = {
-                category: "Experience Name",
-                term: name
-            };
-            this.searchCriteria.push(chip);
-            // Select the new chip by default
-            this.selectedSearchChips.push(this.searchCriteria.length - 1);
-        });
-
-        // Close the dialog and reset selectedExperienceNames
-        this.dialogExperienceName = false;
-        this.selectedExperienceNames = [];
 
         // Call search
         this.performFilter();
@@ -597,6 +688,108 @@ methods: {
 
     handleAddNewActivity() {
         this.$router.push({ name: "instructorAddActivity" });
+    },
+
+    async fetchExperienceData() {
+        try {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+
+            const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/`;
+            const response = await axios.get(apiURL, { headers: { token }});
+            this.experienceData = response.data.sort((a, b) => {
+                return a.experienceCategory.localeCompare(b.experienceCategory);
+            })
+            console.log('this.experienceData: ', this.experienceData);
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    removeExperienceName(index) {
+        const [removedExperience] = this.selectedExperienceNames.splice(index, 1);
+        
+        // Add the removed activity back into activityData
+        this.experienceData.push(removedExperience);
+        this.experienceData.sort((a, b) => a.experienceCategory.localeCompare(b.experienceCategory));
+    },
+
+    selectExperienceName(selectedExperienceName) {
+        this.selectedExperienceNames.push(selectedExperienceName);
+        // Remove the selected activity from the activityData list
+        this.experienceData = this.experienceData.filter(experience => experience._id !== selectedExperienceName._id);
+    },
+
+
+    cancelExperienceNameSearch() {
+        this.selectedExperienceNames = [];
+        this.experienceNameSearch = "";
+        this.dialogExperienceName = false;
+    },
+
+    async submitExperienceNameSearch() {
+        // Transform selectedActivities into the desired format for searchCriteria
+        const newSearchCriteria = this.selectedExperienceNames.map(experience => ({
+            category: "Experience Name",
+            term: experience.experienceName
+        }));
+
+        // Calculate the starting index for new chips
+        const startIndexForNewChips = this.searchCriteria.length;
+
+        // Append the new search criteria to the existing searchCriteria array
+        this.searchCriteria = [...this.searchCriteria, ...newSearchCriteria];
+
+        // Update selectedSearchChips to include the indices of the newly added chips
+        this.selectedSearchChips = [
+            ...this.selectedSearchChips,
+            ...newSearchCriteria.map((_, index) => startIndexForNewChips + index)
+        ];
+
+        
+        await this.fetchActivitiesByExperience();
+
+        // Optionally, if you want to clear selectedActivities after adding them as chips
+        this.selectedExperienceNames = [];
+
+        this.experienceNameSearch = "";
+
+        // Close the dialog
+        this.dialogExperienceName = false;
+
+        this.performFilter();
+    },
+
+    async fetchActivitiesByExperience() {
+        // Extract experience IDs from selectedExperiences
+        const experienceIDs = this.selectedExperienceNames.map(experience => experience._id);
+
+        try {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/by-experience`;
+
+            const response = await axios.post(apiURL, {
+                experienceIDs: experienceIDs
+            }, {
+                headers: { token }
+            });
+
+            this.experienceBasedActivities = response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    updateExperienceNameSearchApplied() {
+        // Check if there's at least one selected "Experience Name" chip
+        const hasSelectedExperienceNameChip = this.selectedSearchChips.some(chipIndex => {
+            const criteria = this.searchCriteria[chipIndex];
+            return criteria && criteria.category === "Experience Name";
+        });
+
+        // Update activitySearchApplied based on the condition
+        this.experienceNameSearchApplied = hasSelectedExperienceNameChip;
     }
 }
 
@@ -619,5 +812,16 @@ methods: {
 
 .highlight-red {
     color: #c8102e;
+}
+
+.experience-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.invisible-icon {
+    color: transparent;
 }
 </style>

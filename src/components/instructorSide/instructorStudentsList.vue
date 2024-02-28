@@ -45,6 +45,7 @@
                       <v-list-item
                         v-for="item in searchMenuItems"
                         :key="item"
+                        @click="updateSearchCriteria(item)"
                       >
                         <v-list-item-title>{{ item }}</v-list-item-title>
                       </v-list-item>
@@ -281,6 +282,10 @@
         name: "instructorSpecificStudent",
         params: { userID: student._id },
       });
+    },
+
+    updateSearchCriteria(item) {
+      
     },
   
   
