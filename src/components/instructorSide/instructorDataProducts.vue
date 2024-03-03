@@ -88,6 +88,38 @@
             }
         },
   
+        async downloadAllGoalDataAsCSV() {
+            try {
+            const user = useLoggedInUserStore();
+            let token = user.token;
+            // Fetch JSON data from the API endpoint
+            const response = await axios.get(import.meta.env.VITE_ROOT_API +'/instructorSideData/data-product/goal-forms/', { headers: { token } });
+            const jsonData = response.data;
+    
+            // Convert JSON to CSV format
+            const csvData = this.convertGoalSettingFormToCSV(jsonData);
+
+            // Add UTF-8 Byte Order Mark (BOM)
+            const bom = '\uFEFF';
+    
+            // Create a Blob containing the CSV data
+            const blob = new Blob([bom + csvData], { type: 'text/csv;charset=utf-8' });
+    
+            // Create a download link and trigger the download
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'goalData.csv';
+            document.body.appendChild(link);
+            link.click();
+    
+            // Clean up
+            URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+            } catch (error) {
+            this.handleError('Error downloading data:', error);
+            }
+        },
   
       async downloadAllExitDataAsCSV() {
         try {
@@ -116,36 +148,6 @@
           document.body.removeChild(link);
         } catch (error) {
           this.handleError(error);
-        }
-      },
-  
-      async downloadAllGoalDataAsCSV() {
-        try {
-          const user = useLoggedInUserStore();
-          let token = user.token;
-          // Fetch JSON data from the API endpoint
-          const response = await axios.get(import.meta.env.VITE_ROOT_API +'/studentSideData/goalForms/all/', { headers: { token } });
-          const jsonData = response.data;
-  
-          // Convert JSON to CSV format
-          const csvData = this.convertGoalSettingFormToCSV(jsonData);
-  
-          // Create a Blob containing the CSV data
-          const blob = new Blob([csvData], { type: 'text/csv' });
-  
-          // Create a download link and trigger the download
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = 'goalData.csv';
-          document.body.appendChild(link);
-          link.click();
-  
-          // Clean up
-          URL.revokeObjectURL(url);
-          document.body.removeChild(link);
-        } catch (error) {
-          this.handleError('Error downloading data:', error);
         }
       },
   
