@@ -126,14 +126,17 @@
           const user = useLoggedInUserStore();
           let token = user.token;
           // Fetch JSON data from the API endpoint
-          const response = await axios.get(import.meta.env.VITE_ROOT_API +'/studentSideData/exitForms/all', { headers: { token } });
+          const response = await axios.get(import.meta.env.VITE_ROOT_API +'/instructorSideData/data-product/exit-forms', { headers: { token } });
           const jsonData = response.data;
   
           // Convert JSON to CSV format
           const csvData = this.convertExitFormToCSV(jsonData);
 
+          // Add UTF-8 Byte Order Mark (BOM)
+          const bom = '\uFEFF';
+
           // Create a Blob containing the CSV data
-          const blob = new Blob([csvData], { type: 'text/csv' });
+          const blob = new Blob([bom + csvData], { type: 'text/csv;charset=utf-8' });
   
           // Create a download link and trigger the download
           const url = URL.createObjectURL(blob);
@@ -166,7 +169,7 @@
           "_id": "goal_id",
           "organizationID": "org_id",
           "userID": "user_id",
-          "semester": "semester",
+          "sessionName": "session",
           "experienceID": "experience",
           "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
           "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
@@ -361,7 +364,7 @@
         "organizationID": "org_id",
         "userID": "user_id",
         "goalSettingFormID": "goal_id",
-        "semester": "semester",
+        "sessionName": "session",
         "createdAt": "created_at",
         "updatedAt": "updated_at",
         // Continue mapping other fields as needed...
@@ -575,7 +578,7 @@
           "_id",
           "organizationID",
           "userID",
-          "semester",
+          "sessionName",
           "experienceID",
       ];
   
@@ -741,8 +744,8 @@
             "_id",
             "organizationID",
             "userID",
-            "semester",
-            "experienceID._id",
+            "sessionName",
+            "experienceID",
             "goalSettingFormID",
             "exitForm.progressMade.aspirationOneProgressResults",
             "exitForm.progressMade.aspirationTwoProgressResults",
