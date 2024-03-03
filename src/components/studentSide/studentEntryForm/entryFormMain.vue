@@ -251,7 +251,6 @@
             </v-card>
         </v-dialog>
 
-
 </template>
 
 <script>
@@ -292,6 +291,8 @@ export default {
                     { id: 6, label: "Prefer not to answer", checked: false },
                 ],
                 otherPronouns: '',
+                commentsByStaff: '',
+                issuesConcernsTriggers: '',
                 enrolledUHInfo: {
                     uhStatus: '',
                     uhEmail: '',

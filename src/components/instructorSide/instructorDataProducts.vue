@@ -53,35 +53,40 @@
     },
     methods: {
 
-      async downloadEntryDataAsCSV() {
-          try {
-              const user = useLoggedInUserStore();
-              let token = user.token;
-              // Fetch JSON data from the API endpoint
-              const response = await axios.get(import.meta.env.VITE_ROOT_API + '/studentSideData/studentInformation/all', { headers: { token } });
-              const jsonData = response.data.data;
-  
-              // Convert JSON to CSV format using the renamed headers
-              const csvData = this.convertEntryFormToCSV(jsonData);
-  
-              // Create a Blob containing the CSV data
-              const blob = new Blob([csvData], { type: 'text/csv' });
-  
-              // Create a download link and trigger the download
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = 'entryData.csv';
-              document.body.appendChild(link);
-              link.click();
-  
-              // Clean up
-              URL.revokeObjectURL(url);
-              document.body.removeChild(link);
-          } catch (error) {
-              this.handleError('Error downloading data:', error);
-          }
-      },
+        async downloadEntryDataAsCSV() {
+            console.log('downloadEntryDataAsCSV');
+            try {
+                const user = useLoggedInUserStore();
+                let token = user.token;
+                // Fetch JSON data from the API endpoint
+                const response = await axios.get(import.meta.env.VITE_ROOT_API + '/instructorSideData/data-product/entry-forms', { headers: { token } });
+                console.log('response: ', response);
+                const jsonData = response.data.data;
+
+                // Convert JSON to CSV format using the renamed headers
+                const csvData = this.convertEntryFormToCSV(jsonData);
+
+                // Add UTF-8 Byte Order Mark (BOM)
+                const bom = '\uFEFF';
+
+                // Create a Blob containing the CSV data with BOM
+                const blob = new Blob([bom + csvData], { type: 'text/csv;charset=utf-8;' });
+
+                // Create a download link and trigger the download
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'entryData.csv';
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up
+                URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+            } catch (error) {
+                this.handleError('Error downloading data:', error);
+            }
+        },
   
   
       async downloadAllExitDataAsCSV() {
