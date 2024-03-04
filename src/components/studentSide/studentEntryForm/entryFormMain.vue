@@ -260,7 +260,8 @@ import EntryFormGradProf from './entryFormGradProf.vue';
 import EntryFormReview from './entryFormReview.vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from 'axios';
-import debounce from 'vue-debounce';
+import debounce from 'lodash.debounce';
+
 
 export default {
     name: "test",
@@ -270,10 +271,6 @@ export default {
         EntryFormGradProf,
         EntryFormReview
     },
-    directives: {
-        debounce
-    },
-
     data() {
         return {
             currentStep: 0,
@@ -368,6 +365,10 @@ export default {
             formID: null,
         }
     },
+    created() {
+        // Initialize the debounced function
+        this.debouncedUpdateStudentInformation = debounce(this.updateStudentInformation, 1000);
+    },
     mounted() {
         this.originalStudentInformation = this.deepClone(this.studentInformation);
         const loggedInUserStore = useLoggedInUserStore();
@@ -391,6 +392,7 @@ export default {
                 if (this.isFirstInput) {
                     this.handleFirstInput();
                 } else {
+                    // Use the debounced method for subsequent updates
                     this.handleInput();
                 }
             },
@@ -469,34 +471,35 @@ export default {
             }
         },
         submitForm() {
+            // Assuming `formID` holds the ID of the form being updated
             const user = useLoggedInUserStore();
             const token = user.token;
-            const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
+            const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
 
-            axios.post(apiURL, {
-                studentInformation: this.studentInformation
-            }, {
-                headers: { token }
-            }).then(response => {
-                this.formSubmitSuccess = true;
+            // Set completed to true
+            const formData = { ...this.studentInformation, completed: true };
 
-                // Directly check the form completion status
-                user.checkFormCompletion();
-
-                // Show the success message and navigate to the dashboard
-                this.$router.push({ 
-                name: 'studentDashboard',
-                params: {
-                    toastType: 'success',
-                    toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--create'
-                }
+            axios.patch(apiURL, formData, { headers: { token } })
+                .then(response => {
+                    this.formSubmitSuccess = true;
+                    // Update form completion status in the user store or wherever it's needed
+                    user.checkFormCompletion();
+                    // Navigate to dashboard with success message
+                    this.$router.push({ 
+                        name: 'studentDashboard',
+                        params: {
+                            toastType: 'success',
+                            toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
+                            toastPosition: 'top-right',
+                            toastCSS: 'Toastify__toast--create'
+                        }
+                    });
+                })
+                .catch(error => {
+                    this.handleError(error);
                 });
-            }).catch(error => {
-                this.handleError(error);
-            });
-            },
+        },
+
 
 
         cleanupFormData() {
@@ -647,13 +650,13 @@ export default {
                     }
                 }
             },
-            handleInput: debounce(function() {
-                this.updateStudentInformation();
-            }, 1000),
             updateStudentInformation() {
+                console.log("updateStudentInformation");
+                // Your update logic here
                 const user = useLoggedInUserStore();
                 const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
+                console.log('apiURL: ', apiURL);
                 console.log("Updating formData:", this.studentInformation);
 
                 axios.patch(apiURL, { studentInformation: this.studentInformation }, { headers: { token }})
@@ -662,7 +665,12 @@ export default {
                     })
                     .catch(error => {
                         this.handleError(error);
-                    })
+                    });
+            },
+
+            handleInput() {
+                // Instead of calling updateStudentInformation directly, call the debounced version
+                this.debouncedUpdateStudentInformation();
             },
     },
     beforeRouteLeave(to, from, next) {
