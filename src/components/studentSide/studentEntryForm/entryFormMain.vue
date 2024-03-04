@@ -258,10 +258,9 @@ import EntryFormDemo from './entryFormDemo.vue';
 import EntryFormEnrolled from './entryFormEnrolled.vue';
 import EntryFormGradProf from './entryFormGradProf.vue';
 import EntryFormReview from './entryFormReview.vue';
-
-
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from 'axios';
+import debounce from 'vue-debounce';
 
 export default {
     name: "test",
@@ -270,6 +269,9 @@ export default {
         EntryFormEnrolled,
         EntryFormGradProf,
         EntryFormReview
+    },
+    directives: {
+        debounce
     },
 
     data() {
@@ -362,6 +364,8 @@ export default {
             nextFunction: null,
             formSubmitSuccess: false,
             originalStudentInformation: {},
+            isFirstInput: true,
+            formID: null,
         }
     },
     mounted() {
@@ -380,6 +384,18 @@ export default {
             // Default to English
             this.$i18n.locale = 'en';
         }
+    },
+    watch: {
+        studentInformation: {
+            handler(newVal, oldVal) {
+                if (this.isFirstInput) {
+                    this.handleFirstInput();
+                } else {
+                    this.handleInput();
+                }
+            },
+            deep: true,
+        },
     },
     computed: {
         showAltLabels() {
@@ -601,6 +617,52 @@ export default {
 
             isObjectEqual(obj1, obj2) {
                 return JSON.stringify(obj1) === JSON.stringify(obj2);
+            },
+
+
+            async handleFirstInput() {
+                if (this.isFirstInput) {
+                    this.isFirstInput = false;
+
+                    const formData = {
+                        ...this.studentInformation,
+                        completed: false,
+                    };
+
+                    try {
+                        const user = useLoggedInUserStore();
+                        const token = user.token;
+                        const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
+
+                        console.log("Sending formData:", formData);
+
+                        const response = await axios.post(apiURL, formData, { headers: { token } })
+
+                        this.formID = response.data.entryForm._id;
+                        console.log('formID: ', this.formID);
+
+                        console.log("Form created: ", response.data);
+                    } catch (error) {
+                        this.handleError(error);
+                    }
+                }
+            },
+            handleInput: debounce(function() {
+                this.updateStudentInformation();
+            }, 1000),
+            updateStudentInformation() {
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
+                console.log("Updating formData:", this.studentInformation);
+
+                axios.patch(apiURL, { studentInformation: this.studentInformation }, { headers: { token }})
+                    .then(response => {
+                        console.log("Form updated: ", response.data);
+                    })
+                    .catch(error => {
+                        this.handleError(error);
+                    })
             },
     },
     beforeRouteLeave(to, from, next) {
