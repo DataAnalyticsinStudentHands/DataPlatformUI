@@ -369,12 +369,13 @@ export default {
         // Initialize the debounced function
         this.debouncedUpdateStudentInformation = debounce(this.updateStudentInformation, 1000);
     },
-    mounted() {
+    async mounted() {
         this.originalStudentInformation = this.deepClone(this.studentInformation);
         const loggedInUserStore = useLoggedInUserStore();
+        loggedInUserStore.checkFormCompletion();
         // Check the hasCompletedEntryForm state
         if (!loggedInUserStore.hasCompletedEntryForm) {
-            this.showNewUserDialog = true; // Open the dialog if the condition is met
+            this.checkIncompleteForm();
         }
 
         // Translations
@@ -672,6 +673,22 @@ export default {
                 // Instead of calling updateStudentInformation directly, call the debounced version
                 this.debouncedUpdateStudentInformation();
             },
+
+            async checkIncompleteForm() {
+                console.log('checkIncompleteForm');
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-form-incomplete/`;
+                const response = await axios.get(apiURL, { headers: { token } });
+                if (!response.data.entryForm) {
+                    this.showNewUserDialog = true; // Open the dialog if the condition is met
+                } else {
+                    console.log('incomplete entry form found');
+                    this.isFirstInput = false;
+                    this.studentInformation = response.data.entryForm.studentInformation;
+                    this.formID = response.data.entryForm._id;
+                }
+            }
     },
     beforeRouteLeave(to, from, next) {
         // If the user is logged out, allow navigation without confirmation

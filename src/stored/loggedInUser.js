@@ -175,6 +175,7 @@ export const useLoggedInUserStore = defineStore({
       this.languagePreference = langPref;
     },
     async checkFormCompletion() {
+      console.log('checkFormCompletion');
       try {
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }
