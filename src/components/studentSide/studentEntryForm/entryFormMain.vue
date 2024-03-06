@@ -237,7 +237,7 @@
                     Confirm Navigation
                 </v-card-title>
                 <v-card-text>
-                    <p>Are you sure you want to leave? <strong>Unsaved changes will be lost.</strong></p>
+                    <p>Are you sure you want to leave? <strong>Your responses will be saved for later.</strong></p>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -246,6 +246,27 @@
                     </v-btn>
                     <v-btn color="red darken-2" text @click="confirmLeave">
                         Yes, Leave
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Incomplete Form Found Dialog -->
+        <v-dialog v-model="showIncompleteFormFoundDialog" persistent max-width="500px">
+            <v-card>
+                <v-card-title class="text-h5">
+                    Resume Your Progress?
+                </v-card-title>
+                <v-card-text>
+                    <p>We found an incomplete Student Entry Form from your last session. Would you like to continue where you left off or start a new form?</p>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn text @click="startNew">
+                        Start New
+                    </v-btn>
+                    <v-btn color="red darken-2" text @click="resumeProgress">
+                        Continue
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -363,6 +384,8 @@ export default {
             originalStudentInformation: {},
             isFirstInput: true,
             formID: null,
+            showIncompleteFormFoundDialog: false,
+            tempIncompleteForm: {},
         }
     },
     created() {
@@ -679,15 +702,39 @@ export default {
                 const user = useLoggedInUserStore();
                 const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-form-incomplete/`;
-                const response = await axios.get(apiURL, { headers: { token } });
-                if (!response.data.entryForm) {
-                    this.showNewUserDialog = true; // Open the dialog if the condition is met
-                } else {
-                    console.log('incomplete entry form found');
-                    this.isFirstInput = false;
-                    this.studentInformation = response.data.entryForm.studentInformation;
-                    this.formID = response.data.entryForm._id;
+                try {
+                    const response = await axios.get(apiURL, { headers: { token } });
+                    if (!response.data.entryForm) {
+                        this.showNewUserDialog = true; // Open the dialog if the condition is met
+                    } else {
+                        this.tempIncompleteForm = response.data;
+                        this.showIncompleteFormFoundDialog = true;
+                    }
+                } catch (error) {
+                    this.handleError(error);
                 }
+            },
+
+            async startNew() {
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.tempIncompleteForm.entryForm._id}`;
+
+                try {
+                    await axios.delete(apiURL, { headers: { token } });
+                    this.tempIncompleteForm = {};
+                    this.showIncompleteFormFoundDialog = false;
+                } catch (error) {
+                    this.handleError(error);
+                }
+            },
+
+
+            resumeProgress() {
+                this.isFirstInput = false;
+                this.studentInformation = this.tempIncompleteForm.entryForm.studentInformation;
+                this.formID = this.tempIncompleteForm.entryForm._id;
+                this.showIncompleteFormFoundDialog = false;
             }
     },
     beforeRouteLeave(to, from, next) {
