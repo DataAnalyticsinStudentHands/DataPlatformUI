@@ -383,7 +383,6 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-{{ goalForm }}
 </template>
 
 <script>
@@ -397,6 +396,7 @@ import GoalFormAsp from './goalFormAsp.vue';
 import GoalFormGoals from './goalFormGoals.vue';
 import GoalFormReview from './goalFormReview.vue';
 import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
 
 export default {
 name: "GoalSettingForm",
@@ -562,17 +562,18 @@ async mounted() {
 },
 watch: {
     currentStep(newVal) {
-        // Convert newVal to a number and update currentStep
-        this.currentStep = Number(newVal);
+        const newStep = Number(newVal); // Convert newVal to a number
 
-        // Check if the converted currentStep is higher than the highest step in allowedStepsForJump
-        if (this.allowedStepsForJump.length === 0 || this.currentStep > Math.max(...this.allowedStepsForJump)) {
-            this.allowedStepsForJump.push(this.currentStep);
+        // Update currentStep with the new value
+        this.currentStep = newStep;
+
+        // Specifically track visitation to step 5
+        if (newStep === 5 && !this.allowedStepsForJump.includes(newStep)) {
+            this.allowedStepsForJump.push(newStep);
         }
     },
     goalForm: {
         handler(newVal, oldVal) {
-            console.log('this.initialDataLoaded: ', this.initialDataLoaded);
             if (this.initialDataLoaded && this.isFirstInput) {
                 console.log('newVal: ', newVal);
                 console.log('oldVal: ', oldVal);
@@ -775,19 +776,22 @@ methods: {
         this.selectedExperience = value;
     },
 
-    stepVisited(step) {
-        if (!this.visitedSteps.includes(step)) {
-            this.visitedSteps.push(step);
-        }
-    },
-
     checkJump(step) {
-        // Check if the current step is valid
-        const isCurrentStepValid = this.isStepValid(this.currentStep);
+        const stepToSectionMap = {
+            1: 'backgroundSection',
+            2: 'growthSection',
+            3: 'aspirationsSection',
+            4: 'goalsSection',
+        };
 
-        // Allow jump if the step is allowed and the current step is valid
-        return isCurrentStepValid && this.allowedStepsForJump.includes(step);
+        const section = stepToSectionMap[step];
+        const isCurrentStepValid = this.isStepValid(this.currentStep);
+        const isSectionEdited = this.isSectionEdited(section);
+
+        // User can jump if the current step is valid and the corresponding section is edited
+        return isCurrentStepValid && (isSectionEdited || this.allowedStepsForJump.includes(step));
     },
+
 
     isStepValid(step) {
         switch(step) {
@@ -950,33 +954,31 @@ methods: {
             const user = useLoggedInUserStore();
             const token = user.token;
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-            console.log('this.shouldINcludeHichProject: ', this.shouldIncludeHichProject);
-            console.log('this.hichProject: ', this.hichProject);
-            // await axios.patch(apiURL, { completed: true }, { headers: { token }});
-            // this.formSubmitSuccess = true;
-            // const motivatingMessages = [
-            //     "Goals successfully set! You're on the right track!",
-            //     "Great job setting your goals! Let's make them happen!",
-            //     "Goals locked in! Believe in yourself and you'll achieve them.",
-            //     "You've set your goals! Now, let's conquer them together!",
-            //     "Your goals are set! Keep pushing forward and you'll achieve them.",
-            //     "Way to go! Every goal you set brings you one step closer to success.",
-            // ];
-            // const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+            await axios.patch(apiURL, { completed: true }, { headers: { token }});
+            this.formSubmitSuccess = true;
+            const motivatingMessages = [
+                "Goals successfully set! You're on the right track!",
+                "Great job setting your goals! Let's make them happen!",
+                "Goals locked in! Believe in yourself and you'll achieve them.",
+                "You've set your goals! Now, let's conquer them together!",
+                "Your goals are set! Keep pushing forward and you'll achieve them.",
+                "Way to go! Every goal you set brings you one step closer to success.",
+            ];
+            const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
 
-            // // Update pinia store
-            // this.updateChecklistStore();
+            // Update pinia store
+            this.updateChecklistStore();
 
         
-            // this.$router.push({ 
-            //     name: 'studentDashboard',
-            //     params: {
-            //         toastType: 'success',
-            //         toastMessage: this.$t(randomMessage),
-            //         toastPosition: 'top-right',
-            //         toastCSS: 'Toastify__toast--create'
-            //     }
-            // });
+            this.$router.push({ 
+                name: 'studentDashboard',
+                params: {
+                    toastType: 'success',
+                    toastMessage: this.$t(randomMessage),
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                }
+            });
 
         } catch (error) {
             this.handleError(error);
@@ -1187,11 +1189,50 @@ methods: {
     resumeProgress() {
         this.isFirstInput = false;
         this.goalForm = this.tempIncompleteForm.incompleteForm.goalForm;
+        console.log('goalForm', this.goalForm);
         this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID;
         console.log('this.tempIncompleteForm: ', this.tempIncompleteForm);
         this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
+        this.goalForm.hichProject = this.tempIncompleteForm.incompleteForm.hichProject;
         this.showIncompleteFormFoundDialog = false;
-    }
+    },
+
+    isSectionEdited(section) {
+        if (section === 'backgroundSection') {
+            // Compare the relevant parts of goalForm against their original values
+            const originalCommunityEngagement = this.originalGoalForm.communityEngagement;
+            const currentCommunityEngagement = this.goalForm.communityEngagement;
+            const originalResearchExperience = this.originalGoalForm.researchExperience;
+            const currentResearchExperience = this.goalForm.researchExperience;
+
+            // Use lodash's isEqual to perform deep comparison
+            const communityEngagementEdited = !isEqual(originalCommunityEngagement, currentCommunityEngagement);
+            const researchExperienceEdited = !isEqual(originalResearchExperience, currentResearchExperience);
+
+            return communityEngagementEdited || researchExperienceEdited;
+        } else if (section === 'growthSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalGrowthGoal = this.originalGoalForm.growthGoal;
+            const currentGrowthGoal = this.goalForm.growthGoal;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalGrowthGoal, currentGrowthGoal);
+        } else if (section === 'aspirationsSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalAspirations = this.originalGoalForm.aspirations;
+            const currentAspirations = this.goalForm.aspirations;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalAspirations, currentAspirations);
+        } else if (section === 'goalsSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalGoals = this.originalGoalForm.goals;
+            const currentGoals = this.goalForm.goals;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalGoals, currentGoals);
+        }
+    },
 
 
 },

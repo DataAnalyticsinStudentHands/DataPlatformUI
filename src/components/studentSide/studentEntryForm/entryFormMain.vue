@@ -57,6 +57,7 @@
                             icon="mdi-account"
                             value="0"
                             :error="demoError"
+                            :editable="checkJump(0)"
                         ></v-stepper-item>
 
                         <v-divider></v-divider>
@@ -67,6 +68,7 @@
                             icon="mdi-school"
                             value="1"
                             :error="degreeError"
+                            :editable="checkJump(1)"
                         ></v-stepper-item>
 
                         <v-divider></v-divider>
@@ -77,6 +79,7 @@
                             icon="mdi-account-school"
                             value="2"
                             :error="gradProfError"
+                            :editable="checkJump(2)"
                         ></v-stepper-item>
 
                         <v-divider></v-divider>
@@ -86,6 +89,7 @@
                             :title="$t('Review')"
                             icon="mdi-check-bold"
                             value="3"
+                            :editable="checkJump(3)"
                         ></v-stepper-item>
                     </v-stepper-header>
                     <div id="progress-bar" :style="{ width: progressBarWidth }"></div>
@@ -282,6 +286,7 @@ import EntryFormReview from './entryFormReview.vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from 'axios';
 import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
 
 
 export default {
@@ -386,6 +391,7 @@ export default {
             formID: null,
             showIncompleteFormFoundDialog: false,
             tempIncompleteForm: {},
+            allowedStepsForJump: [0],
         }
     },
     created() {
@@ -421,6 +427,17 @@ export default {
                 }
             },
             deep: true,
+        },
+        currentStep(newVal) {
+            const newStep = Number(newVal); // Convert newVal to a number
+
+            // Update currentStep with the new value
+            this.currentStep = newStep;
+
+            // Specifically track visitation to step 5
+            if (newStep === 3 && !this.allowedStepsForJump.includes(newStep)) {
+                this.allowedStepsForJump.push(newStep);
+            }
         },
     },
     computed: {
@@ -648,6 +665,7 @@ export default {
 
 
             async handleFirstInput() {
+                console.log('handleFirstInput');
                 if (this.isFirstInput) {
                     this.isFirstInput = false;
 
@@ -735,7 +753,80 @@ export default {
                 this.studentInformation = this.tempIncompleteForm.entryForm.studentInformation;
                 this.formID = this.tempIncompleteForm.entryForm._id;
                 this.showIncompleteFormFoundDialog = false;
-            }
+            },
+
+            updateOriginalStudentInformation(newVal) {
+                this.originalStudentInformation = this.deepClone(newVal);;
+            },
+
+            checkJump(step) {
+                const stepToSectionMap = {
+                    1: 'demoSection',
+                    2: 'degreeSection',
+                    3: 'gradProfSection',
+                };
+
+                const section = stepToSectionMap[step];
+                const isCurrentStepValid = this.isStepValid(this.currentStep);
+                const isSectionEdited = this.isSectionEdited(section);
+
+                // User can jump if the current step is valid and the corresponding section is edited
+                return isCurrentStepValid && (isSectionEdited || this.allowedStepsForJump.includes(step));
+            },
+
+            isStepValid(step) {
+                switch(step) {
+                    case 0: return !this.demoError;
+                    case 1: return !this.degreeError;
+                    case 2: return !this.gradProfError;
+                    default: return true;
+                }
+            },
+
+            isSectionEdited(section) {
+                if (section === 'demoSection') {
+                    // Extract the demo section parts from both the current and original student information
+                    const originalDemo = {
+                        cityOrigin: this.originalStudentInformation.cityOrigin,
+                        primaryLanguage: this.originalStudentInformation.primaryLanguage,
+                        otherLanguages: this.originalStudentInformation.otherLanguages,
+                        pronouns: this.originalStudentInformation.pronouns,
+                        otherPronouns: this.originalStudentInformation.otherPronouns,
+                        commentsByStaff: this.originalStudentInformation.commentsByStaff,
+                        issuesConcernsTriggers: this.originalStudentInformation.issuesConcernsTriggers,
+                    };
+
+                    const currentDemo = {
+                        cityOrigin: this.studentInformation.cityOrigin,
+                        primaryLanguage: this.studentInformation.primaryLanguage,
+                        otherLanguages: this.studentInformation.otherLanguages,
+                        pronouns: this.studentInformation.pronouns,
+                        otherPronouns: this.studentInformation.otherPronouns,
+                        commentsByStaff: this.studentInformation.commentsByStaff,
+                        issuesConcernsTriggers: this.studentInformation.issuesConcernsTriggers,
+                    };
+
+                    // Use lodash's isEqual to perform a deep comparison
+                    return !isEqual(originalDemo, currentDemo);
+                } else if (section === 'degreeSection') {
+                    const originalDegree = this.originalStudentInformation.enrolledUHInfo;
+                    const currentDegree = this.studentInformation.enrolledUHInfo;
+
+                    return !isEqual(originalDegree, currentDegree);
+                } else if (section === 'gradProfSection') {
+                    const originalGradProf = {
+                        graduateProfessionalSchool: this.originalStudentInformation.graduateProfessionalSchool,
+                        specializedDegCert: this.originalStudentInformation.specializedDegCert,
+                    }
+
+                    const currentGradProf = {
+                        graduateProfessionalSchool: this.studentInformation.graduateProfessionalSchool,
+                        specializedDegCert: this.studentInformation.specializedDegCert,
+                    }
+
+                    return !isEqual(originalGradProf, currentGradProf);
+                }
+            },
     },
     beforeRouteLeave(to, from, next) {
         // If the user is logged out, allow navigation without confirmation

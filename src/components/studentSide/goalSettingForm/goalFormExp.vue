@@ -180,6 +180,17 @@ watch: {
         }
     },
 
+    goalForm: {
+        handler(newVal) {
+            if (newVal && newVal.hichProject) {
+                // Assuming hichProject in goalForm is an array of selected project names
+                this.hichProject = newVal.hichProject;
+            }
+        },
+        deep: true, // This is to ensure we react to nested property changes
+        immediate: true, // This ensures the watcher runs on initial load
+    },
+
     hichProject(newVal) {
         if ((this.prevHichProject.length > 0 && newVal.length === 0) || newVal.length > 0) {
             this.$emit("update-hich-project", newVal);
@@ -403,6 +414,29 @@ methods: {
                 await axios.patch(apiURL, {expRegistrationID: selectedExperienceObject.expRegistrationID}, { headers: { token } });
             } catch (error) {
                 this.handleError(error);
+            } finally {
+                this.formSubmitted = true;
+                const { valid } = await this.$refs.form.validate();
+
+                // Check for HICH Project selection if required
+                let hichProjectValid = true;
+                if (this.shouldShowHichCheckboxes && this.hichProject.length === 0) {
+                    hichProjectValid = false;
+                    toast.error(this.$t("Please select at least one HICH Project."), {
+                        position: 'top-right',
+                        toastClassName: 'Toastify__toast--delete',
+                        multiple: false
+                    });
+                }
+
+                if (!valid || !hichProjectValid) {
+                    this.$emit('form-invalid');
+                    toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+                        position: 'top-right',
+                        toastClassName: 'Toastify__toast--delete',
+                        multiple: false
+                    });
+                }
             }
         }
     }
