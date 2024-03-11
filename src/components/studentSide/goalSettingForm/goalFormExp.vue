@@ -100,7 +100,8 @@ props: {
     goalForm: Object,
     experiences: Array,
     experienceID: String,
-    expRegistrationID: String, 
+    expRegistrationID: String,
+    incompleteFormID: String
 },
 emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form", "update-experiences", "update-experienceID"],
 data() {
@@ -161,6 +162,7 @@ watch: {
     selectedExperience(newVal, oldVal) {
       if (newVal && newVal !== oldVal) {
         this.checkExistingForm(newVal);
+        this.updateIncompleteForm(newVal);
       }
       if (!newVal) {
         this.experienceFoundWarning = null;
@@ -200,7 +202,7 @@ computed: {
     formattedExperiences() {
       return this.experiences.map(experience => ({
         text: `${experience.experienceCategory}: ${experience.experienceName}`,
-        value: experience.experienceID
+        value: experience.experienceID,
       }));
     },
 
@@ -384,6 +386,26 @@ methods: {
             }
         }
     },
+
+    async updateIncompleteForm(value) {
+        console.log('this.selectedExperience: ', this.selectedExperience);
+        console.log('updateIncompleteForm: ', value);
+        console.log('incompleteFormID: ', this.incompleteFormID);
+
+        // Find the experience object from localExperiences that matches the selectedExperience
+        const selectedExperienceObject = this.localExperiences.find(exp => exp.experienceID === this.selectedExperience);
+        if (this.incompleteFormID) {
+            console.log('incompleteFormID found');
+            try {
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`
+                await axios.patch(apiURL, {expRegistrationID: selectedExperienceObject.expRegistrationID}, { headers: { token } });
+            } catch (error) {
+                this.handleError(error);
+            }
+        }
+    }
 
 
 
