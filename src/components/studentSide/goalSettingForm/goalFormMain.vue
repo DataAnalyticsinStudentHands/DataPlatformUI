@@ -383,6 +383,7 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
+{{ goalForm }}
 </template>
 
 <script>
@@ -949,31 +950,33 @@ methods: {
             const user = useLoggedInUserStore();
             const token = user.token;
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-            await axios.patch(apiURL, { completed: true }, { headers: { token }});
-            this.formSubmitSuccess = true;
-            const motivatingMessages = [
-                "Goals successfully set! You're on the right track!",
-                "Great job setting your goals! Let's make them happen!",
-                "Goals locked in! Believe in yourself and you'll achieve them.",
-                "You've set your goals! Now, let's conquer them together!",
-                "Your goals are set! Keep pushing forward and you'll achieve them.",
-                "Way to go! Every goal you set brings you one step closer to success.",
-            ];
-            const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+            console.log('this.shouldINcludeHichProject: ', this.shouldIncludeHichProject);
+            console.log('this.hichProject: ', this.hichProject);
+            // await axios.patch(apiURL, { completed: true }, { headers: { token }});
+            // this.formSubmitSuccess = true;
+            // const motivatingMessages = [
+            //     "Goals successfully set! You're on the right track!",
+            //     "Great job setting your goals! Let's make them happen!",
+            //     "Goals locked in! Believe in yourself and you'll achieve them.",
+            //     "You've set your goals! Now, let's conquer them together!",
+            //     "Your goals are set! Keep pushing forward and you'll achieve them.",
+            //     "Way to go! Every goal you set brings you one step closer to success.",
+            // ];
+            // const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
 
-            // Update pinia store
-            this.updateChecklistStore();
+            // // Update pinia store
+            // this.updateChecklistStore();
 
         
-            this.$router.push({ 
-                name: 'studentDashboard',
-                params: {
-                    toastType: 'success',
-                    toastMessage: this.$t(randomMessage),
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--create'
-                }
-            });
+            // this.$router.push({ 
+            //     name: 'studentDashboard',
+            //     params: {
+            //         toastType: 'success',
+            //         toastMessage: this.$t(randomMessage),
+            //         toastPosition: 'top-right',
+            //         toastCSS: 'Toastify__toast--create'
+            //     }
+            // });
 
         } catch (error) {
             this.handleError(error);
@@ -1124,13 +1127,20 @@ methods: {
 
     updateGoalForm() {
         console.log("updateGoalForm");
-        // Your update logic here
         const user = useLoggedInUserStore();
         const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
         console.log('apiURL: ', apiURL);
 
-        axios.patch(apiURL, { goalForm: this.goalForm }, { headers: { token }})
+        const { hichProject, ...restOfGoalForm } = this.goalForm;
+        console.log('hichProject: ', hichProject);
+        
+        const payload = {
+            goalForm: restOfGoalForm, 
+            hichProject,
+        };
+
+        axios.patch(apiURL, payload, { headers: { 'Authorization': `Bearer ${token}` }})
             .then(response => {
                 console.log("Form updated: ", response.data);
             })

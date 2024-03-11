@@ -15,6 +15,7 @@
     "chart.js": "^4.4.0",
     "crypto-hash": "^2.0.1",
     "lodash.debounce": "^4.0.8",
+    "lodash.isequal": "^4.5.0",
     "luxon": "^3.2.1",
     "pinia": "^2.0.32",
     "pinia-plugin-persistedstate": "^3.1.0",
