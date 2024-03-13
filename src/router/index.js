@@ -11,9 +11,8 @@ const routes = [
     },
     {
       path: '/test',
-      name: 'testInstructorStudentsList',
-      props: true,
-      component: () => import('../components/testInstructorStudentsList.vue')
+      name: 'test',
+      component: () => import('../components/instructorSide/instructorMailer/instructorMailerMain.vue'),
     },
     {
       path: '/studentEntryFormUpdate',
@@ -380,6 +379,19 @@ const routes = [
       path: '/instructorProgressMonitorContainer',
       name: 'instructorProgressMonitorContainer',
       component: () => import('../components/instructorSide/instructorProgressMonitor/instructorProgressMonitorContainer.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/instructorMailer',
+      name: 'instructorMailer',
+      component: () => import('../components/instructorSide/instructorMailer/instructorMailerMain.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
         if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {

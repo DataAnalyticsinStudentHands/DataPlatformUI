@@ -135,6 +135,7 @@
         try {
           const response = await axios.get(url, { headers: { token } });
           this.studentsWithoutEntryForm = response.data;
+          console.log('studentsWithoutEntryForm: ', this.studentsWithoutEntryForm);
         } catch (error) {
           this.handleError(error);
         } finally {
