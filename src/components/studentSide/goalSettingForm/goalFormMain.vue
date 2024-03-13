@@ -377,7 +377,7 @@
             <v-btn text @click="startNew">
                 Start New
             </v-btn>
-            <v-btn color="red darken-2" text @click="resumeProgress">
+            <v-btn color="red darken-2" text @click="continueProgress">
                 Continue
             </v-btn>
         </v-card-actions>
@@ -990,7 +990,10 @@ methods: {
         await user.checkFormCompletion();
     },
 
-    async handleUpdateForm() {   
+    async handleUpdateForm() {  
+        console.log('handleUpdateForm') 
+        console.log('foundDocumentId: ', this.foundDocumentId);
+        console.log('incompleteFormID: ', this.incompleteFormID);
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
@@ -998,11 +1001,13 @@ methods: {
         let updatedGoalForm = {
             goalForm: this.goalForm,
             // Conditionally add hichProject if it should be included
-            ...(this.shouldIncludeHichProject && { hichProject: this.goalForm.hichProject })
+            ...(this.shouldIncludeHichProject && { hichProject: this.goalForm.hichProject }),
+            tempIncompleteFormID: this.incompleteFormID
         };
 
         axios.put(apiURL, updatedGoalForm, { headers: { token } })
             .then(() => {
+                this.formSubmitSuccess = true;
                 const motivatingMessages = [
                     "Goals updated successfully! Keep pushing forward!",
                     "Great job updating your goals! Let's continue on this journey together!",
@@ -1186,7 +1191,7 @@ methods: {
         }
     },
 
-    resumeProgress() {
+    continueProgress() {
         this.isFirstInput = false;
         this.goalForm = this.tempIncompleteForm.incompleteForm.goalForm;
         console.log('goalForm', this.goalForm);
