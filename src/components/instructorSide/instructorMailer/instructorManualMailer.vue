@@ -28,64 +28,77 @@
         </v-col>
     </v-row>
     <v-row v-else-if="selection === 1 && !entryFormLoading">
-        <v-col cols="8">
-            <v-row>
-                <v-col>
-                    <v-card
-                        flat
-                        title="Students Without an Entry Form"
-                    >
-                        <template v-slot:text>
-                            <v-text-field
-                                v-model="studentSearch"
-                                label="Search"
-                                prepend-inner-icon="mdi-magnify"
-                                single-line
-                                variant="outlined"
-                                hide-details
-                            ></v-text-field>
+        <v-col cols="5">
+            <v-card
+                flat
+                title="Students Without an Entry Form"
+            >
+                <template v-slot:text>
+                    <v-text-field
+                        v-model="studentSearch"
+                        label="Search"
+                        prepend-inner-icon="mdi-magnify"
+                        single-line
+                        variant="outlined"
+                        hide-details
+                    ></v-text-field>
+                </template>
+                <v-data-table
+                    :headers="studentHeaders"
+                    :items="studentsWithoutEntryForm"
+                    item-value="_id"
+                    items-per-page="-1"
+                    class="scrollable-table"
+                    hover
+                    :search="studentSearch"
+                >
+                    <template v-slot:body="{ items }">
+                        <template v-for="item in items" :key="item._id">
+                            <tr
+                                @mouseover="hoveredItem = item._id"
+                                @mouseleave="hoveredItem = null"
+                                class="pointer-cursor student-row"
+                            >
+                                <td>
+                                    <div class="activity-content">
+                                        <td>{{ item.firstName }} {{ item.lastName }}</td>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="activity-content">
+                                        <td>{{ item.email }}</td>
+                                    </div>
+                                </td>
+                            </tr>
                         </template>
-                        <v-data-table
-                            :headers="studentHeaders"
-                            :items="studentsWithoutEntryForm"
-                            item-value="_id"
-                            items-per-page="-1"
-                            class="scrollable-table"
-                            hover
-                            :search="studentSearch"
-                        >
-                            <template v-slot:body="{ items }">
-                                <template v-for="item in items" :key="item._id">
-                                    <tr
-                                        @mouseover="hoveredItem = item._id"
-                                        @mouseleave="hoveredItem = null"
-                                        class="pointer-cursor student-row"
-                                    >
-                                        <td>
-                                            <div class="activity-content">
-                                                <td>{{ item.firstName }} {{ item.lastName }}</td>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="activity-content">
-                                                <td>{{ item.email }}</td>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </template>
-                            <template v-slot:bottom></template>
-                        </v-data-table>
-                    </v-card>
-                </v-col>
-            </v-row>
+                    </template>
+                    <template v-slot:bottom></template>
+                </v-data-table>
+            </v-card>
         </v-col>
-        <v-col>
-            Hello
+        <!-- Action Buttons Column -->
+        <v-col cols="2" class="text-center d-flex align-center justify-center">
+            <div>
+                <v-row class="mb-2">
+                <v-btn>
+                    <v-icon>mdi-chevron-double-right</v-icon>
+                </v-btn>
+                </v-row>
+                <v-row>
+                <v-btn>
+                    <v-icon>mdi-chevron-double-left</v-icon>
+                </v-btn>
+                </v-row>
+            </div>
+        </v-col>
+        <v-col cols="5">
+            <v-card
+                flat
+                title="Email Recipients"
+            ></v-card>
         </v-col>
     </v-row>
 </v-container>
-{{  }}
 </template>
 
 <script>
