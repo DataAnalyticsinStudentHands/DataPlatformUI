@@ -162,7 +162,12 @@
     </v-row>
     <v-row>
         <v-col cols="12">
-            <v-textarea></v-textarea>
+            <v-text-field label="Subject Header" hide-details></v-text-field>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="12">
+            <v-textarea label="Content"></v-textarea>
         </v-col>
     </v-row>
     <v-row>
