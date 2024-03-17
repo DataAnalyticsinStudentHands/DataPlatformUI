@@ -3,6 +3,9 @@
     <v-row>
         <v-col>
             <v-tabs v-model="tab" grow>
+            <v-tab value="Overview">
+              Overview
+            </v-tab>
             <v-tab value="manualMailer">
               Manual Mailer
             </v-tab>
