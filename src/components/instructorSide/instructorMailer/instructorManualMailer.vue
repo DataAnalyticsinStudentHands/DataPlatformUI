@@ -167,7 +167,12 @@
     </v-row>
     <v-row>
         <v-col cols="12">
-            <v-textarea label="Content"></v-textarea>
+            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @ready="onEditorReady"></ckeditor>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="12">
+            <v-btn @click="addStudentName">Add Student Name</v-btn>
         </v-col>
     </v-row>
     <v-row>
@@ -177,13 +182,20 @@
     </v-row>
 </div>
 </v-container>
+{{ editorData }}
 </template>
 
 <script>
 import axios from 'axios';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import CKEditor from '@ckeditor/ckeditor5-vue';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 export default {
     name: "InstructorManualMailer",
+    components: {
+        ckeditor: CKEditor.component
+    },
     data() {
         return {
             mailType: null,
@@ -212,6 +224,11 @@ export default {
             emailRecipients: [],
             selectedEmailRecipients: [],
             emailRecipientSearch: null,
+            editorInstance: null,
+            editor: ClassicEditor,
+            editorData: '',
+            editorConfig: {
+            },
         }
     },
 
@@ -350,6 +367,21 @@ export default {
             // Clear the selection after moving
             this.selectedEmailRecipients = [];
             this.selectedStudents = [];
+        },
+
+        onEditorReady(editorInstance) {
+            this.editorInstance = editorInstance;
+        },
+
+        addStudentName() {
+            const editor = this.editorInstance;
+            if (editor) {
+                editor.model.change(writer => {
+                    const placeholderText = writer.createText('{{STUDENT_NAME}}');
+                    const insertPosition = editor.model.document.selection.getFirstPosition();
+                    editor.model.insertContent(placeholderText, insertPosition);
+                });
+            }
         },
 
     },
