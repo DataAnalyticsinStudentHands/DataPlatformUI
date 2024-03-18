@@ -156,33 +156,112 @@
     </v-row>
     <v-row><v-col></v-col></v-row>
     <v-row>
-        <v-col class="d-flex text-h6">
-            Email Message
+        <v-col>
+            <v-checkbox
+                v-model="includeSpanish"
+                label="Include Translation"
+                hide-details    
+            ></v-checkbox>
+            <div class="text-subtitle-2 ml-4">Write a message in English and Spanish. Students will receive one based on their "Language Preference"</div>
         </v-col>
     </v-row>
-    <v-row>
-        <v-col cols="12">
-            <v-text-field label="Subject Header" hide-details></v-text-field>
-        </v-col>
-    </v-row>
-    <v-row>
-        <v-col cols="12">
-            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @ready="onEditorReady"></ckeditor>
-        </v-col>
-    </v-row>
-    <v-row>
-        <v-col cols="12">
-            <v-btn @click="addStudentName">Add Student Name</v-btn>
-        </v-col>
-    </v-row>
+    <div v-if="!includeSpanish">
+        <v-row>
+            <v-col class="d-flex text-h6">
+                Email
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-text-field 
+                    v-model="emailHeader"
+                    label="Subject Header" 
+                    hide-details
+                ></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @ready="onEditorReady"></ckeditor>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-btn @click="addStudentName">Add Student Name</v-btn>
+            </v-col>
+        </v-row>
+    </div>
+    <div v-else>
+        <v-row>
+            <v-col class="d-flex text-h6">
+                English Email
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-text-field 
+                    v-model="emailHeaderEnglish"
+                    label="Subject Header" 
+                    hide-details
+                ></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <ckeditor :editor="editor" v-model="editorDataEnglish" :config="editorConfig" @ready="onEditorEnglishReady"></ckeditor>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-btn @click="addStudentNameEnglish">Add Student Name</v-btn>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col class="d-flex text-h6">
+                Spanish Email
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-text-field
+                    v-model="emailHeaderSpanish"
+                    label="Subject Header" 
+                    hide-details
+                ></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <ckeditor :editor="editor" v-model="editorDataSpanish" :config="editorConfig" @ready="onEditorSpanishReady"></ckeditor>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-btn @click="addStudentNameSpanish">Add Student Name</v-btn>
+            </v-col>
+        </v-row>
+    </div>
     <v-row>
         <v-col class="d-flex justify-end">
-            <v-btn>Send Email</v-btn>
+            <v-btn 
+                @click="sendEmail"
+                :disabled="!emailRecipients || emailRecipients.length === 0"
+            >Send Email</v-btn>
         </v-col>
     </v-row>
 </div>
 </v-container>
-{{ editorData }}
+emailRecipients:
+<br>
+{{ emailRecipients }}
+<br><br><br>
+emailHeader:
+<br>
+{{ emailHeader }}
+<br><br><br>
+editorData:
+<br>
+{{editorData}}
 </template>
 
 <script>
@@ -227,8 +306,16 @@ export default {
             editorInstance: null,
             editor: ClassicEditor,
             editorData: '',
+            editorDataEnglish: '',
+            editorDataSpanish: '',
             editorConfig: {
             },
+            includeSpanish: false,
+            editorEnglishInstance: null,
+            editorSpanishInstance: null,
+            emailHeader: '',
+            emailHeaderEnglish: '',
+            emailHeaderSpanish: '',
         }
     },
 
@@ -373,6 +460,14 @@ export default {
             this.editorInstance = editorInstance;
         },
 
+        onEditorEnglishReady(editorInstance) {
+            this.editorEnglishInstance = editorInstance;
+        },
+
+        onEditorSpanishReady(editorInstance) {
+            this.editorSpanishInstance = editorInstance;
+        },
+
         addStudentName() {
             const editor = this.editorInstance;
             if (editor) {
@@ -383,6 +478,57 @@ export default {
                 });
             }
         },
+
+        addStudentNameEnglish() {
+            const editor = this.editorEnglishInstance;
+            if (editor) {
+                editor.model.change(writer => {
+                    const placeholderText = writer.createText('{{STUDENT_NAME}}');
+                    const insertPosition = editor.model.document.selection.getFirstPosition();
+                    editor.model.insertContent(placeholderText, insertPosition);
+                });
+            }
+        },
+
+        addStudentNameSpanish() {
+            const editor = this.editorSpanishInstance;
+            if (editor) {
+                editor.model.change(writer => {
+                    const placeholderText = writer.createText('{{STUDENT_NAME}}');
+                    const insertPosition = editor.model.document.selection.getFirstPosition();
+                    editor.model.insertContent(placeholderText, insertPosition);
+                });
+            }
+        },
+
+        async sendEmail() {
+            if (!this.includeSpanish) {
+                try {
+                    const user = useLoggedInUserStore();
+                    // let token = user.token;
+                    const token = import.meta.env.VITE_TOKEN;
+                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manualMailer`;
+
+                    // Prepare the email data
+                    const emailData = {
+                        emails: this.emailRecipients.map(recipient => recipient.email), // Extract emails from recipients
+                        subject: this.emailHeader,
+                        htmlContent: this.editorData
+                    };
+
+                    // Use axios.post to send the email data
+                    const response = await axios.post(apiURL, emailData, {
+                        headers: { token }
+                    });
+
+                    // Handle response
+                    console.log(response.data); // For debugging, log the success message
+                    // Here, add any UI feedback to indicate success to the user
+                } catch (error) {
+                    this.handleError(error);
+                }
+            }
+        }
 
     },
 }
