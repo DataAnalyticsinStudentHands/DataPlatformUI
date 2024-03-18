@@ -511,7 +511,10 @@ export default {
 
                     // Prepare the email data
                     const emailData = {
-                        emails: this.emailRecipients.map(recipient => recipient.email), // Extract emails from recipients
+                        recipients: this.emailRecipients.map(recipient => ({
+                            email: recipient.email,
+                            fullName: `${recipient.firstName} ${recipient.lastName}`
+                        })),
                         subject: this.emailHeader,
                         htmlContent: this.editorData
                     };
