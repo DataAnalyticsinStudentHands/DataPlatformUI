@@ -26,15 +26,20 @@
     <div v-if="selection === 1">
         <instructor-manual-mailer-entry-forms />
     </div>
+    <div v-else-if="selection === 2">
+        <instructor-manual-mailer-goal-forms />
+    </div>
 </v-container>
 </template>
 
 <script>
 import InstructorManualMailerEntryForms from './instructorManualMailerEntryForms.vue';
+import InstructorManualMailerGoalForms from './instructorManualMailerGoalForms.vue';
 export default {
     name: 'instructorManualMailer',
     components: {
-        InstructorManualMailerEntryForms
+        InstructorManualMailerEntryForms,
+        InstructorManualMailerGoalForms
     },
     data() {
       return {
