@@ -761,9 +761,9 @@ export default {
 
             checkJump(step) {
                 const stepToSectionMap = {
-                    1: 'demoSection',
-                    2: 'degreeSection',
-                    3: 'gradProfSection',
+                    0: 'demoSection',
+                    1: 'degreeSection',
+                    2: 'gradProfSection',
                 };
 
                 const section = stepToSectionMap[step];

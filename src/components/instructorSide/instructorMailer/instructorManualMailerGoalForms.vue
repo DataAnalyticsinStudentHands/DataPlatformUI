@@ -49,7 +49,14 @@
         </v-card>
         </v-col>
     </v-row>
-    <div v-if="studentsWithoutGoalForms && studentsWithoutGoalForms.length">
+    <div v-if="studentsLoading">
+        <v-row>
+            <v-col class="d-flex justify-center">
+                <v-progress-circular indeterminate></v-progress-circular>
+            </v-col>
+        </v-row>
+    </div>
+    <div v-else-if="!studentsLoading && studentsWithoutGoalForms && studentsWithoutGoalForms.length">
         <v-row>
             <v-col cols="12">
                 <div class="text-h6 pa-4">
@@ -214,9 +221,6 @@
             <v-col cols="2">
                 <v-btn @click="addStudentName">Add Student Name</v-btn>
             </v-col>
-            <v-col cols="5">
-                <v-btn @click="addExperienceName">Add Experience Name</v-btn>
-            </v-col>
         </v-row>
     </div>
     <div v-else>
@@ -245,9 +249,6 @@
                     <v-col cols="4">
                         <v-btn @click="addStudentNameEnglish">Add Student Name</v-btn>
                     </v-col>
-                    <v-col cols="5">
-                        <v-btn @click="addExperienceNameEnglish">Add Experience Name</v-btn>
-                    </v-col>
                 </v-row>
             </v-col>
             <v-col cols="6">
@@ -273,9 +274,6 @@
                 <v-row>
                     <v-col cols="4">
                         <v-btn @click="addStudentNameSpanish">Add Student Name</v-btn>
-                    </v-col>
-                    <v-col cols="5">
-                        <v-btn @click="addExperienceNameSpanish">Add Experience Name</v-btn>
                     </v-col>
                 </v-row>
         </v-col>
@@ -325,13 +323,14 @@ export default {
     components: {
         ckeditor: CKEditor.component
     },
+    inject: ['setTab'],
     data() {
         return {
             selectedExperience: null,
             expInstances: [],
             studentsWithoutGoalForms: [],
             viewLoading: false,
-            goalFormsLoading: false,
+            studentsLoading: false,
             studentSearch: null,
             studentHeaders: [
                 {
@@ -468,8 +467,8 @@ export default {
             this.fetchStudentsWithoutGoalForm();
         },
         async fetchStudentsWithoutGoalForm() {
+            this.studentsLoading = true;
             console.log('fetchStudentsWithoutGoalForm')
-            this.goalFormsLoading = true;
             const user = useLoggedInUserStore();
             // let token = user.token;
             const token = import.meta.env.VITE_TOKEN;
@@ -481,7 +480,7 @@ export default {
             } catch (error) {
                 this.handleError(error);
             } finally {
-                this.goalFormsLoading = false;
+                this.studentsLoading = false;
             }
         },
 
@@ -602,46 +601,13 @@ export default {
             }
         },
 
-        addExperienceName() {
-            const editor = this.editorInstance;
-            if (editor) {
-                editor.model.change(writer => {
-                    const placeholderText = writer.createText('{{EXPERIENCE_NAME}}');
-                    const insertPosition = editor.model.document.selection.getFirstPosition();
-                    editor.model.insertContent(placeholderText, insertPosition);
-                });
-            }
-        },
-
-        addExperienceNameEnglish() {
-            const editor = this.editorEnglishInstance;
-            if (editor) {
-                editor.model.change(writer => {
-                    const placeholderText = writer.createText('{{EXPERIENCE_NAME}}');
-                    const insertPosition = editor.model.document.selection.getFirstPosition();
-                    editor.model.insertContent(placeholderText, insertPosition);
-                });
-            }
-        },
-
-        addExperienceNameSpanish() {
-            const editor = this.editorSpanishInstance;
-            if (editor) {
-                editor.model.change(writer => {
-                    const placeholderText = writer.createText('{{EXPERIENCE_NAME}}');
-                    const insertPosition = editor.model.document.selection.getFirstPosition();
-                    editor.model.insertContent(placeholderText, insertPosition);
-                });
-            }
-        },
-
         async sendEmail() {
             if (!this.includeSpanish) {
                 try {
                     const user = useLoggedInUserStore();
                     // let token = user.token;
                     const token = import.meta.env.VITE_TOKEN;
-                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manualMailer`;
+                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer`;
 
                     // Prepare the email data
                     const emailData = {
@@ -660,17 +626,18 @@ export default {
 
                     // Handle response
                     console.log(response.data); // For debugging, log the success message
-                    // Here, add any UI feedback to indicate success to the user
+
+                    this.setTab('overview');
                 } catch (error) {
                     this.handleError(error);
                 } finally {
-                    sendEmailDialog = false;
+                    this.sendEmailDialog = false;
                 }
             } else {
                 try {
                     const user = useLoggedInUserStore(); // Assuming this exists from your previous code
                     const token = import.meta.env.VITE_TOKEN;
-                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manualMailer/multi-language`;
+                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer/multi-language`;
 
                     const emailData = {
                         recipients: this.emailRecipients.map(recipient => ({
@@ -692,7 +659,7 @@ export default {
                 } catch (error) {
                     this.handleError(error);
                 } finally {
-                    sendEmailDialog = false;
+                    this.sendEmailDialog = false;
                 }
             }
         },

@@ -3,7 +3,7 @@
     <v-row>
         <v-col>
             <v-tabs v-model="tab" grow>
-            <v-tab value="Overview">
+            <v-tab value="overview">
               Overview
             </v-tab>
             <v-tab value="manualMailer">
@@ -15,8 +15,13 @@
           </v-tabs>
 
           <!-- Content for Entry Form Monitor -->
+          <div v-if="tab === 'overview'">
+            <instructor-mailer-overview />
+          </div>
+
+          <!-- Content for Entry Form Monitor -->
           <div v-if="tab === 'manualMailer'">
-            <InstructorManualMailer />
+            <instructor-manual-mailer />
           </div>
           
         </v-col>
@@ -26,15 +31,27 @@
 
 <script>
 import InstructorManualMailer from './instructorManualMailer.vue';
+import InstructorMailerOverview from './InstructorMailerOverview.vue';
 export default {
     name: "instructorMailer",
     components: {
-      InstructorManualMailer
+      InstructorManualMailer,
+      InstructorMailerOverview
     },
     data() {
       return {
-        tab: 'manualMailer',
+        tab: 'overview',
       };
+    },
+    provide() {
+      return {
+        setTab: this.setTab
+      };
+    },
+    methods: {
+      setTab(tab) {
+        this.tab = tab;
+      }
     },
 }
 </script>

@@ -285,6 +285,7 @@ export default {
     components: {
         ckeditor: CKEditor.component
     },
+    inject: ['setTab'],
     data() {
         return {
             mailType: null,
@@ -536,7 +537,7 @@ export default {
                     const user = useLoggedInUserStore();
                     // let token = user.token;
                     const token = import.meta.env.VITE_TOKEN;
-                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manualMailer`;
+                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer`;
 
                     // Prepare the email data
                     const emailData = {
@@ -555,17 +556,18 @@ export default {
 
                     // Handle response
                     console.log(response.data); // For debugging, log the success message
-                    // Here, add any UI feedback to indicate success to the user
+                    
+                    this.setTab('overview');
                 } catch (error) {
                     this.handleError(error);
                 } finally {
-                    sendEmailDialog = false;
+                    this.sendEmailDialog = false;
                 }
             } else {
                 try {
                     const user = useLoggedInUserStore(); // Assuming this exists from your previous code
                     const token = import.meta.env.VITE_TOKEN;
-                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manualMailer/multi-language`;
+                    let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer/multi-language`;
 
                     const emailData = {
                         recipients: this.emailRecipients.map(recipient => ({
@@ -587,7 +589,7 @@ export default {
                 } catch (error) {
                     this.handleError(error);
                 } finally {
-                    sendEmailDialog = false;
+                    this.sendEmailDialog = false;
                 }
             }
         },
