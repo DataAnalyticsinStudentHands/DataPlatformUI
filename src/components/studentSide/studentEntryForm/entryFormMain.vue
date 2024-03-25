@@ -515,10 +515,12 @@ export default {
             // Assuming `formID` holds the ID of the form being updated
             const user = useLoggedInUserStore();
             const token = user.token;
+            const userID = user.userId;
+            console.log('userID: ', userID);
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
 
             // Set completed to true
-            const formData = { ...this.studentInformation, completed: true };
+            const formData = { ...this.studentInformation, completed: true, userID: userID };
 
             axios.patch(apiURL, formData, { headers: { token } })
                 .then(response => {
@@ -696,12 +698,17 @@ export default {
                 console.log("updateStudentInformation");
                 // Your update logic here
                 const user = useLoggedInUserStore();
+                const userID = user.userId;
+                console.log('userID: ', userID);
                 const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
                 console.log('apiURL: ', apiURL);
                 console.log("Updating formData:", this.studentInformation);
 
-                axios.patch(apiURL, { studentInformation: this.studentInformation }, { headers: { token }})
+                axios.patch(apiURL, { 
+                    studentInformation: this.studentInformation,
+                    userID: userID
+                 }, { headers: { token }})
                     .then(response => {
                         console.log("Form updated: ", response.data);
                     })

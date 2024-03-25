@@ -656,6 +656,7 @@ export default {
                     });
 
                     console.log(response.data); // For debugging
+                    this.setTab('overview');
                 } catch (error) {
                     this.handleError(error);
                 } finally {

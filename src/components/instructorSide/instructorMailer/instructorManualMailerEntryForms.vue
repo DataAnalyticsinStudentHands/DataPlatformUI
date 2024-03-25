@@ -256,22 +256,6 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-sendEmailDialog:
-<br>
-{{ sendEmailDialog }}
-<br><br><br>
-
-emailRecipients:
-<br>
-{{ emailRecipients }}
-<br><br><br>
-emailHeader:
-<br>
-{{ emailHeader }}
-<br><br><br>
-editorData:
-<br>
-{{editorData}}
 </template>
 
 <script>
@@ -549,13 +533,103 @@ export default {
                         htmlContent: this.editorData
                     };
 
+                    const emailData2 = {
+                        "recipients": [
+                            {
+                                "email": "paerikss@cougarnet.uh.edu",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "erikssonphil@yahoo.com",
+                                "fullName": "Felippe Eirikson"
+                            },
+                            {
+                                "email": "farroovano@yahoo.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "vcarnivorous@gmail.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "asylusofficial@outlook.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "paerikss@cougarnet.uh.edu",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "erikssonphil@yahoo.com",
+                                "fullName": "Felippe Eirikson"
+                            },
+                            {
+                                "email": "farroovano@yahoo.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "vcarnivorous@gmail.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "asylusofficial@outlook.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "paerikss@cougarnet.uh.edu",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "erikssonphil@yahoo.com",
+                                "fullName": "Felippe Eirikson"
+                            },
+                            {
+                                "email": "farroovano@yahoo.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "vcarnivorous@gmail.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "asylusofficial@outlook.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "paerikss@cougarnet.uh.edu",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "erikssonphil@yahoo.com",
+                                "fullName": "Felippe Eirikson"
+                            },
+                            {
+                                "email": "farroovano@yahoo.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "vcarnivorous@gmail.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                            {
+                                "email": "asylusofficial@outlook.com",
+                                "fullName": "Philip Eriksson"
+                            },
+                        ],
+                        "subject": "720pm",
+                        "htmlContent": "<p>asdasd</p>"
+                    }
+
+                    console.log('emailData: ', emailData);
+                    console.log('emailData2: ', emailData2);
+2
                     // Use axios.post to send the email data
-                    const response = await axios.post(apiURL, emailData, {
+                    const response = axios.post(apiURL, emailData2, {
                         headers: { token }
                     });
 
                     // Handle response
-                    console.log(response.data); // For debugging, log the success message
+                    // console.log(response.data); // For debugging, log the success message
                     
                     this.setTab('overview');
                 } catch (error) {
@@ -586,6 +660,7 @@ export default {
                     });
 
                     console.log(response.data); // For debugging
+                    this.setTab('overview');
                 } catch (error) {
                     this.handleError(error);
                 } finally {
