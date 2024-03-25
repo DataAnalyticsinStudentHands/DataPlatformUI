@@ -953,8 +953,9 @@ methods: {
         try {
             const user = useLoggedInUserStore();
             const token = user.token;
+            const userID = user.userId;
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-            await axios.patch(apiURL, { completed: true }, { headers: { token }});
+            await axios.patch(apiURL, { completed: true, userID: userID }, { headers: { token }});
             this.formSubmitSuccess = true;
             const motivatingMessages = [
                 "Goals successfully set! You're on the right track!",
@@ -1131,6 +1132,7 @@ methods: {
         console.log("updateGoalForm");
         const user = useLoggedInUserStore();
         const token = user.token;
+        const userID = user.userId;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
         console.log('apiURL: ', apiURL);
 
@@ -1139,10 +1141,10 @@ methods: {
         
         const payload = {
             goalForm: restOfGoalForm, 
-            hichProject,
+            hichProject
         };
 
-        axios.patch(apiURL, payload, { headers: { 'Authorization': `Bearer ${token}` }})
+        axios.patch(apiURL, payload, { headers: { token }})
             .then(response => {
                 console.log("Form updated: ", response.data);
             })
