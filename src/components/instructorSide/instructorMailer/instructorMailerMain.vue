@@ -14,14 +14,19 @@
             </v-tab>
           </v-tabs>
 
-          <!-- Content for Entry Form Monitor -->
+          <!-- Content for Overview -->
           <div v-if="tab === 'overview'">
             <instructor-mailer-overview />
           </div>
 
-          <!-- Content for Entry Form Monitor -->
+          <!-- Content for Manual Mailer -->
           <div v-if="tab === 'manualMailer'">
-            <instructor-manual-mailer />
+            <instructor-manual-mailer-main />
+          </div>
+
+          <!-- Content for Automatic Mailer -->
+          <div v-if="tab === 'autoMailer'">
+            <instructor-automatic-mailer-main />
           </div>
           
         </v-col>
@@ -30,13 +35,15 @@
 </template>
 
 <script>
-import InstructorManualMailer from './instructorManualMailer.vue';
-import InstructorMailerOverview from './InstructorMailerOverview.vue';
+import InstructorManualMailerMain from './instructorManualMailer/instructorManualMailerMain.vue';
+import InstructorMailerOverview from './instructorMailerOverview.vue';
+import InstructorAutomaticMailerMain from './instructorAutomaticMailer/instructorAutomaticMailerMain.vue';
 export default {
     name: "instructorMailer",
     components: {
-      InstructorManualMailer,
-      InstructorMailerOverview
+      InstructorManualMailerMain,
+      InstructorMailerOverview,
+      InstructorAutomaticMailerMain
     },
     data() {
       return {
