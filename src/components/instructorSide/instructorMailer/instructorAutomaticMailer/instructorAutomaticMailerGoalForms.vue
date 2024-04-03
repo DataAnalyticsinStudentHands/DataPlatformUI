@@ -10,7 +10,7 @@
     <div v-else>
         <v-row>
             <v-col cols="12" class="d-flex text-h6">
-                <h1>Entry Form Email Configuration</h1>
+                <h1>Goal Setting Form Email Configuration</h1>
             </v-col>
         </v-row>
         <v-row>
@@ -172,9 +172,6 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-goalSettingFormEmail:
-<br><br>
-{{ goalSettingFormEmail }}
 </template>
 
 <script>
@@ -182,12 +179,14 @@ import axios from 'axios';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { toast } from 'vue3-toastify';
 
 export default {
 name: "InstructorAutomaticMailerGoalForms",
 components: {
     ckeditor: CKEditor.component
 },
+inject: ['setTab'],
 data() {
     return {
         goalSettingFormEmail: {
@@ -246,8 +245,8 @@ methods: {
     async fetchAutoMailerConfigGoalSettingForms() {
         this.configLoading = true;
         const user = useLoggedInUserStore();
-        // const token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        const token = user.token;
+        // const token = import.meta.env.VITE_TOKEN;
         const type = 'goalSettingForm';
         let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/auto-mailer-config/${type}`;
 
@@ -353,8 +352,8 @@ methods: {
 
     applyEmailConfigs() {
         const user = useLoggedInUserStore();
-        // const token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        const token = user.token;
+        // const token = import.meta.env.VITE_TOKEN;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/auto-mailer-config/goalSettingForm`;
         try {
             const response = axios.put(apiURL, this.goalSettingFormEmail, { headers: { token }});

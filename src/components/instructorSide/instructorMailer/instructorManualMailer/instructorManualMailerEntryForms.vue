@@ -382,9 +382,9 @@ export default {
 
         async fetchStudentsWithoutEntryForm() {
             this.entryFormLoading = true;
-            // const user = useLoggedInUserStore();
-            // let token = user.token;
-            const token = import.meta.env.VITE_TOKEN;
+            const user = useLoggedInUserStore();
+            let token = user.token;
+            // const token = import.meta.env.VITE_TOKEN;
             let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/students-without-entry-form';
     
             try {
@@ -519,8 +519,8 @@ export default {
             if (!this.includeSpanish) {
                 try {
                     const user = useLoggedInUserStore();
-                    // let token = user.token;
-                    const token = import.meta.env.VITE_TOKEN;
+                    let token = user.token;
+                    // const token = import.meta.env.VITE_TOKEN;
                     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer`;
 
                     // Prepare the email data
@@ -624,7 +624,7 @@ export default {
                     console.log('emailData2: ', emailData2);
 2
                     // Use axios.post to send the email data
-                    const response = axios.post(apiURL, emailData2, {
+                    const response = axios.post(apiURL, emailData, {
                         headers: { token }
                     });
 

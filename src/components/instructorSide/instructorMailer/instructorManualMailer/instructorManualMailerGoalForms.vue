@@ -442,8 +442,8 @@ export default {
         async fetchExperiences() {
             this.viewLoading = true;
             const user = useLoggedInUserStore();
-            // let token = user.token;
-            const token = import.meta.env.VITE_TOKEN;
+            let token = user.token;
+            // const token = import.meta.env.VITE_TOKEN;
             let apiURL = import.meta.env.VITE_ROOT_API + '/instructorSideData/experience-instances/active/';
     
             try {
@@ -470,8 +470,8 @@ export default {
             this.studentsLoading = true;
             console.log('fetchStudentsWithoutGoalForm')
             const user = useLoggedInUserStore();
-            // let token = user.token;
-            const token = import.meta.env.VITE_TOKEN;
+            let token = user.token;
+            // const token = import.meta.env.VITE_TOKEN;
             let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${this.selectedExperience}`;
             
             try {
@@ -605,8 +605,8 @@ export default {
             if (!this.includeSpanish) {
                 try {
                     const user = useLoggedInUserStore();
-                    // let token = user.token;
-                    const token = import.meta.env.VITE_TOKEN;
+                    let token = user.token;
+                    // const token = import.meta.env.VITE_TOKEN;
                     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer`;
 
                     // Prepare the email data
@@ -635,8 +635,9 @@ export default {
                 }
             } else {
                 try {
-                    const user = useLoggedInUserStore(); // Assuming this exists from your previous code
-                    const token = import.meta.env.VITE_TOKEN;
+                    const user = useLoggedInUserStore();
+                    const token = user.token;
+                    // const token = import.meta.env.VITE_TOKEN;
                     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer/multi-language`;
 
                     const emailData = {

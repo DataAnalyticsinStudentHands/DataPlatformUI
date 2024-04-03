@@ -163,9 +163,6 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-entryFormEmail:
-<br><br>
-{{ entryFormEmail }}
 </template>
 
 <script>
@@ -239,8 +236,8 @@ methods: {
     async fetchAutoMailerConfigEntryForms() {
         this.configLoading = true;
         const user = useLoggedInUserStore();
-        // const token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        const token = user.token;
+        // const token = import.meta.env.VITE_TOKEN;
         const type = 'entryForm';
         let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/auto-mailer-config/${type}`;
 
@@ -311,8 +308,8 @@ methods: {
 
     applyEmailConfigs() {
         const user = useLoggedInUserStore();
-        // const token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        const token = user.token;
+        // const token = import.meta.env.VITE_TOKEN;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/auto-mailer-config/entryForm`;
         try {
             const response = axios.put(apiURL, this.entryFormEmail, { headers: { token }});

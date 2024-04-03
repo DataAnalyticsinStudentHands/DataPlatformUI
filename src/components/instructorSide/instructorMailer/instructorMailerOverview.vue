@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
@@ -38,7 +39,9 @@ export default {
   },
   methods: {
     listenToEmailProgress() {
-      const token = import.meta.env.VITE_TOKEN;
+      const user = useLoggedInUserStore();
+      const token = user.token;
+      // const token = import.meta.env.VITE_TOKEN;
 
       const evtSource = new EventSource(`${import.meta.env.VITE_ROOT_API}/instructorSideData/email-progress?token=${encodeURIComponent(token)}`);
 
