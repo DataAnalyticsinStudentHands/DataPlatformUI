@@ -1,3 +1,4 @@
+<!-- instructorSpecificExperienceInstance - this view presents a single Experience Instance's data -->
 <template>
 <v-container>
     <v-form>
@@ -222,8 +223,9 @@ export default {
     },
     
     methods: {
+
+      // Fetches data for a specific experience instance identified by the instance ID in the route parameters. Retrieves information such as the session ID, experience ID, and exit form release date from the backend API. Additionally, filters and retrieves the relevant activities associated with the instance. Finally, fetches details for the session and experience related to this instance. If there's an error during the process, handles the error.
         async fetchExperienceInstance() {
-            console.log('activityData beginning of fetchExperienceInstance: ', this.activityData);
             const instanceID = this.$route.params.id; // Get instance ID from route parameter
             const user = useLoggedInUserStore();
             let token = user.token;
@@ -232,7 +234,6 @@ export default {
             try {
                 const response = await axios.get(apiURL, { headers: { token } });
                 const instanceData = response.data;
-                console.log('instanceData: ', instanceData);
                 this.selectedSessionID = instanceData.sessionID;
                 this.selectedExperienceID = instanceData.experience.id;
                 this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10); // Format date as 'YYYY-MM-DD'
@@ -240,8 +241,6 @@ export default {
                 this.selectedActivities = this.activityData.filter(activity =>
                     instanceData.activities.some(instanceActivity => instanceActivity.id === activity._id)
                 );
-
-                console.log('selectedActivities: ', this.selectedActivities);
 
                 // Fetch session and experience details
                 this.fetchSessionDetails();
@@ -251,6 +250,7 @@ export default {
             }
         },
 
+        // Retrieves details for the session associated with the current experience instance. Utilizes the session ID obtained from the instance data to fetch session information from the backend API. Stores the retrieved session data for further use. 
         async fetchSessionDetails() {
             const user = useLoggedInUserStore();
             let token = user.token;
@@ -264,6 +264,7 @@ export default {
             }
         },
 
+        // Retrieves details for the experience associated with the current experience instance. Utilizes the experience ID obtained from the instance data to fetch experience information from the backend API. Stores the retrieved experience data for further use.
         async fetchExperienceDetails() {
             const user = useLoggedInUserStore();
             let token = user.token;
@@ -277,6 +278,7 @@ export default {
             }
         },
 
+        // Retrieves activity data from the backend API. Filters the retrieved activities to include only those with an active status. Stores the filtered activity data for further use.
         async fetchActivityData() {
             const user = useLoggedInUserStore();
             let token = user.token;
@@ -287,12 +289,12 @@ export default {
                 const activities = response.data;
                 this.activityData = activities.filter(activity => activity.activityStatus === true);
                 this.originalActivityData = [...this.activityData];
-                console.log('activityData: ', this.activityData);
             } catch (error) {
                 this.handleError(error);
             }
         },
 
+        // Checks if the current experience instance can be deleted. Retrieves the instance ID from the route parameter and sends a request to the backend API to determine if the instance can be deleted. Sets a flag based on the response indicating whether the instance can be deleted or not.
         async checkIfExpInstanceCanBeDeleted() {
             const user = useLoggedInUserStore();
             const token = user.token;
@@ -307,11 +309,13 @@ export default {
             }
         },
 
+        // Executes the deletion of the experience instance and hides the delete dialog.
         confirmDelete() {
             this.deleteExpInstance();
             this.showDeleteDialog = false;
         },
 
+        // Deletes the experience instance from the backend API and redirects to a different page or shows a success message upon successful deletion.
         async deleteExpInstance() {
             const instanceID = this.$route.params.id; // Get instance ID from route parameter
             const user = useLoggedInUserStore();
@@ -337,8 +341,7 @@ export default {
             }
         },
 
-
-
+        // Redirects to the instructor data management page with a specified active tab.
         goBack() {
             this.$router.push({
                 name: 'instructorDataManagement',
@@ -348,6 +351,7 @@ export default {
             });
         },
 
+        // Submits the form data for the experience instance, updating the exit form release date. Upon successful submission, redirects to the instructor data management page with a success message.
         async handleSubmitForm() {
             const user = useLoggedInUserStore();
             let token = user.token;
@@ -373,10 +377,12 @@ export default {
             }
         },
 
+        // Adds the provided activity to the list of selected activities.
         selectActivity(activity) {
             this.selectedActivities.push(activity)
         },
 
+        // Removes the specified activity from the list of selected activities.
         removeActivity(activity) {
             this.selectedActivities = this.selectedActivities.filter(selectedActivity => selectedActivity._id !== activity._id);
         },

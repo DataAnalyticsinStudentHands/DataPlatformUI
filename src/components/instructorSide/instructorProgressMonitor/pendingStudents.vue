@@ -1,3 +1,4 @@
+<!-- pendingStudents - this view presents a list of students who have registered for an account, but have not yet activated their account. -->
 <template>
     <v-container>
       <v-row>
@@ -113,6 +114,8 @@
       },
     },
     methods: {
+
+      // Fetches pending students' data by sending a GET request. Upon receiving the response, updates the component's state with the pending students' information.
       async fetchPendingStudents() {
         this.loading = true;
         const user = useLoggedInUserStore();
@@ -128,12 +131,15 @@
           this.loading = false;
         }
       },
+
+      // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
         this.$router.push({
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
       },
+
     },
   };
   </script>

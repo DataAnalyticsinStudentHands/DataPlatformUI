@@ -1,3 +1,7 @@
+<!-- instructorManualMailerMain - this parent container is responsible for holding and rendering its child components:
+    instructorManualMailerEntryForms
+    instructorManualMailerGoalForms
+-->
 <template>
 <v-container>
     <v-row>

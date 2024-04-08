@@ -1,3 +1,4 @@
+<!-- instructorAutomaticMailerEntryForms - this view presents a form to configure the Automatic Reminder Emails for Entry Forms -->
 <template>
 <v-container>
     <div v-if="configLoading">
@@ -233,6 +234,8 @@ computed: {
     }
 },
 methods: {
+
+    // Fetches auto-mailer configuration settings for entry forms from the backend API. Sets the loading state to true before making the request. Upon receiving the response, extracts the configuration data and assigns it to the `entryFormEmail` property.
     async fetchAutoMailerConfigEntryForms() {
         this.configLoading = true;
         const user = useLoggedInUserStore();
@@ -243,13 +246,11 @@ methods: {
 
         try {
             const response = await axios.get(url, { headers: { token } });
-            console.log('response: ', response);
             // Create a new object excluding the _id field
             const { _id, ...configWithoutId } = response.data;
             
             // Assign the modified config to your component's state
             this.entryFormEmail = configWithoutId;
-
         } catch (error) {
             this.handleError(error);
         } finally {
@@ -257,18 +258,22 @@ methods: {
         }
     },
 
+    // Sets the `editorInstance` property to the provided `editorInstance` when the editor is ready.
     onEditorReady(editorInstance) {
         this.editorInstance = editorInstance;
     },
 
+    // Sets the `editorInstanceEnglish` property to the provided `editorInstance` when the editor is ready.
     onEditorEnglishReady(editorInstance) {
         this.editorEnglishInstance = editorInstance;
     },
 
+    // Sets the `editorInstanceSpanish` property to the provided `editorInstance` when the editor is ready.
     onEditorSpanishReady(editorInstance) {
         this.editorSpanishInstance = editorInstance;
     },
 
+    // Adds the placeholder "{{STUDENT_NAME}}" at the current cursor position in the editor instance, if available.
     addStudentName() {
         const editor = this.editorInstance;
         if (editor) {
@@ -280,6 +285,7 @@ methods: {
         }
     },
 
+    // Adds the placeholder "{{STUDENT_NAME}}" at the current cursor position in the English editor instance, if available.
     addStudentNameEnglish() {
         const editor = this.editorEnglishInstance;
         if (editor) {
@@ -291,6 +297,7 @@ methods: {
         }
     },
 
+    // Adds the placeholder "{{STUDENT_NAME}}" at the current cursor position in the Spanish editor instance, if available.
     addStudentNameSpanish() {
         const editor = this.editorSpanishInstance;
         if (editor) {
@@ -302,10 +309,12 @@ methods: {
         }
     },
 
+    // Cancels the email configurations and hides the confirmation dialog.
     cancelEmailConfigs() {
         this.applyEmailConfigsConfirm = false;
     },
 
+    // Applies the email configurations by sending a PUT request to the backend API with the updated entry form email settings. Upon successful update, displays a toast message confirming the update and sets the tab to 'overview'.
     applyEmailConfigs() {
         const user = useLoggedInUserStore();
         const token = user.token;
@@ -313,7 +322,6 @@ methods: {
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/auto-mailer-config/entryForm`;
         try {
             const response = axios.put(apiURL, this.entryFormEmail, { headers: { token }});
-            console.log('Configuration updated successfully', response.data);
 
             // Display the toast message
             toast.info('Entry Form Automatic Mailer Updated!', {

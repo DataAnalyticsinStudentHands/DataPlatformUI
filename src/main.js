@@ -12,8 +12,6 @@ if (localStorage.getItem('token')) {
 import router from './router';
 import App from './App.vue';
 import './index.css';
-import screenSizeMixin from './responsiveDesign/responsive.js';
-import './responsiveDesign/responsiveStyles.css';
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
 
 // state management library
@@ -55,8 +53,6 @@ pinia.use(({ store }) => {
 import Vue3Toastify from 'vue3-toastify';
 
 const app = createApp(App);
-
-app.mixin(screenSizeMixin);
 
 app.mixin(handleErrorMixin);
 

@@ -171,11 +171,9 @@ export const useLoggedInUserStore = defineStore({
 
     },
     setLanguagePreference(langPref) {
-      console.log('pinia setLanguagePreference, langPref: ', langPref);
       this.languagePreference = langPref;
     },
     async checkFormCompletion() {
-      console.log('checkFormCompletion');
       try {
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }

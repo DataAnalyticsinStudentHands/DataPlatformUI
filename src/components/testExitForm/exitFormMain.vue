@@ -718,7 +718,6 @@ methods: {
 
               if (this.goalFormExists) {
                 const goalFormData = resp.data.goalForm;
-                console.log('resp.data.goalForm: ', resp.data.goalForm);
 
                 // Set the goal setting form ID
                 this.exitForm.goalSettingFormID = resp.data._id;

@@ -1,3 +1,4 @@
+<!-- instructorMailerOverview - this view shows Overview information regarding the Manual Mailer and Automatic Mailer -->
 <template>
   <v-container>
     <v-row>
@@ -38,6 +39,7 @@ export default {
     },
   },
   methods: {
+  // Initiates listening to email progress updates. Creates an EventSource to establish a connection with the server-sent events endpoint. Handles incoming messages to update the component's state with the number of emails sent and the total number of emails to be sent. Closes the EventSource connection in case of errors.
     listenToEmailProgress() {
       const user = useLoggedInUserStore();
       const token = user.token;
@@ -47,7 +49,6 @@ export default {
 
       evtSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('data: ', data);
         this.emailsSent = data.sent;
         this.totalEmails = data.total;
       };
@@ -57,6 +58,7 @@ export default {
         evtSource.close();
       };
     }
+
   },
   beforeUnmount() {
     if (this.evtSource) {

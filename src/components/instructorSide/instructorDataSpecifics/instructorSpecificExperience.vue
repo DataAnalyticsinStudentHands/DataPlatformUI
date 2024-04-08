@@ -1,4 +1,4 @@
-<!--'/instructorAddExperience' this page will only show experiences-->
+<!--'/instructorSpecificExperience' - this view presents a single Experience's data -->
 <template>
   <main>
     <v-form>
@@ -128,6 +128,7 @@ export default {
 
   methods: {
 
+    // Fetches experience data from the backend server using an API call based on the provided experience ID. Upon successful retrieval, updates the local state with the fetched experience details, including the experience category and name.
     async fetchExperienceData(experienceID) {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -147,6 +148,7 @@ export default {
         });
     },
 
+    // Fetches data to check if the specified experience can be deleted by sending a request to the backend server. If successful, updates the local state with the boolean value indicating whether the experience can be deleted or not.
     async checkIfExperienceCanBeDeleted(experienceID) {
       try {
         const user = useLoggedInUserStore();
@@ -159,6 +161,7 @@ export default {
       }
     },
 
+    // Checks for associated instances based on the provided action ('update' or 'delete'). If 'update', sets the update loading state to true; if 'delete', sets the delete loading state to true. Then, sends a request to the backend server to check for associated instances related to the experience. If instances are found, updates the associatedInstances array accordingly and sets the update or delete dialog to true. Otherwise, proceeds with the update or confirms the delete action.
     async checkAssociatedInstances(action) {
       if (action === "update") {
         this.updateLoading = true;
@@ -196,13 +199,14 @@ export default {
       }
     },
 
+    // Confirms the delete action by calling the deleteExperience method and then hides the delete dialog.
     confirmDelete() {
       // Call the delete method here
       this.deleteExperience();
       this.showDeleteDialog = false;
     },
 
-
+    // Deletes the experience by sending a DELETE request to the server and then navigates to the instructorDataManagement page with a success message upon successful deletion.
     async deleteExperience() {
       try {
         const user = useLoggedInUserStore();
@@ -227,9 +231,7 @@ export default {
       }
     },
 
-
-
-
+    // Updates the experience details and its related instances by sending PUT requests to the server. Upon successful update, it redirects to the instructorDataManagement page with a success message.
     proceedWithUpdate() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -280,6 +282,7 @@ export default {
         });
     },
 
+    // Navigates back to the previous page. If there's an activity ID specified in the route parameters, it redirects to the instructorSpecificActivity page for that activity. Otherwise, it simply goes back to the previous page in the browser history.
     goBack() {
       if (this.$route.params.activityID) {
         this.$router.push({

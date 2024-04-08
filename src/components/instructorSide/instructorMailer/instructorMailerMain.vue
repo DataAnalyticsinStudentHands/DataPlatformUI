@@ -1,3 +1,8 @@
+<!-- instructorMailerMain - this parent container is responsible for holding and rendering its child components:
+  instructorManualMailerMain - Manual Mailer - allows Instructors to send bulk reminder emails to students
+  instructorAutomaticMailerMain - Automatic Mailer - allows Instructors to configure automatic, periodic reminder emails to students
+  instructorMailerOverview - Overview screen - shows Overview information for both the Manual Mailer and Automatic Mailer
+-->
 <template>
 <v-container>
     <v-row>
@@ -56,6 +61,7 @@ export default {
       };
     },
     methods: {
+      // Switches tab to render a child component
       setTab(tab) {
         this.tab = tab;
       }

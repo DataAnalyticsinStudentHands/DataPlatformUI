@@ -1,3 +1,4 @@
+<!-- studentGoalFormViewer - this view presents Goal Setting Form data for a single student -->
 <template>
 <div v-if="goalForm">
 <v-form disabled>
@@ -372,7 +373,6 @@ export default {
         }
     },
     async created() {
-        console.log('this.$route.params: ', this.$route.params)
         await this.fetchGoalForm(this.$route.params.studentID, this.$route.params.expInstanceID);
     },
     computed: {
@@ -469,6 +469,8 @@ export default {
         },
     },
     methods: {
+
+        // Fetches the goal form for a specific student and experience instance. It sends a GET request to the backend API with the student's ID and experience instance ID as parameters. Upon receiving the response, it extracts the relevant data and stores them in the component's state.
         async fetchGoalForm(studentID, expInstanceID) {
             const user = useLoggedInUserStore();
             const token = user.token;
@@ -479,13 +481,11 @@ export default {
                     headers: { token },
                     params: { userID: studentID, expInstanceID }
                 });
-                console.log('response: ', response.data);
                 this.firstName = response.data.firstName;
                 this.lastName = response.data.lastName;
                 this.experienceName = response.data.experienceName;
                 this.experienceCategory = response.data.experienceCategory;
                 this.goalForm = response.data.goalForm;
-                console.log('goalForm: ', this.goalForm);
 
             } catch (error) {
                 this.handleError(error);

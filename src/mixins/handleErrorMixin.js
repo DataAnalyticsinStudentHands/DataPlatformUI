@@ -5,7 +5,6 @@ export default {
     methods: {
         handleError(error) {
             console.error(error);
-            console.log('error: ', error.message);
             toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
                 position: 'top-right',
                 toastClassName: 'Toastify__toast--delete',

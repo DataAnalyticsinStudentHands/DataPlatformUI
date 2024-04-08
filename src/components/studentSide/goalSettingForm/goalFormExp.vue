@@ -385,7 +385,6 @@ methods: {
     },
 
     selectExperienceMatchingRegistrationID() {
-        console.log('selectExperienceMatchingRegistrationID')
         // Ensure experiences are loaded and expRegistrationID is present
         if (this.expRegistrationID && this.experiences.length) {
             const foundExperience = this.experiences.find(experience => experience.expRegistrationID === this.expRegistrationID);
@@ -399,14 +398,9 @@ methods: {
     },
 
     async updateIncompleteForm(value) {
-        console.log('this.selectedExperience: ', this.selectedExperience);
-        console.log('updateIncompleteForm: ', value);
-        console.log('incompleteFormID: ', this.incompleteFormID);
-
         // Find the experience object from localExperiences that matches the selectedExperience
         const selectedExperienceObject = this.localExperiences.find(exp => exp.experienceID === this.selectedExperience);
         if (this.incompleteFormID) {
-            console.log('incompleteFormID found');
             try {
                 const user = useLoggedInUserStore();
                 const token = user.token;

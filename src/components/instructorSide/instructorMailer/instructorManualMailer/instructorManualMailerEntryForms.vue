@@ -1,3 +1,4 @@
+<!-- instructorManualMailerEntryForms - this view allows Instructors to select students who have not completed their Student Entry Forms, and send a bulk email to those students -->
 <template>
 <v-container>
     <div v-if="entryFormLoading">
@@ -380,6 +381,7 @@ export default {
 
     methods: {
 
+        // Fetches the list of students without entry forms by sending a GET request to the backend API. Upon receiving the response, it stores the list of students in the component's state. Finally, it updates the loading state to indicate that the fetching process is complete.
         async fetchStudentsWithoutEntryForm() {
             this.entryFormLoading = true;
             const user = useLoggedInUserStore();
@@ -390,7 +392,6 @@ export default {
             try {
             const response = await axios.get(url, { headers: { token } });
             this.studentsWithoutEntryForm = response.data;
-            console.log('this.studentsWithoutEntryForm: ', this.studentsWithoutEntryForm);
             } catch (error) {
                 this.handleError(error);
             } finally {
@@ -398,6 +399,7 @@ export default {
             }
         },
 
+        // Toggles the selection of a student identified by their ID. If the student ID is not already in the list of selected students, it adds it. If the student ID is already in the list, it removes it.
         toggleSelection(studentID) {
             const index = this.selectedStudents.indexOf(studentID);
             if (index === -1) {
@@ -407,6 +409,7 @@ export default {
             }
         },
     
+        // Selects all students in the filtered list if any of them are not currently selected. If all students in the filtered list are already selected, it deselects them while keeping students selected that are not currently in the filtered list.
         selectAllStudents() {
             // Check if any student in the filtered list is not selected
             const anyUnselected = this.filteredStudentsWithoutEntryForm.some(student => !this.selectedStudents.includes(student._id));
@@ -421,6 +424,7 @@ export default {
             }
         },
 
+        // Filters students from the original list based on selected IDs, then adds them to the `emailRecipients` array. This step ensures that duplicates are not added if the button is clicked more than once. Finally, it clears both `selectedEmailRecipients` and `selectedStudents` arrays.
         addSelectedToEmailRecipients() {
             // Filter students from the original list based on selected IDs
             const selectedStudentsInfo = this.studentsWithoutEntryForm.filter(student => 
@@ -437,6 +441,7 @@ export default {
             this.selectedStudents = [];
         },
 
+        // Toggles the selection of a student in the email recipients list based on their ID. If the student ID is not already selected, it adds it to the `selectedEmailRecipients` array. If the student ID is already selected, it removes it from the array.
         toggleEmailSelection(studentID) {
             const index = this.selectedEmailRecipients.indexOf(studentID);
             if (index === -1) {
@@ -446,6 +451,7 @@ export default {
             }
         },
 
+        // Selects or deselects all email recipients in the filtered list based on their current selection state. If any of the recipients in the filtered list are not selected, it selects all of them. If all recipients in the filtered list are already selected, it deselects them.
         selectAllEmailRecipients() {
             // Check if any student in the filtered list is not selected
             const anyUnselected = this.filteredEmailRecipients.some(student => !this.selectedEmailRecipients.includes(student._id));
@@ -460,6 +466,7 @@ export default {
             }
         },
 
+        // Removes selected email recipients from the list of email recipients. After removal, it clears the selection of both email recipients and students.
         removeSelectedFromEmailRecipients() {
             // Filter out selected email recipients
             this.emailRecipients = this.emailRecipients.filter(recipient =>
@@ -470,18 +477,22 @@ export default {
             this.selectedStudents = [];
         },
 
+        // Sets the editorInstance property to the provided editorInstance when the editor is ready.
         onEditorReady(editorInstance) {
             this.editorInstance = editorInstance;
         },
 
+        // Sets the editorEnglishInstance property to the provided editorInstance when the editor is ready.
         onEditorEnglishReady(editorInstance) {
             this.editorEnglishInstance = editorInstance;
         },
 
+        // Sets the editorSpanishInstance property to the provided editorInstance when the editor is ready.
         onEditorSpanishReady(editorInstance) {
             this.editorSpanishInstance = editorInstance;
         },
 
+        // Inserts a placeholder text "{{STUDENT_NAME}}" at the current cursor position in the editor, if the editor instance exists.
         addStudentName() {
             const editor = this.editorInstance;
             if (editor) {
@@ -493,6 +504,7 @@ export default {
             }
         },
 
+        // Inserts a placeholder text "{{STUDENT_NAME}}" at the current cursor position in the English editor, if the editor instance exists.
         addStudentNameEnglish() {
             const editor = this.editorEnglishInstance;
             if (editor) {
@@ -504,6 +516,7 @@ export default {
             }
         },
 
+        // Inserts a placeholder text "{{STUDENT_NAME}}" at the current cursor position in the Spanish editor, if the editor instance exists.
         addStudentNameSpanish() {
             const editor = this.editorSpanishInstance;
             if (editor) {
@@ -515,6 +528,7 @@ export default {
             }
         },
 
+        // Sends an email to the selected recipients with the specified subject and content. If the option to include Spanish content is selected, it sends the email with both English and Spanish versions.
         async sendEmail() {
             if (!this.includeSpanish) {
                 try {
@@ -532,104 +546,11 @@ export default {
                         subject: this.emailHeader,
                         htmlContent: this.editorData
                     };
-
-                    const emailData2 = {
-                        "recipients": [
-                            {
-                                "email": "paerikss@cougarnet.uh.edu",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "erikssonphil@yahoo.com",
-                                "fullName": "Felippe Eirikson"
-                            },
-                            {
-                                "email": "farroovano@yahoo.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "vcarnivorous@gmail.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "asylusofficial@outlook.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "paerikss@cougarnet.uh.edu",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "erikssonphil@yahoo.com",
-                                "fullName": "Felippe Eirikson"
-                            },
-                            {
-                                "email": "farroovano@yahoo.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "vcarnivorous@gmail.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "asylusofficial@outlook.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "paerikss@cougarnet.uh.edu",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "erikssonphil@yahoo.com",
-                                "fullName": "Felippe Eirikson"
-                            },
-                            {
-                                "email": "farroovano@yahoo.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "vcarnivorous@gmail.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "asylusofficial@outlook.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "paerikss@cougarnet.uh.edu",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "erikssonphil@yahoo.com",
-                                "fullName": "Felippe Eirikson"
-                            },
-                            {
-                                "email": "farroovano@yahoo.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "vcarnivorous@gmail.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                            {
-                                "email": "asylusofficial@outlook.com",
-                                "fullName": "Philip Eriksson"
-                            },
-                        ],
-                        "subject": "720pm",
-                        "htmlContent": "<p>asdasd</p>"
-                    }
-
-                    console.log('emailData: ', emailData);
-                    console.log('emailData2: ', emailData2);
 2
                     // Use axios.post to send the email data
                     const response = axios.post(apiURL, emailData, {
                         headers: { token }
                     });
-
-                    // Handle response
-                    // console.log(response.data); // For debugging, log the success message
                     
                     this.setTab('overview');
                 } catch (error) {
@@ -659,7 +580,6 @@ export default {
                         headers: { token }
                     });
 
-                    console.log(response.data); // For debugging
                     this.setTab('overview');
                 } catch (error) {
                     this.handleError(error);
@@ -669,6 +589,7 @@ export default {
             }
         },
 
+        // Cancels the email sending process by closing the dialog window.
         cancelEmail() {
             this.sendEmailDialog = false;
         }
