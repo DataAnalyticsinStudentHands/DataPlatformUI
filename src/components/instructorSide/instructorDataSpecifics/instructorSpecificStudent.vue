@@ -1,3 +1,4 @@
+<!-- instructorSpecificStudent - this view presents a single Student's data -->
 <template>
   <v-form disabled>
     <v-row style="margin-top: 1rem;">

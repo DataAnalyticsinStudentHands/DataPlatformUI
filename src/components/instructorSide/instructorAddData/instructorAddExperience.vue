@@ -1,4 +1,4 @@
-<!--'/instructorAddExperience' this page will only show experiences-->
+<!--'/instructorAddExperience' this view presents a form to create a new Experience-->
 <template>
   <main>
     <v-form @submit.prevent="handleSubmitForm">

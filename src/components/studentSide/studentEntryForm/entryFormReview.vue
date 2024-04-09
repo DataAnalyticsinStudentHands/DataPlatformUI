@@ -27,9 +27,7 @@
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
             </p>
-
           </v-col>
-
           <!-- Non-Mobile View Edit Button -->
           <v-col class="text-right" v-if="$vuetify.display.smAndUp">
               <v-btn

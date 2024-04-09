@@ -266,7 +266,6 @@
     methods: {
       async handleValidations() {
           this.formSubmitted = true;
-          console.log(this.$refs.form);
           const { valid } = await this.$refs.form.validate();
           if (valid) {
               this.$emit('form-valid');

@@ -1,4 +1,4 @@
-<!--'/instructorAddActivity' this page will only show experiences-->
+<!--'/instructorAddActivity' this page presents a form to create a new Activity-->
 <template>
     <main>
       <v-form @submit.prevent="handleSubmitForm">

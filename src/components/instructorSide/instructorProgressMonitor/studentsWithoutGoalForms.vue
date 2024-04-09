@@ -1,3 +1,4 @@
+<!-- studentsWithoutGoalForms - this view presents a list of students who have completed/have not completed a Goal Setting Form for a given Experience Instance. Checks whether the student registered for the Experience Instance in order to know if that student is returned (if they registered for an Experience Instance, they should complete a Goal Setting Form for that Instance)-->
 <template>
     <v-container>
 
@@ -215,6 +216,8 @@
       },
     },
     methods: {
+
+      // Fetches active experience instances for the instructor from the backend API. Upon receiving the response, it maps the instance data to a structured format and stores it in the component's state.
       async fetchExperiences() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -233,18 +236,19 @@
           this.handleError(error);
         }
       },
+
+      // Initiates the process of fetching students based on whether they have completed goal forms or not. It calls different methods to fetch students with goal forms or without goal forms based on the value of the `completed` property.
       async fetchStudents() {
-        console.log('fetchStudents called');
         this.studentsWithGoalForm = [];
         this.studentsWithoutGoalForm = [];
         if (this.completed === true) {
-          console.log('this.completed is true')
           await this.fetchStudentsWithGoalForm();
         } else if (this.completed === false) {
-          console.log('this.completed is false')
           await this.fetchStudentsWithoutGoalForm();
         }
       },
+
+      // Fetches students who have not completed a goal form for a specific experience. It sends a GET request to the backend API with the selected experience ID. Upon receiving the response, it stores the data of students without a goal form for the specified experience in the component's state.
       async fetchStudentsWithoutGoalForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -257,37 +261,41 @@
           this.handleError(error);
         }
       },
+
+      // Fetches students who have completed a goal form for a specific experience. It sends a GET request to the backend API with the selected experience ID. Upon receiving the response, it stores the data of students with a goal form for the specified experience in the component's state.
       async fetchStudentsWithGoalForm() {
-        console.log('fetchStudentsWithGoalForm called');
         const user = useLoggedInUserStore();
         let token = user.token;
         let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-goal-form/${this.selectedExperience}`;
-
-        console.log('url: ', url);
         
         try {
           const response = await axios.get(url, { headers: { token } });
-          console.log('response: ', response);
           this.studentsWithGoalForm = response.data;
         } catch (error) {
           this.handleError(error);
         }
       },
+
+      // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
         this.$router.push({
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
       },
+
+      // Concatenates the first name and last name to form a full name string.
       formatFullName(firstName, lastName) {
           return `${firstName} ${lastName}`;
       },
+
+      // Formats a date to the "MM/dd/yyyy" format.
       formatDate(date) {
         return DateTime.fromISO(date).toFormat("MM/dd/yyyy");
       },
+
+      // Navigates to the page to view the goal form of a specific student identified by their studentID.
       viewStudentGoalForm(studentID) {
-        console.log('viewStudentGoalForm');
-        console.log('studentID: ', studentID);
         this.$router.push({
           name: "StudentGoalFormViewer",
           params: { 

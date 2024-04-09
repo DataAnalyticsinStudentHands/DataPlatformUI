@@ -1,3 +1,9 @@
+<!-- instructorProgressMonitorContainer - this parent container is responsible for holding and rendering its child components:
+  studentsWithoutEntryForms - presents a list of students who have registered for and activated their account, but have not yet completed a Student Entry Form.
+  studentsWithoutGoalForms - presents a list of students who have registered for an Experience Instance, but have not yet completed the Goal Setting Form for that Experience Instance.
+  pendingStudents - presents a list of students who have registered for an account, but have not yet activated their account.
+  studentsWithoutExitForms - presents a list of students who have registered for an Experience Instance, but have not yet completed the Exit Form for that Experience Instance.
+-->
 <template>
     <v-container>
         <v-row>

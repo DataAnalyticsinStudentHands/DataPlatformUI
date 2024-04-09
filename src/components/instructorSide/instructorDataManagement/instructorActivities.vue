@@ -1,3 +1,4 @@
+<!-- instructorActivities - this view presents a list of all Activities -->
 <template>
 <v-container>
     <!-- Title -->
@@ -453,12 +454,13 @@ computed: {
                 sessionName
             });
         });
-        console.log('expandedData: ', expandedData);
         return expandedData;
     },
 
 },
 methods: {
+    
+    // Fetches activity data from the backend, updates local state with the fetched data, and then performs any necessary filtering on this data.
     async fetchActivityData() {
         try {
             const user = useLoggedInUserStore();
@@ -473,10 +475,12 @@ methods: {
         }
     },
 
+    // Navigates to the edit page for a specific activity, passing the activity's ID as a parameter.
     editActivity(activity) {
         this.$router.push({ name: "instructorSpecificActivity", params: {id: activity._id } });
     },
 
+    // Toggles an activity's selection state: if the activity is already selected, it is removed from the selection; if it is not selected, it is added to the selection.
     toggleSelection(activity) {
         const index = this.selectedActivities.findIndex((selectedActivity) => selectedActivity._id === activity._id);
         if (index >= 0) {
@@ -488,8 +492,8 @@ methods: {
         }
     },
 
+    // Triggers actions based on the selected search criteria item
     async updateSearchCriteria(item) {
-        console.log('updateSearchCriteria: ', item);
         if (item === "Experience Category") {
             // this.dialogExperienceCategory = true;
         } else if (item === "Experience Name") {
@@ -498,6 +502,7 @@ methods: {
         }
     },
 
+    // Adds a search chip based on the current search input and category, selects the newly added chip by default, clears the search input field, and then performs a filter operation based on the updated search criteria.
     addSearchChip() {
         if (this.activitySearch) {
             this.searchCriteria.push({
@@ -513,6 +518,7 @@ methods: {
         }
     },
 
+    // Toggles the selection state of a search chip: if the chip is already selected, it is removed from the selection; if not, it is added. After updating the selection, a filter operation is performed based on the new selection state.
     selectSearchChip(index) {
         const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
@@ -525,7 +531,8 @@ methods: {
         // Call search
         this.performFilter();
     },
-
+    
+    // Removes a search chip based on its index, updates the list of selected search chips to reflect this removal, adjusts the indexes of the remaining selected chips accordingly, and then performs a filter operation based on the updated search criteria.
     removeSearchChip(index) {
         this.searchCriteria.splice(index, 1);
         // Update selectedSearchChips to reflect the removal
@@ -536,6 +543,8 @@ methods: {
         this.performFilter();
     },
 
+    
+    // Groups search terms by their criteria categories, then filters activity data based on these grouped search criteria. If the "Experience Name" search is applied, it filters based on matching experience names. Otherwise, it filters activities based on their status and other criteria like "Activity Name", considering if archived activities should be viewed. It also dynamically updates the search results based on user-selected search chips.
     performFilter() {
         let searchGroups = {};
         this.selectedSearchChips.forEach(index => {
@@ -545,10 +554,6 @@ methods: {
             }
             searchGroups[criteria.category].push(criteria.term.toLowerCase());
         });
-
-
-        console.log('searchCriteria: ', this.searchCriteria);
-        console.log('selectedSearchChips: ', this.selectedSearchChips);
 
         // Manually update activitySearchApplied based on current selectedSearchChips
         this.updateExperienceNameSearchApplied();
@@ -587,15 +592,16 @@ methods: {
                 return false;
             });
         }
-
     },
 
-
+    // Toggles the visibility of archived activities in the view and re-applies the current search and filter criteria.
     toggleArchivedActivities() {
         this.viewArchivedActivities = !this.viewArchivedActivities;
         this.performFilter();
     },
 
+    
+    // Archives or restores selected activities based on the current view setting, using the user's token for authorization. Displays a success toast message indicating the completion of the action for either a single activity or multiple activities. Clears the selection and refreshes the activity list afterwards.
     async handleArchiveActivities() {
         try {
             const user = useLoggedInUserStore();
@@ -623,11 +629,13 @@ methods: {
         }
     },
 
+    // Closes the experience category selection dialog and clears any selected experience categories.
     cancelDialogExperienceCategory() {
         this.dialogExperienceCategory = false;
         this.selectedExperienceCategories = [];
     },
 
+    // Adds selected experience categories as search criteria chips, automatically selects these new chips, closes the experience category selection dialog, resets the selected categories, and then performs a search based on the updated criteria.
     submitExperienceCategory() {
         this.selectedExperienceCategories.forEach(category => {
             const chip = {
@@ -647,6 +655,7 @@ methods: {
         this.performFilter();
     },
 
+    // Toggles the expansion state of an item in the list: if the item is already expanded, it is collapsed by removing it from the list of expanded activities; if it is not expanded, it is added to the list, thus expanding it.
     toggleRowExpansion(item) {
         const index = this.expandedActivities.indexOf(item);
         if (index > -1) {
@@ -658,16 +667,19 @@ methods: {
         }
     },
 
+    // Splits a list of experiences in half and returns the first half. If the list has an odd number of experiences, the midpoint is rounded up, including the middle experience in the first half.
     firstHalfExperiences(experiences) {
         const midpoint = Math.ceil(experiences.length / 2);
         return experiences.slice(0, midpoint);
     },
 
+    // Splits a list of experiences in half and returns the second half, starting from the midpoint. If the list has an odd number of experiences, the midpoint is rounded up, and the second half starts immediately after the middle experience.
     secondHalfExperiences(experiences) {
         const midpoint = Math.ceil(experiences.length / 2);
         return experiences.slice(midpoint);
     },
 
+    // Determines if a given experience name matches any of the selected 'Experience Name' search criteria by comparing the experience name against lowercased search terms. Returns true if there's at least one match, otherwise false.
     isExperienceNameMatched(experienceName) {
         // Check if any 'Experience Name' criteria are selected
         const selectedExperienceNameCriteria = this.searchCriteria
@@ -677,6 +689,7 @@ methods: {
         return selectedExperienceNameCriteria.some(term => experienceName.toLowerCase().includes(term));
     },
 
+    // Checks if a given experience category matches any of the selected 'Experience Category' search criteria by comparing the experience category against lowercased search terms. Returns true if at least one match is found, indicating the experience category meets the selected criteria.
     isExperienceCategoryMatched(experienceCategory) {
         // Check if any 'Experience Category' criteria are selected
         const selectedExperienceCategoryCriteria = this.searchCriteria
@@ -686,10 +699,12 @@ methods: {
         return selectedExperienceCategoryCriteria.some(term => experienceCategory.toLowerCase().includes(term));
     },
 
+    // Navigates to the view for adding a new activity by routing to the specified route name "instructorAddActivity".
     handleAddNewActivity() {
         this.$router.push({ name: "instructorAddActivity" });
     },
 
+    // Fetches experience data from the backend, sorts it by the experienceCategory in ascending order, and updates the local state with the sorted data.
     async fetchExperienceData() {
         try {
             const user = useLoggedInUserStore();
@@ -700,12 +715,12 @@ methods: {
             this.experienceData = response.data.sort((a, b) => {
                 return a.experienceCategory.localeCompare(b.experienceCategory);
             })
-            console.log('this.experienceData: ', this.experienceData);
         } catch (error) {
             this.handleError(error);
         }
     },
 
+    // Removes a selected experience by its index from the list of selected experience names, adds the removed experience back into the pool of available experiences, and then sorts the updated experience data by experienceCategory.
     removeExperienceName(index) {
         const [removedExperience] = this.selectedExperienceNames.splice(index, 1);
         
@@ -714,19 +729,21 @@ methods: {
         this.experienceData.sort((a, b) => a.experienceCategory.localeCompare(b.experienceCategory));
     },
 
+    // Adds a selected experience to the list of selected experience names and removes it from the available experience data to prevent duplication.
     selectExperienceName(selectedExperienceName) {
         this.selectedExperienceNames.push(selectedExperienceName);
         // Remove the selected activity from the activityData list
         this.experienceData = this.experienceData.filter(experience => experience._id !== selectedExperienceName._id);
     },
 
-
+    // Resets the selected experience names and search input, then closes the experience name search dialog.
     cancelExperienceNameSearch() {
         this.selectedExperienceNames = [];
         this.experienceNameSearch = "";
         this.dialogExperienceName = false;
     },
 
+    // Adds selected experience names as search criteria, fetches activities associated with the selected experiences, clears the selected experience names and search input, and closes the dialog. Performs filtering based on the updated search criteria.
     async submitExperienceNameSearch() {
         // Transform selectedActivities into the desired format for searchCriteria
         const newSearchCriteria = this.selectedExperienceNames.map(experience => ({
@@ -760,6 +777,7 @@ methods: {
         this.performFilter();
     },
 
+    // Fetches activities associated with the selected experiences by sending a request to the server with the experience IDs. Upon receiving the response, updates the list of experience-based activities accordingly.
     async fetchActivitiesByExperience() {
         // Extract experience IDs from selectedExperiences
         const experienceIDs = this.selectedExperienceNames.map(experience => experience._id);
@@ -781,6 +799,7 @@ methods: {
         }
     },
 
+    // Updates the experienceNameSearchApplied flag based on whether there is at least one selected "Experience Name" chip in the search criteria.
     updateExperienceNameSearchApplied() {
         // Check if there's at least one selected "Experience Name" chip
         const hasSelectedExperienceNameChip = this.selectedSearchChips.some(chipIndex => {

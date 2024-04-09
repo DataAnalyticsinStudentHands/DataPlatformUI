@@ -98,8 +98,12 @@ export default {
 name: "GoalFormExperiences",
 props: {
     goalForm: Object,
+    experiences: Array,
+    experienceID: String,
+    expRegistrationID: String,
+    incompleteFormID: String
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form", "update-experiences", "update-experienceID"],
 data() {
     return {
         formSubmitted: false,
@@ -122,7 +126,10 @@ data() {
         'PEERS',
         'Creative Care',
         'Responsive Resourcing'
-        ],
+      ],
+      localExperiences: [],
+      localExperienceID: null,
+      prevHichProject: [],
     }
 },
 mounted() {
@@ -155,6 +162,7 @@ watch: {
     selectedExperience(newVal, oldVal) {
       if (newVal && newVal !== oldVal) {
         this.checkExistingForm(newVal);
+        this.updateIncompleteForm(newVal);
       }
       if (!newVal) {
         this.experienceFoundWarning = null;
@@ -172,8 +180,28 @@ watch: {
         }
     },
 
+    goalForm: {
+        handler(newVal) {
+            if (newVal && newVal.hichProject) {
+                // Assuming hichProject in goalForm is an array of selected project names
+                this.hichProject = newVal.hichProject;
+            }
+        },
+        deep: true, // This is to ensure we react to nested property changes
+        immediate: true, // This ensures the watcher runs on initial load
+    },
+
     hichProject(newVal) {
-        this.$emit("update-hich-project", newVal);
+        if ((this.prevHichProject.length > 0 && newVal.length === 0) || newVal.length > 0) {
+            this.$emit("update-hich-project", newVal);
+        }
+        this.prevHichProject = [...newVal];
+    },
+
+    expRegistrationID(newVal) {
+        if (newVal) {
+            this.selectExperienceMatchingRegistrationID();
+        }
     },
 },
 computed: {
@@ -183,9 +211,9 @@ computed: {
     },
 
     formattedExperiences() {
-      return this.goalForm.experiences.map(experience => ({
+      return this.experiences.map(experience => ({
         text: `${experience.experienceCategory}: ${experience.experienceName}`,
-        value: experience.experienceID
+        value: experience.experienceID,
       }));
     },
 
@@ -213,13 +241,14 @@ methods: {
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });
-        this.goalForm.experiences = response.data.map(experience => ({
+        this.localExperiences = response.data.map(experience => ({
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
           experienceName: experience.experienceName,
           expRegistrationID: experience.expRegistrationID
         }));
         this.$emit("update-original-goal-form", this.goalForm);
+        this.$emit("update-experiences", this.localExperiences);
       } catch (error) {
         this.handleError(error);
       }
@@ -286,26 +315,28 @@ methods: {
 
     updateExperienceID(selected) {
         if (!selected) {
-            this.goalForm.experienceID = null;
+            this.localExperienceID = null;
             this.$emit("update-selected-experience", null); // Emit null if no experience is selected
+            this.$emit("update-experienceID", this.localExperienceID);
             return;
         }
 
         // The selected variable already has the experienceID
-        this.goalForm.experienceID = selected;
+        this.localExperienceID = selected;
 
         // Find the text corresponding to the selected value
         const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
 
         // Emit an object with both text and value
         this.$emit("update-selected-experience", { text: selectedExperienceText, value: selected });
+        this.$emit("update-experienceID", this.localExperienceID);
     },
 
     selectExperienceFromRouteParam() {
         const experienceRegistrationIDFromRoute = this.$route.params.id;
         if (experienceRegistrationIDFromRoute) {
             // Find the experience in the array that matches the expRegistrationID
-            const matchingExperience = this.goalForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
+            const matchingExperience = this.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
             if (matchingExperience) {
                 // Set the selectedExperience to the experienceID of the matching experience
@@ -348,11 +379,65 @@ methods: {
         }
     },
 
-
     findExperienceText(experienceID) {
         const experience = this.formattedExperiences.find(exp => exp.value === experienceID);
         return experience ? experience.text.trim() : '';
     },
+
+    selectExperienceMatchingRegistrationID() {
+        // Ensure experiences are loaded and expRegistrationID is present
+        if (this.expRegistrationID && this.experiences.length) {
+            const foundExperience = this.experiences.find(experience => experience.expRegistrationID === this.expRegistrationID);
+            if (foundExperience) {
+                // Update selectedExperience to the found experience's ID
+                this.selectedExperience = foundExperience.experienceID;
+                // If you have a method to update and emit changes based on selected experience, call it here
+                this.updateExperienceID(this.selectedExperience);
+            }
+        }
+    },
+
+    async updateIncompleteForm(value) {
+        // Find the experience object from localExperiences that matches the selectedExperience
+        const selectedExperienceObject = this.localExperiences.find(exp => exp.experienceID === this.selectedExperience);
+        if (this.incompleteFormID) {
+            try {
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`
+                await axios.patch(apiURL, {expRegistrationID: selectedExperienceObject.expRegistrationID}, { headers: { token } });
+            } catch (error) {
+                this.handleError(error);
+            } finally {
+                this.formSubmitted = true;
+                const { valid } = await this.$refs.form.validate();
+
+                // Check for HICH Project selection if required
+                let hichProjectValid = true;
+                if (this.shouldShowHichCheckboxes && this.hichProject.length === 0) {
+                    hichProjectValid = false;
+                    toast.error(this.$t("Please select at least one HICH Project."), {
+                        position: 'top-right',
+                        toastClassName: 'Toastify__toast--delete',
+                        multiple: false
+                    });
+                }
+
+                if (!valid || !hichProjectValid) {
+                    this.$emit('form-invalid');
+                    toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+                        position: 'top-right',
+                        toastClassName: 'Toastify__toast--delete',
+                        multiple: false
+                    });
+                }
+            }
+        }
+    }
+
+
+
+
 },
 }
 </script>

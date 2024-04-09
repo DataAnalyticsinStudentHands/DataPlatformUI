@@ -158,15 +158,12 @@ methods: {
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });
-        console.log('response: ', response.data);
         this.exitForm.experiences = response.data.map(experience => ({
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
           experienceName: experience.experienceName,
           expRegistrationID: experience.expRegistrationID
         }));
-        console.log('this.exitForm: ', this.exitForm);
-        this.$emit("update-original-exit-form", this.exitForm);
       } catch (error) {
         this.handleError(error);
       }

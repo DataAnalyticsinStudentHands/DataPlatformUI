@@ -49,7 +49,6 @@ export default {
   async mounted() {
     const loggedInUserStore = useLoggedInUserStore();
     if (this.$route.params.toastType) {
-      console.log('loggedInUserStore.languagePreference: ', loggedInUserStore.languagePreference);
         toast[this.$route.params.toastType](this.$t(this.$route.params.toastMessage), {
             position: this.$route.params.toastPosition,
             toastClassName: this.$route.params.toastCSS
