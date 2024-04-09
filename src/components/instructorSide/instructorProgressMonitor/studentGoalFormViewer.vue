@@ -1,48 +1,26 @@
 <template>
+<div v-if="goalForm">
 <v-form disabled>
 <v-container>
+<v-row>
+    <v-col>
+        <v-btn @click="$router.back()">Back</v-btn>
+    </v-col>
+</v-row>
 <!-- Section: Selected Experience -->
 <v-row>
     <v-col>
         <p 
             class="font-weight-black text-h6"
-        >{{$t('Review')}}</p>
+        >{{ firstName }} {{ lastName }} - Goal Form</p>
     </v-col>
 </v-row>
 <v-row><v-col></v-col></v-row>
 <div class="review-section">
 <v-row>
-    <v-col cols="10" class="pb-0">
-        <h3 class="review-section-title">
-            {{ $t('Selected Experience') }}
-            <!-- Mobile View Edit Button -->
-            <v-btn v-if="$vuetify.display.xs"
-                icon
-                size="small"
-                variant="text"
-                @click="emitStepChange(0)"
-                class="pb-2"
-            >
-                <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-        </h3>
-    </v-col>
-    <!-- Non-Mobile View Edit Button -->
-    <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
-        <v-btn
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(0)"
-        >
-        <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-    </v-col>
-</v-row>
-<v-row>
-    <v-col cols="10" class="pt-0">
-        <p class="review-section-content pl-3">
-            {{ selectedExperience?.text }}
+    <v-col cols="10">
+        <p class="review-section-content pl-3 font-weight-bold">
+            {{ experienceCategory }} - {{ experienceName }}
         </p>
     </v-col>
 </v-row>
@@ -63,40 +41,16 @@
     </v-row>
 </div>
 
-
-<div v-if="isBackgroundEditActive || !hasCompletedGoalForm">
 <!-- Background Title -->
 <v-row class="d-flex justify-center align-center">
     <!-- Empty Column for Space -->
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
     <!-- Title Column -->
-    <v-col cols="10" class="pb-0">
+    <v-col cols="12" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Background') }}
         </h2>
-    </v-col>
-    <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
-        <v-btn v-if="$vuetify.display.xs"
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(1)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-    </v-col>
-    <!-- Non-Mobile View Edit Button -->
-    <v-col cols="1" class="d-none d-sm-flex">
-        <v-btn
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(1)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
     </v-col>
 </v-row>
 
@@ -236,40 +190,16 @@
     </v-col>
 </v-row>
 
-</div>
-
 <!-- Growth Title -->
 <v-row class="d-flex justify-center align-center">
     <!-- Empty Column for Space -->
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
     <!-- Title Column -->
-    <v-col cols="10" class="pb-0">
+    <v-col cols="12" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Growth Goals') }}
         </h2>
-    </v-col>
-    <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
-        <v-btn v-if="$vuetify.display.xs"
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(2)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-    </v-col>
-    <!-- Non-Mobile View Edit Button -->
-    <v-col cols="1" class="d-none d-sm-flex">
-        <v-btn
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(2)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
     </v-col>
 </v-row>
 
@@ -347,32 +277,10 @@
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
     <!-- Title Column -->
-    <v-col cols="10" class="pb-0">
+    <v-col cols="12" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Aspirations') }}
         </h2>
-    </v-col>
-    <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
-        <v-btn v-if="$vuetify.display.xs"
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(3)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-    </v-col>
-    <!-- Non-Mobile View Edit Button -->
-    <v-col cols="1" class="d-none d-sm-flex">
-        <v-btn
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(3)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
     </v-col>
 </v-row>
 
@@ -406,32 +314,10 @@
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
     <!-- Title Column -->
-    <v-col cols="10" class="pb-0">
+    <v-col cols="12" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Goals') }}
         </h2>
-    </v-col>
-    <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
-        <v-btn v-if="$vuetify.display.xs"
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(4)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-    </v-col>
-    <!-- Non-Mobile View Edit Button -->
-    <v-col cols="1" class="d-none d-sm-flex">
-        <v-btn
-            icon
-            size="small"
-            variant="text"
-            @click="emitStepChange(4)"
-        >
-            <v-icon>mdi-pencil</v-icon>
-        </v-btn>
     </v-col>
 </v-row>
 
@@ -465,24 +351,30 @@
         <p v-if="goalForm.goals.goalFive" class="review-section-content pl-3">{{ $t(goalForm.goals.goalFive) }}</p>
     </v-col>
 </v-row>
-
-
 </v-container>
 </v-form>
+</div>
 </template>
 
-
 <script>
+import axios from 'axios';
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
 export default {
-    name: "GoalFormReview",
-    props: {
-        selectedExperience: Object,
-        goalForm: Object,
-        hasCompletedGoalForm: Boolean,
-        isBackgroundEditActive: Boolean,
-        hichProject: Array
+    name: "studentGoalFormViewer",
+    data() {
+        return {
+            firstName: "",
+            lastName: "",
+            experienceName: "",
+            experienceCategory: "",
+            goalForm: {},
+        }
     },
-    emits: ["change-step"],
+    async created() {
+        console.log('this.$route.params: ', this.$route.params)
+        await this.fetchGoalForm(this.$route.params.studentID, this.$route.params.expInstanceID);
+    },
     computed: {
         processedCommunityEngagementExperiences() {
             const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.id === 7 && experience.checked);
@@ -577,13 +469,31 @@ export default {
         },
     },
     methods: {
-        emitStepChange(stepNumber) {
-            this.$emit('change-step', stepNumber);
-        },
-    },
+        async fetchGoalForm(studentID, expInstanceID) {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/goal-form`;
+
+            try {
+                const response = await axios.get(url, {
+                    headers: { token },
+                    params: { userID: studentID, expInstanceID }
+                });
+                console.log('response: ', response.data);
+                this.firstName = response.data.firstName;
+                this.lastName = response.data.lastName;
+                this.experienceName = response.data.experienceName;
+                this.experienceCategory = response.data.experienceCategory;
+                this.goalForm = response.data.goalForm;
+                console.log('goalForm: ', this.goalForm);
+
+            } catch (error) {
+                this.handleError(error);
+            }
+        }
+    }
 }
 </script>
-
 
 <style scoped>
 .review-section {

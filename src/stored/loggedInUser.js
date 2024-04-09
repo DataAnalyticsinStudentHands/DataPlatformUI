@@ -3,6 +3,7 @@ import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import { i18n } from '@/plugins/i18n';
 
 // Defining a store
 export const useLoggedInUserStore = defineStore({
@@ -170,6 +171,7 @@ export const useLoggedInUserStore = defineStore({
 
     },
     setLanguagePreference(langPref) {
+      console.log('pinia setLanguagePreference, langPref: ', langPref);
       this.languagePreference = langPref;
     },
     async checkFormCompletion() {
@@ -253,7 +255,7 @@ export const useLoggedInUserStore = defineStore({
     
         // Fetch updated registered experiences
         await this.fetchRegisteredExperiences();
-        toast.success('Experiences Registered!', {
+        toast.success(i18n.global.t('Experiences Registered') + '!', {
           position: 'top-right',
           toastClassName: 'Toastify__toast--create'
         });

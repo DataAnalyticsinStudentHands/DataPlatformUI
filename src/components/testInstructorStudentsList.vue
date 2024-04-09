@@ -358,9 +358,9 @@ methods: {
     
     async fetchStudentData() {
         try {
-            useLoggedInUserStore().startLoading();
             const user = useLoggedInUserStore();
-            let token = user.token;
+            // let token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             let apiURL =
             import.meta.env.VITE_ROOT_API + `/instructorSideData/studentInformation/`;
             const resp = await axios.get(apiURL, { headers: { token } });
@@ -380,8 +380,6 @@ methods: {
             this.filteredStudentData = [...this.studentData];
         } catch (error) {
             this.handleError(error);
-        } finally {
-          useLoggedInUserStore().stopLoading();
         }
     },
 

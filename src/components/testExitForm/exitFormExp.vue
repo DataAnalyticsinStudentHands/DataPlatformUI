@@ -4,13 +4,6 @@
     @submit.prevent="handleValidations"
 >
     <v-container style="width: 100%; margin: 0 auto;">
-        <v-row>
-            <v-col>
-                <p 
-                    class="font-weight-black text-h6"
-                >{{$t('Experience')}}</p>
-            </v-col>
-        </v-row>
         <v-row></v-row>
         <v-col cols="12"></v-col>
         <v-row dense>
@@ -51,40 +44,17 @@
                 <!-- Message when experienceFoundWarning is true -->
                 <div v-if="experienceFoundWarning" style="display: flex; align-items: center; color: #4A90E2; font-weight: bold;">
                     <v-icon left small style="margin-right: 0.5rem; color: #4A90E2;">mdi-alert-circle</v-icon>
-                    {{$t('Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.')}}
+                    {{$t('Hi there! You have already filled out an Exit Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.')}}
                 </div>
 
                 <!-- Message when experienceFoundWarning is false -->
                 <div v-if="experienceFoundWarning === false" style="display: flex; align-items: center; color: #4CAF50; font-weight: bold;">
                     <v-icon left small style="margin-right: 0.5rem; color: #4CAF50;">mdi-check-circle</v-icon>
-                    {{$t("You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!")}}
+                    {{$t("You haven't filled out an Exit Form for this experience. Complete this form to complete your experience!")}}
                 </div>
                 </div>
             </v-col>
         </v-row>
-        <!-- HICH Projects -->
-        <v-fade-transition>
-            <v-row v-if="shouldShowHichCheckboxes">
-                <v-col cols="12">
-                    <p :class="{'error-text': isHICHProjectInvalid}" class="font-weight-black text-h8">
-                        {{$t('Please select which HICH Project you are involved in:')}}
-                    </p>
-
-                    <v-checkbox
-                        v-for="(item, index) in hichCheckboxItems"
-                        :key="index"
-                        :label="item"
-                        :value="item"
-                        v-model="hichProject"
-                        :class="{'error-text': isHICHProjectInvalid}"
-                        density="compact"
-                        class="ma-0 pa-0" 
-                        hide-details="true"
-                    ></v-checkbox>
-                    <div v-if="isHICHProjectInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
-                </v-col>
-            </v-row>
-        </v-fade-transition>
     </v-container>
 </v-form>
 </template>
@@ -95,11 +65,11 @@ import { toast } from 'vue3-toastify';
 import axios from "axios";
 
 export default {
-name: "GoalFormExperiences",
+name: "ExitFormExperiences",
 props: {
-    goalForm: Object,
+    exitForm: Object,
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-original-exit-form"],
 data() {
     return {
         formSubmitted: false,
@@ -114,15 +84,6 @@ data() {
       ],
       isLoadingExpCheck: false,
       experienceFoundWarning: null,
-      hichProject: [],
-      hichCheckboxItems: [
-        'BREATHE',
-        'WEAR',
-        'Operation Fusion',
-        'PEERS',
-        'Creative Care',
-        'Responsive Resourcing'
-        ],
     }
 },
 mounted() {
@@ -140,7 +101,7 @@ mounted() {
 
     try {
         this.fetchExperiences().then(() => {
-        this.fetchHasFilledForm();
+        // this.fetchHasFilledForm();
         this.selectExperienceFromRouteParam();
         });
 
@@ -159,11 +120,6 @@ watch: {
       if (!newVal) {
         this.experienceFoundWarning = null;
       }
-
-        // Reset hichProject if shouldShowHichCheckboxes becomes false
-        if (!this.shouldShowHichCheckboxes) {
-            this.hichProject = [];
-        }
     },
 
     hasValidationErrors(newValue, oldValue) {
@@ -172,9 +128,6 @@ watch: {
         }
     },
 
-    hichProject(newVal) {
-        this.$emit("update-hich-project", newVal);
-    },
 },
 computed: {
     isExperienceIDInvalid() {
@@ -183,76 +136,74 @@ computed: {
     },
 
     formattedExperiences() {
-      return this.goalForm.experiences.map(experience => ({
+      return this.exitForm.experiences.map(experience => ({
         text: `${experience.experienceCategory}: ${experience.experienceName}`,
         value: experience.experienceID
       }));
     },
 
-    shouldShowHichCheckboxes() {
-        const experienceText = this.findExperienceText(this.selectedExperience);
-        return experienceText.includes('HICH - Project Volunteer') || experienceText.includes('HICH - Project Head');
-    },
-
-    isHICHProjectInvalid() {
-        if (!this.formSubmitted) return false;
-        // Return true if HICH Project checkboxes should be shown but no option is selected
-        return this.shouldShowHichCheckboxes && this.hichProject.length === 0;
-    },
-
     hasValidationErrors() {
         if (!this.formSubmitted) return false;
-        return this.isExperienceIDInvalid || this.isHICHProjectInvalid;
+        return this.isExperienceIDInvalid;
     },
 },
 methods: {
     async fetchExperiences() {
       const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experience-instances/';
+      // let token = user.token;
+      
+        const token = import.meta.env.VITE_TOKEN;
+
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experiences/';
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });
-        this.goalForm.experiences = response.data.map(experience => ({
+        console.log('response: ', response.data);
+        this.exitForm.experiences = response.data.map(experience => ({
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
           experienceName: experience.experienceName,
           expRegistrationID: experience.expRegistrationID
         }));
-        this.$emit("update-original-goal-form", this.goalForm);
+        console.log('this.exitForm: ', this.exitForm);
+        this.$emit("update-original-exit-form", this.exitForm);
       } catch (error) {
         this.handleError(error);
       }
     },
 
-    async fetchHasFilledForm() {
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-filled-goal-setting-form/';
+    // async fetchHasFilledForm() {
+    //     const user = useLoggedInUserStore();
+    //     // let token = user.token;
+        
+    //     const token = import.meta.env.VITE_TOKEN;
 
-        try {
-        const response = await axios.get(apiURL, {
-            headers: {
-            token: token
-            }
-        });
-        this.hasFilledForm = response.data.hasFilled;
-        if (this.hasFilledForm) {
-            this.goalForm.communityEngagement = response.data.communityEngagement;
-            this.goalForm.researchExperience = response.data.researchExperience;
-        }
+    //     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-filled-goal-setting-form/';
 
-        } catch (error) {
-            this.handleError("Error fetching form fill status:", error);
-        }
-    },
+    //     try {
+    //     const response = await axios.get(apiURL, {
+    //         headers: {
+    //         token: token
+    //         }
+    //     });
+    //     this.hasFilledForm = response.data.hasFilled;
+    //     if (this.hasFilledForm) {
+    //         this.goalForm.communityEngagement = response.data.communityEngagement;
+    //         this.goalForm.researchExperience = response.data.researchExperience;
+    //     }
+
+    //     } catch (error) {
+    //         this.handleError("Error fetching form fill status:", error);
+    //     }
+    // },
 
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
         const experienceID = this.selectedExperience;
         const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
+        // let token = user.token;
+        const token = import.meta.env.VITE_TOKEN;
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-EF-for-experience/';
 
         try {
             const response = await axios.get(apiURL + `${experienceID}`, {
@@ -286,13 +237,13 @@ methods: {
 
     updateExperienceID(selected) {
         if (!selected) {
-            this.goalForm.experienceID = null;
+            this.exitForm.experienceID = null;
             this.$emit("update-selected-experience", null); // Emit null if no experience is selected
             return;
         }
 
         // The selected variable already has the experienceID
-        this.goalForm.experienceID = selected;
+        this.exitForm.experienceID = selected;
 
         // Find the text corresponding to the selected value
         const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
@@ -305,7 +256,7 @@ methods: {
         const experienceRegistrationIDFromRoute = this.$route.params.id;
         if (experienceRegistrationIDFromRoute) {
             // Find the experience in the array that matches the expRegistrationID
-            const matchingExperience = this.goalForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
+            const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
             if (matchingExperience) {
                 // Set the selectedExperience to the experienceID of the matching experience
@@ -325,18 +276,7 @@ methods: {
         this.formSubmitted = true;
         const { valid } = await this.$refs.form.validate();
 
-        // Check for HICH Project selection if required
-        let hichProjectValid = true;
-        if (this.shouldShowHichCheckboxes && this.hichProject.length === 0) {
-            hichProjectValid = false;
-            toast.error(this.$t("Please select at least one HICH Project."), {
-                position: 'top-right',
-                toastClassName: 'Toastify__toast--delete',
-                multiple: false
-            });
-        }
-
-        if (valid && hichProjectValid) {
+        if (valid) {
             this.$emit('form-valid');
         } else {
             this.$emit('form-invalid');
@@ -361,20 +301,5 @@ methods: {
 .error-text {
     color: rgb(176, 0, 32);
 }
-
-
-.section-title {
-    font-size: 1.25rem; /* Adjusted for larger section titles */
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-
-.review-section-title {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
 
 </style>

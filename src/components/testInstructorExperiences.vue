@@ -206,17 +206,17 @@
 <v-card>
     <v-card-item>
         <v-card
-                flat
-                title="Add Activities"
+              flat
+              title="Add Activities"
             >
-                <template v-slot:text>
+              <template v-slot:text>
                 <v-text-field
-                    v-model="activitySearch"
-                    label="Search"
-                    prepend-inner-icon="mdi-magnify"
-                    single-line
-                    variant="outlined"
-                    hide-details
+                  v-model="activitySearch"
+                  label="Search"
+                  prepend-inner-icon="mdi-magnify"
+                  single-line
+                  variant="outlined"
+                  hide-details
                 ></v-text-field>
                 <v-card-item v-if="selectedActivities && selectedActivities.length">
                     <v-chip-group
@@ -237,8 +237,8 @@
                         </v-chip>
                     </v-chip-group>
                 </v-card-item>
-                </template>
-                <v-data-table
+              </template>
+              <v-data-table
                 :headers="activityHeaders"
                 :items="activityData"
                 item-value="_id"
@@ -246,14 +246,14 @@
                 class="scrollable-table"
                 hover
                 :search="activitySearch"
-                >
+              >
                 <template v-slot:body="{ items }">
                     <template v-for="item in items" :key="item._id">
                         <tr
                             @click="selectActivity(item)"
                             @mouseover="hoveredItem = item._id"
                             @mouseleave="hoveredItem = null"
-                            class="pointer-cursor activity-row"
+                            class="pointer-cursor"
                         >
                             <td>
                                 <div class="activity-content">
@@ -265,7 +265,7 @@
                     </template>
                 </template>
                 <template v-slot:bottom></template>
-                </v-data-table>
+              </v-data-table>
         </v-card>
     </v-card-item>
     <v-card-actions>
@@ -278,6 +278,8 @@
     </v-card-actions>
 </v-card>
 </v-dialog>
+
+{{ activitySearchApplied }}
 </template>
 
 <script>
@@ -410,7 +412,7 @@ computed: {
                 sessionName
             });
         });
-        console.log('expandedData: ', expandedData);
+        console.log('expandedData')
         return expandedData;
     }
 
@@ -419,7 +421,8 @@ methods: {
     async fetchExperienceData() {
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
+            // const token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
             const response = await axios.get(apiURL, { headers: { token } });
             this.experienceData = response.data;
@@ -571,7 +574,8 @@ methods: {
     async handleArchiveExperiences() {
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
+            // const token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             const updateStatus = { experienceStatus: this.viewArchivedExperiences };
 
             for (const experience of this.selectedExperiences) {
@@ -607,7 +611,8 @@ methods: {
     async fetchActivityData() {
         try {
             const user = useLoggedInUserStore();
-            let token = user.token;
+            // let token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
 
             const response = await axios.get(apiURL, { headers: { token } });
@@ -687,7 +692,8 @@ methods: {
 
         try {
             const user = useLoggedInUserStore();
-            let token = user.token;
+            // let token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/by-activity`;
 
             // Use axios.post and pass activityIDs in the body

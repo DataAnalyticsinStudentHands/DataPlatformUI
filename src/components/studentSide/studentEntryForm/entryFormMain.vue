@@ -53,7 +53,7 @@
                     <v-stepper-header>
                         <v-stepper-item
                             ref="step0"
-                            title="Demographics"
+                            :title="$t('Demographics')"
                             icon="mdi-account"
                             value="0"
                             :error="demoError"
@@ -63,7 +63,7 @@
 
                         <v-stepper-item
                             ref="step1"
-                            title="Degree Program"
+                            :title="$t('Degree Program')"
                             icon="mdi-school"
                             value="1"
                             :error="degreeError"
@@ -73,7 +73,7 @@
 
                         <v-stepper-item
                             ref="step2"
-                            title="Graduate/Professional"
+                            :title="$t('Graduate/Professional')"
                             icon="mdi-account-school"
                             value="2"
                             :error="gradProfError"
@@ -83,7 +83,7 @@
 
                         <v-stepper-item
                             ref="step3"
-                            title="Review"
+                            :title="$t('Review')"
                             icon="mdi-check-bold"
                             value="3"
                         ></v-stepper-item>
@@ -251,7 +251,6 @@
             </v-card>
         </v-dialog>
 
-
 </template>
 
 <script>
@@ -292,6 +291,8 @@ export default {
                     { id: 6, label: "Prefer not to answer", checked: false },
                 ],
                 otherPronouns: '',
+                commentsByStaff: '',
+                issuesConcernsTriggers: '',
                 enrolledUHInfo: {
                     uhStatus: '',
                     uhEmail: '',
@@ -369,6 +370,15 @@ export default {
         // Check the hasCompletedEntryForm state
         if (!loggedInUserStore.hasCompletedEntryForm) {
             this.showNewUserDialog = true; // Open the dialog if the condition is met
+        }
+
+        // Translations
+        if (loggedInUserStore.languagePreference === "Spanish") {
+            // Set to Spanish
+            this.$i18n.locale = 'es';
+        } else {
+            // Default to English
+            this.$i18n.locale = 'en';
         }
     },
     computed: {

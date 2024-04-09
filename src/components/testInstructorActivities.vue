@@ -243,17 +243,17 @@
 <v-card>
     <v-card-item>
         <v-card
-                flat
-                title="Search Activities by Experiences"
+              flat
+              title="Search Activities by Experiences"
             >
-                <template v-slot:text>
+              <template v-slot:text>
                 <v-text-field
-                    v-model="experienceNameSearch"
-                    label="Search"
-                    prepend-inner-icon="mdi-magnify"
-                    single-line
-                    variant="outlined"
-                    hide-details
+                  v-model="experienceNameSearch"
+                  label="Search"
+                  prepend-inner-icon="mdi-magnify"
+                  single-line
+                  variant="outlined"
+                  hide-details
                 ></v-text-field>
                 <v-card-item v-if="selectedExperienceNames && selectedExperienceNames.length">
                     <v-chip-group
@@ -274,41 +274,40 @@
                         </v-chip>
                     </v-chip-group>
                 </v-card-item>
-                </template>
-                <v-data-table
-                    :headers="experienceHeaders"
-                    :items="experienceData"
-                    item-value="_id"
-                    items-per-page="-1"
-                    class="scrollable-table"
-                    hover
-                    :search="experienceNameSearch"
-                    >
-                    <template v-slot:body="{ items }">
-                        <template v-for="item in items" :key="item._id">
-                            <tr
-                                @click="selectExperienceName(item)"
-                                @mouseover="hoveredItem = item._id"
-                                @mouseleave="hoveredItem = null"
-                                class="pointer-cursor"
-                            >
-                                <td>
-                                    <div class="experience-content">
-                                        {{ item.experienceCategory }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="experience-content">
-                                        {{ item.experienceName }}
-                                        <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
-                                        <v-icon v-else class="invisible-icon">mdi-plus</v-icon>
-                                    </div>
-                                </td>
-                            </tr>
-                        </template>
+              </template>
+              <v-data-table
+                :headers="experienceHeaders"
+                :items="experienceData"
+                item-value="_id"
+                items-per-page="-1"
+                class="scrollable-table"
+                hover
+                :search="experienceNameSearch"
+              >
+                <template v-slot:body="{ items }">
+                    <template v-for="item in items" :key="item._id">
+                        <tr
+                            @click="selectExperienceName(item)"
+                            @mouseover="hoveredItem = item._id"
+                            @mouseleave="hoveredItem = null"
+                            class="pointer-cursor"
+                        >
+                            <td>
+                                <div class="experience-content">
+                                    {{ item.experienceCategory }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="experience-content">
+                                    {{ item.experienceName }}
+                                    <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
+                                </div>
+                            </td>
+                        </tr>
                     </template>
-                    <template v-slot:bottom></template>
-                </v-data-table>
+                </template>
+                <template v-slot:bottom></template>
+              </v-data-table>
         </v-card>
     </v-card-item>
     <v-card-actions>
@@ -462,7 +461,8 @@ methods: {
     async fetchActivityData() {
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
+            // const token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/activities/";
             const response = await axios.get(apiURL, { headers: { token } });
             this.activityData = response.data;
@@ -599,7 +599,8 @@ methods: {
     async handleArchiveActivities() {
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
+            // const token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             const updateStatus = { activityStatus: this.viewArchivedActivities };
 
             for (const activity of this.selectedActivities) {
@@ -693,7 +694,8 @@ methods: {
     async fetchExperienceData() {
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
+            // const token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
 
             const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/`;
             const response = await axios.get(apiURL, { headers: { token }});
@@ -766,7 +768,8 @@ methods: {
 
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
+            // const token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
             let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/by-experience`;
 
             const response = await axios.post(apiURL, {
@@ -819,9 +822,5 @@ methods: {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-}
-
-.invisible-icon {
-    color: transparent;
 }
 </style>

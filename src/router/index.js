@@ -10,6 +10,12 @@ const routes = [
       redirect: '/login'
     },
     {
+      path: '/test',
+      name: 'testInstructorStudentsList',
+      props: true,
+      component: () => import('../components/testInstructorStudentsList.vue')
+    },
+    {
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
@@ -165,6 +171,19 @@ const routes = [
       path: '/instructorDash',
       name: 'instructorDash',
       component: () => import('../components/instructorSide/instructorDash.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          next('/error');
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/studentGoalFormViewer',
+      name: 'StudentGoalFormViewer',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentGoalFormViewer.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
         if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {

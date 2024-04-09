@@ -4,6 +4,13 @@
     @submit.prevent="handleValidations"
 >
 <v-container>
+    <v-row>
+        <v-col>
+            <p 
+                class="font-weight-black text-h6"
+            >{{$t('Aspirations')}}</p>
+        </v-col>
+    </v-row>
     <!-- Aspirations -->
     <v-col cols="12" md="10">
         <p 
@@ -28,7 +35,7 @@
             v-model="goalForm.aspirations.aspirationOne"
             :error="isAspirationsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
 
@@ -38,7 +45,7 @@
             v-model="goalForm.aspirations.aspirationTwo"
             :error="isAspirationsInvalid"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
 
         <v-textarea
@@ -47,7 +54,7 @@
             v-model="goalForm.aspirations.aspirationThree"
             :error-messages="aspirationsErrorMessages"
             auto-grow
-            rows="1"
+            rows="3"
         ></v-textarea>
     </v-col>
 </v-container>

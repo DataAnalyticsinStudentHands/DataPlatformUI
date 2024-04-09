@@ -12,86 +12,6 @@
             <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col cols="6">
-            <v-card flat>
-              <v-card-title>
-                <v-row>
-                  <v-col>
-                    Selected Activities
-                  </v-col>
-                </v-row>
-              </v-card-title>
-              <v-list class="scrollable-list">
-                <v-list-item
-                  v-for="activity in selectedActivities"
-                  :key="activity._id"
-                >
-                <v-row>
-                  <v-col cols="10">
-                    {{ activity.activityName }}
-                  </v-col>
-                  <v-col>
-                    <v-icon
-                      @click.stop="removeSelectedActivity(activity)"
-                      class="mdi-close"
-                    >
-                      mdi-close
-                    </v-icon>
-                  </v-col>
-                </v-row>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-col>
-          <v-col>
-            <v-card
-              flat
-              title="Add Activities"
-            >
-              <template v-slot:text>
-                <v-text-field
-                  v-model="activitySearch"
-                  label="Search"
-                  prepend-inner-icon="mdi-magnify"
-                  single-line
-                  variant="outlined"
-                  hide-details
-                ></v-text-field>
-              </template>
-              <v-data-table
-                :headers="activityHeaders"
-                :items="activities"
-                item-value="_id"
-                items-per-page="-1"
-                class="scrollable-table"
-                hover
-                :search="activitySearch"
-              >
-                <template v-slot:body="{ items }">
-                  <template v-for="item in items" :key="item._id">
-                    <tr
-                      @click="selectActivity(item)"
-                      @mouseover="hoveredItem = item._id"
-                      @mouseleave="hoveredItem = null"
-                      class="pointer-cursor activity-row"
-                    >
-                      <td>
-                        <div class="activity-content">
-                          {{ item.activityName }}
-                          <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
-                        </div>
-                      </td>
-                    </tr>
-                  </template>
-                </template>
-                <template v-slot:bottom>
-
-                </template>
-              </v-data-table>
-            </v-card>
-          </v-col>
-        </v-row>
         <v-row class="pt-5">
           <v-col>
             <v-btn @click="goBack()">
@@ -188,19 +108,6 @@ export default {
         experienceName: '',
       },
       originalExperienceName: "",
-      activities: [],
-      originalActivities: [],
-      activityHeaders: [
-        {
-          title: "Activity Name",
-          value: "activityName",
-          key: "activityName",
-          align: "start",
-          sortable: true
-        }
-      ],
-      selectedActivities: [],
-      activitySearch: "",
       hoveredItem: null,
       canExperienceBeDeleted: false,
       showDeleteDialog: false,
@@ -234,29 +141,6 @@ export default {
             experienceCategory: experienceData.experienceCategory,
             experienceName: experienceData.experienceName,
           };
-
-          // Wait for the activities to be fetched before processing
-          this.fetchActivityData().then(() => {
-            this.selectedActivities = this.originalActivities.filter(a => experienceData.activities.includes(a._id));
-            this.activities = this.originalActivities.filter(a => !experienceData.activities.includes(a._id));
-          });
-        })
-        .catch((error) => {
-          this.handleError(error);
-        });
-    },
-
-
-    async fetchActivityData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
-      return axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          const activities = resp.data;
-          this.activities = activities.filter((activity) => activity.activityStatus === true);
-          this.originalActivities = [...this.activities];
         })
         .catch((error) => {
           this.handleError(error);
@@ -331,7 +215,7 @@ export default {
         this.$router.push({
           name: 'instructorDataManagement',
           params: {
-            activeTab: 2,
+            activeTab: 1,
             toastType: 'success',
             toastMessage: 'Experience Deleted!',
             toastPosition: 'top-right',
@@ -359,7 +243,6 @@ export default {
         .put(experienceUpdateURL, {
           experienceCategory: this.experience.experienceCategory,
           experienceName: this.experience.experienceName,
-          activities: this.selectedActivities.map(activity => activity._id),
         }, { headers: { token } })
         .then(() => {
           // Prepare data for updating Experience Instances
@@ -368,10 +251,6 @@ export default {
               category: this.experience.experienceCategory,
               name: this.experience.experienceName,
             },
-            activities: this.selectedActivities.map(activity => ({
-              id: activity._id,
-              name: activity.activityName
-            }))
           };
 
           // Update Experience Instances
@@ -388,7 +267,7 @@ export default {
           this.$router.push({ 
             name: 'instructorDataManagement',
             params: {
-              activeTab: 2,
+              activeTab: 1,
               toastType: 'info',
               toastMessage: toastMessage,
               toastPosition: 'top-right',
@@ -399,33 +278,6 @@ export default {
         .catch((error) => {
           this.handleError(error);
         });
-    },
-
-
-
-
-    selectActivity(activity) {
-      // Add to selectedActivities
-      this.selectedActivities.push(activity);
-
-      // Remove from the activities list
-      this.activities = this.activities.filter(a => a._id !== activity._id);
-    },
-
-    removeSelectedActivity(activity) {
-      // Remove from selectedActivities
-      this.selectedActivities = this.selectedActivities.filter(a => a._id !== activity._id);
-
-      // Find original index in the originalActivities array
-      const originalIndex = this.originalActivities.findIndex(a => a._id === activity._id);
-
-      // Check if the activity is already in the activities list
-      const alreadyPresent = this.activities.some(a => a._id === activity._id);
-
-      // Re-insert at the original position if not present
-      if (!alreadyPresent && originalIndex !== -1) {
-        this.activities.splice(originalIndex, 0, activity);
-      }
     },
 
     goBack() {
@@ -464,14 +316,6 @@ export default {
 .pointer-cursor {
     cursor: pointer;
 }
-
-.activity-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
 .mdi-close {
   cursor: pointer;
 }
