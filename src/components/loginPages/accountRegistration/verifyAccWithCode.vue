@@ -71,6 +71,7 @@ export default {
     }
   },
   methods: {
+    // Official Form Submission. Checks if there are errors. If not, proceed to activating account.
     formSubmit() {
         // Check if form has errors
         if (!this.code) {
@@ -78,6 +79,8 @@ export default {
         }
         this.activateAccount();
     },
+
+    // Activates the account using a verification code and user ID. On successful account activation, updates user status, retrieves full name, sets the user as logged in, and navigates to the appropriate dashboard based on the user's role. If the account activation fails due to an expired or invalid code, attempts to send a new code and notifies the user accordingly.
     async activateAccount() {
         this.loading = true;
         let user = {
@@ -152,13 +155,13 @@ export default {
         }
     },
 
-
+// Sends a request to reissue a new verification code for the user, identified by userID. On successful request, the userID is extracted from the response.
     async sendNewCode() {
         let user = {
         userID: this.userID,
         error: this.error,
         };
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/sendNewCode`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/send-new-code`;
 
         axios.put(apiURL, user)
         .then((res) => {

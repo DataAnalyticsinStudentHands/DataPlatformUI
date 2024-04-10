@@ -94,6 +94,7 @@ export default {
     };
   },
   methods: {
+    // Called when Form is submitted. Activates the account if there are no errors in the form.
     formSubmit() {
         // Check if form has errors
         if (!this.code) {
@@ -101,13 +102,15 @@ export default {
         }
         this.activateAccount();
     },
+
+    // Activates the account using an email and a verification code. On successful activation, navigates to the login page with a success toast message. If the activation fails due to an invalid email or code, displays an error toast. For expired codes, attempts to resend a new code.
     async activateAccount() {
         this.loading = true;
         let user = {
             email: this.email,
             code: this.code,
         };
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verifyWithEmail`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verify-with-email`;
         try {
             const res = await axios.put(apiURL, user);
 
@@ -143,14 +146,14 @@ export default {
             this.loading = false;
         }
     },
-
-
+    
+    // Sends a request to generate and send a new verification code to the user's email. Notifies the user with a toast message when a new code is sent successfully.
     async sendNewCode() {
         let user = {
         email: this.email,
         error: this.error,
         };
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/sendNewCode`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/send-new-code`;
 
         axios.put(apiURL, user)
         .then((res) => {
@@ -169,6 +172,7 @@ export default {
         });
     },
 
+    // Navigate to Login screen
     goBackToLogin() {
         this.$router.push({name: 'login'});
     },

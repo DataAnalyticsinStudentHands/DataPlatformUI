@@ -138,6 +138,7 @@ export default {
   },
   methods: {
 
+    // Retrieves active activities from the backend, filtering them based on their status, and stores them for display.
     fetchActivityData() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -154,6 +155,7 @@ export default {
         });
     },
 
+    // Submits a new experience along with selected activities to the backend and navigates to the data management view with a success toast message indicating the experience has been added.
     handleSubmitForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -182,6 +184,8 @@ export default {
           this.handleError(error);
         });
     },
+
+    // Adds a selected activity to the selectedActivities array for inclusion in an experience, and removes it from the available activities list to prevent duplicate selection.
     selectActivity(activity) {
       // Add to selectedActivities
       this.selectedActivities.push(activity);
@@ -190,6 +194,7 @@ export default {
       this.activities = this.activities.filter(a => a._id !== activity._id);
     },
 
+    // Removes an activity from the selectedActivities list and reinserts it back into the original activities list at its initial position, if it isn't already present, maintaining the initial order of activities.
     removeSelectedActivity(activity) {
       // Remove from selectedActivities
       this.selectedActivities = this.selectedActivities.filter(a => a._id !== activity._id);
