@@ -66,6 +66,7 @@ export default {
     window.scrollTo(0, 0);
   },
   methods: {
+
     async handleSubmitForm() {
       // Validate the form before submission
       const isValid = await this.$refs.form.validate();
@@ -106,6 +107,7 @@ export default {
         });
       }
     }
+    
   }
 }
 </script>

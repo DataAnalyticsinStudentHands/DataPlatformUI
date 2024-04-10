@@ -69,6 +69,8 @@ export default {
         };
     },
     methods: {
+        
+        // Validates the email form and initiates the password reset process for the given email. On successful initiation, stores the user ID and token received from the response, then navigates to the password reset code  verification page.
         async emailFormSubmit() {
             // Check if there are any errors in the form
             await this.$refs.emailForm.validate();
@@ -81,7 +83,7 @@ export default {
                     email: this.email,
                     error: this.error,
                 };
-                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/passwordReset/initiate`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/password-reset/initiate`;
 
                 try {
                     const response = await axios.put(apiURL, user);
@@ -112,6 +114,8 @@ export default {
                 }
             }
         },
+
+        // Navigate to Login screen
         goBackToLogin() {
             this.$router.push({name: 'login'});
         },

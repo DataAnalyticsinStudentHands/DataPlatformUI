@@ -32,6 +32,8 @@
     },
     
     methods: {
+
+      // Submits an activity to the backend and redirects to the data management view with a success toast message indicating the activity has been added.
       async handleSubmitForm() {
         const user = useLoggedInUserStore();
         let token = user.token;

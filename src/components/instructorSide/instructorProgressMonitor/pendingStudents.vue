@@ -117,7 +117,7 @@
         this.loading = true;
         const user = useLoggedInUserStore();
         let token = user.token;
-        let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/user/checkStatus';
+        let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/user/check-status';
   
         try {
           const response = await axios.get(url, { headers: { token } });

@@ -89,10 +89,12 @@
       }
     },
     methods: {
+
+      // Updates user information based on input fields and navigates to the respective dashboard with a language-specific toast message indicating successful update.
       async handleSubmitForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/updateUserData`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/update-user-data`;
         const destination = user.role === 'Student' ? 'studentDashboard' : user.role === 'Instructor' ? 'instructorDash' : '';
 
         
