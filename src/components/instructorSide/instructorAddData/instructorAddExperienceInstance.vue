@@ -326,7 +326,6 @@ export default {
     },
 
     created() {
-        console.log('instructorAddExperienceInstance created');
         this.fetchActivityData();
         this.fetchActiveSessions().then(() => {
             if (this.$route.params.id) {
@@ -349,25 +348,19 @@ export default {
         },
 
         selectedExperiences(newVal) {
-            console.log('selectedExperiences watch newVal: ', newVal);
             if (newVal && newVal.length > 0) {
-                console.log('selectedExperiences first if')
                 this.activitiesTab = newVal[0]._id;
             } else if (newVal.length === 0) {
-                console.log('selectedExperiences watch newVal.length === 0')
                 this.selectedExperience = {};
                 this.activitiesTab = null;
             }
         },
         
         activitiesTab(newVal) {
-            console.log('activitiesTab newVal: ', newVal);
             // Find the experience that matches the newVal (which is the _id of the experience)
             let matchingExperience = this.selectedExperiences.find(experience => experience._id === newVal);
             if (matchingExperience) {
-                console.log('matching experience');
                 this.selectedExperience = matchingExperience;
-                console.log('selectedExperience: ', matchingExperience);
             } else {
                 console.log('no matching experience');
             }
@@ -564,7 +557,7 @@ export default {
                 });
             } catch (error) {
                 // Handle error
-                console.error('Error creating experience instances:', error);
+                this.handleError(error);
                 toast.error('Failed to create experience instances. Please try again.', {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete',
@@ -580,11 +573,8 @@ export default {
 
         // Identifies and removes a specified activity's ID from the list of activities within a selected experience, based on the activity's ID.
         removeActivity(activity) {
-            console.log('removeActivity called');
             // Find the index of the activity's _id in the selectedExperience.activities array
             const index = this.selectedExperience.activities.indexOf(activity._id);
-            console.log('index: ', index);
-            console.log('activity._id: ', activity._id);
 
             // If the activity's _id is found in the array, remove it
             if (index !== -1) {

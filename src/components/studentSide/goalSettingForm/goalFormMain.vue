@@ -981,10 +981,7 @@ methods: {
         await user.checkFormCompletion();
     },
 
-    async handleUpdateForm() {  
-        console.log('handleUpdateForm') 
-        console.log('foundDocumentId: ', this.foundDocumentId);
-        console.log('incompleteFormID: ', this.incompleteFormID);
+    async handleUpdateForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
