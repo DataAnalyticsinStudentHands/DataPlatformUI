@@ -516,7 +516,6 @@ export default {
             const user = useLoggedInUserStore();
             const token = user.token;
             const userID = user.userId;
-            console.log('userID: ', userID);
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
 
             // Set completed to true
@@ -667,7 +666,6 @@ export default {
 
 
             async handleFirstInput() {
-                console.log('handleFirstInput');
                 if (this.isFirstInput) {
                     this.isFirstInput = false;
 
@@ -681,36 +679,26 @@ export default {
                         const token = user.token;
                         const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
 
-                        console.log("Sending formData:", formData);
-
                         const response = await axios.post(apiURL, formData, { headers: { token } })
 
                         this.formID = response.data.entryForm._id;
-                        console.log('formID: ', this.formID);
-
-                        console.log("Form created: ", response.data);
                     } catch (error) {
                         this.handleError(error);
                     }
                 }
             },
             updateStudentInformation() {
-                console.log("updateStudentInformation");
                 // Your update logic here
                 const user = useLoggedInUserStore();
                 const userID = user.userId;
-                console.log('userID: ', userID);
                 const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
-                console.log('apiURL: ', apiURL);
-                console.log("Updating formData:", this.studentInformation);
 
                 axios.patch(apiURL, { 
                     studentInformation: this.studentInformation,
                     userID: userID
                  }, { headers: { token }})
                     .then(response => {
-                        console.log("Form updated: ", response.data);
                     })
                     .catch(error => {
                         this.handleError(error);
@@ -723,7 +711,6 @@ export default {
             },
 
             async checkIncompleteForm() {
-                console.log('checkIncompleteForm');
                 const user = useLoggedInUserStore();
                 const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-form-incomplete/`;

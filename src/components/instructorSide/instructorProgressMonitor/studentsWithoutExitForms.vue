@@ -1,3 +1,4 @@
+<!-- studentsWithoutExitForms - this view presents a list of students who have registered for a given selected Experience Instance, but have not yet completed an Exit Form for that Instance -->
 <template>
     <v-container>
       <v-row>
@@ -148,6 +149,8 @@
       },
     },
     methods: {
+
+      // Updates the selected experience ID and triggers fetching of students without an exit form based on the selected experience. If no experience is selected, sets the selected experience ID to null.
       updateExperienceID(selected) {
         if (!selected) {
           this.selectedExperience = null;
@@ -156,6 +159,8 @@
         this.selectedExperience = selected;
         this.fetchstudentsWithoutExitForm(selected);
       },
+
+      // Fetches the active semester experiences available for students. It sends a GET request to the backend API. Upon receiving the response, it maps the experience data to a more structured format and stores it in the component's state.
       async fetchExperiences() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -172,6 +177,8 @@
           this.handleError(error);
         }
       },
+
+      // Fetches the students who have not submitted an exit form for a specific experience. It sends a GET request to the backend API. Upon receiving the response, it stores the data of students without an exit form for the specified experience in the component's state.
       async fetchstudentsWithoutExitForm(experienceID) {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -184,12 +191,15 @@
           this.handleError(error);
         }
       },
+
+      // Navigates to the profile page of a specific student identified by their user ID.
       navigateToProfile(userID) {
         this.$router.push({
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
       },
+
     },
   };
   </script>

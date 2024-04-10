@@ -1,3 +1,4 @@
+<!-- studentsWithoutEntryForms - this view presents a list of students that have registered for and activated their account, but have not yet completed a Student Entry Form -->
 <template>
     <v-container>
       <v-row>
@@ -126,6 +127,8 @@
       },
     },
     methods: {
+
+      // Fetches the students who do not have an entry form. It sends a GET request to the backend API. Upon receiving the response, it stores the data of students without an entry form in the component's state. 
       async fetchStudentsWithoutEntryForm() {
         this.loading = true;
         const user = useLoggedInUserStore();
@@ -135,19 +138,22 @@
         try {
           const response = await axios.get(url, { headers: { token } });
           this.studentsWithoutEntryForm = response.data;
-          console.log('studentsWithoutEntryForm: ', this.studentsWithoutEntryForm);
         } catch (error) {
           this.handleError(error);
         } finally {
             this.loading = false;
         }
       },
+
+      // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
         this.$router.push({
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
       },
+
+      // Formats the given date into "MM/dd/yyyy" format.
       formatDate(date) {
         return DateTime.fromISO(date).toFormat("MM/dd/yyyy")
       },

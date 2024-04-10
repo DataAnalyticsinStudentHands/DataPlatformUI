@@ -1,3 +1,7 @@
+<!-- instructorAutomaticMailerMain - this view is the parent component to render the child components:
+    instructorAutomaticMailerEntryForms
+    instructorAutomaticMailerGoalForms
+-->
 <template>
 <v-container>
     <v-row>

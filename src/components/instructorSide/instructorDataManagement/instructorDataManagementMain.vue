@@ -1,3 +1,8 @@
+<!-- instructorDataManagementMain - this is the parent container for Instructor Data Management. It renders child components:
+  instructorActivities
+  instructorExperiences
+  instructorSessions
+-->
 <template>
 <v-container>
     <v-row>
@@ -27,7 +32,6 @@ import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 import instructorActivities from './instructorActivities.vue';
-import instructorExperienceInstances from './instructorExperienceInstances.vue';
 import instructorExperiences from './instructorExperiences.vue';
 import instructorSessions from './instructorSessions.vue';
 
@@ -36,7 +40,6 @@ export default {
         instructorActivities,
         instructorExperiences,
         instructorSessions,
-        instructorExperienceInstances
     },
     data() {
         return {
@@ -53,6 +56,8 @@ export default {
       this.loadActiveTab();
     },
     methods: {
+
+      // Initializes the component by checking if there's an activeTab parameter in the route. If found, updates the component's tab state and also updates the store with the active tab. If not found, loads the tab from the store. Additionally, handles toast messages based on parameters in the route, displaying them accordingly.
       initializeComponent() {
         const store = useLoggedInUserStore();
 
@@ -75,15 +80,19 @@ export default {
           });
         }
       },
-        selectTab(index) {
-          this.tab = index;
-          const store = useLoggedInUserStore();
-          store.instructorDataManagementActiveTab  = index;
-        },
-        loadActiveTab() {
-          const store = useLoggedInUserStore();
-          this.tab = store.instructorDataManagementActiveTab !== undefined ? store.instructorDataManagementActiveTab : 0;
-        },
+
+      // Updates the selected tab to the specified index and also updates the active tab in the store accordingly.
+      selectTab(index) {
+        this.tab = index;
+        const store = useLoggedInUserStore();
+        store.instructorDataManagementActiveTab  = index;
+      },
+
+      // Loads the active tab from the store, or defaults to index 0 if no active tab is set in the store.
+      loadActiveTab() {
+        const store = useLoggedInUserStore();
+        this.tab = store.instructorDataManagementActiveTab !== undefined ? store.instructorDataManagementActiveTab : 0;
+      },
     }
 };
 </script>

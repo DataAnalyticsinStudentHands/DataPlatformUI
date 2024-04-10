@@ -1,3 +1,4 @@
+<!-- instructorAutomaticMailerGoalForms - this view presents a form to configure the Automatic Reminder Emails for Goal Forms -->
 <template>
 <v-container>
     <div v-if="configLoading">
@@ -242,6 +243,8 @@ computed: {
     }
 },
 methods: {
+
+    // Fetches the auto-mailer configurations for goal setting forms by sending a GET request to the backend API. Upon receiving the response, it extracts the configuration data, excluding the `_id` field, and assigns the modified configuration to the component's state.
     async fetchAutoMailerConfigGoalSettingForms() {
         this.configLoading = true;
         const user = useLoggedInUserStore();
@@ -252,7 +255,6 @@ methods: {
 
         try {
             const response = await axios.get(url, { headers: { token } });
-            console.log('response: ', response);
             // Create a new object excluding the _id field
             const { _id, ...configWithoutId } = response.data;
             
@@ -266,18 +268,22 @@ methods: {
         }
     },
 
+    // Sets the `editorInstance` property to the provided `editorInstance` when the editor is ready.
     onEditorReady(editorInstance) {
         this.editorInstance = editorInstance;
     },
 
+    // Sets the `editorEnglishInstance` property to the provided `editorInstance` when the editor is ready.
     onEditorEnglishReady(editorInstance) {
         this.editorEnglishInstance = editorInstance;
     },
 
+    // Sets the `editorSpanishInstance` property to the provided `editorInstance` when the editor is ready.
     onEditorSpanishReady(editorInstance) {
         this.editorSpanishInstance = editorInstance;
     },
 
+    // Adds the placeholder "{{STUDENT_NAME}}" to the editor content at the current cursor position, if the editor instance is available.
     addStudentName() {
         const editor = this.editorInstance;
         if (editor) {
@@ -289,6 +295,7 @@ methods: {
         }
     },
 
+    // Adds the placeholder "{{STUDENT_NAME}}" to the English editor content at the current cursor position, if the editor instance is available.
     addStudentNameEnglish() {
         const editor = this.editorEnglishInstance;
         if (editor) {
@@ -300,6 +307,7 @@ methods: {
         }
     },
 
+    // Adds the placeholder "{{STUDENT_NAME}}" to the Spanish editor content at the current cursor position, if the editor instance is available.
     addStudentNameSpanish() {
         const editor = this.editorSpanishInstance;
         if (editor) {
@@ -311,6 +319,7 @@ methods: {
         }
     },
 
+    // Adds the placeholder "{{EXPERIENCE_NAME}}" to the editor content at the current cursor position, if the editor instance is available.
     addExperienceName() {
         const editor = this.editorInstance;
         if (editor) {
@@ -322,6 +331,7 @@ methods: {
         }
     },
 
+    // Adds the placeholder "{{EXPERIENCE_NAME}}" to the English editor content at the current cursor position, if the editor instance is available.
     addExperienceNameEnglish() {
         const editor = this.editorEnglishInstance;
         if (editor) {
@@ -333,6 +343,7 @@ methods: {
         }
     },
 
+    // Adds the placeholder "{{EXPERIENCE_NAME}}" to the Spanish editor content at the current cursor position, if the editor instance is available.
     addExperienceNameSpanish() {
         const editor = this.editorSpanishInstance;
         if (editor) {
@@ -344,12 +355,12 @@ methods: {
         }
     },
 
-    
-
+    // Updates the state to hide the confirmation dialog for applying email configurations by setting `applyEmailConfigsConfirm` to `false`.
     cancelEmailConfigs() {
         this.applyEmailConfigsConfirm = false;
     },
 
+    // Applies the email configurations for goal setting forms by sending a PUT request to the backend API with the updated configuration data. Upon successful update, it displays a toast message confirming the update and sets the tab to 'overview'.
     applyEmailConfigs() {
         const user = useLoggedInUserStore();
         const token = user.token;

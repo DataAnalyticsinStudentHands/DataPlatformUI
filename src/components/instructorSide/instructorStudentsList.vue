@@ -1,4 +1,4 @@
-<!--'/instructorStudentsList'-->
+<!--'/instructorStudentsList' - this view presents a list of all students -->
 <template>
 <v-container>
     <!-- Title -->
@@ -356,6 +356,7 @@ computed: {
 
 methods: {
     
+    // Fetches student data from the server and updates the component's state.
     async fetchStudentData() {
         try {
             useLoggedInUserStore().startLoading();
@@ -385,48 +386,51 @@ methods: {
         }
     },
 
+    // Formats the first and last names by capitalizing the first letter of each word and combining them. Formats the pronouns by filtering checked ones and joining their labels.
     formatName(firstName, lastName) {
-    // Function to capitalize the first letter of each word
-    const capitalize = (word) => {
-        if (!word) return "";
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    };
+        // Function to capitalize the first letter of each word
+        const capitalize = (word) => {
+            if (!word) return "";
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        };
 
-    // Trim and capitalize the names
-    const formattedFirstName = capitalize(firstName.trim());
-    const formattedLastName = capitalize(lastName.trim());
+        // Trim and capitalize the names
+        const formattedFirstName = capitalize(firstName.trim());
+        const formattedLastName = capitalize(lastName.trim());
 
-    // Combine the names
-    return `${formattedFirstName} ${formattedLastName}`;
+        // Combine the names
+        return `${formattedFirstName} ${formattedLastName}`;
+        },
+        
+        formatPronouns(pronouns) {
+        if (!pronouns || pronouns.length === 0) {
+            return '';
+        }
+        return pronouns
+            .filter(p => p.checked)
+            .map(p => p.label)
+            .join(', ');
     },
-    
-    formatPronouns(pronouns) {
-    if (!pronouns || pronouns.length === 0) {
-        return '';
-    }
-    return pronouns
-        .filter(p => p.checked)
-        .map(p => p.label)
-        .join(', ');
-    },
 
-
+    // Formats the majors by joining them with commas.
     formatMajors(majors) {
-    if (!majors || majors.length === 0) {
-        return '';
-    }
-    return majors.join(', ');
+        if (!majors || majors.length === 0) {
+            return '';
+        }
+        return majors.join(', ');
     },
 
+    // Formats the graduation date into 'MM-dd-yyyy' format.
     formatGraduationDate(date) {
-    if (!date) {
-        return '';
-    } else {
-        const formattedDate = DateTime.fromISO(date).toFormat('MM-dd-yyyy');
-        return formattedDate;
-    }
+        if (!date) {
+            return '';
+        } else {
+            const formattedDate = DateTime.fromISO(date).toFormat('MM-dd-yyyy');
+            return formattedDate;
+        }
     },
 
+    // Navigates to the specific student view page with the student's ID as a parameter.
     viewStudent(student) {
         this.$router.push({
             name: "instructorSpecificStudent",
@@ -434,15 +438,16 @@ methods: {
         });
     },
 
+    // Updates the search criteria based on the selected item.
     updateSearchCriteria(item) {
-    if (item === "Graduation Date") {
-        this.dialogGraduationDate = true;
-    } else {
-        this.searchLabel = "Search " + item;
-        console.log('this.searchLabel: ', this.searchLabel);
-    }
+        if (item === "Graduation Date") {
+            this.dialogGraduationDate = true;
+        } else {
+            this.searchLabel = "Search " + item;
+        }
     },
 
+    // Adds a search chip based on the entered student search criteria. If the search criteria is not empty, it adds the chip to the search criteria array, selects it by default, clears the input field, and triggers the search process.
     addSearchChip() {
         if (this.studentSearch) {
             this.searchCriteria.push({
@@ -458,8 +463,8 @@ methods: {
         }
     },
 
+    // Filters student data based on selected search criteria.
     performFilter() {
-        console.log('performFilter called');
         let searchGroups = {};
         this.selectedSearchChips.forEach(index => {
             let criteria = this.searchCriteria[index];
@@ -468,10 +473,6 @@ methods: {
             }
             searchGroups[criteria.category].push(criteria.term.toLowerCase());
         })
-
-        console.log('this.searchCriteria: ', this.searchCriteria);
-        console.log('this.selectedSearchChips: ', this.selectedSearchChips);
-        console.log('searchGroups: ', searchGroups);
 
         this.filteredStudentData = this.studentData.filter(student => {
             // Archive Filter
@@ -543,17 +544,13 @@ methods: {
                     return true; // If the term format is not recognized, do not exclude the student
                 });
             }
-
-
-
             });
         });
     },
 
+    // Toggles the selection state of a search chip and updates the filtered student data accordingly.
     selectSearchChip(index) {
-        console.log('selectSearchChip: ', index);
         const selectedIndex = this.selectedSearchChips.indexOf(index);
-        console.log('selectedIndex: ', selectedIndex);
         if (selectedIndex >= 0) {
             // If the chip is already selected, create a new array without the chip
             this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
@@ -565,6 +562,7 @@ methods: {
         this.performFilter();
     },
 
+    // Removes a search chip from the list, updates the selected chips, and triggers the filtering process.
     removeSearchChip(index) {
         this.searchCriteria.splice(index, 1);
         // Update selectedSearchChips to reflect the removal
@@ -575,11 +573,13 @@ methods: {
         this.performFilter();
     },
 
+    // Toggles the visibility of archived students and triggers the filtering process.
     toggleArchivedStudents() {
         this.viewArchivedStudents = !this.viewArchivedStudents;
         this.performFilter();
     },
 
+    // Handles the selection of graduation dates based on the chosen filter type. If the filter type is set to 'Between', it sets the beginning date range if it's not set yet, otherwise sets the end date range. Otherwise, it sets the selected graduation date directly.
     handleGraduationDateSelection(date) {
         if (this.graduationDateFilterType === 'Between') {
             if (!this.beginningDateRange || this.endDateRange) {
@@ -596,6 +596,7 @@ methods: {
         }
     },
 
+    // Submits the selected graduation date filter. Depending on the chosen filter type and the presence of selected dates, it creates corresponding search chips. Then, it resets the dialog state and selected graduation date for future use.
     submitGraduationDate() {
         // Handle different date filter types
         if (this.graduationDateFilterType === 'On' && this.selectedGraduationDate) {
@@ -617,6 +618,7 @@ methods: {
         this.graduationDateFilterType = "On";
     },
 
+    // Creates a search chip based on the specified operator and date for the graduation date filter. Then, adds the chip to the search criteria and selects it by default. Finally, triggers the search operation to apply the filter.
     createGraduationDateChip(operator, date) {
         let term = '';
         if (operator === '=') {
@@ -637,7 +639,6 @@ methods: {
 
         // Add the chip to the search criteria
         this.searchCriteria.push(graduationDateChip);
-        console.log('searchCriteria: ', this.searchCriteria)
         // Select the new chip by default
         this.selectedSearchChips.push(this.searchCriteria.length - 1);
         
@@ -645,18 +646,17 @@ methods: {
         this.performFilter();
     },
 
+    // Formats the provided date object into a string with the format 'MM-dd-yyyy'.
     formatDateMethod(date) {
         return DateTime.fromJSDate(date).toFormat('MM-dd-yyyy');
     },
 
+    // Cancels the selection of graduation date by closing the dialog, resetting the filter type to "On", and setting the selected graduation date to the current date.
     cancelSelectGraduationDate() {
         this.dialogGraduationDate = false;
         this.graduationDateFilterType = "On";
         this.selectedGraduationDate = new Date();
     },
-
-
-
 
 },
 };

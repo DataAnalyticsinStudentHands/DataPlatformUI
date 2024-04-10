@@ -1,4 +1,4 @@
-<!--'/instructorSpecificActivity' this page will only show experiences-->
+<!--'/instructorSpecificActivity' - this view presents a single Activity's data -->
 
 <template>
   <main class="">
@@ -10,29 +10,6 @@
             <v-text-field v-model="activity.activityName" label="Activity Name"></v-text-field>
           </v-col>
         </v-row>
-        <!-- <v-row>
-          <v-col>
-            <p class="font-weight-black text-h8">Associated Experiences</p>
-            <v-table>
-              <thead>
-                <tr>
-                  <th class="text-left">Experience Name</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr 
-                  v-for="experience in experiences" 
-                  :key="experience._id"
-                  :class="{ 'hoverRow': hoverId === experience._id}"
-                  @mouseenter="hoverId = experience._id"
-                  @mouseleave="hoverId = null"
-                >
-                  <td @click="editExperience(experience._id)">{{ experience.experienceName }}</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-col>
-        </v-row> -->
         <v-row>
           <v-col>
             <v-btn @click=goBack() class="mr-4">
@@ -148,11 +125,12 @@ export default {
 
   async mounted() {
     await this.fetchActivityData();
-    // await this.fetchAssociatedExperiences();
     await this.checkIfActivityCanBeDeleted();
   },
 
   methods: {
+    
+    // Fetches activity data from the server based on the provided route parameter ID. Upon successful retrieval, updates the activity object with the received data including the activity name and status. Also stores the original activity name for reference.
     async fetchActivityData() {
       try {
         const store = useLoggedInUserStore();
@@ -170,18 +148,7 @@ export default {
       }
     },
 
-    // async fetchAssociatedExperiences() {
-    //   try {
-    //     const store = useLoggedInUserStore();
-    //     let token = store.token;
-    //     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/active/${this.$route.params.id}`;
-    //     const response = await axios.get(apiURL, { headers: { token }});
-    //     this.experiences = response.data;
-    //   } catch (error) {
-    //     this.handleError(error);
-    //   }
-    // },
-
+    // Checks if there are any associated instances with the current activity. If the action is to update, it sets a flag to indicate updating. If the action is to delete, it sets a flag to indicate deletion. Then, it sends a request to the server to check for associated instances using the activity ID. Depending on the action and the response from the server, it displays the appropriate dialog to either proceed with the update, display the update dialog with associated instances, confirm the delete action, or display the delete dialog with associated instances.
     async checkAssociatedInstances(action) {
       if (action === "update") {
         this.updateLoading = true;
@@ -189,7 +156,6 @@ export default {
         this.deleteLoading = true;
       }
       
-
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
@@ -211,8 +177,6 @@ export default {
             this.confirmDelete();
           }
         }
-
-
       } catch (error) {
         this.handleError(error);
       } finally {
@@ -221,6 +185,7 @@ export default {
       }
     },
 
+    // Executes the update process for the activity. It sends requests to update the activity details and associated experience instances. Upon successful updates, it determines the appropriate toast message based on whether any instances were updated and displays it.
     async proceedWithUpdate() {
       const user = useLoggedInUserStore();
       const token = user.token;
@@ -254,6 +219,7 @@ export default {
       }
     },
 
+    // Checks if the activity can be deleted by sending a request to the backend API. If successful, it updates the `canActivityBeDeleted` variable accordingly.
     async checkIfActivityCanBeDeleted() {
       try {
         const store = useLoggedInUserStore();
@@ -266,6 +232,7 @@ export default {
       }
     },
 
+    // Redirects to the instructor data management page with a toast message about the successful update.
     handleUpdateSuccess(toastMessage) {
       this.$router.push({
         name: 'instructorDataManagement',
@@ -279,21 +246,13 @@ export default {
       });
     },
 
-    // editExperience(experienceID) {
-    //   this.$router.push({ 
-    //     name: "instructorSpecificExperience", 
-    //     params: { 
-    //       id: experienceID,
-    //       activityID: this.$route.params.id
-    //     } 
-    //   });
-    // },
-
+    // Redirects to the delete activity function and hides the delete dialog.
     confirmDelete() {
       this.deleteActivity();
       this.showDeleteDialog = false;
     },
 
+    // Deletes the activity from the database and redirects to the instructorDataManagement page with a success message.
     async deleteActivity() {
       try {
         const user = useLoggedInUserStore();
@@ -318,6 +277,7 @@ export default {
       }
     },
 
+    // Redirects to the instructorDataManagement page.
     goBack() {
       this.$router.push({
         name: "instructorDataManagement",

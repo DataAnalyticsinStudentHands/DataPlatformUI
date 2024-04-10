@@ -1,3 +1,4 @@
+<!-- instructorManualMailerGoalForms - this view allows bulk email sending for selected students who have not yet completed their Goal Setting Forms for a Registration -->
 <template>
 <div v-if="viewLoading">
 <v-row>
@@ -439,6 +440,8 @@ export default {
         },
     },
     methods: {
+
+        // Fetches the active experience instances for the current instructor. Retrieves the data from the backend API by sending a GET request with the instructor's authentication token. Upon receiving the response, it maps the instance data to a more structured format and stores it in the component's state.
         async fetchExperiences() {
             this.viewLoading = true;
             const user = useLoggedInUserStore();
@@ -461,14 +464,17 @@ export default {
                 this.viewLoading = false;
             }
         },
+
+        // Initiates the process of fetching students. Resets the selected students and email recipients. Calls the method to fetch students without goal forms.
         fetchStudents() {
             this.selectedStudents = [];
             this.selectedEmailRecipients = [];
             this.fetchStudentsWithoutGoalForm();
         },
+
+        // Initiates the process of fetching students without goal forms associated with the selected experience. Retrieves the data from the backend API by sending a GET request with the instructor's authentication token and the selected experience ID. Upon receiving the response, it stores the student data in the component's state.
         async fetchStudentsWithoutGoalForm() {
             this.studentsLoading = true;
-            console.log('fetchStudentsWithoutGoalForm')
             const user = useLoggedInUserStore();
             let token = user.token;
             // const token = import.meta.env.VITE_TOKEN;
@@ -484,6 +490,7 @@ export default {
             }
         },
 
+        // Updates the selection status of a student identified by their ID. If the student ID is not already in the selectedStudents array, it adds the ID to the array. Otherwise, it removes the ID from the array, effectively toggling the selection status.
         toggleSelection(studentID) {
             const index = this.selectedStudents.indexOf(studentID);
             if (index === -1) {
@@ -493,6 +500,7 @@ export default {
             }
         },
     
+        // Selects or deselects all students in the filtered list based on their current selection status. If any student in the filtered list is not selected, it selects all students. If all students in the filtered list are already selected, it deselects them. This operation maintains the selection of students that are not currently in the filtered list.
         selectAllStudents() {
             // Check if any student in the filtered list is not selected
             const anyUnselected = this.filteredStudentsWithoutGoalForm.some(student => !this.selectedStudents.includes(student._id));
@@ -507,6 +515,7 @@ export default {
             }
         },
 
+        // Adds the selected students from the original list to the email recipients array. This function filters out students based on their selected IDs, ensures no duplicates are added, clears the selected email recipients, and resets the selected students array.
         addSelectedToEmailRecipients() {
             // Filter students from the original list based on selected IDs
             const selectedStudentsInfo = this.studentsWithoutGoalForms.filter(student => 
@@ -523,6 +532,7 @@ export default {
             this.selectedStudents = [];
         },
 
+        // Toggles the selection of a student for email recipients. If the student ID is not already in the list of selected email recipients, it adds it; otherwise, it removes it.
         toggleEmailSelection(studentID) {
             const index = this.selectedEmailRecipients.indexOf(studentID);
             if (index === -1) {
@@ -532,6 +542,7 @@ export default {
             }
         },
 
+        // Selects all email recipients in the filtered list if any of them are unselected; otherwise, deselects all email recipients. This operation ensures that students selected but not currently in the filtered list remain selected.
         selectAllEmailRecipients() {
             // Check if any student in the filtered list is not selected
             const anyUnselected = this.filteredEmailRecipients.some(student => !this.selectedEmailRecipients.includes(student._id));
@@ -546,6 +557,7 @@ export default {
             }
         },
 
+        // Removes selected email recipients from the recipient list and clears the selection afterward.
         removeSelectedFromEmailRecipients() {
             // Filter out selected email recipients
             this.emailRecipients = this.emailRecipients.filter(recipient =>
@@ -556,18 +568,22 @@ export default {
             this.selectedStudents = [];
         },
 
+        // Sets the `editorInstance` when the editor is ready.
         onEditorReady(editorInstance) {
             this.editorInstance = editorInstance;
         },
 
+        // Sets the `editorInstance` when the English editor is ready.
         onEditorEnglishReady(editorInstance) {
             this.editorEnglishInstance = editorInstance;
         },
 
+        // Sets the `editorInstance` when the Spanish editor is ready.
         onEditorSpanishReady(editorInstance) {
             this.editorSpanishInstance = editorInstance;
         },
 
+        // Inserts a placeholder {{STUDENT_NAME}} for the student's name into the editor content.
         addStudentName() {
             const editor = this.editorInstance;
             if (editor) {
@@ -579,6 +595,7 @@ export default {
             }
         },
 
+        // Inserts a placeholder {{STUDENT_NAME}} for the student's name into the English editor content.
         addStudentNameEnglish() {
             const editor = this.editorEnglishInstance;
             if (editor) {
@@ -590,6 +607,7 @@ export default {
             }
         },
 
+        // Inserts a placeholder {{STUDENT_NAME}} for the student's name into the Spanish editor content.
         addStudentNameSpanish() {
             const editor = this.editorSpanishInstance;
             if (editor) {
@@ -601,6 +619,7 @@ export default {
             }
         },
 
+        // Sends an email based on the content and recipients specified in the dialog. If the email is not intended to include Spanish content, it sends a single-language email using the English editor data. Otherwise, it sends a multi-language email with both English and Spanish content.
         async sendEmail() {
             if (!this.includeSpanish) {
                 try {
@@ -623,9 +642,6 @@ export default {
                     const response = await axios.post(apiURL, emailData, {
                         headers: { token }
                     });
-
-                    // Handle response
-                    console.log(response.data); // For debugging, log the success message
 
                     this.setTab('overview');
                 } catch (error) {
@@ -656,7 +672,6 @@ export default {
                         headers: { token }
                     });
 
-                    console.log(response.data); // For debugging
                     this.setTab('overview');
                 } catch (error) {
                     this.handleError(error);
@@ -666,6 +681,7 @@ export default {
             }
         },
 
+        // Closes the email dialog without sending the email.
         cancelEmail() {
             this.sendEmailDialog = false;
         }

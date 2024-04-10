@@ -1,3 +1,4 @@
+<!-- instructorAddExperienceInstance - this view presents a form to create a new Experience Instance -->
 <template>
 <div>
 <v-container>

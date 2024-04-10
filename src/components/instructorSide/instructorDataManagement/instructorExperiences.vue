@@ -1,3 +1,4 @@
+<!-- instructorExperiences - this view presents a list of all Experiences -->
 <template>
 <v-container>
     <!-- Title -->
@@ -410,12 +411,12 @@ computed: {
                 sessionName
             });
         });
-        console.log('expandedData: ', expandedData);
         return expandedData;
     }
 
 },
 methods: {
+    // Fetches experience data from the backend API and updates the local experienceData array. Also creates a copy of the fetched data in filteredExperienceData and triggers a filtering process.
     async fetchExperienceData() {
         try {
             const user = useLoggedInUserStore();
@@ -430,10 +431,12 @@ methods: {
         }
     },
 
+    // Navigates to the route for editing a specific experience based on the provided experience ID.
     editExperience(experience) {
         this.$router.push({ name: "instructorSpecificExperience", params: {id: experience._id } });
     },
 
+    // Toggles the selection state of an experience. If the experience is already selected, it removes it from the list of selected experiences; otherwise, it adds it.
     toggleSelection(experience) {
         const index = this.selectedExperiences.findIndex((selectedExperience) => selectedExperience._id === experience._id);
         if (index >= 0) {
@@ -445,6 +448,7 @@ methods: {
         }
     },
 
+    // Updates the search criteria based on the selected item. If the item is "Activity", it fetches activity data and opens the activity search dialog. Otherwise, it updates the search label with the selected item.
     async updateSearchCriteria(item) {
         if (item === "Activity") {
             await this.fetchActivityData();
@@ -454,6 +458,7 @@ methods: {
         }
     },
 
+    // Adds a search chip based on the entered experience search term. If there is a valid search term, it adds the chip to the search criteria and selects it by default. Then, it clears the input field and performs filtering based on the updated search criteria.
     addSearchChip() {
         if (this.experienceSearch) {
             this.searchCriteria.push({
@@ -469,8 +474,8 @@ methods: {
         }
     },
 
+    // Selects or deselects a search chip based on the provided index. If the chip is already selected, it deselects it by removing it from the array of selected search chips. If it's not selected, it adds the chip to the array. Then, it calls the performFilter function to update the filtering based on the selected chips.
     selectSearchChip(index) {
-        console.log('selectSearchChip')
         const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, creae a new array without this chip
@@ -483,6 +488,7 @@ methods: {
         this.performFilter();
     },
 
+    // Removes a search chip at the specified index from the search criteria array. It then updates the array of selected search chips to reflect the removal and adjusts the indexes of the remaining selected chips if needed. Finally, it calls the performFilter function to update the filtering based on the modified search criteria.
     removeSearchChip(index) {
         this.searchCriteria.splice(index, 1);
         // Update selectedSearchChips to reflect the removal
@@ -493,8 +499,8 @@ methods: {
         this.performFilter();
     },
 
+    // Performs filtering based on the selected search criteria. It constructs search groups from the selected search chips and criteria. Then, it updates the activity search applied flag and filters experiences accordingly. If activity search is applied and activity-based experiences exist, it filters experiences based on matching activity names. Otherwise, it applies default filtering logic considering archived experiences and matches against experience categories and names. Finally, it updates the filtered experience data.
     performFilter() {
-        console.log('performFilter')
         let searchGroups = {};
         this.selectedSearchChips.forEach(index => {
             let criteria = this.searchCriteria[index];
@@ -503,9 +509,6 @@ methods: {
             }
             searchGroups[criteria.category].push(criteria.term.toLowerCase());
         });
-
-        console.log('searchCriteria: ', this.searchCriteria);
-        console.log('selectedSearchChips: ', this.selectedSearchChips);
 
         // Manually update activitySearchApplied based on current selectedSearchChips
         this.updateActivitySearchApplied();
@@ -516,14 +519,10 @@ methods: {
                 .filter(index => this.searchCriteria[index]?.category === "Activity")
                 .map(index => this.searchCriteria[index].term.trim().toLowerCase());
 
-            console.log('activitySearchApplied && activityBasedExperiences.length');
-            console.log('searchCriteria:', this.searchCriteria);
-
             // Filter experiences based on matching activity names
             const filteredActivityBasedExperiences = this.activityBasedExperiences.filter(ae =>
                 activityTerms.includes(ae.activityName.trim().toLowerCase())
             );
-            console.log('filteredActivityBasedExperiences: ', filteredActivityBasedExperiences);
 
             // Use the filtered activities to determine which experiences to show
             const activityExperienceIDs = filteredActivityBasedExperiences.map(ae => ae.experienceID);
@@ -562,12 +561,13 @@ methods: {
         }
     },
 
-
+    // Toggles the view of archived experiences. After toggling, it triggers the filtering process to update the displayed experiences based on the new view setting.
     toggleArchivedExperiences() {       
         this.viewArchivedExperiences = !this.viewArchivedExperiences;
         this.performFilter();
     },
 
+    // Handles the archiving or restoration of selected experiences. It updates the status of each experience accordingly via a PUT request. Upon completion, it displays a toast message indicating the success of the operation.
     async handleArchiveExperiences() {
         try {
             const user = useLoggedInUserStore();
@@ -595,6 +595,7 @@ methods: {
         }
     },
 
+    // Toggles the expansion state of a row/item in the UI. If the item is already expanded, it removes it from the list of expanded items. Otherwise, it adds the item to the list.
     toggleRowExpansion(item) {
         const index = this.expandedExperiences.indexOf(item);
         if (index > -1) {
@@ -604,6 +605,7 @@ methods: {
         }
     },
 
+    // Fetches activity data from the server asynchronously. It sends a GET request to the appropriate API endpoint to retrieve the activities. Upon receiving the response, it sorts the activities alphabetically by their names. Any errors encountered during this process are handled appropriately.
     async fetchActivityData() {
         try {
             const user = useLoggedInUserStore();
@@ -619,17 +621,19 @@ methods: {
         }
     },
 
-
+    // Handles the navigation to the page for adding a new experience. It redirects the user to the route associated with adding a new experience in the instructor interface.
     handleAddNewExperience() {
         this.$router.push({ name: "instructorAddExperience" });
     },
 
+    // Cancels the activity search operation by clearing the selected activities, resetting the activity search input field, and closing the activity search dialog.
     cancelActivitySearch() {
         this.selectedActivities = [];
         this.activitySearch = "";
         this.dialogActivitySearch = false;
     },
 
+    // Submits the activity search operation by transforming the selected activities into search criteria. It fetches experiences associated with the selected activities, clears the selected activities and search input, and closes the activity search dialog. Finally, it triggers the filtering process based on the updated search criteria.
     async submitActivitySearch() {
         // Transform selectedActivities into the desired format for searchCriteria
         const newSearchCriteria = this.selectedActivities.map(activity => ({
@@ -663,23 +667,23 @@ methods: {
         this.performFilter();
     },
 
-
-
+    // Selects an activity from the search results and adds it to the list of selected activities. Additionally, it removes the selected activity from the activity data list to prevent duplication in the selection.
     selectActivity(selectedActivity) {
         this.selectedActivities.push(selectedActivity);
         // Remove the selected activity from the activityData list
         this.activityData = this.activityData.filter(activity => activity._id !== selectedActivity._id);
     },
 
+    // Removes the selected activity at the specified index from the list of selected activities. Additionally, it adds the removed activity back into the activity data list to make it available for selection again.
     removeActivity(index) {
         const [removedActivity] = this.selectedActivities.splice(index, 1);
         
         // Add the removed activity back into activityData
         this.activityData.push(removedActivity);
         this.activityData.sort((a, b) => a.activityName.localeCompare(b.activityName));
-
     },
 
+    // Fetches experiences associated with the selected activities by sending a POST request to the backend API. The selected activity IDs are extracted and sent in the request body. Upon receiving the response, the fetched experiences are stored in the `activityBasedExperiences` array.
     async fetchExperiencesByActivity() {
 
         // Extract activity IDs from selectedActivities
@@ -703,6 +707,7 @@ methods: {
         }
     },
 
+    // Updates the `activitySearchApplied` flag based on whether there is at least one selected "Activity" chip in the `selectedSearchChips`. If such a chip exists, the flag is set to `true`; otherwise, it is set to `false`.
     updateActivitySearchApplied() {
         // Check if there's at least one selected "Activity" chip
         const hasSelectedActivityChip = this.selectedSearchChips.some(chipIndex => {
@@ -713,8 +718,6 @@ methods: {
         // Update activitySearchApplied based on the condition
         this.activitySearchApplied = hasSelectedActivityChip;
     },
-
-
 }
 
 

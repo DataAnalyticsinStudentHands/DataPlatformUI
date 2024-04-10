@@ -1,3 +1,4 @@
+<!-- instructorSessions - this view presents a list of all Sessions -->
 <template>
 <v-container>
     <!-- Sessions Title -->
@@ -854,6 +855,8 @@ computed: {
 
 },
 methods: {
+
+    // Fetches session data from the server and assigns it to the `sessionData` variable. For each session, it filters the instances data to find instances associated with that session and assigns them to a new property called `instances`. Finally, it copies the `sessionData` to `filteredSessionData`.
     async fetchSessionData() {
         try {
             const user = useLoggedInUserStore();
@@ -872,6 +875,7 @@ methods: {
         }
     },
 
+    // Fetches instances data from the server. It starts loading state, retrieves the data using an HTTP GET request with the user's token in the header, and stores the response in `instancesData`. After the request completes, regardless of success or failure, it stops the loading state.
     async fetchInstances() {
         useLoggedInUserStore().startLoading();
         const user = useLoggedInUserStore();
@@ -887,20 +891,23 @@ methods: {
         }
     },
 
+    // Navigates to the page for editing a specific session based on the provided session ID.
     editSession(session) {
-        console.log('session: ', session);
         this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
     },
 
+    // Formats a given datetime from the database into the 'MM-dd-yyyy' format.
     formatDate(datetimeDB) {
         const formattedDate = DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
         return formattedDate;
     },
 
+    // Checks if the provided item is selected among the sessions based on their IDs. If the item is found in the `selectedSessions` array, it returns `true`; otherwise, it returns `false`.
     isSelected(item) {
         return this.selectedSessions.some((selectedItem) => selectedItem._id === item._id);
     },
 
+    // Toggles the selection of the provided session. If the session is already selected, it removes it from the `selectedSessions` array. If it's not selected, it adds it to the array.
     toggleSelection(item) {
         const index = this.selectedSessions.findIndex((selectedItem) => selectedItem._id === item._id);
         if (index >= 0) {
@@ -912,6 +919,7 @@ methods: {
         }
     },
 
+    // Updates the search criteria based on the selected item, triggering the appropriate dialog visibility or setting the search label accordingly.
     updateSearchCriteria(item) {
         if (item === "Session Start Date") {
             this.dialogStartDate = true;
@@ -924,6 +932,7 @@ methods: {
         }
     },
 
+    // Adds a new search chip based on the session search input. If there is input in the session search field, it creates a new chip with the category derived from the search label and the term from the session search input. Then it selects the new chip by default, clears the session search input field, and triggers the search functionality.
     addSearchChip() {
         if (this.sessionSearch) {
             this.searchCriteria.push({
@@ -939,8 +948,8 @@ methods: {
         }
     },
 
+    // Toggles the selection of a search chip. If the chip is already selected, it removes it; otherwise, it adds it. After updating the selected chips, it triggers the search functionality.
     selectSearchChip(index) {
-        console.log('select search chip called');
         const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, create a new array without this chip
@@ -953,6 +962,7 @@ methods: {
         this.performFilter();
     },
 
+    // Removes a search chip at the specified index from the search criteria. It also updates the selected search chips array to reflect the removal and adjusts the indexes of the remaining selected chips. Finally, it triggers the search functionality.
     removeSearchChip(index) {
         this.searchCriteria.splice(index, 1);
         // Update selectedSearchChips to reflect the removal
@@ -963,6 +973,7 @@ methods: {
         this.performFilter();
     },
 
+    // Filters the session data based on the selected search criteria. It constructs search groups for each category of criteria and iterates through the session data to check if each session matches the filter conditions. It also handles filtering by session status, session name, session start and end dates, experience name, experience category, and exit form release date. Finally, it updates the filtered session data.
     performFilter() {
         let searchGroups = {};
         this.selectedSearchChips.forEach(index => {
@@ -972,9 +983,6 @@ methods: {
             }
             searchGroups[criteria.category].push(criteria.term);
         });
-
-        console.log("Search groups:", searchGroups);
-
 
         // Reset filtered instances
         this.filteredInstances = {};
@@ -1040,7 +1048,6 @@ methods: {
                     });
                 } else if (category === "Experience Name") {
                     let experiencesMatch = searchGroups[category].every(term => {
-                        console.log("Before filtering instances in session", sessionItem._id, ":", sessionItem.instances);
                         return sessionItem.instances.some(instance => {
                             return instance.experience.name.toLowerCase().includes(term.toLowerCase());
                         });
@@ -1128,12 +1135,12 @@ methods: {
 
                 return true;
             })
-            console.log("Filtered session data at end:", this.filteredSessionData);
 
             return matchesFilter ? sessionItem : null;
         }).filter(item => item !== null); // Filter out null values
     },
 
+    // Handles the selection of the start date filter. If the filter type is 'Between', it sets the beginning date range if it's not already set, or sets the end date range if the beginning date range is already set. If the filter type is not 'Between', it sets the selected start date.
     handleStartDateSelection(date) {
         if (this.startDateFilterType === 'Between') {
             if (!this.beginningDateRange || this.endDateRange) {
@@ -1150,6 +1157,7 @@ methods: {
         }
     },
 
+    // Handles the selection of the end date filter. If the filter type is 'Between', it sets the beginning date range if it's not already set, or sets the end date range if the beginning date range is already set. If the filter type is not 'Between', it sets the selected end date.
     handleEndDateSelection(date) {
         if (this.endDateFilterType === 'Between') {
             if (!this.beginningDateRange || this.endDateRange) {
@@ -1166,6 +1174,7 @@ methods: {
         }
     },
 
+    // Handles the selection of the exit form release date filter. If the filter type is 'Between', it sets the beginning date range if it's not already set, or sets the end date range if the beginning date range is already set. If the filter type is not 'Between', it sets the selected exit form release date.
     handleExitFormReleaseDateSelection(date) {
         if (this.exitFormReleaseDateFilterType === 'Between') {
             if (!this.beginningDateRange || this.endDateRange) {
@@ -1182,8 +1191,8 @@ methods: {
         }
     },
 
+    // Handles the submission of the start date filter. It creates a chip based on the selected filter type and date(s). If the filter type is 'Between', it creates a chip for the date range. Finally, it resets the dialog state and selected start date, and sets the filter type back to 'On'.
     submitStartDate() {
-
         // Handle different date filter types
         if (this.startDateFilterType === 'On' && this.selectedStartDate) {
             this.createStartDateChip('=', this.selectedStartDate);
@@ -1204,8 +1213,8 @@ methods: {
         this.startDateFilterType = "On";
     },
 
+    // Handles the submission of the end date filter. It creates a chip based on the selected filter type and date(s). If the filter type is 'Between', it creates a chip for the date range. Finally, it resets the dialog state and selected end date, and sets the filter type back to 'On'.
     submitEndDate() {
-
         // Handle different date filter types
         if (this.endDateFilterType === 'On' && this.selectedEndDate) {
             this.createEndDateChip('=', this.selectedEndDate);
@@ -1226,6 +1235,7 @@ methods: {
         this.endDateFilterType = "On";
     },
 
+    // Handles the submission of the exit form release date filter. It creates a chip based on the selected filter type and date(s). If the filter type is 'Between', it creates a chip for the date range. Finally, it resets the dialog state and selected exit form release date, and sets the filter type back to 'On'.
     submitExitFormReleaseDate() {
         // Handle different date filter types
         if (this.exitFormReleaseDateFilterType === 'On' && this.selectedExitFormReleaseDate) {
@@ -1247,24 +1257,28 @@ methods: {
         this.exitFormReleaseDateFilterType = "On";
     },
 
+    // Cancels the selection of the start date filter. It closes the dialog, resets the filter type to "On", and sets the selected start date to the current date.
     cancelSelectStartDate() {
         this.dialogStartDate = false;
         this.startDateFilterType = "On";
         this.selectedStartDate = new Date();
     },
 
+    // Cancels the selection of the end date filter. It closes the dialog, resets the filter type to "On", and sets the selected end date to the current date.
     cancelSelectEndDate() {
         this.dialogEndDate = false;
         this.endDateFilterType = "On";
         this.selectedEndDate = new Date();
     },
 
+    // Cancels the selection of the exit form release date filter. It closes the dialog, resets the filter type to "On", and sets the selected exit form release date to the current date.
     cancelSelectExitFormReleaseDate() {
         this.dialogExitFormReleaseDate = false;
         this.exitFormReleaseDateFilterType = "On";
         this.selectedExitFormReleaseDate = new Date();
     },
 
+    // Creates a search chip for the start date filter based on the provided operator and date. Then adds the chip to the search criteria and selects it by default. Finally, triggers the filter process.
     createStartDateChip(operator, date) {
         let term = '';
         if (operator === '=') {
@@ -1292,6 +1306,7 @@ methods: {
         this.performFilter();
     },
 
+    // Creates a search chip for the end date filter based on the provided operator and date. Then adds the chip to the search criteria and selects it by default. Finally, triggers the filter process.
     createEndDateChip(operator, date) {
         let term = '';
         if (operator === '=') {
@@ -1319,6 +1334,7 @@ methods: {
         this.performFilter();
     },
 
+    // Creates a search chip for the exit form release date filter based on the provided operator and date. Then adds the chip to the search criteria and selects it by default. Finally, triggers the filter process.
     createExitFormReleaseDateChip(operator, date) {
         let term = '';
         if (operator === '=') {
@@ -1346,15 +1362,18 @@ methods: {
         this.performFilter();
     },
 
+    // Formats the provided date into the 'MM-dd-yyyy' format using Luxon's DateTime library.
     formatDateMethod(date) {
         return DateTime.fromJSDate(date).toFormat('MM-dd-yyyy');
     },
 
+    // Toggles the visibility of archived sessions. After toggling, triggers the filtering process to update the displayed sessions accordingly.
     toggleArchivedSessions() {
         this.viewArchivedSessions = !this.viewArchivedSessions;
         this.performFilter();
     },
 
+    // Handles archiving or restoring selected sessions. It updates the status of each session accordingly via a PUT request. Upon completion, it displays a toast message indicating the success of the operation.
     async handleArchiveSessions() {
         try {
             const user = useLoggedInUserStore();
@@ -1405,15 +1424,18 @@ methods: {
         }
     },
 
+    // Navigates to the page for adding a new session.
     handleAddNewSession() {
         this.$router.push({ name: "instructorAddSession" });
     },
 
+    // Cancels the search dialog and resets the search filter selection for extra small screens.
     xsCancelSearchDialog() {
         this.xsdialogSearch = false;
         this.xsSearchFilterSelection = null;
     },
 
+    // Applies search filters for extra small screens based on the selected filter option. If the selected filter is "Session Name", it adds a search chip. If the selected filter is "Session Start Date" or "Session End Date", it handles the date selection according to the chosen date filter type ('On', 'Before', 'After', or 'Between'). Finally, it resets the search dialog and clears the search input and filter selection.
     xsApplySearchFilters() {
         if (this.xsSearchFilterSelection === "Session Name") {
             this.addSearchChip();
@@ -1445,6 +1467,7 @@ methods: {
         this.xsSearchFilterSelection = null;
     },
 
+    // Toggles the expansion state of a session row. If the session is already expanded, it collapses it by removing it from the list of expanded sessions. If the session is not expanded, it expands it by adding it to the list of expanded sessions.
     toggleRowExpansion(item) {
         const index = this.expandedSessions.indexOf(item);
         if (index > -1) {
@@ -1456,31 +1479,25 @@ methods: {
         }
     },
 
+    // Formats a date object into a string suitable for a date picker input field, using the format 'MM-dd-yyyy'.
     formatDateForDatePicker(date) {
         return DateTime.fromJSDate(date).toFormat('MM-dd-yyyy');
     },
 
+    // Returns the count of activities in the provided array.
     getActivityCount(activities) {
         return activities.length;
     },
 
+    // Redirects the user to the edit page for a specific experience instance when invoked.
     editInstance(instance) {
-        console.log('instance: ', instance);
         this.$router.push({ name: "instructorSpecificExperienceInstance", params: { id: instance._id } });
     },
 
+    // Redirects the user to the page for adding a new experience instance, passing along the session ID as a parameter for context.
     handleAddExperience(sessionID) {
-        console.log('item: ', sessionID);
         this.$router.push({ name: "instructorAddExperienceInstance", params: { id: sessionID } });
     },
-
-
-
-
-
-
-
-
 },
 };
 </script>

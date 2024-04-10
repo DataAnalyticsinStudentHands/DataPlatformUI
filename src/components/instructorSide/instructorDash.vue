@@ -1,3 +1,4 @@
+<!-- instructorDash - this view presents the Instructor's Dashboard -->
 <template>
   <main>
     <v-container>
@@ -85,9 +86,13 @@ export default {
     }
   },
   methods: {
+
+    // Navigates to the progress monitor tool.
     navigateToProgressMonitor() {
       this.$router.push({ name: 'instructorProgressMonitorContainer' });
     },
+
+    // Navigates to the Mailer tool.
     navigateToMailer() {
       this.$router.push({ name: 'instructorMailer' });
     }

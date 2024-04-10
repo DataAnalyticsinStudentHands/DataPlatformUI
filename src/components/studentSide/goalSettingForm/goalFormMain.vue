@@ -575,9 +575,6 @@ watch: {
     goalForm: {
         handler(newVal, oldVal) {
             if (this.initialDataLoaded && this.isFirstInput) {
-                console.log('newVal: ', newVal);
-                console.log('oldVal: ', oldVal);
-                console.log('goalForm watch isFirstInput')
                 this.handleFirstInput();
             } else if (this.initialDataLoaded) {
                 // Use the debounced method for subsequent updates
@@ -620,7 +617,6 @@ methods: {
 
         try {
             const response = await axios.get(apiURL, { headers: { token } });
-            console.log('fetchLatestGoalSettingForm: ', response);
 
             // Check if a goal setting form was found
             if (response.data.formFound) {
@@ -682,7 +678,6 @@ methods: {
     },
 
     updateHichProject(newVal) {
-        console.log('updateHichProject');
         this.goalForm.hichProject = newVal;
     },
 
@@ -725,8 +720,6 @@ methods: {
     },
 
     triggerValidation() {
-        console.log('trigger validation called');
-        console.log('this.currentStep: ', this.currentStep);
         if (this.currentStep === 0) {
             this.triggerExpValidation();
         } else if (this.currentStep === 1) {
@@ -747,9 +740,7 @@ methods: {
     },
 
     triggerCommResValidation() {
-        console.log('triggerCommResValidation')
         if (this.$refs.GoalFormCommResRef) {
-            console.log('this.$refs.GoalFormCommResRef')
             this.$refs.GoalFormCommResRef.handleValidations();
         }
     },
@@ -949,7 +940,6 @@ methods: {
     },
 
     async handleSubmitForm() {
-        console.log('handleSubmitForm');
         try {
             const user = useLoggedInUserStore();
             const token = user.token;
@@ -1116,12 +1106,7 @@ methods: {
 
                 const response = await axios.post(apiURL, goalFormSubmission, { headers: { token } });
 
-                console.log('response: ', response);
-
                 this.incompleteFormID = response.data.goalForm._id;
-                console.log('incompleteFormID: ', this.incompleteFormID);
-
-                console.log("Form created: ", response.data);
             } catch (error) {
                     this.handleError(error);
             }
@@ -1129,15 +1114,12 @@ methods: {
     },
 
     updateGoalForm() {
-        console.log("updateGoalForm");
         const user = useLoggedInUserStore();
         const token = user.token;
         const userID = user.userId;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-        console.log('apiURL: ', apiURL);
 
         const { hichProject, ...restOfGoalForm } = this.goalForm;
-        console.log('hichProject: ', hichProject);
         
         const payload = {
             goalForm: restOfGoalForm, 
@@ -1146,7 +1128,6 @@ methods: {
 
         axios.patch(apiURL, payload, { headers: { token }})
             .then(response => {
-                console.log("Form updated: ", response.data);
             })
             .catch(error => {
                 this.handleError(error);
@@ -1158,7 +1139,6 @@ methods: {
     },
 
     async checkIncompleteForm() {
-        console.log('checkIncompleteForm');
         const user = useLoggedInUserStore();
         const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-form-incomplete/`;
@@ -1177,7 +1157,6 @@ methods: {
         const user = useLoggedInUserStore();
         const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.tempIncompleteForm.incompleteForm._id}`;
-        console.log('apiURL: ', apiURL);
 
         try {
             await axios.delete(apiURL, { headers: { token } });
@@ -1191,9 +1170,7 @@ methods: {
     resumeProgress() {
         this.isFirstInput = false;
         this.goalForm = this.tempIncompleteForm.incompleteForm.goalForm;
-        console.log('goalForm', this.goalForm);
         this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID;
-        console.log('this.tempIncompleteForm: ', this.tempIncompleteForm);
         this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
         this.goalForm.hichProject = this.tempIncompleteForm.incompleteForm.hichProject;
         this.showIncompleteFormFoundDialog = false;
