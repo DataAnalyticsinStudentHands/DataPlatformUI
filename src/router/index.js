@@ -118,13 +118,7 @@ const routes = [
         name: 'eventdetails',
         props: true,
         component: () => import('../components/defaultPages/eventDetails.vue')
-    },
-    {
-      path: '/resetPasswordForm',
-      name: 'Password Reset Form',
-      props: true,
-      component: () => import('../components/loginPages/resetPasswordForm.vue')
-    },    
+    }, 
     {
         path: '/updatePassword',
         name: 'updatePassword',
