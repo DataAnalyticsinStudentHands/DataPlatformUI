@@ -30,7 +30,9 @@
       <!-- Aspirations Progress Table -->
       <v-row>
           <v-col cols="12">
-            <p :class="{'text-custom-red': isAspirationProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
+            <p
+              ref="aspirationProgressField" 
+              :class="{'text-custom-red': isAspirationProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
           </v-col>
       </v-row>
 
@@ -118,7 +120,7 @@
     <!-- Aspirations Connection Table -->
     <v-row>
       <v-col cols="12">
-          <p :class="{'text-custom-red': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
+          <p ref="aspirationConnectionField" :class="{'text-custom-red': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
       </v-col>
     </v-row>
 
@@ -215,10 +217,26 @@
 
     </div>
   </v-form>
+
+  <v-btn
+      v-if="hasValidationErrors"
+      @click="scrollToErrorField"
+      color="error"
+      icon
+      class="pa-1 fixed-button"
+      elevation="4"
+      size="small"
+    >
+      <v-icon>mdi-alert-circle</v-icon>
+      <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
+    </v-btn>
+
 </v-container>
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+
   export default {
     name: "ExitFormAspirations",
     props: {
@@ -238,6 +256,19 @@
           return !!value || this.$t('Information is required.');
           },
       }
+    },
+
+    watch: {
+      hasValidationErrors(newValue, oldValue) {
+          if (newValue !== oldValue) {
+              this.$emit('validation-change', { isValid: !newValue });
+          }
+          if (newValue) {
+              this.jumpToErrorTooltip = true;
+          } else {
+              this.jumpToErrorTooltip = false;
+          }
+      },
     },
 
     computed: {
@@ -261,6 +292,11 @@
 
           return isAspirationOneConnectionInvalid || isAspirationTwoConnectionInvalid || isAspirationThreeConnectionInvalid;
       },
+
+      hasValidationErrors() {
+          if (!this.formSubmitted) return false;
+              return this.isAspirationProgressInvalid || this.isAspirationConnectionInvalid
+      },
     },
 
     methods: {
@@ -279,106 +315,45 @@
           }
       },
 
-      scrollToErrorField() {
-          // const errorFields = [
-          //     'communityEngagementExperiencesRef',
-          //     'otherExperienceRef',
-          //     'previousEngagementExperiencesRef',
-          //     'previousEngagementExperiencesOtherRef',
-          //     'engagementActivitiesToolsRef',
-          //     'engagementActivitiesToolOtherRef',
-          //     'currentResearchExperienceRef',
-          //     'currentResearchExperienceOtherRef',
-          //     'previousResearchExperienceRef',
-          //     'previousResearchExperienceOtherRef',
-          //     'familiarToolsRef',
-          //     'familiarToolOtherRef',
-          //     'interestResearchServiceRef',
-          //     'interestResearchServiceOtherRef',
-          //     'leadershipOptionRef'
-          // ];
-
-          // for (let i = 0; i < errorFields.length; i++) {
-          //     if (this.isFieldInvalid(errorFields[i])) {
-
-          //         let ref;
-          //         switch (errorFields[i]) {
-          //             case 'otherExperienceRef':
-          //                 ref = this.$refs[`otherExperienceRef-6`][0];
-          //                 break;
-          //             case 'previousEngagementExperiencesOtherRef':
-          //                 ref = this.$refs[`previousEngagementExperiencesOtherRef-8`][0];
-          //                 break;
-          //             case 'engagementActivitiesToolOtherRef':
-          //                 ref = this.$refs[`engagementActivitiesToolOtherRef-8`][0];
-          //                 break;
-          //             case 'currentResearchExperienceOtherRef':
-          //                 ref = this.$refs[`currentResearchExperienceOtherRef-7`][0];
-          //                 break;
-          //             case 'previousResearchExperienceOtherRef':
-          //                 ref = this.$refs[`previousResearchExperienceOtherRef-8`][0];
-          //                 break;
-          //             case 'familiarToolOtherRef':
-          //                 ref = this.$refs[`familiarToolOtherRef-10`][0];
-          //                 break;
-          //             case 'interestResearchServiceOtherRef':
-          //                 ref = this.$refs[`interestResearchServiceOtherRef-8`][0];
-          //                 break;
-          //             default:
-          //                 ref = this.$refs[errorFields[i]];
-          //                 break;
-          //         }
-
-
-          //         if (ref) {
-          //             const element = ref.$el ? ref.$el : ref;
-          //             this.$emit('scroll-to-error', element);
-          //             break;
-          //         }
-          //     }
-          // }
-      },
+          scrollToErrorField() {
+              const errorFields = [
+                  'aspirationProgressField',
+                  'aspirationConnectionField',
+              ];
+  
+              for (let i = 0; i < errorFields.length; i++) {
+                  if (this.isFieldInvalid(errorFields[i])) {
+                      // Emit the actual DOM element or component reference
+                      const ref = this.$refs[errorFields[i]];
+                      const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                      this.$emit('scroll-to-error', element);
+                      break;
+                  }
+              }
+          },
       
-      isFieldInvalid(fieldRef) {
-          switch (fieldRef) {
-              // case 'communityEngagementExperiencesRef':
-              //     return this.isCommunityEngagementExperiencesInvalid;
-              // case 'otherExperienceRef':
-              //     return this.isOtherEngagementExperienceInvalid;
-              // case 'previousEngagementExperiencesRef':
-              //     return this.isPreviousEngagementExperiencesInvalid;
-              // case 'previousEngagementExperiencesOtherRef':
-              //     return this.isPreviousEngagementExperiencesOtherInvalid;
-              // case 'engagementActivitiesToolsRef':
-              //     return this.isEngagementActivitiesToolsInvalid;
-              // case 'engagementActivitiesToolOtherRef':
-              //     return this.isEngagementActivitiesToolOtherInvalid;
-              // case 'currentResearchExperienceRef':
-              //     return this.isCurrentResearchExperienceInvalid;
-              // case 'currentResearchExperienceOtherRef':
-              //     return this.isCurrentResearchExperienceOtherInvalid;
-              // case 'previousResearchExperienceRef':
-              //     return this.isPreviousResearchExperienceInvalid;
-              // case 'previousResearchExperienceOtherRef':
-              //     return this.isPreviousResearchExperienceOtherInvalid;
-              // case 'familiarToolsRef':
-              //     return this.isFamiliarToolsInvalid;
-              // case 'familiarToolOtherRef':
-              //     return this.isFamiliarToolOtherInvalid;
-              // case 'interestResearchServiceRef':
-              //     return this.isInterestResearchServiceInvalid;
-              // case 'interestResearchServiceOtherRef':
-              //     return this.isInterestResearchServiceOtherInvalid;
-              // case 'leadershipOptionRef':
-              //     return this.isLeadershipOptionInvalid;
-              // default:
-              //     return false;
-          }
-      },
+          isFieldInvalid(fieldRef) {
+                switch (fieldRef) {
+                    case 'aspirationProgressField':
+                        return this.isAspirationProgressInvalid;
+                    case 'aspirationConnectionField':
+                        return this.isAspirationConnectionInvalid;
+                    default:
+                        return false;
+                }
+            },
+
     }
   }
 </script>
 
-<style>
-
+<style scoped>
+    
+  .fixed-button {
+    position: fixed;
+    bottom: 20px; /* Adjust the bottom value as needed */
+    right: 20px; /* Adjust the right value as needed */
+    z-index: 1000;
+  }
+  
 </style>

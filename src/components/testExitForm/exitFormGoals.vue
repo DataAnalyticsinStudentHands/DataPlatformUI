@@ -8,7 +8,7 @@
         <!-- Goals Progress Table -->
         <v-row>
             <v-col cols="12">
-                <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('At the beginning of the semester, we asked you to share three goals for your participation in this course. Now we would like to know about your progress towards these goals and which activities from the course contributed to your progress.')}}</p>
+                <p ref="goalProgressField" :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('At the beginning of the semester, we asked you to share three goals for your participation in this course. Now we would like to know about your progress towards these goals and which activities from the course contributed to your progress.')}}</p>
 
                 <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
             </v-col>
@@ -137,7 +137,7 @@
         <!-- Goals Connection Table -->
         <v-row>
             <v-col cols="12">
-                <p :class="{'text-custom-red': isGoalConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
+                <p ref="goalConnectionField" :class="{'text-custom-red': isGoalConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
             </v-col>
         </v-row>
 
@@ -277,7 +277,7 @@
         <!-- Goal Barriers List -->
         <v-row>
             <v-col cols="12">
-                <p class="font-weight-black text-h8" :class="{ 'text-custom-red': isGoalIssuesInvalid }">{{$t('Please select which goal(s) you faced barriers to achieving this semester.')}}</p>
+                <p ref="goalIssuesField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGoalIssuesInvalid }">{{$t('Please select which goal(s) you faced barriers to achieving this semester.')}}</p>
                 <!-- List of goals from the student's input -->
                 <v-list density="compact">
                     <v-list-item
@@ -342,9 +342,26 @@
 
     </v-form>
 </v-container>
+
+<v-btn
+      v-if="hasValidationErrors"
+      @click="scrollToErrorField"
+      color="error"
+      icon
+      class="pa-1 fixed-button"
+      elevation="4"
+      size="small"
+    >
+      <v-icon>mdi-alert-circle</v-icon>
+      <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
+    </v-btn>
+
+
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+
 export default {
     name: "ExitFormGoals",
     props: {
@@ -355,21 +372,6 @@ export default {
     data() {
         return {
             formSubmitted: false,
-            isGoalProgressInvalid() {
-                const goalProgressProperties = this.existingGoals.map((_, index) => {
-                    const goalNumber = (index + 1).toString();
-                    const suffix = goalNumber === '1' ? 'One'
-                                    : goalNumber === '2' ? 'Two'
-                                    : goalNumber === '3' ? 'Three'
-                                    : goalNumber === '4' ? 'Four'
-                                    : 'Five';
-                    return `goal${suffix}ProgressSelected`;
-                });
-
-                return goalProgressProperties.some(progressProperty => {
-                    return !this.exitForm.progressMade[progressProperty];
-                });
-            },
             requiredRule: value => {
                 // If form has not been submitted, pass validation
                 if (!this.formSubmitted) {
@@ -378,21 +380,6 @@ export default {
                 // Otherwise, check if the value is present
                 return !!value || this.$t('Information is required.');
             },
-            isGoalConnectionInvalid() {
-                const goalConnectionProperties = this.existingGoals.map((_, index) => {
-                    const goalNumber = (index + 1).toString();
-                    const suffix = goalNumber === '1' ? 'One'
-                                    : goalNumber === '2' ? 'Two'
-                                    : goalNumber === '3' ? 'Three'
-                                    : goalNumber === '4' ? 'Four'
-                                    : 'Five';
-                    return `goal${suffix}ExperienceConnectionSelected`;
-                });
-
-                return goalConnectionProperties.some(connectionProperty => {
-                    return !this.exitForm.progressMade[connectionProperty];
-                });
-            },
         }
     },
 
@@ -400,7 +387,52 @@ export default {
         window.scrollTo(0, 0);
     },
 
+    watch: {
+      hasValidationErrors(newValue, oldValue) {
+          if (newValue !== oldValue) {
+              this.$emit('validation-change', { isValid: !newValue });
+          }
+          if (newValue) {
+              this.jumpToErrorTooltip = true;
+          } else {
+              this.jumpToErrorTooltip = false;
+          }
+      },
+    },
+
     computed: {
+        isGoalProgressInvalid() {
+            // Assuming `existingGoals` holds an array of goals and `exitForm` is defined in your data
+            const goalProgressProperties = this.existingGoals.map((_, index) => {
+                const goalNumber = (index + 1).toString();
+                const suffix = goalNumber === '1' ? 'One'
+                            : goalNumber === '2' ? 'Two'
+                            : goalNumber === '3' ? 'Three'
+                            : goalNumber === '4' ? 'Four'
+                            : 'Five';
+                return `goal${suffix}ProgressSelected`;
+            });
+
+            // Evaluate each goal progress property to determine if it's truthy
+            return goalProgressProperties.some(progressProperty => {
+                return !this.exitForm.progressMade[progressProperty];
+            });
+        },
+        isGoalConnectionInvalid() {
+            const goalConnectionProperties = this.existingGoals.map((_, index) => {
+                const goalNumber = (index + 1).toString();
+                const suffix = goalNumber === '1' ? 'One'
+                            : goalNumber === '2' ? 'Two'
+                            : goalNumber === '3' ? 'Three'
+                            : goalNumber === '4' ? 'Four'
+                            : 'Five';
+                return `goal${suffix}ExperienceConnectionSelected`;
+            });
+
+            return goalConnectionProperties.some(connectionProperty => {
+                return !this.exitForm.progressMade[connectionProperty];
+            });
+        },
         goalIssuesErrorMessage() {
             const ruleResult = this.goalIssuesRules[0]();
             if (this.formSubmitted && typeof ruleResult === 'string') {
@@ -423,6 +455,10 @@ export default {
             }
             return '';
         }, 
+        hasValidationErrors() {
+            if (!this.formSubmitted) return false;
+                return this.isGoalProgressInvalid || this.isGoalConnectionInvalid || this.isGoalIssuesInvalid
+        },
     },
 
     methods: {
@@ -450,10 +486,48 @@ export default {
                 })
             }
         },
+
+        scrollToErrorField() {
+              const errorFields = [
+                  'goalProgressField',
+                  'goalConnectionField',
+                  'goalIssuesField'
+              ];
+  
+              for (let i = 0; i < errorFields.length; i++) {
+                  if (this.isFieldInvalid(errorFields[i])) {
+                      // Emit the actual DOM element or component reference
+                      const ref = this.$refs[errorFields[i]];
+                      const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                      this.$emit('scroll-to-error', element);
+                      break;
+                  }
+              }
+          },
+      
+          isFieldInvalid(fieldRef) {
+                switch (fieldRef) {
+                    case 'goalProgressField':
+                        return this.isGoalProgressInvalid;
+                    case 'goalConnectionField':
+                        return this.isGoalConnectionInvalid;
+                    case 'goalIssuesField':
+                        return this.isGoalIssuesInvalid;
+                    default:
+                        return false;
+                }
+            },
     },
 }
 </script>
 
 <style scoped>
-
+    
+  .fixed-button {
+    position: fixed;
+    bottom: 20px; /* Adjust the bottom value as needed */
+    right: 20px; /* Adjust the right value as needed */
+    z-index: 1000;
+  }
+  
 </style>

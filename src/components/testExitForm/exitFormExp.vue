@@ -67,9 +67,9 @@ import axios from "axios";
 export default {
 name: "ExitFormExperiences",
 props: {
-    exitForm: Object,
+    exitForm: Object
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-original-exit-form"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-original-exit-form", "update-goal-form-exists"],
 data() {
     return {
         formSubmitted: false,
@@ -138,7 +138,8 @@ computed: {
     formattedExperiences() {
       return this.exitForm.experiences.map(experience => ({
         text: `${experience.experienceCategory}: ${experience.experienceName}`,
-        value: experience.experienceID
+        value: experience.experienceID,
+        expRegistrationID: experience.expRegistrationID  // Include the registration ID
       }));
     },
 
@@ -158,6 +159,7 @@ methods: {
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });
+        console.log('response.data: ', response.data);
         this.exitForm.experiences = response.data.map(experience => ({
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
@@ -196,35 +198,78 @@ methods: {
 
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
-        const experienceID = this.selectedExperience;
-        const user = useLoggedInUserStore();
-        // let token = user.token;
+        const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
+        const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
+
+        console.log('expRegistrationID: ', expRegistrationID);
+
         const token = import.meta.env.VITE_TOKEN;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-EF-for-experience/';
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-EF-for-registration/';
 
         try {
-            const response = await axios.get(apiURL + `${experienceID}`, {
-            headers: {
-                token: token
-            }
+            const response = await axios.get(apiURL + `${expRegistrationID}`, {
+                headers: {
+                    token: token
+                }
             });
 
+            console.log('response.data: ', response.data);
 
-            // If the document wasn't found
-            if (response.data.documentFound === false) {
-                this.$emit('update-found-document-id', null);
-                this.experienceFoundWarning = false;
-            return;
+            this.$emit('update-goal-form-exists', response.data.goalFormFound);
+
+            if (response.data.goalFormFound) {
+                console.log('response.data && response.data.goalFormFound')
+                const goalFormData = response.data.goalForm;
+                console.log('goalFormData: ', goalFormData);
+
+                // Set the goal setting form ID
+                this.exitForm.goalSettingFormID = goalFormData._id;
+
+                // Update aspirations
+                this.exitForm.aspiration1 = goalFormData.goalForm.aspirations?.aspirationOne;
+                this.exitForm.aspiration2 = goalFormData.goalForm.aspirations?.aspirationTwo;
+                this.exitForm.aspiration3 = goalFormData.goalForm.aspirations?.aspirationThree;
+                // Update goals
+                this.exitForm.goal1 = goalFormData.goalForm.goals?.goalOne;
+                this.exitForm.goal2 = goalFormData.goalForm.goals?.goalTwo;
+                this.exitForm.goal3 = goalFormData.goalForm.goals?.goalThree;
+                this.exitForm.goal4 = goalFormData.goalForm.goals?.goalFour;
+                this.exitForm.goal5 = goalFormData.goalForm.goals?.goalFive;
+                
+            } else {
+                this.exitForm.goalSettingFormID = null;
+                // Update aspirations
+                this.exitForm.aspiration1 = null;
+                this.exitForm.aspiration2 = null;
+                this.exitForm.aspiration3 = null;
+                // Update goals
+                this.exitForm.goal1 = null;
+                this.exitForm.goal2 = null;
+                this.exitForm.goal3 = null;
+                this.exitForm.goal4 = null;
+                this.exitForm.goal5 = null;
             }
 
-            // If a document was found
-            if (response.data && response.data.id) {
-                this.$emit('update-found-document-id', response.data.id);
+            console.log('exitForm: ', this.exitForm);
+
+            // If an Exit Form document wasn't found
+            if (response.data.exitFormFound === false) {
+                console.log('response.data.exitFormFound === false')
+                this.$emit('update-found-document-id', null);
+                this.experienceFoundWarning = false;
+                return;
+            }
+
+            // If an Exit Form document was found
+            if (response.data && response.data.exitFormFound) {
+                this.$emit('update-found-document-id', response.data.exitFormID);
                 this.experienceFoundWarning = true;
             } else {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
             }
+
+
         } catch (error) {
             this.handleError("An unexpected error occurred while checking for existing form:", error);
         } finally {
@@ -233,20 +278,21 @@ methods: {
     },
 
     updateExperienceID(selected) {
+        const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === selected);
+
         if (!selected) {
             this.exitForm.experienceID = null;
+            this.exitForm.expRegistrationID = null;
             this.$emit("update-selected-experience", null); // Emit null if no experience is selected
             return;
         }
 
-        // The selected variable already has the experienceID
-        this.exitForm.experienceID = selected;
+        // Include both experienceID and expRegistrationID in the emitted data
+        this.exitForm.experienceID = selectedExperienceInfo.value;
+        this.exitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
 
-        // Find the text corresponding to the selected value
-        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
-
-        // Emit an object with both text and value
-        this.$emit("update-selected-experience", { text: selectedExperienceText, value: selected });
+        // Emit an object with all necessary details
+        this.$emit("update-selected-experience", selectedExperienceInfo);
     },
 
     selectExperienceFromRouteParam() {

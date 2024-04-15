@@ -12,7 +12,12 @@ const routes = [
     {
       path: '/test',
       name: 'test',
-      component: () => import('../components/instructorSide/instructorMailer/instructorMailerMain.vue'),
+      component: () => import('../components/testExitForm/exitFormMain.vue'),
+    },
+    {
+      path: '/test2',
+      name: 'test2',
+      component: () => import('../components/testExitFormOld.vue'),
     },
     {
       path: '/studentEntryFormUpdate',

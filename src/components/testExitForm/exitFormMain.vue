@@ -37,7 +37,6 @@
             </template>
         </v-dialog>
     </div>
-    <!-- ***NEED TO CHANGE*** -->
     <p class="text-subtitle-1">{{$t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
 </v-container>
 
@@ -66,6 +65,7 @@
 
                     <v-stepper-item
                         ref="step1"
+                        v-if="goalFormExists"
                         title="Aspirations"
                         icon="mdi-image-filter-hdr"
                         edit-icon="mdi-image-filter-hdr"
@@ -74,10 +74,11 @@
                         :editable="checkJump(1)"
                     ></v-stepper-item>
                     
-                    <v-divider></v-divider>
+                    <v-divider v-if="goalFormExists"></v-divider>
 
                     <v-stepper-item
                         ref="step2"
+                        v-if="goalFormExists"
                         title="Goals"
                         icon="mdi-flag-variant"
                         edit-icon="mdi-flag-variant"
@@ -86,10 +87,11 @@
                         :editable="checkJump(2)"
                     ></v-stepper-item>
 
-                    <v-divider></v-divider>
+                    <v-divider v-if="goalFormExists"></v-divider>
 
                     <v-stepper-item
                         ref="step3"
+                        v-if="goalFormExists"
                         title="Activities"
                         icon="mdi-toolbox"
                         edit-icon="mdi-toolbox"
@@ -98,7 +100,7 @@
                         :editable="checkJump(3)"
                     ></v-stepper-item>
 
-                    <v-divider></v-divider>
+                    <v-divider v-if="goalFormExists"></v-divider>
 
                     <v-stepper-item
                         ref="step4"
@@ -140,14 +142,15 @@
                         @update-selected-experience="handleSelectedExperience"
                         @update-found-document-id="foundDocumentId = $event"
                         @update-original-exit-form="updateOriginalExitForm"
+                        @update-goal-form-exists="handleGoalFormExists"
                     ></exit-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
                     <exit-form-asp
                         ref="ExitFormAspRef"
                         :exitForm="exitForm"
-                        :goalFormExists="goalFormExists"
                         @form-valid="handleFormValid"
+                        :goalFormExists="goalFormExists"
                         @form-invalid="handleFormInvalid('asp')"
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('asp', $event)"
@@ -342,6 +345,7 @@
 exitForm:
 <br>
 {{ exitForm }} -->
+goalFormExists: {{ goalFormExists }}
 </template>
 
 <script>
@@ -593,8 +597,8 @@ data() {
     }
 },
 async created() {
-    await this.fetchGoalSettingFormData();
-    await this.fetchExperienceActivities();
+    // await this.fetchGoalSettingFormData();
+    // await this.fetchExperienceActivities();
 },
 watch: {
     currentStep(newVal) {
@@ -701,14 +705,15 @@ methods: {
     },
 
     async fetchGoalSettingFormData() {
+        console.log('fetchGoalSettingFormData')
           const user = useLoggedInUserStore();
           // const token = user.token;
 
           const token = import.meta.env.VITE_TOKEN;
 
-          // const experienceID = this.$route.params.id; // Use experienceID from route params
+          const experienceID = this.$route.params.id; // Use experienceID from route params
 
-          const expRegistrationID = "851707301679949"
+        //   const expRegistrationID = "851707301679949"
 
           const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-form/${expRegistrationID}`;
 
@@ -727,17 +732,17 @@ methods: {
                 this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
                 this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
                 // Update goals
-                // this.exitForm.goal1 = goalFormData.goals?.goalOne;
-                // this.exitForm.goal2 = goalFormData.goals?.goalTwo;
-                // this.exitForm.goal3 = goalFormData.goals?.goalThree;
-                // this.exitForm.goal4 = goalFormData.goals?.goalFour;
-                // this.exitForm.goal5 = goalFormData.goals?.goalFive;
+                this.exitForm.goal1 = goalFormData.goals?.goalOne;
+                this.exitForm.goal2 = goalFormData.goals?.goalTwo;
+                this.exitForm.goal3 = goalFormData.goals?.goalThree;
+                this.exitForm.goal4 = goalFormData.goals?.goalFour;
+                this.exitForm.goal5 = goalFormData.goals?.goalFive;
                 // DELETE ME
-                this.exitForm.goal1 = "I want to obtain comprehensive knowledge of community health, including social determinants of health, health disparities, and the importance of cultural competency."
-                this.exitForm.goal2 = "I want to develop practical skills essential for the role of a CHW, such as learning how to effectively communicate with diverse populations and navigating healthcare systems.";
-                this.exitForm.goal3 = "I want to enhance my employment opportunities in the public/community health field and learn about specific roles in the career.";
-                this.exitForm.goal4 = "I want to build a network in public health by connecting with peers, instructors, and community leaders to obtain valuable insights and opportunities for mentorship and collaboration.";
-                this.exitForm.goal5 = "I want to contribute to community empowerment and health equity to fulfill my passion for making a difference in my community and helping others.";
+                // this.exitForm.goal1 = "I want to obtain comprehensive knowledge of community health, including social determinants of health, health disparities, and the importance of cultural competency."
+                // this.exitForm.goal2 = "I want to develop practical skills essential for the role of a CHW, such as learning how to effectively communicate with diverse populations and navigating healthcare systems.";
+                // this.exitForm.goal3 = "I want to enhance my employment opportunities in the public/community health field and learn about specific roles in the career.";
+                // this.exitForm.goal4 = "I want to build a network in public health by connecting with peers, instructors, and community leaders to obtain valuable insights and opportunities for mentorship and collaboration.";
+                // this.exitForm.goal5 = "I want to contribute to community empowerment and health equity to fulfill my passion for making a difference in my community and helping others.";
               }
           })
           .catch((error) => {
@@ -1105,6 +1110,10 @@ methods: {
             this.nextFunction = null; // Clear the stored next function
         }
     },
+
+    handleGoalFormExists(goalFormExists) {
+        this.goalFormExists = goalFormExists;
+    }
 
 
 },
