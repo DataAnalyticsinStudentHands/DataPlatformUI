@@ -873,9 +873,9 @@ methods: {
         this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
     },
 
-    // Formats a given datetime from the database into the 'MM-dd-yyyy' format.
+    // Formats a given ISO datetime from the database into the 'MM-dd-yyyy' format without converting timezones.
     formatDate(datetimeDB) {
-        const formattedDate = DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
+        const formattedDate = DateTime.fromISO(datetimeDB, { zone: 'utc' }).toFormat('MM-dd-yyyy');
         return formattedDate;
     },
 
