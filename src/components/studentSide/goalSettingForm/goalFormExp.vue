@@ -237,7 +237,7 @@ methods: {
     async fetchExperiences() {
       const user = useLoggedInUserStore();
       let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experience-instances/';
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experiences/';
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });

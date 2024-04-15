@@ -44,7 +44,7 @@
           this.$router.push({ 
               name: 'instructorDataManagement',
               params: {
-                activeTab: 3,
+                activeTab: 2,
                 toastType: 'success',
                 toastMessage: 'Activity added!',
                 toastPosition: 'top-right',

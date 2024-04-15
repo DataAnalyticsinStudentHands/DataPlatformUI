@@ -932,9 +932,11 @@ methods: {
 
         // After cleaning up the data, check whether to update or create
         if (this.foundDocumentId) {
+            console.log('handleUpdateForm')
             this.handleUpdateForm();
         } else {
             // If previously filled document wasn't found, create new document
+            console.log('handleSubmitForm')
             this.handleSubmitForm();
         }
     },
