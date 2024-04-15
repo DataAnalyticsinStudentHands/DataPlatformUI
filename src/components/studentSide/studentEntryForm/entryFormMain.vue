@@ -438,6 +438,10 @@ export default {
             if (newStep === 3 && !this.allowedStepsForJump.includes(newStep)) {
                 this.allowedStepsForJump.push(newStep);
             }
+
+            if (newStep === 3) {
+                this.cleanupFormData();
+            }
         },
     },
     computed: {
@@ -541,8 +545,6 @@ export default {
                     this.handleError(error);
                 });
         },
-
-
 
         cleanupFormData() {
             // Check condition for "Other" pronouns
