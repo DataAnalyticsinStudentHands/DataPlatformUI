@@ -445,7 +445,7 @@ export default {
         },
         goalIssuesRules() {
             return [
-                () => this.exitForm.goalIssues.goals.some(goal => goal.checked) || this.$t('Please select one.')
+                () => this.exitForm.goalIssues.goals.some(goal => goal.checked) || this.$t('Please select at least one.')
             ];
         },
         goalIssuesErrorMessage() {

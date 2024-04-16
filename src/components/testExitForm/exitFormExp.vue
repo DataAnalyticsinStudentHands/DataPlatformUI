@@ -69,7 +69,7 @@ name: "ExitFormExperiences",
 props: {
     exitForm: Object
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-original-exit-form", "update-goal-form-exists"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists"],
 data() {
     return {
         formSubmitted: false,
@@ -159,7 +159,6 @@ methods: {
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });
-        console.log('response.data: ', response.data);
         this.exitForm.experiences = response.data.map(experience => ({
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
@@ -200,8 +199,7 @@ methods: {
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
-
-        console.log('expRegistrationID: ', expRegistrationID);
+        this.$emit('reset-exit-form');
 
         const token = import.meta.env.VITE_TOKEN;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-EF-for-registration/';
@@ -213,14 +211,11 @@ methods: {
                 }
             });
 
-            console.log('response.data: ', response.data);
 
             this.$emit('update-goal-form-exists', response.data.goalFormFound);
 
             if (response.data.goalFormFound) {
-                console.log('response.data && response.data.goalFormFound')
                 const goalFormData = response.data.goalForm;
-                console.log('goalFormData: ', goalFormData);
 
                 // Set the goal setting form ID
                 this.exitForm.goalSettingFormID = goalFormData._id;
@@ -250,23 +245,25 @@ methods: {
                 this.exitForm.goal5 = null;
             }
 
-            console.log('exitForm: ', this.exitForm);
-
             // If an Exit Form document wasn't found
-            if (response.data.exitFormFound === false) {
-                console.log('response.data.exitFormFound === false')
+            if (response.data && response.data.exitFormFound === false) {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
-                return;
             }
-
             // If an Exit Form document was found
-            if (response.data && response.data.exitFormFound) {
+            else if (response.data && response.data.exitFormFound) {
                 this.$emit('update-found-document-id', response.data.exitFormID);
                 this.experienceFoundWarning = true;
             } else {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
+            }
+
+            if (response.data && response.data.activities && response.data.activities.length > 0) {
+                this.exitForm.experienceActivities = response.data.activities;
+                this.$emit('update-activities-exist', true);
+            } else {
+                this.$emit('update-activities-exist', false);
             }
 
 

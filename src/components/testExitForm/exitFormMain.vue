@@ -91,7 +91,7 @@
 
                     <v-stepper-item
                         ref="step3"
-                        v-if="goalFormExists"
+                        v-if="goalFormExists && activitiesExist"
                         title="Activities"
                         icon="mdi-toolbox"
                         edit-icon="mdi-toolbox"
@@ -100,7 +100,7 @@
                         :editable="checkJump(3)"
                     ></v-stepper-item>
 
-                    <v-divider v-if="goalFormExists"></v-divider>
+                    <v-divider v-if="goalFormExists && activitiesExist"></v-divider>
 
                     <v-stepper-item
                         ref="step4"
@@ -135,21 +135,22 @@
                     <exit-form-exp
                         ref="ExitFormExpRef"
                         :exitForm="exitForm"
-                        @form-valid="handleFormValid"
+                        @form-valid="handleFormValid(0)"
                         @form-invalid="handleFormInvalid('exp')"
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('exp', $event)"
                         @update-selected-experience="handleSelectedExperience"
                         @update-found-document-id="foundDocumentId = $event"
-                        @update-original-exit-form="updateOriginalExitForm"
+                        @reset-exit-form="resetExitForm"
                         @update-goal-form-exists="handleGoalFormExists"
+                        @update-activities-exist="handleActivitiesExist"
                     ></exit-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
                     <exit-form-asp
                         ref="ExitFormAspRef"
                         :exitForm="exitForm"
-                        @form-valid="handleFormValid"
+                        @form-valid="handleFormValid(1)"
                         :goalFormExists="goalFormExists"
                         @form-invalid="handleFormInvalid('asp')"
                         @scroll-to-error="handleScrollToError"
@@ -161,7 +162,7 @@
                         ref="ExitFormGoalsRef"
                         :exitForm="exitForm"
                         :existingGoals="existingGoals"
-                        @form-valid="handleFormValid"
+                        @form-valid="handleFormValid(2)"
                         @form-invalid="handleFormInvalid('goals')"
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('goals', $event)"
@@ -172,7 +173,7 @@
                         ref="ExitFormActRef"
                         :exitForm="exitForm"
                         :existingGoals="existingGoals"
-                        @form-valid="handleFormValid"
+                        @form-valid="handleFormValid(3)"
                         @form-invalid="handleFormInvalid('act')"
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('act', $event)"
@@ -182,22 +183,19 @@
                     <exit-form-growth
                         ref="ExitFormGrowthRef"
                         :exitForm="exitForm"
-                        @form-valid="handleFormValid"
+                        @form-valid="handleFormValid(4)"
                         @form-invalid="handleFormInvalid('growth')"
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('growth', $event)"
                     ></exit-form-growth>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="5">
-                    <goal-form-review
-                        ref="GoalFormReviewRef"
+                    <exit-form-review
+                        ref="ExitFormReviewRef"
                         :selectedExperience="selectedExperience"
-                        :hasCompletedGoalForm="hasCompletedGoalForm"
-                        :isBackgroundEditActive="isBackgroundEditActive"
-                        :hichProject="hichProject"
                         :exitForm="exitForm"
                         @change-step="currentStep = $event"
-                    ></goal-form-review>
+                    ></exit-form-review>
                     </v-stepper-window-item>                    
                 </v-stepper-window>
                 </v-container>
@@ -215,15 +213,13 @@
                             @validation-change="handleValidationChange('exp', $event)"
                             @update-selected-experience="handleSelectedExperience"
                             @update-found-document-id="foundDocumentId = $event"
-                            @update-original-exit-form="updateOriginalExitForm"
+                            @reset-exit-form="resetExitForm"
                         ></exit-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
                         <exit-form-asp
                             ref="ExitFormAspRef"
                             :exitForm="exitForm"
-                            :hasCompletedGoalForm="hasCompletedGoalForm"
-                            :is-background-edit-active="isBackgroundEditActive"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('asp')"
                             @scroll-to-error="handleScrollToError"
@@ -263,15 +259,14 @@
                         ></exit-form-growth>
                     </div>
                     <div v-show="currentStep === 5" key="step5">
-                        <goal-form-review
-                            ref="GoalFormReviewRef"
+                        <exit-form-review
+                            ref="ExitFormReviewRef"
                             :selectedExperience="selectedExperience"
-                            :hasCompletedGoalForm="hasCompletedGoalForm"
-                            :isBackgroundEditActive="isBackgroundEditActive"
-                            :hichProject="hichProject"
                             :exitForm="exitForm"
+                            :goalFormExists="goalFormExists"
+                            :activitiesExist="activitiesExist"
                             @change-step="currentStep = $event"
-                        ></goal-form-review>
+                        ></exit-form-review>
                     </div>
                     </v-scroll-x-reverse-transition>
                 </v-container>
@@ -346,6 +341,8 @@ exitForm:
 <br>
 {{ exitForm }} -->
 goalFormExists: {{ goalFormExists }}
+<br><br>
+activitiesExist: {{ activitiesExist }}
 </template>
 
 <script>
@@ -358,7 +355,7 @@ import ExitFormAsp from './exitFormAsp.vue';
 import ExitFormGoals from './exitFormGoals.vue';
 import ExitFormAct from './exitFormAct.vue';
 import ExitFormGrowth from './exitFormGrowth.vue';
-import GoalFormReview from './goalFormReview.vue';
+import ExitFormReview from './exitFormReview.vue';
 
 export default {
 name: "GoalSettingForm",
@@ -368,7 +365,7 @@ components: {
     ExitFormGoals,
     ExitFormAct,
     ExitFormGrowth,
-    GoalFormReview
+    ExitFormReview
 },
 data() {
     return {
@@ -406,10 +403,7 @@ data() {
                 goal5:"",}
             ],
             goalSettingFormID: "",
-            experienceActivities:[{
-                activityID:"",
-                activityName:""}
-            ],
+            experienceActivities:[],
             progressMade: {
                 aspirationOneProgressResults: [
                 { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress", checked: false },
@@ -590,10 +584,211 @@ data() {
                 comments: ""
             }
         },
-        originalExitForm: {},
+        originalExitForm: {
+            semester: "",
+            experiences: [
+                {
+                _id: "",
+                experienceCategory: "",
+                experienceName: ""
+                }
+            ],
+            goalForm:[{
+                aspiration1:"",
+                aspiration2:"",
+                aspiration3:"",
+                goal1:"",
+                goal2:"",
+                goal3:"",
+                goal4:"",
+                goal5:"",}
+            ],
+            goalSettingFormID: "",
+            experienceActivities:[],
+            progressMade: {
+                aspirationOneProgressResults: [
+                { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress", checked: false }
+                ],
+                aspirationTwoProgressResults: [
+                { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress", checked: false }
+                ],
+                aspirationThreeProgressResults: [
+                { id: 1, label: "I made lots of progress towards this aspiration", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this aspiration", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this aspiration", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this aspiration", xs_label: "No progress", checked: false }
+                ],
+                aspirationOneProgressSelected: "",
+                aspirationTwoProgressSelected:"",
+                aspirationThreeProgressSelected: "",
+                aspirationOneExperienceConnection: [
+                { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course.",  checked: false },
+                { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course.",  checked: false }
+                ],
+                aspirationTwoExperienceConnection: [
+                { id: 1, label: "The progress I made towards this aspiration was largely due to this course",  xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this aspiration was partly due to this course",  xs_label: "Partly due to this course.", checked: false },
+                { id: 3, label: "The progress I made towards this aspiration was not due to this course",  xs_label: "Not due to this course.", checked: false }
+                ],
+                aspirationThreeExperienceConnection: [
+                { id: 1, label: "The progress I made towards this aspiration was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this aspiration was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+                { id: 3, label: "The progress I made towards this aspiration was not due to this course", xs_label: "Not due to this course.", checked: false }
+                ],
+                aspirationOneExperienceConnectionSelected: null,
+                aspirationTwoExperienceConnectionSelected: null,
+                aspirationThreeExperienceConnectionSelected: null,
+                goalOneProgressResults: [
+                { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
+                ],
+                goalTwoProgressResults: [
+                { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
+                ],
+                goalThreeProgressResults: [
+                { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
+                ],
+                goalFourProgressResults: [
+                { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
+                ],
+                goalFiveProgressResults: [
+                { id: 1, label: "I made lots of progress towards this goal", xs_label: "Lots of progress", checked: false },
+                { id: 2, label: "I made some progress towards this goal", xs_label: "Some progress", checked: false },
+                { id: 3, label: "I made little progress towards this goal", xs_label: "Little progress", checked: false },
+                { id: 4, label: "I did not make progress towards this goal", xs_label: "No progress", checked: false }
+                ],
+                goalOneProgressSelected: null,
+                goalTwoProgressSelected: null,
+                goalThreeProgressSelected: null,
+                goalFourProgressSelected: null,
+                goalFiveProgressSelected: null,
+                goalOneExperienceConnection: [
+                { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+                { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+                ],
+                goalTwoExperienceConnection: [
+                { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+                { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+                ],
+                goalThreeExperienceConnection: [
+                { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+                { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+                ],
+                goalFourExperienceConnection: [
+                { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+                { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+                ],
+                goalFiveExperienceConnection: [
+                { id: 1, label: "The progress I made towards this goal was largely due to this course", xs_label: "Largely due to this course.", checked: false },
+                { id: 2, label: "The progress I made towards this goal was partly due to this course", xs_label: "Partly due to this course.", checked: false },
+                { id: 3, label: "The progress I made towards this goal was not due to this course", xs_label: "Not due to this course.", checked: false }
+                ],
+                goalOneExperienceConnectionSelected: null,
+                goalTwoExperienceConnectionSelected: null,
+                goalThreeExperienceConnectionSelected: null,
+                goalFourExperienceConnectionSelected: null,
+                goalFiveExperienceConnectionSelected: null,
+            },
+            //section to describe obstacles and how it was overcome
+            goalIssues: {
+                goals: [
+                { id: 1, label: "Goal 1", checked: false },
+                { id: 2, label: "Goal 2", checked: false },
+                { id: 3, label: "Goal 3", checked: false },
+                { id: 4, label: "Goal 4", checked: false },
+                { id: 5, label: "Goal 5", checked: false },
+                { id: 6, label: "No Goals", checked: false },
+                ],
+                issuesDescription: ""
+            },
+            //array that includes which activities contributed towards the goals
+            activitiesContribution: {
+                goalOneContributions: [],
+                goalTwoContributions: [],
+                goalThreeContributions: [],
+                goalFourContributions: [],
+                goalFiveContributions: [],
+                noContributions: []
+            },
+            //how experience contributed to goals, net promoter question
+            experienceContributions: "",
+            //likliehood of doing certain actions based on the experience taken
+            likelihoodOf: {
+                enrollAnotherCourse: [
+                { id: 1, label: "Extremely likely", checked: false },
+                { id: 2, label: "Somewhat likely", checked: false },
+                { id: 3, label: "Neutral likely/unlikely", checked: false },
+                { id: 4, label: "Somewhat unlikely", checked: false },
+                { id: 5, label: "Extremely unlikely", checked: false }
+                ],
+                completeMinor: [
+                { id: 1, label: "Extremely likely", checked: false },
+                { id: 2, label: "Somewhat likely", checked: false },
+                { id: 3, label: "Neutral likely/unlikely", checked: false },
+                { id: 4, label: "Somewhat unlikely", checked: false },
+                { id: 5, label: "Extremely unlikely", checked: false }
+                ],
+                recommendCourse: [
+                { id: 1, label: "Extremely likely", checked: false },
+                { id: 2, label: "Somewhat likely", checked: false },
+                { id: 3, label: "Neutral likely/unlikely", checked: false },
+                { id: 4, label: "Somewhat unlikely", checked: false },
+                { id: 5, label: "Extremely unlikely", checked: false }
+                ],
+                pursueCareer: [
+                { id: 1, label: "Extremely likely", checked: false },
+                { id: 2, label: "Somewhat likely", checked: false },
+                { id: 3, label: "Neutral likely/unlikely", checked: false },
+                { id: 4, label: "Somewhat unlikely", checked: false },
+                { id: 5, label: "Extremely unlikely", checked: false }
+                ],
+                enrollAnotherCourseSelected: "",
+                completeMinorSelected: "",
+                recommendCourseSelected: "",
+                pursueCareerSelected: "",
+            },
+            //general growth goals and the results after experience
+            generalGrowth: {
+                problemSolving: "",
+                effectiveCommunication: "",
+                teamwork: "",
+                culturalHumility: "",
+                ethicalDecisionMaking: "",
+                professionalResponsibility: ""
+            },
+            //general open-ended
+            openEnded: {
+                biggestLessons: "",
+                supportOthers: "",
+                comments: ""
+            }
+        },
         leaveDialog: false,
         nextFunction: null,
         goalFormExists: false,
+        activitiesExist: false,
     }
 },
 async created() {
@@ -610,6 +805,9 @@ watch: {
             this.allowedStepsForJump.push(this.currentStep);
         }
     },
+    originalExitForm(newVal) {
+        console.log('newVal: ', newVal);
+    }
 },
 computed: {
     showAltLabels() {
@@ -645,7 +843,7 @@ computed: {
             this.exitForm.goal4, 
             this.exitForm.goal5
         ].filter(goal => goal);
-    }, 
+    },
 },
 methods: {
     // async fetchLatestGoalSettingForm() {
@@ -806,8 +1004,12 @@ methods: {
         this.currentStep++;
     },
 
-    updateOriginalExitForm(newVal) {
-        this.originalExitForm = this.deepClone(newVal);
+    resetExitForm() {
+        console.log('resetExitForm originalExitForm :', this.originalExitForm);
+        console.log('resetExitForm exitForm :', this.exitForm);
+        const tempExperiences = this.exitForm.experiences;
+        this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+        this.exitForm.experiences = tempExperiences;
     },
     
     handleFormInvalid(section) {
@@ -845,16 +1047,42 @@ methods: {
     },
 
     triggerValidation() {
-        if (this.currentStep === 0) {
-            this.triggerExpValidation();
-        } else if (this.currentStep === 1) {
-            this.triggerAspValidation();
-        } else if (this.currentStep === 2) {
-            this.triggerGoalsValidation();
-        } else if (this.currentStep === 3) {
-            this.triggerActValidation();
-        } else if (this.currentStep === 4) {
-            this.triggerGoalsValidation();
+
+        if (this.goalFormExists) {
+            switch (this.currentStep) {
+                case 0:
+                    this.triggerExpValidation();
+                    break;
+                case 1:
+                    this.triggerAspValidation();
+                    break;
+                case 2:
+                    this.triggerGoalsValidation();
+                    break;
+                case 3:
+                    // Determine which validation to trigger based on activities existence
+                    if (this.activitiesExist) {
+                        this.triggerActValidation();
+                    } else {
+                        this.triggerGrowthValidation();
+                    }
+                    break;
+                case 4:
+                    if (this.activitiesExist) {
+                        this.triggerGrowthValidation();
+                    }
+                    break;
+                default:
+                    console.log('Invalid currentStep with goalFormExists');
+            }
+        } else if (!this.goalFormExists) {
+            if (this.currentStep === 0) {
+                this.triggerExpValidation();
+            } else if (this.currentStep === 1) {
+                this.triggerGrowthValidation();
+            }
+        } else {
+            console.log('Configuration not handled');
         }
     },
 
@@ -888,11 +1116,11 @@ methods: {
         }
     },
 
-    // triggerGoalsValidation() {
-    //     if (this.$refs.GoalFormGoalsRef) {
-    //         this.$refs.GoalFormGoalsRef.handleValidations();
-    //     }
-    // },
+    triggerGrowthValidation() {
+        if (this.$refs.ExitFormGrowthRef) {
+            this.$refs.ExitFormGrowthRef.handleValidations();
+        }
+    },
 
     handleSelectedExperience(value) {
         this.selectedExperience = value;
@@ -1113,6 +1341,14 @@ methods: {
 
     handleGoalFormExists(goalFormExists) {
         this.goalFormExists = goalFormExists;
+    },
+
+    handleActivitiesExist(activitiesExist) {
+        this.activitiesExist = activitiesExist;
+    },
+
+    handleAllowedStepsForJump() {
+        this.allowedStepsForJump = [0];
     }
 
 

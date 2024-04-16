@@ -11,7 +11,7 @@
 
         <v-row>
             <v-col cols="12">
-                <p class="font-weight-black text-h8 mb-2" :class="{'text-custom-red': isGoalActivityProgressMobileInvalidTitle && formSubmitted}">
+                <p ref="goalActivityProgressMobileField" class="font-weight-black text-h8 mb-2" :class="{'text-custom-red': isGoalActivityProgressMobileInvalidTitle && formSubmitted}">
                 {{$t("For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select 'no goals'.")}}
                 </p>
             </v-col>
@@ -118,7 +118,7 @@
 
         <v-row>
             <v-col cols="12">
-                <p class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isGoalActivityProgressInvalid && formSubmitted }">
+                <p ref="goalActivityProgressField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isGoalActivityProgressInvalid && formSubmitted }">
                 {{$t("For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select 'no goals'.")}}
                 </p>
             </v-col>
@@ -220,10 +220,28 @@
         </v-row>
     </div>
 </v-form>
+
+
+<v-btn
+      v-if="hasValidationErrors"
+      @click="scrollToErrorField"
+      color="error"
+      icon
+      class="pa-1 fixed-button"
+      elevation="4"
+      size="small"
+    >
+      <v-icon>mdi-alert-circle</v-icon>
+      <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
+    </v-btn>
+
+
 </v-container>
 </template>
 
 <script>
+import { toast } from 'vue3-toastify';
+
 export default {
     name: "ExitFormActivities",
     props: {
@@ -239,6 +257,19 @@ export default {
 
     mounted() {
         window.scrollTo(0, 0);
+    },
+
+    watch: {
+      hasValidationErrors(newValue, oldValue) {
+          if (newValue !== oldValue) {
+              this.$emit('validation-change', { isValid: !newValue });
+          }
+          if (newValue) {
+              this.jumpToErrorTooltip = true;
+          } else {
+              this.jumpToErrorTooltip = false;
+          }
+      },
     },
 
     computed: {
@@ -288,6 +319,10 @@ export default {
                 return !isAnyChecked;
             });
         },
+        hasValidationErrors() {
+            if (!this.formSubmitted) return false;
+                return this.isGoalActivityProgressMobileInvalidTitle || this.isGoalActivityProgressInvalid
+        },
     },
 
     methods: {
@@ -334,10 +369,41 @@ export default {
             );
             return isAnyChecked || this.$t('At least one checkbox must be selected for each activity.');
         },
+
+        scrollToErrorField() {
+              const errorFields = [
+                  'goalActivityProgressField'
+              ];
+  
+              for (let i = 0; i < errorFields.length; i++) {
+                  if (this.isFieldInvalid(errorFields[i])) {
+                      // Emit the actual DOM element or component reference
+                      const ref = this.$refs[errorFields[i]];
+                      const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                      this.$emit('scroll-to-error', element);
+                      break;
+                  }
+              }
+          },
+      
+          isFieldInvalid(fieldRef) {
+            console.log('isFieldInvalid: ', fieldRef);
+                switch (fieldRef) {
+                    case 'goalActivityProgressField':
+                        return this.isGoalActivityProgressInvalid;
+                    default:
+                        return false;
+                }
+            },
     },
 }
 </script>
 
-<style>
-
+<style scoped>
+.fixed-button {
+    position: fixed;
+    bottom: 20px; /* Adjust the bottom value as needed */
+    right: 20px; /* Adjust the right value as needed */
+    z-index: 1000;
+}
 </style>
