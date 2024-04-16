@@ -142,6 +142,7 @@
                         @update-selected-experience="handleSelectedExperience"
                         @update-found-document-id="foundDocumentId = $event"
                         @reset-exit-form="resetExitForm"
+                        @reset-error-flags="resetErrorFlags"
                         @update-goal-form-exists="handleGoalFormExists"
                         @update-activities-exist="handleActivitiesExist"
                     ></exit-form-exp>
@@ -149,6 +150,7 @@
                     <v-stepper-window-item value="1">
                     <exit-form-asp
                         ref="ExitFormAspRef"
+                        :key="componentsKey"
                         :exitForm="exitForm"
                         @form-valid="handleFormValid(1)"
                         :goalFormExists="goalFormExists"
@@ -160,6 +162,7 @@
                     <v-stepper-window-item value="2">
                     <exit-form-goals
                         ref="ExitFormGoalsRef"
+                        :key="componentsKey"
                         :exitForm="exitForm"
                         :existingGoals="existingGoals"
                         @form-valid="handleFormValid(2)"
@@ -171,6 +174,7 @@
                     <v-stepper-window-item value="3">
                     <exit-form-act
                         ref="ExitFormActRef"
+                        :key="componentsKey"
                         :exitForm="exitForm"
                         :existingGoals="existingGoals"
                         @form-valid="handleFormValid(3)"
@@ -182,6 +186,7 @@
                     <v-stepper-window-item value="4">
                     <exit-form-growth
                         ref="ExitFormGrowthRef"
+                        :key="componentsKey"
                         :exitForm="exitForm"
                         @form-valid="handleFormValid(4)"
                         @form-invalid="handleFormInvalid('growth')"
@@ -192,8 +197,11 @@
                     <v-stepper-window-item value="5">
                     <exit-form-review
                         ref="ExitFormReviewRef"
+                        :key="componentsKey"
                         :selectedExperience="selectedExperience"
                         :exitForm="exitForm"
+                        :goalFormExists="goalFormExists"
+                        :activitiesExist="activitiesExist"
                         @change-step="currentStep = $event"
                     ></exit-form-review>
                     </v-stepper-window-item>                    
@@ -286,7 +294,7 @@
                     <v-col cols="auto">
                         <!-- Conditional rendering for Submit Form button -->
                         <v-btn 
-                            v-if="currentStep === 5" 
+                            v-if="showSubmitButton" 
                             type="submit" 
                             @click="submitFormCleanup" 
                             class="btn"
@@ -300,7 +308,7 @@
                         </template>
                         <!-- Next button for other steps -->
                         <v-btn 
-                            v-else-if="currentStep !== 5" 
+                            v-else-if="!showSubmitButton" 
                             type="submit" 
                             @click="triggerValidation" 
                             class="btn"
@@ -336,13 +344,6 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<!-- <br><br><br><br>
-exitForm:
-<br>
-{{ exitForm }} -->
-goalFormExists: {{ goalFormExists }}
-<br><br>
-activitiesExist: {{ activitiesExist }}
 </template>
 
 <script>
@@ -789,6 +790,7 @@ data() {
         nextFunction: null,
         goalFormExists: false,
         activitiesExist: false,
+        componentsKey: 0,
     }
 },
 async created() {
@@ -819,8 +821,16 @@ computed: {
     },
 
     progressBarWidth() {
-        const stepWidth = 16.66;
+        let stepWidth = 0;
+        if (this.goalFormExists && this.activitiesExist) {
+            stepWidth = 16.66;
+        } else if (this.goalFormExists && !this.activitiesExist) {
+            stepWidth = 20;
+        } else if (!this.goalFormExists) {
+            stepWidth = 33.33;
+        }
         return `${stepWidth * (this.currentStep + 1)}%`
+
     },
 
     shouldIncludeHichProject() {
@@ -844,6 +854,23 @@ computed: {
             this.exitForm.goal5
         ].filter(goal => goal);
     },
+
+    showSubmitButton() {
+        if (this.goalFormExists && this.activitiesExist) {
+            if (this.currentStep === 5) {
+                return true;
+            }
+        } else if (this.goalFormExists && !this.activitiesExist) {
+            if (this.currentStep === 4) {
+                return true;
+            }
+        } else if (!this.goalFormExists) {
+            if (this.currentStep === 2) {
+                return true;
+            }
+        }
+        return false;
+    }
 },
 methods: {
     // async fetchLatestGoalSettingForm() {
@@ -1005,11 +1032,25 @@ methods: {
     },
 
     resetExitForm() {
-        console.log('resetExitForm originalExitForm :', this.originalExitForm);
-        console.log('resetExitForm exitForm :', this.exitForm);
         const tempExperiences = this.exitForm.experiences;
         this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
         this.exitForm.experiences = tempExperiences;
+        // Code to refresh all the child components
+        this.componentsKey++;
+        // Reset allowedStepsForJump to prevent navigation
+        this.allowedStepsForJump = [0];
+    },
+
+    // Method to fix a bug: section has errors. User fixes the errors, then goes to exitFormExp to change experience. Since exitForm is reset, the previous section that had errors should not have errors, but it does
+    resetErrorFlags() {
+        console.log('resetErrorFlags')
+        // Reset all error flags
+        this.expError = false;
+        this.aspError = false;
+        this.goalsError = false;
+        this.actError = false;
+        this.growthError = false;
+        console.log('this.growthError: ', this.growthError);
     },
     
     handleFormInvalid(section) {
@@ -1048,6 +1089,8 @@ methods: {
 
     triggerValidation() {
 
+        console.log('triggerValidation called');
+
         if (this.goalFormExists) {
             switch (this.currentStep) {
                 case 0:
@@ -1064,11 +1107,13 @@ methods: {
                     if (this.activitiesExist) {
                         this.triggerActValidation();
                     } else {
+                        console.log('triggerGrowthValidation 1');
                         this.triggerGrowthValidation();
                     }
                     break;
                 case 4:
                     if (this.activitiesExist) {
+                        console.log('triggerGrowthValidation 2');
                         this.triggerGrowthValidation();
                     }
                     break;
@@ -1079,6 +1124,7 @@ methods: {
             if (this.currentStep === 0) {
                 this.triggerExpValidation();
             } else if (this.currentStep === 1) {
+                console.log('triggerGrowthValidation 3');
                 this.triggerGrowthValidation();
             }
         } else {
@@ -1132,6 +1178,7 @@ methods: {
         }
     },
 
+    // TO EDIT: NEED TO UPDATE TO ALLOW JUMPING WHEN CONTINUING FORM.
     checkJump(step) {
         // Check if the current step is valid
         const isCurrentStepValid = this.isStepValid(this.currentStep);
@@ -1141,14 +1188,31 @@ methods: {
     },
 
     isStepValid(step) {
-        switch(step) {
-            case 0: return !this.expError;
-            case 1: return !this.aspError;
-            case 2: return !this.goalsError;
-            case 3: return !this.actError;
-            case 4: return !this.growthError;
-            default: return true;
+        if (this.goalFormExists && this.activitiesExist) {
+            switch(step) {
+                case 0: return !this.expError;
+                case 1: return !this.aspError;
+                case 2: return !this.goalsError;
+                case 3: return !this.actError;
+                case 4: return !this.growthError;
+                default: return true;
+            }
+        } else if (this.goalFormExists && !this.activitiesExist) {
+            switch(step) {
+                case 0: return !this.expError;
+                case 1: return !this.aspError;
+                case 2: return !this.goalsError;
+                case 3: return !this.growthError;
+                default: return true;
+            }
+        } else if (!this.goalFormExists) {
+            switch(step) {
+                case 0: return !this.expError;
+                case 1: return !this.growthError;
+                default: return true;
+            }
         }
+
     },
 
     handlePreviousClick() {

@@ -69,7 +69,7 @@ name: "ExitFormExperiences",
 props: {
     exitForm: Object
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags"],
 data() {
     return {
         formSubmitted: false,
@@ -265,6 +265,8 @@ methods: {
             } else {
                 this.$emit('update-activities-exist', false);
             }
+
+            this.$emit('reset-error-flags');
 
 
         } catch (error) {

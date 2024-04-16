@@ -1,4 +1,5 @@
 <template>
+  formSubmitted: {{ formSubmitted }}
 <v-container>
   <v-form 
     ref="form"
