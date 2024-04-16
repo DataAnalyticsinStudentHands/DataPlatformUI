@@ -1,4 +1,5 @@
 <template>
+    <v-btn @click="submitFormCleanup">Test Button</v-btn>
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
@@ -1237,6 +1238,626 @@ methods: {
         } else {
             // If previously filled document wasn't found, create new document
             // this.handleSubmitForm();
+            this.exitForm = {
+    "semester": "",
+    "experiences": [
+        {
+            "experienceID": "371700585066467",
+            "experienceCategory": "HICH",
+            "experienceName": "HICH - Project Head",
+            "expRegistrationID": "841713211519470"
+        },
+        {
+            "experienceID": "611713206933321",
+            "experienceCategory": "New Exp Cat",
+            "experienceName": "New Exp",
+            "expRegistrationID": "311713211519691"
+        },
+        {
+            "experienceID": "e63fedf0-4b6a-11ee-be70-57bb79342314",
+            "experienceCategory": "Minor Data & Society",
+            "experienceName": "HON 3397",
+            "expRegistrationID": "801713211519920"
+        }
+    ],
+    "goalForm": [
+        {
+            "aspiration1": "",
+            "aspiration2": "",
+            "aspiration3": "",
+            "goal1": "",
+            "goal2": "",
+            "goal3": "",
+            "goal4": "",
+            "goal5": ""
+        }
+    ],
+    "goalSettingFormID": "761713230135629",
+    "experienceActivities": [
+        {
+            "activityID": "211713206926107",
+            "activityName": "New Act"
+        }
+    ],
+    "progressMade": {
+        "aspirationOneProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this aspiration",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this aspiration",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this aspiration",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this aspiration",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "aspirationTwoProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this aspiration",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this aspiration",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this aspiration",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this aspiration",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "aspirationThreeProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this aspiration",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this aspiration",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this aspiration",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this aspiration",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "aspirationOneProgressSelected": "I made lots of progress towards this aspiration",
+        "aspirationTwoProgressSelected": "I made some progress towards this aspiration",
+        "aspirationThreeProgressSelected": "I made little progress towards this aspiration",
+        "aspirationOneExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this aspiration was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this aspiration was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this aspiration was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "aspirationTwoExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this aspiration was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this aspiration was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this aspiration was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "aspirationThreeExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this aspiration was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this aspiration was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this aspiration was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "aspirationOneExperienceConnectionSelected": "The progress I made towards this aspiration was largely due to this course",
+        "aspirationTwoExperienceConnectionSelected": "The progress I made towards this aspiration was partly due to this course",
+        "aspirationThreeExperienceConnectionSelected": "The progress I made towards this aspiration was not due to this course",
+        "goalOneProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this goal",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this goal",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this goal",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this goal",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "goalTwoProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this goal",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this goal",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this goal",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this goal",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "goalThreeProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this goal",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this goal",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this goal",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this goal",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "goalFourProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this goal",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this goal",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this goal",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this goal",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "goalFiveProgressResults": [
+            {
+                "id": 1,
+                "label": "I made lots of progress towards this goal",
+                "xs_label": "Lots of progress",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "I made some progress towards this goal",
+                "xs_label": "Some progress",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "I made little progress towards this goal",
+                "xs_label": "Little progress",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "I did not make progress towards this goal",
+                "xs_label": "No progress",
+                "checked": false
+            }
+        ],
+        "goalOneProgressSelected": "I made lots of progress towards this goal",
+        "goalTwoProgressSelected": "I made some progress towards this goal",
+        "goalThreeProgressSelected": "I made little progress towards this goal",
+        "goalFourProgressSelected": "I did not make progress towards this goal",
+        "goalFiveProgressSelected": "I made little progress towards this goal",
+        "goalOneExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this goal was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this goal was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this goal was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "goalTwoExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this goal was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this goal was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this goal was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "goalThreeExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this goal was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this goal was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this goal was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "goalFourExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this goal was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this goal was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this goal was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "goalFiveExperienceConnection": [
+            {
+                "id": 1,
+                "label": "The progress I made towards this goal was largely due to this course",
+                "xs_label": "Largely due to this course.",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "The progress I made towards this goal was partly due to this course",
+                "xs_label": "Partly due to this course.",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "The progress I made towards this goal was not due to this course",
+                "xs_label": "Not due to this course.",
+                "checked": false
+            }
+        ],
+        "goalOneExperienceConnectionSelected": "The progress I made towards this goal was largely due to this course",
+        "goalTwoExperienceConnectionSelected": "The progress I made towards this goal was partly due to this course",
+        "goalThreeExperienceConnectionSelected": "The progress I made towards this goal was not due to this course",
+        "goalFourExperienceConnectionSelected": "The progress I made towards this goal was partly due to this course",
+        "goalFiveExperienceConnectionSelected": "The progress I made towards this goal was largely due to this course"
+    },
+    "goalIssues": {
+        "goals": [
+            {
+                "id": 1,
+                "label": "Goal 1",
+                "checked": true
+            },
+            {
+                "id": 2,
+                "label": "Goal 2",
+                "checked": true
+            },
+            {
+                "id": 3,
+                "label": "Goal 3",
+                "checked": true
+            },
+            {
+                "id": 4,
+                "label": "Goal 4",
+                "checked": true
+            },
+            {
+                "id": 5,
+                "label": "Goal 5",
+                "checked": true
+            },
+            {
+                "id": 6,
+                "label": "No Goals",
+                "checked": false
+            }
+        ],
+        "issuesDescription": "asdasdasd"
+    },
+    "activitiesContribution": {
+        "goalOneContributions": [
+            "211713206926107"
+        ],
+        "goalTwoContributions": [
+            "211713206926107"
+        ],
+        "goalThreeContributions": [
+            "211713206926107"
+        ],
+        "goalFourContributions": [
+            "211713206926107"
+        ],
+        "goalFiveContributions": [
+            "211713206926107"
+        ],
+        "noContributions": []
+    },
+    "experienceContributions": "asdasdasdasd",
+    "likelihoodOf": {
+        "enrollAnotherCourse": [
+            {
+                "id": 1,
+                "label": "Extremely likely",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "Somewhat likely",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "Neutral likely/unlikely",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "Somewhat unlikely",
+                "checked": false
+            },
+            {
+                "id": 5,
+                "label": "Extremely unlikely",
+                "checked": false
+            }
+        ],
+        "completeMinor": [
+            {
+                "id": 1,
+                "label": "Extremely likely",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "Somewhat likely",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "Neutral likely/unlikely",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "Somewhat unlikely",
+                "checked": false
+            },
+            {
+                "id": 5,
+                "label": "Extremely unlikely",
+                "checked": false
+            }
+        ],
+        "recommendCourse": [
+            {
+                "id": 1,
+                "label": "Extremely likely",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "Somewhat likely",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "Neutral likely/unlikely",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "Somewhat unlikely",
+                "checked": false
+            },
+            {
+                "id": 5,
+                "label": "Extremely unlikely",
+                "checked": false
+            }
+        ],
+        "pursueCareer": [
+            {
+                "id": 1,
+                "label": "Extremely likely",
+                "checked": false
+            },
+            {
+                "id": 2,
+                "label": "Somewhat likely",
+                "checked": false
+            },
+            {
+                "id": 3,
+                "label": "Neutral likely/unlikely",
+                "checked": false
+            },
+            {
+                "id": 4,
+                "label": "Somewhat unlikely",
+                "checked": false
+            },
+            {
+                "id": 5,
+                "label": "Extremely unlikely",
+                "checked": false
+            }
+        ],
+        "enrollAnotherCourseSelected": "",
+        "completeMinorSelected": "",
+        "recommendCourseSelected": "",
+        "pursueCareerSelected": ""
+    },
+    "generalGrowth": {
+        "problemSolving": "A moderate amount of growth",
+        "effectiveCommunication": "A little growth",
+        "teamwork": "A moderate amount of growth",
+        "culturalHumility": "A lot of growth",
+        "ethicalDecisionMaking": "A little growth",
+        "professionalResponsibility": "No growth"
+    },
+    "openEnded": {
+        "biggestLessons": "asdasdasdasdsadasdasdsadasdasdsad",
+        "supportOthers": "asdasdasdasdsadasdasdsadasdasdsad",
+        "comments": "asdasdsad"
+    },
+    "aspiration1": "This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. ",
+    "aspiration2": "This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. ",
+    "aspiration3": "This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. ",
+    "goal1": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
+    "goal2": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
+    "goal3": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
+    "goal4": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
+    "goal5": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. "
+}
+            console.log('selectedExperience ', this.selectedExperience);
+            console.log('finished exitForm: ', this.exitForm);
+            this.handleSubmitForm();
         }
     },
 
@@ -1248,7 +1869,7 @@ methods: {
 
         let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
         // Find the expRegistrationID corresponding to the selected experience
-        const selectedExp = this.goalForm.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
+        const selectedExp = this.goalForm.experiences.find(exp => exp.expRegistrationID === this.selectedExperience.expRegistrationID);
 
         const expRegistrationID = selectedExp.expRegistrationID;
 
