@@ -1,4 +1,5 @@
 <template>
+    selectedExperience: {{selectedExperience}}
     <!-- isFirstInput: {{ isFirstInput }} -->
     <!-- <br><br> -->
     <!-- initialDataLoaded: {{ initialDataLoaded }} -->
@@ -52,7 +53,7 @@
             <v-stepper
                 :alt-labels="showAltLabels"
                 v-model="currentStep"
-                :mobile="$vuetify.display.sm"
+                :mobile="$vuetify.display.xs"
                 :flat="$vuetify.display.xs"
             >
                 <v-stepper-header>
@@ -968,7 +969,9 @@ methods: {
     },
 
     resetExitForm() {
+        console.log('resetExitForm');
         const tempExperiences = this.exitForm.experiences;
+        console.log('this.incompleteFormID', this.incompleteFormID);
         if (!this.incompleteFormID || !this.incompleteFormID.length) {
             this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
         }

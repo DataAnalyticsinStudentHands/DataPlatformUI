@@ -1,6 +1,4 @@
 <template>
-    {{ selectedExperience }}
-    <br>
 <v-form
     ref="form"
     @submit.prevent="handleValidations"

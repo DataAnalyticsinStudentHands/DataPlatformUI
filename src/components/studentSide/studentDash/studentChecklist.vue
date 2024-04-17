@@ -1,4 +1,9 @@
 <template>
+    registeredExperiences: {{ registeredExperiences }}
+    <br><br><br>
+    goalSettingFormCompletion: {{ goalSettingFormCompletion }}
+    <br><br><br>
+    exitFormCompletion: {{ exitFormCompletion }}
       <v-card
       class="mx-auto elevation-12"
       color="#385F73"
@@ -57,6 +62,7 @@
                 </div>
             </v-list-item>
         </v-list-group>
+
         <v-list-group value="Goal Form" v-if="registeredExperiences.length && !exitFormsReleased" :class="areAllGoalsSet ? 'light-green-bg' : 'light-red-bg'">
           <template v-slot:activator="{ props }">
               <v-list-item v-bind="props">
@@ -96,7 +102,7 @@
             </v-list-item>
        </v-list-group>
 
-       <v-list-group v-if="registeredExperiences.length && exitFormsReleased" :class="areAllExitFormsCompleted ? 'light-green-bg' : 'light-red-bg'">
+       <v-list-group v-if="registeredExperiences.length && exitFormCompletion && exitFormCompletion.length > 0" :class="areAllExitFormsCompleted ? 'light-green-bg' : 'light-red-bg'">
         <template v-slot:activator="{ props }">
             <v-list-item v-bind="props">
               <span :class="areAllExitFormsCompleted ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
