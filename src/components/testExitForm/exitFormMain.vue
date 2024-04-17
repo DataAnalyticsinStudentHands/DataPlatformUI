@@ -1,5 +1,7 @@
 <template>
-    <v-btn @click="submitFormCleanup">Test Button</v-btn>
+    isFirstInput: {{ isFirstInput }}
+    <br><br>
+    {{ exitForm }}
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
@@ -136,6 +138,8 @@
                     <exit-form-exp
                         ref="ExitFormExpRef"
                         :exitForm="exitForm"
+                        :isFirstInput="isFirstInput"
+                        :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
                         @form-valid="handleFormValid(0)"
                         @form-invalid="handleFormInvalid('exp')"
                         @scroll-to-error="handleScrollToError"
@@ -146,6 +150,8 @@
                         @reset-error-flags="resetErrorFlags"
                         @update-goal-form-exists="handleGoalFormExists"
                         @update-activities-exist="handleActivitiesExist"
+                        @update-initial-data-loaded="handleUpdateInitialDataLoaded"
+                        @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                     ></exit-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -216,13 +222,17 @@
                         <exit-form-exp
                             ref="ExitFormExpRef"
                             :exitForm="exitForm"
-                            @form-valid="handleFormValid"
+                            @form-valid="handleFormValid(0)"
                             @form-invalid="handleFormInvalid('exp')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('exp', $event)"
                             @update-selected-experience="handleSelectedExperience"
                             @update-found-document-id="foundDocumentId = $event"
                             @reset-exit-form="resetExitForm"
+                            @reset-error-flags="resetErrorFlags"
+                            @update-goal-form-exists="handleGoalFormExists"
+                            @update-activities-exist="handleActivitiesExist"
+                            @update-initial-data-loaded="handleUpdateInitialDataLoaded"
                         ></exit-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
@@ -302,11 +312,6 @@
                         >
                             {{$t('Submit Form')}}
                         </v-btn>
-                        <!-- Edit and Looks Good! buttons for step 1 when form exists -->
-                        <template v-if="currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive">
-                            <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Edit</v-btn>
-                            <v-btn type="submit" @click="triggerValidation">Looks Good!</v-btn>
-                        </template>
                         <!-- Next button for other steps -->
                         <v-btn 
                             v-else-if="!showSubmitButton" 
@@ -345,19 +350,40 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
+<!-- Incomplete Form Found Dialog -->
+<v-dialog v-model="showIncompleteFormFoundDialog" persistent max-width="500px">
+    <v-card>
+        <v-card-title class="text-h5">
+            Resume Your Progress?
+        </v-card-title>
+        <v-card-text>
+            <p>We found an incomplete Exit Form from your last session. Would you like to continue where you left off or start a new form?</p>
+        </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="startNew">
+                Start New
+            </v-btn>
+            <v-btn color="red darken-2" text @click="continueProgress">
+                Continue
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
 </template>
 
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { toast } from 'vue3-toastify';
-
 import ExitFormExp from './exitFormExp.vue';
 import ExitFormAsp from './exitFormAsp.vue';
 import ExitFormGoals from './exitFormGoals.vue';
 import ExitFormAct from './exitFormAct.vue';
 import ExitFormGrowth from './exitFormGrowth.vue';
 import ExitFormReview from './exitFormReview.vue';
+import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
 
 export default {
 name: "GoalSettingForm",
@@ -379,9 +405,7 @@ data() {
         actError: false,
         growthError: false,
         foundDocumentId: null,
-        hasCompletedGoalForm: false,
         goalSettingFormBackground: null,
-        isBackgroundEditActive: false,
         selectedExperience: null,
         hichProject: [],
         formSubmitSuccess: false,
@@ -792,11 +816,20 @@ data() {
         goalFormExists: false,
         activitiesExist: false,
         componentsKey: 0,
+        isFirstInput: true,
+        incompleteFormID: null,
+        showIncompleteFormFoundDialog: false,
+        tempIncompleteForm: {},
+        expRegistrationIDFromIncomplete: null,
+        initialDataLoaded: false,
     }
 },
 async created() {
-    // await this.fetchGoalSettingFormData();
-    // await this.fetchExperienceActivities();
+    // Initialize the debounced function
+    this.debouncedUpdateExitForm = debounce(this.updateExitForm, 1000);
+},
+async mounted() {
+    await this.checkIncompleteForm();
 },
 watch: {
     currentStep(newVal) {
@@ -810,7 +843,21 @@ watch: {
     },
     originalExitForm(newVal) {
         console.log('newVal: ', newVal);
-    }
+    },
+    exitForm: {
+        handler(newVal, oldVal) {
+            console.log('exitForm updated: ', newVal);
+            if (this.initialDataLoaded && this.isFirstInput) {
+                console.log('handle first input')
+                this.handleFirstInput();
+            } else if (this.initialDataLoaded) {
+                // Use the debounced method for subsequent updates
+                console.log('handle other inputs')
+                this.handleInput();
+            }
+        },
+        deep: true,
+    },
 },
 computed: {
     showAltLabels() {
@@ -874,31 +921,6 @@ computed: {
     }
 },
 methods: {
-    // async fetchLatestGoalSettingForm() {
-    //     const user = useLoggedInUserStore();
-    //     // let token = user.token;
-
-    //     const token = import.meta.env.VITE_TOKEN;
-
-    //     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/latest-goal-setting-form';
-
-    //     try {
-    //         const response = await axios.get(apiURL, { headers: { token } });
-
-    //         // Check if a goal setting form was found
-    //         if (response.data.formFound) {
-    //             this.hasCompletedGoalForm = true;
-    //             this.goalSettingFormBackground = response.data.goalSettingFormBackground;
-    //             this.updateGoalFormWithBackgroundData();
-    //         } else {
-    //             this.hasCompletedGoalForm = false;
-    //             this.goalSettingFormBackground = null;
-    //         }
-    //     } catch (error) {
-    //         this.handleError(error);
-    //     }
-    // },
-
     updateGoalFormWithBackgroundData() {
         if (this.goalSettingFormBackground && this.goalSettingFormBackground.goalForm) {
             const { communityEngagement, researchExperience } = this.goalSettingFormBackground.goalForm;
@@ -930,111 +952,15 @@ methods: {
         }
     },
 
-    async fetchGoalSettingFormData() {
-        console.log('fetchGoalSettingFormData')
-          const user = useLoggedInUserStore();
-          // const token = user.token;
-
-          const token = import.meta.env.VITE_TOKEN;
-
-          const experienceID = this.$route.params.id; // Use experienceID from route params
-
-        //   const expRegistrationID = "851707301679949"
-
-          const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-form/${expRegistrationID}`;
-
-          axios.get(apiURL, { headers: { token } })
-          .then((resp) => {
-              this.goalFormExists = resp.data.goalFormExists;
-
-              if (this.goalFormExists) {
-                const goalFormData = resp.data.goalForm;
-
-                // Set the goal setting form ID
-                this.exitForm.goalSettingFormID = resp.data._id;
-
-                // Update aspirations
-                this.exitForm.aspiration1 = goalFormData.aspirations?.aspirationOne;
-                this.exitForm.aspiration2 = goalFormData.aspirations?.aspirationTwo;
-                this.exitForm.aspiration3 = goalFormData.aspirations?.aspirationThree;
-                // Update goals
-                this.exitForm.goal1 = goalFormData.goals?.goalOne;
-                this.exitForm.goal2 = goalFormData.goals?.goalTwo;
-                this.exitForm.goal3 = goalFormData.goals?.goalThree;
-                this.exitForm.goal4 = goalFormData.goals?.goalFour;
-                this.exitForm.goal5 = goalFormData.goals?.goalFive;
-                // DELETE ME
-                // this.exitForm.goal1 = "I want to obtain comprehensive knowledge of community health, including social determinants of health, health disparities, and the importance of cultural competency."
-                // this.exitForm.goal2 = "I want to develop practical skills essential for the role of a CHW, such as learning how to effectively communicate with diverse populations and navigating healthcare systems.";
-                // this.exitForm.goal3 = "I want to enhance my employment opportunities in the public/community health field and learn about specific roles in the career.";
-                // this.exitForm.goal4 = "I want to build a network in public health by connecting with peers, instructors, and community leaders to obtain valuable insights and opportunities for mentorship and collaboration.";
-                // this.exitForm.goal5 = "I want to contribute to community empowerment and health equity to fulfill my passion for making a difference in my community and helping others.";
-              }
-          })
-          .catch((error) => {
-              this.handleError(error);
-          });
-      },
-
-      async fetchExperienceActivities() {
-            // const experienceID = this.$route.params.id;
-            const token = import.meta.env.VITE_TOKEN;
-            const experienceID = "1c2ac6b0-6911-11ee-acdd-43267c0573ee"
-            const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/experience/${experienceID}/activities`;
-
-            axios.get(apiURL, { headers: { token } })
-            .then((resp) => {
-                // Update experience activities
-                // DELETE ME
-                this.exitForm.experienceActivities = 
-                [
-                    {
-                        "activityID": "061701356800973",
-                        "activityName": "Motivational Interviewing Role Play"
-                    },
-                    {
-                        "activityID": "501701357349009",
-                        "activityName": "Reading/Topic - Mapping/Needs Assessment/Grants"
-                    },
-                    {
-                        "activityID": "511701356844338",
-                        "activityName": "Reading/Topic - Maternal Health/Purple Crying"
-                    },
-                    {
-                        "activityID": "561701357366365",
-                        "activityName": "Reading/Topic - Cultural competency/cultural humility/implicit bias"
-                    },
-                    {
-                        "activityID": "681701357396485",
-                        "activityName": "Reading/Topic - Physical activity/mental health"
-                    },
-                    {
-                        "activityID": "861701356689564",
-                        "activityName": "Community Health Project"
-                    },
-                ]
-                // this.exitForm.experienceActivities = resp.data.map((activity) => ({
-                //     activityID: activity._id,
-                //     activityName: activity.activityName
-                // }));
-            })
-            .catch((error) => {
-                this.handleError(error);
-            });
-        },
-
-    handleBackgroundEditClick() {
-        this.isBackgroundEditActive = true;
-    },
-
-
     handleFormValid() {
         this.currentStep++;
     },
 
     resetExitForm() {
         const tempExperiences = this.exitForm.experiences;
-        this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+        if (!this.incompleteFormID || !this.incompleteFormID.length) {
+            this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+        }
         this.exitForm.experiences = tempExperiences;
         // Code to refresh all the child components
         this.componentsKey++;
@@ -1237,710 +1163,34 @@ methods: {
             // this.handleUpdateForm();
         } else {
             // If previously filled document wasn't found, create new document
-            // this.handleSubmitForm();
-            this.exitForm = {
-    "semester": "",
-    "experiences": [
-        {
-            "experienceID": "371700585066467",
-            "experienceCategory": "HICH",
-            "experienceName": "HICH - Project Head",
-            "expRegistrationID": "841713211519470"
-        },
-        {
-            "experienceID": "611713206933321",
-            "experienceCategory": "New Exp Cat",
-            "experienceName": "New Exp",
-            "expRegistrationID": "311713211519691"
-        },
-        {
-            "experienceID": "e63fedf0-4b6a-11ee-be70-57bb79342314",
-            "experienceCategory": "Minor Data & Society",
-            "experienceName": "HON 3397",
-            "expRegistrationID": "801713211519920"
-        }
-    ],
-    "goalForm": [
-        {
-            "aspiration1": "",
-            "aspiration2": "",
-            "aspiration3": "",
-            "goal1": "",
-            "goal2": "",
-            "goal3": "",
-            "goal4": "",
-            "goal5": ""
-        }
-    ],
-    "goalSettingFormID": "761713230135629",
-    "experienceActivities": [
-        {
-            "activityID": "211713206926107",
-            "activityName": "New Act"
-        }
-    ],
-    "progressMade": {
-        "aspirationOneProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this aspiration",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this aspiration",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this aspiration",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this aspiration",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "aspirationTwoProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this aspiration",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this aspiration",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this aspiration",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this aspiration",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "aspirationThreeProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this aspiration",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this aspiration",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this aspiration",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this aspiration",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "aspirationOneProgressSelected": "I made lots of progress towards this aspiration",
-        "aspirationTwoProgressSelected": "I made some progress towards this aspiration",
-        "aspirationThreeProgressSelected": "I made little progress towards this aspiration",
-        "aspirationOneExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this aspiration was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this aspiration was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this aspiration was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "aspirationTwoExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this aspiration was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this aspiration was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this aspiration was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "aspirationThreeExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this aspiration was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this aspiration was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this aspiration was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "aspirationOneExperienceConnectionSelected": "The progress I made towards this aspiration was largely due to this course",
-        "aspirationTwoExperienceConnectionSelected": "The progress I made towards this aspiration was partly due to this course",
-        "aspirationThreeExperienceConnectionSelected": "The progress I made towards this aspiration was not due to this course",
-        "goalOneProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this goal",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this goal",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this goal",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this goal",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "goalTwoProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this goal",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this goal",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this goal",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this goal",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "goalThreeProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this goal",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this goal",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this goal",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this goal",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "goalFourProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this goal",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this goal",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this goal",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this goal",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "goalFiveProgressResults": [
-            {
-                "id": 1,
-                "label": "I made lots of progress towards this goal",
-                "xs_label": "Lots of progress",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "I made some progress towards this goal",
-                "xs_label": "Some progress",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "I made little progress towards this goal",
-                "xs_label": "Little progress",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "I did not make progress towards this goal",
-                "xs_label": "No progress",
-                "checked": false
-            }
-        ],
-        "goalOneProgressSelected": "I made lots of progress towards this goal",
-        "goalTwoProgressSelected": "I made some progress towards this goal",
-        "goalThreeProgressSelected": "I made little progress towards this goal",
-        "goalFourProgressSelected": "I did not make progress towards this goal",
-        "goalFiveProgressSelected": "I made little progress towards this goal",
-        "goalOneExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this goal was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this goal was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this goal was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "goalTwoExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this goal was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this goal was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this goal was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "goalThreeExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this goal was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this goal was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this goal was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "goalFourExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this goal was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this goal was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this goal was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "goalFiveExperienceConnection": [
-            {
-                "id": 1,
-                "label": "The progress I made towards this goal was largely due to this course",
-                "xs_label": "Largely due to this course.",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "The progress I made towards this goal was partly due to this course",
-                "xs_label": "Partly due to this course.",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "The progress I made towards this goal was not due to this course",
-                "xs_label": "Not due to this course.",
-                "checked": false
-            }
-        ],
-        "goalOneExperienceConnectionSelected": "The progress I made towards this goal was largely due to this course",
-        "goalTwoExperienceConnectionSelected": "The progress I made towards this goal was partly due to this course",
-        "goalThreeExperienceConnectionSelected": "The progress I made towards this goal was not due to this course",
-        "goalFourExperienceConnectionSelected": "The progress I made towards this goal was partly due to this course",
-        "goalFiveExperienceConnectionSelected": "The progress I made towards this goal was largely due to this course"
-    },
-    "goalIssues": {
-        "goals": [
-            {
-                "id": 1,
-                "label": "Goal 1",
-                "checked": true
-            },
-            {
-                "id": 2,
-                "label": "Goal 2",
-                "checked": true
-            },
-            {
-                "id": 3,
-                "label": "Goal 3",
-                "checked": true
-            },
-            {
-                "id": 4,
-                "label": "Goal 4",
-                "checked": true
-            },
-            {
-                "id": 5,
-                "label": "Goal 5",
-                "checked": true
-            },
-            {
-                "id": 6,
-                "label": "No Goals",
-                "checked": false
-            }
-        ],
-        "issuesDescription": "asdasdasd"
-    },
-    "activitiesContribution": {
-        "goalOneContributions": [
-            "211713206926107"
-        ],
-        "goalTwoContributions": [
-            "211713206926107"
-        ],
-        "goalThreeContributions": [
-            "211713206926107"
-        ],
-        "goalFourContributions": [
-            "211713206926107"
-        ],
-        "goalFiveContributions": [
-            "211713206926107"
-        ],
-        "noContributions": []
-    },
-    "experienceContributions": "asdasdasdasd",
-    "likelihoodOf": {
-        "enrollAnotherCourse": [
-            {
-                "id": 1,
-                "label": "Extremely likely",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "Somewhat likely",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "Neutral likely/unlikely",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "Somewhat unlikely",
-                "checked": false
-            },
-            {
-                "id": 5,
-                "label": "Extremely unlikely",
-                "checked": false
-            }
-        ],
-        "completeMinor": [
-            {
-                "id": 1,
-                "label": "Extremely likely",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "Somewhat likely",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "Neutral likely/unlikely",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "Somewhat unlikely",
-                "checked": false
-            },
-            {
-                "id": 5,
-                "label": "Extremely unlikely",
-                "checked": false
-            }
-        ],
-        "recommendCourse": [
-            {
-                "id": 1,
-                "label": "Extremely likely",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "Somewhat likely",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "Neutral likely/unlikely",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "Somewhat unlikely",
-                "checked": false
-            },
-            {
-                "id": 5,
-                "label": "Extremely unlikely",
-                "checked": false
-            }
-        ],
-        "pursueCareer": [
-            {
-                "id": 1,
-                "label": "Extremely likely",
-                "checked": false
-            },
-            {
-                "id": 2,
-                "label": "Somewhat likely",
-                "checked": false
-            },
-            {
-                "id": 3,
-                "label": "Neutral likely/unlikely",
-                "checked": false
-            },
-            {
-                "id": 4,
-                "label": "Somewhat unlikely",
-                "checked": false
-            },
-            {
-                "id": 5,
-                "label": "Extremely unlikely",
-                "checked": false
-            }
-        ],
-        "enrollAnotherCourseSelected": "",
-        "completeMinorSelected": "",
-        "recommendCourseSelected": "",
-        "pursueCareerSelected": ""
-    },
-    "generalGrowth": {
-        "problemSolving": "A moderate amount of growth",
-        "effectiveCommunication": "A little growth",
-        "teamwork": "A moderate amount of growth",
-        "culturalHumility": "A lot of growth",
-        "ethicalDecisionMaking": "A little growth",
-        "professionalResponsibility": "No growth"
-    },
-    "openEnded": {
-        "biggestLessons": "asdasdasdasdsadasdasdsadasdasdsad",
-        "supportOthers": "asdasdasdasdsadasdasdsadasdasdsad",
-        "comments": "asdasdsad"
-    },
-    "aspiration1": "This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. ",
-    "aspiration2": "This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. ",
-    "aspiration3": "This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. This is a really long aspiration. ",
-    "goal1": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
-    "goal2": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
-    "goal3": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
-    "goal4": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. ",
-    "goal5": "This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. This is a really long goal. "
-}
             console.log('selectedExperience ', this.selectedExperience);
             console.log('finished exitForm: ', this.exitForm);
             this.handleSubmitForm();
         }
     },
 
-    handleSubmitForm() {
-        const user = useLoggedInUserStore();
-        // const token = user.token;
-
-        const token = import.meta.env.VITE_TOKEN;
-
-        let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
-        // Find the expRegistrationID corresponding to the selected experience
-        const selectedExp = this.goalForm.experiences.find(exp => exp.expRegistrationID === this.selectedExperience.expRegistrationID);
-
-        const expRegistrationID = selectedExp.expRegistrationID;
-
-        const goalFormSubmission = {
-            expRegistrationID,
-            experienceID: this.selectedExperience.value,
-            goalForm: {
-                communityEngagement: {
-                    communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
-                    communityEngagementExperiencesOther: this.goalForm.communityEngagement.communityEngagementExperiencesOther,
-                    previousEngagementExperiences: this.goalForm.communityEngagement.previousEngagementExperiences,
-                    previousEngagementExperiencesOther: this.goalForm.communityEngagement.previousEngagementExperiencesOther,
-                    engagementActivitiesTools: this.goalForm.communityEngagement.engagementActivitiesTools,
-                    engagementActivitiesToolOther: this.goalForm.communityEngagement.engagementActivitiesToolOther,
-                },
-                researchExperience: {
-                    currentResearchExperience: this.goalForm.researchExperience.currentResearchExperience,
-                    currentResearchExperienceOther: this.goalForm.researchExperience.currentResearchExperienceOther,
-                    previousResearchExperience: this.goalForm.researchExperience.previousResearchExperience,
-                    previousResearchExperienceOther: this.goalForm.researchExperience.previousResearchExperienceOther,
-                    familiarTools: this.goalForm.researchExperience.familiarTools,
-                    familiarToolOther: this.goalForm.researchExperience.familiarToolOther,
-                    interestResearchService: this.goalForm.researchExperience.interestResearchService,
-                    interestResearchServiceOther: this.goalForm.researchExperience.interestResearchServiceOther,
-                    leadershipOption: this.goalForm.researchExperience.leadershipOption,
-                },
-                growthGoal: {
-                    problemSolvingGoal: this.goalForm.growthGoal.problemSolvingGoal,
-                    effectiveCommunicationGoal: this.goalForm.growthGoal.effectiveCommunicationGoal,
-                    teamworkGoal: this.goalForm.growthGoal.teamworkGoal,
-                    culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
-                    ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
-                    professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
-                },
-                aspirations: {
-                    aspirationOne: this.goalForm.aspirations.aspirationOne,
-                    aspirationTwo: this.goalForm.aspirations.aspirationTwo,
-                    aspirationThree: this.goalForm.aspirations.aspirationThree,
-                },
-                goals: {
-                    goalOne: this.goalForm.goals.goalOne,
-                    goalTwo: this.goalForm.goals.goalTwo,
-                    goalThree: this.goalForm.goals.goalThree,
-                    goalFour: this.goalForm.goals.goalFour,
-                    goalFive: this.goalForm.goals.goalFive,
-                },
-            },
-        }
-        // Conditionally add hichProject if it should be included
-        if (this.shouldIncludeHichProject) {
-            goalFormSubmission.hichProject = this.hichProject;
-        }
-
-        axios
-        .post(apiURL, goalFormSubmission, { headers: { token } })
-        .then(() => {
+    async handleSubmitForm() {
+        try {
+            const user = useLoggedInUserStore();
+            // const token = user.token;
+            const token = import.meta.env.VITE_TOKEN;
+            const userID = user.userId;
+            const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
+            await axios.patch(apiURL, { completed: true, userID: userID,  }, { headers: { token }});
             this.formSubmitSuccess = true;
             const motivatingMessages = [
-            "Goals successfully set! You're on the right track!",
-            "Great job setting your goals! Let's make them happen!",
-            "Goals locked in! Believe in yourself and you'll achieve them.",
-            "You've set your goals! Now, let's conquer them together!",
-            "Your goals are set! Keep pushing forward and you'll achieve them.",
-            "Way to go! Every goal you set brings you one step closer to success.",
+                "Well done on completing your journey! Reflect on your growth and get ready for what's next!",
+                "Congratulations on wrapping up! You've put in the work and made real progress towards your aspirations.",
+                "You've completed your Exit Form! Take a moment to appreciate how far you've come and the goals you've reached.",
+                "Exit completed! Your dedication to your goals has truly paid off. Onward to new achievements!",
+                "Fantastic job on your Exit Form! Your journey shows just how much you can accomplish with focus and persistence.",
+                "You've crossed the finish line for this experience! Your efforts in reaching your goals are truly inspiring."
             ];
             const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
 
             // Update pinia store
             this.updateChecklistStore();
 
-        
             this.$router.push({ 
                 name: 'studentDashboard',
                 params: {
@@ -1950,10 +1200,10 @@ methods: {
                     toastCSS: 'Toastify__toast--create'
                 }
             });
-        })
-        .catch((error) => {
+
+        } catch (error) {
             this.handleError(error);
-        });
+        }
     },
 
     async updateChecklistStore() {
@@ -1962,46 +1212,7 @@ methods: {
     },
 
     async handleUpdateForm() {   
-        const user = useLoggedInUserStore();
-        // let token = user.token;
-
-        const token = import.meta.env.VITE_TOKEN;
-
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
-
-        let updatedGoalForm = {
-            goalForm: this.goalForm,
-            // Conditionally add hichProject if it should be included
-            ...(this.shouldIncludeHichProject && { hichProject: this.hichProject })
-        };
-
-        axios.put(apiURL, updatedGoalForm, { headers: { token } })
-            .then(() => {
-                const motivatingMessages = [
-                    "Goals updated successfully! Keep pushing forward!",
-                    "Great job updating your goals! Let's continue on this journey together!",
-                    "Goals refreshed! Remember, every step counts towards achieving them.",
-                    "You've adjusted your goals! Stay focused and you'll achieve them in no time.",
-                    "Way to keep refining your vision! Remember, it's the journey that counts.",
-                ];
-                const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
-                
-                // Update pinia store
-                this.updateChecklistStore();
-
-                this.$router.push({ 
-                        name: 'studentDashboard',
-                        params: {
-                        toastType: 'info',
-                        toastMessage: randomMessage,
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--update'
-                    }
-                    });
-            })
-            .catch((error) => {
-                this.handleError(error);
-            });
+        console.log('handle update form')
     },
 
     deepClone(obj) {
@@ -2034,9 +1245,297 @@ methods: {
 
     handleAllowedStepsForJump() {
         this.allowedStepsForJump = [0];
+    },
+
+    handleUpdateInitialDataLoaded() {
+        this.isFirstInput = true;
+        this.initialDataLoaded = true;
+    },
+
+    async handleFirstInput() {
+        console.log('handleFirstInput called');
+        if (this.isFirstInput) {
+            this.isFirstInput = false;
+
+            try {
+                const user = useLoggedInUserStore();
+                // const token = user.token;
+                const token = import.meta.env.VITE_TOKEN;
+                let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exit-forms";
+                const exitFormData = {
+                    expRegistrationID: this.selectedExperience.expRegistrationID,
+                    exitForm: {
+                    progressMade: {
+                        aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
+                        aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected || "No aspiration",
+                        aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
+                        aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
+                        aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
+                        aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
+                        goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected || "No goal",
+                        goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected || "No goal",
+                        goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected || "No goal",
+                        goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
+                        goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
+                        goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
+                        goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
+                        goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
+                        goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
+                        goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
+                    },
+                    goalIssues: {
+                        goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
+                        issuesDescription: this.exitForm.goalIssues.issuesDescription
+                    },
+                    activitiesContribution: {
+                        goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
+                        goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
+                        goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
+                        goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
+                        goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
+                        noContributions:this.exitForm.activitiesContribution.noContributions,
+                    },
+                    experienceContributions: this.exitForm.experienceContributions,
+                    likelihoodOf: {
+                        enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected,
+                        completeMinor: this.exitForm.likelihoodOf.completeMinorSelected,
+                        recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected,
+                        pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected,
+                    },
+                    generalGrowth: {
+                        problemSolving: this.exitForm.generalGrowth.problemSolving,
+                        effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
+                        teamwork: this.exitForm.generalGrowth.teamwork,
+                        culturalHumility: this.exitForm.generalGrowth.culturalHumility,
+                        ethicalDecisionMaking: this.exitForm.generalGrowth.ethicalDecisionMaking,
+                        professionalResponsibility: this.exitForm.generalGrowth.professionalResponsibility
+                    },
+                    openEnded: {
+                        biggestLessons: this.exitForm.openEnded.biggestLessons,
+                        supportOthers: this.exitForm.openEnded.supportOthers,
+                        comments: this.exitForm.openEnded.comments
+                    }
+                    }
+                };
+
+                try {
+                    const response = await axios.post(apiURL, exitFormData, {
+                        headers: { token }
+                    });
+                    this.incompleteFormID = response.data.exitForm._id;
+                    console.log('incompleteFormID: ', this.incompleteFormID);
+                } catch (error) {
+                    this.handleError(error);
+                }
+            } catch (error) {
+                    this.handleError(error);
+            }
+        }
+    },
+
+    handleInput() {
+        this.debouncedUpdateExitForm();
+    },
+
+    async checkIncompleteForm() {
+        const user = useLoggedInUserStore();
+        // const token = user.token;
+        const token = import.meta.env.VITE_TOKEN;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-form-incomplete/`;
+        try {
+            const response = await axios.get(apiURL, { headers: { token } });
+            if (response.data.incompleteForm) {
+                this.tempIncompleteForm = response.data;
+                this.showIncompleteFormFoundDialog = true;
+            }
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    async startNew() {
+        const user = useLoggedInUserStore();
+        // const token = user.token;
+        const token = import.meta.env.VITE_TOKEN;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.tempIncompleteForm.incompleteForm._id}`;
+
+        try {
+            await axios.delete(apiURL, { headers: { token } });
+            this.tempIncompleteForm = {};
+            this.showIncompleteFormFoundDialog = false;
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    continueProgress() {
+        this.isFirstInput = true;
+        const tempExperiences = this.exitForm.experiences;
+        this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+        this.exitForm.experiences = tempExperiences;
+        const existingExitForm = this.tempIncompleteForm.incompleteForm.exitForm;
+
+        console.log('existingExitForm: ', existingExitForm);
+
+        // Transforming progressMade data
+        console.log('existingExitForm.progressMade.aspirationOneProgressResults: ', existingExitForm.progressMade.aspirationOneProgressResults);
+        this.exitForm.progressMade.aspirationOneProgressSelected = existingExitForm.progressMade.aspirationOneProgressResults;
+        console.log('this.exitForm.progressMade.aspirationOneProgressSelected: ', this.exitForm.progressMade.aspirationOneProgressSelected);
+        this.exitForm.progressMade.aspirationTwoProgressSelected = existingExitForm.progressMade.aspirationTwoProgressResults;
+        this.exitForm.progressMade.aspirationThreeProgressSelected = existingExitForm.progressMade.aspirationThreeProgressResults;
+
+        // Handle aspiration progress and experience connections
+        const aspirations = ['aspirationOne', 'aspirationTwo', 'aspirationThree'];
+        aspirations.forEach(aspiration => {
+            // Set the selected progress
+            const selectedProgress = existingExitForm.progressMade[aspiration + 'ProgressResults'];
+            this.exitForm.progressMade[aspiration + 'ProgressSelected'] = selectedProgress;
+            this.exitForm.progressMade[aspiration + 'ProgressResults'] = this.exitForm.progressMade[aspiration + 'ProgressResults'].map(option => ({
+                ...option,
+                checked: option.label === selectedProgress
+            }));
+
+            // Set the selected experience connection
+            const selectedConnection = existingExitForm.progressMade[aspiration + 'ExperienceConnection'];
+            this.exitForm.progressMade[aspiration + 'ExperienceConnectionSelected'] = selectedConnection;
+            this.exitForm.progressMade[aspiration + 'ExperienceConnection'] = this.exitForm.progressMade[aspiration + 'ExperienceConnection'].map(option => ({
+                ...option,
+                checked: option.label === selectedConnection
+            }));
+        });
+
+        this.exitForm.progressMade.aspirationOneExperienceConnectionSelected = existingExitForm.progressMade.aspirationOneExperienceConnection;
+        this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected = existingExitForm.progressMade.aspirationTwoExperienceConnection;
+        this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected = existingExitForm.progressMade.aspirationThreeExperienceConnection;
+
+        this.exitForm.progressMade.goalOneProgressSelected = existingExitForm.progressMade.goalOneProgressResults;
+        this.exitForm.progressMade.goalTwoProgressSelected = existingExitForm.progressMade.goalTwoProgressResults;
+        this.exitForm.progressMade.goalThreeProgressSelected = existingExitForm.progressMade.goalThreeProgressResults;
+        this.exitForm.progressMade.goalFourProgressSelected = existingExitForm.progressMade.goalFourProgressResults;
+        this.exitForm.progressMade.goalFiveProgressSelected = existingExitForm.progressMade.goalFiveProgressResults;
+
+        this.exitForm.progressMade.goalOneExperienceConnectionSelected = existingExitForm.progressMade.goalOneExperienceConnection;
+        this.exitForm.progressMade.goalTwoExperienceConnectionSelected = existingExitForm.progressMade.goalTwoExperienceConnection;
+        this.exitForm.progressMade.goalThreeExperienceConnectionSelected = existingExitForm.progressMade.goalThreeExperienceConnection;
+        this.exitForm.progressMade.goalFourExperienceConnectionSelected = existingExitForm.progressMade.goalFourExperienceConnection;
+        this.exitForm.progressMade.goalFiveExperienceConnectionSelected = existingExitForm.progressMade.goalFiveExperienceConnection;
+
+        // Transforming goalIssues data
+        const dbGoals = existingExitForm.goalIssues.goals;
+        this.exitForm.goalIssues.goals = this.exitForm.goalIssues.goals.map(goal => ({
+            ...goal,
+            checked: dbGoals.includes(goal.label)  // Check if the goal label is included in the dbGoals array
+        }));
+        this.exitForm.goalIssues.issuesDescription = existingExitForm.goalIssues.issuesDescription;
+
+
+        // Activities Contribution
+        this.exitForm.activitiesContribution = existingExitForm.activitiesContribution;
+
+        // Experience Contribution
+        this.exitForm.experienceContributions = existingExitForm.experienceContributions;
+
+        // Likelihood Of
+        const likelihoodCategories = ['enrollAnotherCourse', 'completeMinor', 'recommendCourse', 'pursueCareer'];
+        likelihoodCategories.forEach(category => {
+            // Assign the selected value from the database to the 'Selected' property in the Vue model
+            this.exitForm.likelihoodOf[category + 'Selected'] = existingExitForm.likelihoodOf[category + 'Selected'];
+
+            // Map each option, checking if it matches the selected value
+            this.exitForm.likelihoodOf[category] = this.exitForm.likelihoodOf[category].map(option => ({
+                ...option,
+                checked: option.label === this.exitForm.likelihoodOf[category + 'Selected']
+            }));
+        });
+
+        // General Growth
+        this.exitForm.generalGrowth = existingExitForm.generalGrowth;
+
+        // Open Ended
+        this.exitForm.openEnded = existingExitForm.openEnded;
+
+        this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID
+
+        this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
+        this.showIncompleteFormFoundDialog = false;
+        console.log('exit form at end: ', this.exitForm);
+    },
+
+    updateExitForm() {
+        const user = useLoggedInUserStore();
+        // const token = user.token;
+        const token = import.meta.env.VITE_TOKEN;
+        const userID = user.userId;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
+
+        const exitFormData = {
+            expRegistrationID: this.selectedExperience.expRegistrationID,
+            exitForm: {
+            progressMade: {
+                aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
+                aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected || "No aspiration",
+                aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
+                aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
+                aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
+                aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
+                goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected || "No goal",
+                goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected || "No goal",
+                goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected || "No goal",
+                goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
+                goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
+                goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
+                goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
+                goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
+                goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
+                goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
+            },
+            goalIssues: {
+                goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
+                issuesDescription: this.exitForm.goalIssues.issuesDescription
+            },
+            activitiesContribution: {
+                goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
+                goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
+                goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
+                goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
+                goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
+                noContributions:this.exitForm.activitiesContribution.noContributions,
+            },
+            experienceContributions: this.exitForm.experienceContributions,
+            likelihoodOf: {
+                enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected,
+                completeMinor: this.exitForm.likelihoodOf.completeMinorSelected,
+                recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected,
+                pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected,
+            },
+            generalGrowth: {
+                problemSolving: this.exitForm.generalGrowth.problemSolving,
+                effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
+                teamwork: this.exitForm.generalGrowth.teamwork,
+                culturalHumility: this.exitForm.generalGrowth.culturalHumility,
+                ethicalDecisionMaking: this.exitForm.generalGrowth.ethicalDecisionMaking,
+                professionalResponsibility: this.exitForm.generalGrowth.professionalResponsibility
+            },
+            openEnded: {
+                biggestLessons: this.exitForm.openEnded.biggestLessons,
+                supportOthers: this.exitForm.openEnded.supportOthers,
+                comments: this.exitForm.openEnded.comments
+            }
+            }
+        };
+
+        axios.patch(apiURL, exitFormData, { headers: { token }})
+            .then(response => {
+            })
+            .catch(error => {
+                this.handleError(error);
+            });
+    },
+
+    handleUpdateIncompleteExpRegistration() {
+        // Set this to null so that the app start a new form when user selects a new experiences
+        this.expRegistrationIDFromIncomplete = null;
     }
-
-
 },
 
 beforeRouteLeave(to, from, next) {

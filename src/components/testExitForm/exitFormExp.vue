@@ -1,4 +1,6 @@
 <template>
+    {{ selectedExperience }}
+    <br>
 <v-form
     ref="form"
     @submit.prevent="handleValidations"
@@ -67,9 +69,11 @@ import axios from "axios";
 export default {
 name: "ExitFormExperiences",
 props: {
-    exitForm: Object
+    exitForm: Object,
+    isFirstInput: Boolean,
+    expRegistrationIDFromIncomplete: String
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-initial-data-loaded", "update-incomplete-exp-registration"],
 data() {
     return {
         formSubmitted: false,
@@ -128,6 +132,14 @@ watch: {
         }
     },
 
+    expRegistrationIDFromIncomplete(newVal) {
+        console.log('expRegistrationIDFromIncomplete newVal: ', newVal);
+        if (newVal) {
+            const matchedExperience = this.exitForm.experiences.find(experience => experience.expRegistrationID === newVal);
+            this.selectedExperience = matchedExperience ? matchedExperience.experienceID : null;
+        }
+    },
+
 },
 computed: {
     isExperienceIDInvalid() {
@@ -150,6 +162,7 @@ computed: {
 },
 methods: {
     async fetchExperiences() {
+        console.log('fetchExperiences called');
       const user = useLoggedInUserStore();
       // let token = user.token;
       
@@ -196,6 +209,7 @@ methods: {
     // },
 
     async checkExistingForm() {
+        console.log('checkExistingForm called:');
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
@@ -272,7 +286,12 @@ methods: {
         } catch (error) {
             this.handleError("An unexpected error occurred while checking for existing form:", error);
         } finally {
-            this.isLoadingExpCheck = false; 
+            this.isLoadingExpCheck = false;
+            if (!this.expRegistrationIDFromIncomplete || !this.expRegistrationIDFromIncomplete.length) {
+                this.$emit("update-initial-data-loaded");
+            } else {
+                this.$emit("update-incomplete-exp-registration");
+            }
         }
     },
 
