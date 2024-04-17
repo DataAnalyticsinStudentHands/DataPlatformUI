@@ -1,7 +1,8 @@
 <template>
     isFirstInput: {{ isFirstInput }}
     <br><br>
-    {{ exitForm }}
+    initialDataLoaded: {{ initialDataLoaded }}
+    <!-- {{ exitForm }} -->
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
@@ -1262,8 +1263,12 @@ methods: {
                 // const token = user.token;
                 const token = import.meta.env.VITE_TOKEN;
                 let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exit-forms";
+
+                // Set 'expRegistrationID' from 'selectedExperience' if it exists, otherwise from 'tempIncompleteForm'
+                const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+
                 const exitFormData = {
-                    expRegistrationID: this.selectedExperience.expRegistrationID,
+                    expRegistrationID: expRegistrationID,
                     exitForm: {
                     progressMade: {
                         aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
@@ -1297,10 +1302,10 @@ methods: {
                     },
                     experienceContributions: this.exitForm.experienceContributions,
                     likelihoodOf: {
-                        enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected,
-                        completeMinor: this.exitForm.likelihoodOf.completeMinorSelected,
-                        recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected,
-                        pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected,
+                        enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected || "",
+                        completeMinor: this.exitForm.likelihoodOf.completeMinorSelected || "",
+                        recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected || "",
+                        pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected || "",
                     },
                     generalGrowth: {
                         problemSolving: this.exitForm.generalGrowth.problemSolving,
@@ -1369,7 +1374,7 @@ methods: {
     },
 
     continueProgress() {
-        this.isFirstInput = true;
+        this.isFirstInput = false;
         const tempExperiences = this.exitForm.experiences;
         this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
         this.exitForm.experiences = tempExperiences;
@@ -1468,8 +1473,11 @@ methods: {
         const userID = user.userId;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
 
+        // Set 'expRegistrationID' from 'selectedExperience' if it exists, otherwise from 'tempIncompleteForm'
+        const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+
         const exitFormData = {
-            expRegistrationID: this.selectedExperience.expRegistrationID,
+            expRegistrationID: expRegistrationID,
             exitForm: {
             progressMade: {
                 aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
@@ -1503,10 +1511,10 @@ methods: {
             },
             experienceContributions: this.exitForm.experienceContributions,
             likelihoodOf: {
-                enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected,
-                completeMinor: this.exitForm.likelihoodOf.completeMinorSelected,
-                recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected,
-                pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected,
+                enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected || "",
+                completeMinor: this.exitForm.likelihoodOf.completeMinorSelected || "",
+                recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected || "",
+                pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected || "",
             },
             generalGrowth: {
                 problemSolving: this.exitForm.generalGrowth.problemSolving,

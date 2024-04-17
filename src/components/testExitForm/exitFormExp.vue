@@ -287,9 +287,8 @@ methods: {
             this.handleError("An unexpected error occurred while checking for existing form:", error);
         } finally {
             this.isLoadingExpCheck = false;
-            if (!this.expRegistrationIDFromIncomplete || !this.expRegistrationIDFromIncomplete.length) {
-                this.$emit("update-initial-data-loaded");
-            } else {
+            this.$emit("update-initial-data-loaded");
+            if (this.expRegistrationIDFromIncomplete && this.expRegistrationIDFromIncomplete.length) {
                 this.$emit("update-incomplete-exp-registration");
             }
         }
