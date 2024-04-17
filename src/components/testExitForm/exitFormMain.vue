@@ -1,7 +1,7 @@
 <template>
-    isFirstInput: {{ isFirstInput }}
-    <br><br>
-    initialDataLoaded: {{ initialDataLoaded }}
+    <!-- isFirstInput: {{ isFirstInput }} -->
+    <!-- <br><br> -->
+    <!-- initialDataLoaded: {{ initialDataLoaded }} -->
     <!-- {{ exitForm }} -->
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
@@ -10,7 +10,8 @@
             {{ $t("Exit Form") }}
         </p>
         <v-dialog width="500">
-            <template v-slot:activator="{ props }">
+            <!-- HELP BUTTON - NEED TO EDIT CONTENTS -->
+            <!-- <template v-slot:activator="{ props }">
                 <v-btn
                     size="x-small"
                     class="pb-2"
@@ -20,7 +21,7 @@
                     v-bind="props"
                 >
                 </v-btn>
-            </template>
+            </template> -->
 
             <template v-slot:default="{ isActive }">
                 <!-- ***NEED TO CHANGE*** -->
@@ -210,6 +211,7 @@
                         :exitForm="exitForm"
                         :goalFormExists="goalFormExists"
                         :activitiesExist="activitiesExist"
+                        :expRegistrationIDFromIncompleteBackup="expRegistrationIDFromIncompleteBackup"
                         @change-step="currentStep = $event"
                     ></exit-form-review>
                     </v-stepper-window-item>                    
@@ -223,6 +225,8 @@
                         <exit-form-exp
                             ref="ExitFormExpRef"
                             :exitForm="exitForm"
+                            :isFirstInput="isFirstInput"
+                            :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
                             @form-valid="handleFormValid(0)"
                             @form-invalid="handleFormInvalid('exp')"
                             @scroll-to-error="handleScrollToError"
@@ -234,13 +238,16 @@
                             @update-goal-form-exists="handleGoalFormExists"
                             @update-activities-exist="handleActivitiesExist"
                             @update-initial-data-loaded="handleUpdateInitialDataLoaded"
+                            @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                         ></exit-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
                         <exit-form-asp
                             ref="ExitFormAspRef"
+                            :key="componentsKey"
                             :exitForm="exitForm"
-                            @form-valid="handleFormValid"
+                            @form-valid="handleFormValid(1)"
+                            :goalFormExists="goalFormExists"
                             @form-invalid="handleFormInvalid('asp')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('asp', $event)"
@@ -249,9 +256,10 @@
                     <div v-show="currentStep === 2" key="step2">
                         <exit-form-goals
                             ref="ExitFormGoalsRef"
+                            :key="componentsKey"
                             :exitForm="exitForm"
                             :existingGoals="existingGoals"
-                            @form-valid="handleFormValid"
+                            @form-valid="handleFormValid(2)"
                             @form-invalid="handleFormInvalid('goals')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('goals', $event)"
@@ -260,9 +268,10 @@
                     <div v-show="currentStep === 3" key="step3">
                         <exit-form-act
                             ref="ExitFormActRef"
+                            :key="componentsKey"
                             :exitForm="exitForm"
                             :existingGoals="existingGoals"
-                            @form-valid="handleFormValid"
+                            @form-valid="handleFormValid(3)"
                             @form-invalid="handleFormInvalid('act')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('act', $event)"
@@ -270,21 +279,24 @@
                     </div>
                     <div v-show="currentStep === 4" key="step4">
                             <exit-form-growth
-                            ref="ExitFormGrowthRef"
-                            :exitForm="exitForm"
-                            @form-valid="handleFormValid"
-                            @form-invalid="handleFormInvalid('growth')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('growth', $event)"
+                                ref="ExitFormGrowthRef"
+                                :key="componentsKey"
+                                :exitForm="exitForm"
+                                @form-valid="handleFormValid(4)"
+                                @form-invalid="handleFormInvalid('growth')"
+                                @scroll-to-error="handleScrollToError"
+                                @validation-change="handleValidationChange('growth', $event)"
                         ></exit-form-growth>
                     </div>
                     <div v-show="currentStep === 5" key="step5">
                         <exit-form-review
                             ref="ExitFormReviewRef"
+                            :key="componentsKey"
                             :selectedExperience="selectedExperience"
                             :exitForm="exitForm"
                             :goalFormExists="goalFormExists"
                             :activitiesExist="activitiesExist"
+                            :expRegistrationIDFromIncompleteBackup="expRegistrationIDFromIncompleteBackup"
                             @change-step="currentStep = $event"
                         ></exit-form-review>
                     </div>
@@ -823,6 +835,7 @@ data() {
         tempIncompleteForm: {},
         expRegistrationIDFromIncomplete: null,
         initialDataLoaded: false,
+        expRegistrationIDFromIncompleteBackup: null,
     }
 },
 async created() {
@@ -847,13 +860,10 @@ watch: {
     },
     exitForm: {
         handler(newVal, oldVal) {
-            console.log('exitForm updated: ', newVal);
             if (this.initialDataLoaded && this.isFirstInput) {
-                console.log('handle first input')
                 this.handleFirstInput();
             } else if (this.initialDataLoaded) {
                 // Use the debounced method for subsequent updates
-                console.log('handle other inputs')
                 this.handleInput();
             }
         },
@@ -971,14 +981,12 @@ methods: {
 
     // Method to fix a bug: section has errors. User fixes the errors, then goes to exitFormExp to change experience. Since exitForm is reset, the previous section that had errors should not have errors, but it does
     resetErrorFlags() {
-        console.log('resetErrorFlags')
         // Reset all error flags
         this.expError = false;
         this.aspError = false;
         this.goalsError = false;
         this.actError = false;
         this.growthError = false;
-        console.log('this.growthError: ', this.growthError);
     },
     
     handleFormInvalid(section) {
@@ -1017,8 +1025,6 @@ methods: {
 
     triggerValidation() {
 
-        console.log('triggerValidation called');
-
         if (this.goalFormExists) {
             switch (this.currentStep) {
                 case 0:
@@ -1035,13 +1041,11 @@ methods: {
                     if (this.activitiesExist) {
                         this.triggerActValidation();
                     } else {
-                        console.log('triggerGrowthValidation 1');
                         this.triggerGrowthValidation();
                     }
                     break;
                 case 4:
                     if (this.activitiesExist) {
-                        console.log('triggerGrowthValidation 2');
                         this.triggerGrowthValidation();
                     }
                     break;
@@ -1052,7 +1056,6 @@ methods: {
             if (this.currentStep === 0) {
                 this.triggerExpValidation();
             } else if (this.currentStep === 1) {
-                console.log('triggerGrowthValidation 3');
                 this.triggerGrowthValidation();
             }
         } else {
@@ -1140,7 +1143,6 @@ methods: {
                 default: return true;
             }
         }
-
     },
 
     handlePreviousClick() {
@@ -1161,11 +1163,9 @@ methods: {
     submitFormCleanup() {
         // After cleaning up the data, check whether to update or create
         if (this.foundDocumentId) {
-            // this.handleUpdateForm();
+            this.handleUpdateForm();
         } else {
             // If previously filled document wasn't found, create new document
-            console.log('selectedExperience ', this.selectedExperience);
-            console.log('finished exitForm: ', this.exitForm);
             this.handleSubmitForm();
         }
     },
@@ -1212,8 +1212,100 @@ methods: {
         await user.checkFormCompletion();
     },
 
-    async handleUpdateForm() {   
-        console.log('handle update form')
+    async handleUpdateForm() {
+        const user = useLoggedInUserStore();
+        // let token = user.token;
+        const token = import.meta.env.VITE_TOKEN;
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/exit-forms/' + this.foundDocumentId;
+
+        // Set 'expRegistrationID' from 'selectedExperience' if it exists, otherwise from 'tempIncompleteForm'
+        const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+
+        const exitFormData = {
+            expRegistrationID: expRegistrationID,
+            exitForm: {
+            progressMade: {
+                aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
+                aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected || "No aspiration",
+                aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
+                aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
+                aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
+                aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
+                goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected || "No goal",
+                goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected || "No goal",
+                goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected || "No goal",
+                goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
+                goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
+                goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
+                goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
+                goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
+                goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
+                goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
+            },
+            goalIssues: {
+                goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
+                issuesDescription: this.exitForm.goalIssues.issuesDescription
+            },
+            activitiesContribution: {
+                goalOneContributions: this.exitForm.activitiesContribution.goalOneContributions,
+                goalTwoContributions: this.exitForm.activitiesContribution.goalTwoContributions,
+                goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
+                goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
+                goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
+                noContributions:this.exitForm.activitiesContribution.noContributions,
+            },
+            experienceContributions: this.exitForm.experienceContributions,
+            likelihoodOf: {
+                enrollAnotherCourse: this.exitForm.likelihoodOf.enrollAnotherCourseSelected || "",
+                completeMinor: this.exitForm.likelihoodOf.completeMinorSelected || "",
+                recommendCourse: this.exitForm.likelihoodOf.recommendCourseSelected || "",
+                pursueCareer: this.exitForm.likelihoodOf.pursueCareerSelected || "",
+            },
+            generalGrowth: {
+                problemSolving: this.exitForm.generalGrowth.problemSolving,
+                effectiveCommunication: this.exitForm.generalGrowth.effectiveCommunication,
+                teamwork: this.exitForm.generalGrowth.teamwork,
+                culturalHumility: this.exitForm.generalGrowth.culturalHumility,
+                ethicalDecisionMaking: this.exitForm.generalGrowth.ethicalDecisionMaking,
+                professionalResponsibility: this.exitForm.generalGrowth.professionalResponsibility
+            },
+            openEnded: {
+                biggestLessons: this.exitForm.openEnded.biggestLessons,
+                supportOthers: this.exitForm.openEnded.supportOthers,
+                comments: this.exitForm.openEnded.comments
+            }
+            }
+        };
+
+        let updatedExitForm = {
+            exitForm: exitFormData,
+            tempIncompleteFormID: this.incompleteFormID
+        };
+
+        axios.put(apiURL, updatedExitForm, { headers: { token } })
+            .then(() => {
+                this.formSubmitSuccess = true;
+                const motivatingMessages = [
+                    "Exit Form updated!",
+                ];
+                const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+                
+                // Update pinia store
+                this.updateChecklistStore();
+
+                this.$router.push({ 
+                        name: 'studentDashboard',
+                        params: {
+                        toastType: 'info',
+                        toastMessage: randomMessage,
+                        toastPosition: 'top-right',
+                        toastCSS: 'Toastify__toast--update'
+                    }
+                    });
+            })
+            .catch((error) => {
+                this.handleError(error);
+            });
     },
 
     deepClone(obj) {
@@ -1254,7 +1346,6 @@ methods: {
     },
 
     async handleFirstInput() {
-        console.log('handleFirstInput called');
         if (this.isFirstInput) {
             this.isFirstInput = false;
 
@@ -1328,7 +1419,6 @@ methods: {
                         headers: { token }
                     });
                     this.incompleteFormID = response.data.exitForm._id;
-                    console.log('incompleteFormID: ', this.incompleteFormID);
                 } catch (error) {
                     this.handleError(error);
                 }
@@ -1351,6 +1441,8 @@ methods: {
             const response = await axios.get(apiURL, { headers: { token } });
             if (response.data.incompleteForm) {
                 this.tempIncompleteForm = response.data;
+                console.log('tempIncompleteForm: ', this.tempIncompleteForm);
+                this.expRegistrationIDFromIncompleteBackup = this.tempIncompleteForm.incompleteForm.expRegistrationID;
                 this.showIncompleteFormFoundDialog = true;
             }
         } catch (error) {
@@ -1380,12 +1472,9 @@ methods: {
         this.exitForm.experiences = tempExperiences;
         const existingExitForm = this.tempIncompleteForm.incompleteForm.exitForm;
 
-        console.log('existingExitForm: ', existingExitForm);
 
         // Transforming progressMade data
-        console.log('existingExitForm.progressMade.aspirationOneProgressResults: ', existingExitForm.progressMade.aspirationOneProgressResults);
         this.exitForm.progressMade.aspirationOneProgressSelected = existingExitForm.progressMade.aspirationOneProgressResults;
-        console.log('this.exitForm.progressMade.aspirationOneProgressSelected: ', this.exitForm.progressMade.aspirationOneProgressSelected);
         this.exitForm.progressMade.aspirationTwoProgressSelected = existingExitForm.progressMade.aspirationTwoProgressResults;
         this.exitForm.progressMade.aspirationThreeProgressSelected = existingExitForm.progressMade.aspirationThreeProgressResults;
 
@@ -1463,7 +1552,6 @@ methods: {
 
         this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
         this.showIncompleteFormFoundDialog = false;
-        console.log('exit form at end: ', this.exitForm);
     },
 
     updateExitForm() {

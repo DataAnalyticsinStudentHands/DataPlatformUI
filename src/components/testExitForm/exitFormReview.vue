@@ -1,5 +1,4 @@
 <template>
-    <!-- {{ exitForm }} -->
 <v-container>
 <v-form disabled>
 <!-- Section: Selected Experience -->
@@ -43,7 +42,7 @@
 <v-row>
     <v-col cols="10" class="pt-0">
         <p class="review-section-content pl-3">
-            {{ selectedExperience?.text }}
+            {{ displayExperienceText }}
         </p>
     </v-col>
 </v-row>
@@ -188,30 +187,26 @@
         <v-row>
             <v-col cols="12">
                 <v-list dense>
-                    <v-list-item-group>
-                        <v-list-item v-for="(activity, index) in exitForm.experienceActivities" :key="activity.activityID">
-                            <v-list-item-content>
-                                <v-list-item-title class="font-weight-bold">{{$t('Activity')}} {{ index + 1 }}: {{ activity.activityName }}</v-list-item-title>
-                                <div v-if="goalsContributions(activity.activityID).length === 0">
-                                    <v-list-item>
-                                        {{$t('No specific goals contributed.')}}
-                                    </v-list-item>
-                                </div>
-                                <div v-else>
-                                    <v-list-item>
-                                        {{$t('Contributed to Goals')}}:
-                                    </v-list-item>
-                                    <v-list-item 
-                                        v-for="(goal, gIndex) in goalsContributions(activity.activityID)" 
-                                        :key="'goal-' + gIndex"
-                                        class="subtitle-enhanced-nowrap"
-                                    >
-                                        {{ goal }}
-                                    </v-list-item>
-                                </div>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list-item-group>
+                    <v-list-item v-for="(activity, index) in exitForm.experienceActivities" :key="activity.activityID">
+                        <v-list-item-title class="font-weight-bold">{{$t('Activity')}} {{ index + 1 }}: {{ activity.activityName }}</v-list-item-title>
+                        <div v-if="goalsContributions(activity.activityID).length === 0">
+                            <v-list-item>
+                                {{$t('No specific goals contributed.')}}
+                            </v-list-item>
+                        </div>
+                        <div v-else>
+                            <v-list-item>
+                                {{$t('Contributed to Goals')}}:
+                            </v-list-item>
+                            <v-list-item 
+                                v-for="(goal, gIndex) in goalsContributions(activity.activityID)" 
+                                :key="'goal-' + gIndex"
+                                class="subtitle-enhanced-nowrap"
+                            >
+                                {{ goal }}
+                            </v-list-item>
+                        </div>
+                    </v-list-item>
                 </v-list>
             </v-col>
         </v-row>
@@ -360,7 +355,8 @@ export default {
         selectedExperience: Object,
         exitForm: Object,
         goalFormExists: Boolean,
-        activitiesExist: Boolean
+        activitiesExist: Boolean,
+        expRegistrationIDFromIncompleteBackup: String
     },
     emits: ["change-step"],
     computed: {
@@ -418,36 +414,49 @@ export default {
                 .filter(goal => goal.checked);
         },
         goalsContributions() {
-    return (activityID) => {
-        console.log("Activity ID:", activityID); // Log the activity ID
-        console.log("Activities Contribution:", this.exitForm.activitiesContribution); // Log the activitiesContribution data
+            return (activityID) => {
+                console.log("Activity ID:", activityID); // Log the activity ID
+                console.log("Activities Contribution:", this.exitForm.activitiesContribution); // Log the activitiesContribution data
 
-        let contributions = [];
-        // Map contributions to goal descriptions
-        console.log("Checking Goal 1 Contributions:", this.exitForm.activitiesContribution.goalOneContributions.includes(activityID));
-        if (this.exitForm.activitiesContribution.goalOneContributions.includes(activityID)) {
-            contributions.push(this.exitForm.goal1);
+                let contributions = [];
+                // Map contributions to goal descriptions
+                console.log("Checking Goal 1 Contributions:", this.exitForm.activitiesContribution.goalOneContributions.includes(activityID));
+                if (this.exitForm.activitiesContribution.goalOneContributions.includes(activityID)) {
+                    contributions.push(this.exitForm.goal1);
+                }
+                console.log("Checking Goal 2 Contributions:", this.exitForm.activitiesContribution.goalTwoContributions.includes(activityID));
+                if (this.exitForm.activitiesContribution.goalTwoContributions.includes(activityID)) {
+                    contributions.push(this.exitForm.goal2);
+                }
+                console.log("Checking Goal 3 Contributions:", this.exitForm.activitiesContribution.goalThreeContributions.includes(activityID));
+                if (this.exitForm.activitiesContribution.goalThreeContributions.includes(activityID)) {
+                    contributions.push(this.exitForm.goal3);
+                }
+                console.log("Checking Goal 4 Contributions:", this.exitForm.activitiesContribution.goalFourContributions.includes(activityID));
+                if (this.exitForm.activitiesContribution.goalFourContributions.includes(activityID)) {
+                    contributions.push(this.exitForm.goal4);
+                }
+                console.log("Checking Goal 5 Contributions:", this.exitForm.activitiesContribution.goalFiveContributions.includes(activityID));
+                if (this.exitForm.activitiesContribution.goalFiveContributions.includes(activityID)) {
+                    contributions.push(this.exitForm.goal5);
+                }
+                console.log("Final Contributions List:", contributions); // Log the final list of contributions
+                return contributions; // Returns an array of descriptions for goals to which the activity contributes
+            }
+        },
+        displayExperienceText() {
+            // Check if selectedExperience exists and has a non-empty text property
+            if (this.selectedExperience && this.selectedExperience.text) {
+                return this.selectedExperience.text;
+            } else if (this.expRegistrationIDFromIncompleteBackup) {
+                // Find the experience in exitForm.experiences that matches expRegistrationIDFromIncomplete
+                const matchingExperience = this.exitForm.experiences.find(experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup);
+                // If a matching experience is found, return the formatted string
+                if (matchingExperience) {
+                    return `${matchingExperience.experienceCategory}: ${matchingExperience.experienceName}`;
+                }
+            }
         }
-        console.log("Checking Goal 2 Contributions:", this.exitForm.activitiesContribution.goalTwoContributions.includes(activityID));
-        if (this.exitForm.activitiesContribution.goalTwoContributions.includes(activityID)) {
-            contributions.push(this.exitForm.goal2);
-        }
-        console.log("Checking Goal 3 Contributions:", this.exitForm.activitiesContribution.goalThreeContributions.includes(activityID));
-        if (this.exitForm.activitiesContribution.goalThreeContributions.includes(activityID)) {
-            contributions.push(this.exitForm.goal3);
-        }
-        console.log("Checking Goal 4 Contributions:", this.exitForm.activitiesContribution.goalFourContributions.includes(activityID));
-        if (this.exitForm.activitiesContribution.goalFourContributions.includes(activityID)) {
-            contributions.push(this.exitForm.goal4);
-        }
-        console.log("Checking Goal 5 Contributions:", this.exitForm.activitiesContribution.goalFiveContributions.includes(activityID));
-        if (this.exitForm.activitiesContribution.goalFiveContributions.includes(activityID)) {
-            contributions.push(this.exitForm.goal5);
-        }
-        console.log("Final Contributions List:", contributions); // Log the final list of contributions
-        return contributions; // Returns an array of descriptions for goals to which the activity contributes
-    }
-},
 
     },
     methods: {

@@ -184,6 +184,7 @@ export const useLoggedInUserStore = defineStore({
             hasCompletedEntryForm: response.data.entryFormCompleted,
             hasRegisteredExperiences: response.data.hasRegisteredExperiences,
             goalSettingFormCompletion: response.data.goalSettingFormCompletion,
+            exitFormCompletion: response.data.exitFormCompletion
           });
         }
 
