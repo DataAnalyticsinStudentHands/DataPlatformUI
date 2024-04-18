@@ -471,7 +471,7 @@ const routes = [
     {
       path: '/exitForm',
       name: 'exitForm',
-      component: () => import('../components/studentSide/exitForm.vue'),
+      component: () => import('../components/studentSide/exitForm/exitFormMain.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
         if (!userStore.isLoggedIn || userStore.role !== 'Student') {
@@ -481,20 +481,20 @@ const routes = [
         }
       }
     },    
-    {
-      path: '/exitFormsAvailable',
-      name: 'exitFormsAvailable',
-      component: () => import('../components/studentSide/exitFormsAvailable.vue'),
-      beforeEnter: (to, from, next) => {
-        // Use the Pinia store
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
-          next('/error');
-        } else {
-          next();
-        }
-      }
-    },
+    // {
+    //   path: '/exitFormsAvailable',
+    //   name: 'exitFormsAvailable',
+    //   component: () => import('../components/studentSide/exitFormsAvailable.vue'),
+    //   beforeEnter: (to, from, next) => {
+    //     // Use the Pinia store
+    //     const userStore = useLoggedInUserStore();
+    //     if (!userStore.isLoggedIn || userStore.role !== 'Student') {
+    //       next('/error');
+    //     } else {
+    //       next();
+    //     }
+    //   }
+    // },
     {
       path: '/studentDashboard',
       name: 'studentDashboard',

@@ -1,9 +1,9 @@
 <template>
-    registeredExperiences: {{ registeredExperiences }}
+    <!-- registeredExperiences: {{ registeredExperiences }}
     <br><br><br>
     goalSettingFormCompletion: {{ goalSettingFormCompletion }}
     <br><br><br>
-    exitFormCompletion: {{ exitFormCompletion }}
+    exitFormCompletion: {{ exitFormCompletion }} -->
       <v-card
       class="mx-auto elevation-12"
       color="#385F73"
@@ -17,6 +17,7 @@
               </v-list-item-title>
           </v-list-item>
 
+          <!-- Entry Form -->
           <v-list-group value="Entry Form">
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props" :color="hasCompletedEntryForm ? 'green darken-4' : ''" :class="hasCompletedEntryForm ? 'light-green-bg' : 'light-red-bg'" class="font-weight-black text-base">
@@ -40,7 +41,7 @@
         </v-list-group>
 
 
-
+        <!-- Register for Experiences -->
         <v-list-group v-if="hasCompletedEntryForm" value="Register Experiences">
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props" :class="registeredExperiences.length === 0 ? 'light-red-bg' : 'light-green-bg'" @click="registeredExperiences.length === 0">
@@ -63,79 +64,77 @@
             </v-list-item>
         </v-list-group>
 
-        <v-list-group value="Goal Form" v-if="registeredExperiences.length && !exitFormsReleased" :class="areAllGoalsSet ? 'light-green-bg' : 'light-red-bg'">
-          <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props">
-                <span :class="areAllGoalsSet ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
-                    <span v-if="registeredExperiences.length === 1">
-                        {{ areAllGoalsSet ? $t('Completed Goal Setting Form') : $t('Complete Goal Setting Form') }}
+        <!-- Goal Forms -->
+        <v-list-group value="Goal Form" v-if="registeredExperiences.length" :class="areAllGoalsSet ? 'light-green-bg' : 'light-red-bg'">
+            <template v-slot:activator="{ props }">
+                <v-list-item v-bind="props">
+                    <span :class="areAllGoalsSet ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
+                        <span v-if="Object.keys(filteredGoalFormCompletion).length === 1">
+                            {{ areAllGoalsSet ? $t('Completed Goal Setting Form') : $t('Complete Goal Setting Form') }}
+                        </span>
+                        <span v-if="Object.keys(filteredGoalFormCompletion).length > 1">
+                            {{ areAllGoalsSet ? $t('Completed Goal Setting Forms') : $t('Complete Goal Setting Forms') }}
+                        </span>
                     </span>
-                    <span v-if="registeredExperiences.length > 1">
-                        {{ areAllGoalsSet ? $t('Completed Goal Setting Forms') : $t('Complete Goal Setting Forms') }}
-                    </span>
-                </span>
-                  <template v-slot:append>
-                      <v-icon :class="areAllGoalsSet ? 'text-green-800' : 'text-red-800'">{{ areAllGoalsSet ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
-                  </template>
-              </v-list-item>
-          </template>
-            <!-- Loop through selected experiences and create a dropdown item for each one -->
+                    <template v-slot:append>
+                        <v-icon :class="areAllGoalsSet ? 'text-green-800' : 'text-red-800'">{{ areAllGoalsSet ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
+                    </template>
+                </v-list-item>
+            </template>
+            <!-- Loop through filteredGoalFormCompletion to create a dropdown item for each one -->
             <v-list-item 
-                v-for="experience in registeredExperiences" 
-                :key="experience._id" 
-                :class="isGoalFormCompleted(experience._id) ? 'light-green-bg' : 'light-red-bg'"
+                v-for="(completed, registrationId) in filteredGoalFormCompletion" 
+                :key="registrationId" 
+                :class="completed ? 'light-green-bg' : 'light-red-bg'"
             >
-                <span :class="isGoalFormCompleted(experience._id) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
-                    {{ isGoalFormCompleted(experience._id) ? $t('Completed Goal Setting Form for') : $t('Complete Goal Setting Form for') }}
+                <span :class="completed ? 'text-sm text-green-800' : 'text-sm text-red-800'">
+                    {{ completed ? $t('Completed Goal Setting Form for') : $t('Complete Goal Setting Form for') }}
                     <!-- Conditionally render router-link or plain text based on completion status -->
                     <router-link 
-                        v-if="!isGoalFormCompleted(experience._id)"
-                        :to="{ name: 'goalSettingForm', params: { id: experience._id } }" 
+                        v-if="!completed"
+                        :to="{ name: 'goalSettingForm', params: { id: registrationId } }" 
                         class="text-blue-600 underline hover:text-blue-800"
                     >
-                        {{ experience.experienceInstance.name }}
+                        {{ findExperienceName(registrationId) }}
                     </router-link>
-                    <span v-else class="text-green-800">
-                        {{ experience.experienceInstance.name }}
+                    <!-- Render the experience name -->
+                    <span v-else :class="completed ? 'text-green-800' : 'text-red-800'">
+                        {{ findExperienceName(registrationId) }}
+                    </span>
+                </span>
+            </v-list-item>
+        </v-list-group>
+
+
+       <!-- Exit Forms -->
+       <v-list-group 
+        v-if="hasExitForms" 
+        :class="areAllExitFormsCompleted ? 'light-green-bg' : 'light-red-bg'">
+            <template v-slot:activator="{ props }">
+                <v-list-item v-bind="props">
+                    <span :class="areAllExitFormsCompleted ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
+                        {{ areAllExitFormsCompleted ? 'Completed' : 'Complete' }} Exit Form<span v-if="Object.keys(exitFormCompletion).length > 1">s</span>
+                    </span>
+                    <template v-slot:append>
+                        <v-icon :class="areAllExitFormsCompleted ? 'text-green-800' : 'text-red-800'">{{ areAllExitFormsCompleted ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
+                    </template>
+                </v-list-item>
+            </template>
+            <!-- Loop through exitFormCompletion to get each completed form's ID -->
+            <v-list-item 
+                v-for="registrationId in Object.keys(exitFormCompletion)" 
+                :key="registrationId"
+                :class="isExitFormCompleted(registrationId) ? 'light-green-bg' : 'light-red-bg'">
+                <span :class="isExitFormCompleted(registrationId) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
+                    {{ isExitFormCompleted(registrationId) ? 'Completed' : 'Complete' }} Exit Form for 
+                    <!-- Display the name from the registeredExperiences -->
+                    <span :class="isExitFormCompleted(registrationId) ? 'text-green-800' : 'text-red-800'">
+                        {{ findExperienceName(registrationId) }}
                     </span>
                 </span> 
             </v-list-item>
-       </v-list-group>
+        </v-list-group>
 
-       <v-list-group v-if="registeredExperiences.length && exitFormCompletion && exitFormCompletion.length > 0" :class="areAllExitFormsCompleted ? 'light-green-bg' : 'light-red-bg'">
-        <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props">
-              <span :class="areAllExitFormsCompleted ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
-                  {{ areAllExitFormsCompleted ? 'Completed' : 'Complete' }} Exit Form<span v-if="registeredExperiences.length > 1">s</span>
-              </span>
-                <template v-slot:append>
-                    <v-icon :class="areAllExitFormsCompleted ? 'text-green-800' : 'text-red-800'">{{ areAllExitFormsCompleted ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
-                </template>
-            </v-list-item>
-        </template>
-          <!-- Loop through selected experiences and create a dropdown item for each one -->
-          <v-list-item 
-              v-for="experience in registeredExperiences" 
-              :key="experience._id" 
-              :class="isExitFormCompleted(experience._id) ? 'light-green-bg' : 'light-red-bg'"
-          >
-              <span :class="isExitFormCompleted(experience._id) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
-                  {{ isExitFormCompleted(experience._id) ? 'Completed' : 'Complete' }} Exit Form for 
-              </span> 
-              <!-- Conditionally render router-link or plain text based on completion status -->
-              <router-link 
-                  v-if="!isExitFormCompleted(experience._id)"
-                  :to="{ name: 'exitForm', params: { id: experience._id } }" 
-                  class="text-blue-600 underline hover:text-blue-800"
-              >
-                  {{ experience.experienceName }}
-              </router-link>
-              <!-- Render plain text if form is completed -->
-              <span v-else class="text-green-800">
-                  {{ experience.experienceName }}
-              </span>
-          </v-list-item>
-      </v-list-group>
       </v-list>
       </v-card>
 </template>
@@ -180,7 +179,22 @@ export default {
         },
         registeredExperiences() {
             return this.store.registeredExperiences;
-        }
+        },
+        hasExitForms() {
+            return Object.keys(this.exitFormCompletion).length > 0;
+        },
+        areAllExitFormsCompleted() {
+            return Object.keys(this.exitFormCompletion).every(key => this.exitFormCompletion[key]);
+        },
+        filteredGoalFormCompletion() {
+            const exitIds = Object.keys(this.exitFormCompletion);
+            return Object.keys(this.goalSettingFormCompletion).reduce((acc, key) => {
+                if (!exitIds.includes(key)) {
+                    acc[key] = this.goalSettingFormCompletion[key];
+                }
+                return acc;
+            }, {});
+        },
     },
     methods: {
         isGoalFormCompleted(registrationId) {
@@ -188,6 +202,10 @@ export default {
         },
         isExitFormCompleted(experienceId) {
             return this.exitFormCompletion && this.exitFormCompletion[experienceId];
+        },
+        findExperienceName(registrationId) {
+            const experience = this.registeredExperiences.find(exp => exp._id === registrationId);
+            return experience ? experience.experienceInstance.name : 'Unknown Experience';
         },
     }
 }

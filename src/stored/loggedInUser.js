@@ -23,7 +23,8 @@ export const useLoggedInUserStore = defineStore({
       goalSettingFormCompletion: {},
       loading: false,
       semesterName: "",
-      exitFormsReleased: false,
+      hasGoalFormsToComplete: false,
+      hasExitFormsToComplete: false,
       exitFormCompletion: {},
       registeredExperiences: [],
       orgName: "",
@@ -110,7 +111,6 @@ export const useLoggedInUserStore = defineStore({
         hasRegisteredExperiences: false,
         goalSettingFormCompletion: {},
         loading: false,
-        exitFormsReleased: false,
         exitFormCompletion: {},
         registeredExperiences: [],
       });
@@ -178,20 +178,22 @@ export const useLoggedInUserStore = defineStore({
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }
         });
-
+    
         if (response && response.data) {
-          this.$patch({
-            hasCompletedEntryForm: response.data.entryFormCompleted,
-            hasRegisteredExperiences: response.data.hasRegisteredExperiences,
-            goalSettingFormCompletion: response.data.goalSettingFormCompletion,
-            exitFormCompletion: response.data.exitFormCompletion
-          });
+          // Completely replace the state with the new data
+          this.hasCompletedEntryForm = response.data.entryFormCompleted;
+          this.hasRegisteredExperiences = response.data.hasRegisteredExperiences;
+          this.goalSettingFormCompletion = { ...response.data.goalSettingFormCompletion };
+          this.exitFormCompletion = { ...response.data.exitFormCompletion };
+    
+          // Check if there are forms to complete
+          this.hasGoalFormsToComplete = Object.keys(this.goalSettingFormCompletion).length > 0;
+          this.hasExitFormsToComplete = Object.keys(this.exitFormCompletion).length > 0;
         }
-
       } catch (error) {
         this.handleError(error);
       }
-    },
+    },      
     setTokenHeader(token) {
       if (token) {
         axios.defaults.headers.common['token'] = token;
@@ -227,6 +229,7 @@ export const useLoggedInUserStore = defineStore({
       }
     },     
     async updateRegisteredExperiences(selectedExperiences) {
+      console.log('updateRegisteredExperiences called');
       const token = this.token;
       const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
       const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
@@ -259,6 +262,11 @@ export const useLoggedInUserStore = defineStore({
           position: 'top-right',
           toastClassName: 'Toastify__toast--create'
         });
+
+        console.log('end of updateRegisteredExperiences');
+
+        // Call Student Checklist
+        await this.checkFormCompletion();
     
       } catch (error) {
         this.handleError(error);
