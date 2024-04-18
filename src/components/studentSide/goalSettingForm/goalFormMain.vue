@@ -1,4 +1,5 @@
 <template>
+    selectedExperience Main: {{ selectedExperience }}
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
@@ -682,7 +683,7 @@ methods: {
     },
 
     updateOriginalGoalForm(newVal) {
-        this.originalGoalForm = this.deepClone(newVal);;
+        this.originalGoalForm = this.deepClone(newVal);
     },
     
     handleFormInvalid(section) {
@@ -1148,6 +1149,7 @@ methods: {
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-form-incomplete/`;
         try {
             const response = await axios.get(apiURL, { headers: { token } });
+            console.log('checkIncompleteForm response.data', response.data);
             if (response.data.incompleteForm) {
                 this.tempIncompleteForm = response.data;
                 this.showIncompleteFormFoundDialog = true;
@@ -1172,6 +1174,7 @@ methods: {
     },
 
     continueProgress() {
+        console.log('continueProgress called');
         this.isFirstInput = false;
         this.goalForm = this.tempIncompleteForm.incompleteForm.goalForm;
         this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID;

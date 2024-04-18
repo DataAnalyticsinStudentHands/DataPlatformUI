@@ -71,7 +71,7 @@ props: {
     isFirstInput: Boolean,
     expRegistrationIDFromIncomplete: String
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-initial-data-loaded", "update-incomplete-exp-registration"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration"],
 data() {
     return {
         formSubmitted: false,
@@ -117,6 +117,7 @@ mounted() {
 watch: {
     selectedExperience(newVal, oldVal) {
       if (newVal && newVal !== oldVal) {
+        console.log('checkExistingForm called');
         this.checkExistingForm(newVal);
       }
       if (!newVal) {
@@ -131,7 +132,6 @@ watch: {
     },
 
     expRegistrationIDFromIncomplete(newVal) {
-        console.log('expRegistrationIDFromIncomplete newVal: ', newVal);
         if (newVal) {
             const matchedExperience = this.exitForm.experiences.find(experience => experience.expRegistrationID === newVal);
             this.selectedExperience = matchedExperience ? matchedExperience.experienceID : null;
@@ -160,25 +160,33 @@ computed: {
 },
 methods: {
     async fetchExperiences() {
-        console.log('fetchExperiences called');
-      const user = useLoggedInUserStore();
-      // let token = user.token;
-      
+        const user = useLoggedInUserStore();
         const token = import.meta.env.VITE_TOKEN;
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experiences-available-for-forms/exit-forms/';
 
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experiences/';
+        try {
+            const response = await axios.get(apiURL, { headers: { token } });
+            
+            // Create a deep copy of this.exitForm
+            let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+            
+            // Map the response data to the tempExitForm's experiences
+            tempExitForm.experiences = response.data.map(experience => ({
+            experienceID: experience._id,
+            experienceCategory: experience.experienceCategory,
+            experienceName: experience.experienceName,
+            expRegistrationID: experience.expRegistrationID
+            }));
+            
+            // Emit the event with the original exit form to update it elsewhere as needed
+            this.$emit("update-original-exit-form", tempExitForm);
 
-      try {
-        const response = await axios.get(apiURL, { headers: { token } });
-        this.exitForm.experiences = response.data.map(experience => ({
-          experienceID: experience._id,
-          experienceCategory: experience.experienceCategory,
-          experienceName: experience.experienceName,
-          expRegistrationID: experience.expRegistrationID
-        }));
-      } catch (error) {
-        this.handleError(error);
-      }
+            // Now update this.exitForm with the changes from tempExitForm
+            this.exitForm.experiences = tempExitForm.experiences;
+            
+        } catch (error) {
+            this.handleError(error);
+        }
     },
 
     // async fetchHasFilledForm() {
@@ -207,12 +215,13 @@ methods: {
     // },
 
     async checkExistingForm() {
-        console.log('checkExistingForm called:');
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
         this.$emit('reset-exit-form');
 
+        const user = useLoggedInUserStore();
+        // const token = user.token;
         const token = import.meta.env.VITE_TOKEN;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-EF-for-registration/';
 
@@ -223,12 +232,34 @@ methods: {
                 }
             });
 
-
-            this.$emit('update-goal-form-exists', response.data.goalFormFound);
+            console.log('response: ', response.data);
 
             if (response.data.goalFormFound) {
+                this.$emit('update-goal-form-exists', response.data.goalFormFound);
+
+                // Create a deep copy of this.exitForm
+                let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+
                 const goalFormData = response.data.goalForm;
 
+                // Set the goal setting form ID
+                tempExitForm.goalSettingFormID = goalFormData._id;
+
+                // Update aspirations
+                tempExitForm.aspiration1 = goalFormData.goalForm.aspirations?.aspirationOne;
+                tempExitForm.aspiration2 = goalFormData.goalForm.aspirations?.aspirationTwo;
+                tempExitForm.aspiration3 = goalFormData.goalForm.aspirations?.aspirationThree;
+                // Update goals
+                tempExitForm.goal1 = goalFormData.goalForm.goals?.goalOne;
+                tempExitForm.goal2 = goalFormData.goalForm.goals?.goalTwo;
+                tempExitForm.goal3 = goalFormData.goalForm.goals?.goalThree;
+                tempExitForm.goal4 = goalFormData.goalForm.goals?.goalFour;
+                tempExitForm.goal5 = goalFormData.goalForm.goals?.goalFive;
+                
+                // Emit the event with the original exit form to update it elsewhere as needed
+                this.$emit("update-original-exit-form", tempExitForm);
+
+                // Update exitForm
                 // Set the goal setting form ID
                 this.exitForm.goalSettingFormID = goalFormData._id;
 
@@ -242,8 +273,27 @@ methods: {
                 this.exitForm.goal3 = goalFormData.goalForm.goals?.goalThree;
                 this.exitForm.goal4 = goalFormData.goalForm.goals?.goalFour;
                 this.exitForm.goal5 = goalFormData.goalForm.goals?.goalFive;
-                
+
             } else {
+                // Create a deep copy of this.exitForm
+                let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+
+                tempExitForm.goalSettingFormID = null;
+                // Update aspirations
+                tempExitForm.aspiration1 = null;
+                tempExitForm.aspiration2 = null;
+                tempExitForm.aspiration3 = null;
+                // Update goals
+                tempExitForm.goal1 = null;
+                tempExitForm.goal2 = null;
+                tempExitForm.goal3 = null;
+                tempExitForm.goal4 = null;
+                tempExitForm.goal5 = null;
+
+                // Emit the event with the original exit form to update it elsewhere as needed
+                this.$emit("update-original-exit-form", tempExitForm);
+
+                // Update exitForm
                 this.exitForm.goalSettingFormID = null;
                 // Update aspirations
                 this.exitForm.aspiration1 = null;
@@ -285,7 +335,6 @@ methods: {
             this.handleError("An unexpected error occurred while checking for existing form:", error);
         } finally {
             this.isLoadingExpCheck = false;
-            this.$emit("update-initial-data-loaded");
             if (this.expRegistrationIDFromIncomplete && this.expRegistrationIDFromIncomplete.length) {
                 this.$emit("update-incomplete-exp-registration");
             }
@@ -302,33 +351,24 @@ methods: {
             return;
         }
 
+        // Create a deep copy of this.exitForm
+        let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+
         // Include both experienceID and expRegistrationID in the emitted data
+        tempExitForm.experienceID = selectedExperienceInfo.value;
+        tempExitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
+
+        // Update original Exit Form first
+        // Emit the event with the original exit form to update it elsewhere as needed
+        this.$emit("update-original-exit-form", tempExitForm);
+
+        // Update exitForm
         this.exitForm.experienceID = selectedExperienceInfo.value;
         this.exitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
 
         // Emit an object with all necessary details
         this.$emit("update-selected-experience", selectedExperienceInfo);
-    },
-
-    selectExperienceFromRouteParam() {
-        const experienceRegistrationIDFromRoute = this.$route.params.id;
-        if (experienceRegistrationIDFromRoute) {
-            // Find the experience in the array that matches the expRegistrationID
-            const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
-
-            if (matchingExperience) {
-                // Set the selectedExperience to the experienceID of the matching experience
-                this.selectedExperience = matchingExperience.experienceID;
-                // Find the text corresponding to the selected value
-                const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
-
-                // Emit an object with both text and value
-                this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience });
-            } else {
-                console.log('No matching experience found for the given expRegistrationID');
-            }
-        }
-    },    
+    },   
 
     async handleValidations() {
         this.formSubmitted = true;
@@ -346,11 +386,30 @@ methods: {
         }
     },
 
-
     findExperienceText(experienceID) {
         const experience = this.formattedExperiences.find(exp => exp.value === experienceID);
         return experience ? experience.text.trim() : '';
     },
+
+    selectExperienceFromRouteParam() {
+        const experienceRegistrationIDFromRoute = this.$route.params.registrationID;
+        if (experienceRegistrationIDFromRoute) {
+            // Find the experience in the array that matches the expRegistrationID
+            const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
+
+            if (matchingExperience) {
+                // Set the selectedExperience to the experienceID of the matching experience
+                this.selectedExperience = matchingExperience.experienceID;
+                // Find the text corresponding to the selected value
+                const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+
+                // Emit an object with both text and value
+                this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience, expRegistrationID: experienceRegistrationIDFromRoute });
+            } else {
+                console.log('No matching experience found for the given expRegistrationID');
+            }
+        }
+    },    
 },
 }
 </script>

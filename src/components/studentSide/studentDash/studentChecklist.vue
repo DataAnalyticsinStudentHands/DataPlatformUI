@@ -92,7 +92,7 @@
                     <!-- Conditionally render router-link or plain text based on completion status -->
                     <router-link 
                         v-if="!completed"
-                        :to="{ name: 'goalSettingForm', params: { id: registrationId } }" 
+                        :to="{ name: 'goalSettingForm', params: { registrationID: registrationId } }" 
                         class="text-blue-600 underline hover:text-blue-800"
                     >
                         {{ findExperienceName(registrationId) }}
@@ -127,8 +127,16 @@
                 :class="isExitFormCompleted(registrationId) ? 'light-green-bg' : 'light-red-bg'">
                 <span :class="isExitFormCompleted(registrationId) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
                     {{ isExitFormCompleted(registrationId) ? 'Completed' : 'Complete' }} Exit Form for 
+                    <!-- Conditionally render router-link or plain text based on completion status -->
+                    <router-link 
+                        v-if="!isExitFormCompleted(registrationId)"
+                        :to="{ name: 'exitForm', params: { registrationID: registrationId } }" 
+                        class="text-blue-600 underline hover:text-blue-800"
+                    >
+                        {{ findExperienceName(registrationId) }}
+                    </router-link>
                     <!-- Display the name from the registeredExperiences -->
-                    <span :class="isExitFormCompleted(registrationId) ? 'text-green-800' : 'text-red-800'">
+                    <span v-else class="'text-green-800'">
                         {{ findExperienceName(registrationId) }}
                     </span>
                 </span> 

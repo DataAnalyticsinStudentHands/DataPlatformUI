@@ -1,4 +1,6 @@
 <template>
+<div>
+    selectedExperience Exp: {{ selectedExperience }}
 <v-form
     ref="form"
     @submit.prevent="handleValidations"
@@ -87,6 +89,7 @@
         </v-fade-transition>
     </v-container>
 </v-form>
+</div>
 </template>
 
 <script>
@@ -237,7 +240,7 @@ methods: {
     async fetchExperiences() {
       const user = useLoggedInUserStore();
       let token = user.token;
-      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experiences/';
+      let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experiences-available-for-forms/goal-forms/';
 
       try {
         const response = await axios.get(apiURL, { headers: { token } });
@@ -333,7 +336,8 @@ methods: {
     },
 
     selectExperienceFromRouteParam() {
-        const experienceRegistrationIDFromRoute = this.$route.params.id;
+        const experienceRegistrationIDFromRoute = this.$route.params.registrationID;
+        console.log('experienceRegistrationIDFromRoute: ', experienceRegistrationIDFromRoute);
         if (experienceRegistrationIDFromRoute) {
             // Find the experience in the array that matches the expRegistrationID
             const matchingExperience = this.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);

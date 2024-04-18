@@ -2,7 +2,6 @@
     <!-- selectedExperience: {{selectedExperience}} -->
     <!-- isFirstInput: {{ isFirstInput }} -->
     <!-- <br><br> -->
-    <!-- initialDataLoaded: {{ initialDataLoaded }} -->
     <!-- {{ exitForm }} -->
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
@@ -147,13 +146,13 @@
                         @form-invalid="handleFormInvalid('exp')"
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('exp', $event)"
+                        @update-original-exit-form="updateOriginalExitForm"
                         @update-selected-experience="handleSelectedExperience"
                         @update-found-document-id="foundDocumentId = $event"
                         @reset-exit-form="resetExitForm"
                         @reset-error-flags="resetErrorFlags"
                         @update-goal-form-exists="handleGoalFormExists"
                         @update-activities-exist="handleActivitiesExist"
-                        @update-initial-data-loaded="handleUpdateInitialDataLoaded"
                         @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                     ></exit-form-exp>
                     </v-stepper-window-item>
@@ -232,13 +231,13 @@
                             @form-invalid="handleFormInvalid('exp')"
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('exp', $event)"
+                            @update-original-exit-form="updateOriginalExitForm"
                             @update-selected-experience="handleSelectedExperience"
                             @update-found-document-id="foundDocumentId = $event"
                             @reset-exit-form="resetExitForm"
                             @reset-error-flags="resetErrorFlags"
                             @update-goal-form-exists="handleGoalFormExists"
                             @update-activities-exist="handleActivitiesExist"
-                            @update-initial-data-loaded="handleUpdateInitialDataLoaded"
                             @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                         ></exit-form-exp>
                     </div>
@@ -351,7 +350,7 @@
             Confirm Navigation
         </v-card-title>
         <v-card-text>
-            <p>Are you sure you want to leave? <strong>Unsaved changes will be lost.</strong></p>
+            <p>Are you sure you want to leave? <strong>Your responses will be saved for later.</strong></p>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -384,6 +383,8 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+{{ exitForm }}
 </template>
 
 <script>
@@ -835,7 +836,6 @@ data() {
         showIncompleteFormFoundDialog: false,
         tempIncompleteForm: {},
         expRegistrationIDFromIncomplete: null,
-        initialDataLoaded: false,
         expRegistrationIDFromIncompleteBackup: null,
     }
 },
@@ -856,16 +856,17 @@ watch: {
             this.allowedStepsForJump.push(this.currentStep);
         }
     },
-    originalExitForm(newVal) {
-        console.log('newVal: ', newVal);
-    },
     exitForm: {
         handler(newVal, oldVal) {
-            if (this.initialDataLoaded && this.isFirstInput) {
-                this.handleFirstInput();
-            } else if (this.initialDataLoaded) {
-                // Use the debounced method for subsequent updates
-                this.handleInput();
+            // console.log('newVal: ', newVal);
+            // console.log('this.originalExitForm: ', this.originalExitForm);
+            if (newVal && !isEqual(newVal, this.originalExitForm)) {
+                if (this.isFirstInput) {
+                    this.handleFirstInput();
+                } else {
+                    // Use the debounced method for subsequent updates
+                    this.handleInput();
+                }
             }
         },
         deep: true,
@@ -969,9 +970,7 @@ methods: {
     },
 
     resetExitForm() {
-        console.log('resetExitForm');
         const tempExperiences = this.exitForm.experiences;
-        console.log('this.incompleteFormID', this.incompleteFormID);
         if (!this.incompleteFormID || !this.incompleteFormID.length) {
             this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
         }
@@ -1176,8 +1175,7 @@ methods: {
     async handleSubmitForm() {
         try {
             const user = useLoggedInUserStore();
-            // const token = user.token;
-            const token = import.meta.env.VITE_TOKEN;
+            const token = user.token;
             const userID = user.userId;
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
             await axios.patch(apiURL, { completed: true, userID: userID,  }, { headers: { token }});
@@ -1217,8 +1215,7 @@ methods: {
 
     async handleUpdateForm() {
         const user = useLoggedInUserStore();
-        // let token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/exit-forms/' + this.foundDocumentId;
 
         // Set 'expRegistrationID' from 'selectedExperience' if it exists, otherwise from 'tempIncompleteForm'
@@ -1343,19 +1340,14 @@ methods: {
         this.allowedStepsForJump = [0];
     },
 
-    handleUpdateInitialDataLoaded() {
-        this.isFirstInput = true;
-        this.initialDataLoaded = true;
-    },
-
     async handleFirstInput() {
+        console.log('handleFirstInput called');
         if (this.isFirstInput) {
             this.isFirstInput = false;
 
             try {
                 const user = useLoggedInUserStore();
-                // const token = user.token;
-                const token = import.meta.env.VITE_TOKEN;
+                const token = user.token;
                 let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exit-forms";
 
                 // Set 'expRegistrationID' from 'selectedExperience' if it exists, otherwise from 'tempIncompleteForm'
@@ -1435,16 +1427,18 @@ methods: {
         this.debouncedUpdateExitForm();
     },
 
+    updateOriginalExitForm(newVal) {
+        this.originalExitForm = this.deepClone(newVal);
+    },
+
     async checkIncompleteForm() {
         const user = useLoggedInUserStore();
-        // const token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-form-incomplete/`;
         try {
             const response = await axios.get(apiURL, { headers: { token } });
             if (response.data.incompleteForm) {
                 this.tempIncompleteForm = response.data;
-                console.log('tempIncompleteForm: ', this.tempIncompleteForm);
                 this.expRegistrationIDFromIncompleteBackup = this.tempIncompleteForm.incompleteForm.expRegistrationID;
                 this.showIncompleteFormFoundDialog = true;
             }
@@ -1455,8 +1449,7 @@ methods: {
 
     async startNew() {
         const user = useLoggedInUserStore();
-        // const token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.tempIncompleteForm.incompleteForm._id}`;
 
         try {
@@ -1559,8 +1552,7 @@ methods: {
 
     updateExitForm() {
         const user = useLoggedInUserStore();
-        // const token = user.token;
-        const token = import.meta.env.VITE_TOKEN;
+        const token = user.token;
         const userID = user.userId;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
 
