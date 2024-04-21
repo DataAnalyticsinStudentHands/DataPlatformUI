@@ -156,6 +156,7 @@
                         @update-activities-exist="handleActivitiesExist"
                         @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                         @update-data-and-society="handleUpdateDataAndSociety"
+                        @update-first-input="handleUpdateFirstInput"
                     ></exit-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -243,6 +244,7 @@
                             @update-activities-exist="handleActivitiesExist"
                             @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                             @update-data-and-society="handleUpdateDataAndSociety"
+                            @update-first-input="handleUpdateFirstInput"
                         ></exit-form-exp>
                     </div>
                     <div v-show="showAspirationsStep" key="step1">
@@ -388,8 +390,8 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br>
-{{ exitForm }} -->
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+{{ exitForm }}
 </template>
 
 <script>
@@ -630,6 +632,7 @@ data() {
                 comments: ""
             }
         },
+        originalExitFormTwo: {},
         originalExitForm: {
             semester: "",
             experiences: [
@@ -850,6 +853,7 @@ async created() {
     this.debouncedUpdateExitForm = debounce(this.updateExitForm, 1000);
 },
 async mounted() {
+    this.originalExitFormTwo = this.deepClone(this.originalExitForm);
     await this.checkIncompleteForm();
     window.scrollTo(0, 0);
 },
@@ -865,8 +869,8 @@ watch: {
     },
     exitForm: {
         handler(newVal, oldVal) {
-            console.log('newVal: ', newVal);
-            console.log('this.originalExitForm: ', this.originalExitForm);
+            // console.log('newVal: ', newVal);
+            // console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
                     this.handleFirstInput();
@@ -1148,11 +1152,20 @@ methods: {
 
     // TO EDIT: NEED TO UPDATE TO ALLOW JUMPING WHEN CONTINUING FORM.
     checkJump(step) {
+        const stepToSectionMap = {
+            1: 'aspirationsSection',
+            2: 'goalsSection',
+            3: 'activitiesSection',
+            4: 'growthSection',
+        };
+        const section = stepToSectionMap[step];
         // Check if the current step is valid
         const isCurrentStepValid = this.isStepValid(this.currentStep);
+        const isSectionEdited = this.isSectionEdited(section);
 
         // Allow jump if the step is allowed and the current step is valid
-        return isCurrentStepValid && this.allowedStepsForJump.includes(step);
+        // return isCurrentStepValid && this.allowedStepsForJump.includes(step);
+        return isCurrentStepValid && (isSectionEdited || this.allowedStepsForJump.includes(step));
     },
 
     isStepValid(step) {
@@ -1179,6 +1192,50 @@ methods: {
                 case 1: return !this.growthError;
                 default: return true;
             }
+        }
+    },
+
+    isSectionEdited(section) {
+        if (section === 'aspirationsSection') {
+            // Compare the relevant parts of exitForm against their original values
+            const originalAspirationOneProgressSelected = this.originalExitFormTwo.progressMade.aspirationOneProgressSelected;
+            const originalAspirationTwoProgressSelected = this.originalExitFormTwo.progressMade.aspirationTwoProgressSelected;
+            const originalAspirationThreeProgressSelected = this.originalExitFormTwo.progressMade.aspirationThreeProgressSelected;
+
+            const originalAspirationOneExperienceConnectionSelected = this.originalExitFormTwo.progressMade.aspirationOneExperienceConnectionSelected;
+            const originalAspirationTwoExperienceConnectionSelected = this.originalExitFormTwo.progressMade.aspirationTwoExperienceConnectionSelected;
+            const originalAspirationThreeExperienceConnectionSelected = this.originalExitFormTwo.progressMade.aspirationThreeExperienceConnectionSelected;
+
+            const currentAspirationOneProgressSelected = this.exitForm.progressMade.aspirationOneProgressSelected;
+            const currentAspirationTwoProgressSelected = this.exitForm.progressMade.aspirationTwoProgressSelected;
+            const currentAspirationThreeProgressSelected = this.exitForm.progressMade.aspirationThreeProgressSelected;
+
+            const currentAspirationOneExperienceConnectionSelected = this.exitForm.progressMade.aspirationOneExperienceConnectionSelected;
+            const currentAspirationTwoExperienceConnectionSelected = this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected;
+            const currentAspirationThreeExperienceConnectionSelected = this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected;
+
+            // Use lodash's isEqual to perform deep comparison
+            const aspirationOneProgressSelectedEdited = !isEqual(originalAspirationOneProgressSelected, currentAspirationOneProgressSelected);
+
+            const aspirationTwoProgressSelectedEdited = !isEqual(originalAspirationTwoProgressSelected, currentAspirationTwoProgressSelected);
+
+            const aspirationThreeProgressSelectedEdited = !isEqual(originalAspirationThreeProgressSelected, currentAspirationThreeProgressSelected);
+
+            const aspirationOneExperienceConnectionSelectedEdited = !isEqual(originalAspirationOneExperienceConnectionSelected, currentAspirationOneExperienceConnectionSelected);
+
+            const aspirationTwoExperienceConnectionSelectedEdited = !isEqual(originalAspirationTwoExperienceConnectionSelected, currentAspirationTwoExperienceConnectionSelected);
+
+            const aspirationThreeExperienceConnectionSelectedEdited = !isEqual(originalAspirationThreeExperienceConnectionSelected, currentAspirationThreeExperienceConnectionSelected);
+
+            const editedCheck = aspirationOneProgressSelectedEdited || aspirationTwoProgressSelectedEdited || aspirationThreeProgressSelectedEdited || aspirationOneExperienceConnectionSelectedEdited || aspirationTwoExperienceConnectionSelectedEdited || aspirationThreeExperienceConnectionSelectedEdited;
+
+            return editedCheck
+        } else if (section === 'goalsSection') {
+
+        } else if (section === 'activitiesSection') {
+
+        } else if (section === 'growthSection') {
+
         }
     },
 
@@ -1666,6 +1723,11 @@ methods: {
     handleUpdateDataAndSociety(status) {
         this.dataAndSociety = status;
     },
+
+    handleUpdateFirstInput(status) {
+        console.log('handleUpdateFirstInput: ', status);
+        this.isFirstInput = status;
+    }
     
 },
 

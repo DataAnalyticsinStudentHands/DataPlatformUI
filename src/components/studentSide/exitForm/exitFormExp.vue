@@ -71,7 +71,7 @@ props: {
     isFirstInput: Boolean,
     expRegistrationIDFromIncomplete: String
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration", "update-data-and-society"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration", "update-data-and-society", "update-first-input"],
 data() {
     return {
         formSubmitted: false,
@@ -118,7 +118,6 @@ mounted() {
 watch: {
     selectedExperience(newVal, oldVal) {
       if (newVal && newVal !== oldVal) {
-        console.log('checkExistingForm called');
         this.checkExistingForm(newVal);
       }
       if (!newVal) {
@@ -193,7 +192,6 @@ methods: {
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
-        console.log('selectedExperienceInfo: ', selectedExperienceInfo);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
         this.$emit('reset-exit-form');
 
@@ -210,8 +208,6 @@ methods: {
                     token: token
                 }
             });
-
-            console.log('checkExistingForm response: ', response.data);
 
             // Check for specific "Data & Society" patterns in the text
             const textPatterns = ["Data & Society", "Data And Society", "Data and Society", "Minor Data & Society", "Minor Data And Society", "Minor Data and Society"];
@@ -314,6 +310,8 @@ methods: {
             }
 
             this.$emit('reset-error-flags');
+
+            this.$emit("update-first-input", true);
 
 
         } catch (error) {
