@@ -71,7 +71,7 @@ props: {
     isFirstInput: Boolean,
     expRegistrationIDFromIncomplete: String
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration", "update-data-and-society"],
 data() {
     return {
         formSubmitted: false,
@@ -89,6 +89,7 @@ data() {
     }
 },
 mounted() {
+    window.scrollTo(0, 0);
     const user = useLoggedInUserStore();
 
     // Translations
@@ -172,10 +173,10 @@ methods: {
             
             // Map the response data to the tempExitForm's experiences
             tempExitForm.experiences = response.data.map(experience => ({
-            experienceID: experience._id,
-            experienceCategory: experience.experienceCategory,
-            experienceName: experience.experienceName,
-            expRegistrationID: experience.expRegistrationID
+                experienceID: experience._id,
+                experienceCategory: experience.experienceCategory,
+                experienceName: experience.experienceName,
+                expRegistrationID: experience.expRegistrationID
             }));
             
             // Emit the event with the original exit form to update it elsewhere as needed
@@ -192,8 +193,12 @@ methods: {
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
+        console.log('selectedExperienceInfo: ', selectedExperienceInfo);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
         this.$emit('reset-exit-form');
+
+        // Create a deep copy of this.exitForm
+        let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
 
         const user = useLoggedInUserStore();
         const token = user.token;
@@ -206,13 +211,15 @@ methods: {
                 }
             });
 
-            console.log('response: ', response.data);
+            console.log('checkExistingForm response: ', response.data);
+
+            // Check for specific "Data & Society" patterns in the text
+            const textPatterns = ["Data & Society", "Data And Society", "Data and Society", "Minor Data & Society", "Minor Data And Society", "Minor Data and Society"];
+            const containsDataAndSociety = selectedExperienceInfo && textPatterns.some(pattern => selectedExperienceInfo.text.includes(pattern));
+            this.$emit("update-data-and-society", containsDataAndSociety);
 
             if (response.data.goalFormFound) {
                 this.$emit('update-goal-form-exists', response.data.goalFormFound);
-
-                // Create a deep copy of this.exitForm
-                let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
 
                 const goalFormData = response.data.goalForm;
 
@@ -249,8 +256,7 @@ methods: {
                 this.exitForm.goal5 = goalFormData.goalForm.goals?.goalFive;
 
             } else {
-                // Create a deep copy of this.exitForm
-                let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+                this.$emit('update-goal-form-exists', false);
 
                 tempExitForm.goalSettingFormID = null;
                 // Update aspirations
@@ -296,6 +302,11 @@ methods: {
             }
 
             if (response.data && response.data.activities && response.data.activities.length > 0) {
+                // Update the temporary form first
+                tempExitForm.experienceActivities = response.data.activities;
+
+                // Emit the updated temporary form
+                this.$emit("update-original-exit-form", tempExitForm);
                 this.exitForm.experienceActivities = response.data.activities;
                 this.$emit('update-activities-exist', true);
             } else {

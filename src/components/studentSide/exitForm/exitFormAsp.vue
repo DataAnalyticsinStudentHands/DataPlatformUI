@@ -258,6 +258,10 @@ import { toast } from 'vue3-toastify';
       }
     },
 
+    mounted() {
+      window.scrollTo(0, 0);
+    },
+
     watch: {
       hasValidationErrors(newValue, oldValue) {
           if (newValue !== oldValue) {

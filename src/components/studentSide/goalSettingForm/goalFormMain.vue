@@ -1,5 +1,4 @@
 <template>
-    selectedExperience Main: {{ selectedExperience }}
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">

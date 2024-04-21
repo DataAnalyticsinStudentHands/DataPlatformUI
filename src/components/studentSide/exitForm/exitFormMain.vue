@@ -3,6 +3,7 @@
     <!-- isFirstInput: {{ isFirstInput }} -->
     <!-- <br><br> -->
     <!-- {{ exitForm }} -->
+    currentStep: {{ currentStep }}
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
@@ -154,6 +155,7 @@
                         @update-goal-form-exists="handleGoalFormExists"
                         @update-activities-exist="handleActivitiesExist"
                         @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
+                        @update-data-and-society="handleUpdateDataAndSociety"
                     ></exit-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -197,6 +199,7 @@
                         ref="ExitFormGrowthRef"
                         :key="componentsKey"
                         :exitForm="exitForm"
+                        :dataAndSociety="dataAndSociety"
                         @form-valid="handleFormValid(4)"
                         @form-invalid="handleFormInvalid('growth')"
                         @scroll-to-error="handleScrollToError"
@@ -218,10 +221,10 @@
                 </v-stepper-window>
                 </v-container>
 
-                <!-- Mobile View with Vuetify Slide Transition -->
+                <!-- Mobile View -->
                 <v-container v-if="$vuetify.display.xs" class="pa-0 ma-0">
                     <v-scroll-x-reverse-transition group hide-on-leave>
-                    <div v-show="currentStep === 0" key="step0">
+                    <div v-show="showExperienceStep" key="step0">
                         <exit-form-exp
                             ref="ExitFormExpRef"
                             :exitForm="exitForm"
@@ -239,9 +242,10 @@
                             @update-goal-form-exists="handleGoalFormExists"
                             @update-activities-exist="handleActivitiesExist"
                             @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
+                            @update-data-and-society="handleUpdateDataAndSociety"
                         ></exit-form-exp>
                     </div>
-                    <div v-show="currentStep === 1" key="step1">
+                    <div v-show="showAspirationsStep" key="step1">
                         <exit-form-asp
                             ref="ExitFormAspRef"
                             :key="componentsKey"
@@ -253,7 +257,7 @@
                             @validation-change="handleValidationChange('asp', $event)"
                         ></exit-form-asp>
                     </div>
-                    <div v-show="currentStep === 2" key="step2">
+                    <div v-show="showGoalsStep" key="step2">
                         <exit-form-goals
                             ref="ExitFormGoalsRef"
                             :key="componentsKey"
@@ -265,7 +269,7 @@
                             @validation-change="handleValidationChange('goals', $event)"
                         ></exit-form-goals>
                     </div>
-                    <div v-show="currentStep === 3" key="step3">
+                    <div v-show="showActivitiesStep" key="step3">
                         <exit-form-act
                             ref="ExitFormActRef"
                             :key="componentsKey"
@@ -277,18 +281,19 @@
                             @validation-change="handleValidationChange('act', $event)"
                         ></exit-form-act>
                     </div>
-                    <div v-show="currentStep === 4" key="step4">
+                    <div v-show="showGrowthStep" key="step4">
                             <exit-form-growth
                                 ref="ExitFormGrowthRef"
                                 :key="componentsKey"
                                 :exitForm="exitForm"
+                                :dataAndSociety="dataAndSociety"
                                 @form-valid="handleFormValid(4)"
                                 @form-invalid="handleFormInvalid('growth')"
                                 @scroll-to-error="handleScrollToError"
                                 @validation-change="handleValidationChange('growth', $event)"
                         ></exit-form-growth>
                     </div>
-                    <div v-show="currentStep === 5" key="step5">
+                    <div v-show="showReviewStep" key="step5">
                         <exit-form-review
                             ref="ExitFormReviewRef"
                             :key="componentsKey"
@@ -383,8 +388,8 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<br><br><br><br><br><br><br><br><br><br><br><br><br>
-{{ exitForm }}
+<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br>
+{{ exitForm }} -->
 </template>
 
 <script>
@@ -837,6 +842,7 @@ data() {
         tempIncompleteForm: {},
         expRegistrationIDFromIncomplete: null,
         expRegistrationIDFromIncompleteBackup: null,
+        dataAndSociety: false,
     }
 },
 async created() {
@@ -845,6 +851,7 @@ async created() {
 },
 async mounted() {
     await this.checkIncompleteForm();
+    window.scrollTo(0, 0);
 },
 watch: {
     currentStep(newVal) {
@@ -858,8 +865,8 @@ watch: {
     },
     exitForm: {
         handler(newVal, oldVal) {
-            // console.log('newVal: ', newVal);
-            // console.log('this.originalExitForm: ', this.originalExitForm);
+            console.log('newVal: ', newVal);
+            console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
                     this.handleFirstInput();
@@ -931,7 +938,35 @@ computed: {
             }
         }
         return false;
-    }
+    },
+
+    showExperienceStep() {
+        return this.currentStep === 0;
+    },
+    showAspirationsStep() {
+        return this.currentStep === 1;
+    },
+    showGoalsStep() {
+        return this.currentStep === 2 && this.goalFormExists;
+    },
+    showActivitiesStep() {
+        return this.currentStep === 3 && this.goalFormExists && this.activitiesExist;
+    },
+    showGrowthStep() {
+        if (this.goalFormExists) {
+            return this.currentStep === 4 || (!this.activitiesExist && this.currentStep === 3);
+        }
+        return this.currentStep === 1;  // Handle case when there is no goal form
+    },
+    showReviewStep() {
+        if (this.goalFormExists) {
+            if (this.activitiesExist) {
+                return this.currentStep === 5;
+            }
+            return this.currentStep === 4;  // When there are no activities
+        }
+        return this.currentStep === 2;  // When there is no goal form
+    },
 },
 methods: {
     updateGoalFormWithBackgroundData() {
@@ -1626,7 +1661,12 @@ methods: {
     handleUpdateIncompleteExpRegistration() {
         // Set this to null so that the app start a new form when user selects a new experiences
         this.expRegistrationIDFromIncomplete = null;
-    }
+    },
+
+    handleUpdateDataAndSociety(status) {
+        this.dataAndSociety = status;
+    },
+    
 },
 
 beforeRouteLeave(to, from, next) {

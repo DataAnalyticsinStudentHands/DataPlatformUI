@@ -10,11 +10,6 @@ const routes = [
       redirect: '/login'
     },
     {
-      path: '/test',
-      name: 'test',
-      component: () => import('../components/testExitForm/exitFormMain.vue'),
-    },
-    {
       path: '/test2',
       name: 'test2',
       component: () => import('../components/testExitFormOld.vue'),
