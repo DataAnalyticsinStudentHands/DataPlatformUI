@@ -141,6 +141,7 @@
                     <exit-form-exp
                         ref="ExitFormExpRef"
                         :exitForm="exitForm"
+                        :originalExitForm="originalExitForm"
                         :isFirstInput="isFirstInput"
                         :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
                         @form-valid="handleFormValid(0)"
@@ -392,6 +393,8 @@
 </v-dialog>
 <br><br><br><br><br><br><br><br><br><br><br><br><br>
 {{ exitForm }}
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+{{ originalExitForm }}
 </template>
 
 <script>
@@ -873,9 +876,11 @@ watch: {
             // console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
+                    console.log('handleFirstInput called');
                     this.handleFirstInput();
                 } else {
                     // Use the debounced method for subsequent updates
+                    console.log('regular handleInput called');
                     this.handleInput();
                 }
             }
@@ -1009,10 +1014,11 @@ methods: {
     },
 
     resetExitForm() {
+        console.log('resetExitForm called exitForm: ', this.exitForm);
+        console.log('resetExitForm called originalExitForm: ', this.originalExitForm);
         const tempExperiences = this.exitForm.experiences;
-        if (!this.incompleteFormID || !this.incompleteFormID.length) {
-            this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
-        }
+        this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+        console.log('resetExitForm after resetting exitForm: ', this.exitForm);
         this.exitForm.experiences = tempExperiences;
         // Code to refresh all the child components
         this.componentsKey++;
@@ -1520,6 +1526,7 @@ methods: {
     },
 
     updateOriginalExitForm(newVal) {
+        console.log('PHIL HERE updateOriginalExitForm called newVal: ', newVal);
         this.originalExitForm = this.deepClone(newVal);
     },
 
@@ -1725,7 +1732,6 @@ methods: {
     },
 
     handleUpdateFirstInput(status) {
-        console.log('handleUpdateFirstInput: ', status);
         this.isFirstInput = status;
     }
     
