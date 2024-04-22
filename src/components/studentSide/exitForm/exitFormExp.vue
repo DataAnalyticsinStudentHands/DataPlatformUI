@@ -68,10 +68,12 @@ name: "ExitFormExperiences",
 props: {
     exitForm: Object,
     originalExitForm: Object,
+    originalExitFormTwo: Object,
     isFirstInput: Boolean,
     expRegistrationIDFromIncomplete: String,
     tempIncompleteForm: Object,
     startNewSelected: Boolean,
+    currentlyUsingIncompleteForm: Boolean
 },
 emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration", "update-data-and-society", "update-first-input"],
 data() {
@@ -199,17 +201,27 @@ methods: {
     },
 
     async checkExistingForm() {
+        console.log('exitForm beginning checkExistingForm: ', this.exitForm);
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
 
         let tempExitForm = {};
 
-        // Check if tempIncompleteForm and its key incompleteForm exist and have meaningful data
-        if (this.tempIncompleteForm && this.tempIncompleteForm.incompleteForm && Object.keys(this.tempIncompleteForm.incompleteForm).length > 0) {
-            tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+        if (this.currentlyUsingIncompleteForm) {
+            console.log('currentUsingIncompleteForm');
+            tempExitForm = JSON.parse(JSON.stringify(this.originalExitFormTwo));
+            console.log('tempExitForm: ', tempExitForm);
         } else {
-            tempExitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+            console.log('NOT currentUsingIncompleteForm');
+            // Check if tempIncompleteForm and its key incompleteForm exist and have meaningful data
+            if (this.tempIncompleteForm && this.tempIncompleteForm.incompleteForm && Object.keys(this.tempIncompleteForm.incompleteForm).length > 0) {
+                console.log('this.tempIncompleteForm');
+                tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+            } else {
+                console.log('NOT this.tempIncompleteForm');
+                tempExitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+            }
         }
 
         this.$emit('reset-exit-form');
@@ -344,6 +356,8 @@ methods: {
 
             // Emit an object with all necessary details
             this.$emit("update-selected-experience", selectedExperienceInfo);
+
+            console.log('exitForm end checkExistingForm: ', this.exitForm);
 
         } catch (error) {
             this.handleError("An unexpected error occurred while checking for existing form:", error);

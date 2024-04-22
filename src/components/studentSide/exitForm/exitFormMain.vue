@@ -142,10 +142,12 @@
                         ref="ExitFormExpRef"
                         :exitForm="exitForm"
                         :originalExitForm="originalExitForm"
+                        :originalExitFormTwo="originalExitFormTwo"
                         :isFirstInput="isFirstInput"
                         :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
                         :tempIncompleteForm="tempIncompleteForm"
                         :startNewSelected="startNewSelected"
+                        :currentlyUsingIncompleteForm="currentlyUsingIncompleteForm"
                         @form-valid="handleFormValid(0)"
                         @form-invalid="handleFormInvalid('exp')"
                         @scroll-to-error="handleScrollToError"
@@ -232,10 +234,13 @@
                         <exit-form-exp
                             ref="ExitFormExpRef"
                             :exitForm="exitForm"
+                            :originalExitForm="originalExitForm"
+                            :originalExitFormTwo="originalExitFormTwo"
                             :isFirstInput="isFirstInput"
                             :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
                             :tempIncompleteForm="tempIncompleteForm"
                             :startNewSelected="startNewSelected"
+                            :currentlyUsingIncompleteForm="currentlyUsingIncompleteForm"
                             @form-valid="handleFormValid(0)"
                             @form-invalid="handleFormInvalid('exp')"
                             @scroll-to-error="handleScrollToError"
@@ -854,6 +859,7 @@ data() {
         expRegistrationIDFromIncompleteBackup: null,
         dataAndSociety: false,
         startNewSelected: false,
+        currentlyUsingIncompleteForm: false,
     }
 },
 async created() {
@@ -1540,6 +1546,7 @@ methods: {
             if (response.data.incompleteForm) {
                 this.tempIncompleteForm = response.data;
                 this.expRegistrationIDFromIncompleteBackup = this.tempIncompleteForm.incompleteForm.expRegistrationID;
+                this.currentlyUsingIncompleteForm = true;
                 this.showIncompleteFormFoundDialog = true;
             }
         } catch (error) {
