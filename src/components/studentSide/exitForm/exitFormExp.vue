@@ -107,7 +107,9 @@ mounted() {
     try {
         this.fetchExperiences().then(() => {
         // this.fetchHasFilledForm();
-        // this.selectExperienceFromRouteParam();
+        if (this.startNewSelected === false) {
+            this.selectExperienceFromRouteParam();
+        }
         });
 
     } catch (error) {
@@ -404,22 +406,45 @@ methods: {
     },
 
     selectExperienceFromRouteParam() {
-        const experienceRegistrationIDFromRoute = this.$route.params.registrationID;
-        if (experienceRegistrationIDFromRoute) {
-            // Find the experience in the array that matches the expRegistrationID
-            const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
-            if (matchingExperience) {
-                // Set the selectedExperience to the experienceID of the matching experience
-                this.selectedExperience = matchingExperience.experienceID;
-                // Find the text corresponding to the selected value
-                const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+        if (this.tempIncompleteForm && this.tempIncompleteForm.incompleteForm && Object.keys(this.tempIncompleteForm.incompleteForm).length > 0) {
+            if (this.startNewSelected) {
+                const experienceRegistrationIDFromRoute = this.$route.params.registrationID;
+                if (experienceRegistrationIDFromRoute) {
+                    // Find the experience in the array that matches the expRegistrationID
+                    const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
-                // Emit an object with both text and value
-                this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience, expRegistrationID: experienceRegistrationIDFromRoute });
-            } else {
-                console.log('No matching experience found for the given expRegistrationID');
+                    if (matchingExperience) {
+                        // Set the selectedExperience to the experienceID of the matching experience
+                        this.selectedExperience = matchingExperience.experienceID;
+                        // Find the text corresponding to the selected value
+                        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+
+                        // Emit an object with both text and value
+                        this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience, expRegistrationID: experienceRegistrationIDFromRoute });
+                    } else {
+                        console.log('No matching experience found for the given expRegistrationID');
+                    }
+                }
             }
+        } else {
+            const experienceRegistrationIDFromRoute = this.$route.params.registrationID;
+                if (experienceRegistrationIDFromRoute) {
+                    // Find the experience in the array that matches the expRegistrationID
+                    const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
+
+                    if (matchingExperience) {
+                        // Set the selectedExperience to the experienceID of the matching experience
+                        this.selectedExperience = matchingExperience.experienceID;
+                        // Find the text corresponding to the selected value
+                        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+
+                        // Emit an object with both text and value
+                        this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience, expRegistrationID: experienceRegistrationIDFromRoute });
+                    } else {
+                        console.log('No matching experience found for the given expRegistrationID');
+                    }
+                }
         }
     },    
 },
