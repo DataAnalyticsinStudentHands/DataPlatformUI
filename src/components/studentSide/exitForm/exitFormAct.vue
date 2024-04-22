@@ -387,7 +387,6 @@
               },
           
               isFieldInvalid(fieldRef) {
-                console.log('isFieldInvalid: ', fieldRef);
                     switch (fieldRef) {
                         case 'goalActivityProgressField':
                             return this.isGoalActivityProgressInvalid;

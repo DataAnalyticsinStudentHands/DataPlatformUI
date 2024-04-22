@@ -1195,7 +1195,6 @@
         
         try {
           // Submit the entry form
-          console.log('studentInformation before creation: ', this.studentInformation);
           await axios.post(apiURL, this.studentInformation, { headers: { token } });
   
           // After form submission, call the checkFormCompletion action to update the hasCompletedEntryForm state

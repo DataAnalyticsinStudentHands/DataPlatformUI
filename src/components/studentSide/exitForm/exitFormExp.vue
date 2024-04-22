@@ -201,7 +201,6 @@ methods: {
     },
 
     async checkExistingForm() {
-        console.log('exitForm beginning checkExistingForm: ', this.exitForm);
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
@@ -209,17 +208,12 @@ methods: {
         let tempExitForm = {};
 
         if (this.currentlyUsingIncompleteForm) {
-            console.log('currentUsingIncompleteForm');
             tempExitForm = JSON.parse(JSON.stringify(this.originalExitFormTwo));
-            console.log('tempExitForm: ', tempExitForm);
         } else {
-            console.log('NOT currentUsingIncompleteForm');
             // Check if tempIncompleteForm and its key incompleteForm exist and have meaningful data
             if (this.tempIncompleteForm && this.tempIncompleteForm.incompleteForm && Object.keys(this.tempIncompleteForm.incompleteForm).length > 0) {
-                console.log('this.tempIncompleteForm');
                 tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
             } else {
-                console.log('NOT this.tempIncompleteForm');
                 tempExitForm = JSON.parse(JSON.stringify(this.originalExitForm));
             }
         }
@@ -356,8 +350,6 @@ methods: {
 
             // Emit an object with all necessary details
             this.$emit("update-selected-experience", selectedExperienceInfo);
-
-            console.log('exitForm end checkExistingForm: ', this.exitForm);
 
         } catch (error) {
             this.handleError("An unexpected error occurred while checking for existing form:", error);

@@ -418,32 +418,23 @@ export default {
         },
         goalsContributions() {
             return (activityID) => {
-                console.log("Activity ID:", activityID); // Log the activity ID
-                console.log("Activities Contribution:", this.exitForm.activitiesContribution); // Log the activitiesContribution data
-
                 let contributions = [];
                 // Map contributions to goal descriptions
-                console.log("Checking Goal 1 Contributions:", this.exitForm.activitiesContribution.goalOneContributions.includes(activityID));
                 if (this.exitForm.activitiesContribution.goalOneContributions.includes(activityID)) {
                     contributions.push(this.exitForm.goal1);
                 }
-                console.log("Checking Goal 2 Contributions:", this.exitForm.activitiesContribution.goalTwoContributions.includes(activityID));
                 if (this.exitForm.activitiesContribution.goalTwoContributions.includes(activityID)) {
                     contributions.push(this.exitForm.goal2);
                 }
-                console.log("Checking Goal 3 Contributions:", this.exitForm.activitiesContribution.goalThreeContributions.includes(activityID));
                 if (this.exitForm.activitiesContribution.goalThreeContributions.includes(activityID)) {
                     contributions.push(this.exitForm.goal3);
                 }
-                console.log("Checking Goal 4 Contributions:", this.exitForm.activitiesContribution.goalFourContributions.includes(activityID));
                 if (this.exitForm.activitiesContribution.goalFourContributions.includes(activityID)) {
                     contributions.push(this.exitForm.goal4);
                 }
-                console.log("Checking Goal 5 Contributions:", this.exitForm.activitiesContribution.goalFiveContributions.includes(activityID));
                 if (this.exitForm.activitiesContribution.goalFiveContributions.includes(activityID)) {
                     contributions.push(this.exitForm.goal5);
                 }
-                console.log("Final Contributions List:", contributions); // Log the final list of contributions
                 return contributions; // Returns an array of descriptions for goals to which the activity contributes
             }
         },

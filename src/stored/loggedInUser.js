@@ -231,7 +231,6 @@ export const useLoggedInUserStore = defineStore({
       }
     },     
     async updateRegisteredExperiences(selectedExperiences) {
-      console.log('updateRegisteredExperiences called');
       const token = this.token;
       const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
       const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
@@ -264,8 +263,6 @@ export const useLoggedInUserStore = defineStore({
           position: 'top-right',
           toastClassName: 'Toastify__toast--create'
         });
-
-        console.log('end of updateRegisteredExperiences');
 
         // Call Student Checklist
         await this.checkFormCompletion();

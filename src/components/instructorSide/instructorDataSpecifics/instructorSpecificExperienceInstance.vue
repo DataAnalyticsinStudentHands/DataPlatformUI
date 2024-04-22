@@ -234,7 +234,6 @@ export default {
             try {
                 const response = await axios.get(apiURL, { headers: { token } });
                 const instanceData = response.data;
-                console.log('instanceData: ', instanceData);
                 this.selectedSessionID = instanceData.sessionID;
                 this.selectedExperienceID = instanceData.experience.id;
                 this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10); // Format date as 'YYYY-MM-DD'
@@ -358,9 +357,6 @@ export default {
             let token = user.token;
             const instanceID = this.$route.params.id;
             let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-single-instance/${instanceID}`;
-
-            // Make sure to log or check that selectedActivities is formatted correctly
-            console.log('selectedActivities: ', this.selectedActivities);
 
             try {
                 await axios.put(apiURL, {

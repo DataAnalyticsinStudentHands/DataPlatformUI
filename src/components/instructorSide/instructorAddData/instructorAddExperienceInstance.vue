@@ -455,7 +455,6 @@ export default {
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experiences/available-experiences-for-instance?sessionID=${sessionID}`;
                 const resp = await axios.get(apiURL, { headers: { token } });
                 this.experienceData = resp.data;
-                console.log('experienceData: ', this.experienceData);
                 this.originalExperienceData = [...this.experienceData];
             } catch (error) {
                 this.handleError(error);
@@ -540,8 +539,6 @@ export default {
                 const token = user.token;
 
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances/multiple`;
-                console.log('this.selectedExperiences: ', this.selectedExperiences);
-                console.log('this.activityData: ', this.activityData)
 
                 // Prepare the experience data for the API call
                 const experienceData = this.selectedExperiences.map(exp => ({
@@ -555,8 +552,6 @@ export default {
                         };
                     })
                 }));
-
-                console.log('experienceData: ', experienceData);
 
                 await axios.post(apiURL, {
                     sessionID: this.selectedSession._id,

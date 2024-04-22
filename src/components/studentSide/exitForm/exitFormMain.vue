@@ -888,11 +888,9 @@ watch: {
             // console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
-                    console.log('handleFirstInput called');
                     this.handleFirstInput();
                 } else {
                     // Use the debounced method for subsequent updates
-                    console.log('regular handleInput called');
                     this.handleInput();
                 }
             }

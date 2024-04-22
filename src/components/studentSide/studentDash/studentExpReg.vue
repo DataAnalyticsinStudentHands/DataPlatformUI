@@ -334,7 +334,6 @@ export default {
             return this.selectedExperiences.some(selectedExp => selectedExp._id === experience._id);
         },
         saveExperiences() {
-          console.log('saveExperiences called');
           const store = useLoggedInUserStore();
           store.updateRegisteredExperiences(this.selectedExperiences);
           this.clearSelectedExperiences(); // Clear selections and Close the dialog

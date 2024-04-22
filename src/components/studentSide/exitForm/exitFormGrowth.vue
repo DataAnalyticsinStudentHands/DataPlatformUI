@@ -399,7 +399,6 @@ export default {
 
     methods: {
         async handleValidations() {
-            console.log('handleValidations from exitFormGrowth')
             this.formSubmitted = true;
             const { valid } = await this.$refs.form.validate();
 

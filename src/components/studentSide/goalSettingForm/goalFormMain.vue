@@ -932,11 +932,9 @@ methods: {
 
         // After cleaning up the data, check whether to update or create
         if (this.foundDocumentId) {
-            console.log('handleUpdateForm')
             this.handleUpdateForm();
         } else {
             // If previously filled document wasn't found, create new document
-            console.log('handleSubmitForm')
             this.handleSubmitForm();
         }
     },
@@ -1148,7 +1146,6 @@ methods: {
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-form-incomplete/`;
         try {
             const response = await axios.get(apiURL, { headers: { token } });
-            console.log('checkIncompleteForm response.data', response.data);
             if (response.data.incompleteForm) {
                 this.tempIncompleteForm = response.data;
                 this.showIncompleteFormFoundDialog = true;
@@ -1173,7 +1170,6 @@ methods: {
     },
 
     continueProgress() {
-        console.log('continueProgress called');
         this.isFirstInput = false;
         this.goalForm = this.tempIncompleteForm.incompleteForm.goalForm;
         this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID;
