@@ -3,7 +3,7 @@
     <!-- isFirstInput: {{ isFirstInput }} -->
     <!-- <br><br> -->
     <!-- {{ exitForm }} -->
-    currentStep: {{ currentStep }}
+    <!-- currentStep: {{ currentStep }} -->
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
@@ -400,10 +400,10 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<br><br><br><br><br><br><br><br><br><br><br><br><br>
+<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br>
 {{ exitForm }}
 <br><br><br><br><br><br><br><br><br><br><br><br><br>
-{{ originalExitForm }}
+{{ originalExitForm }} -->
 </template>
 
 <script>
