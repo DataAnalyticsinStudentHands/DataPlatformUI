@@ -384,7 +384,9 @@ export default {
     },
 
     mounted() {
-        window.scrollTo(0, 0);
+        this.$nextTick(() => {
+            window.scrollTo(0, 0);
+        });
     },
 
     watch: {

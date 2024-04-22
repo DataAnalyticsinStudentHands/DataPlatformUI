@@ -562,10 +562,12 @@ async mounted() {
 },
 watch: {
     currentStep(newVal) {
+        console.log('currentStep newVal: ', newVal);
         const newStep = Number(newVal); // Convert newVal to a number
 
         // Update currentStep with the new value
         this.currentStep = newStep;
+        console.log('this.currentStep after update: ', this.currentStep);
 
         // Specifically track visitation to step 5
         if (newStep === 5 && !this.allowedStepsForJump.includes(newStep)) {
@@ -792,6 +794,48 @@ methods: {
             case 3: return !this.aspError;
             case 4: return !this.goalsError;
             default: return true;
+        }
+    },
+
+    isSectionEdited(section) {
+        if (section === 'backgroundSection') {
+            // Compare the relevant parts of goalForm against their original values
+            const originalCommunityEngagement = this.originalGoalForm.communityEngagement;
+            const currentCommunityEngagement = this.goalForm.communityEngagement;
+            const originalResearchExperience = this.originalGoalForm.researchExperience;
+            const currentResearchExperience = this.goalForm.researchExperience;
+
+            // Use lodash's isEqual to perform deep comparison
+            const communityEngagementEdited = !isEqual(originalCommunityEngagement, currentCommunityEngagement);
+            const researchExperienceEdited = !isEqual(originalResearchExperience, currentResearchExperience);
+
+            // Also check for Growth goal -> if filled then Background should be navigatable
+            const originalGrowthGoal = this.originalGoalForm.growthGoal;
+            const currentGrowthGoal = this.goalForm.growthGoal;
+            const growthGoalEdited = !isEqual(originalGrowthGoal, currentGrowthGoal);
+
+            return communityEngagementEdited || researchExperienceEdited || growthGoalEdited;
+        } else if (section === 'growthSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalGrowthGoal = this.originalGoalForm.growthGoal;
+            const currentGrowthGoal = this.goalForm.growthGoal;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalGrowthGoal, currentGrowthGoal);
+        } else if (section === 'aspirationsSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalAspirations = this.originalGoalForm.aspirations;
+            const currentAspirations = this.goalForm.aspirations;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalAspirations, currentAspirations);
+        } else if (section === 'goalsSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalGoals = this.originalGoalForm.goals;
+            const currentGoals = this.goalForm.goals;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalGoals, currentGoals);
         }
     },
 
@@ -1176,43 +1220,14 @@ methods: {
         this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
         this.goalForm.hichProject = this.tempIncompleteForm.incompleteForm.hichProject;
         this.showIncompleteFormFoundDialog = false;
-    },
 
-    isSectionEdited(section) {
-        if (section === 'backgroundSection') {
-            // Compare the relevant parts of goalForm against their original values
-            const originalCommunityEngagement = this.originalGoalForm.communityEngagement;
-            const currentCommunityEngagement = this.goalForm.communityEngagement;
-            const originalResearchExperience = this.originalGoalForm.researchExperience;
-            const currentResearchExperience = this.goalForm.researchExperience;
-
-            // Use lodash's isEqual to perform deep comparison
-            const communityEngagementEdited = !isEqual(originalCommunityEngagement, currentCommunityEngagement);
-            const researchExperienceEdited = !isEqual(originalResearchExperience, currentResearchExperience);
-
-            return communityEngagementEdited || researchExperienceEdited;
-        } else if (section === 'growthSection') {
-            // Compare the growthGoal part of the form against its original values
-            const originalGrowthGoal = this.originalGoalForm.growthGoal;
-            const currentGrowthGoal = this.goalForm.growthGoal;
-
-            // Use lodash's isEqual to perform a deep comparison
-            return !isEqual(originalGrowthGoal, currentGrowthGoal);
-        } else if (section === 'aspirationsSection') {
-            // Compare the growthGoal part of the form against its original values
-            const originalAspirations = this.originalGoalForm.aspirations;
-            const currentAspirations = this.goalForm.aspirations;
-
-            // Use lodash's isEqual to perform a deep comparison
-            return !isEqual(originalAspirations, currentAspirations);
-        } else if (section === 'goalsSection') {
-            // Compare the growthGoal part of the form against its original values
-            const originalGoals = this.originalGoalForm.goals;
-            const currentGoals = this.goalForm.goals;
-
-            // Use lodash's isEqual to perform a deep comparison
-            return !isEqual(originalGoals, currentGoals);
-        }
+        // Trigger Validations
+        this.$nextTick(() => {
+            this.triggerCommResValidation();
+            this.triggerGrowthValidation();
+            this.triggerAspValidation();
+            this.triggerGoalsValidation();
+        });
     },
 
 

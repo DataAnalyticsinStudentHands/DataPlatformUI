@@ -164,12 +164,12 @@ export default {
             return this.store.exitFormsReleased;
         },
         areAllGoalsSet() {
-            if (!this.goalSettingFormCompletion) {
-                return false;
-            }
-            return this.store.registeredExperiences.every(experience => {
-                return this.goalSettingFormCompletion[experience._id];
-            });
+            // First, filter out goal settings that are also in exit forms
+            const relevantGoals = Object.keys(this.goalSettingFormCompletion).filter(key => 
+                !Object.keys(this.exitFormCompletion).includes(key));
+
+            // Check if all relevant goal settings are set to true
+            return relevantGoals.every(key => this.goalSettingFormCompletion[key]);
         },
         goalSettingFormCompletion() {
             return this.store.goalSettingFormCompletion;

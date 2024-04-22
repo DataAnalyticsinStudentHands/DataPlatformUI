@@ -869,7 +869,9 @@ async created() {
 async mounted() {
     this.originalExitFormTwo = this.deepClone(this.originalExitForm);
     await this.checkIncompleteForm();
-    window.scrollTo(0, 0);
+    this.$nextTick(() => {
+        window.scrollTo(0, 0);
+    });
 },
 watch: {
     currentStep(newVal) {
@@ -1208,7 +1210,7 @@ methods: {
         }
     },
 
-    isSectionEdited(section) {
+    isSectionEdited(section) {        
         if (section === 'aspirationsSection') {
             // Compare the relevant parts of exitForm against their original values
             const originalAspirationOneProgressSelected = this.originalExitFormTwo.progressMade.aspirationOneProgressSelected;
@@ -1244,10 +1246,134 @@ methods: {
 
             return editedCheck
         } else if (section === 'goalsSection') {
+            const originalGoalOneProgressSelected = this.originalExitFormTwo.progressMade.goalOneProgressSelected;
+            const originalGoalTwoProgressSelected = this.originalExitFormTwo.progressMade.goalTwoProgressSelected;
+            const originalGoalThreeProgressSelected = this.originalExitFormTwo.progressMade.goalThreeProgressSelected;
+            const originalGoalFourProgressSelected = this.originalExitFormTwo.progressMade.goalFourProgressSelected;
+            const originalGoalFiveProgressSelected = this.originalExitFormTwo.progressMade.goalFiveProgressSelected;
 
+            const originalGoalOneExperienceConnectionSelected = this.originalExitFormTwo.progressMade.goalOneProgressSelected;
+            const originalGoalTwoExperienceConnectionSelected = this.originalExitFormTwo.progressMade.goalTwoProgressSelected;
+            const originalGoalThreeExperienceConnectionSelected = this.originalExitFormTwo.progressMade.goalThreeProgressSelected;
+            const originalGoalFourExperienceConnectionSelected = this.originalExitFormTwo.progressMade.goalFourProgressSelected;
+            const originalGoalFiveExperienceConnectionSelected = this.originalExitFormTwo.progressMade.goalFiveProgressSelected;
+
+            const originalGoalIssues = this.originalExitFormTwo.goalIssues;
+
+            const currentGoalOneProgressSelected = this.exitForm.progressMade.goalOneProgressSelected;
+            const currentGoalTwoProgressSelected = this.exitForm.progressMade.goalTwoProgressSelected;
+            const currentGoalThreeProgressSelected = this.exitForm.progressMade.goalThreeProgressSelected;
+            const currentGoalFourProgressSelected = this.exitForm.progressMade.goalFourProgressSelected;
+            const currentGoalFiveProgressSelected = this.exitForm.progressMade.goalFiveProgressSelected;
+
+            const currentGoalOneExperienceConnectionSelected = this.exitForm.progressMade.goalOneProgressSelected;
+            const currentGoalTwoExperienceConnectionSelected = this.exitForm.progressMade.goalTwoProgressSelected;
+            const currentGoalThreeExperienceConnectionSelected = this.exitForm.progressMade.goalThreeProgressSelected;
+            const currentGoalFourExperienceConnectionSelected = this.exitForm.progressMade.goalFourProgressSelected;
+            const currentGoalFiveExperienceConnectionSelected = this.exitForm.progressMade.goalFiveProgressSelected;
+
+            const currentGoalIssues = this.exitForm.goalIssues;
+
+            // Use lodash's isEqual to perform deep comparison
+            const goalOneProgressSelectedEdited = !isEqual(originalGoalOneProgressSelected, currentGoalOneProgressSelected);
+
+            const goalTwoProgressSelectedEdited = !isEqual(originalGoalTwoProgressSelected, currentGoalTwoProgressSelected);
+
+            const goalThreeProgressSelectedEdited = !isEqual(originalGoalThreeProgressSelected, currentGoalThreeProgressSelected);
+
+            const goalFourProgressSelectedEdited = !isEqual(originalGoalFourProgressSelected, currentGoalFourProgressSelected);
+
+            const goalFiveProgressSelectedEdited = !isEqual(originalGoalFiveProgressSelected, currentGoalFiveProgressSelected);
+
+            const goalOneExperienceConnectionSelectedEdited = !isEqual(originalGoalOneExperienceConnectionSelected, currentGoalOneExperienceConnectionSelected);
+
+            const goalTwoExperienceConnectionSelectedEdited = !isEqual(originalGoalTwoExperienceConnectionSelected, currentGoalTwoExperienceConnectionSelected);
+
+            const goalThreeExperienceConnectionSelectedEdited = !isEqual(originalGoalThreeExperienceConnectionSelected, currentGoalThreeExperienceConnectionSelected);
+
+            const goalFourExperienceConnectionSelectedEdited = !isEqual(originalGoalFourExperienceConnectionSelected, currentGoalFourExperienceConnectionSelected);
+
+            const goalFiveExperienceConnectionSelectedEdited = !isEqual(originalGoalFiveExperienceConnectionSelected, currentGoalFiveExperienceConnectionSelected);
+
+            const goalIssuesEdited = !isEqual(originalGoalIssues, currentGoalIssues);
+
+            const editedCheck = goalOneProgressSelectedEdited || goalTwoProgressSelectedEdited || goalThreeProgressSelectedEdited || goalFourProgressSelectedEdited || goalFiveProgressSelectedEdited || goalOneExperienceConnectionSelectedEdited || goalTwoExperienceConnectionSelectedEdited || goalThreeExperienceConnectionSelectedEdited || goalFourExperienceConnectionSelectedEdited || goalFiveExperienceConnectionSelectedEdited || goalIssuesEdited;
+
+            return editedCheck
         } else if (section === 'activitiesSection') {
+            const originalActivitiesContribution = this.originalExitFormTwo.activitiesContribution;
+            const currentActivitiesContribution = this.exitForm.activitiesContribution;
 
+            const activitiesContributionEdited = !isEqual(originalActivitiesContribution, currentActivitiesContribution);
+
+            return activitiesContributionEdited
         } else if (section === 'growthSection') {
+            const originalExperienceContributions = this.originalExitFormTwo.experienceContributions;
+
+            let enrollAnotherCourseSelectedEdited = null;
+            let completeMinorSelectedEdited = null;
+            let recommendCourseSelectedEdited = null;
+            let pursueCareerSelectedEdited = null;
+
+            if (this.dataAndSociety) {
+                const originalEnrollAnotherCourseSelected = this.originalExitFormTwo.likelihoodOf.enrollAnotherCourseSelected;
+
+                const originalCompleteMinorSelected = this.originalExitFormTwo.likelihoodOf.completeMinorSelected;
+
+                const originalRecommendCourseSelected = this.originalExitFormTwo.likelihoodOf.recommendCourseSelected;
+
+                const originalPursueCareerSelected = this.originalExitFormTwo.likelihoodOf.pursueCareerSelected;
+
+                const currentEnrollAnotherCourseSelected = this.exitForm.likelihoodOf.enrollAnotherCourseSelected || "";
+
+                const currentCompleteMinorSelected = this.exitForm.likelihoodOf.completeMinorSelected || "";
+
+                const currentRecommendCourseSelected = this.exitForm.likelihoodOf.recommendCourseSelected || "";
+
+                const currentPursueCareerSelected = this.exitForm.likelihoodOf.pursueCareerSelected || "";
+
+                enrollAnotherCourseSelectedEdited = !isEqual(originalEnrollAnotherCourseSelected, currentEnrollAnotherCourseSelected);
+
+                completeMinorSelectedEdited = !isEqual(originalCompleteMinorSelected, currentCompleteMinorSelected);
+
+                recommendCourseSelectedEdited = !isEqual(originalRecommendCourseSelected, currentRecommendCourseSelected);
+
+                pursueCareerSelectedEdited = !isEqual(originalPursueCareerSelected, currentPursueCareerSelected);
+            }
+
+            const originalGeneralGrowth = this.originalExitFormTwo.generalGrowth;
+
+            const originalOpenEnded = this.originalExitFormTwo.openEnded;
+
+            const currentExperienceContributions = this.exitForm.experienceContributions;
+
+            const currentGeneralGrowth = this.exitForm.generalGrowth;
+
+            const currentOpenEnded = this.exitForm.openEnded;
+
+            const experienceContributionsEdited = !isEqual(originalExperienceContributions, currentExperienceContributions);
+
+            const generalGrowthEdited = !isEqual(originalGeneralGrowth, currentGeneralGrowth);
+
+            const openEndedEdited = !isEqual(originalOpenEnded, currentOpenEnded);
+
+            if (this.dataAndSociety) {
+                
+                console.log('experienceContributionsEdited: ', experienceContributionsEdited);
+                console.log('enrollAnotherCourseSelectedEdited: ', enrollAnotherCourseSelectedEdited);
+                console.log('completeMinorSelectedEdited: ', completeMinorSelectedEdited);
+                console.log('recommendCourseSelectedEdited: ', recommendCourseSelectedEdited);
+                console.log('pursueCareerSelectedEdited: ', pursueCareerSelectedEdited);
+                console.log('generalGrowthEdited: ', generalGrowthEdited);
+                console.log('openEndedEdited: ', openEndedEdited);
+                const editedCheck = experienceContributionsEdited || enrollAnotherCourseSelectedEdited || completeMinorSelectedEdited || recommendCourseSelectedEdited || pursueCareerSelectedEdited || generalGrowthEdited || openEndedEdited;
+
+                return editedCheck;
+            } else {
+                const editedCheck = experienceContributionsEdited || generalGrowthEdited || openEndedEdited;
+
+                return editedCheck;
+            }
 
         }
     },
@@ -1657,6 +1783,18 @@ methods: {
 
         this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
         this.showIncompleteFormFoundDialog = false;
+
+        // Trigger Validations
+        this.$nextTick(() => {
+            if (this.goalFormExists) {
+                this.triggerAspValidation();
+                this.triggerGoalsValidation();
+                if (this.activitiesExist) {
+                    this.triggerActValidation();
+                }
+            }
+            this.triggerGrowthValidation();
+        });
     
     },
 
