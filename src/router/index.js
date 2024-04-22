@@ -10,11 +10,6 @@ const routes = [
       redirect: '/login'
     },
     {
-      path: '/test2',
-      name: 'test2',
-      component: () => import('../components/testExitFormOld.vue'),
-    },
-    {
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,

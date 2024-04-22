@@ -47,15 +47,6 @@
                   </v-col>
                 </v-row>
 
-                <v-row>
-                  <v-col>
-                    <v-btn
-                      @click="fetchStudents"
-                      :disabled="completed === null || !selectedExperience"
-                    >Fetch Students</v-btn>
-                  </v-col>
-                </v-row>
-
                 <v-row v-if="selectedExperience">
                 <v-col cols="12">
                   <div class="text-h6 pa-4">
@@ -86,6 +77,15 @@
                     ></v-pagination>
                   </v-col>
                 </v-row>
+
+                <v-row justify="space-between">
+                  <v-col cols="auto" class="ml-4">
+                    <v-btn size="small"
+                      :active="isNavigationDisabled"
+                      @click="toggleNavigation"
+                    >Disable Navigation</v-btn>
+                  </v-col>
+                </v-row>
                 </v-container>
         
                 <!-- Table -->
@@ -105,7 +105,7 @@
                         :class="{ 'hoverRow': hoverId === student._id }"
                         @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
-                        @click="navigateToProfile(student._id)"
+                        @click="navigateIfEnabled(student._id)"
                     >
                         <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left">{{ student.email }}</td>
@@ -127,7 +127,7 @@
                         :key="student._id"
                         @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
-                        @click="navigateToProfile(student._id)"
+                        @click="navigateIfEnabled(student._id)"
                     >
                         <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ student.email }}</td>
@@ -165,6 +165,7 @@
         itemsPerPage: 10,
         completed: null,
         studentsWithGoalForm: [],
+        isNavigationDisabled: false,
       };
     },
     components: {
@@ -179,6 +180,14 @@
           this.csvFileName = `no_goal_form_${selectedObj.experienceName}.csv`;
         } else {
           this.csvFileName = 'no_goal_form.csv';
+        }
+        if (newVal !== null && this.completed !== null) {
+          this.fetchStudents();
+        }
+      },
+      completed(newVal, oldVal) {
+        if (newVal !== null && this.selectedExperience !== null) {
+          this.fetchStudents();
         }
       },
     },
@@ -239,6 +248,7 @@
 
       // Initiates the process of fetching students based on whether they have completed goal forms or not. It calls different methods to fetch students with goal forms or without goal forms based on the value of the `completed` property.
       async fetchStudents() {
+        if (this.selectedExperience === null || this.completed === null) return;
         this.studentsWithGoalForm = [];
         this.studentsWithoutGoalForm = [];
         if (this.completed === true) {
@@ -273,6 +283,18 @@
           this.studentsWithGoalForm = response.data;
         } catch (error) {
           this.handleError(error);
+        }
+      },
+
+      toggleNavigation() {
+        this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
+        // Optionally change the button text based on state
+        this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
+      },
+
+      navigateIfEnabled(userID) {
+        if (!this.isNavigationDisabled) {
+          this.navigateToProfile(userID);
         }
       },
 

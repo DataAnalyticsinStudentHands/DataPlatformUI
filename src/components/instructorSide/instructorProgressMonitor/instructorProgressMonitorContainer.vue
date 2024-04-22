@@ -26,10 +26,10 @@
             <v-tab value="goalForms">
               Goal Form Monitor
             </v-tab>
-            <!-- <v-tab value="exitForms">
+            <v-tab value="exitForms">
               Exit Form Monitor
             </v-tab>
-            <v-tab value="pending">
+            <!-- <v-tab value="pending">
               Pending Monitor
             </v-tab> -->
           </v-tabs>

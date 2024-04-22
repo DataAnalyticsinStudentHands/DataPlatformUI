@@ -40,6 +40,17 @@
               </v-col>
             </v-row>
 
+            <v-row justify="space-between">
+              <v-col cols="auto" class="ml-4">
+                <v-btn size="small"
+                  :active="isNavigationDisabled"
+                  @click="toggleNavigation"
+                >Disable Navigation</v-btn>
+              </v-col>
+            </v-row>
+
+
+
 
 
             <!-- Loading Wheel -->
@@ -70,7 +81,7 @@
                         :class="{ 'hoverRow': hoverId === student._id }"
                         @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
-                        @click="navigateToProfile(student._id)"
+                        @click="navigateIfEnabled(student._id)"
                       >
                         <td class="text-left">{{ student.firstName }} {{ student.lastName }}</td>
                         <td class="text-left">{{ student.email }}</td>
@@ -102,6 +113,7 @@
         loading: false,
         currentPage: 1,
         itemsPerPage: 10,
+        isNavigationDisabled: false,
       };
     },
     components: {
@@ -142,6 +154,18 @@
           this.handleError(error);
         } finally {
             this.loading = false;
+        }
+      },
+
+      toggleNavigation() {
+        this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
+        // Optionally change the button text based on state
+        this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
+      },
+
+      navigateIfEnabled(userID) {
+        if (!this.isNavigationDisabled) {
+          this.navigateToProfile(userID);
         }
       },
 
