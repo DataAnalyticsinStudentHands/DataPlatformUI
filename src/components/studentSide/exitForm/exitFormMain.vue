@@ -144,6 +144,8 @@
                         :originalExitForm="originalExitForm"
                         :isFirstInput="isFirstInput"
                         :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
+                        :tempIncompleteForm="tempIncompleteForm"
+                        :startNewSelected="startNewSelected"
                         @form-valid="handleFormValid(0)"
                         @form-invalid="handleFormInvalid('exp')"
                         @scroll-to-error="handleScrollToError"
@@ -232,6 +234,8 @@
                             :exitForm="exitForm"
                             :isFirstInput="isFirstInput"
                             :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
+                            :tempIncompleteForm="tempIncompleteForm"
+                            :startNewSelected="startNewSelected"
                             @form-valid="handleFormValid(0)"
                             @form-invalid="handleFormInvalid('exp')"
                             @scroll-to-error="handleScrollToError"
@@ -849,6 +853,7 @@ data() {
         expRegistrationIDFromIncomplete: null,
         expRegistrationIDFromIncompleteBackup: null,
         dataAndSociety: false,
+        startNewSelected: false,
     }
 },
 async created() {
@@ -873,6 +878,7 @@ watch: {
     exitForm: {
         handler(newVal, oldVal) {
             // console.log('newVal: ', newVal);
+            // console.log('oldVal: ', oldVal);
             // console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
@@ -1014,11 +1020,8 @@ methods: {
     },
 
     resetExitForm() {
-        console.log('resetExitForm called exitForm: ', this.exitForm);
-        console.log('resetExitForm called originalExitForm: ', this.originalExitForm);
         const tempExperiences = this.exitForm.experiences;
         this.exitForm = JSON.parse(JSON.stringify(this.originalExitForm));
-        console.log('resetExitForm after resetting exitForm: ', this.exitForm);
         this.exitForm.experiences = tempExperiences;
         // Code to refresh all the child components
         this.componentsKey++;
@@ -1439,7 +1442,6 @@ methods: {
     },
 
     async handleFirstInput() {
-        console.log('handleFirstInput called');
         if (this.isFirstInput) {
             this.isFirstInput = false;
 
@@ -1526,7 +1528,6 @@ methods: {
     },
 
     updateOriginalExitForm(newVal) {
-        console.log('PHIL HERE updateOriginalExitForm called newVal: ', newVal);
         this.originalExitForm = this.deepClone(newVal);
     },
 
@@ -1555,6 +1556,7 @@ methods: {
             await axios.delete(apiURL, { headers: { token } });
             this.tempIncompleteForm = {};
             this.showIncompleteFormFoundDialog = false;
+            this.startNewSelected = true;
         } catch (error) {
             this.handleError(error);
         }
@@ -1642,11 +1644,15 @@ methods: {
 
         // Open Ended
         this.exitForm.openEnded = existingExitForm.openEnded;
+        
+
+        this.originalExitForm = JSON.parse(JSON.stringify(this.exitForm));
 
         this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID
 
         this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
         this.showIncompleteFormFoundDialog = false;
+    
     },
 
     updateExitForm() {

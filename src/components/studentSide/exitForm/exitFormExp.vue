@@ -69,7 +69,9 @@ props: {
     exitForm: Object,
     originalExitForm: Object,
     isFirstInput: Boolean,
-    expRegistrationIDFromIncomplete: String
+    expRegistrationIDFromIncomplete: String,
+    tempIncompleteForm: Object,
+    startNewSelected: Boolean,
 },
 emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration", "update-data-and-society", "update-first-input"],
 data() {
@@ -105,7 +107,7 @@ mounted() {
     try {
         this.fetchExperiences().then(() => {
         // this.fetchHasFilledForm();
-        this.selectExperienceFromRouteParam();
+        // this.selectExperienceFromRouteParam();
         });
 
     } catch (error) {
@@ -137,6 +139,11 @@ watch: {
             this.selectedExperience = matchedExperience ? matchedExperience.experienceID : null;
         }
     },
+    startNewSelected(newVal) {
+        if (newVal === true) {
+            this.selectExperienceFromRouteParam();
+        }
+    }
 
 },
 computed: {
@@ -178,7 +185,6 @@ methods: {
                 expRegistrationID: experience.expRegistrationID
             }));
             
-            console.log('PHIL HERE 1 update-original-exit-form: ', tempExitForm);
             // Emit the event with the original exit form to update it elsewhere as needed
             this.$emit("update-original-exit-form", tempExitForm);
 
@@ -191,15 +197,20 @@ methods: {
     },
 
     async checkExistingForm() {
-        console.log('exitForm at the beginning of checkExistingForm: ', this.exitForm);
-        console.log('originalExitForm at the beginning of checkExistingForm: ', this.originalExitForm);
         this.isLoadingExpCheck = true;
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
-        this.$emit('reset-exit-form');
 
-        // Create a deep copy of this.exitForm
-        let tempExitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+        let tempExitForm = {};
+
+        // Check if tempIncompleteForm and its key incompleteForm exist and have meaningful data
+        if (this.tempIncompleteForm && this.tempIncompleteForm.incompleteForm && Object.keys(this.tempIncompleteForm.incompleteForm).length > 0) {
+            tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
+        } else {
+            tempExitForm = JSON.parse(JSON.stringify(this.originalExitForm));
+        }
+
+        this.$emit('reset-exit-form');
         
         // Include both experienceID and expRegistrationID in the emitted data
         tempExitForm.experienceID = selectedExperienceInfo.value;
@@ -208,6 +219,7 @@ methods: {
         const user = useLoggedInUserStore();
         const token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-EF-for-registration/';
+        
 
         try {
             const response = await axios.get(apiURL + `${expRegistrationID}`, {
@@ -239,8 +251,6 @@ methods: {
                 tempExitForm.goal3 = goalFormData.goalForm.goals?.goalThree;
                 tempExitForm.goal4 = goalFormData.goalForm.goals?.goalFour;
                 tempExitForm.goal5 = goalFormData.goalForm.goals?.goalFive;
-
-                console.log('PHIL HERE 2 update-original-exit-form: ', tempExitForm);
                 
                 // Emit the event with the original exit form to update it elsewhere as needed
                 this.$emit("update-original-exit-form", tempExitForm);
@@ -278,8 +288,6 @@ methods: {
                 tempExitForm.goal3 = null;
                 tempExitForm.goal4 = null;
                 tempExitForm.goal5 = null;
-
-                console.log('PHIL HERE 3 update-original-exit-form: ', tempExitForm);
 
                 // Emit the event with the original exit form to update it elsewhere as needed
                 this.$emit("update-original-exit-form", tempExitForm);
@@ -321,7 +329,6 @@ methods: {
                 tempExitForm.experienceActivities = response.data.activities;
 
                 // Emit the updated temporary form
-                console.log('PHIL HERE 4 update-original-exit-form: ', tempExitForm);
                 this.$emit("update-original-exit-form", tempExitForm);
                 this.exitForm.experienceActivities = response.data.activities;
                 this.$emit('update-activities-exist', true);
@@ -335,9 +342,6 @@ methods: {
 
             // Emit an object with all necessary details
             this.$emit("update-selected-experience", selectedExperienceInfo);
-
-            console.log('exitForm at the end of checkExistingForm: ', this.exitForm);
-
 
         } catch (error) {
             this.handleError("An unexpected error occurred while checking for existing form:", error);
@@ -368,7 +372,6 @@ methods: {
 
         // Update original Exit Form first
         // Emit the event with the original exit form to update it elsewhere as needed
-        console.log('PHIL HERE 5 update-original-exit-form: ', tempExitForm);
         this.$emit("update-original-exit-form", tempExitForm);
 
         // Update exitForm

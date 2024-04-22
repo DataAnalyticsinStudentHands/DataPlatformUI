@@ -65,7 +65,7 @@
         </v-list-group>
 
         <!-- Goal Forms -->
-        <v-list-group value="Goal Form" v-if="registeredExperiences.length" :class="areAllGoalsSet ? 'light-green-bg' : 'light-red-bg'">
+        <v-list-group value="Goal Form" v-if="hasGoalFormsToComplete" :class="areAllGoalsSet ? 'light-green-bg' : 'light-red-bg'">
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props">
                     <span :class="areAllGoalsSet ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
@@ -108,7 +108,7 @@
 
        <!-- Exit Forms -->
        <v-list-group 
-        v-if="hasExitForms" 
+        v-if="hasExitFormsToComplete" 
         :class="areAllExitFormsCompleted ? 'light-green-bg' : 'light-red-bg'">
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props">
@@ -188,7 +188,12 @@ export default {
         registeredExperiences() {
             return this.store.registeredExperiences;
         },
-        hasExitForms() {
+        hasGoalFormsToComplete() {
+            const exitIds = Object.keys(this.exitFormCompletion);
+            // Check if there's at least one goal setting form ID that is not in the exit form completion IDs
+            return Object.keys(this.goalSettingFormCompletion).some(key => !exitIds.includes(key));
+        },
+        hasExitFormsToComplete() {
             return Object.keys(this.exitFormCompletion).length > 0;
         },
         areAllExitFormsCompleted() {

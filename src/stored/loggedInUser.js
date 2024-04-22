@@ -187,8 +187,10 @@ export const useLoggedInUserStore = defineStore({
           this.exitFormCompletion = { ...response.data.exitFormCompletion };
     
           // Check if there are forms to complete
-          this.hasGoalFormsToComplete = Object.keys(this.goalSettingFormCompletion).length > 0;
-          this.hasExitFormsToComplete = Object.keys(this.exitFormCompletion).length > 0;
+            const exitIds = Object.keys(this.exitFormCompletion);
+            // Check if there's at least one goal setting form ID that is not in the exit form completion IDs
+            this.hasGoalFormsToComplete = Object.keys(this.goalSettingFormCompletion).some(key => !exitIds.includes(key));
+          this.hasExitFormsToComplete = exitIds.length > 0;
         }
       } catch (error) {
         this.handleError(error);
