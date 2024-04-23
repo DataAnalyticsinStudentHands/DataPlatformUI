@@ -3,7 +3,9 @@
     <!-- isFirstInput: {{ isFirstInput }} -->
     <!-- <br><br> -->
     <!-- {{ exitForm }} -->
-    <!-- currentStep: {{ currentStep }} -->
+    currentStep: {{ currentStep }}
+    <br>
+    growthCurrentStepValue: {{ growthCurrentStepValue }}
 <!-- Title -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
@@ -101,7 +103,7 @@
                         title="Activities"
                         icon="mdi-toolbox"
                         edit-icon="mdi-toolbox"
-                        value="3"
+                        :value="actCurrentStepValue"
                         :error="actError"
                         :editable="checkJump(3)"
                     ></v-stepper-item>
@@ -113,7 +115,7 @@
                         title="Growth"
                         icon="mdi-sprout"
                         edit-icon="mdi-sprout"
-                        value="4"
+                        :value="growthCurrentStepValue"
                         :error="growthError"
                         :editable="checkJump(4)"
                     ></v-stepper-item>
@@ -125,7 +127,7 @@
                         title="Review"
                         icon="mdi-check-bold"
                         edit-icon="mdi-check-bold"
-                        value="5"
+                        :value="reviewCurrentStepValue"
                         :editable="checkJump(5)"
                     ></v-stepper-item>
                 </v-stepper-header>
@@ -188,7 +190,7 @@
                         @validation-change="handleValidationChange('goals', $event)"
                     ></exit-form-goals>
                     </v-stepper-window-item>
-                    <v-stepper-window-item value="3">
+                    <v-stepper-window-item :value="actCurrentStepValue">
                     <exit-form-act
                         ref="ExitFormActRef"
                         :key="componentsKey"
@@ -200,7 +202,7 @@
                         @validation-change="handleValidationChange('act', $event)"
                     ></exit-form-act>
                     </v-stepper-window-item>
-                    <v-stepper-window-item value="4">
+                    <v-stepper-window-item :value="growthCurrentStepValue">
                     <exit-form-growth
                         ref="ExitFormGrowthRef"
                         :key="componentsKey"
@@ -212,7 +214,7 @@
                         @validation-change="handleValidationChange('growth', $event)"
                     ></exit-form-growth>
                     </v-stepper-window-item>
-                    <v-stepper-window-item value="5">
+                    <v-stepper-window-item :value="reviewCurrentStepValue">
                     <exit-form-review
                         ref="ExitFormReviewRef"
                         :key="componentsKey"
@@ -400,10 +402,10 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br>
-{{ exitForm }}
 <br><br><br><br><br><br><br><br><br><br><br><br><br>
-{{ originalExitForm }} -->
+{{ exitForm }}
+<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br> -->
+<!-- {{ originalExitForm }} -->
 </template>
 
 <script>
@@ -885,14 +887,15 @@ watch: {
     },
     exitForm: {
         handler(newVal, oldVal) {
-            // console.log('newVal: ', newVal);
-            // console.log('oldVal: ', oldVal);
-            // console.log('this.originalExitForm: ', this.originalExitForm);
+            console.log('newVal: ', newVal);
+            console.log('oldVal: ', oldVal);
+            console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
                     this.handleFirstInput();
                 } else {
                     // Use the debounced method for subsequent updates
+                    console.log('handleInput called');
                     this.handleInput();
                 }
             }
@@ -988,6 +991,31 @@ computed: {
         }
         return this.currentStep === 2;  // When there is no goal form
     },
+    actCurrentStepValue() {
+        if (this.goalFormExists && this.activitiesExist) {
+            return 3;
+        } else {
+            return 993;
+        }
+    },
+    growthCurrentStepValue() {
+        if (this.goalFormExists && this.activitiesExist) {
+            return 4;
+        } else if (this.goalFormExists && !this.activitiesExist) {
+            return 3;
+        } else if (!this.goalFormExists) {
+            return 1;
+        }
+    },
+    reviewCurrentStepValue() {
+        if (this.goalFormExists && this.activitiesExist) {
+            return 5;
+        } else if (this.goalFormExists && !this.activitiesExist) {
+            return 4;
+        } else if (!this.goalFormExists) {
+            return 2;
+        }
+    },
 },
 methods: {
     updateGoalFormWithBackgroundData() {
@@ -1080,7 +1108,6 @@ methods: {
     },
 
     triggerValidation() {
-
         if (this.goalFormExists) {
             switch (this.currentStep) {
                 case 0:
@@ -1358,14 +1385,6 @@ methods: {
             const openEndedEdited = !isEqual(originalOpenEnded, currentOpenEnded);
 
             if (this.dataAndSociety) {
-                
-                console.log('experienceContributionsEdited: ', experienceContributionsEdited);
-                console.log('enrollAnotherCourseSelectedEdited: ', enrollAnotherCourseSelectedEdited);
-                console.log('completeMinorSelectedEdited: ', completeMinorSelectedEdited);
-                console.log('recommendCourseSelectedEdited: ', recommendCourseSelectedEdited);
-                console.log('pursueCareerSelectedEdited: ', pursueCareerSelectedEdited);
-                console.log('generalGrowthEdited: ', generalGrowthEdited);
-                console.log('openEndedEdited: ', openEndedEdited);
                 const editedCheck = experienceContributionsEdited || enrollAnotherCourseSelectedEdited || completeMinorSelectedEdited || recommendCourseSelectedEdited || pursueCareerSelectedEdited || generalGrowthEdited || openEndedEdited;
 
                 return editedCheck;
@@ -1757,18 +1776,18 @@ methods: {
         // Experience Contribution
         this.exitForm.experienceContributions = existingExitForm.experienceContributions;
 
+        console.log('exitForm:', this.exitForm);
+        console.log('existingExitForm:', existingExitForm);
+        console.log('exitForm.likelihoodOf:', this.exitForm.likelihoodOf);
+        console.log('existingExitForm.likelihoodOf:', existingExitForm.likelihoodOf);
+
         // Likelihood Of
         const likelihoodCategories = ['enrollAnotherCourse', 'completeMinor', 'recommendCourse', 'pursueCareer'];
         likelihoodCategories.forEach(category => {
-            // Assign the selected value from the database to the 'Selected' property in the Vue model
-            this.exitForm.likelihoodOf[category + 'Selected'] = existingExitForm.likelihoodOf[category + 'Selected'];
-
-            // Map each option, checking if it matches the selected value
-            this.exitForm.likelihoodOf[category] = this.exitForm.likelihoodOf[category].map(option => ({
-                ...option,
-                checked: option.label === this.exitForm.likelihoodOf[category + 'Selected']
-            }));
+            this.exitForm.likelihoodOf[category + 'Selected'] = existingExitForm.likelihoodOf[category];
         });
+
+        console.log('this.exitForm aftter: ', this.exitForm.likelihoodOf);
 
         // General Growth
         this.exitForm.generalGrowth = existingExitForm.generalGrowth;
@@ -1806,6 +1825,8 @@ methods: {
 
         // Set 'expRegistrationID' from 'selectedExperience' if it exists, otherwise from 'tempIncompleteForm'
         const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+
+        console.log('this.exitForm.likelihoodOf.enrollAnotherCourseSelected', this.exitForm.likelihoodOf.enrollAnotherCourseSelected)
 
         const exitFormData = {
             expRegistrationID: expRegistrationID,
