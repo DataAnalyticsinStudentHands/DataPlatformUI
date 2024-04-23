@@ -369,17 +369,17 @@ export default {
             return [
                 {
                     text: this.exitForm.aspiration1,
-                    progressSelected: this.exitForm.progressMade.aspirationOneProgressSelected,
+                    progressSelected: this.exitForm.progressMade.aspirationOneProgressSelected || "",
                     experienceConnectionSelected: this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.aspiration2,
-                    progressSelected: this.exitForm.progressMade.aspirationTwoProgressSelected,
+                    progressSelected: this.exitForm.progressMade.aspirationTwoProgressSelected || "",
                     experienceConnectionSelected: this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.aspiration3,
-                    progressSelected: this.exitForm.progressMade.aspirationThreeProgressSelected,
+                    progressSelected: this.exitForm.progressMade.aspirationThreeProgressSelected || "",
                     experienceConnectionSelected: this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || ""
                 }
             ].filter(aspiration => aspiration.text);  // Filter out undefined or empty aspirations
