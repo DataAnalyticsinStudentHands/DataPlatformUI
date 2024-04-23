@@ -887,15 +887,14 @@ watch: {
     },
     exitForm: {
         handler(newVal, oldVal) {
-            console.log('newVal: ', newVal);
-            console.log('oldVal: ', oldVal);
-            console.log('this.originalExitForm: ', this.originalExitForm);
+            // console.log('newVal: ', newVal);
+            // console.log('oldVal: ', oldVal);
+            // console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
                     this.handleFirstInput();
                 } else {
                     // Use the debounced method for subsequent updates
-                    console.log('handleInput called');
                     this.handleInput();
                 }
             }
@@ -1776,18 +1775,11 @@ methods: {
         // Experience Contribution
         this.exitForm.experienceContributions = existingExitForm.experienceContributions;
 
-        console.log('exitForm:', this.exitForm);
-        console.log('existingExitForm:', existingExitForm);
-        console.log('exitForm.likelihoodOf:', this.exitForm.likelihoodOf);
-        console.log('existingExitForm.likelihoodOf:', existingExitForm.likelihoodOf);
-
         // Likelihood Of
         const likelihoodCategories = ['enrollAnotherCourse', 'completeMinor', 'recommendCourse', 'pursueCareer'];
         likelihoodCategories.forEach(category => {
             this.exitForm.likelihoodOf[category + 'Selected'] = existingExitForm.likelihoodOf[category];
         });
-
-        console.log('this.exitForm aftter: ', this.exitForm.likelihoodOf);
 
         // General Growth
         this.exitForm.generalGrowth = existingExitForm.generalGrowth;
@@ -1825,8 +1817,6 @@ methods: {
 
         // Set 'expRegistrationID' from 'selectedExperience' if it exists, otherwise from 'tempIncompleteForm'
         const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
-
-        console.log('this.exitForm.likelihoodOf.enrollAnotherCourseSelected', this.exitForm.likelihoodOf.enrollAnotherCourseSelected)
 
         const exitFormData = {
             expRegistrationID: expRegistrationID,
