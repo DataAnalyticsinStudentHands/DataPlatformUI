@@ -335,6 +335,12 @@
     "Complete Goal Setting Form for": "Complete el Formulario de Establecimiento de Objetivos para",
     "Completed Goal Setting Form for": "Formulario de Establecimiento de Objetivos Completado para",
     "Update User Information": "Actualizar Información del Usuario",
+    "Complete Exit Form": "Complete el Formulario de Salida",
+    "Completed Exit Form": "Formulario de Salida Completado",
+    "Complete Exit Forms": "Complete los Formularios de Salida",
+    "Completed Exit Forms": "Formularios de Salida Completados",
+    "Complete Exit Form for": "Complete el Formulario de Salida para",
+    "Completed Exit Form for": "Formulario de Salida Completado para",
     "Logout": "Cerrar Sesión",
     "User Information Update Form": "Formulario de Actualización de Información del Usuario",
     "Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again.": "Rellene los detalles requeridos y presione el botón de enviar. No se preocupe, podrá editar estos detalles nuevamente.",
@@ -347,5 +353,13 @@
     "Current Password": "Contraseña Actual",
     "New Password": "Nueva Contraseña",
     "Confirm New Password": "Confirmar Nueva Contraseña",
-    "Reset Password": "Restablecer Contraseña"
+    "Reset Password": "Restablecer Contraseña",
+    "Below are the goals you faced barriers to achieving this semester.": "A continuación se presentan los objetivos a los que se enfrentaron barreras para lograr este semestre.",
+    "For one of the goals you selected above, described below are the barriers encountered and the strategies employed to overcome them:": "Para uno de los objetivos que seleccionó arriba, se describen a continuación las barreras encontradas y las estrategias empleadas para superarlas:",
+    "Below is a summary of how activities contributed to your goals throughout the semester:": "A continuación se resume cómo las actividades contribuyeron a sus objetivos a lo largo del semestre:",
+    "No specific goals contributed.": "Ningún objetivo específico contribuyó.",
+    "Contributed to Goals": "Contribuyó a los Objetivos",
+    "How this experience contributed to your graduate/professional goals:": "Cómo esta experiencia contribuyó a sus objetivos de posgrado/profesionales:",
+    "Progress Made": "Progreso Realizado",
+    "Experience Connection": "Conexión de la Experiencia"
 }

@@ -296,15 +296,15 @@
                         ></exit-form-act>
                     </div>
                     <div v-show="showGrowthStep" key="step4">
-                            <exit-form-growth
-                                ref="ExitFormGrowthRef"
-                                :key="componentsKey"
-                                :exitForm="exitForm"
-                                :dataAndSociety="dataAndSociety"
-                                @form-valid="handleFormValid(4)"
-                                @form-invalid="handleFormInvalid('growth')"
-                                @scroll-to-error="handleScrollToError"
-                                @validation-change="handleValidationChange('growth', $event)"
+                        <exit-form-growth
+                            ref="ExitFormGrowthRef"
+                            :key="componentsKey"
+                            :exitForm="exitForm"
+                            :dataAndSociety="dataAndSociety"
+                            @form-valid="handleFormValid(4)"
+                            @form-invalid="handleFormInvalid('growth')"
+                            @scroll-to-error="handleScrollToError"
+                            @validation-change="handleValidationChange('growth', $event)"
                         ></exit-form-growth>
                     </div>
                     <div v-show="showReviewStep" key="step5">

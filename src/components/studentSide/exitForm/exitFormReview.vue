@@ -78,10 +78,10 @@
                     <strong>{{$t('Aspiration')}} {{ index + 1 }}:</strong> {{ aspiration.text }}
                 </v-list-item-title>
                 <v-list-item class="subtitle-enhanced">
-                    {{ aspiration.progressSelected }}
+                    {{ $t(aspiration.progressSelected) }}
                 </v-list-item>
                 <v-list-item class="subtitle-enhanced">
-                    {{ aspiration.experienceConnectionSelected }}
+                    {{ $t(aspiration.experienceConnectionSelected) }}
                 </v-list-item>
             </v-list-item>
         </v-col>
@@ -115,10 +115,10 @@
                     <strong>{{$t('Goal')}} {{ index + 1 }}:</strong> {{ goal.text }}
                 </v-list-item-title>
                 <v-list-item class="subtitle-enhanced">
-                    {{$t('Progress Made')}}: {{ goal.progressMade }}
+                    {{$t('Progress Made')}}: {{ $t(goal.progressMade) }}
                 </v-list-item>
                 <v-list-item class="subtitle-enhanced">
-                    {{$t('Experience Connection')}}: {{ goal.experienceConnection }}
+                    {{$t('Experience Connection')}}: {{ $t(goal.experienceConnection) }}
                 </v-list-item>
             </v-list-item>
         </v-col>
@@ -297,7 +297,7 @@
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
-            Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.
+            {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('professional responsibility')}}</u>.
         </p>
         <div class="subtitle-enhanced">
             {{ exitForm.generalGrowth.professionalResponsibility || 'No response provided' }}
@@ -370,17 +370,17 @@ export default {
                 {
                     text: this.exitForm.aspiration1,
                     progressSelected: this.exitForm.progressMade.aspirationOneProgressSelected,
-                    experienceConnectionSelected: this.exitForm.progressMade.aspirationOneExperienceConnectionSelected
+                    experienceConnectionSelected: this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.aspiration2,
                     progressSelected: this.exitForm.progressMade.aspirationTwoProgressSelected,
-                    experienceConnectionSelected: this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected
+                    experienceConnectionSelected: this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.aspiration3,
                     progressSelected: this.exitForm.progressMade.aspirationThreeProgressSelected,
-                    experienceConnectionSelected: this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected
+                    experienceConnectionSelected: this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || ""
                 }
             ].filter(aspiration => aspiration.text);  // Filter out undefined or empty aspirations
         },
@@ -388,28 +388,28 @@ export default {
             return [
                 {
                     text: this.exitForm.goal1,
-                    progressMade: this.exitForm.progressMade.goalOneProgressSelected,
-                    experienceConnection: this.exitForm.progressMade.goalOneExperienceConnectionSelected
+                    progressMade: this.exitForm.progressMade.goalOneProgressSelected || "",
+                    experienceConnection: this.exitForm.progressMade.goalOneExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.goal2,
-                    progressMade: this.exitForm.progressMade.goalTwoProgressSelected,
-                    experienceConnection: this.exitForm.progressMade.goalTwoExperienceConnectionSelected
+                    progressMade: this.exitForm.progressMade.goalTwoProgressSelected || "",
+                    experienceConnection: this.exitForm.progressMade.goalTwoExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.goal3,
-                    progressMade: this.exitForm.progressMade.goalThreeProgressSelected,
-                    experienceConnection: this.exitForm.progressMade.goalThreeExperienceConnectionSelected
+                    progressMade: this.exitForm.progressMade.goalThreeProgressSelected || "",
+                    experienceConnection: this.exitForm.progressMade.goalThreeExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.goal4,
-                    progressMade: this.exitForm.progressMade.goalFourProgressSelected,
-                    experienceConnection: this.exitForm.progressMade.goalFourExperienceConnectionSelected
+                    progressMade: this.exitForm.progressMade.goalFourProgressSelected || "",
+                    experienceConnection: this.exitForm.progressMade.goalFourExperienceConnectionSelected || ""
                 },
                 {
                     text: this.exitForm.goal5,
-                    progressMade: this.exitForm.progressMade.goalFiveProgressSelected,
-                    experienceConnection: this.exitForm.progressMade.goalFiveExperienceConnectionSelected
+                    progressMade: this.exitForm.progressMade.goalFiveProgressSelected || "",
+                    experienceConnection: this.exitForm.progressMade.goalFiveExperienceConnectionSelected || ""
                 }
             ].filter(goal => goal.text); // Filters out undefined or empty goals
         },

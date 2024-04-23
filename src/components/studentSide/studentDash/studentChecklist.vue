@@ -113,7 +113,12 @@
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props">
                     <span :class="areAllExitFormsCompleted ? 'text-green-800 font-weight-black' : 'text-red-800 font-weight-black'">
-                        {{ areAllExitFormsCompleted ? 'Completed' : 'Complete' }} Exit Form<span v-if="Object.keys(exitFormCompletion).length > 1">s</span>
+                        <span v-if="Object.keys(exitFormCompletion).length > 1">
+                            {{ areAllExitFormsCompleted ? $t('Completed Exit Forms') : $t('Complete Exit Forms') }}
+                        </span>
+                         <span v-else>
+                            {{ areAllExitFormsCompleted ? $t('Completed Exit Form') : $t('Complete Exit Form') }}
+                        </span>
                     </span>
                     <template v-slot:append>
                         <v-icon :class="areAllExitFormsCompleted ? 'text-green-800' : 'text-red-800'">{{ areAllExitFormsCompleted ? 'mdi-check-bold' : 'mdi-alert-circle' }}</v-icon>
@@ -126,7 +131,7 @@
                 :key="registrationId"
                 :class="isExitFormCompleted(registrationId) ? 'light-green-bg' : 'light-red-bg'">
                 <span :class="isExitFormCompleted(registrationId) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
-                    {{ isExitFormCompleted(registrationId) ? 'Completed' : 'Complete' }} Exit Form for 
+                    {{ isExitFormCompleted(registrationId) ? $t('Completed Exit Form for') : $t('Complete Exit Form for') }}
                     <!-- Conditionally render router-link or plain text based on completion status -->
                     <router-link 
                         v-if="!isExitFormCompleted(registrationId)"
