@@ -562,12 +562,10 @@ async mounted() {
 },
 watch: {
     currentStep(newVal) {
-        console.log('currentStep newVal: ', newVal);
         const newStep = Number(newVal); // Convert newVal to a number
 
         // Update currentStep with the new value
         this.currentStep = newStep;
-        console.log('this.currentStep after update: ', this.currentStep);
 
         // Specifically track visitation to step 5
         if (newStep === 5 && !this.allowedStepsForJump.includes(newStep)) {
