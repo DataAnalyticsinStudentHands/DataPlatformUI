@@ -13,8 +13,8 @@
             {{ $t("Exit Form") }}
         </p>
         <v-dialog width="500">
-            <!-- HELP BUTTON - NEED TO EDIT CONTENTS -->
-            <!-- <template v-slot:activator="{ props }">
+
+            <template v-slot:activator="{ props }">
                 <v-btn
                     size="x-small"
                     class="pb-2"
@@ -24,13 +24,13 @@
                     v-bind="props"
                 >
                 </v-btn>
-            </template> -->
+            </template>
 
             <template v-slot:default="{ isActive }">
                 <!-- ***NEED TO CHANGE*** -->
                 <v-card :title="$t('Exit Form')">
                     <v-card-text>
-                    {{$t('The goal setting process helps us to continue to tailor classes and programming to the needs our students. We do use your feedback to improve future classes and programs. Goal setting also allows you to be more intentional as you go through the experience and gives you a chance to reflect at the end of the course.')}}
+                    {{$t('The exit survey helps us to connect the goals you made at the beginning of the semester to the activities in the course. This is also an opportunity for you to give us feedback on the experience as a whole. Even if you did not fill out your goals at the beginning of the semester, you can still complete the exit survey to give us general feedback. ')}}
                     </v-card-text>
 
                     <v-card-actions>
@@ -1189,7 +1189,6 @@ methods: {
         }
     },
 
-    // TO EDIT: NEED TO UPDATE TO ALLOW JUMPING WHEN CONTINUING FORM.
     checkJump(step) {
         const stepToSectionMap = {
             1: 'aspirationsSection',
