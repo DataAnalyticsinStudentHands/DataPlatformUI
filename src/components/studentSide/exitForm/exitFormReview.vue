@@ -12,7 +12,7 @@
 <v-row><v-col></v-col></v-row>
 <div class="review-section">
 <v-row>
-    <v-col cols="10" class="pb-0">
+    <v-col sm="10" xs="12" class="pb-0">
         <h3 class="review-section-title">
             {{ $t('Selected Experience') }}
             <!-- Mobile View Edit Button -->
@@ -51,7 +51,7 @@
 <div v-if="goalFormExists">
     <!-- Aspirations Review -->
     <v-row>
-        <v-col cols="10">
+        <v-col sm="10" xs="12">
             <h2 class="section-title mb-0">{{$t('Aspirations Progress')}}
                 <!-- Mobile View Edit Button -->
                 <v-btn v-if="$vuetify.display.xs"
@@ -99,7 +99,7 @@
     </v-row>
     <!-- Goals Progress Review -->
     <v-row>
-        <v-col cols="10">
+        <v-col sm="10" xs="12">
             <h2 class="section-title mb-0">{{$t('Goals Progress')}}
                 <!-- Mobile View Edit Button -->
                 <v-btn v-if="$vuetify.display.xs"
@@ -147,7 +147,7 @@
     </v-row>
     <!-- Goals Barriers -->
     <v-row>
-        <v-col cols="10">
+        <v-col sm="10" xs="12">
             <h2 class="section-title mb-0">{{$t('Goal Barriers')}}
                 <!-- Mobile View Edit Button -->
                 <v-btn v-if="$vuetify.display.xs"
@@ -197,7 +197,7 @@
     </v-row>
     <div v-if="activitiesExist">
         <v-row>
-            <v-col cols="10">
+            <v-col sm="10" xs="12">
                 <h2 class="section-title mb-0">{{$t('Activity Contributions to Goals')}}
                 <!-- Mobile View Edit Button -->
                 <v-btn v-if="$vuetify.display.xs"
@@ -258,7 +258,7 @@
 </div>
 <!-- Experience Contribution to Graduate/Professional Goals -->
 <v-row class="mt-5">
-    <v-col cols="10">
+    <v-col sm="10" xs="12">
         <h2 class="section-title mb-0">{{$t('Growth')}}
                 <!-- Mobile View Edit Button -->
                 <v-btn v-if="$vuetify.display.xs"
