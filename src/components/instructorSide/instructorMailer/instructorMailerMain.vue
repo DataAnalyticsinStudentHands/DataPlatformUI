@@ -14,9 +14,9 @@
             <v-tab value="manualMailer">
               Manual Mailer
             </v-tab>
-            <v-tab value="autoMailer">
+            <!-- <v-tab value="autoMailer">
               Automatic Mailer
-            </v-tab>
+            </v-tab> -->
           </v-tabs>
 
           <!-- Content for Overview -->
@@ -30,9 +30,9 @@
           </div>
 
           <!-- Content for Automatic Mailer -->
-          <div v-if="tab === 'autoMailer'">
+          <!-- <div v-if="tab === 'autoMailer'">
             <instructor-automatic-mailer-main />
-          </div>
+          </div> -->
           
         </v-col>
     </v-row>
