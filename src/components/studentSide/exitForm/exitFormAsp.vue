@@ -231,7 +231,7 @@
       <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
     </v-btn>
 
-</v-container>
+  </v-container>
 </template>
 
 <script>

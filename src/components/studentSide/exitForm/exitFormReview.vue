@@ -52,7 +52,18 @@
     <!-- Aspirations Review -->
     <v-row>
         <v-col cols="10">
-            <h2 class="section-title mb-0">{{$t('Aspirations Progress')}}</h2>
+            <h2 class="section-title mb-0">{{$t('Aspirations Progress')}}
+                <!-- Mobile View Edit Button -->
+                <v-btn v-if="$vuetify.display.xs"
+                    icon
+                    size="small"
+                    variant="text"
+                    @click="emitStepChange(1)"
+                    class="pb-2"
+                >
+                    <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+            </h2>
         </v-col>
         <!-- Non-Mobile View Edit Button -->
         <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
@@ -89,7 +100,18 @@
     <!-- Goals Progress Review -->
     <v-row>
         <v-col cols="10">
-            <h2 class="section-title mb-0">{{$t('Goals Progress')}}</h2>
+            <h2 class="section-title mb-0">{{$t('Goals Progress')}}
+                <!-- Mobile View Edit Button -->
+                <v-btn v-if="$vuetify.display.xs"
+                    icon
+                    size="small"
+                    variant="text"
+                    @click="emitStepChange(2)"
+                    class="pb-2"
+                >
+                    <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+            </h2>
         </v-col>
         <!-- Non-Mobile View Edit Button -->
         <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
@@ -126,7 +148,18 @@
     <!-- Goals Barriers -->
     <v-row>
         <v-col cols="10">
-            <h2 class="section-title mb-0">{{$t('Goal Barriers')}}</h2>
+            <h2 class="section-title mb-0">{{$t('Goal Barriers')}}
+                <!-- Mobile View Edit Button -->
+                <v-btn v-if="$vuetify.display.xs"
+                    icon
+                    size="small"
+                    variant="text"
+                    @click="emitStepChange(2)"
+                    class="pb-2"
+                >
+                    <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+            </h2>
         </v-col>
         <!-- Non-Mobile View Edit Button -->
         <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
@@ -165,7 +198,18 @@
     <div v-if="activitiesExist">
         <v-row>
             <v-col cols="10">
-                <h2 class="section-title mb-0">{{$t('Activity Contributions to Goals')}}</h2>
+                <h2 class="section-title mb-0">{{$t('Activity Contributions to Goals')}}
+                <!-- Mobile View Edit Button -->
+                <v-btn v-if="$vuetify.display.xs"
+                    icon
+                    size="small"
+                    variant="text"
+                    @click="emitStepChange(3)"
+                    class="pb-2"
+                >
+                    <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                </h2>
             </v-col>
             <!-- Non-Mobile View Edit Button -->
             <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
@@ -215,7 +259,18 @@
 <!-- Experience Contribution to Graduate/Professional Goals -->
 <v-row class="mt-5">
     <v-col cols="10">
-        <h2 class="section-title mb-0">{{$t('Growth')}}</h2>
+        <h2 class="section-title mb-0">{{$t('Growth')}}
+                <!-- Mobile View Edit Button -->
+                <v-btn v-if="$vuetify.display.xs"
+                    icon
+                    size="small"
+                    variant="text"
+                    @click="emitStepChange(4)"
+                    class="pb-2"
+                >
+                    <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+        </h2>
     </v-col>
     <!-- Non-Mobile View Edit Button -->
     <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">

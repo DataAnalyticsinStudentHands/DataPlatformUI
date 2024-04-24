@@ -230,97 +230,95 @@
                 </v-container>
 
                 <!-- Mobile View -->
-                <v-container v-if="$vuetify.display.xs" class="pa-0 ma-0">
-                    <v-scroll-x-reverse-transition group hide-on-leave>
-                    <div v-show="showExperienceStep" key="step0">
-                        <exit-form-exp
-                            ref="ExitFormExpRef"
-                            :exitForm="exitForm"
-                            :originalExitForm="originalExitForm"
-                            :originalExitFormTwo="originalExitFormTwo"
-                            :isFirstInput="isFirstInput"
-                            :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
-                            :tempIncompleteForm="tempIncompleteForm"
-                            :startNewSelected="startNewSelected"
-                            :currentlyUsingIncompleteForm="currentlyUsingIncompleteForm"
-                            @form-valid="handleFormValid(0)"
-                            @form-invalid="handleFormInvalid('exp')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('exp', $event)"
-                            @update-original-exit-form="updateOriginalExitForm"
-                            @update-selected-experience="handleSelectedExperience"
-                            @update-found-document-id="foundDocumentId = $event"
-                            @reset-exit-form="resetExitForm"
-                            @reset-error-flags="resetErrorFlags"
-                            @update-goal-form-exists="handleGoalFormExists"
-                            @update-activities-exist="handleActivitiesExist"
-                            @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
-                            @update-data-and-society="handleUpdateDataAndSociety"
-                            @update-first-input="handleUpdateFirstInput"
-                        ></exit-form-exp>
-                    </div>
-                    <div v-show="showAspirationsStep" key="step1">
-                        <exit-form-asp
-                            ref="ExitFormAspRef"
-                            :key="componentsKey"
-                            :exitForm="exitForm"
-                            @form-valid="handleFormValid(1)"
-                            :goalFormExists="goalFormExists"
-                            @form-invalid="handleFormInvalid('asp')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('asp', $event)"
-                        ></exit-form-asp>
-                    </div>
-                    <div v-show="showGoalsStep" key="step2">
-                        <exit-form-goals
-                            ref="ExitFormGoalsRef"
-                            :key="componentsKey"
-                            :exitForm="exitForm"
-                            :existingGoals="existingGoals"
-                            @form-valid="handleFormValid(2)"
-                            @form-invalid="handleFormInvalid('goals')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('goals', $event)"
-                        ></exit-form-goals>
-                    </div>
-                    <div v-show="showActivitiesStep" key="step3">
-                        <exit-form-act
-                            ref="ExitFormActRef"
-                            :key="componentsKey"
-                            :exitForm="exitForm"
-                            :existingGoals="existingGoals"
-                            @form-valid="handleFormValid(3)"
-                            @form-invalid="handleFormInvalid('act')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('act', $event)"
-                        ></exit-form-act>
-                    </div>
-                    <div v-show="showGrowthStep" key="step4">
-                        <exit-form-growth
-                            ref="ExitFormGrowthRef"
-                            :key="componentsKey"
-                            :exitForm="exitForm"
-                            :dataAndSociety="dataAndSociety"
-                            @form-valid="handleFormValid(4)"
-                            @form-invalid="handleFormInvalid('growth')"
-                            @scroll-to-error="handleScrollToError"
-                            @validation-change="handleValidationChange('growth', $event)"
-                        ></exit-form-growth>
-                    </div>
-                    <div v-show="showReviewStep" key="step5">
-                        <exit-form-review
-                            ref="ExitFormReviewRef"
-                            :key="componentsKey"
-                            :selectedExperience="selectedExperience"
-                            :exitForm="exitForm"
-                            :goalFormExists="goalFormExists"
-                            :activitiesExist="activitiesExist"
-                            :expRegistrationIDFromIncompleteBackup="expRegistrationIDFromIncompleteBackup"
-                            @change-step="currentStep = $event"
-                        ></exit-form-review>
-                    </div>
-                    </v-scroll-x-reverse-transition>
-                </v-container>
+                <v-stepper-window v-if="$vuetify.display.xs">
+                    <v-stepper-window-item value="0">
+                    <exit-form-exp
+                        ref="ExitFormExpRef"
+                        :exitForm="exitForm"
+                        :originalExitForm="originalExitForm"
+                        :originalExitFormTwo="originalExitFormTwo"
+                        :isFirstInput="isFirstInput"
+                        :expRegistrationIDFromIncomplete="expRegistrationIDFromIncomplete"
+                        :tempIncompleteForm="tempIncompleteForm"
+                        :startNewSelected="startNewSelected"
+                        :currentlyUsingIncompleteForm="currentlyUsingIncompleteForm"
+                        @form-valid="handleFormValid(0)"
+                        @form-invalid="handleFormInvalid('exp')"
+                        @scroll-to-error="handleScrollToError"
+                        @validation-change="handleValidationChange('exp', $event)"
+                        @update-original-exit-form="updateOriginalExitForm"
+                        @update-selected-experience="handleSelectedExperience"
+                        @update-found-document-id="foundDocumentId = $event"
+                        @reset-exit-form="resetExitForm"
+                        @reset-error-flags="resetErrorFlags"
+                        @update-goal-form-exists="handleGoalFormExists"
+                        @update-activities-exist="handleActivitiesExist"
+                        @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
+                        @update-data-and-society="handleUpdateDataAndSociety"
+                        @update-first-input="handleUpdateFirstInput"
+                    ></exit-form-exp>
+                    </v-stepper-window-item>
+                    <v-stepper-window-item value="1">
+                    <exit-form-asp
+                        ref="ExitFormAspRef"
+                        :key="componentsKey"
+                        :exitForm="exitForm"
+                        @form-valid="handleFormValid(1)"
+                        :goalFormExists="goalFormExists"
+                        @form-invalid="handleFormInvalid('asp')"
+                        @scroll-to-error="handleScrollToError"
+                        @validation-change="handleValidationChange('asp', $event)"
+                    ></exit-form-asp>
+                    </v-stepper-window-item>
+                    <v-stepper-window-item value="2">
+                    <exit-form-goals
+                        ref="ExitFormGoalsRef"
+                        :key="componentsKey"
+                        :exitForm="exitForm"
+                        :existingGoals="existingGoals"
+                        @form-valid="handleFormValid(2)"
+                        @form-invalid="handleFormInvalid('goals')"
+                        @scroll-to-error="handleScrollToError"
+                        @validation-change="handleValidationChange('goals', $event)"
+                    ></exit-form-goals>
+                    </v-stepper-window-item>
+                    <v-stepper-window-item :value="actCurrentStepValue">
+                    <exit-form-act
+                        ref="ExitFormActRef"
+                        :key="componentsKey"
+                        :exitForm="exitForm"
+                        :existingGoals="existingGoals"
+                        @form-valid="handleFormValid(3)"
+                        @form-invalid="handleFormInvalid('act')"
+                        @scroll-to-error="handleScrollToError"
+                        @validation-change="handleValidationChange('act', $event)"
+                    ></exit-form-act>
+                    </v-stepper-window-item>
+                    <v-stepper-window-item :value="growthCurrentStepValue">
+                    <exit-form-growth
+                        ref="ExitFormGrowthRef"
+                        :key="componentsKey"
+                        :exitForm="exitForm"
+                        :dataAndSociety="dataAndSociety"
+                        @form-valid="handleFormValid(4)"
+                        @form-invalid="handleFormInvalid('growth')"
+                        @scroll-to-error="handleScrollToError"
+                        @validation-change="handleValidationChange('growth', $event)"
+                    ></exit-form-growth>
+                    </v-stepper-window-item>
+                    <v-stepper-window-item :value="reviewCurrentStepValue">
+                    <exit-form-review
+                        ref="ExitFormReviewRef"
+                        :key="componentsKey"
+                        :selectedExperience="selectedExperience"
+                        :exitForm="exitForm"
+                        :goalFormExists="goalFormExists"
+                        :activitiesExist="activitiesExist"
+                        :expRegistrationIDFromIncompleteBackup="expRegistrationIDFromIncompleteBackup"
+                        @change-step="currentStep = $event"
+                    ></exit-form-review>
+                    </v-stepper-window-item>                    
+                </v-stepper-window>
 
                 <!-- Previous, Next, and Submit buttons -->
                 <v-row justify="space-between" class="ma-1">
