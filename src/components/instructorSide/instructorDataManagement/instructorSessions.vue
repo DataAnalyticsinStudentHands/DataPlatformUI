@@ -1,3 +1,4 @@
+<!-- instructorSessions - this view presents a list of all Sessions -->
 <template>
 <v-container>
     <!-- Sessions Title -->
@@ -144,7 +145,7 @@
                                     class="ma-2"
                                 >
                                     <!-- Differentiate between 'Session Name' and 'Start Date' -->
-                                    <template v-if="criteria.category === 'Session Name'">
+                                    <template v-if="criteria.category === 'Session Name' || criteria.category === 'Experience Name' || criteria.category === 'Experience Category'">
                                         {{ criteria.category + `="` + criteria.term + `"` }}
                                     </template>
                                     <template v-else>
@@ -166,26 +167,73 @@
                     :items="filteredSessionData"
                     item-key="_id"
                     v-model="selectedSessions"
-                    hover
                     return-object
                     items-per-page="5"
                     :items-per-page-options="dataTableItemsPerPageOptions"
                     :loading="loading"
+                    v-model:expanded="expandedSessions"
+                    show-expand
                 >
                     <template v-slot:body="{ items }">
-                        <tr 
-                            v-for="item in items" 
-                            :key="item._id" 
-                            @click="editSession(item)" 
-                            class="pointer-cursor"
+                        <template
+                            v-for="(sessionItem, sessionIndex) in items"
+                            :key="sessionItem._id"
                         >
-                            <td @click.stop>
-                                <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
-                            </td>
-                            <td>{{ item.sessionName }}</td>
-                            <td>{{ formatDate(item.sessionPeriod.startDate) }}</td>
-                            <td>{{ formatDate(item.sessionPeriod.endDate) }}</td>
-                        </tr>
+                            <tr
+                                @click="editSession(sessionItem)"
+                                class="pointer-cursor custom-hover"
+                            >
+                                <td @click.stop>
+                                    <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(sessionItem)"></v-checkbox>
+                                </td>
+                                <td>{{ sessionItem.sessionName }}</td>
+                                <td>{{ formatDate(sessionItem.sessionPeriod.startDate) }}</td>
+                                <td>{{ formatDate(sessionItem.sessionPeriod.endDate) }}</td>
+                                <td @click.stop>
+                                    <v-btn 
+                                        icon 
+                                        variant="text"
+                                        @click="toggleRowExpansion(sessionItem)"
+                                    >
+                                        <v-icon>
+                                            {{ expandedSessions.includes(sessionItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                                        </v-icon>
+                                    </v-btn>
+                                </td>
+                            </tr>
+                            <tr v-if="expandedSessions.includes(sessionItem)">
+                                <td class="pa-0"></td>
+                                <td :colspan="sessionHeaders.length" class="pa-0">
+                                    <v-data-table
+                                        :headers="instanceHeaders"
+                                        :items="filteredInstances[sessionItem._id] || sessionItem.instances"
+                                        item-value="experience.id"
+                                        hover
+                                        return-object
+                                        multi-sort
+                                        items-per-page="-1"
+                                    >
+                                        <template v-slot:item="{ item }">
+                                            <tr class="pointer-cursor font-italic" @click="editInstance(item)">
+                                                <td>{{ item.experience.category }}</td>
+                                                <td>{{ item.experience.name }}</td>
+                                                <td>{{ formatDate(item.exitFormReleaseDate) }}</td>
+                                                <td>{{ getActivityCount(item.activities) }}</td>
+                                            </tr>
+                                        </template>
+                                        <template v-slot:bottom>
+                                            <v-col class="d-flex justify-end mb-4">
+                                                <v-btn
+                                                    @click="handleAddExperience(sessionItem._id)"
+                                                    elevation="1"
+                                                    prepend-icon="mdi-plus"
+                                                >Add Experience</v-btn>
+                                            </v-col>
+                                        </template>
+                                    </v-data-table>
+                                </td>
+                            </tr>
+                        </template>
                     </template>
                 </v-data-table>
 
@@ -313,6 +361,63 @@
     </v-card>
 </v-dialog>
 
+<!-- Date Picker for Exit Form Release Date -->
+<v-dialog
+    v-model="dialogExitFormReleaseDate"
+    width="auto"
+    persistent
+>
+    <v-card>
+        <v-card-title>
+            <v-row>
+                <v-col>
+                    <v-select
+                        v-model="exitFormReleaseDateFilterType"
+                        :items="['On', 'Before', 'After', 'Between']"
+                        label="Filter Type"
+                        outlined
+                        density="comfortable"
+                        hide-details
+                    ></v-select>
+                </v-col>
+            </v-row>
+        </v-card-title>
+        <v-card-item>
+            <v-row>
+                <v-col cols="6">
+                    <v-date-picker
+                        v-model="selectedExitFormReleaseDate"
+                        elevation="24"
+                        :title="instanceExitFormReleaseDateTitle"
+                        show-adjacent-months
+                        color="red-darken-2"
+                        @update:modelValue="handleExitFormReleaseDateSelection"
+                    >
+                        <template v-slot:header>
+                            <div class="v-date-picker-header">
+                                <v-fade-transition>
+                                    <div :key="formattedSelectedExitFormReleaseDate" class="v-date-picker-header__content">
+                                        {{ formattedSelectedExitFormReleaseDate }}
+                                    </div>
+                                </v-fade-transition>
+                            </div>
+                        </template>
+                    </v-date-picker>
+                </v-col>
+            </v-row>
+        </v-card-item>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="cancelSelectExitFormReleaseDate">Cancel</v-btn>
+            <v-btn
+                color="#c8102e"
+                :disabled="!canApplyExitFormReleaseDates"
+                @click="submitExitFormReleaseDate"
+            >Apply</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
+
 <!-- Dialog for Search Fields for xs Screens -->
 <v-dialog
     v-model="xsdialogSearch"
@@ -435,29 +540,22 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-
-<!-- 
+<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+filteredInstances:
 <br>
-dialogEndDate: {{ dialogEndDate }}
-<br>
-
-selectedStartDate: {{ selectedStartDate }}
-<br><br><br>
-sessionData:
-<br>
-{{ sessionData }}
-<br><br><br>
-selectedSessions:
-<br>
-{{ selectedSessions }}
+{{ filteredInstances }}
 <br><br><br>
 filteredSessionData:
 <br>
 {{ filteredSessionData }}
 <br><br><br>
-searchCriteria:
+sessionData:
 <br>
-{{ searchCriteria }} -->
+{{ sessionData }}
+<br><br><br>
+instancesData:
+<br>
+{{ instancesData }} -->
 
 </template>
 
@@ -476,8 +574,12 @@ data() {
         sessionSearch: "",
         searchLabel: "Search Session Name",
         searchMenuItems: [
-            "Start Date",
-            "End Date"
+            "Session Name",
+            "Session Start Date",
+            "Session End Date",
+            "Experience Category",
+            "Experience Name",
+            "Exit Form Release Date"
         ],
         sessionHeaders: [
             {
@@ -490,20 +592,27 @@ data() {
                 title: "Session Name",
                 value: "sessionName",
                 align: "start",
-                sortable: true
+                sortable: true,
+                key: "sessionName"
             },
             {
                 title: "Start Date",
                 value: "sessionPeriod.startDate",
                 align: "start",
-                sortable: true
+                sortable: true,
+                key: "sessionPeriod.startDate"
             },
             {
                 title: "End Date",
                 value: "sessionPeriod.endDate",
                 align: "start",
-                sortable: true
-            }
+                sortable: true,
+                key: "sessionPeriod.endDate"
+            },
+            {
+                title: "Experiences",
+                key: "data-table-expand"
+            },
         ],
         selectedSessions: [],
         dataTableItemsPerPageOptions: [
@@ -527,17 +636,50 @@ data() {
         viewArchivedSessions: false,
         xsdialogSearch: false,
         xsSearchFilterSelection: null,
-
-
-
-    sessionData: [],
-    searchTerm: "",
-    hoverId: null,
+        sessionData: [],
+        searchTerm: "",
+        hoverId: null,
+        instancesData: [],
+        expandedSessions: [],
+        instanceHeaders: [
+            {
+                title: "Experience Category",
+                value: "experience.category",
+                align: "start",
+                sortable: true,
+                key: "experience.category"
+            },
+            {
+                title: "Experience Name",
+                value: "experience.name",
+                align: "start",
+                sortable: true,
+                key: 'experience.name',
+            },
+            {
+                title: "Exit Form Release Date",
+                value: "exitFormReleaseDate",
+                align: "start",
+                sortable: true,
+                key: "exitFormReleaseDate"
+            },
+            {
+                title: 'Activities',
+                value: 'activityCount',
+                align: 'start',
+                sortable: true,
+            },
+        ],
+        filteredInstances: {},
+        dialogExitFormReleaseDate: false,
+        exitFormReleaseDateFilterType: "On",
+        selectedExitFormReleaseDate: new Date(),
     };
 },
-mounted() {
+async mounted() {
     useLoggedInUserStore().startLoading();
-    this.fetchSessionData()
+    await this.fetchInstances();
+    await this.fetchSessionData()
     .then(() => {
         useLoggedInUserStore().stopLoading();
         this.performFilter();
@@ -645,9 +787,53 @@ computed: {
         // In other cases, allow submission
         return true;
     },
+    instanceExitFormReleaseDateTitle() {
+        switch (this.exitFormReleaseDateFilterType) {
+            case "On":
+                return "Release Date On";
+            case "After":
+                return "Release Date After";
+            case "Before":
+                return "Release Date Before";
+            case "Between":
+                return "Release Date Between";
+            default:
+                return "Release Date On";
+        }
+    },
+    formattedSelectedExitFormReleaseDate() {
+        if (this.exitFormReleaseDateFilterType === "Between") {
+                let text = "";
+                if (this.beginningDateRange) {
+                    text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
+                }
+
+                if (this.beginningDateRange && this.endDateRange) {
+                    text += " to ";
+                    text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
+                }
+
+                return text;
+            }
+
+            return this.selectedExitFormReleaseDate
+                ? DateTime.fromJSDate(this.selectedExitFormReleaseDate).toFormat('MM-dd-yyyy')
+                : "";
+    },
+    canApplyExitFormReleaseDates() {
+        if (this.exitFormReleaseDateFilterType === "Between") {
+                // Allow submission only if both beginning and end date ranes are selected
+                return this.beginningDateRange && this.endDateRange;
+            }
+            // In other cases, allow submission
+            return true;
+    },
+
 
 },
 methods: {
+
+    // Fetches session data from the server and assigns it to the `sessionData` variable. For each session, it filters the instances data to find instances associated with that session and assigns them to a new property called `instances`. Finally, it copies the `sessionData` to `filteredSessionData`.
     async fetchSessionData() {
         try {
             const user = useLoggedInUserStore();
@@ -655,27 +841,50 @@ methods: {
             let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/`;
             const resp = await axios.get(apiURL, { headers: { token } });
             this.sessionData = resp.data;
+            this.sessionData.forEach(session => {
+                session.instances = this.instancesData.filter(instance => instance.session.id === session._id);
+            });
             this.filteredSessionData = [...this.sessionData];
-            this.performFilter();
+            // this.performFilter();
         } catch (error) {
             this.handleError(error);
             throw error;
         }
     },
 
+    // Fetches instances data from the server. It starts loading state, retrieves the data using an HTTP GET request with the user's token in the header, and stores the response in `instancesData`. After the request completes, regardless of success or failure, it stops the loading state.
+    async fetchInstances() {
+        useLoggedInUserStore().startLoading();
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experience-instances";
+        try {
+            const response = await axios.get(apiURL, { headers: { token } });
+            this.instancesData = response.data;
+        } catch (error) {
+            this.handleError(error);
+        } finally {
+            useLoggedInUserStore().stopLoading()
+        }
+    },
+
+    // Navigates to the page for editing a specific session based on the provided session ID.
     editSession(session) {
         this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
     },
 
+    // Formats a given ISO datetime from the database into the 'MM-dd-yyyy' format without converting timezones.
     formatDate(datetimeDB) {
-        const formattedDate = DateTime.fromISO(datetimeDB).toFormat('MM-dd-yyyy');
+        const formattedDate = DateTime.fromISO(datetimeDB, { zone: 'utc' }).toFormat('MM-dd-yyyy');
         return formattedDate;
     },
 
+    // Checks if the provided item is selected among the sessions based on their IDs. If the item is found in the `selectedSessions` array, it returns `true`; otherwise, it returns `false`.
     isSelected(item) {
         return this.selectedSessions.some((selectedItem) => selectedItem._id === item._id);
     },
 
+    // Toggles the selection of the provided session. If the session is already selected, it removes it from the `selectedSessions` array. If it's not selected, it adds it to the array.
     toggleSelection(item) {
         const index = this.selectedSessions.findIndex((selectedItem) => selectedItem._id === item._id);
         if (index >= 0) {
@@ -687,14 +896,20 @@ methods: {
         }
     },
 
+    // Updates the search criteria based on the selected item, triggering the appropriate dialog visibility or setting the search label accordingly.
     updateSearchCriteria(item) {
-        if (item === "Start Date") {
+        if (item === "Session Start Date") {
             this.dialogStartDate = true;
-        } else if (item === "End Date") {
+        } else if (item === "Session End Date") {
             this.dialogEndDate = true;
+        } else if (item === "Exit Form Release Date") {
+            this.dialogExitFormReleaseDate = true;
+        } else {
+            this.searchLabel = "Search " + item;
         }
     },
 
+    // Adds a new search chip based on the session search input. If there is input in the session search field, it creates a new chip with the category derived from the search label and the term from the session search input. Then it selects the new chip by default, clears the session search input field, and triggers the search functionality.
     addSearchChip() {
         if (this.sessionSearch) {
             this.searchCriteria.push({
@@ -704,12 +919,13 @@ methods: {
             // Select the new chip by default
             this.selectedSearchChips.push(this.searchCriteria.length - 1);
             // Clear the input field after adding the chip
-            this.experienceSearch = "";
+            this.sessionSearch = "";
             // Call search
             this.performFilter();
         }
     },
 
+    // Toggles the selection of a search chip. If the chip is already selected, it removes it; otherwise, it adds it. After updating the selected chips, it triggers the search functionality.
     selectSearchChip(index) {
         const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
@@ -723,6 +939,7 @@ methods: {
         this.performFilter();
     },
 
+    // Removes a search chip at the specified index from the search criteria. It also updates the selected search chips array to reflect the removal and adjusts the indexes of the remaining selected chips. Finally, it triggers the search functionality.
     removeSearchChip(index) {
         this.searchCriteria.splice(index, 1);
         // Update selectedSearchChips to reflect the removal
@@ -733,6 +950,7 @@ methods: {
         this.performFilter();
     },
 
+    // Filters the session data based on the selected search criteria. It constructs search groups for each category of criteria and iterates through the session data to check if each session matches the filter conditions. It also handles filtering by session status, session name, session start and end dates, experience name, experience category, and exit form release date. Finally, it updates the filtered session data.
     performFilter() {
         let searchGroups = {};
         this.selectedSearchChips.forEach(index => {
@@ -743,7 +961,12 @@ methods: {
             searchGroups[criteria.category].push(criteria.term);
         });
 
+        // Reset filtered instances
+        this.filteredInstances = {};
+
         this.filteredSessionData = this.sessionData.filter(item => {
+            // Create a deep copy of each session item
+            let sessionItem = JSON.parse(JSON.stringify(item));
             // Check if item should be included based on sessionStatus
             if (this.viewArchivedSessions && item.sessionStatus === false) {
                 // Continue with other criteria checks for archived items
@@ -753,14 +976,14 @@ methods: {
                 // Exclude the item if sessionStatus doesn't match
                 return false;
             }
-            return Object.keys(searchGroups).every(category => {
+            let matchesFilter = Object.keys(searchGroups).every(category => {
                 if (category === "Session Name") {
                     return searchGroups[category].every(term =>
-                        item.sessionName.toLowerCase().includes(term.toLowerCase())
+                        sessionItem.sessionName.toLowerCase().includes(term.toLowerCase())
                     );
-                } else if (category === "Start Date") {
+                } else if (category === "Session Start Date") {
                     return searchGroups[category].every(term => {
-                        let sessionDate = new Date(item.sessionPeriod.startDate);
+                        let sessionDate = new Date(sessionItem.sessionPeriod.startDate);
                         if (term.startsWith('<')) {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate < comparisonDate;
@@ -768,7 +991,7 @@ methods: {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate > comparisonDate;
                         } else if (term.startsWith('=')) {
-                            let sessionDate = this.formatDateMethod(new Date(item.sessionPeriod.startDate));
+                            let sessionDate = this.formatDateMethod(new Date(sessionItem.sessionPeriod.startDate));
                             const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
                             return sessionDate === comparisonDate;
                         } else if (term.startsWith('between')) {
@@ -779,9 +1002,9 @@ methods: {
                         }
                         return true;
                     });
-                } else if (category === "End Date") {
+                } else if (category === "Session End Date") {
                     return searchGroups[category].every(term => {
-                        let sessionDate = new Date(item.sessionPeriod.endDate);
+                        let sessionDate = new Date(sessionItem.sessionPeriod.endDate);
                         if (term.startsWith('<')) {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate < comparisonDate;
@@ -789,7 +1012,7 @@ methods: {
                             const comparisonDate = new Date(term.slice(2).trim());
                             return sessionDate > comparisonDate;
                         } else if (term.startsWith('=')) {
-                            let sessionDate = this.formatDateMethod(new Date(item.sessionPeriod.endDate));
+                            let sessionDate = this.formatDateMethod(new Date(sessionItem.sessionPeriod.endDate));
                             const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
                             return sessionDate === comparisonDate;
                         } else if (term.startsWith('between')) {
@@ -800,12 +1023,101 @@ methods: {
                         }
                         return true;
                     });
+                } else if (category === "Experience Name") {
+                    let experiencesMatch = searchGroups[category].every(term => {
+                        return sessionItem.instances.some(instance => {
+                            return instance.experience.name.toLowerCase().includes(term.toLowerCase());
+                        });
+                    })
+
+                    // If experiences match, filter instances within the session and update filteredInstances
+                    if (experiencesMatch) {
+                        let filteredInstancesForSession = sessionItem.instances.filter(instance => {
+                            return searchGroups[category].some(term => {
+                                return instance.experience.name.toLowerCase().includes(term.toLowerCase());
+                            });
+                        });
+                        // Update filteredInstances for the current session
+                        this.filteredInstances[sessionItem._id] = filteredInstancesForSession;
+                    }
+
+                    return experiencesMatch;
+                } else if (category === "Experience Category") {
+                    let experiencesMatch = searchGroups[category].every(term => {
+                        return sessionItem.instances.some(instance => {
+                            return instance.experience.category.toLowerCase().includes(term.toLowerCase());
+                        });
+                    })
+
+                    if (experiencesMatch) {
+                        let filteredInstancesForSession = sessionItem.instances.filter(instance => {
+                            return searchGroups[category].some(term => {
+                                return instance.experience.category.toLowerCase().includes(term.toLowerCase());
+                            });
+                        });
+                        this.filteredInstances[sessionItem._id] = filteredInstancesForSession;
+                    }
+                    return experiencesMatch;
+                } else if (category === "Exit Form Release Date") {
+                    let experiencesMatch = searchGroups[category].every(term => {
+                        return sessionItem.instances.some(instance => {
+                            let exitDate = new Date(instance.exitFormReleaseDate);
+                            if (term.startsWith('<')) {
+                                const comparisonDate = new Date(term.slice(2).trim());
+                                return exitDate < comparisonDate;
+                            } else if (term.startsWith('>')) {
+                                const comparisonDate = new Date(term.slice(2).trim());
+                                return exitDate > comparisonDate;
+                            } else if (term.startsWith('=')) {
+                                let exitDateFormatted = this.formatDateMethod(new Date(instance.exitFormReleaseDate));
+                                const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
+                                return exitDateFormatted === comparisonDate;
+                            } else if (term.startsWith('between')) {
+                                let [startDateStr, endDateStr] = term.slice(8).split(' and ');
+                                let startDate = DateTime.fromFormat(startDateStr, 'MM-dd-yyyy');
+                                let endDate = DateTime.fromFormat(endDateStr, 'MM-dd-yyyy');
+                                return exitDate >= startDate && exitDate <= endDate;
+                            }
+                            return true;
+                        });
+                    });
+
+                    if (experiencesMatch) {
+                        let filteredInstancesForSession = sessionItem.instances.filter(instance => {
+                            return searchGroups[category].some(term => {
+                                let exitDate = new Date(instance.exitFormReleaseDate);
+                                if (term.startsWith('<')) {
+                                    const comparisonDate = new Date(term.slice(2).trim());
+                                    return exitDate < comparisonDate;
+                                } else if (term.startsWith('>')) {
+                                    const comparisonDate = new Date(term.slice(2).trim());
+                                    return exitDate > comparisonDate;
+                                } else if (term.startsWith('=')) {
+                                    let exitDateFormatted = this.formatDateMethod(new Date(instance.exitFormReleaseDate));
+                                    const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
+                                    return exitDateFormatted === comparisonDate;
+                                } else if (term.startsWith('between')) {
+                                    let [startDateStr, endDateStr] = term.slice(8).split(' and ');
+                                    let startDate = DateTime.fromFormat(startDateStr, 'MM-dd-yyyy');
+                                    let endDate = DateTime.fromFormat(endDateStr, 'MM-dd-yyyy');
+                                    return exitDate >= startDate && exitDate <= endDate;
+                                }
+                                return true;
+                            });
+                        });
+                        this.filteredInstances[sessionItem._id] = filteredInstancesForSession;
+                    }
+                    return experiencesMatch;
                 }
+
                 return true;
             })
-        });
+
+            return matchesFilter ? sessionItem : null;
+        }).filter(item => item !== null); // Filter out null values
     },
 
+    // Handles the selection of the start date filter. If the filter type is 'Between', it sets the beginning date range if it's not already set, or sets the end date range if the beginning date range is already set. If the filter type is not 'Between', it sets the selected start date.
     handleStartDateSelection(date) {
         if (this.startDateFilterType === 'Between') {
             if (!this.beginningDateRange || this.endDateRange) {
@@ -822,6 +1134,7 @@ methods: {
         }
     },
 
+    // Handles the selection of the end date filter. If the filter type is 'Between', it sets the beginning date range if it's not already set, or sets the end date range if the beginning date range is already set. If the filter type is not 'Between', it sets the selected end date.
     handleEndDateSelection(date) {
         if (this.endDateFilterType === 'Between') {
             if (!this.beginningDateRange || this.endDateRange) {
@@ -838,8 +1151,25 @@ methods: {
         }
     },
 
-    submitStartDate() {
+    // Handles the selection of the exit form release date filter. If the filter type is 'Between', it sets the beginning date range if it's not already set, or sets the end date range if the beginning date range is already set. If the filter type is not 'Between', it sets the selected exit form release date.
+    handleExitFormReleaseDateSelection(date) {
+        if (this.exitFormReleaseDateFilterType === 'Between') {
+            if (!this.beginningDateRange || this.endDateRange) {
+                // If beginningDateRange is not set or endDateRange is already set,
+                // set the new date as the beginningDateRange and reset endDateRange
+                this.beginningDateRange = date;
+                this.endDateRange = null;
+            } else {
+                // Set the new date as the endDateRange
+                this.endDateRange = date;
+            }
+        } else {
+            this.selectedExitFormReleaseDate = date;
+        }
+    },
 
+    // Handles the submission of the start date filter. It creates a chip based on the selected filter type and date(s). If the filter type is 'Between', it creates a chip for the date range. Finally, it resets the dialog state and selected start date, and sets the filter type back to 'On'.
+    submitStartDate() {
         // Handle different date filter types
         if (this.startDateFilterType === 'On' && this.selectedStartDate) {
             this.createStartDateChip('=', this.selectedStartDate);
@@ -860,8 +1190,8 @@ methods: {
         this.startDateFilterType = "On";
     },
 
+    // Handles the submission of the end date filter. It creates a chip based on the selected filter type and date(s). If the filter type is 'Between', it creates a chip for the date range. Finally, it resets the dialog state and selected end date, and sets the filter type back to 'On'.
     submitEndDate() {
-
         // Handle different date filter types
         if (this.endDateFilterType === 'On' && this.selectedEndDate) {
             this.createEndDateChip('=', this.selectedEndDate);
@@ -882,18 +1212,50 @@ methods: {
         this.endDateFilterType = "On";
     },
 
+    // Handles the submission of the exit form release date filter. It creates a chip based on the selected filter type and date(s). If the filter type is 'Between', it creates a chip for the date range. Finally, it resets the dialog state and selected exit form release date, and sets the filter type back to 'On'.
+    submitExitFormReleaseDate() {
+        // Handle different date filter types
+        if (this.exitFormReleaseDateFilterType === 'On' && this.selectedExitFormReleaseDate) {
+            this.createExitFormReleaseDateChip('=', this.selectedExitFormReleaseDate);
+        } else if (this.exitFormReleaseDateFilterType === 'Before' && this.selectedExitFormReleaseDate) {
+            this.createExitFormReleaseDateChip('<', this.selectedExitFormReleaseDate);
+        } else if (this.exitFormReleaseDateFilterType === 'After' && this.selectedExitFormReleaseDate) {
+            this.createExitFormReleaseDateChip('>', this.selectedExitFormReleaseDate);
+        } else if (this.exitFormReleaseDateFilterType === 'Between' && this.beginningDateRange && this.endDateRange) {
+            // Format the dates
+            const formattedBeginningDate = this.formatDateForDatePicker(this.beginningDateRange);
+            const formattedEndDate = this.formatDateForDatePicker(this.endDateRange);
+            // Create a chip for the date range
+            this.createExitFormReleaseDateChip('between', `${formattedBeginningDate} and ${formattedEndDate}`);
+        }
+
+        this.dialogExitFormReleaseDate = false;
+        this.selectedExitFormReleaseDate = new Date();
+        this.exitFormReleaseDateFilterType = "On";
+    },
+
+    // Cancels the selection of the start date filter. It closes the dialog, resets the filter type to "On", and sets the selected start date to the current date.
     cancelSelectStartDate() {
         this.dialogStartDate = false;
         this.startDateFilterType = "On";
         this.selectedStartDate = new Date();
     },
 
+    // Cancels the selection of the end date filter. It closes the dialog, resets the filter type to "On", and sets the selected end date to the current date.
     cancelSelectEndDate() {
         this.dialogEndDate = false;
         this.endDateFilterType = "On";
         this.selectedEndDate = new Date();
     },
 
+    // Cancels the selection of the exit form release date filter. It closes the dialog, resets the filter type to "On", and sets the selected exit form release date to the current date.
+    cancelSelectExitFormReleaseDate() {
+        this.dialogExitFormReleaseDate = false;
+        this.exitFormReleaseDateFilterType = "On";
+        this.selectedExitFormReleaseDate = new Date();
+    },
+
+    // Creates a search chip for the start date filter based on the provided operator and date. Then adds the chip to the search criteria and selects it by default. Finally, triggers the filter process.
     createStartDateChip(operator, date) {
         let term = '';
         if (operator === '=') {
@@ -908,7 +1270,7 @@ methods: {
 
         // Create the chip
         const startDateChip = {
-            category: 'Start Date',
+            category: 'Session Start Date',
             term: term
         };
 
@@ -921,6 +1283,7 @@ methods: {
         this.performFilter();
     },
 
+    // Creates a search chip for the end date filter based on the provided operator and date. Then adds the chip to the search criteria and selects it by default. Finally, triggers the filter process.
     createEndDateChip(operator, date) {
         let term = '';
         if (operator === '=') {
@@ -935,7 +1298,7 @@ methods: {
 
         // Create the chip
         const endDateChip = {
-            category: 'End Date',
+            category: 'Session End Date',
             term: term
         };
 
@@ -948,19 +1311,51 @@ methods: {
         this.performFilter();
     },
 
+    // Creates a search chip for the exit form release date filter based on the provided operator and date. Then adds the chip to the search criteria and selects it by default. Finally, triggers the filter process.
+    createExitFormReleaseDateChip(operator, date) {
+        let term = '';
+        if (operator === '=') {
+            term = `= ${this.formatDateForDatePicker(date)}`;  // Equals operator
+        } else if (operator === '<') {
+            term = `< ${this.formatDateForDatePicker(date)}`;  // Less than operator
+        } else if (operator === '>') {
+            term = `> ${this.formatDateForDatePicker(date)}`;  // More than operator
+        } else if (operator === 'between') {
+            term = `between ${date}`;  // Between operator
+        }
+
+        // Create the chip
+        const exitFormReleaseDateChip = {
+            category: 'Exit Form Release Date',
+            term: term
+        };
+
+        // Add the chip to the search criteria
+        this.searchCriteria.push(exitFormReleaseDateChip);
+        // Select the new chip by default
+        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+
+        // Call search
+        this.performFilter();
+    },
+
+    // Formats the provided date into the 'MM-dd-yyyy' format using Luxon's DateTime library.
     formatDateMethod(date) {
         return DateTime.fromJSDate(date).toFormat('MM-dd-yyyy');
     },
 
+    // Toggles the visibility of archived sessions. After toggling, triggers the filtering process to update the displayed sessions accordingly.
     toggleArchivedSessions() {
         this.viewArchivedSessions = !this.viewArchivedSessions;
         this.performFilter();
     },
 
+    // Handles archiving or restoring selected sessions. It updates the status of each session accordingly via a PUT request. Upon completion, it displays a toast message indicating the success of the operation.
     async handleArchiveSessions() {
         try {
             const user = useLoggedInUserStore();
             const token = user.token;
+
             const updateStatus = { sessionStatus: this.viewArchivedSessions };
 
             for (const session of this.selectedSessions) {
@@ -993,73 +1388,113 @@ methods: {
             this.handleError(error);
         } finally {
             this.selectedSessions = [];
-            await this.fetchSessionData();
+            await this.fetchInstances();
+            await this.fetchSessionData()
+                .then(() => {
+                    useLoggedInUserStore().stopLoading();
+                    this.performFilter();
+                })
+                .catch((error) => {
+                    this.handleError(error);
+                    useLoggedInUserStore().stopLoading();
+                });
         }
     },
 
+    // Navigates to the page for adding a new session.
     handleAddNewSession() {
         this.$router.push({ name: "instructorAddSession" });
     },
 
+    // Cancels the search dialog and resets the search filter selection for extra small screens.
     xsCancelSearchDialog() {
         this.xsdialogSearch = false;
         this.xsSearchFilterSelection = null;
     },
 
+    // Applies search filters for extra small screens based on the selected filter option. If the selected filter is "Session Name", it adds a search chip. If the selected filter is "Session Start Date" or "Session End Date", it handles the date selection according to the chosen date filter type ('On', 'Before', 'After', or 'Between'). Finally, it resets the search dialog and clears the search input and filter selection.
     xsApplySearchFilters() {
-    if (this.xsSearchFilterSelection === "Session Name") {
-        this.addSearchChip();
-    } else if (this.xsSearchFilterSelection === "Start Date" || this.xsSearchFilterSelection === "End Date") {
-        const isStartDate = this.xsSearchFilterSelection === "Start Date";
-        let dateFilterType = isStartDate ? this.startDateFilterType : this.endDateFilterType;
-        let selectedDate = isStartDate ? this.selectedStartDate : this.selectedEndDate;
-        let handleDateSelection = isStartDate ? this.handleStartDateSelection : this.handleEndDateSelection;
-        let submitDate = isStartDate ? this.submitStartDate : this.submitEndDate;
-        let createChipMethod = isStartDate ? this.createStartDateChip : this.createEndDateChip;
+        if (this.xsSearchFilterSelection === "Session Name") {
+            this.addSearchChip();
+        } else if (this.xsSearchFilterSelection === "Session Start Date" || this.xsSearchFilterSelection === "Session End Date") {
+            const isStartDate = this.xsSearchFilterSelection === "Session Start Date";
+            let dateFilterType = isStartDate ? this.startDateFilterType : this.endDateFilterType;
+            let selectedDate = isStartDate ? this.selectedStartDate : this.selectedEndDate;
+            let handleDateSelection = isStartDate ? this.handleStartDateSelection : this.handleEndDateSelection;
+            let submitDate = isStartDate ? this.submitStartDate : this.submitEndDate;
+            let createChipMethod = isStartDate ? this.createStartDateChip : this.createEndDateChip;
 
-        if (dateFilterType !== 'Between') {
-            // For 'On', 'Before', and 'After' filters
-            let parsedDate = DateTime.fromISO(selectedDate).toJSDate();
-            handleDateSelection(parsedDate);
-            submitDate(parsedDate);
-        } else {
-            // For 'Between' filter - Split into two chips
-            if (this.beginningDateRange && this.endDateRange) {
-                let parsedStartDate = DateTime.fromISO(this.beginningDateRange).toJSDate();
-                let parsedEndDate = DateTime.fromISO(this.endDateRange).toJSDate();
-                createChipMethod('>', parsedStartDate); // Date After {date1}
-                createChipMethod('<', parsedEndDate);   // Date Before {date2}
+            if (dateFilterType !== 'Between') {
+                // For 'On', 'Before', and 'After' filters
+                let parsedDate = DateTime.fromISO(selectedDate).toJSDate();
+                handleDateSelection(parsedDate);
+                submitDate(parsedDate);
+            } else {
+                // For 'Between' filter - Split into two chips
+                if (this.beginningDateRange && this.endDateRange) {
+                    let parsedStartDate = DateTime.fromISO(this.beginningDateRange).toJSDate();
+                    let parsedEndDate = DateTime.fromISO(this.endDateRange).toJSDate();
+                    createChipMethod('>', parsedStartDate); // Date After {date1}
+                    createChipMethod('<', parsedEndDate);   // Date Before {date2}
+                }
             }
         }
-    }
-    this.xsdialogSearch = false;
-    this.sessionSearch = "";
-    this.xsSearchFilterSelection = null;
-}
+        this.xsdialogSearch = false;
+        this.sessionSearch = "";
+        this.xsSearchFilterSelection = null;
+    },
 
+    // Toggles the expansion state of a session row. If the session is already expanded, it collapses it by removing it from the list of expanded sessions. If the session is not expanded, it expands it by adding it to the list of expanded sessions.
+    toggleRowExpansion(item) {
+        const index = this.expandedSessions.indexOf(item);
+        if (index > -1) {
+            // Session is already expanded, collapse it
+            this.expandedSessions.splice(index, 1); // Remove the item
+        } else {
+            // Session is not expanded, expand it and load its instances
+            this.expandedSessions.push(item); // Add the item
+        }
+    },
 
+    // Formats a date object into a string suitable for a date picker input field, using the format 'MM-dd-yyyy'.
+    formatDateForDatePicker(date) {
+        return DateTime.fromJSDate(date).toFormat('MM-dd-yyyy');
+    },
 
+    // Returns the count of activities in the provided array.
+    getActivityCount(activities) {
+        return activities.length;
+    },
 
+    // Redirects the user to the edit page for a specific experience instance when invoked.
+    editInstance(instance) {
+        this.$router.push({ name: "instructorSpecificExperienceInstance", params: { id: instance._id } });
+    },
 
-
-
-
+    // Redirects the user to the page for adding a new experience instance, passing along the session ID as a parameter for context.
+    handleAddExperience(sessionID) {
+        this.$router.push({ name: "instructorAddExperienceInstance", params: { id: sessionID } });
+    },
 },
 };
 </script>
 
-  
+    
 <style scoped>
 
 
 .pointer-cursor {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .full-width-height {
     width: 100%;
     height: 100%;
     cursor: pointer;
+}
+
+.v-data-table .custom-hover:hover {
+    background-color: #F5F5F5;
 }
 
 </style>

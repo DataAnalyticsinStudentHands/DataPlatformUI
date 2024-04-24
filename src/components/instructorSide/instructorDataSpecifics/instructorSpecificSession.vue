@@ -1,3 +1,4 @@
+<!-- instructorSpecificSession - this view presents a single Session's data -->
 <template>
 <main>
   <v-form>
@@ -132,6 +133,8 @@ import { DateTime } from "luxon";
     },
 
       methods: {
+
+        // Fetches session data from the backend API using the session ID provided in the route parameters. Updates the session properties accordingly.
         fetchSessionData() {
             const user = useLoggedInUserStore();
             let token = user.token;
@@ -153,6 +156,7 @@ import { DateTime } from "luxon";
                 });
         },
 
+        // Checks whether the session can be deleted by making a request to the backend API. Sets the `canSessionBeDeleted` flag based on the response data.
         async checkIfSessionCanBeDeleted() {
           try {
             const user = useLoggedInUserStore();
@@ -166,6 +170,7 @@ import { DateTime } from "luxon";
           }
         }, 
 
+        // Checks for associated instances related to the session based on the provided action. Sets loading flags accordingly. Requests data from the backend API to determine if there are any associated instances. Displays update or delete dialogs based on the response data.
         async checkAssociatedInstances(action) {
           if (action === "update") {
             this.updateLoading = true;
@@ -194,7 +199,6 @@ import { DateTime } from "luxon";
                 this.confirmDelete();
               }
             }
-
           } catch (error) {
             this.handleError(error);
           } finally {
@@ -203,11 +207,13 @@ import { DateTime } from "luxon";
           }
         },
         
+        // Executes the deletion process for the session. Then, hides the delete dialog.
         confirmDelete() {
           this.deleteSession();
           this.showDeleteDialog = false;
         },
 
+        // Deletes the session from the backend. Upon successful deletion, redirects to the data management page with a success message displayed as a toast notification.
         async deleteSession() {
           try {
             const user = useLoggedInUserStore();
@@ -219,7 +225,7 @@ import { DateTime } from "luxon";
             this.$router.push({
               name: 'instructorDataManagement',
               params: {
-                activeTab: 1,
+                activeTab: 0,
                 toastType: 'success',
                 toastMessage: 'Session Deleted!',
                 toastPosition: 'top-right',
@@ -231,35 +237,35 @@ import { DateTime } from "luxon";
           }
         },        
 
-
-          proceedWithUpdate() {
-              const user = useLoggedInUserStore();
-                let token = user.token;
-                const updatedSession = {
-                    sessionName: this.session.sessionName,
-                    sessionPeriod: {
-                        startDate: DateTime.fromFormat(this.session.sessionPeriod.startDate, 'yyyy-MM-dd').toISO(),
-                        endDate: DateTime.fromFormat(this.session.sessionPeriod.endDate, 'yyyy-MM-dd').toISO()
-                    },
-                };
-                let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;
-                axios.put(`${url}/${this.$route.params.id}`, updatedSession, {
-                    headers: { token },
-                }).then(() => {
-                    this.$router.push({ 
-                        name: 'instructorDataManagement',
-                        params: {
-                            activeTab: 1,
-                            toastType: 'info',
-                            toastMessage: 'Session updated!',
-                            toastPosition: 'top-right',
-                            toastCSS: 'Toastify__toast--update'
-                        }
-                    });
-                }).catch((error) => {
-                    this.errorMessage = "Error updating session: " + error.message;
-                });
-            },
+        // Updates the session details with the provided information. After successfully updating the session, redirects to the data management page while displaying a toast notification confirming the update.
+        proceedWithUpdate() {
+            const user = useLoggedInUserStore();
+              let token = user.token;
+              const updatedSession = {
+                  sessionName: this.session.sessionName,
+                  sessionPeriod: {
+                      startDate: DateTime.fromFormat(this.session.sessionPeriod.startDate, 'yyyy-MM-dd').toISO(),
+                      endDate: DateTime.fromFormat(this.session.sessionPeriod.endDate, 'yyyy-MM-dd').toISO()
+                  },
+              };
+              let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;
+              axios.put(`${url}/${this.$route.params.id}`, updatedSession, {
+                  headers: { token },
+              }).then(() => {
+                  this.$router.push({ 
+                      name: 'instructorDataManagement',
+                      params: {
+                          activeTab: 0,
+                          toastType: 'info',
+                          toastMessage: 'Session updated!',
+                          toastPosition: 'top-right',
+                          toastCSS: 'Toastify__toast--update'
+                      }
+                  });
+              }).catch((error) => {
+                  this.errorMessage = "Error updating session: " + error.message;
+              });
+          },
     }
   };
   </script>

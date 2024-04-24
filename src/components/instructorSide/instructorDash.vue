@@ -1,3 +1,4 @@
+<!-- instructorDash - this view presents the Instructor's Dashboard -->
 <template>
   <main>
     <v-container>
@@ -21,10 +22,17 @@
       </v-row>
       
       <v-row>
-        <v-col :cols="12">
+        <v-col :cols="6">
           <v-card @click="navigateToProgressMonitor" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
               Student Progress Monitor
+            </v-card-title>
+          </v-card>
+        </v-col>
+        <v-col :cols="6">
+          <v-card @click="navigateToMailer" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
+            <v-card-title class="red darken-2 text-center py-6">
+              Student Mailer
             </v-card-title>
           </v-card>
         </v-col>
@@ -78,9 +86,16 @@ export default {
     }
   },
   methods: {
+
+    // Navigates to the progress monitor tool.
     navigateToProgressMonitor() {
       this.$router.push({ name: 'instructorProgressMonitorContainer' });
     },
+
+    // Navigates to the Mailer tool.
+    navigateToMailer() {
+      this.$router.push({ name: 'instructorMailer' });
+    }
 
   },
 };

@@ -1,4 +1,4 @@
-<!--'/instructorAddExperience' this page will only show experiences-->
+<!--'/instructorSpecificExperience' - this view presents a single Experience's data -->
 <template>
   <main>
     <v-form>
@@ -10,86 +10,6 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="6">
-            <v-card flat>
-              <v-card-title>
-                <v-row>
-                  <v-col>
-                    Selected Activities
-                  </v-col>
-                </v-row>
-              </v-card-title>
-              <v-list class="scrollable-list">
-                <v-list-item
-                  v-for="activity in selectedActivities"
-                  :key="activity._id"
-                >
-                <v-row>
-                  <v-col cols="10">
-                    {{ activity.activityName }}
-                  </v-col>
-                  <v-col>
-                    <v-icon
-                      @click.stop="removeSelectedActivity(activity)"
-                      class="mdi-close"
-                    >
-                      mdi-close
-                    </v-icon>
-                  </v-col>
-                </v-row>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-col>
-          <v-col>
-            <v-card
-              flat
-              title="Add Activities"
-            >
-              <template v-slot:text>
-                <v-text-field
-                  v-model="activitySearch"
-                  label="Search"
-                  prepend-inner-icon="mdi-magnify"
-                  single-line
-                  variant="outlined"
-                  hide-details
-                ></v-text-field>
-              </template>
-              <v-data-table
-                :headers="activityHeaders"
-                :items="activities"
-                item-value="_id"
-                items-per-page="-1"
-                class="scrollable-table"
-                hover
-                :search="activitySearch"
-              >
-                <template v-slot:body="{ items }">
-                  <template v-for="item in items" :key="item._id">
-                    <tr
-                      @click="selectActivity(item)"
-                      @mouseover="hoveredItem = item._id"
-                      @mouseleave="hoveredItem = null"
-                      class="pointer-cursor activity-row"
-                    >
-                      <td>
-                        <div class="activity-content">
-                          {{ item.activityName }}
-                          <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
-                        </div>
-                      </td>
-                    </tr>
-                  </template>
-                </template>
-                <template v-slot:bottom>
-
-                </template>
-              </v-data-table>
-            </v-card>
           </v-col>
         </v-row>
         <v-row class="pt-5">
@@ -188,19 +108,6 @@ export default {
         experienceName: '',
       },
       originalExperienceName: "",
-      activities: [],
-      originalActivities: [],
-      activityHeaders: [
-        {
-          title: "Activity Name",
-          value: "activityName",
-          key: "activityName",
-          align: "start",
-          sortable: true
-        }
-      ],
-      selectedActivities: [],
-      activitySearch: "",
       hoveredItem: null,
       canExperienceBeDeleted: false,
       showDeleteDialog: false,
@@ -221,6 +128,7 @@ export default {
 
   methods: {
 
+    // Fetches experience data from the backend server using an API call based on the provided experience ID. Upon successful retrieval, updates the local state with the fetched experience details, including the experience category and name.
     async fetchExperienceData(experienceID) {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -234,35 +142,13 @@ export default {
             experienceCategory: experienceData.experienceCategory,
             experienceName: experienceData.experienceName,
           };
-
-          // Wait for the activities to be fetched before processing
-          this.fetchActivityData().then(() => {
-            this.selectedActivities = this.originalActivities.filter(a => experienceData.activities.includes(a._id));
-            this.activities = this.originalActivities.filter(a => !experienceData.activities.includes(a._id));
-          });
         })
         .catch((error) => {
           this.handleError(error);
         });
     },
 
-
-    async fetchActivityData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
-      return axios // Return the axios promise here
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          const activities = resp.data;
-          this.activities = activities.filter((activity) => activity.activityStatus === true);
-          this.originalActivities = [...this.activities];
-        })
-        .catch((error) => {
-          this.handleError(error);
-        });
-    },
-
+    // Fetches data to check if the specified experience can be deleted by sending a request to the backend server. If successful, updates the local state with the boolean value indicating whether the experience can be deleted or not.
     async checkIfExperienceCanBeDeleted(experienceID) {
       try {
         const user = useLoggedInUserStore();
@@ -275,6 +161,7 @@ export default {
       }
     },
 
+    // Checks for associated instances based on the provided action ('update' or 'delete'). If 'update', sets the update loading state to true; if 'delete', sets the delete loading state to true. Then, sends a request to the backend server to check for associated instances related to the experience. If instances are found, updates the associatedInstances array accordingly and sets the update or delete dialog to true. Otherwise, proceeds with the update or confirms the delete action.
     async checkAssociatedInstances(action) {
       if (action === "update") {
         this.updateLoading = true;
@@ -312,13 +199,14 @@ export default {
       }
     },
 
+    // Confirms the delete action by calling the deleteExperience method and then hides the delete dialog.
     confirmDelete() {
       // Call the delete method here
       this.deleteExperience();
       this.showDeleteDialog = false;
     },
 
-
+    // Deletes the experience by sending a DELETE request to the server and then navigates to the instructorDataManagement page with a success message upon successful deletion.
     async deleteExperience() {
       try {
         const user = useLoggedInUserStore();
@@ -331,7 +219,7 @@ export default {
         this.$router.push({
           name: 'instructorDataManagement',
           params: {
-            activeTab: 2,
+            activeTab: 1,
             toastType: 'success',
             toastMessage: 'Experience Deleted!',
             toastPosition: 'top-right',
@@ -343,9 +231,7 @@ export default {
       }
     },
 
-
-
-
+    // Updates the experience details and its related instances by sending PUT requests to the server. Upon successful update, it redirects to the instructorDataManagement page with a success message.
     proceedWithUpdate() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -359,7 +245,6 @@ export default {
         .put(experienceUpdateURL, {
           experienceCategory: this.experience.experienceCategory,
           experienceName: this.experience.experienceName,
-          activities: this.selectedActivities.map(activity => activity._id),
         }, { headers: { token } })
         .then(() => {
           // Prepare data for updating Experience Instances
@@ -368,10 +253,6 @@ export default {
               category: this.experience.experienceCategory,
               name: this.experience.experienceName,
             },
-            activities: this.selectedActivities.map(activity => ({
-              id: activity._id,
-              name: activity.activityName
-            }))
           };
 
           // Update Experience Instances
@@ -388,7 +269,7 @@ export default {
           this.$router.push({ 
             name: 'instructorDataManagement',
             params: {
-              activeTab: 2,
+              activeTab: 1,
               toastType: 'info',
               toastMessage: toastMessage,
               toastPosition: 'top-right',
@@ -401,33 +282,7 @@ export default {
         });
     },
 
-
-
-
-    selectActivity(activity) {
-      // Add to selectedActivities
-      this.selectedActivities.push(activity);
-
-      // Remove from the activities list
-      this.activities = this.activities.filter(a => a._id !== activity._id);
-    },
-
-    removeSelectedActivity(activity) {
-      // Remove from selectedActivities
-      this.selectedActivities = this.selectedActivities.filter(a => a._id !== activity._id);
-
-      // Find original index in the originalActivities array
-      const originalIndex = this.originalActivities.findIndex(a => a._id === activity._id);
-
-      // Check if the activity is already in the activities list
-      const alreadyPresent = this.activities.some(a => a._id === activity._id);
-
-      // Re-insert at the original position if not present
-      if (!alreadyPresent && originalIndex !== -1) {
-        this.activities.splice(originalIndex, 0, activity);
-      }
-    },
-
+    // Navigates back to the previous page. If there's an activity ID specified in the route parameters, it redirects to the instructorSpecificActivity page for that activity. Otherwise, it simply goes back to the previous page in the browser history.
     goBack() {
       if (this.$route.params.activityID) {
         this.$router.push({
@@ -464,14 +319,6 @@ export default {
 .pointer-cursor {
     cursor: pointer;
 }
-
-.activity-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
 .mdi-close {
   cursor: pointer;
 }

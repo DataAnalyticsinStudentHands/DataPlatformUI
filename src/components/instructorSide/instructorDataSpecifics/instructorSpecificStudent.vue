@@ -1,3 +1,4 @@
+<!-- instructorSpecificStudent - this view presents a single Student's data -->
 <template>
   <v-form disabled>
     <v-row style="margin-top: 1rem;">
@@ -35,7 +36,7 @@
               <p style="margin: 0;">{{ languagePreferenceValue }}</p>
             </v-col>
           </v-row>
-          <div v-if="studentData">
+        <div v-if="studentData">
         <br><p class="font-weight-black text-h6">Demographics Information</p>
         <v-row>
             <v-col cols="12" md="6">
@@ -247,11 +248,11 @@ export default {
 data() {
   return {
       userData: [],
-      studentData: []
+      studentData: null,
   };
 },
 
-beforeMount() {
+created() {
   (async () => {
     try {
       const user = useLoggedInUserStore();

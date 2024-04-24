@@ -1,3 +1,4 @@
+<!-- instructorActivities - this view presents a list of all Activities -->
 <template>
 <v-container>
     <!-- Title -->
@@ -139,8 +140,6 @@
                     v-model="selectedActivities"
                     hover
                     return-object
-                    v-model:expanded="expandedActivities"
-                    show-expand
                 >
                     <template v-slot:body="{ items }">
                         <template
@@ -155,38 +154,37 @@
                                     <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
                                 </td>
                                 <td>{{ item.activityName }}</td>
-                                <td @click.stop>
-                                    <v-btn icon variant="text" @click="toggleRowExpansion(item)">
+                                <td
+                                    v-if="experienceNameSearchApplied"
+                                    @click.stop
+                                >
+                                    <v-btn 
+                                        icon 
+                                        variant="text"
+                                        @click="toggleRowExpansion(item)"
+                                    >
                                         <v-icon>
                                             {{ expandedActivities.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                                         </v-icon>
                                     </v-btn>
                                 </td>
                             </tr>
-                            <!-- Expanded row for experiences -->
+                            <!-- Expanded row for displaying experiences and sessions -->
                             <tr v-if="expandedActivities.includes(item)">
-                                <td></td>
-                                <td :colspan="activityHeaders.length">
-                                    <div class="experience-label">
-                                        <strong>Experiences:</strong>
-                                    </div>
-                                    <div v-if="item.experiences && item.experiences.length" class="experiences-grid">
-                                        <div v-for="(half, index) in [firstHalfExperiences(item.experiences), secondHalfExperiences(item.experiences)]" :key="index">
-                                            <v-list density="compact">
-                                                <v-list-item v-for="experience in half" :key="experience._id">
-                                                    <span :class="{
-                                                            'highlight-red': isExperienceNameMatched(experience.experienceName) || 
-                                                                            isExperienceCategoryMatched(experience.experienceCategory)
-                                                        }">
-                                                        {{ experience.experienceCategory }} - {{ experience.experienceName }}
-                                                    </span>
-                                                </v-list-item>
-                                            </v-list>
-                                        </div>
-                                    </div>
-                                    <div v-else class="font-italic pt-2 pl-2">
-                                        None
-                                    </div>
+                                <td :colspan="activityHeaders.length" class="pa-0">
+                                    <v-container>
+                                        <!-- Iterate over activities object -->
+                                        <v-row v-for="(experience, experienceID) in prepareExpandedData[item._id]?.experiences || {}" :key="experienceID">
+                                            <v-col cols="12">
+                                                <strong>{{ experience.name }}</strong>
+                                                <ul>
+                                                    <li v-for="session in experience.sessions" :key="session.sessionID">
+                                                        {{ session.sessionName }}
+                                                    </li>
+                                                </ul>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
                                 </td>
                             </tr>
                         </template>
@@ -240,37 +238,89 @@
 <!-- Dialog for Filtering by Experience Name -->
 <v-dialog
     v-model="dialogExperienceName"
-    width="500"
+    width="1200"
     persistent
 >
-    <v-card>
-        <v-card-title>
-            Filter By Experience Name
-        </v-card-title>
-        <v-card-item>
-            <v-row>
-                <v-col>
-                    <v-autocomplete
-                        :items="uniqueExperienceNames"
-                        v-model="selectedExperienceNames"
-                        label="Experience Name"
-                        clearable
-                        chips
+<v-card>
+    <v-card-item>
+        <v-card
+                flat
+                title="Search Activities by Experiences"
+            >
+                <template v-slot:text>
+                <v-text-field
+                    v-model="experienceNameSearch"
+                    label="Search"
+                    prepend-inner-icon="mdi-magnify"
+                    single-line
+                    variant="outlined"
+                    hide-details
+                ></v-text-field>
+                <v-card-item v-if="selectedExperienceNames && selectedExperienceNames.length">
+                    <v-chip-group
+                        column
                         multiple
-                        return-object
-                    ></v-autocomplete>
-                </v-col>
-            </v-row>
-        </v-card-item>
-        <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text @click="cancelDialogExperienceName">Cancel</v-btn>
-            <v-btn 
-                color="#c8102e"
-                @click="submitExperienceName"
-            >Apply</v-btn>
-        </v-card-actions>
-    </v-card>
+                    >
+                        <v-chip
+                            v-for="(experience, index) in selectedExperienceNames"
+                            :key="experience._id"
+                            @click="removeExperienceName(index)"
+                            class="ma-2"
+                        >
+                            {{ experience.experienceName }}
+                            <v-icon
+                                end
+                                @click.stop="removeExperienceName(index)"
+                            >mdi-close</v-icon>
+                        </v-chip>
+                    </v-chip-group>
+                </v-card-item>
+                </template>
+                <v-data-table
+                    :headers="experienceHeaders"
+                    :items="experienceData"
+                    item-value="_id"
+                    items-per-page="-1"
+                    class="scrollable-table"
+                    hover
+                    :search="experienceNameSearch"
+                    >
+                    <template v-slot:body="{ items }">
+                        <template v-for="item in items" :key="item._id">
+                            <tr
+                                @click="selectExperienceName(item)"
+                                @mouseover="hoveredItem = item._id"
+                                @mouseleave="hoveredItem = null"
+                                class="pointer-cursor"
+                            >
+                                <td>
+                                    <div class="experience-content">
+                                        {{ item.experienceCategory }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="experience-content">
+                                        {{ item.experienceName }}
+                                        <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
+                                        <v-icon v-else class="invisible-icon">mdi-plus</v-icon>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                    <template v-slot:bottom></template>
+                </v-data-table>
+        </v-card>
+    </v-card-item>
+    <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn text @click="cancelExperienceNameSearch">Cancel</v-btn>
+        <v-btn 
+            color="#c8102e"
+            @click="submitExperienceNameSearch"
+        >Apply</v-btn>
+    </v-card-actions>
+</v-card>
 </v-dialog>
 </template>
 
@@ -294,25 +344,6 @@ data() {
             "Experience Category",
             "Experience Name"
         ],
-        activityHeaders: [
-            {
-                title: "",
-                sortable: false,
-                align: "center",
-                width: "30px"
-            },
-            {
-                title: "Activity Name",
-                value: "activityName",
-                align: "start",
-                sortable: true,
-                key: "activityName"
-            },
-            {
-                title: "",
-                key: "data-table-expand"
-            }
-        ],
         searchCriteria: [],
         selectedSearchChips: [],
         dialogExperienceCategory: false,
@@ -320,6 +351,26 @@ data() {
         selectedExperienceCategories: [],
         selectedExperienceNames: [],
         expandedActivities: [],
+        experienceNameSearch: "",
+        experienceHeaders: [
+            {
+                title: "Experience Category",
+                value: "experienceCategory",
+                key: "experienceCategory",
+                align: "start",
+                sortable: true
+            },
+            {
+                title: "Experience Name",
+                value: "experienceName",
+                key: "experienceName",
+                align: "start",
+                sortable: true
+            }
+        ],
+        hoveredItem: null,
+        experienceBasedActivities: [],
+        experienceNameSearchApplied: false,
     }
 },
 mounted() {
@@ -333,6 +384,23 @@ mounted() {
             useLoggedInUserStore.stopLoading();
         });
 },
+watch: {
+    // Watch the searchCriteria and selectedSearchChips for changes
+    searchCriteria: {
+        handler() {
+            this.updateExperienceNameSearchApplied();
+        },
+        deep: true,
+        immediate: true
+    },
+    selectedSearchChips: {
+        handler() {
+            this.updateExperienceNameSearchApplied();
+        },
+        deep: true,
+        immediate: true
+    }
+},
 computed: {
     loading() {
         return useLoggedInUserStore().loading;
@@ -342,27 +410,57 @@ computed: {
         return this.searchCriteria.length > 0;
     },
 
-    uniqueExperienceCategories() {
-        const categories = new Set();
-        this.activityData.forEach(activity => {
-            activity.experiences.forEach(experience => {
-                categories.add(experience.experienceCategory);
+    activityHeaders() {
+        let headers = [
+            {
+                title: "",
+                sortable: false,
+                align: "center",
+                width: "30px"
+            },
+            {
+                title: "Activity Name",
+                value: "activityName",
+                align: "start",
+                sortable: true,
+                key: "activityName"
+            }
+        ];
+
+        // Conditionally add the expand column
+        if (this.experienceNameSearchApplied) {
+            headers.push({
+                title: "", // Adjust the title as needed
+                key: "data-table-expand"
+            });
+        }
+
+        return headers;
+    },
+    prepareExpandedData() {
+        const expandedData = {};
+        this.experienceBasedActivities.forEach(({ activityID, sessionID, sessionName, experienceID, experienceName }) => {
+            if (!expandedData[activityID]) {
+                expandedData[activityID] = { experiences: {} };
+            }
+            if (!expandedData[activityID].experiences[experienceID]) {
+                expandedData[activityID].experiences[experienceID] = {
+                    name: experienceName,
+                    sessions: []
+                };
+            }
+            expandedData[activityID].experiences[experienceID].sessions.push({
+                sessionID,
+                sessionName
             });
         });
-        return Array.from(categories);
+        return expandedData;
     },
 
-    uniqueExperienceNames() {
-        const names = new Set();
-        this.activityData.forEach(activity => {
-            activity.experiences.forEach(experience => {
-                names.add(experience.experienceName);
-            });
-        });
-        return Array.from(names);
-    }
 },
 methods: {
+    
+    // Fetches activity data from the backend, updates local state with the fetched data, and then performs any necessary filtering on this data.
     async fetchActivityData() {
         try {
             const user = useLoggedInUserStore();
@@ -377,10 +475,12 @@ methods: {
         }
     },
 
+    // Navigates to the edit page for a specific activity, passing the activity's ID as a parameter.
     editActivity(activity) {
         this.$router.push({ name: "instructorSpecificActivity", params: {id: activity._id } });
     },
 
+    // Toggles an activity's selection state: if the activity is already selected, it is removed from the selection; if it is not selected, it is added to the selection.
     toggleSelection(activity) {
         const index = this.selectedActivities.findIndex((selectedActivity) => selectedActivity._id === activity._id);
         if (index >= 0) {
@@ -392,14 +492,17 @@ methods: {
         }
     },
 
-    updateSearchCriteria(item) {
+    // Triggers actions based on the selected search criteria item
+    async updateSearchCriteria(item) {
         if (item === "Experience Category") {
-            this.dialogExperienceCategory = true;
+            // this.dialogExperienceCategory = true;
         } else if (item === "Experience Name") {
+            this.fetchExperienceData();
             this.dialogExperienceName = true;
         }
     },
 
+    // Adds a search chip based on the current search input and category, selects the newly added chip by default, clears the search input field, and then performs a filter operation based on the updated search criteria.
     addSearchChip() {
         if (this.activitySearch) {
             this.searchCriteria.push({
@@ -415,6 +518,7 @@ methods: {
         }
     },
 
+    // Toggles the selection state of a search chip: if the chip is already selected, it is removed from the selection; if not, it is added. After updating the selection, a filter operation is performed based on the new selection state.
     selectSearchChip(index) {
         const selectedIndex = this.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
@@ -427,7 +531,8 @@ methods: {
         // Call search
         this.performFilter();
     },
-
+    
+    // Removes a search chip based on its index, updates the list of selected search chips to reflect this removal, adjusts the indexes of the remaining selected chips accordingly, and then performs a filter operation based on the updated search criteria.
     removeSearchChip(index) {
         this.searchCriteria.splice(index, 1);
         // Update selectedSearchChips to reflect the removal
@@ -438,6 +543,8 @@ methods: {
         this.performFilter();
     },
 
+    
+    // Groups search terms by their criteria categories, then filters activity data based on these grouped search criteria. If the "Experience Name" search is applied, it filters based on matching experience names. Otherwise, it filters activities based on their status and other criteria like "Activity Name", considering if archived activities should be viewed. It also dynamically updates the search results based on user-selected search chips.
     performFilter() {
         let searchGroups = {};
         this.selectedSearchChips.forEach(index => {
@@ -448,38 +555,53 @@ methods: {
             searchGroups[criteria.category].push(criteria.term.toLowerCase());
         });
 
-        this.filteredActivityData = this.activityData.filter(activity => {
-            // Check if the activity should be included based on activityStatus
-            if ((this.viewArchivedActivities && !activity.activityStatus) || 
-                (!this.viewArchivedActivities && activity.activityStatus)) {
-                // Filtering based on search criteria
-                return Object.keys(searchGroups).every(category => {
-                    if (category === "Activity Name") {
-                        return searchGroups[category].some(term =>
-                            activity.activityName.toLowerCase().includes(term)
-                        );
-                    } else if (category === "Experience Category") {
-                        return activity.experiences.some(exp =>
-                            searchGroups[category].includes(exp.experienceCategory.toLowerCase())
-                        );
-                    } else if (category === "Experience Name") {
-                        return activity.experiences.some(exp =>
-                            searchGroups[category].includes(exp.experienceName.toLowerCase())
-                        );
-                    }
-                    return true;
-                });
-            }
-            return false;
-        });
+        // Manually update activitySearchApplied based on current selectedSearchChips
+        this.updateExperienceNameSearchApplied();
+
+        if (this.experienceNameSearchApplied && this.experienceBasedActivities.length) {
+            const experienceNameTerms = this.selectedSearchChips
+                .filter(index => this.searchCriteria[index]?.category === "Experience Name")
+                .map(index => this.searchCriteria[index].term.trim().toLowerCase());
+            
+            // Filter experiences based on matching activity names
+            const filteredExperienceBasedActivities = this.experienceBasedActivities.filter(ea =>
+                experienceNameTerms.includes(ea.experienceName.trim().toLowerCase())
+            );
+
+            // Use the filtered activities to determine which experiences to show
+            const experienceActivityIDs = filteredExperienceBasedActivities.map(ea => ea.activityID);
+
+            this.filteredActivityData = this.activityData.filter(activity =>
+            experienceActivityIDs.includes(activity._id)
+            );
+        } else {
+            this.filteredActivityData = this.activityData.filter(activity => {
+                // Check if the activity should be included based on activityStatus
+                if ((this.viewArchivedActivities && !activity.activityStatus) || 
+                    (!this.viewArchivedActivities && activity.activityStatus)) {
+                    // Filtering based on search criteria
+                    return Object.keys(searchGroups).every(category => {
+                        if (category === "Activity Name") {
+                            return searchGroups[category].some(term =>
+                                activity.activityName.toLowerCase().includes(term)
+                            );
+                        }
+                        return true;
+                    });
+                }
+                return false;
+            });
+        }
     },
 
-
+    // Toggles the visibility of archived activities in the view and re-applies the current search and filter criteria.
     toggleArchivedActivities() {
         this.viewArchivedActivities = !this.viewArchivedActivities;
         this.performFilter();
     },
 
+    
+    // Archives or restores selected activities based on the current view setting, using the user's token for authorization. Displays a success toast message indicating the completion of the action for either a single activity or multiple activities. Clears the selection and refreshes the activity list afterwards.
     async handleArchiveActivities() {
         try {
             const user = useLoggedInUserStore();
@@ -507,16 +629,13 @@ methods: {
         }
     },
 
+    // Closes the experience category selection dialog and clears any selected experience categories.
     cancelDialogExperienceCategory() {
         this.dialogExperienceCategory = false;
         this.selectedExperienceCategories = [];
     },
 
-    cancelDialogExperienceName() {
-        this.dialogExperienceName = false;
-        this.selectedExperienceNames = [];
-    },
-
+    // Adds selected experience categories as search criteria chips, automatically selects these new chips, closes the experience category selection dialog, resets the selected categories, and then performs a search based on the updated criteria.
     submitExperienceCategory() {
         this.selectedExperienceCategories.forEach(category => {
             const chip = {
@@ -536,25 +655,7 @@ methods: {
         this.performFilter();
     },
 
-    submitExperienceName() {
-        this.selectedExperienceNames.forEach(name => {
-            const chip = {
-                category: "Experience Name",
-                term: name
-            };
-            this.searchCriteria.push(chip);
-            // Select the new chip by default
-            this.selectedSearchChips.push(this.searchCriteria.length - 1);
-        });
-
-        // Close the dialog and reset selectedExperienceNames
-        this.dialogExperienceName = false;
-        this.selectedExperienceNames = [];
-
-        // Call search
-        this.performFilter();
-    },
-
+    // Toggles the expansion state of an item in the list: if the item is already expanded, it is collapsed by removing it from the list of expanded activities; if it is not expanded, it is added to the list, thus expanding it.
     toggleRowExpansion(item) {
         const index = this.expandedActivities.indexOf(item);
         if (index > -1) {
@@ -566,16 +667,19 @@ methods: {
         }
     },
 
+    // Splits a list of experiences in half and returns the first half. If the list has an odd number of experiences, the midpoint is rounded up, including the middle experience in the first half.
     firstHalfExperiences(experiences) {
         const midpoint = Math.ceil(experiences.length / 2);
         return experiences.slice(0, midpoint);
     },
 
+    // Splits a list of experiences in half and returns the second half, starting from the midpoint. If the list has an odd number of experiences, the midpoint is rounded up, and the second half starts immediately after the middle experience.
     secondHalfExperiences(experiences) {
         const midpoint = Math.ceil(experiences.length / 2);
         return experiences.slice(midpoint);
     },
 
+    // Determines if a given experience name matches any of the selected 'Experience Name' search criteria by comparing the experience name against lowercased search terms. Returns true if there's at least one match, otherwise false.
     isExperienceNameMatched(experienceName) {
         // Check if any 'Experience Name' criteria are selected
         const selectedExperienceNameCriteria = this.searchCriteria
@@ -585,6 +689,7 @@ methods: {
         return selectedExperienceNameCriteria.some(term => experienceName.toLowerCase().includes(term));
     },
 
+    // Checks if a given experience category matches any of the selected 'Experience Category' search criteria by comparing the experience category against lowercased search terms. Returns true if at least one match is found, indicating the experience category meets the selected criteria.
     isExperienceCategoryMatched(experienceCategory) {
         // Check if any 'Experience Category' criteria are selected
         const selectedExperienceCategoryCriteria = this.searchCriteria
@@ -594,8 +699,116 @@ methods: {
         return selectedExperienceCategoryCriteria.some(term => experienceCategory.toLowerCase().includes(term));
     },
 
+    // Navigates to the view for adding a new activity by routing to the specified route name "instructorAddActivity".
     handleAddNewActivity() {
         this.$router.push({ name: "instructorAddActivity" });
+    },
+
+    // Fetches experience data from the backend, sorts it by the experienceCategory in ascending order, and updates the local state with the sorted data.
+    async fetchExperienceData() {
+        try {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+
+            const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/`;
+            const response = await axios.get(apiURL, { headers: { token }});
+            this.experienceData = response.data.sort((a, b) => {
+                return a.experienceCategory.localeCompare(b.experienceCategory);
+            })
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    // Removes a selected experience by its index from the list of selected experience names, adds the removed experience back into the pool of available experiences, and then sorts the updated experience data by experienceCategory.
+    removeExperienceName(index) {
+        const [removedExperience] = this.selectedExperienceNames.splice(index, 1);
+        
+        // Add the removed activity back into activityData
+        this.experienceData.push(removedExperience);
+        this.experienceData.sort((a, b) => a.experienceCategory.localeCompare(b.experienceCategory));
+    },
+
+    // Adds a selected experience to the list of selected experience names and removes it from the available experience data to prevent duplication.
+    selectExperienceName(selectedExperienceName) {
+        this.selectedExperienceNames.push(selectedExperienceName);
+        // Remove the selected activity from the activityData list
+        this.experienceData = this.experienceData.filter(experience => experience._id !== selectedExperienceName._id);
+    },
+
+    // Resets the selected experience names and search input, then closes the experience name search dialog.
+    cancelExperienceNameSearch() {
+        this.selectedExperienceNames = [];
+        this.experienceNameSearch = "";
+        this.dialogExperienceName = false;
+    },
+
+    // Adds selected experience names as search criteria, fetches activities associated with the selected experiences, clears the selected experience names and search input, and closes the dialog. Performs filtering based on the updated search criteria.
+    async submitExperienceNameSearch() {
+        // Transform selectedActivities into the desired format for searchCriteria
+        const newSearchCriteria = this.selectedExperienceNames.map(experience => ({
+            category: "Experience Name",
+            term: experience.experienceName
+        }));
+
+        // Calculate the starting index for new chips
+        const startIndexForNewChips = this.searchCriteria.length;
+
+        // Append the new search criteria to the existing searchCriteria array
+        this.searchCriteria = [...this.searchCriteria, ...newSearchCriteria];
+
+        // Update selectedSearchChips to include the indices of the newly added chips
+        this.selectedSearchChips = [
+            ...this.selectedSearchChips,
+            ...newSearchCriteria.map((_, index) => startIndexForNewChips + index)
+        ];
+
+        
+        await this.fetchActivitiesByExperience();
+
+        // Optionally, if you want to clear selectedActivities after adding them as chips
+        this.selectedExperienceNames = [];
+
+        this.experienceNameSearch = "";
+
+        // Close the dialog
+        this.dialogExperienceName = false;
+
+        this.performFilter();
+    },
+
+    // Fetches activities associated with the selected experiences by sending a request to the server with the experience IDs. Upon receiving the response, updates the list of experience-based activities accordingly.
+    async fetchActivitiesByExperience() {
+        // Extract experience IDs from selectedExperiences
+        const experienceIDs = this.selectedExperienceNames.map(experience => experience._id);
+
+        try {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/by-experience`;
+
+            const response = await axios.post(apiURL, {
+                experienceIDs: experienceIDs
+            }, {
+                headers: { token }
+            });
+
+            this.experienceBasedActivities = response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    // Updates the experienceNameSearchApplied flag based on whether there is at least one selected "Experience Name" chip in the search criteria.
+    updateExperienceNameSearchApplied() {
+        // Check if there's at least one selected "Experience Name" chip
+        const hasSelectedExperienceNameChip = this.selectedSearchChips.some(chipIndex => {
+            const criteria = this.searchCriteria[chipIndex];
+            return criteria && criteria.category === "Experience Name";
+        });
+
+        // Update activitySearchApplied based on the condition
+        this.experienceNameSearchApplied = hasSelectedExperienceNameChip;
     }
 }
 
@@ -618,5 +831,16 @@ methods: {
 
 .highlight-red {
     color: #c8102e;
+}
+
+.experience-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.invisible-icon {
+    color: transparent;
 }
 </style>

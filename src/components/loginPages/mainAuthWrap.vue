@@ -51,13 +51,6 @@
   </v-container>
 </template>
 
-  
-
-  
-
-
-
-
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import LoginForm from "@/components/loginPages/login.vue";
@@ -102,6 +95,8 @@ export default {
     }
   },
   methods: {
+    
+    // Attempts to log in the user with provided credentials and checks form completion status upon successful login.
     async login() {
       try {
         // Attempt to login
@@ -112,6 +107,9 @@ export default {
         this.handleError(error);
       }
     },
+
+    
+    // Navigates to different routes within the application. Supports simple string routes for backward compatibility and object payloads containing both the route name and a userID for more complex navigations.
     changeRoute(payload) {
       if (typeof payload === 'string') {
         // For simple string routes (backward compatibility)
@@ -124,6 +122,8 @@ export default {
         });
       }
     },
+
+    // Toggles the application's language between English and Spanish based on the current language setting.
     changeLanguage() {
       if (this.language) {
         // set the app to Spanish

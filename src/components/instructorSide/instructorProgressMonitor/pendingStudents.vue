@@ -1,3 +1,4 @@
+<!-- pendingStudents - this view presents a list of students who have registered for an account, but have not yet activated their account. -->
 <template>
     <v-container>
       <v-row>
@@ -113,11 +114,13 @@
       },
     },
     methods: {
+
+      // Fetches pending students' data by sending a GET request. Upon receiving the response, updates the component's state with the pending students' information.
       async fetchPendingStudents() {
         this.loading = true;
         const user = useLoggedInUserStore();
         let token = user.token;
-        let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/user/checkStatus';
+        let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/user/check-status';
   
         try {
           const response = await axios.get(url, { headers: { token } });
@@ -128,12 +131,15 @@
           this.loading = false;
         }
       },
+
+      // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
         this.$router.push({
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
       },
+
     },
   };
   </script>

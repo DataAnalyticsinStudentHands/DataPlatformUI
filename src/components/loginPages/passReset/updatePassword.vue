@@ -13,7 +13,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">Current Password</label>
+              <label for="email" class="block">{{$t('Current Password')}}</label>
               <input
                 v-model="code"
                 type="password"
@@ -28,7 +28,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">New Password</label>
+              <label for="email" class="block">{{$t('New Password')}}</label>
               <input
                 v-model="newPassword"
                 type="password"
@@ -52,7 +52,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
             <div>
-              <label for="email" class="block">Confirm New Password</label>
+              <label for="email" class="block">{{$t('Confirm New Password')}}</label>
               <input
                 v-model="confirmNewPassword"
                 type="Password"
@@ -90,7 +90,7 @@
             type="submit"
             class="bg-custom-red text-white rounded"
           >
-            Reset Password
+            {{$t('Reset Password')}}
           </button>
         </form>
       </div>
@@ -146,16 +146,20 @@ export default {
     };
   },
   methods: {
-    chechConfirmPassword() {
+    
+    // Validates that the new password and its confirmation match. Updates the validation state and sets an error message if they do not align.
+    checkConfirmPassword() {
       this.isConfirmPasswordValid = true;
       if (this.newPassword !== this.confirmNewPassword) {
         this.error = "Passwords do not match.";
         this.isConfirmPasswordValid = false;
       }
     },
+
+    // Validates form and password confirmation before requesting a password reset for logged-in users using a verification code. On success, navigates to the appropriate dashboard with a success message.
     async activateAccount() {
       const isFormCorrect = await this.v$.$validate();
-      this.chechConfirmPassword();
+      this.checkConfirmPassword();
       if (isFormCorrect && this.isConfirmPasswordValid) {
         const store = useLoggedInUserStore();
         let user = {
@@ -164,7 +168,7 @@ export default {
           error: this.error,
         };
         let apiURL =
-          import.meta.env.VITE_ROOT_API + `/userdata/passwordReset/loggedIn`;
+          import.meta.env.VITE_ROOT_API + `/userdata/password-reset/logged-in`;
         axios
           .put(apiURL, user, {
             headers: { token: store.token },

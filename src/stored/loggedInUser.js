@@ -3,6 +3,7 @@ import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import { i18n } from '@/plugins/i18n';
 
 // Defining a store
 export const useLoggedInUserStore = defineStore({
@@ -22,7 +23,8 @@ export const useLoggedInUserStore = defineStore({
       goalSettingFormCompletion: {},
       loading: false,
       semesterName: "",
-      exitFormsReleased: false,
+      hasGoalFormsToComplete: false,
+      hasExitFormsToComplete: false,
       exitFormCompletion: {},
       registeredExperiences: [],
       orgName: "",
@@ -109,7 +111,6 @@ export const useLoggedInUserStore = defineStore({
         hasRegisteredExperiences: false,
         goalSettingFormCompletion: {},
         loading: false,
-        exitFormsReleased: false,
         exitFormCompletion: {},
         registeredExperiences: [],
       });
@@ -177,19 +178,24 @@ export const useLoggedInUserStore = defineStore({
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }
         });
-
+    
         if (response && response.data) {
-          this.$patch({
-            hasCompletedEntryForm: response.data.entryFormCompleted,
-            hasRegisteredExperiences: response.data.hasRegisteredExperiences,
-            goalSettingFormCompletion: response.data.goalSettingFormCompletion,
-          });
+          // Completely replace the state with the new data
+          this.hasCompletedEntryForm = response.data.entryFormCompleted;
+          this.hasRegisteredExperiences = response.data.hasRegisteredExperiences;
+          this.goalSettingFormCompletion = { ...response.data.goalSettingFormCompletion };
+          this.exitFormCompletion = { ...response.data.exitFormCompletion };
+    
+          // Check if there are forms to complete
+            const exitIds = Object.keys(this.exitFormCompletion);
+            // Check if there's at least one goal setting form ID that is not in the exit form completion IDs
+            this.hasGoalFormsToComplete = Object.keys(this.goalSettingFormCompletion).some(key => !exitIds.includes(key));
+          this.hasExitFormsToComplete = exitIds.length > 0;
         }
-
       } catch (error) {
         this.handleError(error);
       }
-    },
+    },      
     setTokenHeader(token) {
       if (token) {
         axios.defaults.headers.common['token'] = token;
@@ -253,10 +259,13 @@ export const useLoggedInUserStore = defineStore({
     
         // Fetch updated registered experiences
         await this.fetchRegisteredExperiences();
-        toast.success('Experiences Registered!', {
+        toast.success(i18n.global.t('Experiences Registered') + '!', {
           position: 'top-right',
           toastClassName: 'Toastify__toast--create'
         });
+
+        // Call Student Checklist
+        await this.checkFormCompletion();
     
       } catch (error) {
         this.handleError(error);

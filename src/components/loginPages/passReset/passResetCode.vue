@@ -78,6 +78,8 @@ export default {
         }
     },
     methods: {
+
+        // Validates the password reset form and, if no errors are found, submits a request to verify the password reset code. On successful verification, updates the user token in the store and navigates to the password reset entry page with a success toast message.
         async passFormSubmit() {
             // Check if there are any errors in the form
             await this.$refs.passForm.validate();
@@ -95,7 +97,7 @@ export default {
                     confirmationCode: this.code 
                 };
 
-                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/passwordReset/verifyCode`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/password-reset/verify-code`;
 
                 try {
                     const response = await axios.post(apiURL, requestData);
@@ -131,6 +133,8 @@ export default {
                 }
             }
         },
+
+        // Navigate to Login screen.
         goBackToLogin() {
             this.$router.push({name: 'login'});
         },

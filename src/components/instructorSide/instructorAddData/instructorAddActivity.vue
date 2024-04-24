@@ -1,4 +1,4 @@
-<!--'/instructorAddActivity' this page will only show experiences-->
+<!--'/instructorAddActivity' this page presents a form to create a new Activity-->
 <template>
     <main>
       <v-form @submit.prevent="handleSubmitForm">
@@ -32,6 +32,8 @@
     },
     
     methods: {
+
+      // Submits an activity to the backend and redirects to the data management view with a success toast message indicating the activity has been added.
       async handleSubmitForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -42,7 +44,7 @@
           this.$router.push({ 
               name: 'instructorDataManagement',
               params: {
-                activeTab: 3,
+                activeTab: 2,
                 toastType: 'success',
                 toastMessage: 'Activity added!',
                 toastPosition: 'top-right',

@@ -74,12 +74,14 @@
       };
     },
     methods: {
+      
+      // Requests a new verification code for account activation and displays a success message upon successful request.
       activateAccount() {
         let user = {
           email: this.email,
           error: this.error,
         };
-        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/sendNewCode`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/send-new-code`;
         axios.put(apiURL, user).then(
           (res) => {
             if (res.status == 200) {

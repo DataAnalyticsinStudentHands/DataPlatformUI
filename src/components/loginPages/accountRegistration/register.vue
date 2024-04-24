@@ -174,6 +174,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
       };
     },
     methods: {
+      // Validates that the user's confirmed password and email match their respective inputs. Displays a toast notification if there is a mismatch.
       checkConfirmPassword() {
         this.isConfirmPasswordValid = true;
         this.isConfirmEmailValid = true;
@@ -193,6 +194,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
           });
         }
       },
+      // Submits the user registration form after validating the entire form, confirming password and email match. On successful submission, displays a success message and clears the form, then redirects to verification with the user's ID. 
       async userSubmitForm() {
         // Checks to see if there are any errors in validation
         const isFormCorrect = await this.v$.$validate();

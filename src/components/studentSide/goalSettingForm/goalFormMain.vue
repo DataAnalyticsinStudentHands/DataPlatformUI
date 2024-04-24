@@ -131,6 +131,10 @@
                     <goal-form-exp
                         ref="GoalFormExpRef"
                         :goalForm="goalForm"
+                        :experiences="experiences"
+                        :experienceID="experienceID"
+                        :expRegistrationID="expRegistrationIDFromIncomplete"
+                        :incompleteFormID="incompleteFormID"
                         @form-valid="handleFormValid"
                         @form-invalid="handleFormInvalid('exp')"
                         @scroll-to-error="handleScrollToError"
@@ -139,6 +143,8 @@
                         @update-found-document-id="foundDocumentId = $event"
                         @update-hich-project="updateHichProject"
                         @update-original-goal-form="updateOriginalGoalForm"
+                        @update-experiences="experiences = $event"
+                        @update-experienceID="experienceID = $event"
                     ></goal-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -189,7 +195,7 @@
                         :selectedExperience="selectedExperience"
                         :hasCompletedGoalForm="hasCompletedGoalForm"
                         :isBackgroundEditActive="isBackgroundEditActive"
-                        :hichProject="hichProject"
+                        :hichProject="goalForm.hichProject"
                         :goalForm="goalForm"
                         @change-step="currentStep = $event"
                     ></goal-form-review>
@@ -204,6 +210,10 @@
                         <goal-form-exp
                             ref="GoalFormExpRef"
                             :goalForm="goalForm"
+                            :experiences="experiences"
+                            :experienceID="experienceID"
+                            :expRegistrationID="expRegistrationIDFromIncomplete"
+                            :incompleteFormID="incompleteFormID"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('exp')"
                             @scroll-to-error="handleScrollToError"
@@ -212,6 +222,8 @@
                             @update-found-document-id="foundDocumentId = $event"
                             @update-hich-project="updateHichProject"
                             @update-original-goal-form="updateOriginalGoalForm"
+                            @update-experiences="experiences = $event"
+                            @update-experienceID="experienceID = $event"
                         ></goal-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
@@ -262,7 +274,7 @@
                             :selectedExperience="selectedExperience"
                             :hasCompletedGoalForm="hasCompletedGoalForm"
                             :isBackgroundEditActive="isBackgroundEditActive"
-                            :hichProject="hichProject"
+                            :hichProject="goalForm.hichProject"
                             :goalForm="goalForm"
                             @change-step="currentStep = $event"
                         ></goal-form-review>
@@ -337,7 +349,7 @@
             Confirm Navigation
         </v-card-title>
         <v-card-text>
-            <p>Are you sure you want to leave? <strong>Unsaved changes will be lost.</strong></p>
+            <p>Are you sure you want to leave? <strong>Your responses will be saved for later.</strong></p>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -350,19 +362,41 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
+
+<!-- Incomplete Form Found Dialog -->
+<v-dialog v-model="showIncompleteFormFoundDialog" persistent max-width="500px">
+    <v-card>
+        <v-card-title class="text-h5">
+            Resume Your Progress?
+        </v-card-title>
+        <v-card-text>
+            <p>We found an incomplete Goal Setting Form from your last session. Would you like to continue where you left off or start a new form?</p>
+        </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="startNew">
+                Start New
+            </v-btn>
+            <v-btn color="red darken-2" text @click="continueProgress">
+                Continue
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
 </template>
 
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { toast } from 'vue3-toastify';
-
 import GoalFormExp from './goalFormExp.vue';
 import GoalFormCommRes from './goalFormCommRes.vue';
 import GoalFormGrowth from './goalFormGrowth.vue';
 import GoalFormAsp from './goalFormAsp.vue';
 import GoalFormGoals from './goalFormGoals.vue';
 import GoalFormReview from './goalFormReview.vue';
+import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
 
 export default {
 name: "GoalSettingForm",
@@ -388,15 +422,14 @@ data() {
         goalSettingFormBackground: null,
         isBackgroundEditActive: false,
         selectedExperience: null,
-        hichProject: [],
         formSubmitSuccess: false,
-        goalForm: {
         experiences:[{
             experienceIDFromList:'',
             experienceCategory:'',
             experienceName:''
         }],
         experienceID: null,
+        goalForm: {
         communityEngagement: {
             communityEngagementExperiences: [
             { id: 1, label: "Volunteer organizations (e.g. scouts, nonprofits, food banks)", checked: false },
@@ -504,25 +537,51 @@ data() {
             goalThree: '',
             goalFour: '',
             goalFive: '',
-        }
+        },
+        hichProject: [],
         },
         originalGoalForm: {},
         leaveDialog: false,
         nextFunction: null,
+        isFirstInput: true,
+        incompleteFormID: null,
+        showIncompleteFormFoundDialog: false,
+        tempIncompleteForm: {},
+        expRegistrationIDFromIncomplete: null,
+        initialDataLoaded: false,
+
     }
 },
 async created() {
+    // Initialize the debounced function
+    this.debouncedUpdateGoalForm = debounce(this.updateGoalForm, 1000);
     await this.fetchLatestGoalSettingForm();
+},
+async mounted() {
+    await this.checkIncompleteForm();
 },
 watch: {
     currentStep(newVal) {
-        // Convert newVal to a number and update currentStep
-        this.currentStep = Number(newVal);
+        const newStep = Number(newVal); // Convert newVal to a number
 
-        // Check if the converted currentStep is higher than the highest step in allowedStepsForJump
-        if (this.allowedStepsForJump.length === 0 || this.currentStep > Math.max(...this.allowedStepsForJump)) {
-            this.allowedStepsForJump.push(this.currentStep);
+        // Update currentStep with the new value
+        this.currentStep = newStep;
+
+        // Specifically track visitation to step 5
+        if (newStep === 5 && !this.allowedStepsForJump.includes(newStep)) {
+            this.allowedStepsForJump.push(newStep);
         }
+    },
+    goalForm: {
+        handler(newVal, oldVal) {
+            if (this.initialDataLoaded && this.isFirstInput) {
+                this.handleFirstInput();
+            } else if (this.initialDataLoaded) {
+                // Use the debounced method for subsequent updates
+                this.handleInput();
+            }
+        },
+        deep: true,
     },
 },
 computed: {
@@ -542,7 +601,7 @@ computed: {
     shouldIncludeHichProject() {
         // Access the child component's computed property via a ref
         // Ensure to handle cases where the child component or the computed property is not available
-        return this.$refs.GoalFormExpRef?.shouldShowHichCheckboxes && this.hichProject.length > 0;
+        return this.$refs.GoalFormExpRef?.shouldShowHichCheckboxes && this.goalForm.hichProject.length > 0;
     },
 
     isUserLoggedIn() {
@@ -564,12 +623,17 @@ methods: {
                 this.hasCompletedGoalForm = true;
                 this.goalSettingFormBackground = response.data.goalSettingFormBackground;
                 this.updateGoalFormWithBackgroundData();
+                // Wait for the next DOM update cycle to complete
+                await this.$nextTick();
             } else {
                 this.hasCompletedGoalForm = false;
                 this.goalSettingFormBackground = null;
             }
         } catch (error) {
             this.handleError(error);
+        } finally {
+            // Set initialDataLoaded to true after handling both found and not found cases
+            this.initialDataLoaded = true;
         }
     },
 
@@ -614,11 +678,11 @@ methods: {
     },
 
     updateHichProject(newVal) {
-        this.hichProject = newVal;
+        this.goalForm.hichProject = newVal;
     },
 
     updateOriginalGoalForm(newVal) {
-        this.originalGoalForm = this.deepClone(newVal);;
+        this.originalGoalForm = this.deepClone(newVal);
     },
     
     handleFormInvalid(section) {
@@ -656,8 +720,6 @@ methods: {
     },
 
     triggerValidation() {
-        console.log('trigger validation called');
-        console.log('this.currentStep: ', this.currentStep);
         if (this.currentStep === 0) {
             this.triggerExpValidation();
         } else if (this.currentStep === 1) {
@@ -678,9 +740,7 @@ methods: {
     },
 
     triggerCommResValidation() {
-        console.log('triggerCommResValidation')
         if (this.$refs.GoalFormCommResRef) {
-            console.log('this.$refs.GoalFormCommResRef')
             this.$refs.GoalFormCommResRef.handleValidations();
         }
     },
@@ -707,19 +767,22 @@ methods: {
         this.selectedExperience = value;
     },
 
-    stepVisited(step) {
-        if (!this.visitedSteps.includes(step)) {
-            this.visitedSteps.push(step);
-        }
-    },
-
     checkJump(step) {
-        // Check if the current step is valid
-        const isCurrentStepValid = this.isStepValid(this.currentStep);
+        const stepToSectionMap = {
+            1: 'backgroundSection',
+            2: 'growthSection',
+            3: 'aspirationsSection',
+            4: 'goalsSection',
+        };
 
-        // Allow jump if the step is allowed and the current step is valid
-        return isCurrentStepValid && this.allowedStepsForJump.includes(step);
+        const section = stepToSectionMap[step];
+        const isCurrentStepValid = this.isStepValid(this.currentStep);
+        const isSectionEdited = this.isSectionEdited(section);
+
+        // User can jump if the current step is valid and the corresponding section is edited
+        return isCurrentStepValid && (isSectionEdited || this.allowedStepsForJump.includes(step));
     },
+
 
     isStepValid(step) {
         switch(step) {
@@ -729,6 +792,48 @@ methods: {
             case 3: return !this.aspError;
             case 4: return !this.goalsError;
             default: return true;
+        }
+    },
+
+    isSectionEdited(section) {
+        if (section === 'backgroundSection') {
+            // Compare the relevant parts of goalForm against their original values
+            const originalCommunityEngagement = this.originalGoalForm.communityEngagement;
+            const currentCommunityEngagement = this.goalForm.communityEngagement;
+            const originalResearchExperience = this.originalGoalForm.researchExperience;
+            const currentResearchExperience = this.goalForm.researchExperience;
+
+            // Use lodash's isEqual to perform deep comparison
+            const communityEngagementEdited = !isEqual(originalCommunityEngagement, currentCommunityEngagement);
+            const researchExperienceEdited = !isEqual(originalResearchExperience, currentResearchExperience);
+
+            // Also check for Growth goal -> if filled then Background should be navigatable
+            const originalGrowthGoal = this.originalGoalForm.growthGoal;
+            const currentGrowthGoal = this.goalForm.growthGoal;
+            const growthGoalEdited = !isEqual(originalGrowthGoal, currentGrowthGoal);
+
+            return communityEngagementEdited || researchExperienceEdited || growthGoalEdited;
+        } else if (section === 'growthSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalGrowthGoal = this.originalGoalForm.growthGoal;
+            const currentGrowthGoal = this.goalForm.growthGoal;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalGrowthGoal, currentGrowthGoal);
+        } else if (section === 'aspirationsSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalAspirations = this.originalGoalForm.aspirations;
+            const currentAspirations = this.goalForm.aspirations;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalAspirations, currentAspirations);
+        } else if (section === 'goalsSection') {
+            // Compare the growthGoal part of the form against its original values
+            const originalGoals = this.originalGoalForm.goals;
+            const currentGoals = this.goalForm.goals;
+
+            // Use lodash's isEqual to perform a deep comparison
+            return !isEqual(originalGoals, currentGoals);
         }
     },
 
@@ -873,80 +978,24 @@ methods: {
         } else {
             // If previously filled document wasn't found, create new document
             this.handleSubmitForm();
-            
         }
     },
 
-    handleSubmitForm() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
-        // Find the expRegistrationID corresponding to the selected experience
-        const selectedExp = this.goalForm.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
-
-        const expRegistrationID = selectedExp.expRegistrationID;
-
-        const goalFormSubmission = {
-            expRegistrationID,
-            experienceID: this.selectedExperience.value,
-            goalForm: {
-                communityEngagement: {
-                    communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
-                    communityEngagementExperiencesOther: this.goalForm.communityEngagement.communityEngagementExperiencesOther,
-                    previousEngagementExperiences: this.goalForm.communityEngagement.previousEngagementExperiences,
-                    previousEngagementExperiencesOther: this.goalForm.communityEngagement.previousEngagementExperiencesOther,
-                    engagementActivitiesTools: this.goalForm.communityEngagement.engagementActivitiesTools,
-                    engagementActivitiesToolOther: this.goalForm.communityEngagement.engagementActivitiesToolOther,
-                },
-                researchExperience: {
-                    currentResearchExperience: this.goalForm.researchExperience.currentResearchExperience,
-                    currentResearchExperienceOther: this.goalForm.researchExperience.currentResearchExperienceOther,
-                    previousResearchExperience: this.goalForm.researchExperience.previousResearchExperience,
-                    previousResearchExperienceOther: this.goalForm.researchExperience.previousResearchExperienceOther,
-                    familiarTools: this.goalForm.researchExperience.familiarTools,
-                    familiarToolOther: this.goalForm.researchExperience.familiarToolOther,
-                    interestResearchService: this.goalForm.researchExperience.interestResearchService,
-                    interestResearchServiceOther: this.goalForm.researchExperience.interestResearchServiceOther,
-                    leadershipOption: this.goalForm.researchExperience.leadershipOption,
-                },
-                growthGoal: {
-                    problemSolvingGoal: this.goalForm.growthGoal.problemSolvingGoal,
-                    effectiveCommunicationGoal: this.goalForm.growthGoal.effectiveCommunicationGoal,
-                    teamworkGoal: this.goalForm.growthGoal.teamworkGoal,
-                    culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
-                    ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
-                    professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
-                },
-                aspirations: {
-                    aspirationOne: this.goalForm.aspirations.aspirationOne,
-                    aspirationTwo: this.goalForm.aspirations.aspirationTwo,
-                    aspirationThree: this.goalForm.aspirations.aspirationThree,
-                },
-                goals: {
-                    goalOne: this.goalForm.goals.goalOne,
-                    goalTwo: this.goalForm.goals.goalTwo,
-                    goalThree: this.goalForm.goals.goalThree,
-                    goalFour: this.goalForm.goals.goalFour,
-                    goalFive: this.goalForm.goals.goalFive,
-                },
-            },
-        }
-        // Conditionally add hichProject if it should be included
-        if (this.shouldIncludeHichProject) {
-            goalFormSubmission.hichProject = this.hichProject;
-        }
-
-        axios
-        .post(apiURL, goalFormSubmission, { headers: { token } })
-        .then(() => {
+    async handleSubmitForm() {
+        try {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            const userID = user.userId;
+            const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
+            await axios.patch(apiURL, { completed: true, userID: userID,  }, { headers: { token }});
             this.formSubmitSuccess = true;
             const motivatingMessages = [
-            "Goals successfully set! You're on the right track!",
-            "Great job setting your goals! Let's make them happen!",
-            "Goals locked in! Believe in yourself and you'll achieve them.",
-            "You've set your goals! Now, let's conquer them together!",
-            "Your goals are set! Keep pushing forward and you'll achieve them.",
-            "Way to go! Every goal you set brings you one step closer to success.",
+                "Goals successfully set! You're on the right track!",
+                "Great job setting your goals! Let's make them happen!",
+                "Goals locked in! Believe in yourself and you'll achieve them.",
+                "You've set your goals! Now, let's conquer them together!",
+                "Your goals are set! Keep pushing forward and you'll achieve them.",
+                "Way to go! Every goal you set brings you one step closer to success.",
             ];
             const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
 
@@ -963,10 +1012,10 @@ methods: {
                     toastCSS: 'Toastify__toast--create'
                 }
             });
-        })
-        .catch((error) => {
+
+        } catch (error) {
             this.handleError(error);
-        });
+        }
     },
 
     async updateChecklistStore() {
@@ -974,7 +1023,7 @@ methods: {
         await user.checkFormCompletion();
     },
 
-    async handleUpdateForm() {   
+    async handleUpdateForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
@@ -982,11 +1031,13 @@ methods: {
         let updatedGoalForm = {
             goalForm: this.goalForm,
             // Conditionally add hichProject if it should be included
-            ...(this.shouldIncludeHichProject && { hichProject: this.hichProject })
+            ...(this.shouldIncludeHichProject && { hichProject: this.goalForm.hichProject }),
+            tempIncompleteFormID: this.incompleteFormID
         };
 
         axios.put(apiURL, updatedGoalForm, { headers: { token } })
             .then(() => {
+                this.formSubmitSuccess = true;
                 const motivatingMessages = [
                     "Goals updated successfully! Keep pushing forward!",
                     "Great job updating your goals! Let's continue on this journey together!",
@@ -1032,6 +1083,149 @@ methods: {
             this.nextFunction();
             this.nextFunction = null; // Clear the stored next function
         }
+    },
+
+    async handleFirstInput() {
+        if (this.isFirstInput) {
+            this.isFirstInput = false;
+
+            try {
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
+                // Find the expRegistrationID corresponding to the selected experience
+                const selectedExp = this.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
+
+                const expRegistrationID = selectedExp.expRegistrationID;
+
+                const goalFormSubmission = {
+                    expRegistrationID,
+                    experienceID: this.selectedExperience.value,
+                    goalForm: {
+                        communityEngagement: {
+                            communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,
+                            communityEngagementExperiencesOther: this.goalForm.communityEngagement.communityEngagementExperiencesOther,
+                            previousEngagementExperiences: this.goalForm.communityEngagement.previousEngagementExperiences,
+                            previousEngagementExperiencesOther: this.goalForm.communityEngagement.previousEngagementExperiencesOther,
+                            engagementActivitiesTools: this.goalForm.communityEngagement.engagementActivitiesTools,
+                            engagementActivitiesToolOther: this.goalForm.communityEngagement.engagementActivitiesToolOther,
+                        },
+                        researchExperience: {
+                            currentResearchExperience: this.goalForm.researchExperience.currentResearchExperience,
+                            currentResearchExperienceOther: this.goalForm.researchExperience.currentResearchExperienceOther,
+                            previousResearchExperience: this.goalForm.researchExperience.previousResearchExperience,
+                            previousResearchExperienceOther: this.goalForm.researchExperience.previousResearchExperienceOther,
+                            familiarTools: this.goalForm.researchExperience.familiarTools,
+                            familiarToolOther: this.goalForm.researchExperience.familiarToolOther,
+                            interestResearchService: this.goalForm.researchExperience.interestResearchService,
+                            interestResearchServiceOther: this.goalForm.researchExperience.interestResearchServiceOther,
+                            leadershipOption: this.goalForm.researchExperience.leadershipOption,
+                        },
+                        growthGoal: {
+                            problemSolvingGoal: this.goalForm.growthGoal.problemSolvingGoal,
+                            effectiveCommunicationGoal: this.goalForm.growthGoal.effectiveCommunicationGoal,
+                            teamworkGoal: this.goalForm.growthGoal.teamworkGoal,
+                            culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
+                            ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
+                            professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
+                        },
+                        aspirations: {
+                            aspirationOne: this.goalForm.aspirations.aspirationOne,
+                            aspirationTwo: this.goalForm.aspirations.aspirationTwo,
+                            aspirationThree: this.goalForm.aspirations.aspirationThree,
+                        },
+                        goals: {
+                            goalOne: this.goalForm.goals.goalOne,
+                            goalTwo: this.goalForm.goals.goalTwo,
+                            goalThree: this.goalForm.goals.goalThree,
+                            goalFour: this.goalForm.goals.goalFour,
+                            goalFive: this.goalForm.goals.goalFive,
+                        },
+                    },
+                }
+                // Conditionally add hichProject if it should be included
+                if (this.shouldIncludeHichProject) {
+                    goalFormSubmission.hichProject = this.goalForm.hichProject;
+                }
+
+                const response = await axios.post(apiURL, goalFormSubmission, { headers: { token } });
+
+                this.incompleteFormID = response.data.goalForm._id;
+            } catch (error) {
+                    this.handleError(error);
+            }
+        }
+    },
+
+    updateGoalForm() {
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        const userID = user.userId;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
+
+        const { hichProject, ...restOfGoalForm } = this.goalForm;
+        
+        const payload = {
+            goalForm: restOfGoalForm, 
+            hichProject
+        };
+
+        axios.patch(apiURL, payload, { headers: { token }})
+            .then(response => {
+            })
+            .catch(error => {
+                this.handleError(error);
+            });
+    },
+
+    handleInput() {
+        this.debouncedUpdateGoalForm();
+    },
+
+    async checkIncompleteForm() {
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-form-incomplete/`;
+        try {
+            const response = await axios.get(apiURL, { headers: { token } });
+            if (response.data.incompleteForm) {
+                this.tempIncompleteForm = response.data;
+                this.showIncompleteFormFoundDialog = true;
+            }
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    async startNew() {
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.tempIncompleteForm.incompleteForm._id}`;
+
+        try {
+            await axios.delete(apiURL, { headers: { token } });
+            this.tempIncompleteForm = {};
+            this.showIncompleteFormFoundDialog = false;
+        } catch (error) {
+            this.handleError(error);
+        }
+    },
+
+    continueProgress() {
+        this.isFirstInput = false;
+        this.goalForm = this.tempIncompleteForm.incompleteForm.goalForm;
+        this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID;
+        this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
+        this.goalForm.hichProject = this.tempIncompleteForm.incompleteForm.hichProject;
+        this.showIncompleteFormFoundDialog = false;
+
+        // Trigger Validations
+        this.$nextTick(() => {
+            this.triggerCommResValidation();
+            this.triggerGrowthValidation();
+            this.triggerAspValidation();
+            this.triggerGoalsValidation();
+        });
     },
 
 

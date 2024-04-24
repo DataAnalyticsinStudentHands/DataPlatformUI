@@ -1,3 +1,4 @@
+<!-- studentsWithoutGoalForms - this view presents a list of students who have completed/have not completed a Goal Setting Form for a given Experience Instance. Checks whether the student registered for the Experience Instance in order to know if that student is returned (if they registered for an Experience Instance, they should complete a Goal Setting Form for that Instance)-->
 <template>
     <v-container>
 
@@ -10,7 +11,11 @@
                 </v-card-title>
                 
                 <v-card-subtitle class="text-h6">
-                Select an Experience
+                  <v-row>
+                    <v-col>
+                      Select an Experience
+                    </v-col>
+                  </v-row>
                 </v-card-subtitle>
         
                 <v-container>
@@ -23,10 +28,23 @@
                         item-title="text"
                         item-value="value"
                         clearable
-                        @update:modelValue="updateExperienceID"
                         active
                     ></v-autocomplete>
                     </v-col>
+                </v-row>
+
+                <v-row class="mt-0 mb-2">
+                  <v-col>
+                      <v-btn 
+                        class="mr-3"
+                        @click="completed = true"
+                        :active="completed"
+                      >Completed</v-btn>
+                      <v-btn
+                        @click="completed = false"
+                        :active="completed === false"
+                      >Uncompleted</v-btn>
+                  </v-col>
                 </v-row>
 
                 <v-row v-if="selectedExperience">
@@ -59,11 +77,20 @@
                     ></v-pagination>
                   </v-col>
                 </v-row>
+
+                <v-row justify="space-between">
+                  <v-col cols="auto" class="ml-4">
+                    <v-btn size="small"
+                      :active="isNavigationDisabled"
+                      @click="toggleNavigation"
+                    >Disable Navigation</v-btn>
+                  </v-col>
+                </v-row>
                 </v-container>
         
                 <!-- Table -->
                 <div style="display: flex; justify-content: center;">
-                <v-table style="width: 95%;">
+                <v-table v-if="paginatedStudentsWithoutGoalForm.length" style="width: 95%;">
                     <thead>
                     <tr>
                         <th class="text-left">Name</th>
@@ -78,11 +105,36 @@
                         :class="{ 'hoverRow': hoverId === student._id }"
                         @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
-                        @click="navigateToProfile(student._id)"
+                        @click="navigateIfEnabled(student._id)"
                     >
                         <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left">{{ student.email }}</td>
                         <td class="text-left">{{ formatDate(student.registrationDate) }}</td>
+                    </tr>
+                    </tbody>
+                </v-table>
+                <v-table v-if="paginatedStudentsWithGoalForm.length" style="width: 95%;">
+                    <thead>
+                    <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Email</th>
+                        <th class="text-left">Registration Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        v-for="student in paginatedStudentsWithGoalForm"
+                        :key="student._id"
+                        @mouseenter="hoverId = student._id"
+                        @mouseleave="hoverId = null"
+                        @click="navigateIfEnabled(student._id)"
+                    >
+                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ formatFullName(student.firstName, student.lastName) }}</td>
+                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ student.email }}</td>
+                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ formatDate(student.registrationDate) }}</td>
+                        <td>
+                          <v-btn @click.stop="viewStudentGoalForm(student._id)">View Goal Form</v-btn>
+                        </td>
                     </tr>
                     </tbody>
                 </v-table>
@@ -111,6 +163,9 @@
         csvFileName: 'no_goal_form.csv',
         currentPage: 1,
         itemsPerPage: 10,
+        completed: null,
+        studentsWithGoalForm: [],
+        isNavigationDisabled: false,
       };
     },
     components: {
@@ -125,6 +180,14 @@
           this.csvFileName = `no_goal_form_${selectedObj.experienceName}.csv`;
         } else {
           this.csvFileName = 'no_goal_form.csv';
+        }
+        if (newVal !== null && this.completed !== null) {
+          this.fetchStudents();
+        }
+      },
+      completed(newVal, oldVal) {
+        if (newVal !== null && this.selectedExperience !== null) {
+          this.fetchStudents();
         }
       },
     },
@@ -143,25 +206,27 @@
         const end = this.currentPage * this.itemsPerPage;
         return this.studentsWithoutGoalForm.slice(start, end);
       },
+      paginatedStudentsWithGoalForm() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.studentsWithGoalForm.slice(start, end);
+      },
       totalPaginationLength() {
         return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
       },
       totalStudentsCount() {
-        return this.studentsWithoutGoalForm.length;
+        if (this.studentsWithoutGoalForm.length === 0) {
+          return this.studentsWithGoalForm.length;
+        } else if (this.studentsWithGoalForm.length === 0) {
+          return this.studentsWithoutGoalForm.length;
+        } else {
+          return null;
+        }
       },
     },
     methods: {
-      updateExperienceID(selected) {
-        // If the selected value is empty, set selectedExperience to null and exit the method
-        if (!selected) {
-          this.selectedExperience = null;
-          return;
-        }
-  
-        // If a value is selected, set selectedExperience to the value of the selected experience
-        this.selectedExperience = selected;
-        this.fetchStudentsWithoutGoalForm(selected);
-      },
+
+      // Fetches active experience instances for the instructor from the backend API. Upon receiving the response, it maps the instance data to a structured format and stores it in the component's state.
       async fetchExperiences() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -180,10 +245,24 @@
           this.handleError(error);
         }
       },
-      async fetchStudentsWithoutGoalForm(expInstanceID) {
+
+      // Initiates the process of fetching students based on whether they have completed goal forms or not. It calls different methods to fetch students with goal forms or without goal forms based on the value of the `completed` property.
+      async fetchStudents() {
+        if (this.selectedExperience === null || this.completed === null) return;
+        this.studentsWithGoalForm = [];
+        this.studentsWithoutGoalForm = [];
+        if (this.completed === true) {
+          await this.fetchStudentsWithGoalForm();
+        } else if (this.completed === false) {
+          await this.fetchStudentsWithoutGoalForm();
+        }
+      },
+
+      // Fetches students who have not completed a goal form for a specific experience. It sends a GET request to the backend API with the selected experience ID. Upon receiving the response, it stores the data of students without a goal form for the specified experience in the component's state.
+      async fetchStudentsWithoutGoalForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${expInstanceID}`;
+        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${this.selectedExperience}`;
         
         try {
           const response = await axios.get(url, { headers: { token } });
@@ -192,18 +271,61 @@
           this.handleError(error);
         }
       },
+
+      // Fetches students who have completed a goal form for a specific experience. It sends a GET request to the backend API with the selected experience ID. Upon receiving the response, it stores the data of students with a goal form for the specified experience in the component's state.
+      async fetchStudentsWithGoalForm() {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-goal-form/${this.selectedExperience}`;
+        
+        try {
+          const response = await axios.get(url, { headers: { token } });
+          this.studentsWithGoalForm = response.data;
+        } catch (error) {
+          this.handleError(error);
+        }
+      },
+
+      toggleNavigation() {
+        this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
+        // Optionally change the button text based on state
+        this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
+      },
+
+      navigateIfEnabled(userID) {
+        if (!this.isNavigationDisabled) {
+          this.navigateToProfile(userID);
+        }
+      },
+
+      // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
         this.$router.push({
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
       },
+
+      // Concatenates the first name and last name to form a full name string.
       formatFullName(firstName, lastName) {
           return `${firstName} ${lastName}`;
       },
+
+      // Formats a date to the "MM/dd/yyyy" format.
       formatDate(date) {
         return DateTime.fromISO(date).toFormat("MM/dd/yyyy");
       },
+
+      // Navigates to the page to view the goal form of a specific student identified by their studentID.
+      viewStudentGoalForm(studentID) {
+        this.$router.push({
+          name: "StudentGoalFormViewer",
+          params: { 
+            studentID: studentID,
+            expInstanceID: this.selectedExperience
+          },
+        });
+      }
     },
   };
   </script>

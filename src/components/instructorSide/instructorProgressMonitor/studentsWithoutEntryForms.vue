@@ -1,3 +1,4 @@
+<!-- studentsWithoutEntryForms - this view presents a list of students that have registered for and activated their account, but have not yet completed a Student Entry Form -->
 <template>
     <v-container>
       <v-row>
@@ -39,6 +40,17 @@
               </v-col>
             </v-row>
 
+            <v-row justify="space-between">
+              <v-col cols="auto" class="ml-4">
+                <v-btn size="small"
+                  :active="isNavigationDisabled"
+                  @click="toggleNavigation"
+                >Disable Navigation</v-btn>
+              </v-col>
+            </v-row>
+
+
+
 
 
             <!-- Loading Wheel -->
@@ -69,7 +81,7 @@
                         :class="{ 'hoverRow': hoverId === student._id }"
                         @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
-                        @click="navigateToProfile(student._id)"
+                        @click="navigateIfEnabled(student._id)"
                       >
                         <td class="text-left">{{ student.firstName }} {{ student.lastName }}</td>
                         <td class="text-left">{{ student.email }}</td>
@@ -101,6 +113,7 @@
         loading: false,
         currentPage: 1,
         itemsPerPage: 10,
+        isNavigationDisabled: false,
       };
     },
     components: {
@@ -126,6 +139,8 @@
       },
     },
     methods: {
+
+      // Fetches the students who do not have an entry form. It sends a GET request to the backend API. Upon receiving the response, it stores the data of students without an entry form in the component's state. 
       async fetchStudentsWithoutEntryForm() {
         this.loading = true;
         const user = useLoggedInUserStore();
@@ -141,12 +156,28 @@
             this.loading = false;
         }
       },
+
+      toggleNavigation() {
+        this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
+        // Optionally change the button text based on state
+        this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
+      },
+
+      navigateIfEnabled(userID) {
+        if (!this.isNavigationDisabled) {
+          this.navigateToProfile(userID);
+        }
+      },
+
+      // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
         this.$router.push({
           name: "instructorSpecificStudent",
           params: { userID: userID },
         });
       },
+
+      // Formats the given date into "MM/dd/yyyy" format.
       formatDate(date) {
         return DateTime.fromISO(date).toFormat("MM/dd/yyyy")
       },

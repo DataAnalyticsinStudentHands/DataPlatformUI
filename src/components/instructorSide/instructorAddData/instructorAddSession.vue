@@ -1,3 +1,4 @@
+<!-- instructorAddSession - this view presents a form to create a new Session -->
 <template>
   <main>
     <v-form ref="form" @submit.prevent="handleSubmitForm">
@@ -66,6 +67,7 @@ export default {
     window.scrollTo(0, 0);
   },
   methods: {
+    // Validates the form and, if valid, submits session data. On successful submission, navigates to the instructor data management view with a success toast message.
     async handleSubmitForm() {
       // Validate the form before submission
       const isValid = await this.$refs.form.validate();
@@ -83,7 +85,7 @@ export default {
           this.$router.push({
             name: 'instructorDataManagement',
             params: {
-              activeTab: 1,
+              activeTab: 0,
               toastType: 'success',
               toastMessage: 'Session added!',
               toastPosition: 'top-right',
@@ -106,6 +108,7 @@ export default {
         });
       }
     }
+    
   }
 }
 </script>

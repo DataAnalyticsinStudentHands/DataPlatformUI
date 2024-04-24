@@ -121,6 +121,7 @@ export default {
     }
     },
   methods: {
+    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role. Displays notifications for login feedback. Handles special cases for unverified accounts and incomplete student entry forms.
     async login() {
       // Check if there are any errors in the form
       await this.$refs.loginForm.validate();
@@ -167,29 +168,30 @@ export default {
         }
       }
     },
+    // Initiates sending a new verification code to the user's email and navigates to the verification page with the user's ID upon successful request.
     async sendNewCode() {
-    let user = {
-      email: this.email,
-      error: this.error,
-    };
-    let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/sendNewCode`;
+      let user = {
+        email: this.email,
+        error: this.error,
+      };
+      let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/send-new-code`;
 
-    axios.put(apiURL, user)
-      .then((res) => {
-        if (res.status == 200) {
-          let userID = res.data.userID; // Extract the userID from the response
-          this.$router.push({ 
-            name: 'verifyAccWithCode', 
-            params: { id: userID } 
-          });
-        } else {
-          console.log('Unexpected response status:', res.status);
-        }
-      })
-      .catch((err) => {
-        this.handleError(err);
-      });
-  },
+      axios.put(apiURL, user)
+        .then((res) => {
+          if (res.status == 200) {
+            let userID = res.data.userID; // Extract the userID from the response
+            this.$router.push({ 
+              name: 'verifyAccWithCode', 
+              params: { id: userID } 
+            });
+          } else {
+            console.log('Unexpected response status:', res.status);
+          }
+        })
+        .catch((err) => {
+          this.handleError(err);
+        });
+    },
 
   }
 };

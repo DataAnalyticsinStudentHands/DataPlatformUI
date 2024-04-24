@@ -90,8 +90,6 @@ export default {
                     return true;
                 }
             ],
-
-
             reEnterPassRules: [
                 v => {
                     if (!v) {
@@ -109,7 +107,6 @@ export default {
                     return true;
                 }
             ],
-
         };
     },
     mounted() {
@@ -140,6 +137,8 @@ export default {
         }
     },
     methods: {
+        
+        // Validates the password reset form and submits a request to update the password using the new password provided. On successful password update, redirects the user to the login page with a success toast message indicating the password has been reset.
         async passFormSubmit() {
             // Check if there are any errors in the form
             await this.$refs.passForm.validate();
@@ -157,7 +156,7 @@ export default {
                     password: this.newPassword,
                 };
 
-                let apiURL = import.meta.env.VITE_ROOT_API + `/userData/passwordReset/update`;
+                let apiURL = import.meta.env.VITE_ROOT_API + `/userData/password-reset/update`;
 
                 try {
                     const response = await axios.put(apiURL, dataToSend, {
@@ -196,6 +195,7 @@ export default {
             }
         },
 
+        // Navigate to Login screen
         goBackToLogin() {
             this.$router.push({name: 'login'});
         },

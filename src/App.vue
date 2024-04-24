@@ -44,24 +44,6 @@
           </v-list-item>
 
         <v-list density="compact" nav class="text-white">
-          <!-- <div v-if="!user.isLoggedIn">
-            <v-list-item 
-              :active="activeLink === 'Login'"
-              to="login"
-              prepend-icon="mdi-login"
-              value="Login"
-              class=" tracking-wider "
-            >Login
-            <template v-slot:append>
-              <v-btn
-                variant="text"
-                size="small"
-                icon="mdi-arrow-expand-left"
-                @click.stop.prevent="sidebarToggle"
-              ></v-btn>
-            </template>
-          </v-list-item>
-          </div> -->
           <div v-if="user.isLoggedIn && user.getRole === 'Student'">
             <v-list-item 
               :active="activeLink === 'studentDashboard'"
@@ -69,7 +51,7 @@
               prepend-icon="mdi-view-dashboard"
               value="studentDashboard"
               class=" tracking-wider "
-            >Student Dashboard</v-list-item>
+            >{{$t('Student Dashboard')}}</v-list-item>
             <v-list-item 
               :active="activeLink === 'studentEntryForm'"
               v-if="!user.hasCompletedEntryForm"
@@ -80,20 +62,20 @@
             >Student Entry Form</v-list-item>
             <v-list-item 
               :active="activeLink === 'goalSettingForm'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && !user.exitFormsReleased"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasGoalFormsToComplete"
               to="goalSettingForm"
               prepend-icon="mdi-file-document"
               value="goalSettingForm"
               class=" tracking-wider "
-            >Goal Setting Form</v-list-item>
+            >{{$t('Goal Setting Form')}}</v-list-item>
             <v-list-item 
-              :active="activeLink === 'exitFormsAvailable'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.exitFormsReleased"
-              to="exitFormsAvailable"
+              :active="activeLink === 'exitForm'"
+              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasExitFormsToComplete"
+              to="exitForm"
               prepend-icon="mdi-file-document"
-              value="exitFormsAvailable"
+              value="exitForm"
               class=" tracking-wider "
-            >Exit Forms</v-list-item>
+            >Exit Form</v-list-item>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
             <v-list-item 
@@ -173,21 +155,21 @@
               prepend-icon="mdi-account"
               value="profile"
               class=" tracking-wider "
-            >Profile</v-list-item>
+            >{{$t('Profile')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'User Data Update Form'"
               to="updateUserInformation"
               prepend-icon="mdi-cog"
               value="User Data Update Form"
               class=" tracking-wider "
-            >Update User Information</v-list-item>
+            >{{$t('Update User Information')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Password Reset'"
               to="updatePassword"
               prepend-icon="mdi-cog"
               value="Password Reset"
               class=" tracking-wider "
-            >Update Password</v-list-item>
+            >{{$t('Update Password')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Login'"
               to="login"
@@ -195,7 +177,7 @@
               value="Login"
               class=" tracking-wider "
               @click="handleLogout"
-            >Logout</v-list-item>
+            >{{$t('Logout')}}</v-list-item>
           </div>
         </v-list>
 

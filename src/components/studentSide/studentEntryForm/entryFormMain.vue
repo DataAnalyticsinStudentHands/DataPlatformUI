@@ -55,8 +55,10 @@
                             ref="step0"
                             :title="$t('Demographics')"
                             icon="mdi-account"
+                            edit-icon="mdi-account"
                             value="0"
                             :error="demoError"
+                            :editable="checkJump(0)"
                         ></v-stepper-item>
 
                         <v-divider></v-divider>
@@ -65,8 +67,10 @@
                             ref="step1"
                             :title="$t('Degree Program')"
                             icon="mdi-school"
+                            edit-icon="mdi-school"
                             value="1"
                             :error="degreeError"
+                            :editable="checkJump(1)"
                         ></v-stepper-item>
 
                         <v-divider></v-divider>
@@ -75,8 +79,10 @@
                             ref="step2"
                             :title="$t('Graduate/Professional')"
                             icon="mdi-account-school"
+                            edit-icon="mdi-account-school"
                             value="2"
                             :error="gradProfError"
+                            :editable="checkJump(2)"
                         ></v-stepper-item>
 
                         <v-divider></v-divider>
@@ -85,7 +91,9 @@
                             ref="step3"
                             :title="$t('Review')"
                             icon="mdi-check-bold"
+                            edit-icon="mdi-check-bold"
                             value="3"
+                            :editable="checkJump(3)"
                         ></v-stepper-item>
                     </v-stepper-header>
                     <div id="progress-bar" :style="{ width: progressBarWidth }"></div>
@@ -237,7 +245,7 @@
                     Confirm Navigation
                 </v-card-title>
                 <v-card-text>
-                    <p>Are you sure you want to leave? <strong>Unsaved changes will be lost.</strong></p>
+                    <p>Are you sure you want to leave? <strong>Your responses will be saved for later.</strong></p>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -251,6 +259,26 @@
             </v-card>
         </v-dialog>
 
+        <!-- Incomplete Form Found Dialog -->
+        <v-dialog v-model="showIncompleteFormFoundDialog" persistent max-width="500px">
+            <v-card>
+                <v-card-title class="text-h5">
+                    Resume Your Progress?
+                </v-card-title>
+                <v-card-text>
+                    <p>We found an incomplete Student Entry Form from your last session. Would you like to continue where you left off or start a new form?</p>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn text @click="startNew">
+                        Start New
+                    </v-btn>
+                    <v-btn color="red darken-2" text @click="resumeProgress">
+                        Continue
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
 </template>
 
@@ -259,10 +287,11 @@ import EntryFormDemo from './entryFormDemo.vue';
 import EntryFormEnrolled from './entryFormEnrolled.vue';
 import EntryFormGradProf from './entryFormGradProf.vue';
 import EntryFormReview from './entryFormReview.vue';
-
-
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from 'axios';
+import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
+
 
 export default {
     name: "test",
@@ -272,7 +301,6 @@ export default {
         EntryFormGradProf,
         EntryFormReview
     },
-
     data() {
         return {
             currentStep: 0,
@@ -292,6 +320,8 @@ export default {
                     { id: 6, label: "Prefer not to answer", checked: false },
                 ],
                 otherPronouns: '',
+                commentsByStaff: '',
+                issuesConcernsTriggers: '',
                 enrolledUHInfo: {
                     uhStatus: '',
                     uhEmail: '',
@@ -361,24 +391,62 @@ export default {
             nextFunction: null,
             formSubmitSuccess: false,
             originalStudentInformation: {},
+            isFirstInput: true,
+            formID: null,
+            showIncompleteFormFoundDialog: false,
+            tempIncompleteForm: {},
+            allowedStepsForJump: [0],
         }
     },
-    mounted() {
+    created() {
+        // Initialize the debounced function
+        this.debouncedUpdateStudentInformation = debounce(this.updateStudentInformation, 1000);
+    },
+    async mounted() {
         this.originalStudentInformation = this.deepClone(this.studentInformation);
         const loggedInUserStore = useLoggedInUserStore();
+        loggedInUserStore.checkFormCompletion();
         // Check the hasCompletedEntryForm state
         if (!loggedInUserStore.hasCompletedEntryForm) {
-            this.showNewUserDialog = true; // Open the dialog if the condition is met
+            this.checkIncompleteForm();
         }
 
         // Translations
         if (loggedInUserStore.languagePreference === "Spanish") {
-        // Set to Spanish
-        this.$i18n.locale = 'es';
+            // Set to Spanish
+            this.$i18n.locale = 'es';
         } else {
-        // Default to English
-        this.$i18n.locale = 'en';
+            // Default to English
+            this.$i18n.locale = 'en';
         }
+    },
+    watch: {
+        studentInformation: {
+            handler(newVal, oldVal) {
+                if (this.isFirstInput) {
+                    this.handleFirstInput();
+                } else {
+                    // Use the debounced method for subsequent updates
+                    this.handleInput();
+                }
+            },
+            deep: true,
+        },
+        currentStep(newVal) {
+            const newStep = Number(newVal); // Convert newVal to a number
+
+            // Update currentStep with the new value
+            this.currentStep = newStep;
+
+            // Specifically track visitation to step 5
+            if (newStep === 3 && !this.allowedStepsForJump.includes(newStep)) {
+                this.allowedStepsForJump.push(newStep);
+            }
+
+            if (newStep === 3) {
+                this.cleanupFormData();
+            }
+        },
     },
     computed: {
         showAltLabels() {
@@ -452,35 +520,35 @@ export default {
             }
         },
         submitForm() {
+            // Assuming `formID` holds the ID of the form being updated
             const user = useLoggedInUserStore();
             const token = user.token;
-            const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
+            const userID = user.userId;
+            const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
 
-            axios.post(apiURL, {
-                studentInformation: this.studentInformation
-            }, {
-                headers: { token }
-            }).then(response => {
-                this.formSubmitSuccess = true;
+            // Set completed to true
+            const formData = { ...this.studentInformation, completed: true, userID: userID };
 
-                // Directly check the form completion status
-                user.checkFormCompletion();
-
-                // Show the success message and navigate to the dashboard
-                this.$router.push({ 
-                name: 'studentDashboard',
-                params: {
-                    toastType: 'success',
-                    toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--create'
-                }
+            axios.patch(apiURL, formData, { headers: { token } })
+                .then(response => {
+                    this.formSubmitSuccess = true;
+                    // Update form completion status in the user store or wherever it's needed
+                    user.checkFormCompletion();
+                    // Navigate to dashboard with success message
+                    this.$router.push({ 
+                        name: 'studentDashboard',
+                        params: {
+                            toastType: 'success',
+                            toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
+                            toastPosition: 'top-right',
+                            toastCSS: 'Toastify__toast--create'
+                        }
+                    });
+                })
+                .catch(error => {
+                    this.handleError(error);
                 });
-            }).catch(error => {
-                this.handleError(error);
-            });
-            },
-
+        },
 
         cleanupFormData() {
             // Check condition for "Other" pronouns
@@ -600,6 +668,164 @@ export default {
 
             isObjectEqual(obj1, obj2) {
                 return JSON.stringify(obj1) === JSON.stringify(obj2);
+            },
+
+
+            async handleFirstInput() {
+                if (this.isFirstInput) {
+                    this.isFirstInput = false;
+
+                    const formData = {
+                        ...this.studentInformation,
+                        completed: false,
+                    };
+
+                    try {
+                        const user = useLoggedInUserStore();
+                        const token = user.token;
+                        const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
+
+                        const response = await axios.post(apiURL, formData, { headers: { token } })
+
+                        this.formID = response.data.entryForm._id;
+                    } catch (error) {
+                        this.handleError(error);
+                    }
+                }
+            },
+            updateStudentInformation() {
+                // Your update logic here
+                const user = useLoggedInUserStore();
+                const userID = user.userId;
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
+
+                axios.patch(apiURL, { 
+                    studentInformation: this.studentInformation,
+                    userID: userID
+                 }, { headers: { token }})
+                    .then(response => {
+                    })
+                    .catch(error => {
+                        this.handleError(error);
+                    });
+            },
+
+            handleInput() {
+                // Instead of calling updateStudentInformation directly, call the debounced version
+                this.debouncedUpdateStudentInformation();
+            },
+
+            async checkIncompleteForm() {
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-form-incomplete/`;
+                try {
+                    const response = await axios.get(apiURL, { headers: { token } });
+                    if (!response.data.entryForm) {
+                        this.showNewUserDialog = true; // Open the dialog if the condition is met
+                    } else {
+                        this.tempIncompleteForm = response.data;
+                        this.showIncompleteFormFoundDialog = true;
+                    }
+                } catch (error) {
+                    this.handleError(error);
+                }
+            },
+
+            async startNew() {
+                const user = useLoggedInUserStore();
+                const token = user.token;
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.tempIncompleteForm.entryForm._id}`;
+
+                try {
+                    await axios.delete(apiURL, { headers: { token } });
+                    this.tempIncompleteForm = {};
+                    this.showIncompleteFormFoundDialog = false;
+                } catch (error) {
+                    this.handleError(error);
+                }
+            },
+
+
+            resumeProgress() {
+                this.isFirstInput = false;
+                this.studentInformation = this.tempIncompleteForm.entryForm.studentInformation;
+                this.formID = this.tempIncompleteForm.entryForm._id;
+                this.showIncompleteFormFoundDialog = false;
+            },
+
+            updateOriginalStudentInformation(newVal) {
+                this.originalStudentInformation = this.deepClone(newVal);;
+            },
+
+            checkJump(step) {
+                const stepToSectionMap = {
+                    0: 'demoSection',
+                    1: 'degreeSection',
+                    2: 'gradProfSection',
+                };
+
+                const section = stepToSectionMap[step];
+                const isCurrentStepValid = this.isStepValid(this.currentStep);
+                const isSectionEdited = this.isSectionEdited(section);
+
+                // User can jump if the current step is valid and the corresponding section is edited
+                return isCurrentStepValid && (isSectionEdited || this.allowedStepsForJump.includes(step));
+            },
+
+            isStepValid(step) {
+                switch(step) {
+                    case 0: return !this.demoError;
+                    case 1: return !this.degreeError;
+                    case 2: return !this.gradProfError;
+                    default: return true;
+                }
+            },
+
+            isSectionEdited(section) {
+                if (section === 'demoSection') {
+                    // Extract the demo section parts from both the current and original student information
+                    const originalDemo = {
+                        cityOrigin: this.originalStudentInformation.cityOrigin,
+                        primaryLanguage: this.originalStudentInformation.primaryLanguage,
+                        otherLanguages: this.originalStudentInformation.otherLanguages,
+                        pronouns: this.originalStudentInformation.pronouns,
+                        otherPronouns: this.originalStudentInformation.otherPronouns,
+                        commentsByStaff: this.originalStudentInformation.commentsByStaff,
+                        issuesConcernsTriggers: this.originalStudentInformation.issuesConcernsTriggers,
+                    };
+
+                    const currentDemo = {
+                        cityOrigin: this.studentInformation.cityOrigin,
+                        primaryLanguage: this.studentInformation.primaryLanguage,
+                        otherLanguages: this.studentInformation.otherLanguages,
+                        pronouns: this.studentInformation.pronouns,
+                        otherPronouns: this.studentInformation.otherPronouns,
+                        commentsByStaff: this.studentInformation.commentsByStaff,
+                        issuesConcernsTriggers: this.studentInformation.issuesConcernsTriggers,
+                    };
+
+                    // Use lodash's isEqual to perform a deep comparison
+                    return !isEqual(originalDemo, currentDemo);
+                } else if (section === 'degreeSection') {
+                    const originalDegree = this.originalStudentInformation.enrolledUHInfo;
+                    const currentDegree = this.studentInformation.enrolledUHInfo;
+
+                    return !isEqual(originalDegree, currentDegree);
+                } else if (section === 'gradProfSection') {
+                    const originalGradProf = {
+                        graduateProfessionalSchool: this.originalStudentInformation.graduateProfessionalSchool,
+                        specializedDegCert: this.originalStudentInformation.specializedDegCert,
+                    }
+
+                    const currentGradProf = {
+                        graduateProfessionalSchool: this.studentInformation.graduateProfessionalSchool,
+                        specializedDegCert: this.studentInformation.specializedDegCert,
+                    }
+
+                    return !isEqual(originalGradProf, currentGradProf);
+                }
             },
     },
     beforeRouteLeave(to, from, next) {
