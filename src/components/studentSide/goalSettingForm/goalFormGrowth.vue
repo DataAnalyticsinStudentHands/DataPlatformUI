@@ -120,16 +120,16 @@
     </v-col>
     <v-col cols="12" md="10">
         <span 
-        :class="{'error-text': isSocialJusticeGoalInvalid}"
+        :class="{'error-text': isSocialResponsibilityGoalInvalid}"
         class="font-weight-black text-h8"
-        ref="socialJusticeGoalRef"
+        ref="socialResponsibilityGoalRef"
         >
-        {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('social justice.') }}</u>
+        {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('social responsibility.') }}</u>
         </span>
         <v-radio-group 
-        v-model="goalForm.growthGoal.socialJusticeGoal"
-        :class="{'error-text': isSocialJusticeGoalInvalid}"
-        :rules="socialJusticeGoalRules"
+        v-model="goalForm.growthGoal.socialResponsibilityGoal"
+        :class="{'error-text': isSocialResponsibilityGoalInvalid}"
+        :rules="socialResponsibilityGoalRules"
         >
             <v-radio :label="$t('No growth')" value="No growth"></v-radio>
             <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -139,16 +139,16 @@
     </v-col>
     <v-col cols="12" md="10">
         <span 
-        :class="{'error-text': isPublicHistoryGoalInvalid}"
+        :class="{'error-text': isDigitalLiteracyGoalInvalid}"
         class="font-weight-black text-h8"
-        ref="publicHistoryGoalRef"
+        ref="digitalLiteracyGoalRef"
         >
-        {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('public history.') }}</u>
+        {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('digital literacy.') }}</u>
         </span>
         <v-radio-group 
-        v-model="goalForm.growthGoal.publicHistoryGoal"
-        :class="{'error-text': isPublicHistoryGoalInvalid}"
-        :rules="publicHistoryGoalRules"
+        v-model="goalForm.growthGoal.digitalLiteracyGoal"
+        :class="{'error-text': isDigitalLiteracyGoalInvalid}"
+        :rules="digitalLiteracyGoalRules"
         >
             <v-radio :label="$t('No growth')" value="No growth"></v-radio>
             <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -229,14 +229,14 @@ data() {
                     return !!v || this.$t('Information is required.');
                 },
         ],
-        socialJusticeGoalRules: [
+        socialResponsibilityGoalRules: [
             v => {
                     if (!this.formSubmitted) return true;
 
                     return !!v || this.$t('Information is required.');
                 },
         ],
-        publicHistoryGoalRules: [
+        digitalLiteracyGoalRules: [
             v => {
                     if (!this.formSubmitted) return true;
 
@@ -288,19 +288,19 @@ computed: {
         const rule = v => !!v || this.$t('Information is required');
         return rule(this.goalForm.growthGoal.professionalResponsibilityGoal) !== true;
     },
-    isSocialJusticeGoalInvalid() {
+    isSocialResponsibilityGoalInvalid() {
         if (!this.formSubmitted) return false;
         const rule = v => !!v || this.$t('Information is required');
-        return rule(this.goalForm.growthGoal.socialJusticeGoal) !== true;
+        return rule(this.goalForm.growthGoal.socialResponsibilityGoal) !== true;
     },
-    isPublicHistoryGoalInvalid() {
+    isDigitalLiteracyGoalInvalid() {
         if (!this.formSubmitted) return false;
         const rule = v => !!v || this.$t('Information is required');
-        return rule(this.goalForm.growthGoal.publicHistoryGoal) !== true;
+        return rule(this.goalForm.growthGoal.digitalLiteracyGoal) !== true;
     },
     hasValidationErrors() {
         if (!this.formSubmitted) return false;
-            return this.isProblemSolvingGoalInvalid || this.isEffectiveCommunicationGoalInvalid || this.isTeamworkGoalInvalid || this.isCulturalHumilityGoalInvalid || this.isEthicalDecisionMakingGoalInvalid || this.isProfessionalResponsibilityGoalInvalid || this.isSocialJusticeGoalInvalid || this.isPublicHistoryGoalInvalid;
+            return this.isProblemSolvingGoalInvalid || this.isEffectiveCommunicationGoalInvalid || this.isTeamworkGoalInvalid || this.isCulturalHumilityGoalInvalid || this.isEthicalDecisionMakingGoalInvalid || this.isProfessionalResponsibilityGoalInvalid || this.isSocialResponsibilityGoalInvalid || this.isDigitalLiteracyGoalInvalid;
     },
 },
 methods: {
@@ -327,8 +327,8 @@ methods: {
             'culturalHumilityGoalRef',
             'ethicalDecisionMakingGoalRef',
             'professionalResponsibilityGoalRef',
-            'socialJusticeGoalRef',
-            'publicHistoryGoalRef',
+            'socialResponsibilityGoalRef',
+            'digitalLiteracyGoalRef',
         ];
 
         for (let i = 0; i < errorFields.length; i++) {
@@ -356,10 +356,10 @@ methods: {
                 return this.isEthicalDecisionMakingGoalInvalid;
             case 'professionalResponsibilityGoalRef':
                 return this.isProfessionalResponsibilityGoalInvalid;
-            case 'socialJusticeGoalRef':
-                return this.isSocialJusticeGoalInvalid;
-            case 'publicHistoryGoalRef':
-                return this.isPublicHistoryGoalInvalid;
+            case 'socialResponsibilityGoalRef':
+                return this.isSocialResponsibilityGoalInvalid;
+            case 'digitalLiteracyGoalRef':
+                return this.isDigitalLiteracyGoalInvalid;
             default:
                 return false;
         }

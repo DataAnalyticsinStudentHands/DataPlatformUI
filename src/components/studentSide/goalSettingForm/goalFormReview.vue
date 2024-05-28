@@ -340,25 +340,25 @@
     </v-col>
 </v-row>
 
-<!-- Social Justice Goal -->
+<!-- Social Responsibility Goal -->
 <v-row>
     <v-col cols="12">
-        <h3 class="review-section-title">{{ $t('Social Justice Goal') }}</h3>
+        <h3 class="review-section-title">{{ $t('Social Responsibility Goal') }}</h3>
         <p class="form-label">
-            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('social justice.') }}</u>
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('social responsibility.') }}</u>
         </p>
-        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.socialJusticeGoal) }}</p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.socialResponsibilityGoal) }}</p>
     </v-col>
 </v-row>
 
-<!-- Public History Goal -->
+<!-- Digital Literacy Goal -->
 <v-row>
     <v-col cols="12">
-        <h3 class="review-section-title">{{ $t('Public History Goal') }}</h3>
+        <h3 class="review-section-title">{{ $t('Digital Literacy Goal') }}</h3>
         <p class="form-label">
-            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('public history.') }}</u>
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('digital literacy.') }}</u>
         </p>
-        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.publicHistoryGoal) }}</p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.digitalLiteracyGoal) }}</p>
     </v-col>
 </v-row>
 

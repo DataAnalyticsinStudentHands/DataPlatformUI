@@ -530,8 +530,8 @@ data() {
             culturalHumilityGoal: '',
             ethicalDecisionMakingGoal: '',
             professionalResponsibilityGoal: '',
-            socialJusticeGoal: '',
-            publicHistoryGoal: '',
+            socialResponsibilityGoal: '',
+            digitalLiteracyGoal: '',
         },
         aspirations: {
             aspirationOne: '',
