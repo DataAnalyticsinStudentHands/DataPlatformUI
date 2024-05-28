@@ -1135,6 +1135,8 @@ methods: {
                             culturalHumilityGoal: this.goalForm.growthGoal.culturalHumilityGoal,
                             ethicalDecisionMakingGoal: this.goalForm.growthGoal.ethicalDecisionMakingGoal,
                             professionalResponsibilityGoal: this.goalForm.growthGoal.professionalResponsibilityGoal,
+                            socialResponsibilityGoal: this.goalForm.growthGoal.socialResponsibilityGoal,
+                            digitalLiteracyGoal: this.goalForm.growthGoal.digitalLiteracyGoal,
                         },
                         aspirations: {
                             aspirationOne: this.goalForm.aspirations.aspirationOne,
