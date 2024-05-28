@@ -473,9 +473,10 @@ data() {
             { id: 3, label: "HERE", checked: false },
             { id: 4, label: "SURF", checked: false },
             { id: 5, label: "PURS", checked: false },
-            { id: 6, label: "Volunteered/Interned in a lab", checked: false },
-            { id: 7, label: "Other", checked: false },
-            { id: 8, label: "None of the above", checked: false }
+            { id: 6, label: "REACH", checked: false },
+            { id: 7, label: "Volunteered/Interned in a lab", checked: false },
+            { id: 8, label: "Other", checked: false },
+            { id: 9, label: "None of the above", checked: false }
             ],
             currentResearchExperienceOther: '',
             previousResearchExperience: [
@@ -486,8 +487,9 @@ data() {
             { id: 5, label: "Data collection in a public health/community setting", checked: false },
             { id: 6, label: "Analyzing data with a statistical package", checked: false },
             { id: 7, label: "Writing/assisting with a manuscript", checked: false },
-            { id: 8, label: "Other", checked: false },
-            { id: 9, label: "None of the above", checked: false }
+            { id: 8, label: "Public presentation/communication", checked: false },
+            { id: 9, label: "Other", checked: false },
+            { id: 10, label: "None of the above", checked: false }
             ],
             previousResearchExperienceOther: '',
             familiarTools: [
@@ -500,8 +502,9 @@ data() {
             { id: 7, label: "Nvivo", checked: false },
             { id: 8, label: "Tableau", checked: false },
             { id: 9, label: "SAS", checked: false },
-            { id: 10, label: "Other", checked: false },
-            { id: 11, label: "None of the above", checked: false }
+            { id: 10, label: "Omeka", checked: false },
+            { id: 11, label: "Other", checked: false },
+            { id: 12, label: "None of the above", checked: false }
             ],
             familiarToolOther: '',
             interestResearchService: [
@@ -512,8 +515,10 @@ data() {
             { id: 5, label: "Chronic Disease", checked: false },
             { id: 6, label: "Environment and occupational health", checked: false },
             { id: 7, label: "Government/Law/Policy", checked: false },
-            { id: 8, label: "Other", checked: false },
-            { id: 9, label: "None of the above", checked: false }
+            { id: 8, label: "Social Justice", checked: false },
+            { id: 9, label: "Public History", checked: false },
+            { id: 10, label: "Other", checked: false },
+            { id: 11, label: "None of the above", checked: false }
             ],
             interestResearchServiceOther: '',
             leadershipOption: ''
@@ -524,7 +529,9 @@ data() {
             teamworkGoal: '',
             culturalHumilityGoal: '',
             ethicalDecisionMakingGoal: '',
-            professionalResponsibilityGoal: ''
+            professionalResponsibilityGoal: '',
+            socialJusticeGoal: '',
+            publicHistoryGoal: '',
         },
         aspirations: {
             aspirationOne: '',
@@ -854,43 +861,43 @@ methods: {
 
     submitFormCleanup() {
         // Check condition for "Other" text fields
-        const isOtherCommunityEngagementExperiencesChecked = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.id === 6)?.checked || false;
+        const isOtherCommunityEngagementExperiencesChecked = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.label === "Other")?.checked || false;
 
         if (!isOtherCommunityEngagementExperiencesChecked) {
         this.goalForm.communityEngagement.communityEngagementExperiencesOther = '';
         }
 
-        const isOtherPreviousEngagementExperienceChecked = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8)?.checked || false;
+        const isOtherPreviousEngagementExperienceChecked = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.label === "Other")?.checked || false;
 
         if (!isOtherPreviousEngagementExperienceChecked) {
         this.goalForm.communityEngagement.previousEngagementExperiencesOther = '';
         }
 
-        const isOtherEngagementActivitiesToolsChecked = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.id === 8)?.checked || false;
+        const isOtherEngagementActivitiesToolsChecked = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.label === "Other")?.checked || false;
 
         if (!isOtherEngagementActivitiesToolsChecked) {
         this.goalForm.communityEngagement.engagementActivitiesToolOther= '';
         }
 
-        const isOtherCurrentResearchExperienceChecked = this.goalForm.researchExperience.currentResearchExperience.find(p => p.id === 7)?.checked || false;
+        const isOtherCurrentResearchExperienceChecked = this.goalForm.researchExperience.currentResearchExperience.find(p => p.label === "Other")?.checked || false;
 
         if (!isOtherCurrentResearchExperienceChecked) {
         this.goalForm.researchExperience.currentResearchExperienceOther= '';
         }
 
-        const isOtherPreviousResearchExperienceChecked = this.goalForm.researchExperience.previousResearchExperience.find(p => p.id === 8)?.checked || false;
+        const isOtherPreviousResearchExperienceChecked = this.goalForm.researchExperience.previousResearchExperience.find(p => p.label === "Other")?.checked || false;
 
         if (!isOtherPreviousResearchExperienceChecked) {
         this.goalForm.researchExperience.previousResearchExperienceOther= '';
         }
 
-        const isOtherFamiliarToolsChecked = this.goalForm.researchExperience.familiarTools.find(p => p.id === 10)?.checked || false;
+        const isOtherFamiliarToolsChecked = this.goalForm.researchExperience.familiarTools.find(p => p.label === "Other")?.checked || false;
 
         if (!isOtherFamiliarToolsChecked) {
         this.goalForm.researchExperience.familiarToolOther= '';
         }
 
-        const isInterestResearchServiceChecked = this.goalForm.researchExperience.interestResearchService.find(p => p.id === 8)?.checked || false;
+        const isInterestResearchServiceChecked = this.goalForm.researchExperience.interestResearchService.find(p => p.label === "Other")?.checked || false;
 
         if (!isInterestResearchServiceChecked) {
         this.goalForm.researchExperience.interestResearchServiceOther= '';

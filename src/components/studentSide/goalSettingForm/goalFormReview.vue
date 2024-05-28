@@ -340,6 +340,28 @@
     </v-col>
 </v-row>
 
+<!-- Social Justice Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Social Justice Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('social justice.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.socialJusticeGoal) }}</p>
+    </v-col>
+</v-row>
+
+<!-- Public History Goal -->
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Public History Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('public history.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.publicHistoryGoal) }}</p>
+    </v-col>
+</v-row>
+
 
 <!-- Aspirations Title -->
 <v-row class="d-flex justify-center align-center">
@@ -485,95 +507,95 @@ export default {
     emits: ["change-step"],
     computed: {
         processedCommunityEngagementExperiences() {
-            const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.id === 7 && experience.checked);
+            const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.communityEngagementExperiences
-                .filter(experience => experience.id !== 7) // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
                 }))
-                .filter(experience => experience.id !== 6 || experience.checked);
+                .filter(experience => experience.label !== 'Other' || experience.checked);
         },
         displayOtherExperience() {
-            return this.goalForm.communityEngagement.communityEngagementExperiences.find(experience => experience.id === 6)?.checked;
+            return this.goalForm.communityEngagement.communityEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
         },
         processedPreviousEngagementExperiences() {
-            const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.id === 9 && experience.checked);
+            const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.previousEngagementExperiences
-                .filter(experience => experience.id !== 9) // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
                 }))
-                .filter(experience => experience.id !== 8 || experience.checked);
+                .filter(experience => experience.label !== 'Other' || experience.checked);
         },
         displayPreviousOtherExperience() {
-            return this.goalForm.communityEngagement.previousEngagementExperiences.find(experience => experience.id === 8)?.checked;
+            return this.goalForm.communityEngagement.previousEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
         },
         processedEngagementActivitiesTools() {
-            const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.id === 9 && tool.checked);
+            const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.communityEngagement.engagementActivitiesTools
-                .filter(tool => tool.id !== 9) // Exclude "None of the above"
+                .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
                 .map(tool => ({
                     ...tool,
                     checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
                 }))
-                .filter(tool => tool.id !== 8 || tool.checked);
+                .filter(tool => tool.label !== 'Other' || tool.checked);
         },
         displayEngagementActivitiesToolOther() {
-            return this.goalForm.communityEngagement.engagementActivitiesTools.find(tool => tool.id === 8)?.checked;
+            return this.goalForm.communityEngagement.engagementActivitiesTools.find(tool => tool.label === 'Other')?.checked;
         },
         processedCurrentResearchExperience() {
-            const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.id === 8 && experience.checked);
+            const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.researchExperience.currentResearchExperience
-                .filter(experience => experience.id !== 8) // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
                 }))
-                .filter(experience => experience.id !== 7 || experience.checked);
+                .filter(experience => experience.label !== 'Other' || experience.checked);
         },
         displayCurrentResearchExperienceOther() {
-            return this.goalForm.researchExperience.currentResearchExperience.find(experience => experience.id === 7)?.checked;
+            return this.goalForm.researchExperience.currentResearchExperience.find(experience => experience.label === 'Other')?.checked;
         },
         processedPreviousResearchExperience() {
-            const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.id === 9 && experience.checked);
+            const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.researchExperience.previousResearchExperience
-                .filter(experience => experience.id !== 9) // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
                 }))
-                .filter(experience => experience.id !== 8 || experience.checked);
+                .filter(experience => experience.label !== 'Other' || experience.checked);
         },
         displayPreviousResearchExperienceOther() {
-            return this.goalForm.researchExperience.previousResearchExperience.find(experience => experience.id === 8)?.checked;
+            return this.goalForm.researchExperience.previousResearchExperience.find(experience => experience.label === 'Other')?.checked;
         },
         processedFamiliarTools() {
-            const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.id === 11 && tool.checked);
+            const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.researchExperience.familiarTools
-                .filter(tool => tool.id !== 11) // Exclude "None of the above"
+                .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
                 .map(tool => ({
                     ...tool,
                     checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
                 }))
-                .filter(tool => tool.id !== 10 || tool.checked);
+                .filter(tool => tool.label !== 'Other' || tool.checked);
         },
         displayFamiliarToolOther() {
-            return this.goalForm.researchExperience.familiarTools.find(tool => tool.id === 10)?.checked;
+            return this.goalForm.researchExperience.familiarTools.find(tool => tool.label === 'Other')?.checked;
         },
         processedInterestResearchService() {
-            const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.id === 9 && interest.checked);
+            const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.label === 'None of the above' && interest.checked);
             return this.goalForm.researchExperience.interestResearchService
-                .filter(interest => interest.id !== 9) // Exclude "None of the above"
+                .filter(interest => interest.label !== 'None of the above') // Exclude "None of the above"
                 .map(interest => ({
                     ...interest,
                     checked: noneSelected ? 'No' : (interest.checked ? 'Yes' : 'No')
                 }))
-                .filter(interest => interest.id !== 8 || interest.checked);
+                .filter(interest => interest.label !== 'Other' || interest.checked);
         },
         displayInterestResearchServiceOther() {
-            return this.goalForm.researchExperience.interestResearchService.find(interest => interest.id === 8)?.checked;
+            return this.goalForm.researchExperience.interestResearchService.find(interest => interest.label === 'Other')?.checked;
         },
     },
     methods: {
