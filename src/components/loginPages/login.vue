@@ -13,6 +13,7 @@
           :rules="emailRules"
           required
           prepend-icon="mdi-email"
+          @keydown.enter="login"
         ></v-text-field>
 
         <v-text-field
@@ -22,6 +23,7 @@
           :rules="requiredRule"
           required
           prepend-icon="mdi-lock"
+          @keydown.enter="login"
         >
           <template v-slot:append-inner>
             <v-icon
