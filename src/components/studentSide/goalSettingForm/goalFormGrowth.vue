@@ -118,6 +118,44 @@
             <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
         </v-radio-group>
     </v-col>
+    <v-col cols="12" md="10">
+        <span 
+        :class="{'error-text': isSocialResponsibilityGoalInvalid}"
+        class="font-weight-black text-h8"
+        ref="socialResponsibilityGoalRef"
+        >
+        {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('social responsibility.') }}</u>
+        </span>
+        <v-radio-group 
+        v-model="goalForm.growthGoal.socialResponsibilityGoal"
+        :class="{'error-text': isSocialResponsibilityGoalInvalid}"
+        :rules="socialResponsibilityGoalRules"
+        >
+            <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+            <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+            <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+            <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+        </v-radio-group>
+    </v-col>
+    <v-col cols="12" md="10">
+        <span 
+        :class="{'error-text': isDigitalLiteracyGoalInvalid}"
+        class="font-weight-black text-h8"
+        ref="digitalLiteracyGoalRef"
+        >
+        {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('digital literacy.') }}</u>
+        </span>
+        <v-radio-group 
+        v-model="goalForm.growthGoal.digitalLiteracyGoal"
+        :class="{'error-text': isDigitalLiteracyGoalInvalid}"
+        :rules="digitalLiteracyGoalRules"
+        >
+            <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+            <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+            <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+            <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+        </v-radio-group>
+    </v-col>
 </v-container>
 </v-form>
 
@@ -185,11 +223,25 @@ data() {
             },
         ],
         professionalResponsibilityGoalRules: [
-        v => {
-                if (!this.formSubmitted) return true;
+            v => {
+                    if (!this.formSubmitted) return true;
 
-                return !!v || this.$t('Information is required.');
-            },
+                    return !!v || this.$t('Information is required.');
+                },
+        ],
+        socialResponsibilityGoalRules: [
+            v => {
+                    if (!this.formSubmitted) return true;
+
+                    return !!v || this.$t('Information is required.');
+                },
+        ],
+        digitalLiteracyGoalRules: [
+            v => {
+                    if (!this.formSubmitted) return true;
+
+                    return !!v || this.$t('Information is required.');
+                },
         ],
     }
 },
@@ -236,9 +288,19 @@ computed: {
         const rule = v => !!v || this.$t('Information is required');
         return rule(this.goalForm.growthGoal.professionalResponsibilityGoal) !== true;
     },
+    isSocialResponsibilityGoalInvalid() {
+        if (!this.formSubmitted) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.growthGoal.socialResponsibilityGoal) !== true;
+    },
+    isDigitalLiteracyGoalInvalid() {
+        if (!this.formSubmitted) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.growthGoal.digitalLiteracyGoal) !== true;
+    },
     hasValidationErrors() {
         if (!this.formSubmitted) return false;
-            return this.isProblemSolvingGoalInvalid || this.isEffectiveCommunicationGoalInvalid || this.isTeamworkGoalInvalid || this.isCulturalHumilityGoalInvalid || this.isEthicalDecisionMakingGoalInvalid || this.isProfessionalResponsibilityGoalInvalid;
+            return this.isProblemSolvingGoalInvalid || this.isEffectiveCommunicationGoalInvalid || this.isTeamworkGoalInvalid || this.isCulturalHumilityGoalInvalid || this.isEthicalDecisionMakingGoalInvalid || this.isProfessionalResponsibilityGoalInvalid || this.isSocialResponsibilityGoalInvalid || this.isDigitalLiteracyGoalInvalid;
     },
 },
 methods: {
@@ -265,6 +327,8 @@ methods: {
             'culturalHumilityGoalRef',
             'ethicalDecisionMakingGoalRef',
             'professionalResponsibilityGoalRef',
+            'socialResponsibilityGoalRef',
+            'digitalLiteracyGoalRef',
         ];
 
         for (let i = 0; i < errorFields.length; i++) {
@@ -292,6 +356,10 @@ methods: {
                 return this.isEthicalDecisionMakingGoalInvalid;
             case 'professionalResponsibilityGoalRef':
                 return this.isProfessionalResponsibilityGoalInvalid;
+            case 'socialResponsibilityGoalRef':
+                return this.isSocialResponsibilityGoalInvalid;
+            case 'digitalLiteracyGoalRef':
+                return this.isDigitalLiteracyGoalInvalid;
             default:
                 return false;
         }

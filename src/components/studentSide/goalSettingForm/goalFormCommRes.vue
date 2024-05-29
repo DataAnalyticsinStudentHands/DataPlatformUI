@@ -201,7 +201,7 @@
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
-    <v-row v-show="engagementExperience.id === 6 && engagementExperience.checked">
+    <v-row v-show="engagementExperience.label === 'Other' && engagementExperience.checked">
         <v-col cols="12">
           <v-text-field
             :ref="`otherExperienceRef-${engagementExperience.id}`"
@@ -246,7 +246,7 @@
 
 
       <transition name="slide-y-transition">
-      <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
+      <v-row v-show="previousExperience.label === 'Other' && previousExperience.checked">
         <v-col cols="12">
       <v-text-field 
         :ref="`previousEngagementExperiencesOtherRef-${previousExperience.id}`"
@@ -291,7 +291,7 @@
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
-    <v-row v-show="activitiesTool.id === 8 && activitiesTool.checked">
+    <v-row v-show="activitiesTool.label === 'Other' && activitiesTool.checked">
         <v-col cols="12">
           <v-text-field 
           :ref="`engagementActivitiesToolOtherRef-${activitiesTool.id}`"
@@ -338,7 +338,7 @@
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
-    <v-row v-show="currentExperience.id === 7 && currentExperience.checked">
+    <v-row v-show="currentExperience.label === 'Other' && currentExperience.checked">
         <v-col cols="12">
           <v-text-field 
           :ref="`currentResearchExperienceOtherRef-${currentExperience.id}`"
@@ -384,7 +384,7 @@
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
-    <v-row v-show="previousExperience.id === 8 && previousExperience.checked">
+    <v-row v-show="previousExperience.label === 'Other' && previousExperience.checked">
         <v-col cols="12">
           <v-text-field 
           :ref="`previousResearchExperienceOtherRef-${previousExperience.id}`"
@@ -430,7 +430,7 @@
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
-    <v-row v-show="familiarTool.id === 10 && familiarTool.checked">
+    <v-row v-show="familiarTool.label === 'Other' && familiarTool.checked">
         <v-col cols="12">
           <v-text-field 
           :ref="`familiarToolOtherRef-${familiarTool.id}`"
@@ -476,7 +476,7 @@
 
     <!-- "Please Specify" text field for the 'Other' option -->
     <transition name="slide-y-transition">
-    <v-row v-show="interest.id === 8 && interest.checked">
+    <v-row v-show="interest.label === 'Other' && interest.checked">
         <v-col cols="12">
           <v-text-field 
           :ref="`interestResearchServiceOtherRef-${interest.id}`"
@@ -562,7 +562,7 @@ data() {
             v => {
                 if (!this.formSubmitted) return true;
                 
-                const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.id === 6);
+                const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.label === 'Other');
 
                 // If the condition for v-show is false (Other not checked), validation passes automatically
                 if (!otherExperience || !otherExperience.checked) return true;
@@ -583,7 +583,7 @@ data() {
             v => {
                     if (!this.formSubmitted) return true;
                     
-                    const previousExperience = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8);
+                    const previousExperience = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.label === 'Other');
 
                     // If the condition for v-show is false (Other not checked), validation passes automatically
                     if (!previousExperience || !previousExperience.checked) return true;
@@ -604,7 +604,7 @@ data() {
             v => {
                     if (!this.formSubmitted) return true;
                     
-                    const engagementActivitiesTool = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.id === 8);
+                    const engagementActivitiesTool = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.label === 'Other');
 
                     // If the condition for v-show is false (Other not checked), validation passes automatically
                     if (!engagementActivitiesTool || !engagementActivitiesTool.checked) return true;
@@ -625,7 +625,7 @@ data() {
             v => {
                     if (!this.formSubmitted) return true;
                     
-                    const researchExperience = this.goalForm.researchExperience.currentResearchExperience.find(p => p.id === 7);
+                    const researchExperience = this.goalForm.researchExperience.currentResearchExperience.find(p => p.label === 'Other');
 
                     // If the condition for v-show is false (Other not checked), validation passes automatically
                     if (!researchExperience || !researchExperience.checked) return true;
@@ -646,7 +646,7 @@ data() {
             v => {
                     if (!this.formSubmitted) return true;
                     
-                    const previousExperience = this.goalForm.researchExperience.previousResearchExperience.find(p => p.id === 8);
+                    const previousExperience = this.goalForm.researchExperience.previousResearchExperience.find(p => p.label === 'Other');
 
                     // If the condition for v-show is false (Other not checked), validation passes automatically
                     if (!previousExperience || !previousExperience.checked) return true;
@@ -667,7 +667,7 @@ data() {
             v => {
                     if (!this.formSubmitted) return true;
                     
-                    const familiarTool = this.goalForm.researchExperience.familiarTools.find(p => p.id === 10);
+                    const familiarTool = this.goalForm.researchExperience.familiarTools.find(p => p.label === 'Other');
 
                     // If the condition for v-show is false (Other not checked), validation passes automatically
                     if (!familiarTool || !familiarTool.checked) return true;
@@ -688,7 +688,7 @@ data() {
             v => {
                     if (!this.formSubmitted) return true;
                     
-                    const researchService = this.goalForm.researchExperience.interestResearchService.find(p => p.id === 8);
+                    const researchService = this.goalForm.researchExperience.interestResearchService.find(p => p.label === 'Other');
 
                     // If the condition for v-show is false (Other not checked), validation passes automatically
                     if (!researchService || !researchService.checked) return true;
@@ -722,7 +722,7 @@ watch: {
         });
       }
 
-      const otherExperience = newVal.find(exp => exp.id === 6);
+      const otherExperience = newVal.find(exp => exp.label === 'Other');
       if (otherExperience && otherExperience.checked && this.formSubmitted) {
         // Use the dynamic ref name based on the id
         const dynamicRef = this.$refs[`otherExperienceRef-${otherExperience.id}`];
@@ -747,7 +747,7 @@ watch: {
         });
       }
 
-      const previousExperience = newVal.find(exp => exp.id === 8);
+      const previousExperience = newVal.find(exp => exp.label === 'Other');
       if (previousExperience && previousExperience.checked && this.formSubmitted) {
         // Use the dynamic ref name based on the id
         const dynamicRef = this.$refs[`previousEngagementExperiencesOtherRef-${previousExperience.id}`];
@@ -772,7 +772,7 @@ watch: {
           });
         }
 
-        const engagementActivitiesTool = newVal.find(exp => exp.id === 8);
+        const engagementActivitiesTool = newVal.find(exp => exp.label === 'Other');
         if (engagementActivitiesTool && engagementActivitiesTool.checked && this.formSubmitted) {
           // Use the dynamic ref name based on the id
           const dynamicRef = this.$refs[`engagementActivitiesToolOtherRef-${engagementActivitiesTool.id}`];
@@ -797,7 +797,7 @@ watch: {
           });
         }
 
-        const researchExperience = newVal.find(exp => exp.id === 7);
+        const researchExperience = newVal.find(exp => exp.label === 'Other');
         if (researchExperience && researchExperience.checked && this.formSubmitted) {
           // Use the dynamic ref name based on the id
           const dynamicRef = this.$refs[`currentResearchExperienceOtherRef-${researchExperience.id}`];
@@ -822,7 +822,7 @@ watch: {
           });
         }
 
-        const previousExperience = newVal.find(exp => exp.id === 8);
+        const previousExperience = newVal.find(exp => exp.label === 'Other');
         if (previousExperience && previousExperience.checked && this.formSubmitted) {
           // Use the dynamic ref name based on the id
           const dynamicRef = this.$refs[`previousResearchExperienceOtherRef-${previousExperience.id}`];
@@ -847,7 +847,7 @@ watch: {
           });
         }
 
-        const familiarTool = newVal.find(exp => exp.id === 10);
+        const familiarTool = newVal.find(exp => exp.label === 'Other');
         if (familiarTool && familiarTool.checked && this.formSubmitted) {
           // Use the dynamic ref name based on the id
           const dynamicRef = this.$refs[`familiarToolOtherRef-${familiarTool.id}`];
@@ -872,7 +872,7 @@ watch: {
           });
         }
 
-        const researchService = newVal.find(exp => exp.id === 8);
+        const researchService = newVal.find(exp => exp.label === 'Other');
         if (researchService && researchService.checked && this.formSubmitted) {
           // Use the dynamic ref name based on the id
           const dynamicRef = this.$refs[`interestResearchServiceOtherRef-${researchService.id}`];
@@ -904,7 +904,7 @@ computed: {
     },
     isOtherEngagementExperienceInvalid() {
         if (!this.formSubmitted) return false;
-        const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.id === 6);
+        const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.label === 'Other');
         return otherExperience.checked && !this.goalForm.communityEngagement.communityEngagementExperiencesOther;
     },
     isPreviousEngagementExperiencesInvalid() {
@@ -918,7 +918,7 @@ computed: {
     },
     isPreviousEngagementExperiencesOtherInvalid() {
         if (!this.formSubmitted) return false;
-        const previousExperience = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.id === 8);
+        const previousExperience = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.label === 'Other');
         return previousExperience.checked && !this.goalForm.communityEngagement.previousEngagementExperiencesOther;
     },
     isEngagementActivitiesToolsInvalid() {
@@ -932,7 +932,7 @@ computed: {
     },
     isEngagementActivitiesToolOtherInvalid() {
         if (!this.formSubmitted) return false;
-        const engagementActivitiesTool = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.id === 8);
+        const engagementActivitiesTool = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.label === 'Other');
         return engagementActivitiesTool.checked && !this.goalForm.communityEngagement.engagementActivitiesToolOther;
     },
     isCurrentResearchExperienceInvalid() {
@@ -946,7 +946,7 @@ computed: {
     },
     isCurrentResearchExperienceOtherInvalid() {
         if (!this.formSubmitted) return false;
-        const researchExperience = this.goalForm.researchExperience.currentResearchExperience.find(p => p.id === 7);
+        const researchExperience = this.goalForm.researchExperience.currentResearchExperience.find(p => p.label === 'Other');
         return researchExperience.checked && !this.goalForm.researchExperience.currentResearchExperienceOther;
     },
     isPreviousResearchExperienceInvalid() {
@@ -960,7 +960,7 @@ computed: {
     },
     isPreviousResearchExperienceOtherInvalid() {
         if (!this.formSubmitted) return false;
-        const previousExperience = this.goalForm.researchExperience.previousResearchExperience.find(p => p.id === 8);
+        const previousExperience = this.goalForm.researchExperience.previousResearchExperience.find(p => p.label === 'Other');
         return previousExperience.checked && !this.goalForm.researchExperience.previousResearchExperienceOther;
     },
     isFamiliarToolsInvalid() {
@@ -974,7 +974,7 @@ computed: {
     },
     isFamiliarToolOtherInvalid() {
         if (!this.formSubmitted) return false;
-        const familiarTool = this.goalForm.researchExperience.familiarTools.find(p => p.id === 10);
+        const familiarTool = this.goalForm.researchExperience.familiarTools.find(p => p.label === 'Other');
         return familiarTool.checked && !this.goalForm.researchExperience.familiarToolOther;
     },
     isInterestResearchServiceInvalid() {
@@ -988,7 +988,7 @@ computed: {
     },
     isInterestResearchServiceOtherInvalid() {
         if (!this.formSubmitted) return false;
-        const researchService = this.goalForm.researchExperience.interestResearchService.find(p => p.id === 8);
+        const researchService = this.goalForm.researchExperience.interestResearchService.find(p => p.label === 'Other');
         return researchService.checked && !this.goalForm.researchExperience.interestResearchServiceOther;
     },
     isLeadershipOptionInvalid() {
@@ -1001,95 +1001,95 @@ computed: {
             return this.isCommunityEngagementExperiencesInvalid || this.isOtherEngagementExperienceInvalid || this.isPreviousEngagementExperiencesInvalid || this.isPreviousEngagementExperiencesOtherInvalid || this.isEngagementActivitiesToolsInvalid || this.isEngagementActivitiesToolOtherInvalid || this.isCurrentResearchExperienceInvalid || this.isCurrentResearchExperienceOtherInvalid || this.isPreviousResearchExperienceInvalid || this.isPreviousResearchExperienceOtherInvalid || this.isFamiliarToolsInvalid || this.isFamiliarToolOtherInvalid || this.isInterestResearchServiceInvalid || this.isInterestResearchServiceOtherInvalid || this.isLeadershipOptionInvalid;
     },
     processedCommunityEngagementExperiences() {
-        const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.id === 7 && experience.checked);
+        const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
         return this.goalForm.communityEngagement.communityEngagementExperiences
-            .filter(experience => experience.id !== 7) // Exclude "None of the above"
+            .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
             .map(experience => ({
                 ...experience,
                 checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
             }))
-            .filter(experience => experience.id !== 6 || experience.checked);
+            .filter(experience => experience.label !== 'Other' || experience.checked);
     },
     displayOtherExperience() {
-        return this.goalForm.communityEngagement.communityEngagementExperiences.find(experience => experience.id === 6)?.checked;
+        return this.goalForm.communityEngagement.communityEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
     },
     processedPreviousEngagementExperiences() {
-        const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.id === 9 && experience.checked);
+        const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
         return this.goalForm.communityEngagement.previousEngagementExperiences
-            .filter(experience => experience.id !== 9) // Exclude "None of the above"
+            .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
             .map(experience => ({
                 ...experience,
                 checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
             }))
-            .filter(experience => experience.id !== 8 || experience.checked);
+            .filter(experience => experience.label !== 'None of the above' || experience.checked);
     },
     displayPreviousOtherExperience() {
-        return this.goalForm.communityEngagement.previousEngagementExperiences.find(experience => experience.id === 8)?.checked;
+        return this.goalForm.communityEngagement.previousEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
     },
     processedEngagementActivitiesTools() {
-        const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.id === 9 && tool.checked);
+        const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.label === 'None of the above' && tool.checked);
         return this.goalForm.communityEngagement.engagementActivitiesTools
-            .filter(tool => tool.id !== 9) // Exclude "None of the above"
+            .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
             .map(tool => ({
                 ...tool,
                 checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
             }))
-            .filter(tool => tool.id !== 8 || tool.checked);
+            .filter(tool => tool.label !== 'Other' || tool.checked);
     },
     displayEngagementActivitiesToolOther() {
-        return this.goalForm.communityEngagement.engagementActivitiesTools.find(tool => tool.id === 8)?.checked;
+        return this.goalForm.communityEngagement.engagementActivitiesTools.find(tool => tool.label === 'Other')?.checked;
     },
     processedCurrentResearchExperience() {
-        const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.id === 8 && experience.checked);
+        const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
         return this.goalForm.researchExperience.currentResearchExperience
-            .filter(experience => experience.id !== 8) // Exclude "None of the above"
+            .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
             .map(experience => ({
                 ...experience,
                 checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
             }))
-            .filter(experience => experience.id !== 7 || experience.checked);
+            .filter(experience => experience.label !== 'Other' || experience.checked);
     },
     displayCurrentResearchExperienceOther() {
-        return this.goalForm.researchExperience.currentResearchExperience.find(experience => experience.id === 7)?.checked;
+        return this.goalForm.researchExperience.currentResearchExperience.find(experience => experience.label === 'Other')?.checked;
     },
     processedPreviousResearchExperience() {
-        const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.id === 9 && experience.checked);
+        const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
         return this.goalForm.researchExperience.previousResearchExperience
-            .filter(experience => experience.id !== 9) // Exclude "None of the above"
+            .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
             .map(experience => ({
                 ...experience,
                 checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
             }))
-            .filter(experience => experience.id !== 8 || experience.checked);
+            .filter(experience => experience.label !== 'Other' || experience.checked);
     },
     displayPreviousResearchExperienceOther() {
-        return this.goalForm.researchExperience.previousResearchExperience.find(experience => experience.id === 8)?.checked;
+        return this.goalForm.researchExperience.previousResearchExperience.find(experience => experience.label === 'Other')?.checked;
     },
     processedFamiliarTools() {
-        const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.id === 11 && tool.checked);
+        const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.label === 'None of the above' && tool.checked);
         return this.goalForm.researchExperience.familiarTools
-            .filter(tool => tool.id !== 11) // Exclude "None of the above"
+            .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
             .map(tool => ({
                 ...tool,
                 checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
             }))
-            .filter(tool => tool.id !== 10 || tool.checked);
+            .filter(tool => tool.label !== 'Other' || tool.checked);
     },
     displayFamiliarToolOther() {
-        return this.goalForm.researchExperience.familiarTools.find(tool => tool.id === 10)?.checked;
+        return this.goalForm.researchExperience.familiarTools.find(tool => tool.label === 'Other')?.checked;
     },
     processedInterestResearchService() {
-        const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.id === 9 && interest.checked);
+        const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.label === 'None of the above' && interest.checked);
         return this.goalForm.researchExperience.interestResearchService
-            .filter(interest => interest.id !== 9) // Exclude "None of the above"
+            .filter(interest => interest.label !== 'None of the above') // Exclude "None of the above"
             .map(interest => ({
                 ...interest,
                 checked: noneSelected ? 'No' : (interest.checked ? 'Yes' : 'No')
             }))
-            .filter(interest => interest.id !== 8 || interest.checked);
+            .filter(interest => interest.label !== 'Other' || interest.checked);
     },
     displayInterestResearchServiceOther() {
-        return this.goalForm.researchExperience.interestResearchService.find(interest => interest.id === 8)?.checked;
+        return this.goalForm.researchExperience.interestResearchService.find(interest => interest.label === 'Other')?.checked;
     },
 
 },
@@ -1131,6 +1131,7 @@ methods: {
         for (let i = 0; i < errorFields.length; i++) {
             if (this.isFieldInvalid(errorFields[i])) {
 
+              // HARDCODED ID VALUES - NEED TO MAINTAIN - OPTIMIZE IN FUTURE
                 let ref;
                 switch (errorFields[i]) {
                     case 'otherExperienceRef':
