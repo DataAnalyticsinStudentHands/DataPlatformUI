@@ -241,6 +241,7 @@ export const useLoggedInUserStore = defineStore({
           !this.registeredExperiences.some(re => re.experienceInstance.id === se._id));
         const experiencesToDeregister = this.registeredExperiences.filter(re => 
           !selectedExperiences.some(se => se._id === re.experienceInstance.id));
+        const originalRegisteredExperiences = JSON.parse(JSON.stringify(this.registeredExperiences));
     
         // Register new experiences
         if (experiencesToRegister.length > 0) {
@@ -251,19 +252,35 @@ export const useLoggedInUserStore = defineStore({
     
         // Deregister experiences
         if (experiencesToDeregister.length > 0) {
-          await axios.delete(deregisterUrl, {
+          const response = await axios.delete(deregisterUrl, {
             headers: { token },
             data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
           });
+    
+          if (response.status === 207) {
+            const { cannotDeleteRegistrations } = response.data;
+            const cannotDeleteNames = cannotDeleteRegistrations.map(id => {
+              const experience = originalRegisteredExperiences.find(re => re._id === id);
+              return experience ? experience.experienceInstance.name : id;
+            });
+            cannotDeleteNames.forEach(name => {
+              toast.info(`Cannot deregister: ${name}`, {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--update',
+                multiple: true
+              });
+            });
+          }
         }
     
         // Fetch updated registered experiences
         await this.fetchRegisteredExperiences();
         toast.success(i18n.global.t('Experiences Registered') + '!', {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--create'
+          toastClassName: 'Toastify__toast--create',
+          multiple: true
         });
-
+    
         // Call Student Checklist
         await this.checkFormCompletion();
     
