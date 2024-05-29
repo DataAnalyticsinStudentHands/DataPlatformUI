@@ -346,18 +346,18 @@
 <v-dialog v-model="leaveDialog" persistent max-width="500px">
     <v-card>
         <v-card-title class="text-h5">
-            Confirm Navigation
+            {{$t('Confirm Navigation')}}
         </v-card-title>
         <v-card-text>
-            <p>Are you sure you want to leave? <strong>Your responses will be saved for later.</strong></p>
+            <p>{{$t('Are you sure you want to leave?')}} <strong>{{$t('Your responses will be saved for later.')}}</strong></p>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn text @click="cancelLeave">
-                Cancel
+                {{$t('Cancel')}}
             </v-btn>
             <v-btn color="red darken-2" text @click="confirmLeave">
-                Yes, Leave
+                {{$t('Yes, Leave')}}
             </v-btn>
         </v-card-actions>
     </v-card>
@@ -367,18 +367,18 @@
 <v-dialog v-model="showIncompleteFormFoundDialog" persistent max-width="500px">
     <v-card>
         <v-card-title class="text-h5">
-            Resume Your Progress?
+            {{$t('Resume Your Progress?')}}
         </v-card-title>
         <v-card-text>
-            <p>We found an incomplete Goal Setting Form from your last session. Would you like to continue where you left off or start a new form?</p>
+            <p>{{$t('We found an incomplete Goal Setting Form from your last session. Would you like to continue where you left off or start a new form?')}}</p>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn text @click="startNew">
-                Start New
+                {{$t('Start New')}}
             </v-btn>
             <v-btn color="red darken-2" text @click="continueProgress">
-                Continue
+                {{$t('Continue')}}
             </v-btn>
         </v-card-actions>
     </v-card>
