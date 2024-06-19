@@ -131,9 +131,6 @@
       totalPaginationLength() {
         return Math.ceil(this.studentsWithoutEntryForm.length / this.itemsPerPage);
       },
-      totalPaginationLength() {
-        return Math.ceil(this.studentsWithoutEntryForm.length / this.itemsPerPage);
-      },
       totalStudentsCount() {
         return this.studentsWithoutEntryForm.length;
       },

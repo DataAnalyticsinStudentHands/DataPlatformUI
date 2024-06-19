@@ -212,7 +212,9 @@
         return this.studentsWithGoalForm.slice(start, end);
       },
       totalPaginationLength() {
-        return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
+        // Determine which student list to use based on the `completed` flag
+        let list = this.completed ? this.studentsWithGoalForm : this.studentsWithoutGoalForm;
+        return Math.ceil(list.length / this.itemsPerPage);
       },
       totalStudentsCount() {
         if (this.studentsWithoutGoalForm.length === 0) {

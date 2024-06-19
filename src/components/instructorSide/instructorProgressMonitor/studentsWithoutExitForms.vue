@@ -212,7 +212,9 @@ export default {
       return this.studentsWithExitForm.slice(start, end);
     },
     totalPaginationLength() {
-      return Math.ceil(this.studentsWithoutExitForm.length / this.itemsPerPage);
+      // Determine which student list to use based on the `completed` flag
+      let list = this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
+      return Math.ceil(list.length / this.itemsPerPage);
     },
     totalStudentsCount() {
       if (this.studentsWithoutExitForm.length === 0) {
