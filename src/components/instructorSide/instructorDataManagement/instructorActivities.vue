@@ -770,22 +770,26 @@ methods: {
             term: experience.experienceName
         }));
 
-        // Clear existing chips and selected indices in the store
-        this.viewsStore.clearSearchChips();
-        this.viewsStore.clearSelectedSearchChips();
-
-        // Add new search criteria to the store and update selected indices
-        newSearchCriteria.forEach(chip => {
-            this.viewsStore.addSearchChip(chip);
+        // Append the new search criteria to the existing searchChips array in Pinia
+        newSearchCriteria.forEach(criteria => {
+            this.viewsStore.addSearchChip(criteria);
         });
-        const newSelectedIndices = newSearchCriteria.map((_, index) => index);
-        this.viewsStore.updateSelectedSearchChips(newSelectedIndices);
 
-        // Fetch activities by experience and apply filters
+        // Update selectedSearchChips to include the indices of the newly added chips
+        const startIndexForNewChips = this.viewsStore.searchChips.length - newSearchCriteria.length;
+        const newSelectedSearchChips = newSearchCriteria.map((_, index) => startIndexForNewChips + index);
+        this.viewsStore.setSelectedSearchChips([
+            ...this.viewsStore.selectedSearchChips,
+            ...newSelectedSearchChips
+        ]);
+
         await this.fetchActivitiesByExperience();
+
+        // Optionally, if you want to clear selectedActivities after adding them as chips
         this.selectedExperienceNames = [];
         this.experienceNameSearch = "";
         this.dialogExperienceName = false;
+
         this.performFilter();
     },
 
