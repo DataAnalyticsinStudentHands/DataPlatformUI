@@ -210,11 +210,11 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
           axios.post(apiURL, this.user).then(
             async (response) => {
               //using swal from sweetalert.js for customizeble alerts
-              swal(
-                this.$t("You have registered successfully!"),
-                this.$t("Please check your email and follow the steps to verify your account."),
-                "success"
-              );
+              // swal(
+              //   this.$t("You have registered successfully!"),
+              //   this.$t("Please check your email and follow the steps to verify your account."),
+              //   "success"
+              // );
 
               this.user = {
                 firstName: "",

@@ -9,7 +9,7 @@
         </v-row>
         <v-row>
             <v-col cols="12">
-                {{$t('Please check your email for a confirmation code to verify your email address. This may take a few minutes.')}}
+                {{$t('If your email address is not already associated with an account, you will receive a confirmation code to verify your email. This process may take a few minutes.')}}
             </v-col>
         </v-row>
         <v-row justify="center">
