@@ -5,7 +5,7 @@
     <v-row>
         <v-col>
             <p class="d-flex justify-center font-weight-black text-h6">
-                {{ viewArchivedActivities ? "Archived" : "" }} Activities
+                {{ viewsStore.isViewingArchivedActivities ? "Archived" : "" }} Activities
             </p>
         </v-col>
     </v-row>
@@ -71,21 +71,21 @@
                                 v-if="!selectedActivities.length"
                                 @click="toggleArchivedActivities"
                                 elevation="1"
-                                :append-icon="viewArchivedActivities ? '' : 'mdi-archive'"
+                                :append-icon="viewsStore.isViewingArchivedActivities ? '' : 'mdi-archive'"
                             >
-                                {{ viewArchivedActivities ? 'View Activities' : 'View Archive' }}
+                                {{ viewsStore.isViewingArchivedActivities ? 'View Activities' : 'View Archive' }}
                             </v-btn>
                             <v-btn
                                 v-else
                                 @click="handleArchiveActivities"
                                 elevation="1"
-                                :append-icon="viewArchivedActivities ? 'mdi-restore' : 'mdi-archive-plus'"
+                                :append-icon="viewsStore.isViewingArchivedActivities ? 'mdi-restore' : 'mdi-archive-plus'"
                             >
                             <span class="d-none d-md-flex">
-                                {{ viewArchivedActivities ? "Restore" : "Archive" }} {{ selectedActivities.length === 1 ? "Activity" : "Activities" }}
+                                {{ viewsStore.isViewingArchivedActivities ? "Restore" : "Archive" }} {{ selectedActivities.length === 1 ? "Activity" : "Activities" }}
                             </span>
                             <span class="d-none d-sm-flex d-md-none">
-                                {{ viewArchivedActivities ? "Restore" : "Archive" }} 
+                                {{ viewsStore.isViewingArchivedActivities ? "Restore" : "Archive" }} 
                             </span>
                             </v-btn>
                         </v-col>
@@ -140,6 +140,8 @@
                     v-model="selectedActivities"
                     hover
                     return-object
+                    :sort-by.sync="viewsStore.sortBy"
+                    @update:sort-by="handleSortByUpdate"
                 >
                     <template v-slot:body="{ items }">
                         <template
@@ -327,17 +329,25 @@
 <script>
 import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { useInstructorViewsStore } from "@/stored/instructorViews";
 import axios from "axios";
 
 export default {
 name: "ActivitiesManagement",
+setup() {
+    const viewsStore = useInstructorViewsStore();
+
+    return {
+        viewsStore,
+        // other returned properties...
+    };
+},
 data() {
     return {
         activityData: [],
         filteredActivityData: [],
         selectedActivities: [],
         experienceData: [],
-        viewArchivedActivities: false,
         activitySearch: "",
         searchLabel: "Search Activity Name",
         searchMenuItems: [
@@ -577,8 +587,8 @@ methods: {
         } else {
             this.filteredActivityData = this.activityData.filter(activity => {
                 // Check if the activity should be included based on activityStatus
-                if ((this.viewArchivedActivities && !activity.activityStatus) || 
-                    (!this.viewArchivedActivities && activity.activityStatus)) {
+                if ((this.viewsStore.isViewingArchivedActivities && !activity.activityStatus) || 
+                    (!this.viewsStore.isViewingArchivedActivities && activity.activityStatus)) {
                     // Filtering based on search criteria
                     return Object.keys(searchGroups).every(category => {
                         if (category === "Activity Name") {
@@ -596,7 +606,8 @@ methods: {
 
     // Toggles the visibility of archived activities in the view and re-applies the current search and filter criteria.
     toggleArchivedActivities() {
-        this.viewArchivedActivities = !this.viewArchivedActivities;
+        const newType = this.viewsStore.isViewingArchivedActivities ? 'active' : 'archived'
+        this.viewsStore.switchActivitiesViewType(newType);
         this.performFilter();
     },
 
@@ -606,7 +617,7 @@ methods: {
         try {
             const user = useLoggedInUserStore();
             const token = user.token;
-            const updateStatus = { activityStatus: this.viewArchivedActivities };
+            const updateStatus = { activityStatus: this.viewsStore.isViewingArchivedActivities };
 
             for (const activity of this.selectedActivities) {
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${activity._id}`;
@@ -614,7 +625,7 @@ methods: {
                     .then(() => {
                         toast.success(
                             (this.selectedActivities.length === 1 ? "Activity " : "Activities ") +
-                            (this.viewArchivedActivities ? "Restored!" : "Archived!"), {
+                            (this.viewsStore.isViewingArchivedActivities ? "Restored!" : "Archived!"), {
                                 position: "top-right",
                                 toastClassName: "Toastify__toast--create",
                                 multiple: false
@@ -809,7 +820,12 @@ methods: {
 
         // Update activitySearchApplied based on the condition
         this.experienceNameSearchApplied = hasSelectedExperienceNameChip;
-    }
+    },
+
+    handleSortByUpdate(newSortBy) {
+        this.viewsStore.updateSorting(newSortBy);
+    },
+
 }
 
 }
