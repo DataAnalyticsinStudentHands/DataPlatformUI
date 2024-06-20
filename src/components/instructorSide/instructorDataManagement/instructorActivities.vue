@@ -107,13 +107,13 @@
                         <v-col>
                             <!-- Search Chips -->
                             <v-chip-group
-                                v-if="searchCriteria.length"
-                                v-model="selectedSearchChips"
+                                v-if="viewsStore.searchChips.length"
+                                v-model="viewsStore.selectedSearchChips"
                                 column
                                 multiple
                             >
                                 <v-chip
-                                    v-for="(criteria, index) in searchCriteria"
+                                    v-for="(criteria, index) in viewsStore.searchChips"
                                     :key="index"
                                     @click="selectSearchChip(index)"
                                     filter
@@ -337,9 +337,19 @@ name: "ActivitiesManagement",
 setup() {
     const viewsStore = useInstructorViewsStore();
 
+    function updateExperienceNameSearchApplied() {
+        // Check if there's at least one selected "Experience Name" chip
+        const hasSelectedExperienceNameChip = viewsStore.searchChips.some(chip => {
+            return chip && chip.category === "Experience Name";
+        });
+
+        // Update experienceNameSearchApplied based on the condition
+        viewsStore.experienceNameSearchApplied = hasSelectedExperienceNameChip;
+    }
+
     return {
         viewsStore,
-        // other returned properties...
+        updateExperienceNameSearchApplied
     };
 },
 data() {
@@ -354,8 +364,6 @@ data() {
             "Experience Category",
             "Experience Name"
         ],
-        searchCriteria: [],
-        selectedSearchChips: [],
         dialogExperienceCategory: false,
         dialogExperienceName: false,
         selectedExperienceCategories: [],
@@ -395,15 +403,14 @@ mounted() {
         });
 },
 watch: {
-    // Watch the searchCriteria and selectedSearchChips for changes
-    searchCriteria: {
+    'viewsStore.searchChips': {
         handler() {
             this.updateExperienceNameSearchApplied();
         },
         deep: true,
         immediate: true
     },
-    selectedSearchChips: {
+    'viewsStore.selectedSearchChips': {
         handler() {
             this.updateExperienceNameSearchApplied();
         },
@@ -411,13 +418,14 @@ watch: {
         immediate: true
     }
 },
+
 computed: {
     loading() {
         return useLoggedInUserStore().loading;
     },
 
     showChipsRow() {
-        return this.searchCriteria.length > 0;
+        return this.viewsStore.searchChips.length > 0;
     },
 
     activityHeaders() {
@@ -515,12 +523,12 @@ methods: {
     // Adds a search chip based on the current search input and category, selects the newly added chip by default, clears the search input field, and then performs a filter operation based on the updated search criteria.
     addSearchChip() {
         if (this.activitySearch) {
-            this.searchCriteria.push({
+            this.viewsStore.addSearchChip({
                 category: this.searchLabel.replace("Search ", ""),
                 term: this.activitySearch
             });
             // Select the new chip by default
-            this.selectedSearchChips.push(this.searchCriteria.length - 1);
+            this.viewsStore.selectedSearchChips.push(this.viewsStore.searchChips.length - 1);
             // Clear the input field after adding the chip
             this.activitySearch = "";
             // Call search
@@ -530,13 +538,13 @@ methods: {
 
     // Toggles the selection state of a search chip: if the chip is already selected, it is removed from the selection; if not, it is added. After updating the selection, a filter operation is performed based on the new selection state.
     selectSearchChip(index) {
-        const selectedIndex = this.selectedSearchChips.indexOf(index);
+        const selectedIndex = this.viewsStore.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, creae a new array without this chip
-            this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+            this.viewsStore.selectedSearchChips = this.viewsStore.selectedSearchChips.filter(i => i !== index);
         } else {
             // If the chip is not selected, create a new array with this chip added
-            this.selectedSearchChips = [...this.selectedSearchChips, index]
+            this.viewsStore.selectedSearchChips = [...this.viewsStore.selectedSearchChips, index];
         }
         // Call search
         this.performFilter();
@@ -544,11 +552,11 @@ methods: {
     
     // Removes a search chip based on its index, updates the list of selected search chips to reflect this removal, adjusts the indexes of the remaining selected chips accordingly, and then performs a filter operation based on the updated search criteria.
     removeSearchChip(index) {
-        this.searchCriteria.splice(index, 1);
+        this.viewsStore.removeSearchChip(index);
         // Update selectedSearchChips to reflect the removal
-        this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+        this.viewsStore.selectedSearchChips = this.viewsStore.selectedSearchChips.filter(i => i !== index);
         // Adjust the indexes of the remaining selected chips
-        this.selectedSearchChips = this.selectedSearchChips.map(i => i > index ? i - 1 : i);
+        this.viewsStore.selectedSearchChips = this.viewsStore.selectedSearchChips.map(i => i > index ? i - 1 : i);
         // Call search
         this.performFilter();
     },
@@ -557,8 +565,8 @@ methods: {
     // Groups search terms by their criteria categories, then filters activity data based on these grouped search criteria. If the "Experience Name" search is applied, it filters based on matching experience names. Otherwise, it filters activities based on their status and other criteria like "Activity Name", considering if archived activities should be viewed. It also dynamically updates the search results based on user-selected search chips.
     performFilter() {
         let searchGroups = {};
-        this.selectedSearchChips.forEach(index => {
-            let criteria = this.searchCriteria[index];
+        this.viewsStore.selectedSearchChips.forEach(index => {
+            let criteria = this.viewsStore.searchChips[index];
             if (!searchGroups[criteria.category]) {
                 searchGroups[criteria.category] = [];
             }
@@ -569,9 +577,9 @@ methods: {
         this.updateExperienceNameSearchApplied();
 
         if (this.experienceNameSearchApplied && this.experienceBasedActivities.length) {
-            const experienceNameTerms = this.selectedSearchChips
-                .filter(index => this.searchCriteria[index]?.category === "Experience Name")
-                .map(index => this.searchCriteria[index].term.trim().toLowerCase());
+            const experienceNameTerms = this.viewsStore.selectedSearchChips
+                .filter(index => this.viewsStore.searchChips[index]?.category === "Experience Name")
+                .map(index => this.viewsStore.searchChips[index].term.trim().toLowerCase());
             
             // Filter experiences based on matching activity names
             const filteredExperienceBasedActivities = this.experienceBasedActivities.filter(ea =>
@@ -653,9 +661,9 @@ methods: {
                 category: "Experience Category",
                 term: category
             };
-            this.searchCriteria.push(chip);
+            this.viewsStore.addSearchChip(chip);
             // Select the new chip by default
-            this.selectedSearchChips.push(this.searchCriteria.length - 1);
+            this.viewsStore.selectedSearchChips.push(this.viewsStore.searchChips.length - 1);
         });
 
         // Close the dialog and reset selectedExperienceCategories
@@ -693,8 +701,8 @@ methods: {
     // Determines if a given experience name matches any of the selected 'Experience Name' search criteria by comparing the experience name against lowercased search terms. Returns true if there's at least one match, otherwise false.
     isExperienceNameMatched(experienceName) {
         // Check if any 'Experience Name' criteria are selected
-        const selectedExperienceNameCriteria = this.searchCriteria
-            .filter((criteria, index) => this.selectedSearchChips.includes(index) && criteria.category === "Experience Name")
+        const selectedExperienceNameCriteria = this.viewsStore.searchChips
+            .filter((criteria, index) => this.viewsStore.selectedSearchChips.includes(index) && criteria.category === "Experience Name")
             .map(criteria => criteria.term.toLowerCase());
 
         return selectedExperienceNameCriteria.some(term => experienceName.toLowerCase().includes(term));
@@ -703,8 +711,8 @@ methods: {
     // Checks if a given experience category matches any of the selected 'Experience Category' search criteria by comparing the experience category against lowercased search terms. Returns true if at least one match is found, indicating the experience category meets the selected criteria.
     isExperienceCategoryMatched(experienceCategory) {
         // Check if any 'Experience Category' criteria are selected
-        const selectedExperienceCategoryCriteria = this.searchCriteria
-            .filter((criteria, index) => this.selectedSearchChips.includes(index) && criteria.category === "Experience Category")
+        const selectedExperienceCategoryCriteria = this.viewsStore.searchChips
+            .filter((criteria, index) => this.viewsStore.selectedSearchChips.includes(index) && criteria.category === "Experience Category")
             .map(criteria => criteria.term.toLowerCase());
 
         return selectedExperienceCategoryCriteria.some(term => experienceCategory.toLowerCase().includes(term));
@@ -762,29 +770,22 @@ methods: {
             term: experience.experienceName
         }));
 
-        // Calculate the starting index for new chips
-        const startIndexForNewChips = this.searchCriteria.length;
+        // Clear existing chips and selected indices in the store
+        this.viewsStore.clearSearchChips();
+        this.viewsStore.clearSelectedSearchChips();
 
-        // Append the new search criteria to the existing searchCriteria array
-        this.searchCriteria = [...this.searchCriteria, ...newSearchCriteria];
+        // Add new search criteria to the store and update selected indices
+        newSearchCriteria.forEach(chip => {
+            this.viewsStore.addSearchChip(chip);
+        });
+        const newSelectedIndices = newSearchCriteria.map((_, index) => index);
+        this.viewsStore.updateSelectedSearchChips(newSelectedIndices);
 
-        // Update selectedSearchChips to include the indices of the newly added chips
-        this.selectedSearchChips = [
-            ...this.selectedSearchChips,
-            ...newSearchCriteria.map((_, index) => startIndexForNewChips + index)
-        ];
-
-        
+        // Fetch activities by experience and apply filters
         await this.fetchActivitiesByExperience();
-
-        // Optionally, if you want to clear selectedActivities after adding them as chips
         this.selectedExperienceNames = [];
-
         this.experienceNameSearch = "";
-
-        // Close the dialog
         this.dialogExperienceName = false;
-
         this.performFilter();
     },
 
@@ -813,8 +814,8 @@ methods: {
     // Updates the experienceNameSearchApplied flag based on whether there is at least one selected "Experience Name" chip in the search criteria.
     updateExperienceNameSearchApplied() {
         // Check if there's at least one selected "Experience Name" chip
-        const hasSelectedExperienceNameChip = this.selectedSearchChips.some(chipIndex => {
-            const criteria = this.searchCriteria[chipIndex];
+        const hasSelectedExperienceNameChip = this.viewsStore.selectedSearchChips.some(chipIndex => {
+            const criteria = this.viewsStore.searchChips[chipIndex];
             return criteria && criteria.category === "Experience Name";
         });
 
