@@ -5,7 +5,7 @@
     <v-row>
         <v-col>
             <p class="d-flex justify-center font-weight-black text-h6">
-                {{ viewArchivedExperiences ? "Archived" : "" }} Experiences
+                {{ viewsStore.isViewingArchived('experiences') ? "Archived" : "" }} Experiences
             </p>
         </v-col>
     </v-row>
@@ -67,21 +67,21 @@
                                 v-if="!selectedExperiences.length"
                                 @click="toggleArchivedExperiences"
                                 elevation="1"
-                                :append-icon="viewArchivedExperiences ? '' : 'mdi-archive'"
+                                :append-icon="viewsStore.isViewingArchived('experiences') ? '' : 'mdi-archive'"
                             >
-                                {{ viewArchivedExperiences ? 'View Experiences' : 'View Archive' }}
+                                {{ viewsStore.isViewingArchived('experiences') ? 'View Experiences' : 'View Archive' }}
                             </v-btn>
                             <v-btn
                                 v-else
                                 @click="handleArchiveExperiences"
                                 elevation="1"
-                                :append-icon="viewArchivedExperiences ? 'mdi-restore' : 'mdi-archive-plus'"
+                                :append-icon="viewsStore.isViewingArchived('experiences') ? 'mdi-restore' : 'mdi-archive-plus'"
                             >
                                 <span class="d-none d-md-flex">
-                                    {{ viewArchivedExperiences ? "Restore" : "Archive" }} {{ selectedExperiences.length === 1 ? "Experience" : "Experiences" }}
+                                    {{ viewsStore.isViewingArchived('experiences') ? "Restore" : "Archive" }} {{ selectedExperiences.length === 1 ? "Experience" : "Experiences" }}
                                 </span>
                                 <span class="d-none d-sm-flex d-md-none">
-                                    {{ viewArchivedExperiences ? "Restore" : "Archive" }}
+                                    {{ viewsStore.isViewingArchived('experiences') ? "Restore" : "Archive" }}
                                 </span>
                             </v-btn>
                         </v-col>
@@ -103,13 +103,13 @@
                         <v-col>
                             <!-- Search Chips -->
                             <v-chip-group
-                                v-if="searchCriteria.length"
-                                v-model="selectedSearchChips"
+                                v-if="viewsStore.experiences.searchChips.length"
+                                v-model="viewsStore.experiences.selectedSearchChips"
                                 column
                                 multiple
                             >
                                 <v-chip
-                                    v-for="(criteria, index) in searchCriteria"
+                                    v-for="(criteria, index) in viewsStore.experiences.searchChips"
                                     :key="index"
                                     @click="selectSearchChip(index)"
                                     filter
@@ -137,6 +137,8 @@
                     hover
                     return-object
                     multi-sort
+                    :sort-by.sync="viewsStore.experiences.sortBy"
+                    @update:sort-by="handleSortByUpdate"
                 >
                     <!-- Part of the above data table -->
                     <!-- v-model:expanded="expandedExperiences"
@@ -284,10 +286,18 @@
 <script>
 import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { useInstructorViewsStore } from "@/stored/instructorViews";
 import axios from "axios";
 
 export default {
 name: "ExperiencesManagement",
+setup() {
+    const viewsStore = useInstructorViewsStore();
+
+    return {
+        viewsStore
+    };
+},
 data() {
     return {
         experienceData: [],
@@ -300,10 +310,7 @@ data() {
             "Experience Name",
             "Activity"
         ],
-        viewArchivedExperiences: false,
         experienceSearch: "",
-        searchCriteria: [],
-        selectedSearchChips: [],
         expandedExperiences: [],
         dialogActivitySearch: false,
         activitySearch: "",
@@ -337,14 +344,14 @@ mounted() {
 },
 watch: {
     // Watch the searchCriteria and selectedSearchChips for changes
-    searchCriteria: {
+    'viewsStore.experiences.searchChips': {
         handler() {
             this.updateActivitySearchApplied();
         },
         deep: true,
         immediate: true
     },
-    selectedSearchChips: {
+    'viewsStore.experiences.selectedSearchChips': {
         handler() {
             this.updateActivitySearchApplied();
         },
@@ -358,7 +365,7 @@ computed: {
     },
 
     showChipsRow() {
-        return this.searchCriteria.length > 0;
+        return this.viewsStore.experiences.searchChips.length > 0;
     },
     experienceHeaders() {
         let headers = [
@@ -461,12 +468,12 @@ methods: {
     // Adds a search chip based on the entered experience search term. If there is a valid search term, it adds the chip to the search criteria and selects it by default. Then, it clears the input field and performs filtering based on the updated search criteria.
     addSearchChip() {
         if (this.experienceSearch) {
-            this.searchCriteria.push({
+            this.viewsStore.addSearchChip('experiences', {
                 category: this.searchLabel.replace("Search ", ""),
                 term: this.experienceSearch
             });
             // Select the new chip by default
-            this.selectedSearchChips.push(this.searchCriteria.length - 1);
+            this.viewsStore.experiences.selectedSearchChips.push(this.viewsStore.experiences.searchChips.length - 1);
             // Clear the input field after adding the chip
             this.experienceSearch = "";
             // Call search
@@ -476,13 +483,13 @@ methods: {
 
     // Selects or deselects a search chip based on the provided index. If the chip is already selected, it deselects it by removing it from the array of selected search chips. If it's not selected, it adds the chip to the array. Then, it calls the performFilter function to update the filtering based on the selected chips.
     selectSearchChip(index) {
-        const selectedIndex = this.selectedSearchChips.indexOf(index);
+        const selectedIndex = this.viewsStore.experiences.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, creae a new array without this chip
-            this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+            this.viewsStore.experiences.selectedSearchChips = this.viewsStore.experiences.selectedSearchChips.filter(i => i !== index);
         } else {
             // If the chip is not selected, create a new array with this chip added
-            this.selectedSearchChips = [...this.selectedSearchChips, index]
+            this.viewsStore.experiences.selectedSearchChips = [...this.viewsStore.experiences.selectedSearchChips, index]
         }
         // Call search
         this.performFilter();
@@ -490,11 +497,11 @@ methods: {
 
     // Removes a search chip at the specified index from the search criteria array. It then updates the array of selected search chips to reflect the removal and adjusts the indexes of the remaining selected chips if needed. Finally, it calls the performFilter function to update the filtering based on the modified search criteria.
     removeSearchChip(index) {
-        this.searchCriteria.splice(index, 1);
+        this.viewsStore.removeSearchChip('experiences', index);
         // Update selectedSearchChips to reflect the removal
-        this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+        this.viewsStore.experiences.selectedSearchChips = this.viewsStore.experiences.selectedSearchChips.filter(i => i !== index);
         // Adjust the indexes of the remaining selected chips
-        this.selectedSearchChips = this.selectedSearchChips.map(i => i > index ? i - 1 : i);
+        this.viewsStore.experiences.selectedSearchChips = this.viewsStore.experiences.selectedSearchChips.map(i => i > index ? i - 1 : i);
         // Call search
         this.performFilter();
     },
@@ -502,8 +509,8 @@ methods: {
     // Performs filtering based on the selected search criteria. It constructs search groups from the selected search chips and criteria. Then, it updates the activity search applied flag and filters experiences accordingly. If activity search is applied and activity-based experiences exist, it filters experiences based on matching activity names. Otherwise, it applies default filtering logic considering archived experiences and matches against experience categories and names. Finally, it updates the filtered experience data.
     performFilter() {
         let searchGroups = {};
-        this.selectedSearchChips.forEach(index => {
-            let criteria = this.searchCriteria[index];
+        this.viewsStore.experiences.selectedSearchChips.forEach(index => {
+            let criteria = this.viewsStore.experiences.searchChips[index];
             if (!searchGroups[criteria.category]) {
                 searchGroups[criteria.category] = [];
             }
@@ -515,9 +522,9 @@ methods: {
 
         if (this.activitySearchApplied && this.activityBasedExperiences.length) {
             // Extract "Activity" terms from searchCriteria based on selectedSearchChips
-            const activityTerms = this.selectedSearchChips
-                .filter(index => this.searchCriteria[index]?.category === "Activity")
-                .map(index => this.searchCriteria[index].term.trim().toLowerCase());
+            const activityTerms = this.viewsStore.experiences.selectedSearchChips
+                .filter(index => this.viewsStore.experiences.searchChips[index]?.category === "Activity")
+                .map(index => this.viewsStore.experiences.searchChips[index].term.trim().toLowerCase());
 
             // Filter experiences based on matching activity names
             const filteredActivityBasedExperiences = this.activityBasedExperiences.filter(ae =>
@@ -533,9 +540,9 @@ methods: {
         } else {
             // Default filtering logic if activity search is not applied
             this.filteredExperienceData = this.experienceData.filter(item => {
-                if (this.viewArchivedExperiences && item.experienceStatus === false) {
+                if (this.viewsStore.isViewingArchived('experiences') && item.experienceStatus === false) {
                     return true;
-                } else if (!this.viewArchivedExperiences && item.experienceStatus === true) {
+                } else if (!this.viewsStore.isViewingArchived('experiences') && item.experienceStatus === true) {
                     return true;
                 } else {
                     return false;
@@ -563,7 +570,8 @@ methods: {
 
     // Toggles the view of archived experiences. After toggling, it triggers the filtering process to update the displayed experiences based on the new view setting.
     toggleArchivedExperiences() {       
-        this.viewArchivedExperiences = !this.viewArchivedExperiences;
+        const newType = this.viewsStore.isViewingArchived('experiences') ? 'active' : 'archived'
+        this.viewsStore.switchViewType('experiences', newType);
         this.performFilter();
     },
 
@@ -572,7 +580,7 @@ methods: {
         try {
             const user = useLoggedInUserStore();
             const token = user.token;
-            const updateStatus = { experienceStatus: this.viewArchivedExperiences };
+            const updateStatus = { experienceStatus: this.viewsStore.isViewingArchived('experiences') };
 
             for (const experience of this.selectedExperiences) {
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experience._id}`;
@@ -580,7 +588,7 @@ methods: {
                     .then(() => {
                         toast.success(
                             (this.selectedExperiences.length === 1 ? "Experience " : "Experiences ") +
-                            (this.viewArchivedExperiences ? "Restored!" : "Archived!"), {
+                            (this.viewsStore.isViewingArchived('experiences') ? "Restored!" : "Archived!"), {
                                 position: "top-right",
                                 toastClassName: "Toastify__toast--create",
                                 multiple: false
@@ -642,16 +650,16 @@ methods: {
         }));
 
         // Calculate the starting index for new chips
-        const startIndexForNewChips = this.searchCriteria.length;
+        const startIndexForNewChips = this.viewsStore.experiences.searchChips.length;
 
         // Append the new search criteria to the existing searchCriteria array
-        this.searchCriteria = [...this.searchCriteria, ...newSearchCriteria];
+        this.viewsStore.experiences.searchChips = [...this.viewsStore.experiences.searchChips, ...newSearchCriteria];
 
         // Update selectedSearchChips to include the indices of the newly added chips
-        this.selectedSearchChips = [
-            ...this.selectedSearchChips,
+        this.viewsStore.setSelectedSearchChips('activities, ', [
+            ...this.viewsStore.experiences.selectedSearchChips,
             ...newSearchCriteria.map((_, index) => startIndexForNewChips + index)
-        ];
+        ]);
 
         
         await this.fetchExperiencesByActivity();
@@ -710,13 +718,17 @@ methods: {
     // Updates the `activitySearchApplied` flag based on whether there is at least one selected "Activity" chip in the `selectedSearchChips`. If such a chip exists, the flag is set to `true`; otherwise, it is set to `false`.
     updateActivitySearchApplied() {
         // Check if there's at least one selected "Activity" chip
-        const hasSelectedActivityChip = this.selectedSearchChips.some(chipIndex => {
-            const criteria = this.searchCriteria[chipIndex];
+        const hasSelectedActivityChip = this.viewsStore.experiences.selectedSearchChips.some(chipIndex => {
+            const criteria = this.viewsStore.experiences.searchChips[chipIndex];
             return criteria && criteria.category === "Activity";
         });
 
         // Update activitySearchApplied based on the condition
         this.activitySearchApplied = hasSelectedActivityChip;
+    },
+
+    handleSortByUpdate(newSortBy) {
+        this.viewsStore.updateSorting('experiences', newSortBy);
     },
 }
 

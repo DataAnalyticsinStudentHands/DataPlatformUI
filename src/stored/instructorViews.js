@@ -3,34 +3,66 @@ import { defineStore } from 'pinia';
 
 export const useInstructorViewsStore = defineStore('instructorViews', {
     state: () => ({
-      activitiesViewType: 'active', // 'active' or 'archived'
-      sortBy: [],
-      searchChips: [],
-      selectedSearchChips: []  // Add this line
+      activities: {
+        viewType: 'active', // 'active' or 'archived'
+        sortBy: [],
+        searchChips: [],
+        selectedSearchChips: []
+      },
+      experiences: {
+        viewType: 'active', // 'active' or 'archived'
+        sortBy: [],
+        searchChips: [],
+        selectedSearchChips: []
+      },
+      sessions: {
+        viewType: 'active', // 'active' or 'archived'
+        sortBy: [],
+        searchChips: [],
+        selectedSearchChips: []
+      },
+      studentProgressMonitor: {
+        viewType: 'active', // 'active' or 'archived'
+        sortBy: [],
+        searchChips: [],
+        selectedSearchChips: []
+      }
     }),
     actions: {
-      switchActivitiesViewType(type) {
-        this.activitiesViewType = type;
+      switchViewType(view, type) {
+        if (this[view]) {
+          this[view].viewType = type;
+        }
       },
-      updateSorting(sortArray) {
-        this.sortBy = sortArray;
+      updateSorting(view, sortArray) {
+        if (this[view]) {
+          this[view].sortBy = sortArray;
+        }
       },
-      addSearchChip(chip) {
-        this.searchChips.push(chip);
+      addSearchChip(view, chip) {
+        if (this[view]) {
+          this[view].searchChips.push(chip);
+        }
       },
-      removeSearchChip(index) {
-        this.searchChips.splice(index, 1);
+      removeSearchChip(view, index) {
+        if (this[view]) {
+          this[view].searchChips.splice(index, 1);
+        }
       },
-      clearSearchChips() {
-        this.searchChips = [];
+      clearSearchChips(view) {
+        if (this[view]) {
+          this[view].searchChips = [];
+        }
       },
-      setSelectedSearchChips(chips) {
-        this.selectedSearchChips = chips;
+      setSelectedSearchChips(view, chips) {
+        if (this[view]) {
+          this[view].selectedSearchChips = chips;
+        }
       }
     },
     getters: {
-      isViewingArchivedActivities: (state) => {
-        return state.activitiesViewType === 'archived';
+      isViewingArchived: (state) => (view) => {
+        return state[view] && state[view].viewType === 'archived';
       }
     }
 });
