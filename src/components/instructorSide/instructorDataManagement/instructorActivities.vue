@@ -333,7 +333,7 @@ import { useInstructorViewsStore } from "@/stored/instructorViews";
 import axios from "axios";
 
 export default {
-name: "ActivitiesManagement",
+name: "instructorActivities",
 setup() {
     const viewsStore = useInstructorViewsStore();
 

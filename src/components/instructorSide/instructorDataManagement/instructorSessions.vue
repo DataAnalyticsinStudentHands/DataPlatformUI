@@ -5,7 +5,7 @@
     <v-row>
         <v-col>
             <p class="d-flex justify-center font-weight-black text-h6">
-                {{ viewArchivedSessions ? "Archived" : "" }} Sessions
+                {{ viewsStore.isViewingArchived('sessions') ? "Archived" : "" }} Sessions
             </p>
         </v-col>
     </v-row>
@@ -78,21 +78,21 @@
                                 v-if="!selectedSessions.length"
                                 @click="toggleArchivedSessions"
                                 elevation="1"
-                                :append-icon="viewArchivedSessions ? '' : 'mdi-archive'"
+                                :append-icon="viewsStore.isViewingArchived('sessions') ? '' : 'mdi-archive'"
                             >
-                                {{ viewArchivedSessions ? 'View Sessions' : 'View Archive' }}
+                                {{ viewsStore.isViewingArchived('sessions') ? 'View Sessions' : 'View Archive' }}
                             </v-btn>
                             <v-btn 
                                 v-else
                                 @click="handleArchiveSessions"
                                 elevation="1"
-                                :append-icon="viewArchivedSessions ? 'mdi-restore' : 'mdi-archive-plus'"
+                                :append-icon="viewsStore.isViewingArchived('sessions') ? 'mdi-restore' : 'mdi-archive-plus'"
                             >
                                 <span class="d-none d-md-flex">
-                                    {{ viewArchivedSessions ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }}
+                                    {{ viewsStore.isViewingArchived('sessions') ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }}
                                 </span>
                                 <span class="d-none d-sm-flex d-md-none">
-                                    {{ viewArchivedSessions ? "Restore" : "Archive" }}
+                                    {{ viewsStore.isViewingArchived('sessions') ? "Restore" : "Archive" }}
                                 </span>
                             </v-btn>
                         </v-col>
@@ -104,7 +104,7 @@
                                 @click="selectedSessions.length ? handleArchiveSessions() : toggleArchivedSessions()"
                             >
                                 <v-icon>
-                                    {{ selectedSessions.length ? (viewArchivedSessions ? 'mdi-restore' : 'mdi-archive-plus') : 'mdi-archive' }}
+                                    {{ selectedSessions.length ? (viewsStore.isViewingArchived('sessions') ? 'mdi-restore' : 'mdi-archive-plus') : 'mdi-archive' }}
                                 </v-icon>
                             </v-btn>
                         </v-col>
@@ -131,13 +131,13 @@
                     <v-row v-if="showChipsRow">
                         <v-col>
                             <v-chip-group
-                                v-if="searchCriteria.length"
-                                v-model="selectedSearchChips"
+                                v-if="viewsStore.sessions.searchChips.length"
+                                v-model="viewsStore.sessions.selectedSearchChips"
                                 column
                                 multiple
                             >
                                 <v-chip
-                                    v-for="(criteria, index) in searchCriteria"
+                                    v-for="(criteria, index) in viewsStore.sessions.searchChips"
                                     :key="index"
                                     @click="selectSearchChip(index)"
                                     filter
@@ -173,6 +173,9 @@
                     :loading="loading"
                     v-model:expanded="expandedSessions"
                     show-expand
+                    multi-sort
+                    :sort-by.sync="viewsStore.sessions.sortBy"
+                    @update:sort-by="handleSortByUpdate"
                 >
                     <template v-slot:body="{ items }">
                         <template
@@ -563,11 +566,18 @@ instancesData:
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { useInstructorViewsStore } from "@/stored/instructorViews";
 import axios from "axios";
 import { DateTime } from "luxon";
 
 export default {
-components: {
+name: "instructorSessions",
+setup() {
+    const viewsStore = useInstructorViewsStore();
+
+    return {
+        viewsStore
+    };
 },
 data() {
     return {
@@ -622,8 +632,6 @@ data() {
             {value: 20, title: "20"},
             {value: -1, title: "$vuetify.dataFooter.itemsPerPageAll"},
         ],
-        searchCriteria: [],
-        selectedSearchChips: [],
         filteredSessionData: [],
         dialogStartDate: false,
         selectedStartDate: new Date(),
@@ -633,7 +641,6 @@ data() {
         dialogEndDate: false,
         selectedEndDate: new Date(),
         endDateFilterType: "On",
-        viewArchivedSessions: false,
         xsdialogSearch: false,
         xsSearchFilterSelection: null,
         sessionData: [],
@@ -699,7 +706,7 @@ watch: {
 },
 computed: {
     showChipsRow() {
-        return this.searchCriteria.length > 0;
+        return this.viewsStore.sessions.searchChips.length > 0;
     },
     loading() {
         return useLoggedInUserStore().loading;
@@ -912,12 +919,12 @@ methods: {
     // Adds a new search chip based on the session search input. If there is input in the session search field, it creates a new chip with the category derived from the search label and the term from the session search input. Then it selects the new chip by default, clears the session search input field, and triggers the search functionality.
     addSearchChip() {
         if (this.sessionSearch) {
-            this.searchCriteria.push({
+            this.viewsStore.addSearchChip('sessions', {
                 category: this.searchLabel.replace("Search ", ""),
                 term: this.sessionSearch
             });
             // Select the new chip by default
-            this.selectedSearchChips.push(this.searchCriteria.length - 1);
+            this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
             // Clear the input field after adding the chip
             this.sessionSearch = "";
             // Call search
@@ -927,13 +934,13 @@ methods: {
 
     // Toggles the selection of a search chip. If the chip is already selected, it removes it; otherwise, it adds it. After updating the selected chips, it triggers the search functionality.
     selectSearchChip(index) {
-        const selectedIndex = this.selectedSearchChips.indexOf(index);
+        const selectedIndex = this.viewsStore.sessions.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, create a new array without this chip
-            this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+            this.viewsStore.sessions.selectedSearchChips = this.viewsStore.sessions.selectedSearchChips.filter(i => i !== index);
         } else {
             // If the chip is not selected, create a new array with this chip added
-            this.selectedSearchChips = [...this.selectedSearchChips, index];
+            this.viewsStore.sessions.selectedSearchChips = [...this.viewsStore.sessions.selectedSearchChips, index];
         }
         // Call search
         this.performFilter();
@@ -941,11 +948,11 @@ methods: {
 
     // Removes a search chip at the specified index from the search criteria. It also updates the selected search chips array to reflect the removal and adjusts the indexes of the remaining selected chips. Finally, it triggers the search functionality.
     removeSearchChip(index) {
-        this.searchCriteria.splice(index, 1);
+        this.viewsStore.removeSearchChip('sessions', index);
         // Update selectedSearchChips to reflect the removal
-        this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+        this.viewsStore.sessions.selectedSearchChips = this.viewsStore.sessions.selectedSearchChips.filter(i => i !== index);
         // Adjust the indexes of the remaining selected chips
-        this.selectedSearchChips = this.selectedSearchChips.map(i => i > index ? i - 1 : i);
+        this.viewsStore.sessions.selectedSearchChips = this.viewsStore.sessions.selectedSearchChips.map(i => i > index ? i - 1 : i);
         // Call search
         this.performFilter();
     },
@@ -953,8 +960,8 @@ methods: {
     // Filters the session data based on the selected search criteria. It constructs search groups for each category of criteria and iterates through the session data to check if each session matches the filter conditions. It also handles filtering by session status, session name, session start and end dates, experience name, experience category, and exit form release date. Finally, it updates the filtered session data.
     performFilter() {
         let searchGroups = {};
-        this.selectedSearchChips.forEach(index => {
-            let criteria = this.searchCriteria[index];
+        this.viewsStore.sessions.selectedSearchChips.forEach(index => {
+            let criteria = this.viewsStore.sessions.searchChips[index];
             if (!searchGroups[criteria.category]) {
                 searchGroups[criteria.category] = [];
             }
@@ -968,9 +975,9 @@ methods: {
             // Create a deep copy of each session item
             let sessionItem = JSON.parse(JSON.stringify(item));
             // Check if item should be included based on sessionStatus
-            if (this.viewArchivedSessions && item.sessionStatus === false) {
+            if (this.viewsStore.isViewingArchived('sessions') && item.sessionStatus === false) {
                 // Continue with other criteria checks for archived items
-            } else if (!this.viewArchivedSessions && item.sessionStatus === true) {
+            } else if (!this.viewsStore.isViewingArchived('sessions') && item.sessionStatus === true) {
                 // Continue with other criteria checks for active items
             } else {
                 // Exclude the item if sessionStatus doesn't match
@@ -1275,9 +1282,9 @@ methods: {
         };
 
         // Add the chip to the search criteria
-        this.searchCriteria.push(startDateChip);
+        this.viewsStore.addSearchChip('sessions', startDateChip);
         // Select the new chip by default
-        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+        this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
         
         // Call search
         this.performFilter();
@@ -1303,9 +1310,9 @@ methods: {
         };
 
         // Add the chip to the search criteria
-        this.searchCriteria.push(endDateChip);
+        this.viewsStore.addSearchChip('sessions', endDateChip);
         // Select the new chip by default
-        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+        this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
         
         // Call search
         this.performFilter();
@@ -1331,9 +1338,9 @@ methods: {
         };
 
         // Add the chip to the search criteria
-        this.searchCriteria.push(exitFormReleaseDateChip);
+        this.viewsStore.addSearchChip('sessions', exitFormReleaseDateChip);
         // Select the new chip by default
-        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+        this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
 
         // Call search
         this.performFilter();
@@ -1346,9 +1353,11 @@ methods: {
 
     // Toggles the visibility of archived sessions. After toggling, triggers the filtering process to update the displayed sessions accordingly.
     toggleArchivedSessions() {
-        this.viewArchivedSessions = !this.viewArchivedSessions;
+        const newType = this.viewsStore.isViewingArchived('sessions') ? 'active' : 'archived'
+        this.viewsStore.switchViewType('sessions', newType);
         this.performFilter();
     },
+
 
     // Handles archiving or restoring selected sessions. It updates the status of each session accordingly via a PUT request. Upon completion, it displays a toast message indicating the success of the operation.
     async handleArchiveSessions() {
@@ -1356,7 +1365,7 @@ methods: {
             const user = useLoggedInUserStore();
             const token = user.token;
 
-            const updateStatus = { sessionStatus: this.viewArchivedSessions };
+            const updateStatus = { sessionStatus: this.viewsStore.isViewingArchived('sessions') };
 
             for (const session of this.selectedSessions) {
                 // Update Session Status
@@ -1368,14 +1377,14 @@ methods: {
                 await axios.put(sessionApiURL, updateStatus, { headers: { token }});
 
                 // Update associated experience instances and get the response
-                const expInstanceUpdateStatus = { sessionID: session._id, status: this.viewArchivedSessions };
+                const expInstanceUpdateStatus = { sessionID: session._id, status: this.viewsStore.isViewingArchived('sessions') };
                 const expInstanceResponse = await axios.put(expInstanceApiURL, expInstanceUpdateStatus, { headers: { token }});
 
                 // Determine the toast message
                 const message = (this.selectedSessions.length === 1 ? "Session " : "Sessions ") +
-                                (this.viewArchivedSessions ? "Restored" : "Archived") +
+                                (this.viewsStore.isViewingArchived('sessions') ? "Restored" : "Archived") +
                                 (expInstanceResponse.data.instancesUpdated ? " and Associated Experience Instances " : "") +
-                                (this.viewArchivedSessions ? "Restored!" : "Archived!");
+                                (this.viewsStore.isViewingArchived('sessions') ? "Restored!" : "Archived!");
 
                 // Display the toast message
                 toast.success(message, {
@@ -1474,6 +1483,10 @@ methods: {
     // Redirects the user to the page for adding a new experience instance, passing along the session ID as a parameter for context.
     handleAddExperience(sessionID) {
         this.$router.push({ name: "instructorAddExperienceInstance", params: { id: sessionID } });
+    },
+
+    handleSortByUpdate(newSortBy) {
+        this.viewsStore.updateSorting('sessions', newSortBy);
     },
 },
 };
