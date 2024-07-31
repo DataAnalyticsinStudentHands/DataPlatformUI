@@ -21,7 +21,7 @@
               icon="mdi-menu"
               @click="rail = !rail"
               class="text-white"
-            ></v-btn>
+            ></v-btn> 
           </v-list-item>
         </div>
         <div v-else>
