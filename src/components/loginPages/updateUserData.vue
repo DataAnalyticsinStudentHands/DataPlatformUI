@@ -96,7 +96,7 @@
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/update-user-data`;
         const destination = user.role === 'Student' ? 'studentDashboard' 
-                : (user.role === 'Instructor' || user.role === 'Group Instructor' || user.role === 'Group Admin') ? 'instructorDash' 
+                : (user.role === 'Instructor' || user.role === 'Group Instructor' || user.role === 'Group Admin' || user.role === 'Org Admin') ? 'instructorDash' 
                 : '';
 
         

@@ -230,6 +230,7 @@
                                         <template v-slot:bottom>
                                             <v-col class="d-flex justify-end mb-4">
                                                 <v-btn
+                                                    v-if="canAddExpInstance"
                                                     @click="handleAddExperience(sessionItem._id)"
                                                     elevation="1"
                                                     prepend-icon="mdi-plus"
@@ -590,10 +591,16 @@ setup() {
       return allowedRoles.includes(userStore.role);
     });
 
+    const canAddExpInstance = computed(() => {
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        return allowedRoles.includes(userStore.role);
+    })
+
     return {
         viewsStore,
         showCheckboxColumn: showCheckboxColumn.value,
-        canAddNewSession: canAddNewSession.value
+        canAddNewSession: canAddNewSession.value,
+        canAddExpInstance: canAddExpInstance.value
     };
 },
 data() {

@@ -18,7 +18,7 @@
             <v-btn style="text-align:center;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col cols="auto" v-if="canActivityBeDeleted">
+          <v-col cols="auto" v-if="canActivityBeDeleted && canDeleteActivity">
             <v-btn class="justify-end" @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
           </v-col>
         </v-row>
@@ -99,10 +99,24 @@
 
 
 <script>
+import { ref, computed } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 
 export default {
+  setup() {
+    const userStore = useLoggedInUserStore();
+
+    const canDeleteActivity = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
+
+    return {
+      userStore,
+      canDeleteActivity
+    }
+  },
   props: ["id"],
   data() {
     return {

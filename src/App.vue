@@ -77,7 +77,7 @@
               class=" tracking-wider "
             >Exit Form</v-list-item>
           </div>
-          <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin')">
+          <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
             <v-list-item 
               :active="activeLink === 'instructorDash'"
               to="instructorDash"

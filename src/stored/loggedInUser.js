@@ -70,15 +70,11 @@ export const useLoggedInUserStore = defineStore({
           }
     
           await this.getFullName();
-    
-          // Check if the user is either an Instructor or a Student
-          if (response.data.userRole === 'Instructor' || response.data.userRole === 'Group Instructor' || response.data.userRole === 'Group Admin' || response.data.userRole === 'Student') {
-    
-            // Additional check for the Student role
-            if (response.data.userRole === 'Student') {
-              await this.checkFormCompletion();
-              await this.fetchRegisteredExperiences();
-            }
+  
+          // Additional check for the Student role
+          if (response.data.userRole === 'Student') {
+            await this.checkFormCompletion();
+            await this.fetchRegisteredExperiences();
           }
     
           // Officially log the user in
@@ -115,6 +111,9 @@ export const useLoggedInUserStore = defineStore({
         loading: false,
         exitFormCompletion: {},
         registeredExperiences: [],
+        experienceInstanceCreationDetails: [],
+        instructorDataManagementActiveTab: 0,
+        group: null
       });
 
       // Clear the token from localStorage
