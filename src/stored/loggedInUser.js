@@ -30,6 +30,7 @@ export const useLoggedInUserStore = defineStore({
       orgName: "",
       experienceInstanceCreationDetails: [],
       instructorDataManagementActiveTab: 0,
+      group: null
     }
   },
   getters: { //getting the roles
@@ -40,23 +41,24 @@ export const useLoggedInUserStore = defineStore({
   actions: {
     async login(email, password) {
       try {
-        const response = await axios.post(`${apiURL}/userdata/login`, {email, password});
+        const response = await axios.post(`${apiURL}/userdata/login`, { email, password });
         if (response) {
           this.$patch({
             role: response.data.userRole,
             userId: response.data.userID,
             token: response.data.token,
-            languagePreference: response.data.languagePreference
+            languagePreference: response.data.languagePreference,
+            group: response.data.group || null // Store the group if it exists, otherwise set it to null
           });
-
+    
           // Save the token to localStorage
           localStorage.setItem("token", response.data.token);
-            
+    
           // Set the global default header for axios
           this.setTokenHeader(response.data.token);
-
+    
           let token = localStorage.getItem("token");
-
+    
           // If userStatus is 'Pending', update unverified and token fields
           if (response.data.userStatus === 'Pending') {
             this.$patch({
@@ -66,19 +68,19 @@ export const useLoggedInUserStore = defineStore({
             });
             return;
           }
-
+    
           await this.getFullName();
-
+    
           // Check if the user is either an Instructor or a Student
-          if (response.data.userRole === 'Instructor' || response.data.userRole === 'Student') {
-
+          if (response.data.userRole === 'Instructor' || response.data.userRole === 'Group Instructor' || response.data.userRole === 'Group Admin' || response.data.userRole === 'Student') {
+    
             // Additional check for the Student role
             if (response.data.userRole === 'Student') {
               await this.checkFormCompletion();
               await this.fetchRegisteredExperiences();
             }
           }
-
+    
           // Officially log the user in
           this.$patch({
             isLoggedIn: true,
@@ -92,7 +94,7 @@ export const useLoggedInUserStore = defineStore({
             type: 'error',
           };
         } else {
-            this.handleError(error);
+          this.handleError(error);
         }
       }
     },

@@ -472,8 +472,12 @@ methods: {
         try {
             const user = useLoggedInUserStore();
             const token = user.token;
+            const userId = user.userId; // Get the user ID from the store
             let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/activities/";
-            const response = await axios.get(apiURL, { headers: { token } });
+            const response = await axios.get(apiURL, { 
+                headers: { token },
+                params: { userId } // Send the user ID as a query parameter
+            });
             this.activityData = response.data;
             this.filteredActivityData = [...this.activityData];
             this.performFilter();

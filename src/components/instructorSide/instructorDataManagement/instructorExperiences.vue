@@ -86,15 +86,20 @@
                             </v-btn>
                         </v-col>
                         <!-- Add New Experience Button -->
-                        <v-col lg="auto" md="2" class="d-none d-sm-flex justify-end align-self-center">
+                        <v-col
+                            lg="auto"
+                            md="2"
+                            class="d-none d-sm-flex justify-end align-self-center"
+                            v-if="canAddNewExperience"
+                        >
                             <v-btn
-                                @click="handleAddNewExperience"
-                                elevation="1"
-                                prepend-icon="mdi-plus"
-                                color="#c8102e"
+                            @click="handleAddNewExperience"
+                            elevation="1"
+                            prepend-icon="mdi-plus"
+                            color="#c8102e"
                             >
-                                <span class="d-none d-lg-flex">Add New Experience</span>
-                                <span class="d-none d-sm-flex d-lg-none">New</span>
+                            <span class="d-none d-lg-flex">Add New Experience</span>
+                            <span class="d-none d-sm-flex d-lg-none">New</span>
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -153,7 +158,7 @@
                                 class="pointer-cursor"
                             >
                                 <td @click.stop>
-                                    <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
+                                    <v-checkbox v-if="showCheckboxColumn" density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
                                 </td>
                                 <td>{{ item.experienceCategory }}</td>
                                 <td>{{ item.experienceName }}</td>
@@ -284,6 +289,7 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { useInstructorViewsStore } from "@/stored/instructorViews";
@@ -293,9 +299,22 @@ export default {
 name: "ExperiencesManagement",
 setup() {
     const viewsStore = useInstructorViewsStore();
+    const userStore = useLoggedInUserStore();
+
+    const showCheckboxColumn = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
+
+    const canAddNewExperience = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
 
     return {
-        viewsStore
+      viewsStore,
+      showCheckboxColumn: showCheckboxColumn.value,
+      canAddNewExperience: canAddNewExperience.value
     };
 },
 data() {

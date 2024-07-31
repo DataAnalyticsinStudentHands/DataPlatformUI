@@ -111,6 +111,7 @@
                         <!-- Add New Session Button for sm Screens and Up -->
                         <v-col lg="auto" md="2" sm="2" class="d-none d-sm-flex justify-end align-self-center">
                             <v-btn 
+                                v-if="canAddNewSession"
                                 @click="handleAddNewSession"
                                 elevation="1"
                                 prepend-icon="mdi-plus"
@@ -122,7 +123,9 @@
                         </v-col>
                         <!-- Add New Session Button for xs Screens -->
                         <v-col sm="2" class="d-none d-flex d-sm-none justify-end align-self-center">
-                            <v-btn elevation="2" color="#c8102e" @click="handleAddNewSession">
+                            <v-btn 
+                                v-if="canAddNewSession"
+                                elevation="2" color="#c8102e" @click="handleAddNewSession">
                                 <v-icon>mdi-plus</v-icon>
                             </v-btn>
                         </v-col>
@@ -187,7 +190,7 @@
                                 class="pointer-cursor custom-hover"
                             >
                                 <td @click.stop>
-                                    <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(sessionItem)"></v-checkbox>
+                                    <v-checkbox v-if="showCheckboxColumn" density="compact" class="d-flex" @update:modelValue="toggleSelection(sessionItem)"></v-checkbox>
                                 </td>
                                 <td>{{ sessionItem.sessionName }}</td>
                                 <td>{{ formatDate(sessionItem.sessionPeriod.startDate) }}</td>
@@ -563,6 +566,7 @@ instancesData:
 </template>
 
 <script>
+import { computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -574,9 +578,22 @@ export default {
 name: "instructorSessions",
 setup() {
     const viewsStore = useInstructorViewsStore();
+    const userStore = useLoggedInUserStore();
+
+    const showCheckboxColumn = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
+
+    const canAddNewSession = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
 
     return {
-        viewsStore
+        viewsStore,
+        showCheckboxColumn: showCheckboxColumn.value,
+        canAddNewSession: canAddNewSession.value
     };
 },
 data() {

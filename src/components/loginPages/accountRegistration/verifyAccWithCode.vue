@@ -104,7 +104,7 @@ export default {
                 await store.getFullName();
                 store.isLoggedIn = true;
                 // Navigate to the appropriate dashboard based on the user's role
-                if (store.role === 'Instructor') {
+                if (store.role === 'Instructor' || store.role === 'Group Instructor' || store.role === 'Group Admin') {
                     this.$router.push("/instructorDash");
                 } else if (store.role === 'Student') {
                     // After successful verification, check if the student has completed forms

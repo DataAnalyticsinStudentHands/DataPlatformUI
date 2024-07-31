@@ -95,7 +95,9 @@
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/update-user-data`;
-        const destination = user.role === 'Student' ? 'studentDashboard' : user.role === 'Instructor' ? 'instructorDash' : '';
+        const destination = user.role === 'Student' ? 'studentDashboard' 
+                : (user.role === 'Instructor' || user.role === 'Group Instructor' || user.role === 'Group Admin') ? 'instructorDash' 
+                : '';
 
         
         axios.put(apiURL, {firstName: this.firstName, lastName: this.lastName, email: this.email, languagePreference: this.languagePreference, password: this.confirmPassword}, {headers: { token }})
