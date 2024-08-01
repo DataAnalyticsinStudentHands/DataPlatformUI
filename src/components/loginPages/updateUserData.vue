@@ -12,10 +12,10 @@
     <v-form @submit.prevent="handleSubmitForm">
       <v-container style="width: 90%; margin: 0 auto;">
         <v-col cols="12" md="6">
-          <v-text-field v-model="firstName" :label="$t('New First Name')"></v-text-field>
+          <v-text-field v-model="firstName" :label="$t('New First Name')" disabled></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field v-model="lastName" :label="$t('New Last Name')"></v-text-field>
+          <v-text-field v-model="lastName" :label="$t('New Last Name')" disabled></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
           <v-text-field v-model="email" :label="$t('New Email')"></v-text-field>
