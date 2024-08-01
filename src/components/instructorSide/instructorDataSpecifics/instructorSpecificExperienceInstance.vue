@@ -75,6 +75,7 @@
           </v-col>
           <v-col>
             <v-card
+              v-if="showAddActivities"
               flat
               title="Add Activities"
             >
@@ -134,6 +135,7 @@
                     label="Exit Form Release Date"
                     type="date"
                     v-model="exitFormReleaseDate"
+                    :readonly="!canUpdateExpInstance"
                 ></v-text-field>
             </v-col>
         </v-row>
@@ -143,7 +145,7 @@
                 <v-btn @click="goBack" style="margin-right: 10px;">
                 Cancel
                 </v-btn>
-                <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
+                <v-btn v-if="canUpdateExpInstance" style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="auto" v-if="canExpInstanceBeDeleted">
@@ -167,12 +169,31 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
-import { setTransitionHooks } from "vue";
 
 export default {
     name: 'instructorSpecificExperienceInstance',
+    setup() {
+      const userStore = useLoggedInUserStore();
+
+      const showAddActivities = computed(() => {
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        return allowedRoles.includes(userStore.role);
+      });
+
+      const canUpdateExpInstance = computed(() => {
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        return allowedRoles.includes(userStore.role);
+      })
+
+      return {
+        userStore,
+        showAddActivities: showAddActivities.value,
+        canUpdateExpInstance: canUpdateExpInstance.value
+      }
+    },
     data() {
         return {
             sessionData: {},
