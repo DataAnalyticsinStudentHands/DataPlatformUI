@@ -134,7 +134,7 @@
             class="pointer-cursor"
             @click="viewStudent(item)"
             >
-            <td>
+            <td @click.stop>
                 <v-checkbox density="compact" class="d-flex"></v-checkbox>
             </td>
             <td>{{ formatName(item.firstName, item.lastName) }}</td>
