@@ -135,7 +135,7 @@
             @click="viewStudent(item)"
             >
             <td @click.stop>
-                <v-checkbox density="compact" class="d-flex"></v-checkbox>
+                <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
             </td>
             <td>{{ formatName(item.firstName, item.lastName) }}</td>
             <td>{{ item.email }}</td>
@@ -661,6 +661,46 @@ methods: {
         this.graduationDateFilterType = "On";
         this.selectedGraduationDate = new Date();
     },
+
+    // Toggles the selection state of a student. If the student is already selected, it removes him/her from the list of selected students; otherwise, it adds them.
+    toggleSelection(student) {
+        const index = this.selectedStudents.findIndex((selectedStudent) => selectedStudent._id === student._id);
+        if (index >= 0) {
+            // Already selected, remove it
+            this.selectedStudents.splice(index, 1);
+        } else {
+            // Not selected, add it
+            this.selectedStudents.push(student);
+        }
+    },
+
+    // Handles the archiving or restoration of selected experiences. It updates the status of each experience accordingly via a PUT request. Upon completion, it displays a toast message indicating the success of the operation.
+    async handleArchiveExperiences() {
+        try {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            const updateStatus = { userStatus: this.viewArchivedStudents };
+
+            for (const experience of this.selectedStudents) {
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experience._id}`;
+                await axios.put(apiURL, updateStatus, { headers: { token } })
+                    .then(() => {
+                        toast.success(
+                            (this.selectedStudents.length === 1 ? "Experience " : "Experiences ") +
+                            (this.viewArchivedStudents ? "Restored!" : "Archived!"), {
+                                position: "top-right",
+                                toastClassName: "Toastify__toast--create",
+                                multiple: false
+                        });
+                    });
+            }
+        } catch (error) {
+            this.handleError(error);
+        } finally {
+            this.selectedStudents = [];
+            await this.fetchExperienceData();
+        }
+    },    
 
 },
 };
