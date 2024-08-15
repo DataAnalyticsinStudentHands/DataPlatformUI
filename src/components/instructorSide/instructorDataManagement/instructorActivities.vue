@@ -341,7 +341,6 @@ data() {
         activitySearch: "",
         searchLabel: "Search Activity Name",
         searchMenuItems: [
-            "Experience Category",
             "Experience Name"
         ],
         searchCriteria: [],
@@ -495,7 +494,7 @@ methods: {
     // Triggers actions based on the selected search criteria item
     async updateSearchCriteria(item) {
         if (item === "Experience Category") {
-            // this.dialogExperienceCategory = true;
+            this.dialogExperienceCategory = true;
         } else if (item === "Experience Name") {
             this.fetchExperienceData();
             this.dialogExperienceName = true;
