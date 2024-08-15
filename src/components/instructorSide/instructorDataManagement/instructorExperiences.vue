@@ -573,6 +573,7 @@ methods: {
             const user = useLoggedInUserStore();
             const token = user.token;
             const updateStatus = { experienceStatus: this.viewArchivedExperiences };
+            console.log(this.viewArchivedExperiences)
 
             for (const experience of this.selectedExperiences) {
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experience._id}`;

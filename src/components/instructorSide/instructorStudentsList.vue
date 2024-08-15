@@ -74,6 +74,7 @@
             </v-btn>
             <v-btn
                 v-else
+                @click="handleArchiveStudents"
                 elevation="1"
                 :append-icon="viewArchivedStudents ? 'mdi-restore' : 'mdi-archive-plus'"
             >
@@ -379,6 +380,7 @@ methods: {
             });
 
             this.filteredStudentData = [...this.studentData];
+            this.performFilter()
         } catch (error) {
             this.handleError(error);
         } finally {
@@ -674,19 +676,19 @@ methods: {
         }
     },
 
-    // Handles the archiving or restoration of selected experiences. It updates the status of each experience accordingly via a PUT request. Upon completion, it displays a toast message indicating the success of the operation.
-    async handleArchiveExperiences() {
+    // Handles the archiving or restoration of selected students. It updates the status of each student via a PATCH request.
+    async handleArchiveStudents() {
         try {
             const user = useLoggedInUserStore();
             const token = user.token;
-            const updateStatus = { userStatus: this.viewArchivedStudents };
+            const updateStatus = { userStatus: this.viewArchivedStudents ? 'Active' : 'Inactive' };
 
-            for (const experience of this.selectedStudents) {
-                const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experience._id}`;
-                await axios.put(apiURL, updateStatus, { headers: { token } })
+            for (const student of this.selectedStudents) {
+                const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/students/status/${student._id}`;
+                await axios.patch(apiURL, updateStatus, { headers: { token } })
                     .then(() => {
                         toast.success(
-                            (this.selectedStudents.length === 1 ? "Experience " : "Experiences ") +
+                            (this.selectedStudents.length === 1 ? "Student " : "Students ") +
                             (this.viewArchivedStudents ? "Restored!" : "Archived!"), {
                                 position: "top-right",
                                 toastClassName: "Toastify__toast--create",
@@ -698,9 +700,10 @@ methods: {
             this.handleError(error);
         } finally {
             this.selectedStudents = [];
-            await this.fetchExperienceData();
+            await this.fetchStudentData();
         }
-    },    
+    },
+
 
 },
 };
