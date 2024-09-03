@@ -2,6 +2,9 @@
 
 This project uses [VueJS 3](https://vuejs.org/) with [Vite](https://vitejs.dev/) and [TailwindCSS](https://tailwindcss.com/).
 For form validation [Vuelidate](https://vuelidate-next.netlify.app/) is used.
+
+We are using git task branch workflow.
+
 ## Project setup
 ```
 npm install
