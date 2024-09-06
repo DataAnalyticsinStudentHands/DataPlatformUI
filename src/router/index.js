@@ -234,6 +234,19 @@ const routes = [
         },
     },
     {
+      path: '/instructorAdminPanel',
+      name: 'instructorAdminPanel',
+      component: () => import('../components/instructorSide/instructorAdminPanel/instructorAdminPanelMain.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
+          next('/error');
+        } else {
+          next();
+        }
+      },
+    },
+    {
       path: '/instructorSessions',
       name: 'instructorSessions',
       props: true,

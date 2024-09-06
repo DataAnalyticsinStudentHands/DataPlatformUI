@@ -106,6 +106,13 @@
               value="instructorDataManagement"
               class=" tracking-wider"
             >Data Management Console</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'instructorAdminPanel'"
+              to="instructorAdminPanel"
+              prepend-icon="mdi-account-arrow-up"
+              value="instructorAdminPanel"
+              class=" tracking-wider"
+            >Administrator Panel</v-list-item>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
             <v-list-item 
