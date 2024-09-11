@@ -115,22 +115,22 @@ export default {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
   mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
-    this.queryData = [];
-    axios
-      .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
-      })
-      .then(
-        (resp) => {
-          this.queryData = resp.data;
-        },
-        (err) => {
-          if (err) {
-            this.$router.push("/login");
-          }
-        }
-      );
+    // let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
+    // this.queryData = [];
+    // axios
+    //   .get(apiURL, {
+    //     headers: { token: localStorage.getItem("token") },
+    //   })
+    //   .then(
+    //     (resp) => {
+    //       this.queryData = resp.data;
+    //     },
+    //     (err) => {
+    //       if (err) {
+    //         this.$router.push("/login");
+    //       }
+    //     }
+    //   );
     window.scrollTo(0, 0);
   },
   data() {
