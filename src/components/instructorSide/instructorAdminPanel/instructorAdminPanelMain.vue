@@ -92,17 +92,17 @@
                       name: 'studentDashboard',
                       params: {
                         toastType: 'success',
-                        toastMessage: 'Password successfully reset!',
+                        toastMessage: 'User Elevation Successful!',
                         toastPosition: 'top-right',
                         toastCSS: 'Toastify__toast--create'
                       }
                     });
-                  } else if (store.role === 'Instructor') {
+                  } else if (this.roles.includes(store.role)) {
                     this.$router.push({ 
                       name: 'instructorDash',
                       params: {
                         toastType: 'success',
-                        toastMessage: 'Password successfully reset!',
+                        toastMessage: 'User Elevation Successful!',
                         toastPosition: 'top-right',
                         toastCSS: 'Toastify__toast--create'
                       }
