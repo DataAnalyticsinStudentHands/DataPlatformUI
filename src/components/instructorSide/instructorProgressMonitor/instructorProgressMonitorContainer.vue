@@ -20,7 +20,7 @@
       <v-row>
         <v-col cols="12">
           <v-tabs v-model="tab" grow>
-            <v-tab value="entryForms">
+            <v-tab value="entryForms" v-if="showStudentsWithoutEntryForms">
               Entry Form Monitor
             </v-tab>
             <v-tab value="goalForms">
@@ -60,12 +60,27 @@
   </template>
 
   <script>
+  import { computed } from 'vue';
+  import { useLoggedInUserStore } from "@/stored/loggedInUser";
   import StudentsWithoutGoalForms from './studentsWithoutGoalForms.vue';
   import StudentsWithoutEntryForms from './studentsWithoutEntryForms.vue';
   import PendingStudents from './pendingStudents.vue';
   import StudentsWithoutExitForms from './studentsWithoutExitForms.vue';
   
   export default {
+    setup() {
+        const userStore = useLoggedInUserStore();
+
+        const showStudentsWithoutEntryForms = computed(() => {
+          const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+          return allowedRoles.includes(userStore.role);
+        });
+
+        return {
+          userStore,
+          showStudentsWithoutEntryForms: showStudentsWithoutEntryForms.value
+        };
+    },
     components: {
       StudentsWithoutGoalForms,
       StudentsWithoutEntryForms,

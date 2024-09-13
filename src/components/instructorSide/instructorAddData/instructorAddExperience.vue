@@ -6,7 +6,7 @@
         <p class="font-weight-black text-h6">New Experience</p>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experience.experienceCategory" label="Experience Category"></v-text-field>
+            <v-text-field v-model="experience.experienceCategory" label="Experience Category" :readonly="isReadOnly"></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
@@ -106,10 +106,22 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
+  setup() {
+    const userStore = useLoggedInUserStore();
+    const isReadOnly = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Instructor'];
+      return !allowedRoles.includes(userStore.role);
+    });
+    return {
+      userStore,
+      isReadOnly
+    };
+  },
   data() {
     return {
       experience: {
@@ -134,6 +146,11 @@ export default {
   },
   beforeMount() {
     window.scrollTo(0, 0);
+    const user = useLoggedInUserStore();
+    if (user.role === 'Group Admin') {
+      this.experience.experienceCategory = user.group;
+      console.log('this.experiencecat: ', this.experience.experienceCategory)
+    }
     this.fetchActivityData();
   },
   methods: {

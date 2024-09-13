@@ -1,101 +1,90 @@
 <!-- /updatePasswordForm -->
 <template>
-  <section class="">
-    <div class="px-10 py-20">
-      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <form
-          @submit.prevent
-          class="space-y-4 md:space-y-6"
-          action="/login"
-          method="POST"
-        >
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div>
-              <label for="email" class="block">{{$t('Current Password')}}</label>
-              <input
-                v-model="code"
+  <main>
+    <v-container style="width: 90%; margin: 0 auto;">
+      <p class="font-weight-black text-h5 text--primary">User Password Update Form</p>
+      <p class="text-subtitle-1">{{$t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again.")}}</p>
+    </v-container>
+    <div v-if="loading" class="loading-container">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+    <div v-else>
+      <v-form @submit.prevent="activateAccount">
+        <v-container style="width: 90%; margin: 0 auto;">
+          <v-col cols="12" md="6">
+            <v-text-field 
+              v-model="code" :label="$t('Current Password')" 
+              type="password"
+              name="secretToken"
+              id="secretToken"
+              placeholder="••••••••"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field 
+              v-model="newPassword" :label="$t('New Password')"
+              type="password"
+              name="secretToken"
+              id="secretToken"
+              placeholder="••••••••"
+              outlined
+              dense
+            ></v-text-field>
+            <v-alert
+              v-if="v$.newPassword.$error"
+              type="error"
+              dense
+            >
+              <div v-for="error of v$.newPassword.$errors" :key="error.$uid">
+                {{ error.$message }}!
+              </div>
+            </v-alert>
+          </v-col>          
+          <v-col cols="12" md="6">
+              <v-text-field v-model="confirmNewPassword" :label="$t('Confirm New Password')"
                 type="password"
                 name="secretToken"
                 id="secretToken"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 placeholder="••••••••"
-              />
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div>
-              <label for="email" class="block">{{$t('New Password')}}</label>
-              <input
-                v-model="newPassword"
-                type="password"
-                name="secretToken"
-                id="secretToken"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="••••••••"
-              />
-              <span class="text-black" v-if="v$.newPassword.$error">
-                <p
-                  class="text-custom-red"
-                  v-for="error of v$.newPassword.$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div>
-              <label for="email" class="block">{{$t('Confirm New Password')}}</label>
-              <input
-                v-model="confirmNewPassword"
-                type="Password"
-                name="secretToken"
-                id="secretToken"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
-
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div
-              class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
-              role="alert"
+                outlined
+                dense
+              ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-alert
+              v-if="error"
+              type="warning"
+              border="left"
+              colored-border
+              elevation="2"
+              dense
             >
               {{ error }}
-            </div>
-          </div>
-          <div
-            id="myDIV"
-            class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div
-              class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4"
-              role="alert"
-            >
-              {{ success }}
-            </div>
-          </div>
-          <button
-            @click="activateAccount"
-            type="submit"
-            class="bg-custom-red text-white rounded"
+            </v-alert>
+          </v-col>
+            <v-col cols="12" md="6">
+              <v-alert
+                v-if="success"
+                type="success"
+                border="left"
+                colored-border
+                elevation="2"
+                dense
+              >
+                {{ success }}
+              </v-alert>
+          </v-col>
+          <v-btn
+            @click="activateAccount"            
           >
             {{$t('Reset Password')}}
-          </button>
-        </form>
-      </div>
+          </v-btn>
+        </v-container>
+      </v-form>
     </div>
-  </section>
+  </main>  
 </template>
 
 <script>

@@ -9,7 +9,7 @@
         </v-row>
         <v-row>
             <v-col cols="12">
-                {{$t('Please check your email for a confirmation code to verify your email address. This may take a few minutes.')}}
+                {{$t('If your email address is not already associated with an account, you will receive a confirmation code to verify your email. This process may take a few minutes.')}}
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -104,7 +104,7 @@ export default {
                 await store.getFullName();
                 store.isLoggedIn = true;
                 // Navigate to the appropriate dashboard based on the user's role
-                if (store.role === 'Instructor') {
+                if (store.role === 'Instructor' || store.role === 'Group Instructor' || store.role === 'Group Admin' || store.role === 'Org Admin') {
                     this.$router.push("/instructorDash");
                 } else if (store.role === 'Student') {
                     // After successful verification, check if the student has completed forms

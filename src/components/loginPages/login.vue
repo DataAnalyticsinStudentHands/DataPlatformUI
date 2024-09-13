@@ -13,6 +13,7 @@
           :rules="emailRules"
           required
           prepend-icon="mdi-email"
+          @keydown.enter="login"
         ></v-text-field>
 
         <v-text-field
@@ -22,6 +23,7 @@
           :rules="requiredRule"
           required
           prepend-icon="mdi-lock"
+          @keydown.enter="login"
         >
           <template v-slot:append-inner>
             <v-icon
@@ -143,7 +145,7 @@ export default {
             });
           }
           // Navigate to the appropriate dashboard based on the user's role
-          if (this.store.role === 'Instructor') {
+          if (this.store.role === 'Instructor' || this.store.role === 'Group Instructor' || this.store.role === 'Group Admin' || this.store.role === 'Org Admin') {
             this.$router.push("/instructorDash");
           } else if (this.store.role === 'Student') {
             if (this.store.hasCompletedEntryForm) {

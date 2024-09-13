@@ -6,10 +6,18 @@
         <p class="font-weight-black text-h6">Experience: {{ originalExperienceName }}</p>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experience.experienceCategory" label="Experience Category"></v-text-field>
+            <v-text-field 
+              v-model="experience.experienceCategory" 
+              label="Experience Category" 
+              :readonly="isReadOnly">
+            </v-text-field>
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
+            <v-text-field 
+              v-model="experience.experienceName" 
+              label="Experience Name" 
+              :readonly="isReadOnly">
+            </v-text-field>
           </v-col>
         </v-row>
         <v-row class="pt-5">
@@ -17,7 +25,7 @@
             <v-btn @click="goBack()">
               Cancel
             </v-btn>
-            <v-btn style="text-align: center; margin-left: 10px;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
+            <v-btn v-if="canUpdateExperience" style="text-align: center; margin-left: 10px;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="auto" v-if="canExperienceBeDeleted">
@@ -97,10 +105,27 @@
 </template>
 
 <script>
+import { ref, computed } from 'vue';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
+  setup() {
+    const userStore = useLoggedInUserStore();
+
+    const canUpdateExperience = ref(false);
+
+    const isReadOnly = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return !allowedRoles.includes(userStore.role);
+    });
+
+    return {
+      userStore,
+      canUpdateExperience,
+      isReadOnly
+    };
+  },
   data() {
     return {
       experience: {
@@ -133,21 +158,29 @@ export default {
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
-      axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          const experienceData = resp.data;
-          this.originalExperienceName = experienceData.experienceName;
-          this.experience = {
-            experienceCategory: experienceData.experienceCategory,
-            experienceName: experienceData.experienceName,
-          };
-        })
-        .catch((error) => {
-          this.handleError(error);
-        });
-    },
+      try {
+        const resp = await axios.get(apiURL, { headers: { token } });
+        const experienceData = resp.data;
+        this.experience = {
+          experienceCategory: experienceData.experienceCategory,
+          experienceName: experienceData.experienceName,
+        };
 
+        // Update canUpdateExperience based on the user's role and experienceCategory
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        if (allowedRoles.includes(user.role)) {
+          if (user.role === 'Group Admin') {
+            this.canUpdateExperience = this.experience.experienceCategory === user.group;
+          } else {
+            this.canUpdateExperience = true;
+          }
+        } else {
+          this.canUpdateExperience = false;
+        }
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
     // Fetches data to check if the specified experience can be deleted by sending a request to the backend server. If successful, updates the local state with the boolean value indicating whether the experience can be deleted or not.
     async checkIfExperienceCanBeDeleted(experienceID) {
       try {

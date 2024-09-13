@@ -21,7 +21,7 @@
               icon="mdi-menu"
               @click="rail = !rail"
               class="text-white"
-            ></v-btn>
+            ></v-btn> 
           </v-list-item>
         </div>
         <div v-else>
@@ -77,7 +77,7 @@
               class=" tracking-wider "
             >Exit Form</v-list-item>
           </div>
-          <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
+          <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
             <v-list-item 
               :active="activeLink === 'instructorDash'"
               to="instructorDash"
@@ -106,6 +106,13 @@
               value="instructorDataManagement"
               class=" tracking-wider"
             >Data Management Console</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'instructorAdminPanel'"
+              to="instructorAdminPanel"
+              prepend-icon="mdi-account-arrow-up"
+              value="instructorAdminPanel"
+              class=" tracking-wider"
+            >Administrator Panel</v-list-item>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
             <v-list-item 

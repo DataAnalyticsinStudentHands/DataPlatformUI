@@ -30,6 +30,7 @@ export const useLoggedInUserStore = defineStore({
       orgName: "",
       experienceInstanceCreationDetails: [],
       instructorDataManagementActiveTab: 0,
+      group: null
     }
   },
   getters: { //getting the roles
@@ -40,23 +41,24 @@ export const useLoggedInUserStore = defineStore({
   actions: {
     async login(email, password) {
       try {
-        const response = await axios.post(`${apiURL}/userdata/login`, {email, password});
+        const response = await axios.post(`${apiURL}/userdata/login`, { email, password });
         if (response) {
           this.$patch({
             role: response.data.userRole,
             userId: response.data.userID,
             token: response.data.token,
-            languagePreference: response.data.languagePreference
+            languagePreference: response.data.languagePreference,
+            group: response.data.group || null // Store the group if it exists, otherwise set it to null
           });
-
+    
           // Save the token to localStorage
           localStorage.setItem("token", response.data.token);
-            
+    
           // Set the global default header for axios
           this.setTokenHeader(response.data.token);
-
+    
           let token = localStorage.getItem("token");
-
+    
           // If userStatus is 'Pending', update unverified and token fields
           if (response.data.userStatus === 'Pending') {
             this.$patch({
@@ -66,19 +68,15 @@ export const useLoggedInUserStore = defineStore({
             });
             return;
           }
-
+    
           await this.getFullName();
-
-          // Check if the user is either an Instructor or a Student
-          if (response.data.userRole === 'Instructor' || response.data.userRole === 'Student') {
-
-            // Additional check for the Student role
-            if (response.data.userRole === 'Student') {
-              await this.checkFormCompletion();
-              await this.fetchRegisteredExperiences();
-            }
+  
+          // Additional check for the Student role
+          if (response.data.userRole === 'Student') {
+            await this.checkFormCompletion();
+            await this.fetchRegisteredExperiences();
           }
-
+    
           // Officially log the user in
           this.$patch({
             isLoggedIn: true,
@@ -92,7 +90,7 @@ export const useLoggedInUserStore = defineStore({
             type: 'error',
           };
         } else {
-            this.handleError(error);
+          this.handleError(error);
         }
       }
     },
@@ -113,6 +111,9 @@ export const useLoggedInUserStore = defineStore({
         loading: false,
         exitFormCompletion: {},
         registeredExperiences: [],
+        experienceInstanceCreationDetails: [],
+        instructorDataManagementActiveTab: 0,
+        group: null
       });
 
       // Clear the token from localStorage
@@ -241,6 +242,7 @@ export const useLoggedInUserStore = defineStore({
           !this.registeredExperiences.some(re => re.experienceInstance.id === se._id));
         const experiencesToDeregister = this.registeredExperiences.filter(re => 
           !selectedExperiences.some(se => se._id === re.experienceInstance.id));
+        const originalRegisteredExperiences = JSON.parse(JSON.stringify(this.registeredExperiences));
     
         // Register new experiences
         if (experiencesToRegister.length > 0) {
@@ -251,19 +253,35 @@ export const useLoggedInUserStore = defineStore({
     
         // Deregister experiences
         if (experiencesToDeregister.length > 0) {
-          await axios.delete(deregisterUrl, {
+          const response = await axios.delete(deregisterUrl, {
             headers: { token },
             data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
           });
+    
+          if (response.status === 207) {
+            const { cannotDeleteRegistrations } = response.data;
+            const cannotDeleteNames = cannotDeleteRegistrations.map(id => {
+              const experience = originalRegisteredExperiences.find(re => re._id === id);
+              return experience ? experience.experienceInstance.name : id;
+            });
+            cannotDeleteNames.forEach(name => {
+              toast.info(`Cannot deregister: ${name}`, {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--update',
+                multiple: true
+              });
+            });
+          }
         }
     
         // Fetch updated registered experiences
         await this.fetchRegisteredExperiences();
         toast.success(i18n.global.t('Experiences Registered') + '!', {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--create'
+          toastClassName: 'Toastify__toast--create',
+          multiple: true
         });
-
+    
         // Call Student Checklist
         await this.checkFormCompletion();
     

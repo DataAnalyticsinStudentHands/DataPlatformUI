@@ -167,7 +167,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDash.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -180,7 +180,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentGoalFormViewer.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -193,7 +193,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataProducts.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -206,7 +206,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorStudentsList.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -219,7 +219,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificStudent.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -232,12 +232,25 @@ const routes = [
         component: () => import('../components/instructorSide/instructorDataManagement/instructorDataManagementMain.vue'),
         beforeEnter: (to, from, next) => {
           const userStore = useLoggedInUserStore();
-          if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+          if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
             next('/error');
           } else {
             next();
           }
         },
+    },
+    {
+      path: '/instructorAdminPanel',
+      name: 'instructorAdminPanel',
+      component: () => import('../components/instructorSide/instructorAdminPanel/instructorAdminPanelMain.vue'),
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
+          next('/error');
+        } else {
+          next();
+        }
+      },
     },
     {
       path: '/instructorSessions',
@@ -246,7 +259,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataManagement/instructorSessions.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -259,7 +272,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorAddData/instructorAddSession.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -272,7 +285,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificSession.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -285,7 +298,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorAddData/instructorAddExperienceInstance.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -298,7 +311,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificExperienceInstance.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -311,7 +324,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataManagement/instructorExperiences.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -324,7 +337,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorAddData/instructorAddExperience.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -337,7 +350,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificExperience.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -350,7 +363,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorAddData/instructorAddActivity.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -363,7 +376,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificActivity.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -376,7 +389,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorProgressMonitor/instructorProgressMonitorContainer.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -389,7 +402,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorMailer/instructorMailerMain.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -402,7 +415,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutGoalForms.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -415,7 +428,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutEntryForms.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
@@ -428,7 +441,7 @@ const routes = [
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutExitForms.vue'),
       beforeEnter: (to, from, next) => {
         const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Instructor') {
+        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
           next('/error');
         } else {
           next();
