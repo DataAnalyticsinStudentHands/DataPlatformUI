@@ -57,27 +57,30 @@ export default {
     },
     methods: {
 
-      // Initializes the component by checking if there's an activeTab parameter in the route. If found, updates the component's tab state and also updates the store with the active tab. If not found, loads the tab from the store. Additionally, handles toast messages based on parameters in the route, displaying them accordingly.
+      // Initializes the component by checking if there's an activeTab in Pinia's navigationData. If found, updates the component's tab state and also updates the store with the active tab. If not found, loads the tab from the store. Additionally, handles toast messages based on navigationData, displaying them accordingly.
       initializeComponent() {
         const store = useLoggedInUserStore();
 
-        // Check if there's an activeTab parameter in the route
-        if (this.$route.params.activeTab !== undefined) {
+        // Check if there's an activeTab in Pinia's navigationData
+        if (store.navigationData?.activeTab !== undefined) {
           // If there is, use it and update the store
-          this.tab = parseInt(this.$route.params.activeTab);
+          this.tab = parseInt(store.navigationData.activeTab);
           store.instructorDataManagementActiveTab = this.tab;
         } else {
           // If not, load the tab from the store
           this.tab = store.instructorDataManagementActiveTab;
         }
 
-        // Handle toast messages
-        if (this.$route.params.toastType) {
-          toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-            position: this.$route.params.toastPosition,
-            toastClassName: this.$route.params.toastCSS,
+        // Handle toast messages from Pinia's navigationData
+        if (store.navigationData?.toastType) {
+          toast[store.navigationData.toastType](store.navigationData.toastMessage, { 
+            position: store.navigationData.toastPosition,
+            toastClassName: store.navigationData.toastCSS,
             limit: 1,
           });
+
+          // Clear the navigation data after displaying the toast
+          store.navigationData = null;
         }
       },
 

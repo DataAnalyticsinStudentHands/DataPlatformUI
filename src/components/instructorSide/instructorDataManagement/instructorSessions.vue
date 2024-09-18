@@ -598,6 +598,7 @@ setup() {
 
     return {
         viewsStore,
+        userStore,
         showCheckboxColumn: showCheckboxColumn.value,
         canAddNewSession: canAddNewSession.value,
         canAddExpInstance: canAddExpInstance.value
@@ -901,7 +902,10 @@ methods: {
 
     // Navigates to the page for editing a specific session based on the provided session ID.
     editSession(session) {
-        this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
+        this.userStore.navigationData = {
+            id: session._id
+        };
+        this.$router.push({ name: "instructorSpecificSession" });
     },
 
     // Formats a given ISO datetime from the database into the 'MM-dd-yyyy' format without converting timezones.
@@ -1501,12 +1505,18 @@ methods: {
 
     // Redirects the user to the edit page for a specific experience instance when invoked.
     editInstance(instance) {
-        this.$router.push({ name: "instructorSpecificExperienceInstance", params: { id: instance._id } });
+        this.userStore.navigationData = {
+            id: instance._id
+        };
+        this.$router.push({ name: "instructorSpecificExperienceInstance" });
     },
 
     // Redirects the user to the page for adding a new experience instance, passing along the session ID as a parameter for context.
     handleAddExperience(sessionID) {
-        this.$router.push({ name: "instructorAddExperienceInstance", params: { id: sessionID } });
+        this.userStore.navigationData = {
+            id: sessionID
+        };
+        this.$router.push({ name: "instructorAddExperienceInstance" });
     },
 
     handleSortByUpdate(newSortBy) {

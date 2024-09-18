@@ -186,15 +186,16 @@ export default {
           headers: { token },
         })
         .then(() => {
+          user.navigationData = {
+            activeTab: 1,
+            toastType: 'success',
+            toastMessage: 'Experience added!',
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+          };
+
           this.$router.push({ 
-              name: 'instructorDataManagement',
-              params: {
-                activeTab: 1,
-                toastType: 'success',
-                toastMessage: 'Experience added!',
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--create'
-            }
+              name: 'instructorDataManagement'
           });
         })
         .catch((error) => {

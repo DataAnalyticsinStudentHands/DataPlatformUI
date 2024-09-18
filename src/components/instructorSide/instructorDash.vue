@@ -78,10 +78,10 @@ export default {
           }
         }
       )
-    if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-        position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
+    if (useLoggedInUserStore().navigationData?.toastType) {
+      toast[useLoggedInUserStore().navigationData?.toastType](useLoggedInUserStore().navigationData?.toastMessage, { 
+        position: useLoggedInUserStore().navigationData?.toastPosition,
+        toastClassName: useLoggedInUserStore().navigationData?.toastCSS
       });
     }
   },

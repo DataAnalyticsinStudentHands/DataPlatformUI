@@ -82,15 +82,15 @@ export default {
           sessionPeriod: this.session.sessionPeriod
         }, { headers: { token } })
         .then(() => {
-          this.$router.push({
-            name: 'instructorDataManagement',
-            params: {
+          user.navigationData = {
               activeTab: 0,
               toastType: 'success',
               toastMessage: 'Session added!',
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--create'
-            }
+          };
+          this.$router.push({
+            name: 'instructorDataManagement'
           });
         })
         .catch((error) => {

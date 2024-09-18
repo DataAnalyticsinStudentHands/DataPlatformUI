@@ -149,7 +149,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${this.$route.params.id}`;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${store.navigationData.id}`;
         const response = await axios.get(apiURL, { headers: { token }});
         this.activity = {
           ...this.activity,
@@ -173,7 +173,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${this.$route.params.id}`;
+        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${store.navigationData.id}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         if (action === "update") {
@@ -210,8 +210,8 @@ export default {
         activityStatus: this.activity.activityStatus,
       };
 
-      let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${this.$route.params.id}`;
-      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${this.$route.params.id}`;
+      let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${user.navigationData.id}`;
+      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${user.navigationData.id}`;
 
       try {
         // Update the Activity
@@ -238,7 +238,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/can-be-deleted/${this.$route.params.id}`;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/can-be-deleted/${store.navigationData.id}`;
         const response = await axios.get(apiURL, { headers: { token }});
         this.canActivityBeDeleted = response.data.canBeDeleted;
       } catch (error) {
@@ -248,15 +248,15 @@ export default {
 
     // Redirects to the instructor data management page with a toast message about the successful update.
     handleUpdateSuccess(toastMessage) {
-      this.$router.push({
-        name: 'instructorDataManagement',
-        params: {
+      useLoggedInUserStore().navigationData = {
           activeTab: 2,
           toastType: 'info',
           toastMessage: toastMessage,
           toastPosition: 'top-right',
           toastCSS: 'Toastify__toast--update'
-        }
+      };
+      this.$router.push({
+        name: 'instructorDataManagement'
       });
     },
 
@@ -271,20 +271,20 @@ export default {
       try {
         const user = useLoggedInUserStore();
         const token = user.token;
-        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${this.$route.params.id}`;
+        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${user.navigationData.id}`;
 
         await axios.delete(deleteURL, { headers: { token } });
 
         // Navigate to the instructorDataManagement page with success message
-        this.$router.push({
-          name: 'instructorDataManagement',
-          params: {
+        user.navigationData = {
             activeTab: 2,
             toastType: 'success',
             toastMessage: 'Activity Deleted!',
             toastPosition: 'top-right',
             toastCSS: 'Toastify__toast--create'
-          }
+        };
+        this.$router.push({
+          name: 'instructorDataManagement'
         });
       } catch (error) {
         this.handleError(error);
@@ -293,11 +293,11 @@ export default {
 
     // Redirects to the instructorDataManagement page.
     goBack() {
+      useLoggedInUserStore().navigationData = {
+        activeTab: 2
+      };
       this.$router.push({
-        name: "instructorDataManagement",
-        params: {
-          activeTab: 2
-        }
+        name: "instructorDataManagement"
       });
     },
 

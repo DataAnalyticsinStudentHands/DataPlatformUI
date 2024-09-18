@@ -342,8 +342,8 @@ export default {
     created() {
         this.fetchActivityData();
         this.fetchActiveSessions().then(() => {
-            if (this.$route.params.id) {
-                const matchingSession = this.sessionData.find(session => session._id === this.$route.params.id);
+            if (useLoggedInUserStore().navigationData?.id) {
+                const matchingSession = this.sessionData.find(session => session._id === useLoggedInUserStore().navigationData?.id);
                 if (matchingSession) {
                     this.selectedSession = matchingSession;
                 }
@@ -576,15 +576,16 @@ export default {
                 }, { headers: { token } });
 
                 // Handle response here, e.g., redirecting or displaying a success message
+                user.navigationData = {
+                    activeTab: 0,
+                    toastType: 'success',
+                    toastMessage: 'Experience Instance added!',
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                };
+
                 this.$router.push({
-                    name: 'instructorDataManagement',
-                    params: {
-                        activeTab: 0,
-                        toastType: 'success',
-                        toastMessage: 'Experience Instance added!',
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--create'
-                    }
+                    name: 'instructorDataManagement'
                 });
             } catch (error) {
                 // Handle error
@@ -615,11 +616,11 @@ export default {
 
         // Navigate backwards
         goBack() {
+            useLoggedInUserStore().navigationData = {
+                activeTab: 0,
+            };
             this.$router.push({
-                name: 'instructorDataManagement',
-                params: {
-                    activeTab: 0,
-                }
+                name: 'instructorDataManagement'
             });
         },
 

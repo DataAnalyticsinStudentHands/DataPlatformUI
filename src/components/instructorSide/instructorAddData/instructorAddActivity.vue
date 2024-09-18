@@ -39,22 +39,23 @@
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/`;
         
-        axios.post(apiURL, this.activity, {headers: { token }})
-        .then((response) => {
-          this.$router.push({ 
-              name: 'instructorDataManagement',
-              params: {
-                activeTab: 2,
-                toastType: 'success',
-                toastMessage: 'Activity added!',
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--create'
-            }
+        axios.post(apiURL, this.activity, { headers: { token } })
+          .then((response) => {
+            user.navigationData = {
+              activeTab: 2,
+              toastType: 'success',
+              toastMessage: 'Activity added!',
+              toastPosition: 'top-right',
+              toastCSS: 'Toastify__toast--create'
+            };
+            
+            this.$router.push({ 
+              name: 'instructorDataManagement'
+            });
+          })
+          .catch((error) => {
+            this.handleError(error);
           });
-        })
-        .catch((error) => {
-          this.handleError(error);
-        });
       },
     }
 

@@ -486,9 +486,14 @@ methods: {
         }
     },
 
-    // Navigates to the edit page for a specific activity, passing the activity's ID as a parameter.
+    // Navigates to the edit page for a specific activity, storing the activity's ID in Pinia store.
     editActivity(activity) {
-        this.$router.push({ name: "instructorSpecificActivity", params: {id: activity._id } });
+        useLoggedInUserStore().navigationData = {
+            activityID: activity._id
+        };
+        this.$router.push({ 
+            name: "instructorSpecificActivity"
+        });
     },
 
     // Toggles an activity's selection state: if the activity is already selected, it is removed from the selection; if it is not selected, it is added to the selection.

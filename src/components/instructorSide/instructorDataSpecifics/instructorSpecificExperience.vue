@@ -207,7 +207,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         const token = store.token;
-        const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${this.$route.params.id}`;
+        const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${store.navigationData.id}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         if (action === "update") {
@@ -246,20 +246,20 @@ export default {
       try {
         const user = useLoggedInUserStore();
         const token = user.token;
-        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${this.$route.params.id}`;
+        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${user.navigationData.id}`;
 
         await axios.delete(deleteURL, { headers: { token } });
 
         // Navigate to the instructorDataManagement page with success message
-        this.$router.push({
-          name: 'instructorDataManagement',
-          params: {
+        user.navigationData = {
             activeTab: 1,
             toastType: 'success',
             toastMessage: 'Experience Deleted!',
             toastPosition: 'top-right',
             toastCSS: 'Toastify__toast--create'
-          }
+        };
+        this.$router.push({
+          name: 'instructorDataManagement'
         });
       } catch (error) {
         this.handleError(error);
@@ -272,7 +272,7 @@ export default {
       let token = user.token;
 
       // Get the experience ID
-      const experienceID = this.$route.params.id;
+      const experienceID = user.navigationData.id;
       let experienceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
       let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience-update/${experienceID}`;
 
@@ -301,15 +301,15 @@ export default {
           }
 
           // Redirect after successful update
-          this.$router.push({ 
-            name: 'instructorDataManagement',
-            params: {
+          user.navigationData = {
               activeTab: 1,
               toastType: 'info',
               toastMessage: toastMessage,
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--update'
-            }
+          };
+          this.$router.push({ 
+            name: 'instructorDataManagement'
           });
         })
         .catch((error) => {
@@ -319,12 +319,9 @@ export default {
 
     // Navigates back to the previous page. If there's an activity ID specified in the route parameters, it redirects to the instructorSpecificActivity page for that activity. Otherwise, it simply goes back to the previous page in the browser history.
     goBack() {
-      if (this.$route.params.activityID) {
+      if (useLoggedInUserStore().navigationData?.activityID) {
         this.$router.push({
-          name: "instructorSpecificActivity",
-          params: {
-            id: this.$route.params.activityID
-          }
+          name: "instructorSpecificActivity"
         });
       } else {
         this.$router.back();
