@@ -199,14 +199,14 @@ export const useLoggedInUserStore = defineStore({
     },      
     setTokenHeader(token) {
       if (token) {
-        axios.defaults.headers.common['token'] = token;
+        axios.defaults.headers['token'] = token;
         this.token = token;
       }
     },
     removeTokenHeader() {
-        delete axios.defaults.headers.common['token'];
-        this.token = "";
-    },   
+      delete axios.defaults.headers['token'];
+      this.token = "";
+    },     
     startLoading() {
       this.loading = true;
     },
