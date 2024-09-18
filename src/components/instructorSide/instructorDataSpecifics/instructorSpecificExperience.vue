@@ -144,12 +144,12 @@ export default {
     };
   },
   async mounted() {
-    const experienceID = this.userStore.navigationID;
+    const experienceID = this.userStore.navigationData.experienceID;
     if (experienceID) {
       await this.fetchExperienceData(experienceID);
       await this.checkIfExperienceCanBeDeleted(experienceID);
 
-      this.userStore.navigationID = null;
+      this.userStore.navigationData = null;
     }
   },
 

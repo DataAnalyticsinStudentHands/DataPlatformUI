@@ -432,9 +432,11 @@ methods: {
 
     // Navigates to the specific student view page with the student's ID as a parameter.
     viewStudent(student) {
+        useLoggedInUserStore().navigationData = {
+            userID: student._id,
+        };
         this.$router.push({
-            name: "instructorSpecificStudent",
-            params: { userID: student._id },
+            name: "instructorSpecificStudent"
         });
     },
 

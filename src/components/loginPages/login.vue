@@ -115,13 +115,13 @@ export default {
     };
   },
   mounted() {
-    if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-        position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
+    if (this.store.navigationData?.toastType) {
+      toast[this.store.navigationData.toastType](this.store.navigationData.toastMessage, { 
+        position: this.store.navigationData.toastPosition,
+        toastClassName: this.store.navigationData.toastCSS
       });
     }
-    },
+  },
   methods: {
     // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role. Displays notifications for login feedback. Handles special cases for unverified accounts and incomplete student entry forms.
     async login() {

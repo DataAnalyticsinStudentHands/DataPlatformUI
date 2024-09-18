@@ -313,6 +313,7 @@ setup() {
 
     return {
       viewsStore,
+      userStore,
       showCheckboxColumn: showCheckboxColumn.value,
       canAddNewExperience: canAddNewExperience.value
     };
@@ -459,9 +460,10 @@ methods: {
 
     // Navigates to the route for editing a specific experience based on the provided experience ID.
     editExperience(experience) {
-        // Store Navigation ID in Pinia
-        this.userStore.navigationID = experience._id;
-        this.$router.push({ name: "instructorSpecificExperience" });
+      this.userStore.navigationData = {
+        experienceID: experience._id,
+      };
+      this.$router.push({ name: "instructorSpecificExperience" });
     },
 
     // Toggles the selection state of an experience. If the experience is already selected, it removes it from the list of selected experiences; otherwise, it adds it.

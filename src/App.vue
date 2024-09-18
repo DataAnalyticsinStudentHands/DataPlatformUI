@@ -278,15 +278,17 @@ export default {
         'Come back soon!'
       ];
       logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
-    
+
+      // Store the logout message data in Pinia state
+      store.navigationData = {
+        toastType: 'success',
+        toastMessage: logoutMessage,
+        toastPosition: 'top-right',
+        toastCSS: 'Toastify__toast--create'
+      };
+
       this.$router.push({
-          name: 'login',
-          params: {
-            toastType: 'success',
-            toastMessage: logoutMessage,
-            toastPosition: 'top-right',
-            toastCSS: 'Toastify__toast--create'
-        },
+        name: 'login'
       });
     },
     sidebarToggle() {

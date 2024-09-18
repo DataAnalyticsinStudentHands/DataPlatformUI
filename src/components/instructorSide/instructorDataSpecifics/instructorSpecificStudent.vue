@@ -257,10 +257,17 @@ created() {
     try {
       const user = useLoggedInUserStore();
       let token = user.token;
+
+      // Retrieve the student ID from the user variable's navigationData
+      const userID = user.navigationData.userID;
+
       let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
-      const resp = await axios.get(url + `/${this.$route.params.userID}`, { headers: { token }});
+      const resp = await axios.get(url + `/${userID}`, { headers: { token }});
       this.userData = resp.data.userData;
       this.studentData = resp.data.studentData?.studentInformation;
+
+      // Clear navigation data after use
+      user.navigationData = null;
     } catch (error) {
       this.handleError('Error fetching student information:', error);
     }
