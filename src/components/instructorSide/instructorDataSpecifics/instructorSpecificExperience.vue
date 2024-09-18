@@ -144,10 +144,12 @@ export default {
     };
   },
   async mounted() {
-    const experienceID = this.$route.params.id;
+    const experienceID = this.userStore.navigationID;
     if (experienceID) {
       await this.fetchExperienceData(experienceID);
       await this.checkIfExperienceCanBeDeleted(experienceID);
+
+      this.userStore.navigationID = null;
     }
   },
 
