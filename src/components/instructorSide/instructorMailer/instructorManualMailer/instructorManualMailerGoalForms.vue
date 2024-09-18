@@ -322,7 +322,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
     name: 'InstructorManualMailerGoalForms',
     components: {
-        ckeditor: CKEditor.component
+        ckeditor: CKEditor
     },
     inject: ['setTab'],
     data() {

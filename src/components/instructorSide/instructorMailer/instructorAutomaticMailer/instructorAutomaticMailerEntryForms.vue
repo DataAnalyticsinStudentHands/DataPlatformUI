@@ -176,7 +176,7 @@ import { toast } from 'vue3-toastify';
 export default {
 name: "InstructorAutomaticMailerEntryForms",
 components: {
-    ckeditor: CKEditor.component
+    ckeditor: CKEditor
 },
 inject: ['setTab'],
 data() {

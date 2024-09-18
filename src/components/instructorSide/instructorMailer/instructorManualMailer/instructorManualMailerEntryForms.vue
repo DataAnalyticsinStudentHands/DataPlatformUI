@@ -268,7 +268,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
     name: "InstructorManualMailerEntryForms",
     components: {
-        ckeditor: CKEditor.component
+        ckeditor: CKEditor
     },
     inject: ['setTab'],
     data() {

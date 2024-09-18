@@ -185,7 +185,7 @@ import { toast } from 'vue3-toastify';
 export default {
 name: "InstructorAutomaticMailerGoalForms",
 components: {
-    ckeditor: CKEditor.component
+    ckeditor: CKEditor
 },
 inject: ['setTab'],
 data() {
