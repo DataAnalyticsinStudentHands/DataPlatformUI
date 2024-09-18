@@ -247,7 +247,7 @@ export default {
 
       // Fetches data for a specific experience instance identified by the instance ID in the route parameters. Retrieves information such as the session ID, experience ID, and exit form release date from the backend API. Additionally, filters and retrieves the relevant activities associated with the instance. Finally, fetches details for the session and experience related to this instance. If there's an error during the process, handles the error.
         async fetchExperienceInstance() {
-            const instanceID = this.$route.params.id; // Get instance ID from route parameter
+            const instanceID = useLoggedInUserStore().navigationData.id; // Get instance ID from route parameter
             const user = useLoggedInUserStore();
             let token = user.token;
             let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/${instanceID}`;
@@ -319,7 +319,7 @@ export default {
         async checkIfExpInstanceCanBeDeleted() {
             const user = useLoggedInUserStore();
             const token = user.token;
-            const instanceID = this.$route.params.id; // Get instance ID from route parameter
+            const instanceID = user.navigationData.id; // Get instance ID from route parameter
             const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/can-be-deleted/${instanceID}`;
 
             try {
@@ -338,8 +338,8 @@ export default {
 
         // Deletes the experience instance from the backend API and redirects to a different page or shows a success message upon successful deletion.
         async deleteExpInstance() {
-            const instanceID = this.$route.params.id; // Get instance ID from route parameter
             const user = useLoggedInUserStore();
+            const instanceID = user.navigationData.id; // Get instance ID from route parameter
             const token = user.token;
             const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/delete/${instanceID}`;
 
@@ -347,15 +347,15 @@ export default {
                 await axios.delete(url, { headers: { token } });
 
                 // Redirect to a different page or show a success message
+                user.navigationData = {
+                  activeTab: 0,
+                  toastType: 'success',
+                  toastMessage: 'Experience Instance Deleted!',
+                  toastPosition: 'top-right',
+                  toastCSS: 'Toastify__toast--create'
+                };
                 this.$router.push({
-                    name: 'instructorDataManagement',
-                    params: {
-                        activeTab: 0,
-                        toastType: 'success',
-                        toastMessage: 'Experience Instance Deleted!',
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--create'
-                    }
+                    name: 'instructorDataManagement'
                 });
             } catch (error) {
                 this.handleError(error);
@@ -364,11 +364,11 @@ export default {
 
         // Redirects to the instructor data management page with a specified active tab.
         goBack() {
+          useLoggedInUserStore().navigationData = {
+            activeTab: 0
+          };
             this.$router.push({
-                name: 'instructorDataManagement',
-                params: {
-                    activeTab: 0
-                }
+                name: 'instructorDataManagement'
             });
         },
 
@@ -376,7 +376,7 @@ export default {
         async handleSubmitForm() {
             const user = useLoggedInUserStore();
             let token = user.token;
-            const instanceID = this.$route.params.id;
+            const instanceID = user.navigationData.id;
             let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-single-instance/${instanceID}`;
 
             try {
@@ -385,15 +385,15 @@ export default {
                     activities: this.selectedActivities  // Including activities in the payload
                 }, { headers: { token } })
                 .then(() => {
+                  useLoggedInUserStore().navigationData = {
+                    activeTab: 0,
+                    toastType: 'info',
+                    toastMessage: 'Experience Instance updated!',
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--update'
+                  };
                     this.$router.push({ 
-                        name: 'instructorDataManagement',
-                        params: {
-                            activeTab: 0,
-                            toastType: 'info',
-                            toastMessage: 'Experience Instance updated!',
-                            toastPosition: 'top-right',
-                            toastCSS: 'Toastify__toast--update'
-                        }
+                        name: 'instructorDataManagement'
                     });
                 });
             } catch (error) {

@@ -231,9 +231,12 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
               await store.verifyExistingAcc(response.data);
 
+              store.navigationData = {
+                id: userID
+              };
+
               this.$router.push({ 
-                name: 'verifyAccWithCode', 
-                params: { id: userID } 
+                name: 'verifyAccWithCode'
               });
             },
             (err) => {

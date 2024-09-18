@@ -335,7 +335,7 @@ methods: {
     },
 
     selectExperienceFromRouteParam() {
-        const experienceRegistrationIDFromRoute = this.$route.params.registrationID;
+        const experienceRegistrationIDFromRoute = useLoggedInUserStore().navigationData.registrationID;
         if (experienceRegistrationIDFromRoute) {
             // Find the experience in the array that matches the expRegistrationID
             const matchingExperience = this.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);

@@ -115,14 +115,15 @@ export default {
             const res = await axios.put(apiURL, user);
 
             if (res.status === 200) {
+                useLoggedInUserStore().navigationData = {
+                    toastType: 'success',
+                    toastMessage: this.$t('Your account is activated! You may now login.'),
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                };
+
                 this.$router.push({
-                    name: 'login',
-                    params: {
-                        toastType: 'success',
-                        toastMessage: this.$t('Your account is activated! You may now login.'),
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--create'
-                    }
+                    name: 'login'
                 });
             }
         } catch (err) {

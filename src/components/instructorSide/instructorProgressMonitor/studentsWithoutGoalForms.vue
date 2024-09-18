@@ -302,9 +302,12 @@
 
       // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
+        useLoggedInUserStore().navigationData = {
+          userID: userID
+        };
+
         this.$router.push({
-          name: "instructorSpecificStudent",
-          params: { userID: userID },
+          name: "instructorSpecificStudent"
         });
       },
 
@@ -320,12 +323,12 @@
 
       // Navigates to the page to view the goal form of a specific student identified by their studentID.
       viewStudentGoalForm(studentID) {
-        this.$router.push({
-          name: "StudentGoalFormViewer",
-          params: { 
+        useLoggedInUserStore().navigationData = {
             studentID: studentID,
             expInstanceID: this.selectedExperience
-          },
+        };
+        this.$router.push({
+          name: "StudentGoalFormViewer"
         });
       }
     },

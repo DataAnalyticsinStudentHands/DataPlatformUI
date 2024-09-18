@@ -1439,14 +1439,16 @@ methods: {
             // Update pinia store
             this.updateChecklistStore();
 
+            user.navigationData = {
+                toastType: 'success',
+                toastMessage: this.$t(randomMessage),
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--create'
+            };
+
+
             this.$router.push({ 
-                name: 'studentDashboard',
-                params: {
-                    toastType: 'success',
-                    toastMessage: this.$t(randomMessage),
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--create'
-                }
+                name: 'studentDashboard'
             });
 
         } catch (error) {
@@ -1539,15 +1541,16 @@ methods: {
                 // Update pinia store
                 this.updateChecklistStore();
 
+                user.navigationData = {
+                    toastType: 'info',
+                    toastMessage: randomMessage,
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--update'
+                };
+
                 this.$router.push({ 
-                        name: 'studentDashboard',
-                        params: {
-                        toastType: 'info',
-                        toastMessage: randomMessage,
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--update'
-                    }
-                    });
+                    name: 'studentDashboard'
+                });
             })
             .catch((error) => {
                 this.handleError(error);

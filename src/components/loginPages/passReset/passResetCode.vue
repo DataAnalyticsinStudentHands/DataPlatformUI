@@ -73,8 +73,8 @@ export default {
         };
     },
     mounted() {
-        if (this.$route.params && this.$route.params.userID) {
-            this.userID = this.$route.params.userID; 
+        if (useLoggedInUserStore().navigationData && useLoggedInUserStore().navigationData.userID) {
+            this.userID = useLoggedInUserStore().navigationData.userID; 
         }
     },
     methods: {
@@ -105,16 +105,18 @@ export default {
                     if (response.status === 200) {
                         // Set token as global header
                         loggedInUserStore.setTokenHeader(response.data.token);
+
+                        useLoggedInUserStore().navigationData = {
+                            userID: this.userID,
+                            toastType: 'success',
+                            toastMessage: this.$t('Success! You may now reset your password.'),
+                            toastPosition: 'top-right',
+                            toastCSS: 'Toastify__toast--create'
+                        };
+
                         
                         this.$router.push({
-                            name: 'passResetNewEntry',
-                            params: { 
-                                userID: this.userID,
-                                toastType: 'success',
-                                toastMessage: this.$t('Success! You may now reset your password.'),
-                                toastPosition: 'top-right',
-                                toastCSS: 'Toastify__toast--create'
-                            }
+                            name: 'passResetNewEntry'
                         });
 
                     } else {

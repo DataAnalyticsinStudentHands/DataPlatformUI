@@ -66,8 +66,8 @@ export default {
     };
   },
   mounted() {
-    if (this.$route.params && this.$route.params.id) {
-        this.userID = this.$route.params.id;
+    if (useLoggedInUserStore().navigationData && useLoggedInUserStore().navigationData.id) {
+        this.userID = useLoggedInUserStore().navigationData.id;
     }
   },
   methods: {

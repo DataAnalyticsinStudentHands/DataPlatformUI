@@ -115,10 +115,13 @@ export default {
         // For simple string routes (backward compatibility)
         this.$router.push(payload);
       } else if (payload && payload.routeName && payload.userID) {
+        useLoggedInUserStore().navigationData = {
+          userID: payload.userID
+        };
+
         // Payload is an object containing the routeName and userID
         this.$router.push({
-          name: payload.routeName, // use the route's name
-          params: { userID: payload.userID } // passing userID as a route parameter
+          name: payload.routeName
         });
       }
     },

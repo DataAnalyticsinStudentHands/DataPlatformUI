@@ -134,9 +134,11 @@
 
       // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
+        useLoggedInUserStore().navigationData = {
+          userID: userID
+        };
         this.$router.push({
-          name: "instructorSpecificStudent",
-          params: { userID: userID },
+          name: "instructorSpecificStudent"
         });
       },
 

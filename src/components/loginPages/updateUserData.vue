@@ -108,15 +108,16 @@
             toastMessage = 'User information updated!';
           } else if (user.languagePreference === 'Spanish') {
             toastMessage = '¡Información del Usuario actualizada!';
-          }
+          };
+
+          user.navigationData = {
+            toastType: 'info',
+            toastMessage: toastMessage,
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--update'
+          };
           this.$router.push({ 
-              name: destination,
-              params: {
-                toastType: 'info',
-                toastMessage: toastMessage,
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--update'
-            }
+              name: destination
           });
         })
         .catch((error) => {

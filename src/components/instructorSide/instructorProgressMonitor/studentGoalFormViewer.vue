@@ -373,7 +373,7 @@ export default {
         }
     },
     async created() {
-        await this.fetchGoalForm(this.$route.params.studentID, this.$route.params.expInstanceID);
+        await this.fetchGoalForm(useLoggedInUserStore().navigationData.studentID, useLoggedInUserStore().navigationData.expInstanceID);
     },
     computed: {
         processedCommunityEngagementExperiences() {

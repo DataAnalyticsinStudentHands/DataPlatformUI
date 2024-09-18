@@ -48,10 +48,10 @@ export default {
   },
   async mounted() {
     const loggedInUserStore = useLoggedInUserStore();
-    if (this.$route.params.toastType) {
-        toast[this.$route.params.toastType](this.$t(this.$route.params.toastMessage), {
-            position: this.$route.params.toastPosition,
-            toastClassName: this.$route.params.toastCSS
+    if (loggedInUserStore.navigationData?.toastType) {
+        toast[loggedInUserStore.navigationData.toastType](this.$t(loggedInUserStore.navigationData.toastMessage), {
+            position: loggedInUserStore.navigationData.toastPosition,
+            toastClassName: loggedInUserStore.navigationData.toastCSS
         });
     }
     // Translations

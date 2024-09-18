@@ -105,9 +105,12 @@ export default {
                     });
                 } finally {
                     this.loading = false;
+                    useLoggedInUserStore().navigationData = {
+                        userID: this.userID
+                    };
+
                     this.$router.push({
-                        name: 'passResetCode',
-                        params: { userID: this.userID }
+                        name: 'passResetCode'
                     });
 
 

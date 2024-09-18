@@ -182,24 +182,24 @@ export default {
                 this.error = "";
                 // Show the success message and navigate to the dashboard
                 if (store.role === 'Student') {
-                  this.$router.push({ 
-                    name: 'studentDashboard',
-                    params: {
+                  store.navigationData = {
                       toastType: 'success',
                       toastMessage: 'Password successfully reset!',
                       toastPosition: 'top-right',
                       toastCSS: 'Toastify__toast--create'
-                    }
+                  };
+                  this.$router.push({ 
+                    name: 'studentDashboard'
                   });
                 } else if (store.role === 'Instructor') {
+                  store.navigationData = {
+                    toastType: 'success',
+                    toastMessage: 'Password successfully reset!',
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                  };
                   this.$router.push({ 
-                    name: 'instructorDash',
-                    params: {
-                      toastType: 'success',
-                      toastMessage: 'Password successfully reset!',
-                      toastPosition: 'top-right',
-                      toastCSS: 'Toastify__toast--create'
-                    }
+                    name: 'instructorDash'
                   });
                 }
 

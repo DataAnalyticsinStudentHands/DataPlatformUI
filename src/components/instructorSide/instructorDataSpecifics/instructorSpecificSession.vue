@@ -140,7 +140,7 @@ import { DateTime } from "luxon";
             let token = user.token;
             let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;
             axios
-                .get(`${url}/${this.$route.params.id}`, {
+                .get(`${url}/${user.navigationData.id}`, {
                     headers: { token },
                 })
                 .then((resp) => {
@@ -161,7 +161,7 @@ import { DateTime } from "luxon";
           try {
             const user = useLoggedInUserStore();
             const token = user.token;
-            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/session/can-be-deleted/${this.$route.params.id}`;
+            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/session/can-be-deleted/${user.navigationData.id}`;
 
             const response = await axios.get(url, { headers: { token } });
             this.canSessionBeDeleted = response.data.canBeDeleted;
@@ -181,7 +181,7 @@ import { DateTime } from "luxon";
           try {
             const store = useLoggedInUserStore();
             const token = store.token;
-            const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/session/${this.$route.params.id}`;
+            const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/session/${store.navigationData.id}`;
             const checkResponse = await axios.get(checkURL, { headers: { token } });
 
             if (action === "update") {
@@ -218,19 +218,19 @@ import { DateTime } from "luxon";
           try {
             const user = useLoggedInUserStore();
             const token = user.token;
-            let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/session/delete/${this.$route.params.id}`;
+            let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/session/delete/${user.navigationData.id}`;
 
             await axios.delete(deleteURL, { headers: { token } });
 
+            user.navigationData = {
+              activeTab: 0,
+              toastType: 'success',
+              toastMessage: 'Session Deleted!',
+              toastPosition: 'top-right',
+              toastCSS: 'Toastify__toast--create'
+            };
             this.$router.push({
-              name: 'instructorDataManagement',
-              params: {
-                activeTab: 0,
-                toastType: 'success',
-                toastMessage: 'Session Deleted!',
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--create'
-              }
+              name: 'instructorDataManagement'
             });
           } catch (error) {
             this.handleError(error);
@@ -249,18 +249,18 @@ import { DateTime } from "luxon";
                   },
               };
               let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;
-              axios.put(`${url}/${this.$route.params.id}`, updatedSession, {
+              axios.put(`${url}/${user.navigationData.id}`, updatedSession, {
                   headers: { token },
               }).then(() => {
+                user.navigationData = {
+                  activeTab: 0,
+                  toastType: 'info',
+                  toastMessage: 'Session updated!',
+                  toastPosition: 'top-right',
+                  toastCSS: 'Toastify__toast--update'
+                };
                   this.$router.push({ 
-                      name: 'instructorDataManagement',
-                      params: {
-                          activeTab: 0,
-                          toastType: 'info',
-                          toastMessage: 'Session updated!',
-                          toastPosition: 'top-right',
-                          toastCSS: 'Toastify__toast--update'
-                      }
+                      name: 'instructorDataManagement'
                   });
               }).catch((error) => {
                   this.errorMessage = "Error updating session: " + error.message;

@@ -89,14 +89,13 @@
             >
                 <span :class="completed ? 'text-sm text-green-800' : 'text-sm text-red-800'">
                     {{ completed ? $t('Completed Goal Setting Form for') : $t('Complete Goal Setting Form for') }}
-                    <!-- Conditionally render router-link or plain text based on completion status -->
-                    <router-link 
+                    <a
                         v-if="!completed"
-                        :to="{ name: 'goalSettingForm', params: { registrationID: registrationId } }" 
-                        class="text-blue-600 underline hover:text-blue-800"
+                        @click.prevent="navigateToGoalSettingForm(registrationId)"
+                        class="text-blue-600 underline hover:text-blue-800 cursor-pointer"
                     >
                         {{ findExperienceName(registrationId) }}
-                    </router-link>
+                    </a>
                     <!-- Render the experience name -->
                     <span v-else :class="completed ? 'text-green-800' : 'text-red-800'">
                         {{ findExperienceName(registrationId) }}
@@ -132,14 +131,14 @@
                 :class="isExitFormCompleted(registrationId) ? 'light-green-bg' : 'light-red-bg'">
                 <span :class="isExitFormCompleted(registrationId) ? 'text-sm text-green-800' : 'text-sm text-red-800'">
                     {{ isExitFormCompleted(registrationId) ? $t('Completed Exit Form for') : $t('Complete Exit Form for') }}
-                    <!-- Conditionally render router-link or plain text based on completion status -->
-                    <router-link 
+                    <a
                         v-if="!isExitFormCompleted(registrationId)"
-                        :to="{ name: 'exitForm', params: { registrationID: registrationId } }" 
-                        class="text-blue-600 underline hover:text-blue-800"
+                        @click.prevent="navigateToExitForm(registrationId)"
+                        class="text-blue-600 underline hover:text-blue-800 cursor-pointer"
                     >
                         {{ findExperienceName(registrationId) }}
-                    </router-link>
+                    </a>
+
                     <!-- Display the name from the registeredExperiences -->
                     <span v-else class="'text-green-800'">
                         {{ findExperienceName(registrationId) }}
@@ -224,6 +223,32 @@ export default {
         findExperienceName(registrationId) {
             const experience = this.registeredExperiences.find(exp => exp._id === registrationId);
             return experience ? experience.experienceInstance.name : 'Unknown Experience';
+        },
+        navigateToGoalSettingForm(registrationId) {
+            const store = useLoggedInUserStore();
+
+            // Store the registration ID in Pinia's navigationData
+            store.navigationData = {
+                registrationID: registrationId
+            };
+
+            // Navigate to the goalSettingForm route
+            this.$router.push({ 
+            name: 'goalSettingForm'
+            });
+        },
+        navigateToExitForm(registrationId) {
+            const store = useLoggedInUserStore();
+
+            // Store the registration ID in Pinia's navigationData
+            store.navigationData = {
+                registrationID: registrationId
+            };
+
+            // Navigate to the exitForm route
+            this.$router.push({ 
+                name: 'exitForm'
+            });
         },
     }
 }

@@ -1201,14 +1201,15 @@
           await user.checkFormCompletion();
           
           // Show the success message and navigate to the dashboard
+
+          user.navigationData = {
+            toastType: 'success',
+            toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+          };
           this.$router.push({ 
-            name: 'studentDashboard',
-            params: {
-              toastType: 'success',
-              toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
-              toastPosition: 'top-right',
-              toastCSS: 'Toastify__toast--create'
-            }
+            name: 'studentDashboard'
           });
   
         } catch (error) {

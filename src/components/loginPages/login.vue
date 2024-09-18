@@ -182,9 +182,12 @@ export default {
         .then((res) => {
           if (res.status == 200) {
             let userID = res.data.userID; // Extract the userID from the response
+            useLoggedInUserStore().navigationData = {
+              id: userID
+            };
+
             this.$router.push({ 
-              name: 'verifyAccWithCode', 
-              params: { id: userID } 
+              name: 'verifyAccWithCode'
             });
           } else {
             console.log('Unexpected response status:', res.status);

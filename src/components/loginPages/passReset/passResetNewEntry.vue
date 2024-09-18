@@ -110,10 +110,10 @@ export default {
         };
     },
     mounted() {
-        if (this.$route.params.toastMessage) {
-            toast[this.$route.params.toastType](this.$route.params.toastMessage, {
-                position: this.$route.params.toastPosition || 'top-right',
-                toastClassName: this.$route.params.toastCSS || 'Toastify__toast'
+        if (useLoggedInUserStore().navigationData?.toastMessage) {
+            toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, {
+                position: useLoggedInUserStore().navigationData.toastPosition || 'top-right',
+                toastClassName: useLoggedInUserStore().navigationData.toastCSS || 'Toastify__toast'
             });
         }
     },
@@ -169,14 +169,15 @@ export default {
 
 
                         // Redirecting the user to login after password reset
+
+                        useLoggedInUserStore().navigationData = {
+                            toastType: 'success',
+                            toastMessage: this.$t('Password Reset! You may now login.'),
+                            toastPosition: 'top-right',
+                            toastCSS: 'Toastify__toast--create'
+                        };
                         this.$router.push({ 
-                            name: 'login',
-                            params: { 
-                                toastType: 'success',
-                                toastMessage: this.$t('Password Reset! You may now login.'),
-                                toastPosition: 'top-right',
-                                toastCSS: 'Toastify__toast--create'
-                            }
+                            name: 'login'
                         });
                     } else {
                         toast.error(this.$t('An error occurred. Please try again.'), {
