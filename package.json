@@ -17,7 +17,7 @@
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "autoprefixer": "^10.4.20",
-    "axios": "^0.28.1",
+    "axios": "^1.7.7",
     "crypto-hash": "^2.0.1",
     "css-loader": "^6.11.0",
     "eslint": "^8.57.1",
