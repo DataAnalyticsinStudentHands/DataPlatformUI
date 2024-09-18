@@ -22,20 +22,20 @@
       </v-row>
       
       <v-row>
-        <v-col :cols="6">
+        <v-col>
           <v-card @click="navigateToProgressMonitor" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
               Student Progress Monitor
             </v-card-title>
           </v-card>
         </v-col>
-        <v-col :cols="6">
+        <!-- <v-col :cols="6">
           <v-card @click="navigateToMailer" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
               Student Mailer
             </v-card-title>
           </v-card>
-        </v-col>
+        </v-col> -->
       </v-row>
 
 

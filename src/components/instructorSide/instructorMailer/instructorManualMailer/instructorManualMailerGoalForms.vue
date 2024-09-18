@@ -316,13 +316,13 @@
 <script>
 import axios from 'axios';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
-import CKEditor from '@ckeditor/ckeditor5-vue';
+import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 export default {
     name: 'InstructorManualMailerGoalForms',
     components: {
-        ckeditor: CKEditor
+        ckeditor: Ckeditor
     },
     inject: ['setTab'],
     data() {
