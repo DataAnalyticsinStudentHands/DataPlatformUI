@@ -460,9 +460,11 @@ methods: {
 
     // Navigates to the route for editing a specific experience based on the provided experience ID.
     editExperience(experience) {
-      this.userStore.navigationData = {
+      const store = useLoggedInUserStore();
+      store.navigationData = {
         experienceID: experience._id,
       };
+      console.log('store.navigationData:', store.navigationData);
       this.$router.push({ name: "instructorSpecificExperience" });
     },
 

@@ -115,10 +115,10 @@ export default {
     };
   },
   mounted() {
-    if (this.store.navigationData?.toastType) {
-      toast[this.store.navigationData.toastType](this.store.navigationData.toastMessage, { 
-        position: this.store.navigationData.toastPosition,
-        toastClassName: this.store.navigationData.toastCSS
+    if (useLoggedInUserStore().navigationData?.toastType) {
+      toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, { 
+        position: useLoggedInUserStore().navigationData.toastPosition,
+        toastClassName: useLoggedInUserStore().navigationData.toastCSS
       });
     }
   },

@@ -266,8 +266,6 @@ created() {
       this.userData = resp.data.userData;
       this.studentData = resp.data.studentData?.studentInformation;
 
-      // Clear navigation data after use
-      user.navigationData = null;
     } catch (error) {
       this.handleError('Error fetching student information:', error);
     }

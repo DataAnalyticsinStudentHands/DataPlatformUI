@@ -902,7 +902,7 @@ methods: {
 
     // Navigates to the page for editing a specific session based on the provided session ID.
     editSession(session) {
-        this.userStore.navigationData = {
+        useLoggedInUserStore().navigationData = {
             id: session._id
         };
         this.$router.push({ name: "instructorSpecificSession" });
@@ -1505,7 +1505,7 @@ methods: {
 
     // Redirects the user to the edit page for a specific experience instance when invoked.
     editInstance(instance) {
-        this.userStore.navigationData = {
+        useLoggedInUserStore().navigationData = {
             id: instance._id
         };
         this.$router.push({ name: "instructorSpecificExperienceInstance" });
@@ -1513,7 +1513,7 @@ methods: {
 
     // Redirects the user to the page for adding a new experience instance, passing along the session ID as a parameter for context.
     handleAddExperience(sessionID) {
-        this.userStore.navigationData = {
+        useLoggedInUserStore().navigationData = {
             id: sessionID
         };
         this.$router.push({ name: "instructorAddExperienceInstance" });

@@ -144,12 +144,10 @@ export default {
     };
   },
   async mounted() {
-    const experienceID = this.userStore.navigationData.experienceID;
+    const experienceID = useLoggedInUserStore().navigationData.experienceID;
     if (experienceID) {
       await this.fetchExperienceData(experienceID);
       await this.checkIfExperienceCanBeDeleted(experienceID);
-
-      this.userStore.navigationData = null;
     }
   },
 
@@ -157,9 +155,11 @@ export default {
 
     // Fetches experience data from the backend server using an API call based on the provided experience ID. Upon successful retrieval, updates the local state with the fetched experience details, including the experience category and name.
     async fetchExperienceData(experienceID) {
+      console.log('experienceID: ', experienceID);
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
+      console.log('apiURL: ', apiURL);
       try {
         const resp = await axios.get(apiURL, { headers: { token } });
         const experienceData = resp.data;
@@ -207,7 +207,8 @@ export default {
       try {
         const store = useLoggedInUserStore();
         const token = store.token;
-        const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${store.navigationData.id}`;
+        console.log('store.navigationData:', store.navigationData);
+        const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${store.navigationData.experienceID}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         if (action === "update") {
@@ -246,7 +247,7 @@ export default {
       try {
         const user = useLoggedInUserStore();
         const token = user.token;
-        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${user.navigationData.id}`;
+        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${user.navigationData.experienceID}`;
 
         await axios.delete(deleteURL, { headers: { token } });
 
@@ -272,7 +273,7 @@ export default {
       let token = user.token;
 
       // Get the experience ID
-      const experienceID = user.navigationData.id;
+      const experienceID = user.navigationData.experienceID;
       let experienceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
       let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience-update/${experienceID}`;
 
