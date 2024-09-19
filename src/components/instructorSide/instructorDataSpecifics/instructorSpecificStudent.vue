@@ -281,6 +281,7 @@ computed: {
         .map(item => item.label)
         .join(", ");
     }
+    
     return ""; // Return a default value or handle the case when the data is not available
   },
   honorsCollegeAffiliated() {
