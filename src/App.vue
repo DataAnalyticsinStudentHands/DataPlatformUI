@@ -303,6 +303,7 @@ export default {
   //   this.scrollPosition = event.target.scrollTop;
   // },
   },
+  
   mounted() {
     // Access the root DOM element of the v-main Vue component
     const mainContentEl = this.$refs.mainContent.$el;
