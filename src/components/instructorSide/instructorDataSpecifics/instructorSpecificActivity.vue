@@ -149,7 +149,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${store.navigationData.id}`;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${store.navigationData.activityID}`;
         const response = await axios.get(apiURL, { headers: { token }});
         this.activity = {
           ...this.activity,
@@ -173,7 +173,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${store.navigationData.id}`;
+        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${store.navigationData.activityID}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         if (action === "update") {
@@ -210,8 +210,8 @@ export default {
         activityStatus: this.activity.activityStatus,
       };
 
-      let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${user.navigationData.id}`;
-      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${user.navigationData.id}`;
+      let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${user.navigationData.activityID}`;
+      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${user.navigationData.activityID}`;
 
       try {
         // Update the Activity
@@ -238,7 +238,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/can-be-deleted/${store.navigationData.id}`;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/can-be-deleted/${store.navigationData.activityID}`;
         const response = await axios.get(apiURL, { headers: { token }});
         this.canActivityBeDeleted = response.data.canBeDeleted;
       } catch (error) {
@@ -271,7 +271,7 @@ export default {
       try {
         const user = useLoggedInUserStore();
         const token = user.token;
-        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${user.navigationData.id}`;
+        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${user.navigationData.activityID}`;
 
         await axios.delete(deleteURL, { headers: { token } });
 

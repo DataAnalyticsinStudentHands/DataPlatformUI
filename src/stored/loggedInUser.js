@@ -177,6 +177,7 @@ export const useLoggedInUserStore = defineStore({
     },
     async checkFormCompletion() {
       try {
+        console.log('this.token checkFormCompletion: ', this.token);
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
           headers: { token: this.token }
         });
