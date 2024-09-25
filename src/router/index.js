@@ -511,4 +511,4 @@ const router = createRouter({
     base: "/platform/", 
     routes
 })
-export default router
+export default router;
