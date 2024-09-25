@@ -2,6 +2,55 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useLoggedInUserStore } from '../stored/loggedInUser'; 
 import { verifyJWT } from '../auth/index';
 
+async function isLoggedIn(to, from, next) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    next('/error');
+    return;
+  }
+
+  try {
+    // Verify the token
+    const payload = await verifyJWT(token);
+    if (!payload) {
+      next('/error'); // Invalid token, redirect to error page
+      return;
+    }
+
+    next(); // Proceed to the next route
+  } catch (error) {
+    next('/error'); // If JWT verification fails, redirect to error page
+  }
+}
+
+
+
+
+function requireAuth(allowedRoles) {
+  return async (to, from, next) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      next('/error');
+      return;
+    }
+
+    const payload = await verifyJWT(token);
+    if (!payload) {
+      next('/error');
+      return;
+    }
+
+    if (!allowedRoles.includes(payload.userRole)) {
+      next('/error');
+      return;
+    }
+
+    next();
+  };
+}
+
+
+
 
 
 const routes = [
@@ -120,28 +169,14 @@ const routes = [
         name: 'updatePassword',
         props: true,
         component: () => import('../components/loginPages/passReset/updatePassword.vue'),
-        beforeEnter: (to, from, next) => {
-          const userStore = useLoggedInUserStore();
-          if (!userStore.isLoggedIn) {
-            next('/error');
-          } else {
-            next();
-          }
-        }
+        beforeEnter: isLoggedIn,
     },
     {
       path: '/updateUserInformation',
       name: 'User Data Update Form',
       props: true,
       component: () => import('../components/loginPages/updateUserData.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: isLoggedIn,
     },
     {
         path: '/sendNewCode',
@@ -160,53 +195,25 @@ const routes = [
       path: '/instructorDash',
       name: 'instructorDash',
       component: () => import('../components/instructorSide/instructorDash.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/studentGoalFormViewer',
       name: 'StudentGoalFormViewer',
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentGoalFormViewer.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorDataProducts',
       name: 'instructorDataProducts',
       component: () => import('../components/instructorSide/instructorDataProducts.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorStudentsList',
       name: 'instructorStudentsList',
       component: () => import('../components/instructorSide/instructorStudentsList.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorSpecificStudent',
@@ -225,252 +232,117 @@ const routes = [
         path: '/instructorDataManagement',
         name: 'instructorDataManagement',
         component: () => import('../components/instructorSide/instructorDataManagement/instructorDataManagementMain.vue'),
-        beforeEnter: (to, from, next) => {
-          const userStore = useLoggedInUserStore();
-          if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-            next('/error');
-          } else {
-            next();
-          }
-        },
+        beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorSessions',
       name: 'instructorSessions',
       props: true,
       component: () => import('../components/instructorSide/instructorDataManagement/instructorSessions.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorAddSession',
       name: 'instructorAddSession',
       component: () => import('../components/instructorSide/instructorAddData/instructorAddSession.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorSpecificSession',
       name: 'instructorSpecificSession',
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificSession.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorAddExperienceInstance',
       name: 'instructorAddExperienceInstance',
       component: () => import('../components/instructorSide/instructorAddData/instructorAddExperienceInstance.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorSpecificExperienceInstance',
       name: 'instructorSpecificExperienceInstance',
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificExperienceInstance.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorExperiences',
       name: 'instructorExperiences',
       component: () => import('../components/instructorSide/instructorDataManagement/instructorExperiences.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorAddExperience',
       name: 'instructorAddExperience',
       component: () => import('../components/instructorSide/instructorAddData/instructorAddExperience.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorSpecificExperience',
       name: 'instructorSpecificExperience',
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificExperience.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorAddActivity',
       name: 'instructorAddActivity',
       component: () => import('../components/instructorSide/instructorAddData/instructorAddActivity.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },    
     {
       path: '/instructorSpecificActivity',
       name: 'instructorSpecificActivity',
       component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificActivity.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorProgressMonitorContainer',
       name: 'instructorProgressMonitorContainer',
       component: () => import('../components/instructorSide/instructorProgressMonitor/instructorProgressMonitorContainer.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorMailer',
       name: 'instructorMailer',
       component: () => import('../components/instructorSide/instructorMailer/instructorMailerMain.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/studentsWithoutGoalForms',
       name: 'studentsWithoutGoalForms',
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutGoalForms.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/studentsWithoutEntryForms',
       name: 'studentsWithoutEntryForms',
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutEntryForms.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/studentsWithoutExitForms',
       name: 'studentsWithoutExitForms',
       component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutExitForms.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || (userStore.role !== 'Instructor' && userStore.role !== 'Group Instructor' && userStore.role !== 'Group Admin' && userStore.role !== 'Org Admin')) {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/studentEntryForm',
       name: 'studentEntryForm',
       props: true,
       component: () => import('../components/studentSide/studentEntryForm/entryFormMain.vue'),
-      beforeEnter: (to, from, next) => {
-        // Use the Pinia store
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
-          next('/error');
-        } else {
-          next();
-        }
-      },
+      beforeEnter: requireAuth(['Student']),
     },
     {
       path: '/goalSettingForm',
       name: 'goalSettingForm',
       component: () => import('../components/studentSide/goalSettingForm/goalFormMain.vue'),
-      beforeEnter: (to, from, next) => {
-        // Use the Pinia store
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Student']),
     },
     {
       path: '/exitForm',
       name: 'exitForm',
       component: () => import('../components/studentSide/exitForm/exitFormMain.vue'),
-      beforeEnter: (to, from, next) => {
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Student']),
     },    
     // {
     //   path: '/exitFormsAvailable',
@@ -490,15 +362,7 @@ const routes = [
       path: '/studentDashboard',
       name: 'studentDashboard',
       component: () => import('../components/studentSide/studentDash/studentDashboard.vue'),
-      beforeEnter: (to, from, next) => {
-        // Use the Pinia store
-        const userStore = useLoggedInUserStore();
-        if (!userStore.isLoggedIn || userStore.role !== 'Student') {
-          next('/error');
-        } else {
-          next();
-        }
-      }
+      beforeEnter: requireAuth(['Student']),
     },    
     {
       path: '/error',
