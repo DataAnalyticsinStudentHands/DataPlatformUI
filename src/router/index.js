@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useLoggedInUserStore } from '../stored/loggedInUser'; 
-import { verifyJWT } from '../auth/index';
+import { verifyJWT } from '../auth/jwtVerifier';
 
 async function isLoggedIn(to, from, next) {
   const token = localStorage.getItem('token');

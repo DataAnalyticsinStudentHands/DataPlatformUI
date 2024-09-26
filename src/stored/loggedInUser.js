@@ -4,6 +4,7 @@ const apiURL = import.meta.env.VITE_ROOT_API
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { i18n } from '@/plugins/i18n';
+import { verifyJWT } from '@/auth/jwtVerifier';
 
 // Defining a store
 export const useLoggedInUserStore = defineStore({
@@ -44,36 +45,45 @@ export const useLoggedInUserStore = defineStore({
       try {
         const response = await axios.post(`${apiURL}/userdata/login`, { email, password });
         if (response) {
-          this.$patch({
-            role: response.data.userRole,
-            userId: response.data.userID,
-            token: response.data.token,
-            languagePreference: response.data.languagePreference,
-            group: response.data.group || null // Store the group if it exists, otherwise set it to null
-          });
+          const token = response.data.token;
     
-          // Save the token to localStorage
-          localStorage.setItem("token", response.data.token);
-    
-          // Set the global default header for axios
-          this.setTokenHeader(response.data.token);
-    
-          let token = localStorage.getItem("token");
-    
-          // If userStatus is 'Pending', update unverified and token fields
-          if (response.data.userStatus === 'Pending') {
-            this.$patch({
-              isLoggedIn: false,
-              unverified: true,
-              token: response.data.token
-            });
+          // Optional: Verify the token on the frontend
+          // const payload = await verifyJWT(token);
+          const payload = null;
+          if (!payload) {
+            this.handleError(new Error('Invalid token received from backend.'));
             return;
           }
     
+          // Use payload to get user information
+          this.$patch({
+            role: payload.userRole,
+            userId: payload.userID,
+            token: token,
+            languagePreference: payload.languagePreference || response.data.languagePreference,
+            group: payload.group || response.data.group || null // Store the group if it exists
+          });
+    
+          // Save token to localStorage
+          localStorage.setItem('token', token);
+    
+          // Set token header
+          this.setTokenHeader(token);
+    
+          // Handle other login logic
+          if (payload.userStatus === 'Pending') {
+            this.$patch({
+              isLoggedIn: false,
+              unverified: true,
+              token: token
+            });
+            return;
+          }
+
           await this.getFullName();
-  
-          // Additional check for the Student role
-          if (response.data.userRole === 'Student') {
+    
+          // Fetch additional data or handle role-specific logic
+          if (payload.userRole === 'Student') {
             await this.checkFormCompletion();
             await this.fetchRegisteredExperiences();
           }
@@ -94,7 +104,7 @@ export const useLoggedInUserStore = defineStore({
           this.handleError(error);
         }
       }
-    },
+    },    
     logout(reset = false) {
       // Reset value after user log out
       this.$patch({
