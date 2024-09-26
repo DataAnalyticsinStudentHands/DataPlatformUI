@@ -13,10 +13,10 @@ if (localStorage.getItem('token')) {
 import router from './router';
 import App from './App.vue';
 import './index.css';
-import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
 
 // state management library
 import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'; 
 
 // Vuetify
 import 'vuetify/styles';
@@ -44,8 +44,9 @@ const vuetify = createVuetify({
 
 // create a pinia root store
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
 // pinia should be able to use router - has to be set up as a plugin
-pinia.use(piniaPluginPersistedState)
 pinia.use(({ store }) => {
   store.$router = markRaw(router)
 });
