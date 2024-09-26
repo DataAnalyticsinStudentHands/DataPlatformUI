@@ -120,6 +120,8 @@ export default {
         position: useLoggedInUserStore().navigationData.toastPosition,
         toastClassName: useLoggedInUserStore().navigationData.toastCSS
       });
+
+      useLoggedInUserStore().navigationData = null;
     }
   },
   methods: {

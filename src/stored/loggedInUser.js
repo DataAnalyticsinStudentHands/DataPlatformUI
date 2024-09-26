@@ -33,6 +33,7 @@ export const useLoggedInUserStore = defineStore({
       instructorDataManagementActiveTab: 0,
       group: null,
       navigationData: null,
+      logoutTimer: null,
     }
   },
   getters: { //getting the roles
@@ -46,51 +47,53 @@ export const useLoggedInUserStore = defineStore({
         const response = await axios.post(`${apiURL}/userdata/login`, { email, password });
         if (response) {
           const token = response.data.token;
-    
-          // Optional: Verify the token on the frontend
+
+          // Verify the token on the frontend
           const payload = await verifyJWT(token);
           if (!payload) {
             this.handleError(new Error('Invalid token received from backend.'));
             return;
           }
-    
+
           // Use payload to get user information
           this.$patch({
             role: payload.userRole,
             userId: payload.userID,
             token: token,
             languagePreference: payload.languagePreference || response.data.languagePreference,
-            group: payload.group || response.data.group || null // Store the group if it exists
+            group: payload.group || response.data.group || null, // Store the group if it exists
           });
-    
+
           // Save token to localStorage
           localStorage.setItem('token', token);
-    
+
           // Set token header
           this.setTokenHeader(token);
-    
+
           // Handle other login logic
           if (payload.userStatus === 'Pending') {
             this.$patch({
               isLoggedIn: false,
               unverified: true,
-              token: token
+              token: token,
             });
             return;
           }
 
           await this.getFullName();
-    
+
           // Fetch additional data or handle role-specific logic
           if (payload.userRole === 'Student') {
             await this.checkFormCompletion();
             await this.fetchRegisteredExperiences();
           }
-    
+
           // Officially log the user in
           this.$patch({
             isLoggedIn: true,
           });
+
+          this.setAutoLogout(payload.exp);
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -103,18 +106,25 @@ export const useLoggedInUserStore = defineStore({
           this.handleError(error);
         }
       }
-    },    
+    },
+
     logout(reset = false) {
-      // Reset value after user log out
+      // **Clear the auto logout timer**
+      if (this.logoutTimer) {
+        clearTimeout(this.logoutTimer);
+        this.logoutTimer = null;
+      }
+
+      // Reset values after user log out
       this.$patch({
-        userId: "",
-        role: "",
-        token: "",
-        firstName: "",
-        lastName: "",
+        userId: '',
+        role: '',
+        token: '',
+        firstName: '',
+        lastName: '',
         isLoggedIn: false,
         unverified: null,
-        languagePreference: "",
+        languagePreference: '',
         hasCompletedEntryForm: false,
         hasRegisteredExperiences: false,
         goalSettingFormCompletion: {},
@@ -123,15 +133,78 @@ export const useLoggedInUserStore = defineStore({
         registeredExperiences: [],
         experienceInstanceCreationDetails: [],
         instructorDataManagementActiveTab: 0,
-        group: null
+        group: null,
       });
 
       // Clear the token from localStorage
-      localStorage.removeItem("token");
+      localStorage.removeItem('token');
 
       // Remove the global default header for axios
       this.removeTokenHeader();
-    },    
+    },
+
+    async initializeStore() {
+      const token = this.token;
+
+      if (token) {
+        // Verify the token
+        const payload = await verifyJWT(token);
+        if (payload) {
+          // Check if token is expired
+          const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+          if (payload.exp && payload.exp < currentTime) {
+            // Token is expired
+            this.logout();
+            this.$router.push('/login');
+          } else {
+            // Token is valid
+            this.$patch({
+              isLoggedIn: true,
+              role: payload.userRole,
+              userId: payload.userID,
+              // ... other properties from payload if needed
+            });
+            // Set the global default header for axios
+            this.setTokenHeader(token);
+            // Set up auto logout
+            this.setAutoLogout(payload.exp);
+          }
+        } else {
+          // Invalid token
+          this.logout();
+          this.$router.push('/login');
+        }
+      }
+    },
+
+    setAutoLogout(expirationTime) {
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+      const timeUntilExpiration = (expirationTime - currentTime) * 1000; // Time until expiration in milliseconds
+
+      if (timeUntilExpiration > 0) {
+        // Clear any existing timer
+        if (this.logoutTimer) {
+          clearTimeout(this.logoutTimer);
+        }
+
+        // Set a new timer
+        this.logoutTimer = setTimeout(() => {
+          this.logout();
+          // Redirect to login page
+          this.$router.push('/login');
+          toast.info('Session expired. Please log in again.', {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            limit: 1,
+          });
+        }, timeUntilExpiration);
+      } else {
+        // Token already expired
+        this.logout();
+        this.$router.push('/login');
+      }
+    },
+
     async getFullName() {
       let token = localStorage.getItem("token");
       let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
@@ -177,9 +250,6 @@ export const useLoggedInUserStore = defineStore({
 
       // Fetch the full name of the user
       // await this.getFullName();
-    },
-    async verifyFromRegistration() {
-
     },
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
@@ -311,11 +381,37 @@ export const useLoggedInUserStore = defineStore({
     setOrgName(name) {
       this.orgName = name;
     },
-    persist: {
-      storage: localStorage
-    },
     updateexperienceInstanceCreationDetails(sessions) {
       this.experienceInstanceCreationDetails = sessions;
     }
+  },
+  persist: {
+    enabled: true,
+    storage: window.localStorage,
+    // Specify which paths to persist
+    paths: [
+      'userId',
+      'role',
+      'token',
+      'firstName',
+      'lastName',
+      'isLoggedIn',
+      'unverified',
+      'languagePreference',
+      'hasCompletedEntryForm',
+      'hasRegisteredExperiences',
+      'goalSettingFormCompletion',
+      'loading',
+      'semesterName',
+      'hasGoalFormsToComplete',
+      'hasExitFormsToComplete',
+      'exitFormCompletion',
+      'registeredExperiences',
+      'orgName',
+      'experienceInstanceCreationDetails',
+      'instructorDataManagementActiveTab',
+      'group'
+      // Include other properties to persist
+    ],
   },
 });

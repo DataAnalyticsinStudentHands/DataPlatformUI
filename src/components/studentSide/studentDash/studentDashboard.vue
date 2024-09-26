@@ -53,6 +53,8 @@ export default {
             position: loggedInUserStore.navigationData.toastPosition,
             toastClassName: loggedInUserStore.navigationData.toastCSS
         });
+
+        loggedInUserStore.navigationData = null;
     }
     // Translations
     if (loggedInUserStore.languagePreference === "Spanish") {

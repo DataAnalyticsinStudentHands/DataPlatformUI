@@ -2,6 +2,7 @@ import { createApp, markRaw } from 'vue';
 import axios from 'axios';
 import handleErrorMixin from './mixins/handleErrorMixin';
 import { i18n } from './plugins/i18n';
+import { useLoggedInUserStore } from './stored/loggedInUser';
 
 
 // Setting the token as a default header if it exists in localStorage
@@ -66,6 +67,10 @@ app.use(Vue3Toastify, {
     },
 });
 app.use(pinia);
+
+const userStore = useLoggedInUserStore();
+await userStore.initializeStore();
+
 app.use(vuetify);
 app.use(router);
 app.use(i18n); 

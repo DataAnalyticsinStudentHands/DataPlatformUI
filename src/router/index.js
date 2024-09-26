@@ -49,10 +49,6 @@ function requireAuth(allowedRoles) {
   };
 }
 
-
-
-
-
 const routes = [
     {
       path: '/',
@@ -63,13 +59,15 @@ const routes = [
       path: '/studentEntryFormUpdate',
       name: 'studentEntryFormUpdate',
       props: true,
-      component: () => import('../components/studentSide/studentEntryForm/studentEntryFormUpdate.vue')
+      component: () => import('../components/studentSide/studentEntryForm/studentEntryFormUpdate.vue'),
+      beforeEnter: requireAuth(['Student']),
     },
     {
       path: '/profile',
       name: 'profile',
       props: true,
-      component: () => import('../components/studentSide/profilePage.vue')
+      component: () => import('../components/studentSide/profilePage.vue'),
+      beforeEnter: requireAuth(['Student']),
     },
     {
       path: '/mainAuthWrap',
@@ -368,4 +366,45 @@ const router = createRouter({
     base: "/platform/", 
     routes
 })
+
+// Public routes
+const publicPaths = [
+  '/login',
+  '/register',
+  '/passResetRequest',
+  '/passResetCode',
+  '/passResetNewEntry',
+  '/verifyAccWithCode',
+  '/verifyAccWithEmailCode',
+  '/sendNewCode'
+];
+
+// Global navigation guard
+router.beforeEach(async (to, from, next) => {
+  const userStore = useLoggedInUserStore();
+
+  // Wait for the store to initialize (in case of page refresh)
+  if (!userStore.isLoggedIn && localStorage.getItem('token')) {
+    await userStore.initializeStore();
+  }
+
+  const isPublicRoute = publicPaths.includes(to.path);
+
+  if (userStore.isLoggedIn && isPublicRoute) {
+    // User is logged in and trying to access a public page
+    // Redirect to the appropriate dashboard
+    if (
+      ['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.role)
+    ) {
+      next('/instructorDash');
+    } else if (userStore.role === 'Student') {
+      next('/studentDashboard');
+    } else {
+      next('/'); // Default route or a generic dashboard
+    }
+  } else {
+    next();
+  }
+});
+
 export default router;
