@@ -48,8 +48,7 @@ export const useLoggedInUserStore = defineStore({
           const token = response.data.token;
     
           // Optional: Verify the token on the frontend
-          // const payload = await verifyJWT(token);
-          const payload = null;
+          const payload = await verifyJWT(token);
           if (!payload) {
             this.handleError(new Error('Invalid token received from backend.'));
             return;
@@ -313,7 +312,7 @@ export const useLoggedInUserStore = defineStore({
       this.orgName = name;
     },
     persist: {
-      storage: sessionStorage
+      storage: localStorage
     },
     updateexperienceInstanceCreationDetails(sessions) {
       this.experienceInstanceCreationDetails = sessions;
