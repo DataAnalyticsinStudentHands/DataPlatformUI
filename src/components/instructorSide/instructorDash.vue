@@ -85,6 +85,7 @@ export default {
       });
     }
   },
+  
   methods: {
 
     // Navigates to the progress monitor tool.

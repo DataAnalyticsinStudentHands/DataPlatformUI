@@ -7,7 +7,11 @@
             <v-card>
                 <v-card-title class="pa-4 d-flex justify-space-between align-center">
                   Goal Form Completion Tracker
-                  <progress-monitor-csv-downloader v-if="selectedExperience && studentsWithoutGoalForm.length" :data="studentsWithoutGoalForm" :file-name="csvFileName" />
+                  <progress-monitor-csv-downloader
+                    v-if="selectedExperience && displayedStudents.length"
+                    :data="displayedStudents"
+                    :file-name="csvFileName"
+                  />
                 </v-card-title>
                 
                 <v-card-subtitle class="text-h6">
@@ -90,54 +94,34 @@
         
                 <!-- Table -->
                 <div style="display: flex; justify-content: center;">
-                <v-table v-if="paginatedStudentsWithoutGoalForm.length" style="width: 95%;">
+                  <v-table v-if="paginatedDisplayedStudents.length" style="width: 95%;">
                     <thead>
-                    <tr>
+                      <tr>
                         <th class="text-left">Name</th>
                         <th class="text-left">Email</th>
                         <th class="text-left">Registration Date</th>
-                    </tr>
+                        <th v-if="completed === true" class="text-left">Actions</th>
+                      </tr>
                     </thead>
                     <tbody>
-                    <tr
-                        v-for="student in paginatedStudentsWithoutGoalForm"
+                      <tr
+                        v-for="student in paginatedDisplayedStudents"
                         :key="student._id"
                         :class="{ 'hoverRow': hoverId === student._id }"
                         @mouseenter="hoverId = student._id"
                         @mouseleave="hoverId = null"
                         @click="navigateIfEnabled(student._id)"
-                    >
+                      >
                         <td class="text-left">{{ formatFullName(student.firstName, student.lastName) }}</td>
                         <td class="text-left">{{ student.email }}</td>
                         <td class="text-left">{{ formatDate(student.registrationDate) }}</td>
-                    </tr>
-                    </tbody>
-                </v-table>
-                <v-table v-if="paginatedStudentsWithGoalForm.length" style="width: 95%;">
-                    <thead>
-                    <tr>
-                        <th class="text-left">Name</th>
-                        <th class="text-left">Email</th>
-                        <th class="text-left">Registration Date</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr
-                        v-for="student in paginatedStudentsWithGoalForm"
-                        :key="student._id"
-                        @mouseenter="hoverId = student._id"
-                        @mouseleave="hoverId = null"
-                        @click="navigateIfEnabled(student._id)"
-                    >
-                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ formatFullName(student.firstName, student.lastName) }}</td>
-                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ student.email }}</td>
-                        <td class="text-left" :class="{ 'hoverRow': hoverId === student._id }">{{ formatDate(student.registrationDate) }}</td>
-                        <td>
+                        <td v-if="completed === true">
                           <v-btn @click.stop="viewStudentGoalForm(student._id)">View Goal Form</v-btn>
                         </td>
-                    </tr>
+                      </tr>
                     </tbody>
-                </v-table>
+                  </v-table>
+
                 </div>
         
             </v-card>
@@ -160,7 +144,6 @@
         expInstances: [],
         studentsWithoutGoalForm: [],
         hoverId: null,
-        csvFileName: 'no_goal_form.csv',
         currentPage: 1,
         itemsPerPage: 10,
         completed: null,
@@ -173,14 +156,6 @@
     },
     watch: {
       selectedExperience(newVal) {
-        if (newVal) {
-          // Find the selected experience object by its ID
-          const selectedObj = this.expInstances.find(instance => instance.expInstanceID === newVal);
-          // Update the file name using the experience name from the selected object
-          this.csvFileName = `no_goal_form_${selectedObj.experienceName}.csv`;
-        } else {
-          this.csvFileName = 'no_goal_form.csv';
-        }
         if (newVal !== null && this.completed !== null) {
           this.fetchStudents();
         }
@@ -201,26 +176,35 @@
           value: instance.expInstanceID
         }));
       },
-      paginatedStudentsWithoutGoalForm() {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = this.currentPage * this.itemsPerPage;
-        return this.studentsWithoutGoalForm.slice(start, end);
+      displayedStudents() {
+        if (this.completed === true) {
+          return this.studentsWithGoalForm;
+        } else if (this.completed === false) {
+          return this.studentsWithoutGoalForm;
+        } else {
+          return [];
+        }
       },
-      paginatedStudentsWithGoalForm() {
+      paginatedDisplayedStudents() {
         const start = (this.currentPage - 1) * this.itemsPerPage;
         const end = this.currentPage * this.itemsPerPage;
-        return this.studentsWithGoalForm.slice(start, end);
+        return this.displayedStudents.slice(start, end);
       },
       totalPaginationLength() {
-        return Math.ceil(this.studentsWithoutGoalForm.length / this.itemsPerPage);
+        return Math.ceil(this.displayedStudents.length / this.itemsPerPage);
       },
       totalStudentsCount() {
-        if (this.studentsWithoutGoalForm.length === 0) {
-          return this.studentsWithGoalForm.length;
-        } else if (this.studentsWithGoalForm.length === 0) {
-          return this.studentsWithoutGoalForm.length;
+        return this.displayedStudents.length;
+      },
+      csvFileName() {
+        if (this.selectedExperience) {
+          const selectedObj = this.expInstances.find(
+            (instance) => instance.expInstanceID === this.selectedExperience
+          );
+          const prefix = this.completed === true ? 'completed_goal_forms' : 'no_goal_form';
+          return `${prefix}_${selectedObj.experienceName}.csv`;
         } else {
-          return null;
+          return this.completed === true ? 'completed_goal_forms.csv' : 'no_goal_form.csv';
         }
       },
     },
