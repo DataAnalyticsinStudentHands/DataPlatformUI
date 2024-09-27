@@ -382,29 +382,39 @@ const publicPaths = [
 // Global navigation guard
 router.beforeEach(async (to, from, next) => {
   const userStore = useLoggedInUserStore();
+  const token = localStorage.getItem('token');
 
-  // Wait for the store to initialize (in case of page refresh)
-  if (!userStore.isLoggedIn && localStorage.getItem('token')) {
-    await userStore.initializeStore();
-  }
+  if (token) {
+    // Check if token is expired
+    const currentTime = Math.floor(Date.now() / 1000);
+    const payload = await verifyJWT(token);
 
-  const isPublicRoute = publicPaths.includes(to.path);
-
-  if (userStore.isLoggedIn && isPublicRoute) {
-    // User is logged in and trying to access a public page
-    // Redirect to the appropriate dashboard
-    if (
-      ['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.role)
-    ) {
-      next('/instructorDash');
-    } else if (userStore.role === 'Student') {
-      next('/studentDashboard');
+    if (payload && payload.exp && payload.exp > currentTime) {
+      // Token is valid and not expired
+      if (!userStore.isLoggedIn) {
+        // Initialize the store if it's not initialized yet
+        userStore.$patch({
+          isLoggedIn: true,
+          role: payload.userRole,
+          userId: payload.userID,
+          token: token,
+        });
+      }
+      next();
     } else {
-      next('/'); // Default route or a generic dashboard
+      // Token is expired or invalid
+      userStore.logout();
+      next('/login');
     }
   } else {
-    next();
+    // No token, handle public and private route access
+    if (!userStore.isLoggedIn && !publicPaths.includes(to.path)) {
+      next('/login');
+    } else {
+      next();
+    }
   }
 });
+
 
 export default router;
