@@ -381,42 +381,58 @@ data() {
     }
 },
 mounted() {
-    useLoggedInUserStore().startLoading();
-    this.fetchActivityData()
-        .then(() => {
-            useLoggedInUserStore().stopLoading();
-        })
-        .catch((error) => {
-            this.handleError(error);
-            useLoggedInUserStore.stopLoading();
-        });
-},
-watch: {
-    'viewsStore.activities.searchChips': {
-        handler() {
-            this.updateExperienceNameSearchApplied();
-        },
-        deep: true,
-        immediate: true
-    },
-    'viewsStore.activities.selectedSearchChips': {
-        handler() {
-            this.updateExperienceNameSearchApplied();
-        },
-        deep: true,
-        immediate: true
-    }
+  // Start the loading state when the component is mounted
+  useLoggedInUserStore().startLoading();
+
+  // Fetch activity data
+  this.fetchActivityData()
+    .then(() => {
+      // Stop the loading state after data is fetched successfully
+      useLoggedInUserStore().stopLoading();
+    })
+    .catch((error) => {
+      // Handle any errors and stop the loading state
+      this.handleError(error);
+      useLoggedInUserStore().stopLoading();
+    });
 },
 
+watch: {
+  // Watch for changes in the searchChips in the activities view
+  'viewsStore.activities.searchChips': {
+    handler() {
+      // Update the experience name search state
+      this.updateExperienceNameSearchApplied();
+    },
+    deep: true,
+    immediate: true
+  },
+  
+  // Watch for changes in the selectedSearchChips in the activities view
+  'viewsStore.activities.selectedSearchChips': {
+    handler() {
+      // Update the experience name search state
+      this.updateExperienceNameSearchApplied();
+    },
+    deep: true,
+    immediate: true
+  }
+},
+
+
 computed: {
+
+    // Returns the loading state from the logged-in user store
     loading() {
         return useLoggedInUserStore().loading;
     },
 
+    // Determines whether to show the chips row based on if there are any search chips
     showChipsRow() {
         return this.viewsStore.activities.searchChips.length > 0;
     },
 
+    // Returns the headers for the activity table
     activityHeaders() {
         let headers = [
             {
@@ -434,33 +450,45 @@ computed: {
             }
         ];
 
-        // Conditionally add the expand column
+        // Conditionally add the expand column if experience name search is applied
         if (this.experienceNameSearchApplied) {
             headers.push({
-                title: "", // Adjust the title as needed
+                title: "", // Empty title for the expand column
                 key: "data-table-expand"
             });
         }
 
         return headers;
     },
+    
+    // Prepares a structured dataset for expanded rows in the activity table
     prepareExpandedData() {
         const expandedData = {};
+
+        // Loop through each experience-based activity
         this.experienceBasedActivities.forEach(({ activityID, sessionID, sessionName, experienceID, experienceName }) => {
+
+            // If the activity does not already exist in expandedData, initialize it
             if (!expandedData[activityID]) {
                 expandedData[activityID] = { experiences: {} };
             }
+
+            // If the experience does not already exist under the activity, initialize it
             if (!expandedData[activityID].experiences[experienceID]) {
                 expandedData[activityID].experiences[experienceID] = {
                     name: experienceName,
                     sessions: []
                 };
             }
+
+            // Add the session data to the appropriate experience
             expandedData[activityID].experiences[experienceID].sessions.push({
                 sessionID,
                 sessionName
             });
         });
+
+        // Return the structured data
         return expandedData;
     },
 
@@ -825,6 +853,7 @@ methods: {
         this.experienceNameSearchApplied = hasSelectedExperienceNameChip;
     },
 
+    // Updates the sorting method for activities when the sort order changes
     handleSortByUpdate(newSortBy) {
         this.viewsStore.updateSorting('activities', newSortBy);
     },
