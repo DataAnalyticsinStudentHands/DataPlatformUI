@@ -3,21 +3,26 @@
 <template>
   <main class="">
       <v-container>
+        <!-- Display the original activity name as the title -->
         <p class="text-center font-weight-black text-h6">Activity: {{ originalActivityName }}</p>
         <br>
         <v-row>
           <v-col cols="12" md="6">
+            <!-- Input field for updating the activity name -->
             <v-text-field v-model="activity.activityName" label="Activity Name"></v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
+            <!-- Cancel button to go back to the previous page -->
             <v-btn @click=goBack() class="mr-4">
               Cancel
             </v-btn>
+            <!-- Update button to check associated instances and update activity -->
             <v-btn style="text-align:center;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
           </v-col>
           <v-spacer></v-spacer>
+          <!-- Conditional delete button, shown if the activity can be deleted -->
           <v-col cols="auto" v-if="canActivityBeDeleted && canDeleteActivity">
             <v-btn class="justify-end" @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
           </v-col>
@@ -104,19 +109,21 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 
 export default {
-  setup() {
+setup() {
+    // Access the logged-in user store
     const userStore = useLoggedInUserStore();
 
+    // Computed property to check if the current user can delete an activity based on their role
     const canDeleteActivity = computed(() => {
-      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-      return allowedRoles.includes(userStore.role);
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        return allowedRoles.includes(userStore.role);
     });
 
     return {
-      userStore,
-      canDeleteActivity
-    }
-  },
+        userStore,
+        canDeleteActivity // Return the computed property for use in the template
+    };
+},
   props: ["id"],
   data() {
     return {
@@ -137,10 +144,14 @@ export default {
     };
   },
 
-  async mounted() {
+async mounted() {
+    // Fetch the activity data when the component is mounted
     await this.fetchActivityData();
+
+    // Check if the activity can be deleted after fetching the data
     await this.checkIfActivityCanBeDeleted();
-  },
+},
+
 
   methods: {
     
