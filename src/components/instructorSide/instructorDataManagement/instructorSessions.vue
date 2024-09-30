@@ -244,6 +244,7 @@
                     </template>
                 </v-data-table>
 
+                <!-- Skeleton loader for loading state -->
                 <v-skeleton-loader v-if="loading" type="table-row@5"></v-skeleton-loader>
 
 
@@ -547,22 +548,6 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-filteredInstances:
-<br>
-{{ filteredInstances }}
-<br><br><br>
-filteredSessionData:
-<br>
-{{ filteredSessionData }}
-<br><br><br>
-sessionData:
-<br>
-{{ sessionData }}
-<br><br><br>
-instancesData:
-<br>
-{{ instancesData }} -->
 
 </template>
 
@@ -578,32 +563,37 @@ import { DateTime } from "luxon";
 export default {
 name: "instructorSessions",
 setup() {
-    const viewsStore = useInstructorViewsStore();
-    const userStore = useLoggedInUserStore();
+  // Access the views and user stores
+  const viewsStore = useInstructorViewsStore();
+  const userStore = useLoggedInUserStore();
 
-    const showCheckboxColumn = computed(() => {
-      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-      return allowedRoles.includes(userStore.role);
-    });
+  // Computed property to determine if the checkbox column should be shown based on user roles
+  const showCheckboxColumn = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-    const canAddNewSession = computed(() => {
-      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-      return allowedRoles.includes(userStore.role);
-    });
+  // Computed property to determine if the user can add a new session based on roles
+  const canAddNewSession = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-    const canAddExpInstance = computed(() => {
-        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-        return allowedRoles.includes(userStore.role);
-    })
+  // Computed property to determine if the user can add a new experience instance based on roles
+  const canAddExpInstance = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-    return {
-        viewsStore,
-        userStore,
-        showCheckboxColumn: showCheckboxColumn.value,
-        canAddNewSession: canAddNewSession.value,
-        canAddExpInstance: canAddExpInstance.value
-    };
+  return {
+    viewsStore,
+    userStore,
+    showCheckboxColumn: showCheckboxColumn.value, // Whether to show the checkbox column
+    canAddNewSession: canAddNewSession.value, // Whether the user can add a new session
+    canAddExpInstance: canAddExpInstance.value // Whether the user can add a new experience instance
+  };
 },
+
 data() {
     return {
         sessionSearch: "",
@@ -708,70 +698,94 @@ data() {
         selectedExitFormReleaseDate: new Date(),
     };
 },
+
 async mounted() {
-    useLoggedInUserStore().startLoading();
-    await this.fetchInstances();
-    await this.fetchSessionData()
+  // Start the loading state when the component is mounted
+  useLoggedInUserStore().startLoading();
+
+  // Fetch instances and session data asynchronously
+  await this.fetchInstances();
+  
+  await this.fetchSessionData()
     .then(() => {
-        useLoggedInUserStore().stopLoading();
-        this.performFilter();
+      // Stop loading and apply filters once data is successfully fetched
+      useLoggedInUserStore().stopLoading();
+      this.performFilter();
     })
     .catch((error) => {
-        this.handleError(error);
-        useLoggedInUserStore().stopLoading();
+      // Handle errors and stop loading
+      this.handleError(error);
+      useLoggedInUserStore().stopLoading();
     });
 },
+
 watch: {
-    startDateFilterType(newVal) {
-        if (newVal === "Between") {
-            this.beginningDateRange = null;
-            this.endDateRange = null;
-        }
-    },
+  // Watch for changes in the startDateFilterType and reset date range if "Between" is selected
+  startDateFilterType(newVal) {
+    if (newVal === "Between") {
+      // Reset the beginning and end date range when the filter type is "Between"
+      this.beginningDateRange = null;
+      this.endDateRange = null;
+    }
+  },
 },
+
+
 computed: {
+    // Determines whether the chips row should be shown based on the presence of search chips
     showChipsRow() {
         return this.viewsStore.sessions.searchChips.length > 0;
     },
+
+    // Returns the loading state from the logged-in user store
     loading() {
         return useLoggedInUserStore().loading;
-        // return true;
+        // return true; // (Optional alternative for forcing a loading state)
     },
+
+    // Returns the appropriate title based on the selected start date filter type
     sessionStartDateTitle() {
         switch (this.startDateFilterType) {
-            case "On":
-                return "Start Date On";
-            case "After":
-                return "Start Date After";
-            case "Before":
-                return "Start Date Before";
-            case "Between":
-                return "Start Date Between";
-            default:
-                return "Start Date On";
+        case "On":
+            return "Start Date On";
+        case "After":
+            return "Start Date After";
+        case "Before":
+            return "Start Date Before";
+        case "Between":
+            return "Start Date Between";
+        default:
+            return "Start Date On";
         }
     },
+
+    // Returns the appropriate title based on the selected end date filter type
     sessionEndDateTitle() {
         switch (this.endDateFilterType) {
-            case "On":
-                return "End Date On";
-            case "After":
-                return "End Date After";
-            case "Before":
-                return "End Date Before";
-            case "Between":
-                return "End Date Between";
-            default:
-                return "End Date On";
+        case "On":
+            return "End Date On";
+        case "After":
+            return "End Date After";
+        case "Before":
+            return "End Date Before";
+        case "Between":
+            return "End Date Between";
+        default:
+            return "End Date On";
         }
     },
+
+    // Formats the selected start date based on the filter type, especially for "Between" ranges
     formattedSelectedStartDate() {
         if (this.startDateFilterType === "Between") {
             let text = "";
+            
+            // Format the beginning date range
             if (this.beginningDateRange) {
                 text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
             }
 
+            // Format both the beginning and end date range
             if (this.beginningDateRange && this.endDateRange) {
                 text += " to ";
                 text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
@@ -780,17 +794,23 @@ computed: {
             return text;
         }
 
+        // Format the selected start date for other filter types
         return this.selectedStartDate
-            ? DateTime.fromJSDate(this.selectedStartDate).toFormat('MM-dd-yyyy')
-            : "";
+        ? DateTime.fromJSDate(this.selectedStartDate).toFormat('MM-dd-yyyy')
+        : "";
     },
+
+    // Formats the selected end date based on the filter type, especially for "Between" ranges
     formattedSelectedEndDate() {
         if (this.endDateFilterType === "Between") {
             let text = "";
+            
+            // Format the beginning date range
             if (this.beginningDateRange) {
                 text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
             }
 
+            // Format both the beginning and end date range
             if (this.beginningDateRange && this.endDateRange) {
                 text += " to ";
                 text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
@@ -799,26 +819,33 @@ computed: {
             return text;
         }
 
+        // Format the selected end date for other filter types
         return this.selectedEndDate
             ? DateTime.fromJSDate(this.selectedEndDate).toFormat('MM-dd-yyyy')
             : "";
     },
+
+    // Determines if the start dates can be applied based on the filter type
     canApplyStartDates() {
         if (this.startDateFilterType === "Between") {
-            // Allow submission only if both beginning and end date ranes are selected
+            // Allow submission only if both beginning and end date ranges are selected
             return this.beginningDateRange && this.endDateRange;
         }
         // In other cases, allow submission
         return true;
     },
+
+    // Determines if the end dates can be applied based on the filter type
     canApplyEndDates() {
         if (this.endDateFilterType === "Between") {
-            // Allow submission only if both beginning and end date ranes are selected
+            // Allow submission only if both beginning and end date ranges are selected
             return this.beginningDateRange && this.endDateRange;
         }
         // In other cases, allow submission
         return true;
     },
+
+    // Returns the appropriate title based on the selected exit form release date filter type
     instanceExitFormReleaseDateTitle() {
         switch (this.exitFormReleaseDateFilterType) {
             case "On":
@@ -833,36 +860,44 @@ computed: {
                 return "Release Date On";
         }
     },
+
+    // Formats the selected exit form release date based on the filter type, especially for "Between" ranges
     formattedSelectedExitFormReleaseDate() {
         if (this.exitFormReleaseDateFilterType === "Between") {
-                let text = "";
-                if (this.beginningDateRange) {
-                    text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
-                }
+            let text = "";
 
-                if (this.beginningDateRange && this.endDateRange) {
-                    text += " to ";
-                    text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
-                }
-
-                return text;
+            // Format the beginning date range
+            if (this.beginningDateRange) {
+                text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
             }
 
-            return this.selectedExitFormReleaseDate
-                ? DateTime.fromJSDate(this.selectedExitFormReleaseDate).toFormat('MM-dd-yyyy')
-                : "";
+            // Format both the beginning and end date range
+            if (this.beginningDateRange && this.endDateRange) {
+                text += " to ";
+                text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
+            }
+
+            return text;
+        }
+
+        // Format the selected exit form release date for other filter types
+        return this.selectedExitFormReleaseDate
+            ? DateTime.fromJSDate(this.selectedExitFormReleaseDate).toFormat('MM-dd-yyyy')
+            : "";
     },
+
+    // Determines if the exit form release dates can be applied based on the filter type
     canApplyExitFormReleaseDates() {
         if (this.exitFormReleaseDateFilterType === "Between") {
-                // Allow submission only if both beginning and end date ranes are selected
-                return this.beginningDateRange && this.endDateRange;
-            }
-            // In other cases, allow submission
-            return true;
+            // Allow submission only if both beginning and end date ranges are selected
+            return this.beginningDateRange && this.endDateRange;
+        }
+        // In other cases, allow submission
+        return true;
     },
 
-
 },
+
 methods: {
 
     // Fetches session data from the server and assigns it to the `sessionData` variable. For each session, it filters the instances data to find instances associated with that session and assigns them to a new property called `instances`. Finally, it copies the `sessionData` to `filteredSessionData`.
@@ -1518,7 +1553,8 @@ methods: {
         };
         this.$router.push({ name: "instructorAddExperienceInstance" });
     },
-
+    
+    // Updates the sorting method for sessions when the sort field changes
     handleSortByUpdate(newSortBy) {
         this.viewsStore.updateSorting('sessions', newSortBy);
     },
