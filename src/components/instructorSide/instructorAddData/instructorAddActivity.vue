@@ -1,18 +1,26 @@
 <!--'/instructorAddActivity' this page presents a form to create a new Activity-->
 <template>
     <main>
+      <!-- Form for creating a new activity -->
       <v-form @submit.prevent="handleSubmitForm">
         <v-container>
+          <!-- Page title -->
           <p class="font-weight-black text-h6">New Activity</p>
+
             <v-row>
               <v-col cols="12" md="6">
+                <!-- Input for the activity name -->
                 <v-text-field v-model="activity.activityName" label="Activity's Name"></v-text-field>
               </v-col>
             </v-row>
 
+            <!-- Cancel button to go back to the previous page -->
             <v-btn @click="$router.back()" style="margin-right: 10px;">
               Cancel
             </v-btn>
+
+
+            <!-- Submit button -->
             <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
         </v-container>
       </v-form>
@@ -35,12 +43,17 @@
 
       // Submits an activity to the backend and redirects to the data management view with a success toast message indicating the activity has been added.
       async handleSubmitForm() {
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/`;
-        
-        axios.post(apiURL, this.activity, { headers: { token } })
-          .then((response) => {
+        try {
+          const user = useLoggedInUserStore();
+          let token = user.token;
+          let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/`;
+
+          // Await the POST request to the backend
+          const response = await axios.post(apiURL, this.activity, { headers: { token } });
+
+          // Check if the status is 201 (Created)
+          if (response.status === 201) {
+            // Set the navigation data with a success toast
             user.navigationData = {
               activeTab: 2,
               toastType: 'success',
@@ -48,15 +61,18 @@
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--create'
             };
-            
+
+            // Redirect to the instructor data management view
             this.$router.push({ 
               name: 'instructorDataManagement'
             });
-          })
-          .catch((error) => {
-            this.handleError(error);
-          });
+          }
+        } catch (error) {
+          // Handle the error
+          this.handleError(error);
+        }
       },
+      
     }
 
   }
