@@ -205,7 +205,7 @@
     </v-row>
 </v-container>
 
-
+<!-- Dialog for Filtering Experiences by Activities -->
 <v-dialog
     v-model="dialogActivitySearch"
     width="1200"
@@ -213,10 +213,12 @@
 >
 <v-card>
     <v-card-item>
+        <!-- Card for adding activities -->
         <v-card
                 flat
                 title="Add Activities"
             >
+                <!-- Search input for activities -->
                 <template v-slot:text>
                 <v-text-field
                     v-model="activitySearch"
@@ -226,6 +228,9 @@
                     variant="outlined"
                     hide-details
                 ></v-text-field>
+
+
+                <!-- Display selected activities as chips -->
                 <v-card-item v-if="selectedActivities && selectedActivities.length">
                     <v-chip-group
                         column
@@ -246,14 +251,16 @@
                     </v-chip-group>
                 </v-card-item>
                 </template>
+
+                <!-- Data table for listing activities -->
                 <v-data-table
-                :headers="activityHeaders"
-                :items="activityData"
-                item-value="_id"
-                items-per-page="-1"
-                class="scrollable-table"
-                hover
-                :search="activitySearch"
+                    :headers="activityHeaders"
+                    :items="activityData"
+                    item-value="_id"
+                    items-per-page="-1"
+                    class="scrollable-table"
+                    hover
+                    :search="activitySearch"
                 >
                 <template v-slot:body="{ items }">
                     <template v-for="item in items" :key="item._id">
@@ -276,9 +283,12 @@
                 </v-data-table>
         </v-card>
     </v-card-item>
+
     <v-card-actions>
         <v-spacer></v-spacer>
+        <!-- Cancel Button -->
         <v-btn text @click="cancelActivitySearch">Cancel</v-btn>
+        <!-- Submit Button -->
         <v-btn 
             color="#c8102e"
             @click="submitActivitySearch"
@@ -286,6 +296,7 @@
     </v-card-actions>
 </v-card>
 </v-dialog>
+
 </template>
 
 <script>
@@ -298,26 +309,30 @@ import axios from "axios";
 export default {
 name: "ExperiencesManagement",
 setup() {
-    const viewsStore = useInstructorViewsStore();
-    const userStore = useLoggedInUserStore();
+  // Access the views and user stores
+  const viewsStore = useInstructorViewsStore();
+  const userStore = useLoggedInUserStore();
 
-    const showCheckboxColumn = computed(() => {
-      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-      return allowedRoles.includes(userStore.role);
-    });
+  // Computed property to determine if the checkbox column should be shown based on user role
+  const showCheckboxColumn = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-    const canAddNewExperience = computed(() => {
-      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-      return allowedRoles.includes(userStore.role);
-    });
+  // Computed property to determine if the user can add a new experience based on their role
+  const canAddNewExperience = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-    return {
-      viewsStore,
-      userStore,
-      showCheckboxColumn: showCheckboxColumn.value,
-      canAddNewExperience: canAddNewExperience.value
-    };
+  return {
+    viewsStore,
+    userStore,
+    showCheckboxColumn: showCheckboxColumn.value, // Check if the checkbox column should be shown
+    canAddNewExperience: canAddNewExperience.value // Check if adding new experiences is allowed
+  };
 },
+
 data() {
     return {
         experienceData: [],
@@ -351,42 +366,59 @@ data() {
         activityBasedExperiences: [],
     }
 },
+
 mounted() {
-    useLoggedInUserStore().startLoading();
-    this.fetchExperienceData()
+  // Start the loading state when the component is mounted
+  useLoggedInUserStore().startLoading();
+
+  // Fetch experience data
+  this.fetchExperienceData()
     .then(() => {
-        useLoggedInUserStore().stopLoading();
+      // Stop loading once the data is successfully fetched
+      useLoggedInUserStore().stopLoading();
     })
-    .catch(() => {
-        this.handleError(error);
-        useLoggedInUserStore().stopLoading();
+    .catch((error) => {
+      // Handle any errors and stop loading
+      this.handleError(error);
+      useLoggedInUserStore().stopLoading();
     });
 },
+
+
 watch: {
-    // Watch the searchCriteria and selectedSearchChips for changes
-    'viewsStore.experiences.searchChips': {
-        handler() {
-            this.updateActivitySearchApplied();
-        },
-        deep: true,
-        immediate: true
+  // Watch for changes in the searchChips for experiences
+  'viewsStore.experiences.searchChips': {
+    handler() {
+      // Update the activity search state
+      this.updateActivitySearchApplied();
     },
-    'viewsStore.experiences.selectedSearchChips': {
-        handler() {
-            this.updateActivitySearchApplied();
-        },
-        deep: true,
-        immediate: true
-    }
+    deep: true,
+    immediate: true
+  },
+
+  // Watch for changes in the selectedSearchChips for experiences
+  'viewsStore.experiences.selectedSearchChips': {
+    handler() {
+      // Update the activity search state
+      this.updateActivitySearchApplied();
+    },
+    deep: true,
+    immediate: true
+  }
 },
+
 computed: {
+    // Return the loading state from the user store
     loading() {
         return useLoggedInUserStore().loading;
     },
 
+    // Determines whether to show the chips row based on the presence of search chips
     showChipsRow() {
         return this.viewsStore.experiences.searchChips.length > 0;
     },
+
+    // Defines the headers for the experience data table
     experienceHeaders() {
         let headers = [
             {
@@ -411,33 +443,45 @@ computed: {
             },
         ];
 
-        // Conditionally add the expand column
+        // Conditionally add the expand column if activity search is applied
         if (this.activitySearchApplied) {
             headers.push({
-                title: "", // Adjust the title as needed
+                title: "", // Empty title for expand column
                 key: "data-table-expand"
             });
         }
 
         return headers;
     },
+
+    // Prepares a structured dataset for expanded rows in the experience table
     prepareExpandedData() {
         const expandedData = {};
+
+        // Loop through each activity-based experience
         this.activityBasedExperiences.forEach(({ experienceID, sessionID, sessionName, activityID, activityName }) => {
+
+            // Initialize experience if it doesn't exist in expandedData
             if (!expandedData[experienceID]) {
                 expandedData[experienceID] = { activities: {} };
             }
+
+            // Initialize activity under the experience if it doesn't exist
             if (!expandedData[experienceID].activities[activityID]) {
-                expandedData[experienceID].activities[activityID] = {
+                    expandedData[experienceID].activities[activityID] = {
                     name: activityName,
                     sessions: []
                 };
             }
+
+            // Add session data to the relevant activity under the experience
             expandedData[experienceID].activities[activityID].sessions.push({
                 sessionID,
                 sessionName
             });
         });
+
+        // Return the structured data for use in expanded rows
         return expandedData;
     }
 
@@ -752,6 +796,7 @@ methods: {
         this.activitySearchApplied = hasSelectedActivityChip;
     },
 
+    // Updates the sorting order for experiences when the sort field changes
     handleSortByUpdate(newSortBy) {
         this.viewsStore.updateSorting('experiences', newSortBy);
     },
