@@ -383,38 +383,74 @@ const publicPaths = [
 router.beforeEach(async (to, from, next) => {
   const userStore = useLoggedInUserStore();
   const token = localStorage.getItem('token');
+  const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+  // Check if the route is public
+  const isPublicRoute = publicPaths.includes(to.path);
 
   if (token) {
-    // Check if token is expired
-    const currentTime = Math.floor(Date.now() / 1000);
-    const payload = await verifyJWT(token);
-
-    if (payload && payload.exp && payload.exp > currentTime) {
-      // Token is valid and not expired
-      if (!userStore.isLoggedIn) {
-        // Initialize the store if it's not initialized yet
+    if (isPublicRoute) {
+      // Public route: Verify JWT to extract the role
+      const payload = await verifyJWT(token);
+      if (payload && payload.exp && payload.exp > currentTime) {
+        // Token is valid and not expired
         userStore.$patch({
           isLoggedIn: true,
           role: payload.userRole,
           userId: payload.userID,
           token: token,
         });
+
+        // Redirect user based on role if they are already logged in
+        if (userStore.isLoggedIn) {
+          if (['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.role)) {
+            next('/instructorDash');
+          } else if (userStore.role === 'Student') {
+            next('/studentDashboard');
+          } else {
+            next('/'); // Default route or a generic dashboard
+          }
+        } else {
+          next(); // If not logged in, allow access to public path
+        }
+      } else {
+        // Invalid or expired token, log out and redirect to login
+        userStore.logout();
+        next('/login');
       }
-      next();
     } else {
-      // Token is expired or invalid
-      userStore.logout();
-      next('/login');
+      // Private route: Check only token expiration
+      const payload = await verifyJWT(token);
+      if (payload && payload.exp && payload.exp > currentTime) {
+        // Token is valid and not expired
+        if (!userStore.isLoggedIn) {
+          // Initialize the store if it's not initialized yet
+          userStore.$patch({
+            isLoggedIn: true,
+            role: payload.userRole,
+            userId: payload.userID,
+            token: token,
+          });
+        }
+        next(); // Allow access to private route
+      } else {
+        // Token is expired or invalid, redirect to login
+        userStore.logout();
+        next('/login');
+      }
     }
   } else {
     // No token, handle public and private route access
-    if (!userStore.isLoggedIn && !publicPaths.includes(to.path)) {
-      next('/login');
+    if (isPublicRoute) {
+      next(); // Allow access to public route without token
     } else {
-      next();
+      // No token and trying to access a private route, redirect to login
+      next('/login');
     }
   }
 });
+
+
 
 
 export default router;
