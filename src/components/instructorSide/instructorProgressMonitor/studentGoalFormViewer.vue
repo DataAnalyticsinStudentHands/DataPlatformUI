@@ -3,6 +3,7 @@
 <div v-if="goalForm">
 <v-form disabled>
 <v-container>
+<!-- Back Button -->
 <v-row>
     <v-col>
         <v-btn @click="$router.back()">Back</v-btn>
@@ -373,9 +374,16 @@ export default {
         }
     },
     async created() {
-        await this.fetchGoalForm(useLoggedInUserStore().navigationData.studentID, useLoggedInUserStore().navigationData.expInstanceID);
+        // Fetch the goal form using the student ID and experience instance ID when the component is created
+        await this.fetchGoalForm(
+            useLoggedInUserStore().navigationData.studentID, 
+            useLoggedInUserStore().navigationData.expInstanceID
+        );
     },
+
     computed: {
+
+        // Processes community engagement experiences, excluding "None of the above" and marking others as checked based on conditions
         processedCommunityEngagementExperiences() {
             const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.communityEngagementExperiences
@@ -386,9 +394,13 @@ export default {
                 }))
                 .filter(experience => experience.label !== 'Other' || experience.checked);
         },
+
+        // Returns whether the "Other" experience in community engagement is checked
         displayOtherExperience() {
             return this.goalForm.communityEngagement.communityEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
         },
+
+        // Processes previous engagement experiences, excluding "None of the above" and marking others as checked based on conditions
         processedPreviousEngagementExperiences() {
             const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.previousEngagementExperiences
@@ -399,9 +411,13 @@ export default {
                 }))
                 .filter(experience => experience.label !== 'Other' || experience.checked);
         },
+
+        // Returns whether the "Other" experience in previous engagement is checked
         displayPreviousOtherExperience() {
             return this.goalForm.communityEngagement.previousEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
         },
+
+        // Processes engagement activities/tools, excluding "None of the above" and marking others as checked based on conditions
         processedEngagementActivitiesTools() {
             const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.communityEngagement.engagementActivitiesTools
@@ -412,9 +428,13 @@ export default {
                 }))
                 .filter(tool => tool.label !== 'Other' || tool.checked);
         },
+
+        // Returns whether the "Other" engagement activities tool is checked
         displayEngagementActivitiesToolOther() {
             return this.goalForm.communityEngagement.engagementActivitiesTools.find(tool => tool.label === 'Other')?.checked;
         },
+        
+        // Processes current research experiences, excluding "None of the above" and marking others as checked based on conditions
         processedCurrentResearchExperience() {
             const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.researchExperience.currentResearchExperience
@@ -425,9 +445,13 @@ export default {
                 }))
                 .filter(experience => experience.label !== 'Other' || experience.checked);
         },
+
+        // Returns whether the "Other" research experience is checked
         displayCurrentResearchExperienceOther() {
             return this.goalForm.researchExperience.currentResearchExperience.find(experience => experience.label === 'Other')?.checked;
         },
+        
+        // Processes previous research experiences, excluding "None of the above" and marking others as checked based on conditions
         processedPreviousResearchExperience() {
             const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.id === 9 && experience.checked);
             return this.goalForm.researchExperience.previousResearchExperience
@@ -438,9 +462,13 @@ export default {
                 }))
                 .filter(experience => experience.label !== 'Other' || experience.checked);
         },
+
+        // Returns whether the "Other" previous research experience is checked
         displayPreviousResearchExperienceOther() {
             return this.goalForm.researchExperience.previousResearchExperience.find(experience => experience.id === 8)?.checked;
         },
+
+        // Processes familiar tools, excluding "None of the above" and marking others as checked based on conditions
         processedFamiliarTools() {
             const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.researchExperience.familiarTools
@@ -451,9 +479,13 @@ export default {
                 }))
                 .filter(tool => tool.label !== 'Other' || tool.checked);
         },
+
+        // Returns whether the "Other" familiar tool is checked
         displayFamiliarToolOther() {
             return this.goalForm.researchExperience.familiarTools.find(tool => tool.label === 'Other')?.checked;
         },
+
+        // Processes interest in research/service, excluding "None of the above" and marking others as checked based on conditions
         processedInterestResearchService() {
             const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.label === 'None of the above' && interest.checked);
             return this.goalForm.researchExperience.interestResearchService
@@ -464,9 +496,12 @@ export default {
                 }))
                 .filter(interest => interest.label !== 'Other' || interest.checked);
         },
+
+        // Returns whether the "Other" research/service interest is checked
         displayInterestResearchServiceOther() {
             return this.goalForm.researchExperience.interestResearchService.find(interest => interest.label === 'Other')?.checked;
         },
+
     },
     methods: {
 
