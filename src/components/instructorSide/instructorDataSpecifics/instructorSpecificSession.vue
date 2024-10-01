@@ -3,12 +3,18 @@
 <main>
   <v-form>
     <v-container>
+      <!-- Display the original session name as the title -->
       <p class="font-weight-black text-h6">Session: {{ session.originalSessionName }}</p><br>
+      
+      <!-- Session name input field -->
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field v-model="session.sessionName" label="Session Name"></v-text-field>
         </v-col>
       </v-row>
+
+
+      <!-- Session start and end date input fields -->
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field type="date" v-model="session.sessionPeriod.startDate" label="Session Start Date"></v-text-field>
@@ -20,13 +26,21 @@
 
       <v-row>
         <v-col>
+
+          <!-- Error message display -->
           <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+          <!-- Cancel button to navigate back -->
           <v-btn @click="$router.back()">
             Cancel
           </v-btn>
+          <!-- Update button -->
           <v-btn style="text-align: center; margin-left: 10px;" @click="checkAssociatedInstances('update')" :loading=updateLoading>Update</v-btn>
         </v-col>
+
         <v-spacer></v-spacer>
+
+        <!-- Delete button with loading state, shown if the session can be deleted -->
         <v-col cols="auto" v-if="canSessionBeDeleted">
           <v-btn @click="checkAssociatedInstances('delete')" :loading=deleteLoading>Delete</v-btn>
         </v-col>
@@ -34,6 +48,7 @@
     </v-container>
   </v-form>
 </main>
+
 <!-- Delete Dialog -->
 <v-dialog v-model="showDeleteDialog" persistent width="auto">
   <v-card>
@@ -46,6 +61,7 @@
     </v-card-actions>
   </v-card>
 </v-dialog>
+
 <!-- Delete Dialog with Instances -->
 <v-dialog v-model="deleteDialogWithInstances" persistent width="auto">
   <v-card>
@@ -72,6 +88,7 @@
     </v-card-actions>
   </v-card>
 </v-dialog>
+
 <!-- Update Dialog -->
 <v-dialog v-model="updateDialog" persistent width="auto">
   <v-card>
@@ -127,10 +144,15 @@ import { DateTime } from "luxon";
         deleteDialogWithInstances: false,        
       };
     },
-    created() {
-      this.fetchSessionData();
-      this.checkIfSessionCanBeDeleted();
-    },
+
+created() {
+  // Fetch the session data when the component is created
+  this.fetchSessionData();
+
+  // Check if the session can be deleted
+  this.checkIfSessionCanBeDeleted();
+},
+
 
       methods: {
 
