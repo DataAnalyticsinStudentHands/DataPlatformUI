@@ -1,19 +1,32 @@
 <!-- instructorSpecificStudent - this view presents a single Student's data -->
 <template>
+
+  <!-- Form is disabled to prevent editing -->
   <v-form disabled>
+
+    <!-- Header section with 'Go Back' button and title -->
     <v-row style="margin-top: 1rem;">
       <v-col cols="3" style="padding-left: 3rem;">
+
+        <!-- Go back to the previous view -->
         <v-btn @click=$router.back()>
           Go Back
         </v-btn>
       </v-col>
+
+      <!-- Title for the Student's Information section -->
       <v-col cols="6" class="text-center">
         <p class="font-weight-black text-h5">Student's Information</p>
       </v-col>
       <v-col cols="3"></v-col>
     </v-row>
+
       <v-container style="width: 90%; margin: 0 auto;">
+        <!-- Section title for Basic Information -->
         <br><p class="font-weight-black text-h6">Basic Information</p>
+
+
+          <!-- Row for displaying the first and last name -->
           <v-row>
 
             <v-col cols="12" md="6">
@@ -26,6 +39,9 @@
               <p style="margin: 0;">{{ this.userData.lastName }}</p>
             </v-col>
           </v-row>
+
+
+          <!-- Row for displaying the email and language preference -->
           <v-row>
             <v-col cols="12" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Email</label>
@@ -36,7 +52,10 @@
               <p style="margin: 0;">{{ languagePreferenceValue }}</p>
             </v-col>
           </v-row>
+
+          <!-- Section for Student Data -->
         <div v-if="studentData">
+          <!-- Demographics -->
         <br><p class="font-weight-black text-h6">Demographics Information</p>
         <v-row>
             <v-col cols="12" md="6">
@@ -54,6 +73,7 @@
               <p style="margin: 0;">{{ this.studentData.otherLanguages }}</p>
             </v-col>
           </v-row>
+          <!-- Pronouns -->
           <v-row>
             <v-col cols="11" md="6">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Pronouns</label>
@@ -64,6 +84,7 @@
               <p style="margin: 0;">{{ this.studentData.otherPronouns }}</p>
             </v-col>
           </v-row>
+          <!-- Comments by Staff -->
           <v-row>
             <v-col cols="12">
               <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?</label>
@@ -76,6 +97,8 @@
               <p style="margin: 0;">{{ this.studentData.issuesConcernsTriggers }}</p>
             </v-col>
           </v-row>
+
+          <!-- UH Student Data -->
           <div v-if="this.studentData?.enrolledUHInfo?.uhStatus == 'Yes'">
             <br><p class="font-weight-black text-h6">UH Student's Information</p>
             <v-row>
@@ -258,15 +281,21 @@ created() {
       const user = useLoggedInUserStore();
       let token = user.token;
 
-      // Retrieve the student ID from the user variable's navigationData
+      // Retrieve the student ID from the user's navigation data
       const userID = user.navigationData.userID;
 
+      // Construct the API URL for fetching student information
       let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
+      
+      // Make an API request to fetch student information using the userID
       const resp = await axios.get(url + `/${userID}`, { headers: { token }});
+      
+      // Store the retrieved user data and student data
       this.userData = resp.data.userData;
       this.studentData = resp.data.studentData?.studentInformation;
 
     } catch (error) {
+      // Handle any errors that occur during the data fetching process
       this.handleError('Error fetching student information:', error);
     }
   })();
@@ -274,46 +303,75 @@ created() {
 
 
 computed: {
-  checkedPronouns() {
-    if (this.studentData && this.studentData?.pronouns) {
-      return this.studentData?.pronouns
-        .filter(pronoun => pronoun.checked === true)
-        .map(item => item.label)
-        .join(", ");
-    }
-    
-    return ""; // Return a default value or handle the case when the data is not available
-  },
+
+checkedPronouns() {
+  // Check if studentData and pronouns exist
+  if (this.studentData && this.studentData?.pronouns) {
+    // Filter pronouns where 'checked' is true, map to their labels, and join them as a comma-separated string
+    return this.studentData?.pronouns
+      .filter(pronoun => pronoun.checked === true)
+      .map(item => item.label)
+      .join(", ");
+  }
+
+  // Return an empty string if no pronouns are found
+  return ""; 
+},
+
+
+  // Returns a comma-separated list of honors college affiliations that are checked
   honorsCollegeAffiliated() {
-    return this.studentData.enrolledUHInfo?.honorsCollegeAffiliated.filter(aff => aff.checked === true).map(aff => aff.label).join(", ");
+    return this.studentData.enrolledUHInfo?.honorsCollegeAffiliated
+      .filter(aff => aff.checked === true)
+      .map(aff => aff.label)
+      .join(", ");
   },
+
+  // Returns a comma-separated list of majors or "None" if no majors are found
   majors() {
     const majors = this.studentData?.enrolledUHInfo?.majors;
     return Array.isArray(majors) && majors.length > 0 ? majors.join(", ") : "None";
   },
+
+  // Returns a comma-separated list of honors minors or "None" if no honors minors are found
   honorsMinors() {
     const honorsMinors = this.studentData?.enrolledUHInfo?.honorsMinors;
     return Array.isArray(honorsMinors) && honorsMinors.length > 0 ? honorsMinors.join(", ") : "None";
   },
+
+  // Returns a comma-separated list of other minors or "None" if no other minors are found
   otherMinors() {
     const otherMinors = this.studentData?.enrolledUHInfo?.otherMinors;
     return Array.isArray(otherMinors) && otherMinors.length > 0 ? otherMinors.join(", ") : "None";
   },
+
+  // Returns a comma-separated list of graduate/professional school programs that are checked
   programGradProType() {
-    return this.studentData?.graduateProfessionalSchool?.programGradProType.filter(program => program.checked === true).map(program => program.label).join(", ");
+    return this.studentData?.graduateProfessionalSchool?.programGradProType
+      .filter(program => program.checked === true)
+      .map(program => program.label)
+      .join(", ");
   },
+
+  // Returns a comma-separated list of specialized degree or certificate programs that are checked
   specializedDCType() {
-    return this.studentData?.specializedDegCert?.specializedDegCertType.filter(program => program.checked === true).map(program => program.label).join(", ");
+    return this.studentData?.specializedDegCert?.specializedDegCertType
+      .filter(program => program.checked === true)
+      .map(program => program.label)
+      .join(", ");
   },
+
+  // Returns the language preference from either userData or studentData, with a default of an empty string
   languagePreferenceValue() {
-      if (this.userData && this.userData.languagePreference) {
-          return this.userData.languagePreference;
-      } else if (this.studentData && this.studentData.languagePreference) {
-          return this.studentData.languagePreference;
-      } else {
-          return ""; // Default value in case it's not found in both formats
-      }
+    if (this.userData && this.userData.languagePreference) {
+      return this.userData.languagePreference;
+    } else if (this.studentData && this.studentData.languagePreference) {
+      return this.studentData.languagePreference;
+    } else {
+      return ""; // Default value in case it's not found in both formats
+    }
   },
+
 },
 methods: {
 }
