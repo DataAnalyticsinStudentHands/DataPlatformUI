@@ -6,17 +6,23 @@
 -->
 <template>
     <v-container>
+        <!-- Header with title and "Go Back" button -->
         <v-row>
             <v-col cols="12">  
             <p class="font-weight-black text-h5 text--primary text-center">
             Student Progress Monitor
             </p>
+            <!-- Go back to the previous page -->
             <v-btn @click=$router.back() class="mt-4">
               <v-icon left>mdi-arrow-left</v-icon>
               Go Back
             </v-btn>
         </v-col>
         </v-row>
+
+
+
+      <!-- Tabs for navigating between monitors (Entry Form, Goal Form, Exit Form, Pending) -->
       <v-row>
         <v-col cols="12">
           <v-tabs v-model="tab" grow>
@@ -68,19 +74,22 @@
   import StudentsWithoutExitForms from './studentsWithoutExitForms.vue';
   
   export default {
-    setup() {
-        const userStore = useLoggedInUserStore();
+setup() {
+  // Access the logged-in user store
+  const userStore = useLoggedInUserStore();
 
-        const showStudentsWithoutEntryForms = computed(() => {
-          const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-          return allowedRoles.includes(userStore.role);
-        });
+  // Computed property to determine if the "Students Without Entry Forms" tab should be shown based on user roles
+  const showStudentsWithoutEntryForms = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-        return {
-          userStore,
-          showStudentsWithoutEntryForms: showStudentsWithoutEntryForms.value
-        };
-    },
+  return {
+    userStore,
+    showStudentsWithoutEntryForms: showStudentsWithoutEntryForms.value // Determines if the Entry Form tab is shown
+  };
+},
+
     components: {
       StudentsWithoutGoalForms,
       StudentsWithoutEntryForms,
