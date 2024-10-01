@@ -3,32 +3,37 @@
 <v-container>
     <v-form>
         <v-row>
+            <!-- Display the experience instance name -->
             <v-col>
                 <p class="font-weight-black text-h6">Experience Instance: {{ experienceData.experienceName }}</p><br>
             </v-col>
         </v-row>
 
+        <!-- Section title for the session -->
         <v-row>
             <p class="font-weight-black text-h7">Session</p>
         </v-row>
 
         <v-row>
             <v-col>
-            <v-text-field
-                v-model="sessionData.sessionName"
-                readonly
-            ></v-text-field>
+              <!-- Input field to display the session name (read-only) -->
+              <v-text-field
+                  v-model="sessionData.sessionName"
+                  readonly
+              ></v-text-field>
             </v-col>
         </v-row>
 
 
 
+        <!-- Section title for the experience -->
         <v-row>
             <p class="font-weight-black text-h7">Experience</p>
         </v-row>
 
         <v-row>
             <v-col>
+                <!-- Input field for the experience name (read-only) -->
                 <v-text-field
                     label="Experience Name"
                     v-model="experienceData.experienceName"
@@ -37,12 +42,14 @@
             </v-col>
         </v-row>
 
+        <!-- Section title for the activities -->
         <v-row>
             <p class="font-weight-black text-h7">Activities</p>
         </v-row>
 
         <v-row>
           <v-col cols="6">
+            <!-- Card to display the list of selected activities -->
             <v-card flat>
               <v-card-title>
                 <v-row>
@@ -51,15 +58,20 @@
                   </v-col>
                 </v-row>
               </v-card-title>
+
+              <!-- Scrollable list of selected activities -->
               <v-list class="scrollable-list">
                 <v-list-item
                   v-for="activity in selectedActivities"
                   :key="activity._id"
                 >
+                <!-- Display the activity name -->
                 <v-row>
                   <v-col cols="10">
                     {{ activity.activityName }}
                   </v-col>
+
+                  <!-- Remove activity button -->
                   <v-col>
                     <v-icon
                       @click.stop="removeActivity(activity)"
@@ -73,12 +85,15 @@
               </v-list>
             </v-card>
           </v-col>
+
+          <!-- Card for adding activities, shown conditionally if showAddActivities is true -->
           <v-col>
             <v-card
               v-if="showAddActivities"
               flat
               title="Add Activities"
             >
+              <!-- Search bar for filtering activities -->
               <template v-slot:text>
                 <v-text-field
                   v-model="activitySearch"
@@ -89,6 +104,8 @@
                   hide-details
                 ></v-text-field>
               </template>
+
+              <!-- Data table for displaying filtered activity data -->
               <v-data-table
                 :headers="activityHeaders"
                 :items="filteredActivityData"
@@ -98,6 +115,8 @@
                 hover
                 :search="activitySearch"
               >
+
+                <!-- Custom table body for displaying activities -->
                 <template v-slot:body="{ items }">
                   <template v-for="item in items" :key="item._id">
                     <tr
@@ -109,6 +128,7 @@
                       <td>
                         <div class="activity-content">
                           {{ item.activityName }}
+                          <!-- Show the add icon when hovering over the item -->
                           <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
                         </div>
                       </td>
@@ -116,7 +136,7 @@
                   </template>
                 </template>
                 <template v-slot:bottom>
-
+                <!-- Optional bottom content (empty for now) -->
                 </template>
               </v-data-table>
             </v-card>
@@ -125,12 +145,14 @@
 
 
 
+        <!-- Section title for the Exit Form Release Date -->
         <v-row>
             <p class="font-weight-black text-h7">Exit Form Release Date</p>
         </v-row>
 
         <v-row>
             <v-col cols="6">
+                <!-- Input field for selecting the Exit Form Release Date, editable if user can update -->
                 <v-text-field
                     label="Exit Form Release Date"
                     type="date"
@@ -142,18 +164,24 @@
 
         <v-row>
             <v-col>
+                <!-- Cancel button to go back to the previous page -->
                 <v-btn @click="goBack" style="margin-right: 10px;">
                 Cancel
                 </v-btn>
+                <!-- Submit button, shown if the user has permission to update the instance -->
                 <v-btn v-if="canUpdateExpInstance" style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
             </v-col>
+
             <v-spacer></v-spacer>
+
             <v-col cols="auto" v-if="canExpInstanceBeDeleted">
+                <!-- Delete button, shown if the instance can be deleted -->
                 <v-btn @click="showDeleteDialog = true">Delete</v-btn>
             </v-col>
         </v-row>
     </v-form>
 </v-container>
+
 <!-- Delete Dialog -->
 <v-dialog v-model="showDeleteDialog" persistent width="auto">
     <v-card>
@@ -175,25 +203,29 @@ import axios from "axios";
 
 export default {
     name: 'instructorSpecificExperienceInstance',
-    setup() {
-      const userStore = useLoggedInUserStore();
+setup() {
+  // Access the logged-in user store
+  const userStore = useLoggedInUserStore();
 
-      const showAddActivities = computed(() => {
-        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-        return allowedRoles.includes(userStore.role);
-      });
+  // Computed property to determine if the "Add Activities" section should be shown based on user roles
+  const showAddActivities = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-      const canUpdateExpInstance = computed(() => {
-        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-        return allowedRoles.includes(userStore.role);
-      })
+  // Computed property to determine if the user can update the experience instance based on user roles
+  const canUpdateExpInstance = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
 
-      return {
-        userStore,
-        showAddActivities: showAddActivities.value,
-        canUpdateExpInstance: canUpdateExpInstance.value
-      }
-    },
+  return {
+    userStore,
+    showAddActivities: showAddActivities.value, // Determine if the "Add Activities" section is shown
+    canUpdateExpInstance: canUpdateExpInstance.value // Determine if the experience instance can be updated
+  };
+},
+
     data() {
         return {
             sessionData: {},
@@ -220,28 +252,37 @@ export default {
             hoveredItem: null,
         }
     },
-    async created() {
-        await this.fetchActivityData();
-        this.fetchExperienceInstance();
-        this.checkIfExpInstanceCanBeDeleted();
-    },
 
-    computed: {
-        filteredActivityData() {
-            // Check if selectedActivities is not empty
-            if (this.selectedActivities && this.selectedActivities.length > 0) {
-                // Return activities from activityData not present in selectedActivities
-                return this.activityData.filter(activity => 
-                    !this.selectedActivities.some(selectedActivity => 
-                        selectedActivity._id === activity._id
-                    )
-                );
-            } else {
-                // If no activities are selected, return all activities
-                return this.activityData;
-            }
+async created() {
+  // Fetch activity data when the component is created
+  await this.fetchActivityData();
+
+  // Fetch the experience instance data
+  this.fetchExperienceInstance();
+
+  // Check if the experience instance can be deleted
+  this.checkIfExpInstanceCanBeDeleted();
+},
+
+
+computed: {
+    // Filters the activity data, excluding already selected activities
+    filteredActivityData() {
+        // Check if there are selected activities
+        if (this.selectedActivities && this.selectedActivities.length > 0) {
+            // Return activities that are not present in the selectedActivities array
+            return this.activityData.filter(activity => 
+                !this.selectedActivities.some(selectedActivity => 
+                    selectedActivity._id === activity._id
+                )
+            );
+        } else {
+            // If no activities are selected, return all activities
+            return this.activityData;
         }
-    },
+    }
+},
+
     
     methods: {
 
