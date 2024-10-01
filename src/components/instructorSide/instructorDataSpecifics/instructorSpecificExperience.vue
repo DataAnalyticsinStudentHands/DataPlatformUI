@@ -1,11 +1,14 @@
 <!--'/instructorSpecificExperience' - this view presents a single Experience's data -->
 <template>
   <main>
+    <!-- Form for updating or deleting an experience -->
     <v-form>
       <v-container>
+        <!-- Display the original experience name as the title -->
         <p class="font-weight-black text-h6">Experience: {{ originalExperienceName }}</p>
         <v-row>
           <v-col cols="12" md="6">
+            <!-- Input field for the experience category, read-only if applicable -->
             <v-text-field 
               v-model="experience.experienceCategory" 
               label="Experience Category" 
@@ -13,6 +16,7 @@
             </v-text-field>
           </v-col>
           <v-col cols="12" md="6">
+            <!-- Input field for the experience name, read-only if applicable -->
             <v-text-field 
               v-model="experience.experienceName" 
               label="Experience Name" 
@@ -22,12 +26,15 @@
         </v-row>
         <v-row class="pt-5">
           <v-col>
+            <!-- Cancel button to go back to the previous page -->
             <v-btn @click="goBack()">
               Cancel
             </v-btn>
+            <!-- Update button, shown if the user has permission to update the experience -->
             <v-btn v-if="canUpdateExperience" style="text-align: center; margin-left: 10px;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
           </v-col>
           <v-spacer></v-spacer>
+          <!-- Delete button, shown if the experience can be deleted -->
           <v-col cols="auto" v-if="canExperienceBeDeleted">
             <v-btn @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
           </v-col>
@@ -110,22 +117,26 @@ import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
-  setup() {
-    const userStore = useLoggedInUserStore();
+setup() {
+  // Access the logged-in user store
+  const userStore = useLoggedInUserStore();
 
-    const canUpdateExperience = ref(false);
+  // Ref to determine if the experience can be updated
+  const canUpdateExperience = ref(false);
 
-    const isReadOnly = computed(() => {
-      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-      return !allowedRoles.includes(userStore.role);
-    });
+  // Computed property to check if the form should be read-only based on user roles
+  const isReadOnly = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return !allowedRoles.includes(userStore.role);
+  });
 
-    return {
-      userStore,
-      canUpdateExperience,
-      isReadOnly
-    };
-  },
+  return {
+    userStore,
+    canUpdateExperience, // Determines if the experience can be updated
+    isReadOnly // Determines if the fields are read-only based on user roles
+  };
+},
+
   data() {
     return {
       experience: {
@@ -143,13 +154,18 @@ export default {
       deleteDialogWithInstances: false,
     };
   },
-  async mounted() {
-    const experienceID = useLoggedInUserStore().navigationData.experienceID;
-    if (experienceID) {
-      await this.fetchExperienceData(experienceID);
-      await this.checkIfExperienceCanBeDeleted(experienceID);
-    }
-  },
+
+async mounted() {
+  // Retrieve the experience ID from the user's navigation data
+  const experienceID = useLoggedInUserStore().navigationData.experienceID;
+  
+  // If an experience ID exists, fetch the experience data and check if it can be deleted
+  if (experienceID) {
+    await this.fetchExperienceData(experienceID);
+    await this.checkIfExperienceCanBeDeleted(experienceID);
+  }
+},
+
 
   methods: {
 
@@ -183,6 +199,7 @@ export default {
         this.handleError(error);
       }
     },
+
     // Fetches data to check if the specified experience can be deleted by sending a request to the backend server. If successful, updates the local state with the boolean value indicating whether the experience can be deleted or not.
     async checkIfExperienceCanBeDeleted(experienceID) {
       try {
@@ -226,7 +243,6 @@ export default {
             this.confirmDelete();
           }
         }
-
       } catch (error) {
         this.handleError(error);
       } finally {
