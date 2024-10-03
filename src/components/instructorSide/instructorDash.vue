@@ -2,6 +2,7 @@
 <template>
   <main>
     <v-container>
+      <!-- Title -->
       <v-row>
         <v-col class="text-center">
           <h1
@@ -21,6 +22,7 @@
         </v-col>
       </v-row>
       
+      <!-- Student Progress Monitor -->
       <v-row>
         <v-col>
           <v-card @click="navigateToProgressMonitor" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
@@ -29,6 +31,8 @@
             </v-card-title>
           </v-card>
         </v-col>
+
+        <!-- Student Mailer -->
         <!-- <v-col :cols="6">
           <v-card @click="navigateToMailer" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
@@ -60,33 +64,46 @@ export default {
       lastName: "",
     };
   },
-  mounted() {
-    let token = localStorage.getItem("token");
-    let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
-    axios
-      .get(url, {
-        headers: {token},
-      })
-      .then(
-        (res) => {
-          this.firstName = res.data.user.firstName;
-          this.lastName = res.data.user.lastName;
-        },
-        (err) => {
-          if (err) {
-            this.$router.push("/login");
-          }
+mounted() {
+  // Fetch token from localStorage
+  let token = localStorage.getItem("token");
+  
+  // API URL for fetching user data
+  let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
+
+  // Make an API call to get user information
+  axios
+    .get(url, {
+      headers: { token },
+    })
+    .then(
+      (res) => {
+        // Set user's first and last name
+        this.firstName = res.data.user.firstName;
+        this.lastName = res.data.user.lastName;
+      },
+      (err) => {
+        // If an error occurs, redirect to login
+        if (err) {
+          this.$router.push("/login");
         }
-      )
-    if (useLoggedInUserStore().navigationData?.toastType) {
-      toast[useLoggedInUserStore().navigationData?.toastType](useLoggedInUserStore().navigationData?.toastMessage, { 
+      }
+    );
+
+  // Show a toast message if navigationData contains a toast type
+  if (useLoggedInUserStore().navigationData?.toastType) {
+    toast[useLoggedInUserStore().navigationData?.toastType](
+      useLoggedInUserStore().navigationData?.toastMessage, { 
         position: useLoggedInUserStore().navigationData?.toastPosition,
         toastClassName: useLoggedInUserStore().navigationData?.toastCSS
-      });
+      }
+    );
 
-      useLoggedInUserStore().navigationData = null;
-    }
-  },
+    // Clear navigationData after showing the toast
+    useLoggedInUserStore().navigationData = null;
+  }
+},
+
   methods: {
 
     // Navigates to the progress monitor tool.

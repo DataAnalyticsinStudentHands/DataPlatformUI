@@ -213,7 +213,6 @@
     
 
 <script>
-import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
@@ -291,10 +290,12 @@ data() {
 },
 
 mounted() {
+    // Fetch the student data when the component is mounted
     this.fetchStudentData();
 },
 
 watch: {
+    // Reset the date range if the graduation date filter is set to "Between"
     graduationDateFilterType(newVal) {
         if (newVal === "Between") {
             this.beginningDateRange = null;
@@ -304,13 +305,17 @@ watch: {
 },
 
 computed: {
+    // Return the loading state from the user store
     loading() {
         return useLoggedInUserStore().loading;
     },
 
+    // Show the chips row if search criteria are present
     showChipsRow() {
         return this.searchCriteria.length > 0;
     },
+
+    // Format the selected graduation date range if "Between" is chosen
     formattedSelectedGraduationDate() {
         if (this.graduationDateFilterType === "Between") {
             let text = "";
@@ -330,6 +335,8 @@ computed: {
             ? DateTime.fromJSDate(this.selectedGraduationDate).toFormat('MM-dd-yyyy')
             : "";
     },
+
+    // Return the appropriate title for the graduation date filter
     graduationDateTitle() {
         switch (this.graduationDateFilterType) {
             case "On":
@@ -344,6 +351,8 @@ computed: {
                 return "Graduation Date On";
         }
     },
+
+    // Allow date submission only if both beginning and end dates are selected for "Between"
     canApplyGraduationDates() {
         if (this.graduationDateFilterType === "Between") {
             // Allow submission only if both beginning and end date ranes are selected
