@@ -4,12 +4,15 @@
 
       <v-row>
         <v-col cols="12">
+            <!-- Card for the Goal Form Completion Tracker -->
             <v-card>
+                <!-- Title with CSV download button for students without goal forms -->
                 <v-card-title class="pa-4 d-flex justify-space-between align-center">
                   Goal Form Completion Tracker
                   <progress-monitor-csv-downloader v-if="selectedExperience && studentsWithoutGoalForm.length" :data="studentsWithoutGoalForm" :file-name="csvFileName" />
                 </v-card-title>
                 
+                <!-- Subtitle for selecting an experience -->
                 <v-card-subtitle class="text-h6">
                   <v-row>
                     <v-col>
@@ -21,6 +24,7 @@
                 <v-container>
                 <v-row>
                     <v-col cols="12" sm="8" md="8">
+                    <!-- Autocomplete for selecting an experience -->
                     <v-autocomplete
                         v-model="selectedExperience"
                         :items="formattedExperiences"
@@ -33,6 +37,7 @@
                     </v-col>
                 </v-row>
 
+                <!-- Buttons to toggle between completed and uncompleted states -->
                 <v-row class="mt-0 mb-2">
                   <v-col>
                       <v-btn 
@@ -47,6 +52,7 @@
                   </v-col>
                 </v-row>
 
+                <!-- Display total number of students if an experience is selected -->
                 <v-row v-if="selectedExperience">
                 <v-col cols="12">
                   <div class="text-h6 pa-4">
@@ -172,6 +178,7 @@
       'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
     },
     watch: {
+      // Watch for changes in the selected experience
       selectedExperience(newVal) {
         if (newVal) {
           // Find the selected experience object by its ID
@@ -185,6 +192,8 @@
           this.fetchStudents();
         }
       },
+
+      // Watch for changes in the completion status
       completed(newVal, oldVal) {
         if (newVal !== null && this.selectedExperience !== null) {
           this.fetchStudents();
@@ -192,30 +201,40 @@
       },
     },
     mounted() {
+      // Fetch the list of experiences when the component is mounted
       this.fetchExperiences();
     },
     computed: {
+      // Format experiences for display in the autocomplete dropdown
       formattedExperiences() {
         return this.expInstances.map(instance => ({
           text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
           value: instance.expInstanceID
         }));
       },
+
+      // Get paginated students who haven't completed the goal form
       paginatedStudentsWithoutGoalForm() {
         const start = (this.currentPage - 1) * this.itemsPerPage;
         const end = this.currentPage * this.itemsPerPage;
         return this.studentsWithoutGoalForm.slice(start, end);
       },
+
+      // Get paginated students who have completed the goal form
       paginatedStudentsWithGoalForm() {
         const start = (this.currentPage - 1) * this.itemsPerPage;
         const end = this.currentPage * this.itemsPerPage;
         return this.studentsWithGoalForm.slice(start, end);
       },
+
+      // Determine the total number of pages for pagination based on the completed status
       totalPaginationLength() {
         // Determine which student list to use based on the `completed` flag
         let list = this.completed ? this.studentsWithGoalForm : this.studentsWithoutGoalForm;
         return Math.ceil(list.length / this.itemsPerPage);
       },
+
+      // Return the total number of students based on the list available      
       totalStudentsCount() {
         if (this.studentsWithoutGoalForm.length === 0) {
           return this.studentsWithGoalForm.length;
@@ -288,12 +307,16 @@
         }
       },
 
+
+      // Toggles the navigation state and optionally changes the button text
       toggleNavigation() {
         this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
         // Optionally change the button text based on state
         this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
       },
 
+
+      // Navigates to the student's profile if navigation is enabled
       navigateIfEnabled(userID) {
         if (!this.isNavigationDisabled) {
           this.navigateToProfile(userID);
