@@ -2,14 +2,17 @@
 <template>
   <v-container>
 
+    <!-- Card for the Exit Form Completion Tracker -->
     <v-row>
       <v-col cols="12">
           <v-card>
+              <!-- Title with CSV download button, shown if an experience is selected and there are students without exit forms -->
               <v-card-title class="pa-4 d-flex justify-space-between align-center">
                 Exit Form Completion Tracker
                 <progress-monitor-csv-downloader v-if="selectedExperience && studentsWithoutExitForm.length" :data="studentsWithoutExitForm" :file-name="csvFileName" />
               </v-card-title>
               
+              <!-- Subtitle  -->
               <v-card-subtitle class="text-h6">
                 <v-row>
                   <v-col>
@@ -21,6 +24,7 @@
               <v-container>
               <v-row>
                   <v-col cols="12" sm="8" md="8">
+                  <!-- Autocomplete for selecting an experience -->
                   <v-autocomplete
                       v-model="selectedExperience"
                       :items="formattedExperiences"
@@ -33,6 +37,7 @@
                   </v-col>
               </v-row>
 
+              <!-- Buttons to toggle between completed and uncompleted states -->
               <v-row class="mt-0 mb-2">
                 <v-col>
                     <v-btn 
@@ -47,6 +52,7 @@
                 </v-col>
               </v-row>
 
+              <!-- Display the total number of students if an experience is selected -->
               <v-row v-if="selectedExperience">
               <v-col cols="12">
                 <div class="text-h6 pa-4">
@@ -172,6 +178,7 @@ export default {
     'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
   },
   watch: {
+    // Watch for changes in the selected experience
     selectedExperience(newVal) {
       if (newVal) {
         // Find the selected experience object by its ID
@@ -185,6 +192,8 @@ export default {
         this.fetchStudents();
       }
     },
+
+    // Watch for changes in the completed status
     completed(newVal, oldVal) {
       if (newVal !== null && this.selectedExperience !== null) {
         this.fetchStudents();
@@ -192,30 +201,40 @@ export default {
     },
   },
   mounted() {
+    // Fetch Experiences upon mount
     this.fetchExperiences();
   },
   computed: {
+    // Format experiences for display in the autocomplete dropdown
     formattedExperiences() {
       return this.expInstances.map(instance => ({
         text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
         value: instance.expInstanceID
       }));
     },
+
+    // Get paginated students who haven't completed the exit form
     paginatedStudentsWithoutExitForm() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
       return this.studentsWithoutExitForm.slice(start, end);
     },
+
+    // Get paginated students who have completed the exit form
     paginatedStudentsWithExitForm() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
       return this.studentsWithExitForm.slice(start, end);
     },
+
+    // Determine the total number of pages for pagination based on the completed status
     totalPaginationLength() {
       // Determine which student list to use based on the `completed` flag
       let list = this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
       return Math.ceil(list.length / this.itemsPerPage);
     },
+
+    // Return the total number of students based on the list available
     totalStudentsCount() {
       if (this.studentsWithoutExitForm.length === 0) {
         return this.studentsWithExitForm.length;
@@ -288,6 +307,7 @@ export default {
       }
     },
 
+    // Changes whether the user can navigate
     toggleNavigation() {
         this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
         // Optionally change the button text based on state
