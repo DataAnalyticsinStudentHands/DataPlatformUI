@@ -1,6 +1,7 @@
-<!-- /registerForm -->
+<!-- /registerForm - where users register for a new account -->
 <template>
     <v-container>
+      <!-- Title -->
         <v-row justify="center">
             <v-col cols="12" class="text-center">
                 <h1 class="font-bold text-2xl text-custom-red tracking-widest mt-3 mb-5">
@@ -255,20 +256,22 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
         }
       },
     },
+    // Validations for user input fields
     validations() {
       return {
         user: {
-          firstName: { required },
-          lastName: { required },
-          languagePreference: { required },
+          firstName: { required }, // First name is required
+          lastName: { required }, // Last name is required
+          languagePreference: { required }, // Language preference is required
           password: {
-            required,
-            minLengthValue: minLength(8),
+            required, // Password is required
+            minLengthValue: minLength(8), // Password must be at least 8 characters long
           },
-          email: { required },
+          email: { required }, // Email is required
         },
       };
     },
+
   };
   </script>
   
