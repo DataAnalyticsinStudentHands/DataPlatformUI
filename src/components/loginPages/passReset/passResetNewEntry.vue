@@ -1,17 +1,24 @@
+<!-- passResetNewEntry.vue - This component allows users to update their password by entering a new password and confirming it. After the password is reset, the user is redirected to the login screen. -->
+
+
 <template>
     <v-card-text>
         <v-row>
             <v-col cols="12" class="pb-0">
+                <!-- Title for password update form -->
                 <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                     {{$t('Update Password')}}
                 </h2>
             </v-col>
         </v-row>
         <v-row>
+            <!-- Instructional text asking for the new password -->
             <v-col cols="12">
                 {{$t('Please enter your new password:')}}
             </v-col>
         </v-row>
+
+        <!-- Password update form -->
         <v-row justify="center">
             <v-col cols="12" md="10">
                 <v-sheet>
@@ -73,6 +80,7 @@ export default {
             loading: false,
             newPassword: null,
             reEnterPassword: null,
+            // Validation rules for the password fields
             newPassRules: [
                 v => {
                     if (!v) {
@@ -110,6 +118,7 @@ export default {
         };
     },
     mounted() {
+        // Show toast message if navigationData contains one
         if (useLoggedInUserStore().navigationData?.toastMessage) {
             toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, {
                 position: useLoggedInUserStore().navigationData.toastPosition || 'top-right',
@@ -123,12 +132,14 @@ export default {
         loggedInUserStore.removeTokenHeader();
     },
     watch: {
+        // Watch for changes in the new password and validate the re-entered password
         newPassword(newVal, oldVal) {
             if (newVal !== oldVal) {
                 // Validate reEnterPassword when newPassword changes
                 this.$refs.passForm.validate('reEnterPassword');
             }
         },
+        // Watch for changes in the re-entered password and validate the new password
         reEnterPassword(newVal, oldVal) {
             if (newVal !== oldVal) {
                 // Validate newPassword when reEnterPassword changes

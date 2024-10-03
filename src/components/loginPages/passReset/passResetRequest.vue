@@ -1,17 +1,25 @@
+<!-- passResetRequest.vue - This component allows users to initiate the password reset process by entering their email. If the email exists in the records, a confirmation code is sent to the user's email to proceed with resetting their password. -->
+
+
 <template>
     <v-card-text>
             <v-row>
+                <!-- Title for the password reset form -->
                 <v-col cols="12" class="pb-0">
                     <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                         {{$t('Password Reset')}}
                     </h2>
                 </v-col>
             </v-row>
+
+            <!-- Instructions for the user to enter their email -->
             <v-row>
                 <v-col cols="12">
                     {{$t('Please enter your email. If it exists in our records, you will receive a confirmation code shortly to reset your password.')}}
                 </v-col>
             </v-row>
+
+                <!-- Form to capture the email address -->
                 <v-row justify="center">
                     <v-col cols="12" md="10">
                         <v-sheet>
@@ -56,6 +64,7 @@ export default {
             userID: "",
             loading: false,
             email: null,
+            // Validation rules for the email input
             rules: [
                 v => {
                     if (!v) {

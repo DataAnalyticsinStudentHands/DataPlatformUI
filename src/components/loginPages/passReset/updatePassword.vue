@@ -1,14 +1,17 @@
-<!-- /updatePasswordForm -->
+<!-- updatePassword.vue - This component is responsible for allowing logged-in users to update their password by providing their current password and setting a new password. -->
+
 <template>
   <section class="">
     <div class="px-10 py-20">
       <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <!-- Password reset form -->
         <form
           @submit.prevent
           class="space-y-4 md:space-y-6"
           action="/login"
           method="POST"
         >
+          <!-- Input field for the current password -->
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
@@ -24,6 +27,8 @@
               />
             </div>
           </div>
+
+          <!-- Input field for the new password -->
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
@@ -37,6 +42,8 @@
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 placeholder="••••••••"
               />
+
+              <!-- Display validation errors for the new password -->
               <span class="text-black" v-if="v$.newPassword.$error">
                 <p
                   class="text-custom-red"
@@ -48,6 +55,8 @@
               </span>
             </div>
           </div>
+
+          <!-- Input field to confirm the new password -->
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
@@ -64,6 +73,7 @@
             </div>
           </div>
 
+          <!-- Error message container -->
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
           >
@@ -74,6 +84,8 @@
               {{ error }}
             </div>
           </div>
+
+          <!-- Success message container, hidden by default -->
           <div
             id="myDIV"
             class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
@@ -85,6 +97,8 @@
               {{ success }}
             </div>
           </div>
+
+          <!-- Submit button to trigger the password reset process -->
           <button
             @click="activateAccount"
             type="submit"
@@ -106,43 +120,30 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
   name: "VerifyAccount",
+  // Redirects to the login page if the token is missing
   created() {
     if (localStorage.getItem("token") === null) {
       this.$router.push("/login");
     }
   },
+  // Setup for validation with Vuelidate
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
   mounted() {
-    // let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
-    // this.queryData = [];
-    // axios
-    //   .get(apiURL, {
-    //     headers: { token: localStorage.getItem("token") },
-    //   })
-    //   .then(
-    //     (resp) => {
-    //       this.queryData = resp.data;
-    //     },
-    //     (err) => {
-    //       if (err) {
-    //         this.$router.push("/login");
-    //       }
-    //     }
-    //   );
+    // Scroll to the top of the page when the component is mounted
     window.scrollTo(0, 0);
   },
   data() {
     return {
-      isConfirmPasswordValid: false,
-      code: "",
-      newPassword: "",
-      confirmNewPassword: "",
-      error: "",
-      success: "",
-      loginLink: "",
-      toggle: "hide",
+      isConfirmPasswordValid: false, // Tracks if the password confirmation is valid
+      code: "", // Holds the current password
+      newPassword: "", // Holds the new password
+      confirmNewPassword: "", // Holds the confirmation of the new password
+      error: "", // Stores error messages
+      success: "", // Stores success messages
+      loginLink: "", // Link to login page
+      toggle: "hide", // Toggles visibility of elements
     };
   },
   methods: {
@@ -217,6 +218,7 @@ export default {
       }
     },
   },
+  // Vuelidate validation rules for the new password
   validations() {
     return {
       newPassword: {
