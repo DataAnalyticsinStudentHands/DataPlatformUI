@@ -1,5 +1,8 @@
+<!-- login.vue - Handle the Login process and navigation to password reset/account verification views -->
+
 <template>
   <div>
+    <!-- Main Title -->
     <v-card-text>
       <h2 class="font-bold text-2xl text-custom-red tracking-widest text-center mt-3 mb-5">
           {{$t('Welcome to')}} {{ appName }}
@@ -7,6 +10,8 @@
 
       <!-- Login form -->
       <v-form ref="loginForm">
+
+        <!-- Email Input Field -->
         <v-text-field
           :label="$t('Email:')"
           v-model="email"
@@ -16,6 +21,7 @@
           @keydown.enter="login"
         ></v-text-field>
 
+        <!-- Password Input Field -->
         <v-text-field
           :label="$t('Password:')"
           :type="showPassword ? 'text' : 'password'"
@@ -25,6 +31,8 @@
           prepend-icon="mdi-lock"
           @keydown.enter="login"
         >
+
+          <!-- Password Visibility Icon -->
           <template v-slot:append-inner>
             <v-icon
               @click="showPassword = !showPassword"
@@ -35,6 +43,7 @@
         </v-text-field>
       </v-form>
 
+      <!-- Forgot Your Password? Navigation -->
       <v-row>
         <v-col cols="12" class="pl-0 pt-6">
           <span
@@ -45,6 +54,8 @@
           </span>
         </v-col>
       </v-row>
+
+      <!-- Have a Confirmation Code? Navigation -->
       <v-row class="mt-0">
         <v-col cols="12" class="pl-0">
           <span
@@ -56,6 +67,7 @@
         </v-col>
       </v-row>
 
+      <!-- Login Button -->
       <v-row justify="center">
         <v-col cols="8">
           <v-btn
@@ -87,6 +99,7 @@ export default {
         password: "",
         error: "",
         loading: false,
+        // Validation rules for email input
         emailRules: [
             v => {
                 if (!v) {
@@ -97,6 +110,7 @@ export default {
                 return true;
             }
         ],
+        // Input is required
         requiredRule: [v => !!v || this.$t('This field is required')],
         appName: "",
         showPassword: false,
@@ -105,6 +119,7 @@ export default {
   setup() {
     const store = useLoggedInUserStore();
 
+    // Computed property to dynamically assign the application name based on the organization name
     const appName = computed(() => {
       return store.orgName === 'Data & Society' ? 'Engaged Data' : store.orgName;
     });
@@ -115,6 +130,7 @@ export default {
     };
   },
   mounted() {
+    // Check if there's toast data in the navigationData to show any notifications
     if (useLoggedInUserStore().navigationData?.toastType) {
       toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, { 
         position: useLoggedInUserStore().navigationData.toastPosition,
