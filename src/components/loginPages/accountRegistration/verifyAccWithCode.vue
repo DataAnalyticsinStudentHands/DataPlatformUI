@@ -1,17 +1,24 @@
+<!-- verifyAccWithCode.vue - This component handles the email verification process for users. It presents a form to enter a confirmation code and submits the code to verify and activate the user's account. -->
+
+
 <template>
     <v-card-text>
         <v-row>
             <v-col cols="12" class="pb-0">
+                <!-- Title asking the user to verify their email -->
                 <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                     {{$t('Please Verify Your Email')}}
                 </h2>
             </v-col>
         </v-row>
+
+        <!-- Description of the email verification process -->
         <v-row>
             <v-col cols="12">
                 {{$t('If your email address is not already associated with an account, you will receive a confirmation code to verify your email. This process may take a few minutes.')}}
             </v-col>
         </v-row>
+        <!-- Form for entering the confirmation code -->
         <v-row justify="center">
             <v-col cols="12" md="8">
                 <v-sheet>
@@ -58,6 +65,7 @@ export default {
       loading: false,
       userID: null,
       rules: [
+        // Validation rules for the confirmation code field
         value => {
             if (value) return true
             return this.$t('Code is required.')
@@ -66,6 +74,7 @@ export default {
     };
   },
   mounted() {
+    // Set the user ID if available in navigation data
     if (useLoggedInUserStore().navigationData && useLoggedInUserStore().navigationData.id) {
         this.userID = useLoggedInUserStore().navigationData.id;
     }
