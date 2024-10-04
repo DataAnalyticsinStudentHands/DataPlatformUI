@@ -69,7 +69,11 @@ app.use(Vue3Toastify, {
 app.use(pinia);
 
 const userStore = useLoggedInUserStore();
-await userStore.initializeStore();
+
+async function initialize() {
+  await userStore.initializeStore();
+}
+initialize();
 
 app.use(vuetify);
 app.use(router);
