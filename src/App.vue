@@ -2,7 +2,7 @@
   <v-app>
     <v-layout class="rounded">
       <v-navigation-drawer
-        v-if="user.isLoggedIn"
+        v-if="isFullyAuthenticated"
         v-model="drawer"
         color="#c8102e"
         :rail="rail"
@@ -144,7 +144,7 @@
             >Find Event</v-list-item>
           </div>
 
-          <div v-if="user.isLoggedIn">
+          <div v-if="isFullyAuthenticated">
             <v-list-item>
               <hr> <!-- Horizontal line -->
             </v-list-item>
@@ -189,7 +189,7 @@
   style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
 >
   <v-btn 
-    v-if="user.isLoggedIn && !drawer"
+    v-if="isFullyAuthenticated && !drawer"
     icon 
     @click="drawer = true; rail = false"
   >
@@ -256,7 +256,13 @@ export default {
     loggedIn() {
       const store = useLoggedInUserStore();
       return store.isLoggedIn;
-    }
+    },
+  isFullyAuthenticated() {
+    const store = useLoggedInUserStore();
+    // Only show navigation if user is logged in and not a Temporary role
+    return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
+  }
+
   },
   methods: {
     async handleLogout() {

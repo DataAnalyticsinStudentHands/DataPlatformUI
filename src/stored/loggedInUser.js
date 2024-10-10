@@ -61,7 +61,7 @@ export const useLoggedInUserStore = defineStore({
             userId: payload.userID,
             token: token,
             languagePreference: payload.languagePreference || response.data.languagePreference,
-            group: payload.group || response.data.group || null, // Store the group if it exists
+            group: payload.group || response.data.group || null,
           });
 
           // Save token to localStorage
@@ -88,10 +88,12 @@ export const useLoggedInUserStore = defineStore({
             await this.fetchRegisteredExperiences();
           }
 
-          // Officially log the user in
-          this.$patch({
-            isLoggedIn: true,
-          });
+          // Officially log the user in if not "Temporary"
+          if (payload.userRole !== 'Temporary') {
+            this.$patch({
+              isLoggedIn: true,
+            });
+          }
 
           this.setAutoLogout(payload.exp);
         }
@@ -107,7 +109,6 @@ export const useLoggedInUserStore = defineStore({
         }
       }
     },
-
     logout(reset = false) {
       // **Clear the auto logout timer**
       if (this.logoutTimer) {
@@ -144,7 +145,7 @@ export const useLoggedInUserStore = defineStore({
     },
 
     async initializeStore() {
-      const token = this.token;
+      const token = this.token || localStorage.getItem('token');
 
       if (token) {
         // Verify the token
@@ -159,11 +160,18 @@ export const useLoggedInUserStore = defineStore({
           } else {
             // Token is valid
             this.$patch({
-              isLoggedIn: true,
               role: payload.userRole,
               userId: payload.userID,
               // ... other properties from payload if needed
             });
+
+            // Only set isLoggedIn to true if the role is not "Temporary"
+            if (payload.userRole !== 'Temporary') {
+              this.$patch({
+                isLoggedIn: true,
+              });
+            }
+
             // Set the global default header for axios
             this.setTokenHeader(token);
             // Set up auto logout
@@ -176,7 +184,7 @@ export const useLoggedInUserStore = defineStore({
         }
       }
     },
-
+    
     setAutoLogout(expirationTime) {
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
       const timeUntilExpiration = (expirationTime - currentTime) * 1000; // Time until expiration in milliseconds
@@ -239,17 +247,12 @@ export const useLoggedInUserStore = defineStore({
       // Set the global default header for axios
       this.setTokenHeader(token);
 
-      // If the status of the user is 'Pending', update the unverified field
-      if (responseData.userStatus === 'Pending') {
+      // Only mark the user as logged in if their role is not "Temporary"
+      if (userRole !== 'Temporary') {
         this.$patch({
-          unverified: true,
-          token: token
+          isLoggedIn: true,
         });
-        return; // Return from the method since the account is still pending
       }
-
-      // Fetch the full name of the user
-      // await this.getFullName();
     },
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
