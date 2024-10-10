@@ -109,39 +109,54 @@ export default {
             });
 
             if (res.status === 200) {
-                // Update store and localStorage with new JWT
-                store.$patch({
-                    role: res.data.userRole,
-                    userId: res.data.userID,
-                    token: res.data.token,
-                    languagePreference: res.data.languagePreference,
-                    permissions: res.data.permissions // Include permissions if necessary
-                });
+                console.log("res.data: ", res.data)
+                if (res.data.action && res.data.action === 'password-reset') {
+                    console.log('action is password reset');
 
-                // Save the new token to localStorage
-                localStorage.setItem("token", res.data.token);
+                    // Update store and localStorage with the new token that includes password-reset action
+                    store.$patch({
+                        token: res.data.token
+                    });
+                    localStorage.setItem("token", res.data.token);
+                    store.setTokenHeader(res.data.token);
 
-                // Set the global default header for axios
-                store.setTokenHeader(res.data.token);
-
-                await store.getFullName();
-                store.isLoggedIn = true;
-
-                // Navigate to the appropriate dashboard based on the user's role
-                if (store.role === 'Instructor' || store.role === 'Group Instructor' || store.role === 'Group Admin' || store.role === 'Org Admin') {
-                    this.$router.push("/instructorDash");
-                } else if (store.role === 'Student') {
-                    console.log('store verifyAccWithCode: ', store.permissions);
-                    await store.checkFormCompletion();
-                    if (store.hasCompletedEntryForm) {
-                        this.$router.push("/studentDashboard");
-                    } else {
-                        this.$router.push("/studentEntryForm");
-                    }
-                } else if (store.role === 'Basic') {
-                    this.$router.push("/dashboard");
+                    // Redirect to password reset page if the token action is 'password-reset'
+                    this.$router.push("/passResetNewEntry");
                 } else {
-                    this.$router.push("/");
+                    // Update store and localStorage with new JWT for regular account activation
+                    store.$patch({
+                        role: res.data.userRole,
+                        userId: res.data.userID,
+                        token: res.data.token,
+                        languagePreference: res.data.languagePreference,
+                        permissions: res.data.permissions // Include permissions if necessary
+                    });
+
+                    // Save the new token to localStorage
+                    localStorage.setItem("token", res.data.token);
+
+                    // Set the global default header for axios
+                    store.setTokenHeader(res.data.token);
+
+                    await store.getFullName();
+                    store.isLoggedIn = true;
+
+                    // Navigate to the appropriate dashboard based on the user's role
+                    if (store.role === 'Instructor' || store.role === 'Group Instructor' || store.role === 'Group Admin' || store.role === 'Org Admin') {
+                        this.$router.push("/instructorDash");
+                    } else if (store.role === 'Student') {
+                        console.log('store verifyAccWithCode: ', store.permissions);
+                        await store.checkFormCompletion();
+                        if (store.hasCompletedEntryForm) {
+                            this.$router.push("/studentDashboard");
+                        } else {
+                            this.$router.push("/studentEntryForm");
+                        }
+                    } else if (store.role === 'Basic') {
+                        this.$router.push("/dashboard");
+                    } else {
+                        this.$router.push("/");
+                    }
                 }
             } else {
                 toast.error(this.$t('An error occurred. Please try again.'), {
@@ -169,7 +184,7 @@ export default {
                     });
                 }
             } else {
-                toast.error(this.$t('An error has occured. Please try again.'), {
+                toast.error(this.$t('An error has occurred. Please try again.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });
@@ -178,7 +193,6 @@ export default {
             this.loading = false;
         }
     },
-
 
 // Sends a request to reissue a new verification code for the user, identified by userID. On successful request, the userID is extracted from the response.
     async sendNewCode() {

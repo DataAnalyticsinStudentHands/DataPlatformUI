@@ -195,66 +195,58 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
           });
         }
       },
-      // Submits the user registration form after validating the entire form, confirming password and email match. On successful submission, displays a success message and clears the form, then redirects to verification with the user's ID. 
+      // Submits the user registration form after validating the entire form, confirming password and email match. On successful submission, displays a success message and clears the form, then redirects to verification with the user's ID.
       async userSubmitForm() {
-        // Checks to see if there are any errors in validation
-        const isFormCorrect = await this.v$.$validate();
-        this.checkConfirmPassword();
-        // If no errors found. isFormCorrect = True then the form is submitted
-        if (
-          isFormCorrect &&
-          this.isConfirmPasswordValid &&
-          this.isConfirmEmailValid
-        ) {
-          this.loading = true;
-          let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/register`;
-          axios.post(apiURL, this.user).then(
-            async (response) => {
-              //using swal from sweetalert.js for customizeble alerts
-              // swal(
-              //   this.$t("You have registered successfully!"),
-              //   this.$t("Please check your email and follow the steps to verify your account."),
-              //   "success"
-              // );
+          // Checks to see if there are any errors in validation
+          const isFormCorrect = await this.v$.$validate();
+          this.checkConfirmPassword();
 
-              this.user = {
-                firstName: "",
-                lastName: "",
-                email: "",
-                password: "",
-                role: "",
-                error: "",
-              };
+          // If no errors found. isFormCorrect = True then the form is submitted
+          if (
+              isFormCorrect &&
+              this.isConfirmPasswordValid &&
+              this.isConfirmEmailValid
+          ) {
+              this.loading = true;
+              let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/register`;
 
-              const userID = response.data.userID;
+              axios.post(apiURL, this.user).then(
+                  async (response) => {
+                      // Clear the form
+                      this.user = {
+                          firstName: "",
+                          lastName: "",
+                          email: "",
+                          password: "",
+                          role: "",
+                          error: "",
+                      };
 
-              const store = useLoggedInUserStore();
+                      const userID = response.data.userID;
+                      const store = useLoggedInUserStore();
 
-              await store.verifyExistingAcc(response.data);
+                      // Update Pinia store with the received data
+                      await store.verifyExistingAcc(response.data);
 
-              store.navigationData = {
-                id: userID
-              };
+                      // Set navigation data to pass user ID to the verification view
+                      store.navigationData = {
+                          id: userID
+                      };
 
-              this.$router.push({ 
-                name: 'verifyAccWithCode'
+                      // Redirect to verification page
+                      this.$router.push({
+                          name: 'verifyAccWithCode'
+                      });
+                  },
+                  (err) => {
+                      this.handleError(err);
+                  }
+              ).finally(() => {
+                  this.loading = false;
               });
-            },
-            (err) => {
-              if (err.response && err.response.data.title === 'Registration Failed.') {
-                toast.error(this.$t(err.response.data.error), {
-                  position: 'top-right',
-                  toastClassName: 'Toastify__toast--delete'
-                });
-              } else {
-                this.handleError(err);
-              }
-            }
-          ).finally(() => {
-            this.loading = false;
-          });
-        }
-      },
+          }
+      }
+
     },
     // Validations for user input fields
     validations() {
