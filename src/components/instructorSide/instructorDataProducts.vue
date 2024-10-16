@@ -811,7 +811,7 @@
         return ordered_headers;
     },
 
-    // Extracts values from the given object based on the provided header keys, applying transformations as needed for specific fields. Handles array values, converts to string, and handles special characters for CSV formatting.
+    // Extracts values from the given object based on the provided header keys, applying transformations as needed for specific fields. Handles array values, converts to string, and handles special characters for CSV formatting
     getExitFormCSVRowValues(obj, header) {
         const values = [];
         
