@@ -255,6 +255,8 @@
             "goalForm.growthGoal.culturalHumilityGoal": "growth_cultural_humility",
             "goalForm.growthGoal.ethicalDecisionMakingGoal": "growth_ethical_decision",
             "goalForm.growthGoal.professionalResponsibilityGoal": "growth_professional",
+            "goalForm.growthGoal.socialResponsibilityGoal": "growth_social_responsibility",
+            "goalForm.growthGoal.digitalLiteracyGoal": "growth_digital_literacy",
             "goalForm.aspirations.aspirationOne": "aspiration_1_text_entry",
             "goalForm.aspirations.aspirationTwo": "aspiration_2_text_entry",
             "goalForm.aspirations.aspirationThree": "aspiration_3_text_entry",
@@ -638,6 +640,8 @@
           "goalForm.growthGoal.culturalHumilityGoal",
           "goalForm.growthGoal.ethicalDecisionMakingGoal",
           "goalForm.growthGoal.professionalResponsibilityGoal",
+          "goalForm.growthGoal.socialResponsibilityGoal", 
+          "goalForm.growthGoal.digitalLiteracyGoal",      
           "goalForm.aspirations.aspirationOne",
           "goalForm.aspirations.aspirationTwo",
           "goalForm.aspirations.aspirationThree",
@@ -716,7 +720,9 @@
                 "goalForm.growthGoal.teamworkGoal",
                 "goalForm.growthGoal.culturalHumilityGoal",
                 "goalForm.growthGoal.ethicalDecisionMakingGoal",
-                "goalForm.growthGoal.professionalResponsibilityGoal"
+                "goalForm.growthGoal.professionalResponsibilityGoal",
+                "goalForm.growthGoal.socialResponsibilityGoal",
+                "goalForm.growthGoal.digitalLiteracyGoal"
             ];
 
             if (growthFields.includes(field)) {
