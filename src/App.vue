@@ -262,7 +262,6 @@ export default {
     // Only show navigation if user is logged in and not a Temporary role
     return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
   }
-
   },
   methods: {
     async handleLogout() {
