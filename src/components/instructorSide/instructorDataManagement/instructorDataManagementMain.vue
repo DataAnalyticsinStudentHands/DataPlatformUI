@@ -95,6 +95,9 @@ export default {
             toastClassName: store.navigationData.toastCSS,
             limit: 1,
           });
+
+          // Clear navigationData after showing the toast
+          store.navigationData = null;
         }
       },
 

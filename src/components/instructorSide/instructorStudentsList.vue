@@ -63,7 +63,8 @@
             </v-col>
             <v-spacer class="d-none d-sm-flex"></v-spacer>
             <!-- View Archived Students Button -->
-            <v-col lg="auto" md="4" sm="auto" class="d-none d-sm-flex justify-end align-self-center">
+             <!-- KEEP - FOR FUTURE USE -->
+            <!-- <v-col lg="auto" md="4" sm="auto" class="d-none d-sm-flex justify-end align-self-center">
             <v-btn
                 v-if="!selectedStudents.length"
                 @click="toggleArchivedStudents"
@@ -84,7 +85,7 @@
                 {{ viewArchivedStudents ? "Restore" : "Archive" }}
                 </span>
             </v-btn>
-            </v-col>
+            </v-col> -->
         </v-row>
         <!-- Chips Row -->
         <v-row v-if="showChipsRow" dense>
@@ -134,9 +135,10 @@
             class="pointer-cursor"
             @click="viewStudent(item)"
             >
-            <td>
-                <v-checkbox density="compact" class="d-flex"></v-checkbox>
-            </td>
+            <!-- KEEP - FOR FUTURE USE -->
+            <!-- <td @click.stop>
+                <v-checkbox @update:modelValue="toggleSelection(item)" density="compact" class="d-flex"></v-checkbox>
+            </td> -->
             <td>{{ formatName(item.firstName, item.lastName) }}</td>
             <td>{{ item.email }}</td>
             <td>{{ formatPronouns(item.studentInformation?.pronouns) }}</td>
@@ -233,13 +235,8 @@ data() {
         selectedStudents: [],
         studentData: [],
         filteredStudentData: [],
+        // When adding archives: add this to studentHeaders: { title: "", sortable: false, align: "center", width: "30px" },
         studentHeaders: [
-            {
-            title: "",
-            sortable: false,
-            align: "center",
-            width: "30px"
-            },
             {
             title: "Student Name",
             value: "formattedName",
@@ -557,6 +554,18 @@ methods: {
             }
             });
         });
+    },
+
+    // Toggles an student's selection state: if the student is already selected, it is removed from the selection; if it is not selected, it is added to the selection.
+    toggleSelection(student) {
+        const index = this.selectedStudents.findIndex((selectedStudent) => selectedStudent._id === student._id);
+        if (index >= 0) {
+            // Already selected, remove it
+            this.selectedStudents.splice(index, 1);
+        } else {
+            // Not selected, add it
+            this.selectedStudents.push(student);
+        }
     },
 
     // Toggles the selection state of a search chip and updates the filtered student data accordingly.
