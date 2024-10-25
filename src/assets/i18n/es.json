@@ -396,5 +396,9 @@
     "Aspiration 1": "Aspiración 1",
     "Aspiration 2": "Aspiración 2",
     "Aspiration 3": "Aspiración 3",
-    "Previous": "Anterior"
+    "Previous": "Anterior",
+    "First name is required": "El nombre es obligatorio",
+    "Last name is required": "El apellido es obligatorio",
+    "Language preference is required": "La preferencia de idioma es obligatoria",
+    "Password should be at least 8 characters long": "La contraseña debe tener al menos 8 caracteres"
 }
