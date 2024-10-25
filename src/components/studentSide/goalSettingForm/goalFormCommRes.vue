@@ -177,26 +177,26 @@
     {{$t('What kind of community engagement experiences, if any, have you had? Check all that apply.')}}
   </p>
 
+  {{isCommunityEngagementExperiencesInvalid}}
+
   <!-- Loop through all checkboxes -->
   <div 
     v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" 
     :key="engagementExperience.id"
+    :class="{'error-text': isCommunityEngagementExperiencesInvalid, 'black-text': !isCommunityEngagementExperiencesInvalid}"
     class="relative"
     @mouseover="hoveredCheckboxID1 = engagementExperience.id" 
     @mouseleave="hoveredCheckboxID1 = null"
   >
-    <v-checkbox 
-        :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
-        density="compact"
-        class="ma-0 pa-0" 
-        hide-details="true"
-        v-model="engagementExperience.checked" 
-        :label="$t(engagementExperience.label)"
-        :rules="communityEngagementExperiencesRules"
-        :indeterminate="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
-        :disabled="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
-    >
-    </v-checkbox>
+    <v-checkbox
+      density="compact"
+      class="ma-0 pa-0"
+      hide-details="true"
+      v-model="engagementExperience.checked"
+      :label="$t(engagementExperience.label)"
+      :indeterminate="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
+      :disabled="goalForm.communityEngagement.communityEngagementExperiences[goalForm.communityEngagement.communityEngagementExperiences.length - 1].checked && !engagementExperience.checked"
+    />
 
 
     <!-- "Please Specify" text field for the 'Other' option -->
@@ -549,15 +549,6 @@ data() {
         hoveredCheckboxID6: null,
         hoveredCheckboxID7: null,
         jumpToErrorTooltip: false,
-        communityEngagementExperiencesRules: [
-            () => {
-            if (!this.formSubmitted) {
-                return true;
-            }
-            
-            return this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked) || this.$t('Information is required.');
-            }
-        ],
         communityEngagementExperiencesOtherRules: [
             v => {
                 if (!this.formSubmitted) return true;
@@ -892,16 +883,23 @@ watch: {
     },
 },
 computed: {
-    isCommunityEngagementExperiencesInvalid() {
-        // If form hasn't been submitted then skip validation
-        if (!this.formSubmitted) return '';
 
-        // Check if at least one checkbox is checked
-        if (!this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked)) {
-        return this.$t('Information is required.');
+  communityEngagementExperiencesRules() {
+    return [
+      () => {
+        if (!this.formSubmitted) {
+          return true;
         }
-        return '';
-    },
+
+        const isValid = this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked);
+        return isValid ? true : this.$t('Information is required.');
+      }
+    ];
+  },
+
+  isCommunityEngagementExperiencesInvalid() {
+    return this.formSubmitted && !this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked);
+  },
     isOtherEngagementExperienceInvalid() {
         if (!this.formSubmitted) return false;
         const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.label === 'Other');
@@ -1212,7 +1210,11 @@ methods: {
 
 <style scoped>
 .error-text {
-    color: rgb(176, 0, 32);
+  color: rgb(176, 0, 32);
+}
+
+.black-text {
+  color: black; /* Default black color */
 }
 
 .fixed-button {
