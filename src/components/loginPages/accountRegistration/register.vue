@@ -146,6 +146,7 @@
   import { toast } from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
   import useVuelidate from "@vuelidate/core";
+  import { helpers } from "@vuelidate/validators";
   import { minLength, required } from "@vuelidate/validators";
   import axios from "axios";
   import swal from "sweetalert";
@@ -197,11 +198,9 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
       },
       // Submits the user registration form after validating the entire form, confirming password and email match. On successful submission, displays a success message and clears the form, then redirects to verification with the user's ID.
       async userSubmitForm() {
-          // Checks to see if there are any errors in validation
           const isFormCorrect = await this.v$.$validate();
           this.checkConfirmPassword();
 
-          // If no errors found. isFormCorrect = True then the form is submitted
           if (
               isFormCorrect &&
               this.isConfirmPasswordValid &&
@@ -252,14 +251,22 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
     validations() {
       return {
         user: {
-          firstName: { required }, // First name is required
-          lastName: { required }, // Last name is required
-          languagePreference: { required }, // Language preference is required
-          password: {
-            required, // Password is required
-            minLengthValue: minLength(8), // Password must be at least 8 characters long
+          firstName: {
+            required: helpers.withMessage(() => this.$t('First name is required'), required)
           },
-          email: { required }, // Email is required
+          lastName: {
+            required: helpers.withMessage(() => this.$t('Last name is required'), required)
+          },
+          languagePreference: {
+            required: helpers.withMessage(() => this.$t('Language preference is required'), required)
+          },
+          password: {
+            required: helpers.withMessage(() => this.$t('Password is required'), required),
+            minLength: helpers.withMessage(() => this.$t('Password should be at least 8 characters long'), minLength(8))
+          },
+          email: {
+            required: helpers.withMessage(() => this.$t('Email is required'), required)
+          },
         },
       };
     },
