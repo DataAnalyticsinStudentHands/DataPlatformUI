@@ -10,15 +10,14 @@
 
       <!-- Login form -->
       <v-form ref="loginForm">
-
         <!-- Email Input Field -->
         <v-text-field
           :label="$t('Email:')"
           v-model="email"
-          :rules="emailRules"
-          required
           prepend-icon="mdi-email"
           @keydown.enter="login"
+          :error="emailError !== ''"
+          :error-messages="emailError"
         ></v-text-field>
 
         <!-- Password Input Field -->
@@ -26,22 +25,20 @@
           :label="$t('Password:')"
           :type="showPassword ? 'text' : 'password'"
           v-model="password"
-          :rules="passwordRules"
-          required
           prepend-icon="mdi-lock"
           @keydown.enter="login"
+          :error="passwordError !== ''"
+          :error-messages="passwordError"
         >
           <!-- Password Visibility Icon -->
           <template v-slot:append-inner>
-            <v-icon
-              @click="showPassword = !showPassword"
-            >
+            <v-icon @click="showPassword = !showPassword">
               mdi-eye
             </v-icon>
           </template>
         </v-text-field>
-
       </v-form>
+
 
       <!-- Forgot Your Password? Navigation -->
       <v-row>
@@ -99,30 +96,9 @@ export default {
         password: "",
         error: "",
         loading: false,
-        // Validation rules for email input
-        emailRules: [
-            v => {
-                if (!v) {
-                    return this.$t('Email is required');
-                } else if (!/.+@.+/.test(v)) {
-                    return this.$t('Email must be valid');
-                }
-                return true;
-            }
-        ],
-        // Validation rules for password input
-        passwordRules: [
-          v => {
-            if (!v) {
-              return this.$t('Password is required');
-            } else if (v.length < 8) {
-              return this.$t('Password must be at least 8 characters long');
-            }
-            return true;
-          }
-        ],
-        // Input is required
-        requiredRule: [v => !!v || this.$t('This field is required')],
+        // Input Validation Errors
+        emailError: "",
+        passwordError: "",
         appName: "",
         showPassword: false,
       };
@@ -152,14 +128,35 @@ export default {
     }
   },
   methods: {
+    // Custom validation for email and password fields
+    validateFields() {
+      this.emailError = "";
+      this.passwordError = "";
+
+      // Email Validation
+      if (!this.email) {
+        this.emailError = this.$t('Email is required');
+      } else if (!/.+@.+/.test(this.email)) {
+        this.emailError = this.$t('Email must be valid');
+      }
+
+      // Password Validation
+      if (!this.password) {
+        this.passwordError = this.$t('Password is required');
+      } else if (this.password.length < 8) {
+        this.passwordError = this.$t('Password must be at least 8 characters long');
+      }
+
+      // If no errors, return true
+      return this.emailError === "" && this.passwordError === "";
+    },
     // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role. Displays notifications for login feedback. Handles special cases for unverified accounts and incomplete student entry forms.
     async login() {
-      // Check if there are any errors in the form
-      await this.$refs.loginForm.validate();
-      const hasErrors = this.$refs.loginForm.errors.length > 0;
+      // Run custom validation
+      const isValid = this.validateFields();
 
-      // If no errors, proceed with login
-      if (!hasErrors) {
+      // If the form is valid, proceed with login
+      if (isValid) {
         this.loading = true;
         try {
           // Attempt to login
@@ -173,6 +170,7 @@ export default {
               multiple: false
             });
           }
+
           // Navigate to the appropriate dashboard based on the user's role
           if (this.store.role === 'Instructor' || this.store.role === 'Group Instructor' || this.store.role === 'Group Admin' || this.store.role === 'Org Admin') {
             this.$router.push("/instructorDash");
@@ -187,7 +185,7 @@ export default {
           } else {
             this.$router.push("/");
           }
-          // If invalid login, error message will appear from Pinia store
+
           // If unverified account, send to verification view
           if (this.store.unverified === true) {
             this.sendNewCode();
