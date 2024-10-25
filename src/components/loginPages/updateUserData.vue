@@ -20,13 +20,31 @@
       <v-container style="width: 90%; margin: 0 auto;">
         <!-- Input fields for first name, last name, and email -->
         <v-col cols="12" md="6">
-          <v-text-field v-model="firstName" :label="$t('New First Name')"></v-text-field>
+          <v-text-field 
+            v-model="firstName" 
+            :label="$t('New First Name')" 
+            :rules="nameRules"
+            :error-messages="firstNameError"
+            :error="showErrors && firstNameError.length > 0"
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field v-model="lastName" :label="$t('New Last Name')"></v-text-field>
+          <v-text-field 
+            v-model="lastName" 
+            :label="$t('New Last Name')" 
+            :rules="nameRules"
+            :error-messages="lastNameError"
+            :error="showErrors && lastNameError.length > 0"
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field v-model="email" :label="$t('New Email')"></v-text-field>
+          <v-text-field 
+            v-model="email" 
+            :label="$t('New Email')" 
+            :rules="emailRules"
+            :error-messages="emailError"
+            :error="showErrors && emailError.length > 0"
+          ></v-text-field>
         </v-col>
 
         <!-- Radio group for selecting language preference -->
@@ -40,7 +58,14 @@
         <!-- Password confirmation field to finalize changes -->
         <v-col cols="12" md="6">
           <p>{{$t('Please enter your password to confirm your changes:')}}</p>
-          <v-text-field v-model="confirmPassword" :label="$t('Password')" type="password"></v-text-field>
+          <v-text-field 
+            v-model="confirmPassword" 
+            :label="$t('Password')" 
+            type="password"
+            :rules="passwordRules"
+            :error-messages="passwordError"
+            :error="showErrors && passwordError.length > 0"
+          ></v-text-field>
         </v-col>
 
         <!-- Submit button to save changes -->
@@ -52,9 +77,10 @@
 </template>
 
 
-  <script>
+<script>
   import axios from "axios";
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
   export default {
     data() {
       return {
@@ -63,7 +89,8 @@
         lastName: '',
         email: '',
         languagePreference: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        showErrors: false,
       };
     },
     mounted() {
@@ -102,13 +129,55 @@
       loading() {
         const store = useLoggedInUserStore();
         return store.loading;
+      },
+      emailError() {
+        if (!this.email) {
+          return this.$t('Email is required');
+        } else if (!/.+@.+/.test(this.email)) {
+          return this.$t('Email must be valid');
+        }
+        return "";
+      },
+      passwordError() {
+        if (!this.confirmPassword) {
+          return this.$t('Password is required');
+        } else if (this.confirmPassword.length < 8) {
+          return this.$t('Password must be at least 8 characters long');
+        }
+        return "";
+      },
+      firstNameError() {
+        if (!this.firstName) {
+          return this.$t('First name is required');
+        }
+        return "";
+      },
+      lastNameError() {
+        if (!this.lastName) {
+          return this.$t('Last name is required');
+        }
+        return "";
       }
     },
 
     methods: {
+      // Validation rules for form inputs
+      emailRules: [
+        v => !!v || this.$t('Email is required'),
+        v => /.+@.+/.test(v) || this.$t('Email must be valid')
+      ],
+      passwordRules: [
+        v => !!v || this.$t('Password is required'),
+        v => v.length >= 8 || this.$t('Password must be at least 8 characters long')
+      ],
+      nameRules: [
+        v => !!v || this.$t('This field is required')
+      ],
 
       // Updates user information based on input fields and navigates to the respective dashboard with a language-specific toast message indicating successful update.
       async handleSubmitForm() {
+        this.showErrors = true;
+
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/update-user-data`;
@@ -116,31 +185,42 @@
                 : (user.role === 'Instructor' || user.role === 'Group Instructor' || user.role === 'Group Admin' || user.role === 'Org Admin') ? 'instructorDash' 
                 : '';
 
-        
-        axios.put(apiURL, {firstName: this.firstName, lastName: this.lastName, email: this.email, languagePreference: this.languagePreference, password: this.confirmPassword}, {headers: { token }})
-        .then(() => {
-          user.setLanguagePreference(this.languagePreference);
-          let toastMessage = "";
-          if (user.languagePreference === 'English') {
-            toastMessage = 'User information updated!';
-          } else if (user.languagePreference === 'Spanish') {
-            toastMessage = '¡Información del Usuario actualizada!';
-          };
+        // Check if form is valid before submitting
+        if (!this.emailError && !this.passwordError && !this.firstNameError && !this.lastNameError) {
+          axios.put(apiURL, {firstName: this.firstName, lastName: this.lastName, email: this.email, languagePreference: this.languagePreference, password: this.confirmPassword}, {headers: { token }})
+          .then(() => {
+            user.setLanguagePreference(this.languagePreference);
+            let toastMessage = "";
+            if (user.languagePreference === 'English') {
+              toastMessage = 'User information updated!';
+            } else if (user.languagePreference === 'Spanish') {
+              toastMessage = '¡Información del Usuario actualizada!';
+            };
 
-          user.navigationData = {
-            toastType: 'info',
-            toastMessage: toastMessage,
-            toastPosition: 'top-right',
-            toastCSS: 'Toastify__toast--update'
-          };
-          this.$router.push({ 
-              name: destination
+            user.navigationData = {
+              toastType: 'info',
+              toastMessage: toastMessage,
+              toastPosition: 'top-right',
+              toastCSS: 'Toastify__toast--update'
+            };
+            this.$router.push({ 
+                name: destination
+            });
+          })
+          .catch((error) => {
+              this.handleError(error);
           });
-        })
-        .catch((error) => {
-            this.handleError(error);
-        });
+        }
       }
     }
   }
-  </script>
+</script>
+
+<style scoped>
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+</style>
