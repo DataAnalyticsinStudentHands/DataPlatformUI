@@ -16,8 +16,8 @@
           v-model="email"
           prepend-icon="mdi-email"
           @keydown.enter="login"
-          :error="emailError !== ''"
-          :error-messages="emailError"
+          :error="showErrors && translatedEmailError !== ''"
+          :error-messages="showErrors ? translatedEmailError : ''"
         ></v-text-field>
 
         <!-- Password Input Field -->
@@ -27,8 +27,8 @@
           v-model="password"
           prepend-icon="mdi-lock"
           @keydown.enter="login"
-          :error="passwordError !== ''"
-          :error-messages="passwordError"
+          :error="showErrors && translatedPasswordError !== ''"
+          :error-messages="showErrors ? translatedPasswordError : ''"
         >
           <!-- Password Visibility Icon -->
           <template v-slot:append-inner>
@@ -38,7 +38,6 @@
           </template>
         </v-text-field>
       </v-form>
-
 
       <!-- Forgot Your Password? Navigation -->
       <v-row>
@@ -96,11 +95,9 @@ export default {
         password: "",
         error: "",
         loading: false,
-        // Input Validation Errors
-        emailError: "",
-        passwordError: "",
         appName: "",
         showPassword: false,
+        showErrors: false,
       };
   },
   setup() {
@@ -121,39 +118,37 @@ export default {
     if (useLoggedInUserStore().navigationData?.toastType) {
       toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, { 
         position: useLoggedInUserStore().navigationData.toastPosition,
-        toastClassName: useLoggedInUserStore().navigationData.toastCSS
+        toastClassName: 'Toastify__toast--delete'
       });
 
       useLoggedInUserStore().navigationData = null;
     }
   },
-  methods: {
-    // Custom validation for email and password fields
-    validateFields() {
-      this.emailError = "";
-      this.passwordError = "";
-
-      // Email Validation
+  computed: {
+    translatedEmailError() {
       if (!this.email) {
-        this.emailError = this.$t('Email is required');
+        return this.$t('Email is required');
       } else if (!/.+@.+/.test(this.email)) {
-        this.emailError = this.$t('Email must be valid');
+        return this.$t('Email must be valid');
       }
-
-      // Password Validation
-      if (!this.password) {
-        this.passwordError = this.$t('Password is required');
-      } else if (this.password.length < 8) {
-        this.passwordError = this.$t('Password must be at least 8 characters long');
-      }
-
-      // If no errors, return true
-      return this.emailError === "" && this.passwordError === "";
+      return "";
     },
-    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role. Displays notifications for login feedback. Handles special cases for unverified accounts and incomplete student entry forms.
+    translatedPasswordError() {
+      if (!this.password) {
+        return this.$t('Password is required');
+      } else if (this.password.length < 8) {
+        return this.$t('Password must be at least 8 characters long');
+      }
+      return "";
+    }
+  },
+  methods: {
+    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role.
     async login() {
+      // Show validation errors
+      this.showErrors = true;
       // Run custom validation
-      const isValid = this.validateFields();
+      const isValid = this.translatedEmailError === "" && this.translatedPasswordError === "";
 
       // If the form is valid, proceed with login
       if (isValid) {
@@ -262,7 +257,5 @@ select:focus {
     box-shadow: none !important;
     border-color: currentColor !important;
 }
-
-
 
 </style>
