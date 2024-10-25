@@ -26,12 +26,11 @@
           :label="$t('Password:')"
           :type="showPassword ? 'text' : 'password'"
           v-model="password"
-          :rules="requiredRule"
+          :rules="passwordRules"
           required
           prepend-icon="mdi-lock"
           @keydown.enter="login"
         >
-
           <!-- Password Visibility Icon -->
           <template v-slot:append-inner>
             <v-icon
@@ -41,6 +40,7 @@
             </v-icon>
           </template>
         </v-text-field>
+
       </v-form>
 
       <!-- Forgot Your Password? Navigation -->
@@ -109,6 +109,17 @@ export default {
                 }
                 return true;
             }
+        ],
+        // Validation rules for password input
+        passwordRules: [
+          v => {
+            if (!v) {
+              return this.$t('Password is required');
+            } else if (v.length < 8) {
+              return this.$t('Password must be at least 8 characters long');
+            }
+            return true;
+          }
         ],
         // Input is required
         requiredRule: [v => !!v || this.$t('This field is required')],
