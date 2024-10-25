@@ -10,15 +10,14 @@
 
       <!-- Login form -->
       <v-form ref="loginForm">
-
         <!-- Email Input Field -->
         <v-text-field
           :label="$t('Email:')"
           v-model="email"
-          :rules="emailRules"
-          required
           prepend-icon="mdi-email"
           @keydown.enter="login"
+          :error="showErrors && translatedEmailError !== ''"
+          :error-messages="showErrors ? translatedEmailError : ''"
         ></v-text-field>
 
         <!-- Password Input Field -->
@@ -26,17 +25,14 @@
           :label="$t('Password:')"
           :type="showPassword ? 'text' : 'password'"
           v-model="password"
-          :rules="requiredRule"
-          required
           prepend-icon="mdi-lock"
           @keydown.enter="login"
+          :error="showErrors && translatedPasswordError !== ''"
+          :error-messages="showErrors ? translatedPasswordError : ''"
         >
-
           <!-- Password Visibility Icon -->
           <template v-slot:append-inner>
-            <v-icon
-              @click="showPassword = !showPassword"
-            >
+            <v-icon @click="showPassword = !showPassword">
               mdi-eye
             </v-icon>
           </template>
@@ -99,21 +95,9 @@ export default {
         password: "",
         error: "",
         loading: false,
-        // Validation rules for email input
-        emailRules: [
-            v => {
-                if (!v) {
-                    return this.$t('Email is required');
-                } else if (!/.+@.+/.test(v)) {
-                    return this.$t('Email must be valid');
-                }
-                return true;
-            }
-        ],
-        // Input is required
-        requiredRule: [v => !!v || this.$t('This field is required')],
         appName: "",
         showPassword: false,
+        showErrors: false,
       };
   },
   setup() {
@@ -134,21 +118,40 @@ export default {
     if (useLoggedInUserStore().navigationData?.toastType) {
       toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, { 
         position: useLoggedInUserStore().navigationData.toastPosition,
-        toastClassName: useLoggedInUserStore().navigationData.toastCSS
+        toastClassName: 'Toastify__toast--delete'
       });
 
       useLoggedInUserStore().navigationData = null;
     }
   },
+  computed: {
+    translatedEmailError() {
+      if (!this.email) {
+        return this.$t('Email is required');
+      } else if (!/.+@.+/.test(this.email)) {
+        return this.$t('Email must be valid');
+      }
+      return "";
+    },
+    translatedPasswordError() {
+      if (!this.password) {
+        return this.$t('Password is required');
+      } else if (this.password.length < 8) {
+        return this.$t('Password must be at least 8 characters long');
+      }
+      return "";
+    }
+  },
   methods: {
-    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role. Displays notifications for login feedback. Handles special cases for unverified accounts and incomplete student entry forms.
+    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role.
     async login() {
-      // Check if there are any errors in the form
-      await this.$refs.loginForm.validate();
-      const hasErrors = this.$refs.loginForm.errors.length > 0;
+      // Show validation errors
+      this.showErrors = true;
+      // Run custom validation
+      const isValid = this.translatedEmailError === "" && this.translatedPasswordError === "";
 
-      // If no errors, proceed with login
-      if (!hasErrors) {
+      // If the form is valid, proceed with login
+      if (isValid) {
         this.loading = true;
         try {
           // Attempt to login
@@ -162,6 +165,7 @@ export default {
               multiple: false
             });
           }
+
           // Navigate to the appropriate dashboard based on the user's role
           if (this.store.role === 'Instructor' || this.store.role === 'Group Instructor' || this.store.role === 'Group Admin' || this.store.role === 'Org Admin') {
             this.$router.push("/instructorDash");
@@ -176,7 +180,7 @@ export default {
           } else {
             this.$router.push("/");
           }
-          // If invalid login, error message will appear from Pinia store
+
           // If unverified account, send to verification view
           if (this.store.unverified === true) {
             this.sendNewCode();
@@ -253,7 +257,5 @@ select:focus {
     box-shadow: none !important;
     border-color: currentColor !important;
 }
-
-
 
 </style>
