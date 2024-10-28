@@ -369,16 +369,55 @@
     
   // Converts JSON data representing exit forms to CSV format. Maps JSON variable names to CSV variable names and creates CSV data rows accordingly.
   convertExitFormToCSV(jsonData) {
-        // Define the mapping from JSON variable names to CSV variable names
+        // Update the mapping from JSON variable names to CSV variable names
         const renameMap = {
             "_id": "exit_form_id",
             "organizationID": "org_id",
             "userID": "user_id",
-            "goalSettingFormID": "goal_id",
             "sessionName": "session",
-            "createdAt": "created_at",
-            "updatedAt": "updated_at",
-            // Default to the original variable names if not provided in the renameMap
+            "experienceID": "experience_id",
+            "goalSettingFormID": "goal_id",
+            "exitForm.progressMade.aspirationOneProgressResults": "aspiration1_progress_result",
+            "exitForm.progressMade.aspirationTwoProgressResults": "aspiration2_progress_result",
+            "exitForm.progressMade.aspirationThreeProgressResults": "aspiration3_progress_result",
+            "exitForm.progressMade.aspirationOneExperienceConnection": "aspiration1_experience_connection",
+            "exitForm.progressMade.aspirationTwoExperienceConnection": "aspiration2_experience_connection",
+            "exitForm.progressMade.aspirationThreeExperienceConnection": "aspiration3_experience_connection",
+            "exitForm.progressMade.goalOneProgressResults": "goal1_progress_result",
+            "exitForm.progressMade.goalTwoProgressResults": "goal2_progress_result",
+            "exitForm.progressMade.goalThreeProgressResults": "goal3_progress_result",
+            "exitForm.progressMade.goalFourProgressResults": "goal4_progress_result",
+            "exitForm.progressMade.goalFiveProgressResults": "goal5_progress_result",
+            "exitForm.progressMade.goalOneExperienceConnection": "goal1_experience_connection",
+            "exitForm.progressMade.goalTwoExperienceConnection": "goal2_experience_connection",
+            "exitForm.progressMade.goalThreeExperienceConnection": "goal3_experience_connection",
+            "exitForm.progressMade.goalFourExperienceConnection": "goal4_experience_connection",
+            "exitForm.progressMade.goalFiveExperienceConnection": "goal5_experience_connection",
+            "exitForm.goalIssues.goals": "goals_with_issues",
+            "exitForm.goalIssues.issuesDescription": "issues_description",
+            "exitForm.activitiesContribution.goalOneContributions": "goal1_activity_contributions",
+            "exitForm.activitiesContribution.goalTwoContributions": "goal2_activity_contributions",
+            "exitForm.activitiesContribution.goalThreeContributions": "goal3_activity_contributions",
+            "exitForm.activitiesContribution.goalFourContributions": "goal4_activity_contributions",
+            "exitForm.activitiesContribution.goalFiveContributions": "goal5_activity_contributions",
+            "exitForm.activitiesContribution.noContributions": "no_activity_contributions",
+            "exitForm.likelihoodOf.enrollAnotherCourse": "likelihood_enroll_another_course",
+            "exitForm.likelihoodOf.completeMinor": "likelihood_complete_minor",
+            "exitForm.likelihoodOf.recommendCourse": "likelihood_recommend_course",
+            "exitForm.likelihoodOf.pursueCareer": "likelihood_pursue_career",
+            "exitForm.generalGrowth.problemSolving": "growth_problem_solving",
+            "exitForm.generalGrowth.effectiveCommunication": "growth_effective_communication",
+            "exitForm.generalGrowth.teamwork": "growth_teamwork",
+            "exitForm.generalGrowth.culturalHumility": "growth_cultural_humility",
+            "exitForm.generalGrowth.ethicalDecisionMaking": "growth_ethical_decision_making",
+            "exitForm.generalGrowth.professionalResponsibility": "growth_professional_responsibility",
+            "exitForm.openEnded.biggestLessons": "biggest_lessons_learned",
+            "exitForm.openEnded.supportOthers": "supporting_others",
+            "exitForm.openEnded.comments": "additional_comments",
+            "exitForm.experienceContributions": "experience_contributions",
+            "created_at": "created_at",
+            "updated_at": "updated_at",
+            "__v": "__v"
         };
 
         // Extract headers
