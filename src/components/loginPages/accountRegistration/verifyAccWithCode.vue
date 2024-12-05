@@ -15,7 +15,8 @@
         <!-- Description of the email verification process -->
         <v-row>
             <v-col cols="12">
-                {{$t('If your email address is not already associated with an account, you will receive a confirmation code to verify your email. This process may take a few minutes.')}}
+                <p>{{$t('A confirmation code has been sent to your email. Please enter the code below.')}}</p>
+                <p>{{$t(' If you don\'t see an email, check your spam or junk folder.')}}</p>
             </v-col>
         </v-row>
         <!-- Form for entering the confirmation code -->
