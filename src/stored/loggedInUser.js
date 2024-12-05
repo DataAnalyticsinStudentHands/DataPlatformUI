@@ -182,7 +182,7 @@ export const useLoggedInUserStore = defineStore({
           } else {
             // Invalid token
             this.logout();
-            this.$router.push('/login');
+            // this.$router.push('/login');
           }
         } catch (error) {
           // Handle verification errors
