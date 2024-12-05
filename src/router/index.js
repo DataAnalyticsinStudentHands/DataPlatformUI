@@ -71,12 +71,12 @@ const routes = [
     },
     {
       path: '/mainAuthWrap',
-      name: 'mainAuthWrap',
       props: true,
       component: () => import('../components/loginPages/mainAuthWrap.vue'),
       children: [
         {
           path: '',
+          name: 'mainAuthWrap',
           redirect: '/login'
         },
         {
