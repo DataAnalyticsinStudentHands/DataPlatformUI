@@ -146,44 +146,53 @@ export const useLoggedInUserStore = defineStore({
 
     async initializeStore() {
       const token = this.token || localStorage.getItem('token');
-
+    
       if (token) {
-        // Verify the token
-        const payload = await verifyJWT(token);
-        if (payload) {
-          // Check if token is expired
-          const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-          if (payload.exp && payload.exp < currentTime) {
-            // Token is expired
+        try {
+          // Verify the token
+          const payload = await verifyJWT(token);
+    
+          if (payload) {
+            // Check if token is expired
+            const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+            if (payload.exp && payload.exp < currentTime) {
+              // Token is expired
+              this.logout();
+              this.$router.push('/login');
+            } else {
+              // Token is valid
+              this.$patch({
+                role: payload.userRole,
+                userId: payload.userID,
+                // ... other properties from payload if needed
+              });
+    
+              // Only set isLoggedIn to true if the role is not "Temporary"
+              if (payload.userRole !== 'Temporary') {
+                this.$patch({
+                  isLoggedIn: true,
+                });
+              }
+    
+              // Set the global default header for axios
+              this.setTokenHeader(token);
+              // Set up auto logout
+              this.setAutoLogout(payload.exp);
+            }
+          } else {
+            // Invalid token
             this.logout();
             this.$router.push('/login');
-          } else {
-            // Token is valid
-            this.$patch({
-              role: payload.userRole,
-              userId: payload.userID,
-              // ... other properties from payload if needed
-            });
-
-            // Only set isLoggedIn to true if the role is not "Temporary"
-            if (payload.userRole !== 'Temporary') {
-              this.$patch({
-                isLoggedIn: true,
-              });
-            }
-
-            // Set the global default header for axios
-            this.setTokenHeader(token);
-            // Set up auto logout
-            this.setAutoLogout(payload.exp);
           }
-        } else {
-          // Invalid token
+        } catch (error) {
+          // Handle verification errors
+          console.error('Token verification failed:', error);
           this.logout();
           this.$router.push('/login');
         }
       }
     },
+    
     
     setAutoLogout(expirationTime) {
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds

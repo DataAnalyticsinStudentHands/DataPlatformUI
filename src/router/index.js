@@ -389,30 +389,31 @@ router.beforeEach(async (to, from, next) => {
   const isPublicRoute = publicPaths.includes(to.path);
 
   if (token) {
-    // Verify JWT to determine its validity and extract role
-    const payload = await verifyJWT(token);
-    if (payload && payload.exp && payload.exp > currentTime) {
-      // Token is valid and not expired
-      userStore.$patch({
-        isLoggedIn: true,
-        role: payload.userRole,
-        userId: payload.userID,
-        token: token,
-      });
+    try {
+      // Verify JWT to determine its validity and extract role
+      const payload = await verifyJWT(token);
 
-      // Check the user's role to determine behavior
-      if (payload.userRole === 'Temporary') {
-        // Allow users with Temporary role to access public routes
-        if (isPublicRoute) {
-          next(); // Let them proceed to the public route, like verifyAccWithCode
+      if (payload && payload.exp && payload.exp > currentTime) {
+        // Token is valid and not expired
+        userStore.$patch({
+          isLoggedIn: true,
+          role: payload.userRole,
+          userId: payload.userID,
+          token: token,
+        });
+
+        // Check the user's role to determine behavior
+        if (payload.userRole === 'Temporary') {
+          // Allow users with Temporary role to access public routes
+          if (isPublicRoute) {
+            next(); // Let them proceed to the public route, like verifyAccWithCode
+          } else {
+            next('/verifyAccWithCode'); // Redirect to account verification if accessing private route
+          }
         } else {
-          next('/verifyAccWithCode'); // Redirect to account verification if accessing private route
-        }
-      } else {
-        // For authenticated roles, redirect based on their role
-        if (isPublicRoute) {
-          // Redirect user based on role if they are already logged in
-          if (userStore.isLoggedIn) {
+          // For authenticated roles, redirect based on their role
+          if (isPublicRoute) {
+            // Redirect user based on role if they are already logged in
             if (['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.role)) {
               next('/instructorDash');
             } else if (userStore.role === 'Student') {
@@ -421,14 +422,17 @@ router.beforeEach(async (to, from, next) => {
               next('/'); // Default route or a generic dashboard
             }
           } else {
-            next(); // If not logged in, allow access to public path
+            next(); // Allow access to private route
           }
-        } else {
-          next(); // Allow access to private route
         }
+      } else {
+        // Invalid or expired token, log out and redirect to login
+        userStore.logout();
+        next('/login');
       }
-    } else {
-      // Invalid or expired token, log out and redirect to login
+    } catch (error) {
+      // Handle errors during token verification
+      console.error('Token verification failed in router:', error);
       userStore.logout();
       next('/login');
     }

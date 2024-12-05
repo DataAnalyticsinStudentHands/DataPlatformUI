@@ -29,8 +29,6 @@ export async function verifyJWT(token) {
   } catch (error) {
     // Log any issues with token verification
     console.error('JWT verification failed:', error);
-    this.handleError(error);
-    
     return null;
   }
 }
