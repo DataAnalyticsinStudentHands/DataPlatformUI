@@ -722,18 +722,21 @@ methods: {
         const startIndexForNewChips = this.viewsStore.experiences.searchChips.length;
 
         // Append the new search criteria to the existing searchCriteria array
-        this.viewsStore.experiences.searchChips = [...this.viewsStore.experiences.searchChips, ...newSearchCriteria];
+        this.viewsStore.experiences.searchChips = [
+            ...this.viewsStore.experiences.searchChips,
+            ...newSearchCriteria
+        ];
 
-        // Update selectedSearchChips to include the indices of the newly added chips
-        this.viewsStore.setSelectedSearchChips('activities, ', [
+        // Automatically mark newly added activity chips as selected
+        this.viewsStore.experiences.selectedSearchChips = [
             ...this.viewsStore.experiences.selectedSearchChips,
             ...newSearchCriteria.map((_, index) => startIndexForNewChips + index)
-        ]);
+        ];
 
-        
+        // Fetch experiences associated with selected activities
         await this.fetchExperiencesByActivity();
 
-        // Optionally, if you want to clear selectedActivities after adding them as chips
+        // Clear selected activities from the dialog
         this.selectedActivities = [];
 
         this.activitySearch = "";
@@ -741,6 +744,7 @@ methods: {
         // Close the dialog
         this.dialogActivitySearch = false;
 
+        // Perform filtering based on the updated search chips
         this.performFilter();
     },
 

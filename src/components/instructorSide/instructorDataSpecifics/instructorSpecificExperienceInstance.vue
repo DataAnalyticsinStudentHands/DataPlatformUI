@@ -169,7 +169,7 @@
                 Cancel
                 </v-btn>
                 <!-- Submit button, shown if the user has permission to update the instance -->
-                <v-btn v-if="canUpdateExpInstance" style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
+                <v-btn v-if="canUpdateExpInstance" style="text-align: center;" @click="handleSubmitForm">Update</v-btn>
             </v-col>
 
             <v-spacer></v-spacer>
