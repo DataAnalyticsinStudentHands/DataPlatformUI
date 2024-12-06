@@ -7,7 +7,7 @@
         <p class="text-center font-weight-black text-h6">Activity: {{ originalActivityName }}</p>
         <br>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="8">
             <!-- Input field for updating the activity name -->
             <v-text-field v-model="activity.activityName" label="Activity Name"></v-text-field>
           </v-col>
@@ -19,7 +19,17 @@
               Cancel
             </v-btn>
             <!-- Update button to check associated instances and update activity -->
-            <v-btn style="text-align:center;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
+            <div v-tooltip.bottom="'Only the owner or eligible roles can update this activity.'" style="display: inline-block;">
+  <v-btn
+    style="text-align:center;"
+    @click="checkAssociatedInstances('update')"
+    :loading="updateLoading"
+    :disabled="!showUpdateButton"
+  >
+    Update
+  </v-btn>
+</div>
+
           </v-col>
           <v-spacer></v-spacer>
           <!-- Conditional delete button, shown if the activity can be deleted -->
@@ -109,7 +119,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 
 export default {
-setup() {
+  setup() {
     // Access the logged-in user store
     const userStore = useLoggedInUserStore();
 
@@ -119,11 +129,30 @@ setup() {
         return allowedRoles.includes(userStore.role);
     });
 
+    // Computed property to determine if the "Update" button should be visible
+    const showUpdateButton = computed(() => {
+        const role = userStore.role;
+        const userId = userStore.userId;
+        const createdBy = userStore.navigationData.activityCreatedBy; // Assume `createdBy` is stored in `navigationData` or fetched via API
+
+        if (role === "Org Admin" || role === "Group Admin") {
+            return true;
+        }
+
+        if (role === "Group Instructor") {
+            return createdBy === "Global" || createdBy === userId;
+        }
+
+        return false;
+    });
+
     return {
         userStore,
-        canDeleteActivity // Return the computed property for use in the template
+        canDeleteActivity, // Return the computed property for use in the template
+        showUpdateButton,  // Add the new computed property here
     };
 },
+
   props: ["id"],
   data() {
     return {
@@ -166,6 +195,7 @@ async mounted() {
           ...this.activity,
           activityName: response.data.activityName,
           activityStatus: response.data.activityStatus,
+          createdBy: response.data.createdBy
         };
         this.originalActivityName = response.data.activityName;
       } catch (error) {
