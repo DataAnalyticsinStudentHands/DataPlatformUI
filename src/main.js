@@ -72,8 +72,10 @@ app.use(vuetify);
 app.use(router);
 app.use(i18n); 
 
-const userStore = useLoggedInUserStore();
+async function initApp() {
+  const userStore = useLoggedInUserStore();
+  await userStore.initializeStore();
+  app.mount('#app');
+}
 
-await userStore.initializeStore();
-
-app.mount('#app');
+initApp();
