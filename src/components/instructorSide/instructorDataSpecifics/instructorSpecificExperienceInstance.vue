@@ -382,7 +382,7 @@ computed: {
             const user = useLoggedInUserStore();
             const instanceID = user.navigationData.id; // Get instance ID from route parameter
             const token = user.token;
-            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/delete/${instanceID}`;
+            const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/delete/${instanceID}`;
 
             try {
                 await axios.delete(url, { headers: { token } });
