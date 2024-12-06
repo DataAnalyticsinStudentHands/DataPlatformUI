@@ -350,7 +350,6 @@ data() {
         activitySearch: "",
         searchLabel: "Search Activity Name",
         searchMenuItems: [
-            "Experience Category",
             "Experience Name"
         ],
         dialogExperienceCategory: false,
@@ -378,6 +377,7 @@ data() {
         hoveredItem: null,
         experienceBasedActivities: [],
         experienceNameSearchApplied: false,
+        uniqueExperienceCategories: []
     }
 },
 mounted() {
