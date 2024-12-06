@@ -19,17 +19,29 @@
               Cancel
             </v-btn>
             <!-- Update button to check associated instances and update activity -->
-            <div v-tooltip.bottom="'Only the owner or eligible roles can update this activity.'" style="display: inline-block;">
-  <v-btn
-    style="text-align:center;"
-    @click="checkAssociatedInstances('update')"
-    :loading="updateLoading"
-    :disabled="!showUpdateButton"
-  >
-    Update
-  </v-btn>
-</div>
-
+            <div
+              v-if="!showUpdateButton"
+              v-tooltip.bottom="'Only the owner or eligible roles can update this activity.'"
+              style="display: inline-block;"
+            >
+              <v-btn
+                style="text-align:center;"
+                @click="checkAssociatedInstances('update')"
+                :loading="updateLoading"
+                :disabled="true"
+              >
+                Update
+              </v-btn>
+            </div>
+            <div v-else style="display: inline-block;">
+              <v-btn
+                style="text-align:center;"
+                @click="checkAssociatedInstances('update')"
+                :loading="updateLoading"
+              >
+                Update
+              </v-btn>
+            </div>
           </v-col>
           <v-spacer></v-spacer>
           <!-- Conditional delete button, shown if the activity can be deleted -->
@@ -133,6 +145,7 @@ export default {
     const showUpdateButton = computed(() => {
         const role = userStore.role;
         const userId = userStore.userId;
+        console.log('userId: ', userId);
         const createdBy = userStore.navigationData.activityCreatedBy; // Assume `createdBy` is stored in `navigationData` or fetched via API
 
         if (role === "Org Admin" || role === "Group Admin") {
@@ -191,6 +204,7 @@ async mounted() {
         let token = store.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${store.navigationData.activityID}`;
         const response = await axios.get(apiURL, { headers: { token }});
+        console.log('response:', response.data)
         this.activity = {
           ...this.activity,
           activityName: response.data.activityName,

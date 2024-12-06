@@ -72,7 +72,7 @@
                   </v-col>
 
                   <!-- Remove activity button -->
-                  <v-col>
+                  <v-col v-if="canUpdateExpInstance">
                     <v-icon
                       @click.stop="removeActivity(activity)"
                       class="mdi-close"

@@ -115,33 +115,21 @@ export const useLoggedInUserStore = defineStore({
         clearTimeout(this.logoutTimer);
         this.logoutTimer = null;
       }
-
-      // Reset values after user log out
-      this.$patch({
-        userId: '',
-        role: '',
-        token: '',
-        firstName: '',
-        lastName: '',
-        isLoggedIn: false,
-        unverified: null,
-        languagePreference: '',
-        hasCompletedEntryForm: false,
-        hasRegisteredExperiences: false,
-        goalSettingFormCompletion: {},
-        loading: false,
-        exitFormCompletion: {},
-        registeredExperiences: [],
-        experienceInstanceCreationDetails: [],
-        instructorDataManagementActiveTab: 0,
-        group: null,
-      });
-
-      // Clear the token from localStorage
+    
+      // Reset the store state to its initial values (clear persisted data)
+      this.$reset();
+    
+      // Clear the token from localStorage manually
       localStorage.removeItem('token');
-      this.token = '';
+    
+      // Remove the persisted Pinia state from localStorage
+      localStorage.removeItem('pinia-loggedInUser');
+    
       // Remove the global default header for axios
       this.removeTokenHeader();
+    
+      // Optionally redirect the user to the login page
+      this.$router.push('/login');
     },
 
     async initializeStore() {
