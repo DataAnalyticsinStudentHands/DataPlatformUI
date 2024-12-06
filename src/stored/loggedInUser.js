@@ -66,7 +66,7 @@ export const useLoggedInUserStore = defineStore({
 
           // Save token to localStorage
           localStorage.setItem('token', token);
-
+          this.token = token;
           // Set token header
           this.setTokenHeader(token);
 
@@ -139,60 +139,66 @@ export const useLoggedInUserStore = defineStore({
 
       // Clear the token from localStorage
       localStorage.removeItem('token');
-
+      this.token = '';
       // Remove the global default header for axios
       this.removeTokenHeader();
     },
 
     async initializeStore() {
-      const token = this.token || localStorage.getItem('token');
+      const token = localStorage.getItem('token');
     
-      if (token) {
-        try {
-          // Verify the token
-          const payload = await verifyJWT(token);
+      if (!token) {
+        // No token found; redirect to login to ensure the user is prompted to authenticate
+        this.logout(); // Clear any lingering state
+        this.$router.push('/login');
+        return;
+      }
     
-          if (payload) {
-            // Check if token is expired
-            const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-            if (payload.exp && payload.exp < currentTime) {
-              // Token is expired
-              this.logout();
-              this.$router.push('/login');
-            } else {
-              // Token is valid
-              this.$patch({
-                role: payload.userRole,
-                userId: payload.userID,
-                // ... other properties from payload if needed
-              });
+      try {
+        // Verify the token
+        const payload = await verifyJWT(token);
     
-              // Only set isLoggedIn to true if the role is not "Temporary"
-              if (payload.userRole !== 'Temporary') {
-                this.$patch({
-                  isLoggedIn: true,
-                });
-              }
-    
-              // Set the global default header for axios
-              this.setTokenHeader(token);
-              // Set up auto logout
-              this.setAutoLogout(payload.exp);
-            }
-          } else {
-            // Invalid token
-            this.logout();
-            // this.$router.push('/login');
-          }
-        } catch (error) {
-          // Handle verification errors
-          console.error('Token verification failed:', error);
+        if (!payload) {
+          // The token is invalid; treat this as a logout scenario
           this.logout();
           this.$router.push('/login');
+          return;
         }
-      }
-    },
     
+        // Check if the token is expired
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        if (payload.exp && payload.exp < currentTime) {
+          // Token is expired; clear session and redirect to login
+          this.logout();
+          this.$router.push('/login');
+          return;
+        }
+    
+        // Token is valid; update the store with user information
+        this.$patch({
+          userId: payload.userID,
+          role: payload.userRole,
+          token: token // Store the token in memory for app use
+        });
+    
+        // Mark as logged in if the user is not 'Temporary'
+        if (payload.userRole !== 'Temporary') {
+          this.$patch({ isLoggedIn: true });
+        }
+    
+        // Set the global default header for axios
+        this.setTokenHeader(token);
+    
+        // Set up auto logout to handle token expiration
+        this.setAutoLogout(payload.exp);
+    
+      } catch (error) {
+        // Handle errors during token verification (e.g., invalid token, network issues)
+        console.error('Token verification failed:', error);
+        this.logout(); // Ensure session is cleared
+        this.$router.push('/login');
+      }
+    },    
     
     setAutoLogout(expirationTime) {
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
@@ -404,7 +410,6 @@ export const useLoggedInUserStore = defineStore({
     paths: [
       'userId',
       'role',
-      'token',
       'firstName',
       'lastName',
       'isLoggedIn',

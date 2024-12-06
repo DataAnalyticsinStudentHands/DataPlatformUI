@@ -1,4 +1,4 @@
-<!-- passResetNewEntry.vue - This component allows users to update their password by entering a new password and confirming it. After the password is reset, the user is redirected to the login screen. -->
+<!-- passResetNewEntry.vue - This component allows non-logged-in users to update their password by entering a new password and confirming it. After the password is reset, the user is redirected to the login screen. -->
 
 
 <template>
