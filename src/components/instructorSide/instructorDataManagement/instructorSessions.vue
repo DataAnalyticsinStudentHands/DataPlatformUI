@@ -1163,9 +1163,18 @@ methods: {
                                     const comparisonDate = new Date(term.slice(2).trim());
                                     return exitDate > comparisonDate;
                                 } else if (term.startsWith('=')) {
-                                    let exitDateFormatted = this.formatDateMethod(new Date(instance.exitFormReleaseDate));
-                                    const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
-                                    return exitDateFormatted === comparisonDate;
+                                    const comparisonDateStr = term.slice(2).trim();
+
+                                    // Parse the instance exit date as ISO or known format
+                                    const instanceExitDate = DateTime.fromISO(instance.exitFormReleaseDate, { zone: 'utc' });
+                                    // Convert to "MM-dd-yyyy"
+                                    const instanceExitDateFormatted = instanceExitDate.toFormat('MM-dd-yyyy');
+
+                                    // Parse the comparison date from the chip text
+                                    const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy', { zone: 'utc' });
+                                    const comparisonDateFormatted = comparisonDateObj.toFormat('MM-dd-yyyy');
+
+                                    return instanceExitDateFormatted === comparisonDateFormatted;
                                 } else if (term.startsWith('between')) {
                                     let [startDateStr, endDateStr] = term.slice(8).split(' and ');
                                     let startDate = DateTime.fromFormat(startDateStr, 'MM-dd-yyyy');
