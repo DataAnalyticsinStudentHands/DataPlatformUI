@@ -531,25 +531,41 @@ methods: {
                 });
             } else if (category === "Graduation Date") {
                 return searchGroups[category].every(term => {
-                    const formattedGraduationDate = this.formatGraduationDate(student.studentInformation?.enrolledUHInfo?.expectedGraduationData);
-                    if (!formattedGraduationDate) {
-                        return false; // Skip if formatted graduation date is not valid or not present
+                    const graduationDateISO = student.studentInformation?.enrolledUHInfo?.expectedGraduationData;
+                    if (!graduationDateISO) {
+                        return false;
+                    }
+
+                    // Parse the student's graduation date from ISO
+                    const studentDateObj = DateTime.fromISO(graduationDateISO);
+                    if (!studentDateObj.isValid) {
+                        return false;
                     }
 
                     if (term.startsWith('<')) {
-                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
-                        return formattedGraduationDate < comparisonDate;
+                        const comparisonDateStr = term.slice(2).trim();
+                        const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy');
+                        return comparisonDateObj.isValid && studentDateObj < comparisonDateObj;
+
                     } else if (term.startsWith('>')) {
-                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
-                        return formattedGraduationDate > comparisonDate;
+                        const comparisonDateStr = term.slice(2).trim();
+                        const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy');
+                        return comparisonDateObj.isValid && studentDateObj > comparisonDateObj;
+
                     } else if (term.startsWith('=')) {
-                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
-                        return formattedGraduationDate === comparisonDate;
+                        const comparisonDateStr = term.slice(2).trim();
+                        const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy');
+                        // Check if they're on the same day
+                        return comparisonDateObj.isValid && studentDateObj.hasSame(comparisonDateObj, 'day');
+
                     } else if (term.startsWith('between')) {
                         let [startDateStr, endDateStr] = term.slice(8).split(' and ');
-                        return formattedGraduationDate >= startDateStr && formattedGraduationDate <= endDateStr;
+                        const startDateObj = DateTime.fromFormat(startDateStr.trim(), 'MM-dd-yyyy');
+                        const endDateObj = DateTime.fromFormat(endDateStr.trim(), 'MM-dd-yyyy');
+                        return startDateObj.isValid && endDateObj.isValid && (studentDateObj >= startDateObj && studentDateObj <= endDateObj);
                     }
-                    return true; // If the term format is not recognized, do not exclude the student
+
+                    return true; // If not recognized, don't exclude
                 });
             }
             });
