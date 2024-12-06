@@ -91,6 +91,18 @@
         languagePreference: '',
         confirmPassword: '',
         showErrors: false,
+        // Validation rules for form inputs
+        emailRules: [
+          v => !!v || this.$t('Email is required'),
+          v => /.+@.+/.test(v) || this.$t('Email must be valid')
+        ],
+        passwordRules: [
+          v => !!v || this.$t('Password is required'),
+          v => v.length >= 8 || this.$t('Password must be at least 8 characters long')
+        ],
+        nameRules: [
+          v => !!v || this.$t('This field is required')
+        ],
       };
     },
     mounted() {
@@ -161,18 +173,6 @@
     },
 
     methods: {
-      // Validation rules for form inputs
-      emailRules: [
-        v => !!v || this.$t('Email is required'),
-        v => /.+@.+/.test(v) || this.$t('Email must be valid')
-      ],
-      passwordRules: [
-        v => !!v || this.$t('Password is required'),
-        v => v.length >= 8 || this.$t('Password must be at least 8 characters long')
-      ],
-      nameRules: [
-        v => !!v || this.$t('This field is required')
-      ],
 
       // Updates user information based on input fields and navigates to the respective dashboard with a language-specific toast message indicating successful update.
       async handleSubmitForm() {
@@ -181,37 +181,43 @@
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/update-user-data`;
-        const destination = user.role === 'Student' ? 'studentDashboard' 
-                : (user.role === 'Instructor' || user.role === 'Group Instructor' || user.role === 'Group Admin' || user.role === 'Org Admin') ? 'instructorDash' 
-                : '';
 
         // Check if form is valid before submitting
         if (!this.emailError && !this.passwordError && !this.firstNameError && !this.lastNameError) {
-          axios.put(apiURL, {firstName: this.firstName, lastName: this.lastName, email: this.email, languagePreference: this.languagePreference, password: this.confirmPassword}, {headers: { token }})
-          .then(() => {
-            user.setLanguagePreference(this.languagePreference);
-            let toastMessage = "";
-            if (user.languagePreference === 'English') {
-              toastMessage = 'User information updated!';
-            } else if (user.languagePreference === 'Spanish') {
-              toastMessage = '¡Información del Usuario actualizada!';
-            };
+          try {
+            await axios.put(apiURL, {
+              firstName: this.firstName,
+              lastName: this.lastName,
+              email: this.email,
+              languagePreference: this.languagePreference,
+              password: this.confirmPassword,
+            }, {
+              headers: { token }
+            });
+
+            // Update the Pinia store directly
+            user.firstName = this.firstName;
+            user.lastName = this.lastName;
+
+            let toastMessage = user.languagePreference === 'English' 
+              ? 'User information updated!' 
+              : '¡Información del Usuario actualizada!';
 
             user.navigationData = {
               toastType: 'info',
               toastMessage: toastMessage,
               toastPosition: 'top-right',
-              toastCSS: 'Toastify__toast--update'
+              toastCSS: 'Toastify__toast--update',
             };
-            this.$router.push({ 
-                name: destination
-            });
-          })
-          .catch((error) => {
-              this.handleError(error);
-          });
+            
+            this.$router.push({ name: user.role === 'Student' ? 'studentDashboard' : 'instructorDash' });
+
+          } catch (error) {
+            this.handleError(error);
+          }
         }
       }
+
     }
   }
 </script>
