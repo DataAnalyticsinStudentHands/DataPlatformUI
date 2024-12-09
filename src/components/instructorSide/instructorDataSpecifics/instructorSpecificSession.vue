@@ -23,7 +23,7 @@
         </v-row>
   
         <v-row>
-          <v-col>
+          <v-col class="d-flex align-center justify-start">
             <!-- Error message display -->
             <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
   
@@ -33,7 +33,8 @@
             <!-- Update button -->
             <div v-if="!isAllowedToUpdate" 
                 v-tooltip.bottom="'You do not have the necessary privileges to update this Session.'" 
-                style="display: inline-block;">
+                style="display: inline-block;"
+                class="ml-2">
               <v-btn
                 style="text-align:center; margin-left: 10px;"
                 :loading="updateLoading"
@@ -43,7 +44,7 @@
               </v-btn>
             </div>
 
-            <div v-else>
+            <div v-else class="ml-2">
               <v-btn
                 style="text-align:center; margin-left: 10px;"
                 @click="checkAssociatedInstances('update')"
