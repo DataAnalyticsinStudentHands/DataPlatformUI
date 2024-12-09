@@ -110,27 +110,29 @@ export const useLoggedInUserStore = defineStore({
       }
     },
     logout(reset = false) {
-      // **Clear the auto logout timer**
+      // Save the orgName before resetting the store
+      const orgName = this.orgName;
+    
+      // Clear the auto-logout timer
       if (this.logoutTimer) {
         clearTimeout(this.logoutTimer);
         this.logoutTimer = null;
       }
     
-      // Reset the store state to its initial values (clear persisted data)
+      // Reset the store to its initial state
       this.$reset();
     
-      // Clear the token from localStorage manually
+      // Restore the orgName after reset
+      this.orgName = orgName;
+    
+      // Clear token and related local storage items
       localStorage.removeItem('token');
-    
-      // Remove the persisted Pinia state from localStorage
       localStorage.removeItem('pinia-loggedInUser');
-    
-      // Remove the global default header for axios
       this.removeTokenHeader();
     
-      // Optionally redirect the user to the login page
+      // Redirect to the login page
       this.$router.push('/login');
-    },
+    },    
 
     async initializeStore() {
       const token = localStorage.getItem('token');

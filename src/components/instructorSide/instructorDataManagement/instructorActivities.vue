@@ -142,56 +142,55 @@
                     return-object
                     :sort-by.sync="viewsStore.activities.sortBy"
                     @update:sort-by="handleSortByUpdate"
-                >
+                    >
                     <template v-slot:body="{ items }">
-                        <template
-                            v-for="item in items"
-                            :key="item._id"
-                        >
-                            <tr
-                                @click="editActivity(item)"
-                                class="pointer-cursor"
+                        <template v-for="item in items" :key="item._id">
+                        <tr @click="editActivity(item)" class="pointer-cursor">
+                            <td @click.stop>
+                            <!-- Only show the checkbox if the user's role is not "Group Instructor" -->
+                            <v-checkbox
+                                v-if="userStore.role !== 'Group Instructor'"
+                                density="compact"
+                                class="d-flex"
+                                @update:modelValue="toggleSelection(item)"
+                            ></v-checkbox>
+                            </td>
+                            <td>{{ item.activityName }}</td>
+                            <td
+                            v-if="experienceNameSearchApplied"
+                            @click.stop
                             >
-                                <td @click.stop>
-                                    <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(item)"></v-checkbox>
-                                </td>
-                                <td>{{ item.activityName }}</td>
-                                <td
-                                    v-if="experienceNameSearchApplied"
-                                    @click.stop
-                                >
-                                    <v-btn 
-                                        icon 
-                                        variant="text"
-                                        @click="toggleRowExpansion(item)"
-                                    >
-                                        <v-icon>
-                                            {{ expandedActivities.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                                        </v-icon>
-                                    </v-btn>
-                                </td>
-                            </tr>
-                            <!-- Expanded row for displaying experiences and sessions -->
-                            <tr v-if="expandedActivities.includes(item)">
-                                <td :colspan="activityHeaders.length" class="pa-0">
-                                    <v-container>
-                                        <!-- Iterate over activities object -->
-                                        <v-row v-for="(experience, experienceID) in prepareExpandedData[item._id]?.experiences || {}" :key="experienceID">
-                                            <v-col cols="12">
-                                                <strong>{{ experience.name }}</strong>
-                                                <ul>
-                                                    <li v-for="session in experience.sessions" :key="session.sessionID">
-                                                        {{ session.sessionName }}
-                                                    </li>
-                                                </ul>
-                                            </v-col>
-                                        </v-row>
-                                    </v-container>
-                                </td>
-                            </tr>
+                            <v-btn 
+                                icon 
+                                variant="text"
+                                @click="toggleRowExpansion(item)"
+                            >
+                                <v-icon>
+                                {{ expandedActivities.includes(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                                </v-icon>
+                            </v-btn>
+                            </td>
+                        </tr>
+                        <!-- Expanded row for displaying experiences and sessions -->
+                        <tr v-if="expandedActivities.includes(item)">
+                            <td :colspan="activityHeaders.length" class="pa-0">
+                            <v-container>
+                                <v-row v-for="(experience, experienceID) in prepareExpandedData[item._id]?.experiences || {}" :key="experienceID">
+                                <v-col cols="12">
+                                    <strong>{{ experience.name }}</strong>
+                                    <ul>
+                                    <li v-for="session in experience.sessions" :key="session.sessionID">
+                                        {{ session.sessionName }}
+                                    </li>
+                                    </ul>
+                                </v-col>
+                                </v-row>
+                            </v-container>
+                            </td>
+                        </tr>
                         </template>
                     </template>
-                </v-data-table>
+                    </v-data-table>
 
                 <!-- Skeleton Loader -->
                 <v-skeleton-loader v-if="loading" type="table-row@5"></v-skeleton-loader>
@@ -336,9 +335,11 @@ export default {
 name: "instructorActivities",
 setup() {
     const viewsStore = useInstructorViewsStore();
+    const userStore = useLoggedInUserStore();
 
     return {
-        viewsStore
+        viewsStore,
+        userStore
     };
 },
 data() {

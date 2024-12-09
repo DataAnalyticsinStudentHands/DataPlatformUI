@@ -581,7 +581,7 @@ setup() {
 
   // Computed property to determine if the user can add a new experience instance based on roles
   const canAddExpInstance = computed(() => {
-    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Group Instructor', 'Instructor'];
     return allowedRoles.includes(userStore.role);
   });
 

@@ -118,7 +118,7 @@ export default {
     if (useLoggedInUserStore().navigationData?.toastType) {
       toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, { 
         position: useLoggedInUserStore().navigationData.toastPosition,
-        toastClassName: 'Toastify__toast--delete'
+        toastClassName: useLoggedInUserStore().navigationData.toastCSS
       });
 
       useLoggedInUserStore().navigationData = null;

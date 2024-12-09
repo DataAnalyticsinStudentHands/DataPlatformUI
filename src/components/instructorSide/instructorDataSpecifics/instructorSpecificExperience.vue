@@ -35,7 +35,7 @@
           </v-col>
           <v-spacer></v-spacer>
           <!-- Delete button, shown if the experience can be deleted -->
-          <v-col cols="auto" v-if="canExperienceBeDeleted">
+          <v-col cols="auto" v-if="canExperienceBeDeleted && (userStore.role === 'Org Admin' || userStore.role === 'Group Admin')">
             <v-btn @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
           </v-col>
         </v-row>

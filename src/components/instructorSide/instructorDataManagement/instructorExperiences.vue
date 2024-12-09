@@ -185,7 +185,7 @@
                                                 <strong>{{ activity.name }}</strong>
                                                 <ul>
                                                     <li v-for="session in activity.sessions" :key="session.sessionID">
-                                                        {{ session.sessionName }}
+                                                        Session: {{ session.sessionName }}
                                                     </li>
                                                 </ul>
                                             </v-col>
@@ -443,10 +443,10 @@ computed: {
             },
         ];
 
-        // Conditionally add the expand column if activity search is applied
+        // Conditionally add the "Activity" column if activity search is applied
         if (this.activitySearchApplied) {
             headers.push({
-                title: "", // Empty title for expand column
+                title: "Activities",
                 key: "data-table-expand"
             });
         }
@@ -589,23 +589,28 @@ methods: {
         // Manually update activitySearchApplied based on current selectedSearchChips
         this.updateActivitySearchApplied();
 
-        if (this.activitySearchApplied && this.activityBasedExperiences.length) {
-            // Extract "Activity" terms from searchCriteria based on selectedSearchChips
-            const activityTerms = this.viewsStore.experiences.selectedSearchChips
-                .filter(index => this.viewsStore.experiences.searchChips[index]?.category === "Activity")
-                .map(index => this.viewsStore.experiences.searchChips[index].term.trim().toLowerCase());
+        // If activity search is applied
+        if (this.activitySearchApplied) {
+            // If we have matching activity-based experiences
+            if (this.activityBasedExperiences.length) {
+                // Extract "Activity" terms
+                const activityTerms = this.viewsStore.experiences.selectedSearchChips
+                    .filter(index => this.viewsStore.experiences.searchChips[index]?.category === "Activity")
+                    .map(index => this.viewsStore.experiences.searchChips[index].term.trim().toLowerCase());
 
-            // Filter experiences based on matching activity names
-            const filteredActivityBasedExperiences = this.activityBasedExperiences.filter(ae =>
-                activityTerms.includes(ae.activityName.trim().toLowerCase())
-            );
+                const filteredActivityBasedExperiences = this.activityBasedExperiences.filter(ae =>
+                    activityTerms.includes(ae.activityName.trim().toLowerCase())
+                );
 
-            // Use the filtered activities to determine which experiences to show
-            const activityExperienceIDs = filteredActivityBasedExperiences.map(ae => ae.experienceID);
+                const activityExperienceIDs = filteredActivityBasedExperiences.map(ae => ae.experienceID);
 
-            this.filteredExperienceData = this.experienceData.filter(experience =>
-                activityExperienceIDs.includes(experience._id)
-            );
+                this.filteredExperienceData = this.experienceData.filter(experience =>
+                    activityExperienceIDs.includes(experience._id)
+                );
+            } else {
+                // Activity search applied but no matches found
+                this.filteredExperienceData = [];
+            }
         } else {
             // Default filtering logic if activity search is not applied
             this.filteredExperienceData = this.experienceData.filter(item => {
@@ -712,41 +717,39 @@ methods: {
 
     // Submits the activity search operation by transforming the selected activities into search criteria. It fetches experiences associated with the selected activities, clears the selected activities and search input, and closes the activity search dialog. Finally, it triggers the filtering process based on the updated search criteria.
     async submitActivitySearch() {
-        // Transform selectedActivities into the desired format for searchCriteria
+        // Transform selectedActivities into search criteria, storing both name and ID
         const newSearchCriteria = this.selectedActivities.map(activity => ({
             category: "Activity",
-            term: activity.activityName
+            term: activity.activityName,
+            activityID: activity._id    // Store the ID here
         }));
 
         // Calculate the starting index for new chips
         const startIndexForNewChips = this.viewsStore.experiences.searchChips.length;
 
-        // Append the new search criteria to the existing searchCriteria array
+        // Append the new search criteria to existing criteria
         this.viewsStore.experiences.searchChips = [
             ...this.viewsStore.experiences.searchChips,
             ...newSearchCriteria
         ];
 
-        // Automatically mark newly added activity chips as selected
+        // Automatically select the newly added activity chips
         this.viewsStore.experiences.selectedSearchChips = [
             ...this.viewsStore.experiences.selectedSearchChips,
             ...newSearchCriteria.map((_, index) => startIndexForNewChips + index)
         ];
 
-        // Fetch experiences associated with selected activities
+        // Fetch experiences associated with **all currently selected** activity chips
         await this.fetchExperiencesByActivity();
 
-        // Clear selected activities from the dialog
+        // Clear selected activities from the dialog and close it
         this.selectedActivities = [];
-
         this.activitySearch = "";
-
-        // Close the dialog
         this.dialogActivitySearch = false;
 
         // Perform filtering based on the updated search chips
         this.performFilter();
-    },
+        },
 
     // Selects an activity from the search results and adds it to the list of selected activities. Additionally, it removes the selected activity from the activity data list to prevent duplication in the selection.
     selectActivity(selectedActivity) {
@@ -766,27 +769,39 @@ methods: {
 
     // Fetches experiences associated with the selected activities by sending a POST request to the backend API. The selected activity IDs are extracted and sent in the request body. Upon receiving the response, the fetched experiences are stored in the `activityBasedExperiences` array.
     async fetchExperiencesByActivity() {
+        // Identify all selected activity chips
+        const activityChipIndexes = this.viewsStore.experiences.selectedSearchChips.filter(index => {
+            const criteria = this.viewsStore.experiences.searchChips[index];
+            return criteria && criteria.category === "Activity" && criteria.activityID;
+        });
 
-        // Extract activity IDs from selectedActivities
-        const activityIDs = this.selectedActivities.map(activity => activity._id);
+        // Extract activity IDs directly from those chips
+        const activityIDs = activityChipIndexes
+            .map(index => this.viewsStore.experiences.searchChips[index].activityID);
+
+        if (!activityIDs.length) {
+            // If no activity IDs are found, clear activityBasedExperiences
+            this.activityBasedExperiences = [];
+            return;
+        }
 
         try {
             const user = useLoggedInUserStore();
             let token = user.token;
             let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/by-activity`;
 
-            // Use axios.post and pass activityIDs in the body
-            const response = await axios.post(apiURL, {
-                activityIDs: activityIDs
-            }, {
-                headers: { token }
-            });
+            const response = await axios.post(
+            apiURL,
+            { activityIDs },
+            { headers: { token } }
+            );
 
-            this.activityBasedExperiences = response.data;
+            // Store the returned experiences
+            this.activityBasedExperiences = Array.isArray(response.data) ? response.data : [];
         } catch (error) {
             this.handleError(error);
         }
-    },
+        },
 
     // Updates the `activitySearchApplied` flag based on whether there is at least one selected "Activity" chip in the `selectedSearchChips`. If such a chip exists, the flag is set to `true`; otherwise, it is set to `false`.
     updateActivitySearchApplied() {
