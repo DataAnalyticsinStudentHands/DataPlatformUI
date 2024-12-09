@@ -165,7 +165,6 @@ export default {
     const showUpdateButton = computed(() => {
         const role = userStore.role;
         const userId = userStore.userId;
-        console.log('userId: ', userId);
         // Use createdBy.value, which will be updated after activity data is fetched
         const cb = createdBy.value;
 
@@ -228,7 +227,6 @@ methods: {
       let token = store.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${store.navigationData.activityID}`;
       const response = await axios.get(apiURL, { headers: { token }});
-      console.log('response:', response.data)
       
       this.activity = {
         ...this.activity,
@@ -251,7 +249,6 @@ methods: {
       if (action === "update") {
         this.updateLoading = true;
       } else if (action === "delete") {
-        console.log('action is delete')
         this.deleteLoading = true;
       }
       
@@ -262,7 +259,6 @@ methods: {
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         if (action === "update") {
-          console.log('checkAssociatedInstances response:', checkResponse.data);
           if (checkResponse.data.expInstancesFound === true) {
             this.associatedInstances = checkResponse.data.instancesData;
             this.updateDialogWithInstances = true;

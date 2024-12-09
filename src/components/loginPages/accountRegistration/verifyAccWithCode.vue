@@ -110,9 +110,7 @@ export default {
             });
 
             if (res.status === 200) {
-                console.log("res.data: ", res.data)
                 if (res.data.action && res.data.action === 'password-reset') {
-                    console.log('action is password reset');
 
                     // Update store and localStorage with the new token that includes password-reset action
                     store.$patch({
@@ -146,7 +144,6 @@ export default {
                     if (store.role === 'Instructor' || store.role === 'Group Instructor' || store.role === 'Group Admin' || store.role === 'Org Admin') {
                         this.$router.push("/instructorDash");
                     } else if (store.role === 'Student') {
-                        console.log('store verifyAccWithCode: ', store.permissions);
                         await store.checkFormCompletion();
                         if (store.hasCompletedEntryForm) {
                             this.$router.push("/studentDashboard");

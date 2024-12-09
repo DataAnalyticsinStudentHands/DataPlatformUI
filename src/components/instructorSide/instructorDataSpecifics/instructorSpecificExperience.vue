@@ -171,11 +171,9 @@ async mounted() {
 
     // Fetches experience data from the backend server using an API call based on the provided experience ID. Upon successful retrieval, updates the local state with the fetched experience details, including the experience category and name.
     async fetchExperienceData(experienceID) {
-      console.log('experienceID: ', experienceID);
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
-      console.log('apiURL: ', apiURL);
       try {
         const resp = await axios.get(apiURL, { headers: { token } });
         const experienceData = resp.data;
@@ -224,7 +222,6 @@ async mounted() {
       try {
         const store = useLoggedInUserStore();
         const token = store.token;
-        console.log('store.navigationData:', store.navigationData);
         const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${store.navigationData.experienceID}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 

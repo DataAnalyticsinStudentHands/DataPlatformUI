@@ -307,7 +307,6 @@
               try {
                   const response = await axios.get(apiURL, { headers: { token } });
                   const instanceData = response.data;
-                  console.log('response: ', instanceData)
                   this.selectedSessionID = instanceData.sessionID;
                   this.selectedExperienceID = instanceData.experience.id;
                   this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10); // Format date as 'YYYY-MM-DD'

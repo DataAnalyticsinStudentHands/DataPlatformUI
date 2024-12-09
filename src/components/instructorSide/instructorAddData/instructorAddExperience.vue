@@ -89,7 +89,6 @@ export default {
     // If the user has the 'Group Admin' role, set the experience category to the user's group
     if (user.role === 'Group Admin') {
       this.experience.experienceCategory = user.group;
-      console.log('this.experiencecat: ', this.experience.experienceCategory)
     }
 
     // Fetch additional activity data before the component is mounted

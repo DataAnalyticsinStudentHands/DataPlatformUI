@@ -885,9 +885,6 @@ watch: {
     },
     exitForm: {
         handler(newVal, oldVal) {
-            // console.log('newVal: ', newVal);
-            // console.log('oldVal: ', oldVal);
-            // console.log('this.originalExitForm: ', this.originalExitForm);
             if (newVal && !isEqual(newVal, this.originalExitForm)) {
                 if (this.isFirstInput) {
                     this.handleFirstInput();

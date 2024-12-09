@@ -422,8 +422,6 @@ export default {
                 session.availableExperiences.sort((a, b) => a.experienceName.localeCompare(b.experienceName));
               });
             }    
-            // Log the response data to verify the registrationCode field
-            console.log(response.data);
             
             this.availableExperiencesForRegistration = response.data;
           } catch (error) {

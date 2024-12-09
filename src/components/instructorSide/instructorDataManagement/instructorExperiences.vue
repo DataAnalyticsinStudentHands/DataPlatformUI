@@ -508,7 +508,6 @@ methods: {
       store.navigationData = {
         experienceID: experience._id,
       };
-      console.log('store.navigationData:', store.navigationData);
       this.$router.push({ name: "instructorSpecificExperience" });
     },
 
