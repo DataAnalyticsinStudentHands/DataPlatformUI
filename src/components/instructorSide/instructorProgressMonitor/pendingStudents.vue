@@ -3,15 +3,19 @@
     <v-container>
       <v-row>
         <v-col cols="12">
+          <!-- Card to display the Pending Students Monitor -->
           <v-card>
             <v-card-title class="pa-4 d-flex justify-space-between align-center">
               Pending Students Monitor
+              <!-- CSV download button, visible if there are pending students -->
               <progress-monitor-csv-downloader v-if="pendingStudents" :data="pendingStudents" file-name="pending_students.csv" />
             </v-card-title>
             <v-card-subtitle class="pa-4 text-h6">
               Students with Pending Status
             </v-card-subtitle>
 
+
+            <!-- Total number of pending students -->
             <v-row>
               <v-col cols="12">
                 <div class="text-h6 pa-4">
@@ -97,22 +101,32 @@
     components: {
       'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
     },
+
     mounted() {
+      // Fetch the list of pending students when the component is mounted
       this.fetchPendingStudents();
     },
-    computed: {
-      paginatedPendingStudents() {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = this.currentPage * this.itemsPerPage;
-        return this.pendingStudents.slice(start, end);
-      },
-      totalPaginationLength() {
-        return Math.ceil(this.pendingStudents.length / this.itemsPerPage);
-      },
-      totalStudentsCount() {
-        return this.pendingStudents.length;
-      },
-    },
+
+computed: {
+  // Returns the students for the current page based on pagination
+  paginatedPendingStudents() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = this.currentPage * this.itemsPerPage;
+    return this.pendingStudents.slice(start, end);
+  },
+
+  // Returns the total number of pages for pagination
+  totalPaginationLength() {
+    return Math.ceil(this.pendingStudents.length / this.itemsPerPage);
+  },
+
+  // Returns the total count of pending students
+  totalStudentsCount() {
+    return this.pendingStudents.length;
+  },
+},
+
+
     methods: {
 
       // Fetches pending students' data by sending a GET request. Upon receiving the response, updates the component's state with the pending students' information.
@@ -134,9 +148,11 @@
 
       // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
+        useLoggedInUserStore().navigationData = {
+          userID: userID
+        };
         this.$router.push({
-          name: "instructorSpecificStudent",
-          params: { userID: userID },
+          name: "instructorSpecificStudent"
         });
       },
 

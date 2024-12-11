@@ -1,7 +1,11 @@
+<!-- verifyAccWithEmailCode.vue - This component handles the email verification process for existing users. It presents a form to enter an email address and confirmation code, and submits the code to verify and activate the user's account. -->
+
+
 <template>
     <v-card-text>
         <v-row>
             <v-col cols="12" class="pb-0">
+                <!-- Title asking the user to verify their email -->
                 <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                     {{$t('Verify Your Email')}}
                 </h2>
@@ -9,9 +13,12 @@
         </v-row>
         <v-row>
             <v-col cols="12">
+                <!-- Description explaining the email verification process -->
                 {{$t('Please enter your email address and the confirmation code received in your email to verify your account:')}}
             </v-col>
         </v-row>
+
+        <!-- Form for entering the email and confirmation code -->
         <v-form ref="form" @submit.prevent="formSubmit">
         <v-row justify="center">
             <v-col cols="12" md="10">
@@ -38,12 +45,14 @@
                             style="width: 100%;"
                         >
                         </v-text-field>
-                        <!-- Flex container to center the buttons -->
+                        
                         <div class="d-flex justify-center align-center">
+                            <!-- Back to Login Button -->
                             <v-btn 
                                 @click="goBackToLogin"
                                 class="mt-3 mr-2"
                             >{{$t('Back to Login')}}</v-btn>
+                            <!-- Submit Button -->
                             <v-btn 
                                 :loading="loading"
                                 type="submit" 
@@ -73,6 +82,7 @@ export default {
       email: null,
       code: null,
       loading: false,
+      // Validation rules for the email input
       emailRules: [
         v => {
             if (!v) {
@@ -83,6 +93,7 @@ export default {
             return true;
         }
       ],
+      // Validation rules for the confirmation code input
       codeRules: [
         v => {
             if (!v) {
@@ -115,14 +126,15 @@ export default {
             const res = await axios.put(apiURL, user);
 
             if (res.status === 200) {
+                useLoggedInUserStore().navigationData = {
+                    toastType: 'success',
+                    toastMessage: this.$t('Your account is activated! You may now login.'),
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                };
+
                 this.$router.push({
-                    name: 'login',
-                    params: {
-                        toastType: 'success',
-                        toastMessage: this.$t('Your account is activated! You may now login.'),
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--create'
-                    }
+                    name: 'login'
                 });
             }
         } catch (err) {

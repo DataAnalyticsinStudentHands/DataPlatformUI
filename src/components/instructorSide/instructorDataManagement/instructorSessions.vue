@@ -5,7 +5,7 @@
     <v-row>
         <v-col>
             <p class="d-flex justify-center font-weight-black text-h6">
-                {{ viewArchivedSessions ? "Archived" : "" }} Sessions
+                {{ viewsStore.isViewingArchived('sessions') ? "Archived" : "" }} Sessions
             </p>
         </v-col>
     </v-row>
@@ -78,21 +78,21 @@
                                 v-if="!selectedSessions.length"
                                 @click="toggleArchivedSessions"
                                 elevation="1"
-                                :append-icon="viewArchivedSessions ? '' : 'mdi-archive'"
+                                :append-icon="viewsStore.isViewingArchived('sessions') ? '' : 'mdi-archive'"
                             >
-                                {{ viewArchivedSessions ? 'View Sessions' : 'View Archive' }}
+                                {{ viewsStore.isViewingArchived('sessions') ? 'View Sessions' : 'View Archive' }}
                             </v-btn>
                             <v-btn 
                                 v-else
                                 @click="handleArchiveSessions"
                                 elevation="1"
-                                :append-icon="viewArchivedSessions ? 'mdi-restore' : 'mdi-archive-plus'"
+                                :append-icon="viewsStore.isViewingArchived('sessions') ? 'mdi-restore' : 'mdi-archive-plus'"
                             >
                                 <span class="d-none d-md-flex">
-                                    {{ viewArchivedSessions ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }}
+                                    {{ viewsStore.isViewingArchived('sessions') ? "Restore" : "Archive" }} {{ selectedSessions.length === 1 ? "Session" : "Sessions" }}
                                 </span>
                                 <span class="d-none d-sm-flex d-md-none">
-                                    {{ viewArchivedSessions ? "Restore" : "Archive" }}
+                                    {{ viewsStore.isViewingArchived('sessions') ? "Restore" : "Archive" }}
                                 </span>
                             </v-btn>
                         </v-col>
@@ -104,13 +104,14 @@
                                 @click="selectedSessions.length ? handleArchiveSessions() : toggleArchivedSessions()"
                             >
                                 <v-icon>
-                                    {{ selectedSessions.length ? (viewArchivedSessions ? 'mdi-restore' : 'mdi-archive-plus') : 'mdi-archive' }}
+                                    {{ selectedSessions.length ? (viewsStore.isViewingArchived('sessions') ? 'mdi-restore' : 'mdi-archive-plus') : 'mdi-archive' }}
                                 </v-icon>
                             </v-btn>
                         </v-col>
                         <!-- Add New Session Button for sm Screens and Up -->
                         <v-col lg="auto" md="2" sm="2" class="d-none d-sm-flex justify-end align-self-center">
                             <v-btn 
+                                v-if="canAddNewSession"
                                 @click="handleAddNewSession"
                                 elevation="1"
                                 prepend-icon="mdi-plus"
@@ -122,7 +123,9 @@
                         </v-col>
                         <!-- Add New Session Button for xs Screens -->
                         <v-col sm="2" class="d-none d-flex d-sm-none justify-end align-self-center">
-                            <v-btn elevation="2" color="#c8102e" @click="handleAddNewSession">
+                            <v-btn 
+                                v-if="canAddNewSession"
+                                elevation="2" color="#c8102e" @click="handleAddNewSession">
                                 <v-icon>mdi-plus</v-icon>
                             </v-btn>
                         </v-col>
@@ -131,13 +134,13 @@
                     <v-row v-if="showChipsRow">
                         <v-col>
                             <v-chip-group
-                                v-if="searchCriteria.length"
-                                v-model="selectedSearchChips"
+                                v-if="viewsStore.sessions.searchChips.length"
+                                v-model="viewsStore.sessions.selectedSearchChips"
                                 column
                                 multiple
                             >
                                 <v-chip
-                                    v-for="(criteria, index) in searchCriteria"
+                                    v-for="(criteria, index) in viewsStore.sessions.searchChips"
                                     :key="index"
                                     @click="selectSearchChip(index)"
                                     filter
@@ -173,6 +176,9 @@
                     :loading="loading"
                     v-model:expanded="expandedSessions"
                     show-expand
+                    multi-sort
+                    :sort-by.sync="viewsStore.sessions.sortBy"
+                    @update:sort-by="handleSortByUpdate"
                 >
                     <template v-slot:body="{ items }">
                         <template
@@ -184,7 +190,7 @@
                                 class="pointer-cursor custom-hover"
                             >
                                 <td @click.stop>
-                                    <v-checkbox density="compact" class="d-flex" @update:modelValue="toggleSelection(sessionItem)"></v-checkbox>
+                                    <v-checkbox v-if="showCheckboxColumn" density="compact" class="d-flex" @update:modelValue="toggleSelection(sessionItem)"></v-checkbox>
                                 </td>
                                 <td>{{ sessionItem.sessionName }}</td>
                                 <td>{{ formatDate(sessionItem.sessionPeriod.startDate) }}</td>
@@ -224,6 +230,7 @@
                                         <template v-slot:bottom>
                                             <v-col class="d-flex justify-end mb-4">
                                                 <v-btn
+                                                    v-if="canAddExpInstance"
                                                     @click="handleAddExperience(sessionItem._id)"
                                                     elevation="1"
                                                     prepend-icon="mdi-plus"
@@ -237,6 +244,7 @@
                     </template>
                 </v-data-table>
 
+                <!-- Skeleton loader for loading state -->
                 <v-skeleton-loader v-if="loading" type="table-row@5"></v-skeleton-loader>
 
 
@@ -540,35 +548,52 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-filteredInstances:
-<br>
-{{ filteredInstances }}
-<br><br><br>
-filteredSessionData:
-<br>
-{{ filteredSessionData }}
-<br><br><br>
-sessionData:
-<br>
-{{ sessionData }}
-<br><br><br>
-instancesData:
-<br>
-{{ instancesData }} -->
 
 </template>
 
 <script>
+import { computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { useInstructorViewsStore } from "@/stored/instructorViews";
 import axios from "axios";
 import { DateTime } from "luxon";
 
 export default {
-components: {
+name: "instructorSessions",
+setup() {
+  // Access the views and user stores
+  const viewsStore = useInstructorViewsStore();
+  const userStore = useLoggedInUserStore();
+
+  // Computed property to determine if the checkbox column should be shown based on user roles
+  const showCheckboxColumn = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
+
+  // Computed property to determine if the user can add a new session based on roles
+  const canAddNewSession = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
+
+  // Computed property to determine if the user can add a new experience instance based on roles
+  const canAddExpInstance = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Group Instructor', 'Instructor'];
+    return allowedRoles.includes(userStore.role);
+  });
+
+  return {
+    viewsStore,
+    userStore,
+    showCheckboxColumn: showCheckboxColumn.value, // Whether to show the checkbox column
+    canAddNewSession: canAddNewSession.value, // Whether the user can add a new session
+    canAddExpInstance: canAddExpInstance.value // Whether the user can add a new experience instance
+  };
 },
+
 data() {
     return {
         sessionSearch: "",
@@ -622,8 +647,6 @@ data() {
             {value: 20, title: "20"},
             {value: -1, title: "$vuetify.dataFooter.itemsPerPageAll"},
         ],
-        searchCriteria: [],
-        selectedSearchChips: [],
         filteredSessionData: [],
         dialogStartDate: false,
         selectedStartDate: new Date(),
@@ -633,7 +656,6 @@ data() {
         dialogEndDate: false,
         selectedEndDate: new Date(),
         endDateFilterType: "On",
-        viewArchivedSessions: false,
         xsdialogSearch: false,
         xsSearchFilterSelection: null,
         sessionData: [],
@@ -676,70 +698,94 @@ data() {
         selectedExitFormReleaseDate: new Date(),
     };
 },
+
 async mounted() {
-    useLoggedInUserStore().startLoading();
-    await this.fetchInstances();
-    await this.fetchSessionData()
+  // Start the loading state when the component is mounted
+  useLoggedInUserStore().startLoading();
+
+  // Fetch instances and session data asynchronously
+  await this.fetchInstances();
+  
+  await this.fetchSessionData()
     .then(() => {
-        useLoggedInUserStore().stopLoading();
-        this.performFilter();
+      // Stop loading and apply filters once data is successfully fetched
+      useLoggedInUserStore().stopLoading();
+      this.performFilter();
     })
     .catch((error) => {
-        this.handleError(error);
-        useLoggedInUserStore().stopLoading();
+      // Handle errors and stop loading
+      this.handleError(error);
+      useLoggedInUserStore().stopLoading();
     });
 },
+
 watch: {
-    startDateFilterType(newVal) {
-        if (newVal === "Between") {
-            this.beginningDateRange = null;
-            this.endDateRange = null;
-        }
-    },
+  // Watch for changes in the startDateFilterType and reset date range if "Between" is selected
+  startDateFilterType(newVal) {
+    if (newVal === "Between") {
+      // Reset the beginning and end date range when the filter type is "Between"
+      this.beginningDateRange = null;
+      this.endDateRange = null;
+    }
+  },
 },
+
+
 computed: {
+    // Determines whether the chips row should be shown based on the presence of search chips
     showChipsRow() {
-        return this.searchCriteria.length > 0;
+        return this.viewsStore.sessions.searchChips.length > 0;
     },
+
+    // Returns the loading state from the logged-in user store
     loading() {
         return useLoggedInUserStore().loading;
-        // return true;
+        // return true; // (Optional alternative for forcing a loading state)
     },
+
+    // Returns the appropriate title based on the selected start date filter type
     sessionStartDateTitle() {
         switch (this.startDateFilterType) {
-            case "On":
-                return "Start Date On";
-            case "After":
-                return "Start Date After";
-            case "Before":
-                return "Start Date Before";
-            case "Between":
-                return "Start Date Between";
-            default:
-                return "Start Date On";
+        case "On":
+            return "Start Date On";
+        case "After":
+            return "Start Date After";
+        case "Before":
+            return "Start Date Before";
+        case "Between":
+            return "Start Date Between";
+        default:
+            return "Start Date On";
         }
     },
+
+    // Returns the appropriate title based on the selected end date filter type
     sessionEndDateTitle() {
         switch (this.endDateFilterType) {
-            case "On":
-                return "End Date On";
-            case "After":
-                return "End Date After";
-            case "Before":
-                return "End Date Before";
-            case "Between":
-                return "End Date Between";
-            default:
-                return "End Date On";
+        case "On":
+            return "End Date On";
+        case "After":
+            return "End Date After";
+        case "Before":
+            return "End Date Before";
+        case "Between":
+            return "End Date Between";
+        default:
+            return "End Date On";
         }
     },
+
+    // Formats the selected start date based on the filter type, especially for "Between" ranges
     formattedSelectedStartDate() {
         if (this.startDateFilterType === "Between") {
             let text = "";
+            
+            // Format the beginning date range
             if (this.beginningDateRange) {
                 text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
             }
 
+            // Format both the beginning and end date range
             if (this.beginningDateRange && this.endDateRange) {
                 text += " to ";
                 text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
@@ -748,17 +794,23 @@ computed: {
             return text;
         }
 
+        // Format the selected start date for other filter types
         return this.selectedStartDate
-            ? DateTime.fromJSDate(this.selectedStartDate).toFormat('MM-dd-yyyy')
-            : "";
+        ? DateTime.fromJSDate(this.selectedStartDate).toFormat('MM-dd-yyyy')
+        : "";
     },
+
+    // Formats the selected end date based on the filter type, especially for "Between" ranges
     formattedSelectedEndDate() {
         if (this.endDateFilterType === "Between") {
             let text = "";
+            
+            // Format the beginning date range
             if (this.beginningDateRange) {
                 text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
             }
 
+            // Format both the beginning and end date range
             if (this.beginningDateRange && this.endDateRange) {
                 text += " to ";
                 text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
@@ -767,26 +819,33 @@ computed: {
             return text;
         }
 
+        // Format the selected end date for other filter types
         return this.selectedEndDate
             ? DateTime.fromJSDate(this.selectedEndDate).toFormat('MM-dd-yyyy')
             : "";
     },
+
+    // Determines if the start dates can be applied based on the filter type
     canApplyStartDates() {
         if (this.startDateFilterType === "Between") {
-            // Allow submission only if both beginning and end date ranes are selected
+            // Allow submission only if both beginning and end date ranges are selected
             return this.beginningDateRange && this.endDateRange;
         }
         // In other cases, allow submission
         return true;
     },
+
+    // Determines if the end dates can be applied based on the filter type
     canApplyEndDates() {
         if (this.endDateFilterType === "Between") {
-            // Allow submission only if both beginning and end date ranes are selected
+            // Allow submission only if both beginning and end date ranges are selected
             return this.beginningDateRange && this.endDateRange;
         }
         // In other cases, allow submission
         return true;
     },
+
+    // Returns the appropriate title based on the selected exit form release date filter type
     instanceExitFormReleaseDateTitle() {
         switch (this.exitFormReleaseDateFilterType) {
             case "On":
@@ -801,36 +860,44 @@ computed: {
                 return "Release Date On";
         }
     },
+
+    // Formats the selected exit form release date based on the filter type, especially for "Between" ranges
     formattedSelectedExitFormReleaseDate() {
         if (this.exitFormReleaseDateFilterType === "Between") {
-                let text = "";
-                if (this.beginningDateRange) {
-                    text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
-                }
+            let text = "";
 
-                if (this.beginningDateRange && this.endDateRange) {
-                    text += " to ";
-                    text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
-                }
-
-                return text;
+            // Format the beginning date range
+            if (this.beginningDateRange) {
+                text += DateTime.fromJSDate(this.beginningDateRange).toFormat('MM-dd-yyyy');
             }
 
-            return this.selectedExitFormReleaseDate
-                ? DateTime.fromJSDate(this.selectedExitFormReleaseDate).toFormat('MM-dd-yyyy')
-                : "";
+            // Format both the beginning and end date range
+            if (this.beginningDateRange && this.endDateRange) {
+                text += " to ";
+                text += DateTime.fromJSDate(this.endDateRange).toFormat('MM-dd-yyyy');
+            }
+
+            return text;
+        }
+
+        // Format the selected exit form release date for other filter types
+        return this.selectedExitFormReleaseDate
+            ? DateTime.fromJSDate(this.selectedExitFormReleaseDate).toFormat('MM-dd-yyyy')
+            : "";
     },
+
+    // Determines if the exit form release dates can be applied based on the filter type
     canApplyExitFormReleaseDates() {
         if (this.exitFormReleaseDateFilterType === "Between") {
-                // Allow submission only if both beginning and end date ranes are selected
-                return this.beginningDateRange && this.endDateRange;
-            }
-            // In other cases, allow submission
-            return true;
+            // Allow submission only if both beginning and end date ranges are selected
+            return this.beginningDateRange && this.endDateRange;
+        }
+        // In other cases, allow submission
+        return true;
     },
 
-
 },
+
 methods: {
 
     // Fetches session data from the server and assigns it to the `sessionData` variable. For each session, it filters the instances data to find instances associated with that session and assigns them to a new property called `instances`. Finally, it copies the `sessionData` to `filteredSessionData`.
@@ -870,7 +937,10 @@ methods: {
 
     // Navigates to the page for editing a specific session based on the provided session ID.
     editSession(session) {
-        this.$router.push({ name: "instructorSpecificSession", params: {id: session._id } });
+        useLoggedInUserStore().navigationData = {
+            id: session._id
+        };
+        this.$router.push({ name: "instructorSpecificSession" });
     },
 
     // Formats a given ISO datetime from the database into the 'MM-dd-yyyy' format without converting timezones.
@@ -912,12 +982,12 @@ methods: {
     // Adds a new search chip based on the session search input. If there is input in the session search field, it creates a new chip with the category derived from the search label and the term from the session search input. Then it selects the new chip by default, clears the session search input field, and triggers the search functionality.
     addSearchChip() {
         if (this.sessionSearch) {
-            this.searchCriteria.push({
+            this.viewsStore.addSearchChip('sessions', {
                 category: this.searchLabel.replace("Search ", ""),
                 term: this.sessionSearch
             });
             // Select the new chip by default
-            this.selectedSearchChips.push(this.searchCriteria.length - 1);
+            this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
             // Clear the input field after adding the chip
             this.sessionSearch = "";
             // Call search
@@ -927,13 +997,13 @@ methods: {
 
     // Toggles the selection of a search chip. If the chip is already selected, it removes it; otherwise, it adds it. After updating the selected chips, it triggers the search functionality.
     selectSearchChip(index) {
-        const selectedIndex = this.selectedSearchChips.indexOf(index);
+        const selectedIndex = this.viewsStore.sessions.selectedSearchChips.indexOf(index);
         if (selectedIndex >= 0) {
             // If the chip is already selected, create a new array without this chip
-            this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+            this.viewsStore.sessions.selectedSearchChips = this.viewsStore.sessions.selectedSearchChips.filter(i => i !== index);
         } else {
             // If the chip is not selected, create a new array with this chip added
-            this.selectedSearchChips = [...this.selectedSearchChips, index];
+            this.viewsStore.sessions.selectedSearchChips = [...this.viewsStore.sessions.selectedSearchChips, index];
         }
         // Call search
         this.performFilter();
@@ -941,11 +1011,11 @@ methods: {
 
     // Removes a search chip at the specified index from the search criteria. It also updates the selected search chips array to reflect the removal and adjusts the indexes of the remaining selected chips. Finally, it triggers the search functionality.
     removeSearchChip(index) {
-        this.searchCriteria.splice(index, 1);
+        this.viewsStore.removeSearchChip('sessions', index);
         // Update selectedSearchChips to reflect the removal
-        this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+        this.viewsStore.sessions.selectedSearchChips = this.viewsStore.sessions.selectedSearchChips.filter(i => i !== index);
         // Adjust the indexes of the remaining selected chips
-        this.selectedSearchChips = this.selectedSearchChips.map(i => i > index ? i - 1 : i);
+        this.viewsStore.sessions.selectedSearchChips = this.viewsStore.sessions.selectedSearchChips.map(i => i > index ? i - 1 : i);
         // Call search
         this.performFilter();
     },
@@ -953,8 +1023,8 @@ methods: {
     // Filters the session data based on the selected search criteria. It constructs search groups for each category of criteria and iterates through the session data to check if each session matches the filter conditions. It also handles filtering by session status, session name, session start and end dates, experience name, experience category, and exit form release date. Finally, it updates the filtered session data.
     performFilter() {
         let searchGroups = {};
-        this.selectedSearchChips.forEach(index => {
-            let criteria = this.searchCriteria[index];
+        this.viewsStore.sessions.selectedSearchChips.forEach(index => {
+            let criteria = this.viewsStore.sessions.searchChips[index];
             if (!searchGroups[criteria.category]) {
                 searchGroups[criteria.category] = [];
             }
@@ -968,9 +1038,9 @@ methods: {
             // Create a deep copy of each session item
             let sessionItem = JSON.parse(JSON.stringify(item));
             // Check if item should be included based on sessionStatus
-            if (this.viewArchivedSessions && item.sessionStatus === false) {
+            if (this.viewsStore.isViewingArchived('sessions') && item.sessionStatus === false) {
                 // Continue with other criteria checks for archived items
-            } else if (!this.viewArchivedSessions && item.sessionStatus === true) {
+            } else if (!this.viewsStore.isViewingArchived('sessions') && item.sessionStatus === true) {
                 // Continue with other criteria checks for active items
             } else {
                 // Exclude the item if sessionStatus doesn't match
@@ -1093,9 +1163,18 @@ methods: {
                                     const comparisonDate = new Date(term.slice(2).trim());
                                     return exitDate > comparisonDate;
                                 } else if (term.startsWith('=')) {
-                                    let exitDateFormatted = this.formatDateMethod(new Date(instance.exitFormReleaseDate));
-                                    const comparisonDate = this.formatDateMethod(new Date(term.slice(2).trim()));
-                                    return exitDateFormatted === comparisonDate;
+                                    const comparisonDateStr = term.slice(2).trim();
+
+                                    // Parse the instance exit date as ISO or known format
+                                    const instanceExitDate = DateTime.fromISO(instance.exitFormReleaseDate, { zone: 'utc' });
+                                    // Convert to "MM-dd-yyyy"
+                                    const instanceExitDateFormatted = instanceExitDate.toFormat('MM-dd-yyyy');
+
+                                    // Parse the comparison date from the chip text
+                                    const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy', { zone: 'utc' });
+                                    const comparisonDateFormatted = comparisonDateObj.toFormat('MM-dd-yyyy');
+
+                                    return instanceExitDateFormatted === comparisonDateFormatted;
                                 } else if (term.startsWith('between')) {
                                     let [startDateStr, endDateStr] = term.slice(8).split(' and ');
                                     let startDate = DateTime.fromFormat(startDateStr, 'MM-dd-yyyy');
@@ -1275,9 +1354,9 @@ methods: {
         };
 
         // Add the chip to the search criteria
-        this.searchCriteria.push(startDateChip);
+        this.viewsStore.addSearchChip('sessions', startDateChip);
         // Select the new chip by default
-        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+        this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
         
         // Call search
         this.performFilter();
@@ -1303,9 +1382,9 @@ methods: {
         };
 
         // Add the chip to the search criteria
-        this.searchCriteria.push(endDateChip);
+        this.viewsStore.addSearchChip('sessions', endDateChip);
         // Select the new chip by default
-        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+        this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
         
         // Call search
         this.performFilter();
@@ -1331,9 +1410,9 @@ methods: {
         };
 
         // Add the chip to the search criteria
-        this.searchCriteria.push(exitFormReleaseDateChip);
+        this.viewsStore.addSearchChip('sessions', exitFormReleaseDateChip);
         // Select the new chip by default
-        this.selectedSearchChips.push(this.searchCriteria.length - 1);
+        this.viewsStore.sessions.selectedSearchChips.push(this.viewsStore.sessions.searchChips.length - 1);
 
         // Call search
         this.performFilter();
@@ -1346,9 +1425,11 @@ methods: {
 
     // Toggles the visibility of archived sessions. After toggling, triggers the filtering process to update the displayed sessions accordingly.
     toggleArchivedSessions() {
-        this.viewArchivedSessions = !this.viewArchivedSessions;
+        const newType = this.viewsStore.isViewingArchived('sessions') ? 'active' : 'archived'
+        this.viewsStore.switchViewType('sessions', newType);
         this.performFilter();
     },
+
 
     // Handles archiving or restoring selected sessions. It updates the status of each session accordingly via a PUT request. Upon completion, it displays a toast message indicating the success of the operation.
     async handleArchiveSessions() {
@@ -1356,7 +1437,7 @@ methods: {
             const user = useLoggedInUserStore();
             const token = user.token;
 
-            const updateStatus = { sessionStatus: this.viewArchivedSessions };
+            const updateStatus = { sessionStatus: this.viewsStore.isViewingArchived('sessions') };
 
             for (const session of this.selectedSessions) {
                 // Update Session Status
@@ -1368,14 +1449,14 @@ methods: {
                 await axios.put(sessionApiURL, updateStatus, { headers: { token }});
 
                 // Update associated experience instances and get the response
-                const expInstanceUpdateStatus = { sessionID: session._id, status: this.viewArchivedSessions };
+                const expInstanceUpdateStatus = { sessionID: session._id, status: this.viewsStore.isViewingArchived('sessions') };
                 const expInstanceResponse = await axios.put(expInstanceApiURL, expInstanceUpdateStatus, { headers: { token }});
 
                 // Determine the toast message
                 const message = (this.selectedSessions.length === 1 ? "Session " : "Sessions ") +
-                                (this.viewArchivedSessions ? "Restored" : "Archived") +
+                                (this.viewsStore.isViewingArchived('sessions') ? "Restored" : "Archived") +
                                 (expInstanceResponse.data.instancesUpdated ? " and Associated Experience Instances " : "") +
-                                (this.viewArchivedSessions ? "Restored!" : "Archived!");
+                                (this.viewsStore.isViewingArchived('sessions') ? "Restored!" : "Archived!");
 
                 // Display the toast message
                 toast.success(message, {
@@ -1468,12 +1549,23 @@ methods: {
 
     // Redirects the user to the edit page for a specific experience instance when invoked.
     editInstance(instance) {
-        this.$router.push({ name: "instructorSpecificExperienceInstance", params: { id: instance._id } });
+        useLoggedInUserStore().navigationData = {
+            id: instance._id
+        };
+        this.$router.push({ name: "instructorSpecificExperienceInstance" });
     },
 
     // Redirects the user to the page for adding a new experience instance, passing along the session ID as a parameter for context.
     handleAddExperience(sessionID) {
-        this.$router.push({ name: "instructorAddExperienceInstance", params: { id: sessionID } });
+        useLoggedInUserStore().navigationData = {
+            id: sessionID
+        };
+        this.$router.push({ name: "instructorAddExperienceInstance" });
+    },
+    
+    // Updates the sorting method for sessions when the sort field changes
+    handleSortByUpdate(newSortBy) {
+        this.viewsStore.updateSorting('sessions', newSortBy);
     },
 },
 };

@@ -1,17 +1,25 @@
+<!-- verifyAccWithCode.vue - This component handles the email verification process for users. It presents a form to enter a confirmation code and submits the code to verify and activate the user's account. -->
+
+
 <template>
     <v-card-text>
         <v-row>
             <v-col cols="12" class="pb-0">
+                <!-- Title asking the user to verify their email -->
                 <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                     {{$t('Please Verify Your Email')}}
                 </h2>
             </v-col>
         </v-row>
+
+        <!-- Description of the email verification process -->
         <v-row>
             <v-col cols="12">
-                {{$t('Please check your email for a confirmation code to verify your email address. This may take a few minutes.')}}
+                <p>{{$t('A confirmation code has been sent to your email. Please enter the code below.')}}</p>
+                <p>{{$t(' If you don\'t see an email, check your spam or junk folder.')}}</p>
             </v-col>
         </v-row>
+        <!-- Form for entering the confirmation code -->
         <v-row justify="center">
             <v-col cols="12" md="8">
                 <v-sheet>
@@ -58,6 +66,7 @@ export default {
       loading: false,
       userID: null,
       rules: [
+        // Validation rules for the confirmation code field
         value => {
             if (value) return true
             return this.$t('Code is required.')
@@ -66,8 +75,9 @@ export default {
     };
   },
   mounted() {
-    if (this.$route.params && this.$route.params.id) {
-        this.userID = this.$route.params.id;
+    // Set the user ID if available in navigation data
+    if (useLoggedInUserStore().navigationData && useLoggedInUserStore().navigationData.id) {
+        this.userID = useLoggedInUserStore().navigationData.id;
     }
   },
   methods: {
@@ -100,24 +110,51 @@ export default {
             });
 
             if (res.status === 200) {
-                await store.verifyExistingAcc(res.data);
-                await store.getFullName();
-                store.isLoggedIn = true;
-                // Navigate to the appropriate dashboard based on the user's role
-                if (store.role === 'Instructor') {
-                    this.$router.push("/instructorDash");
-                } else if (store.role === 'Student') {
-                    // After successful verification, check if the student has completed forms
-                    await store.checkFormCompletion();
-                    if (store.hasCompletedEntryForm) {
-                    this.$router.push("/studentDashboard");
-                    } else {
-                    this.$router.push("/studentEntryForm");
-                    }
-                } else if (store.role === 'Basic') {
-                    this.$router.push("/dashboard");
+                if (res.data.action && res.data.action === 'password-reset') {
+
+                    // Update store and localStorage with the new token that includes password-reset action
+                    store.$patch({
+                        token: res.data.token
+                    });
+                    localStorage.setItem("token", res.data.token);
+                    store.setTokenHeader(res.data.token);
+
+                    // Redirect to password reset page if the token action is 'password-reset'
+                    this.$router.push("/passResetNewEntry");
                 } else {
-                    this.$router.push("/");
+                    // Update store and localStorage with new JWT for regular account activation
+                    store.$patch({
+                        role: res.data.userRole,
+                        userId: res.data.userID,
+                        token: res.data.token,
+                        languagePreference: res.data.languagePreference,
+                        permissions: res.data.permissions // Include permissions if necessary
+                    });
+
+                    // Save the new token to localStorage
+                    localStorage.setItem("token", res.data.token);
+
+                    // Set the global default header for axios
+                    store.setTokenHeader(res.data.token);
+
+                    await store.getFullName();
+                    store.isLoggedIn = true;
+
+                    // Navigate to the appropriate dashboard based on the user's role
+                    if (store.role === 'Instructor' || store.role === 'Group Instructor' || store.role === 'Group Admin' || store.role === 'Org Admin') {
+                        this.$router.push("/instructorDash");
+                    } else if (store.role === 'Student') {
+                        await store.checkFormCompletion();
+                        if (store.hasCompletedEntryForm) {
+                            this.$router.push("/studentDashboard");
+                        } else {
+                            this.$router.push("/studentEntryForm");
+                        }
+                    } else if (store.role === 'Basic') {
+                        this.$router.push("/dashboard");
+                    } else {
+                        this.$router.push("/");
+                    }
                 }
             } else {
                 toast.error(this.$t('An error occurred. Please try again.'), {
@@ -145,7 +182,7 @@ export default {
                     });
                 }
             } else {
-                toast.error(this.$t('An error has occured. Please try again.'), {
+                toast.error(this.$t('An error has occurred. Please try again.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });

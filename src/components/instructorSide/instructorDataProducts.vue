@@ -5,6 +5,7 @@
 -->
 <template>
     <v-container>
+        <!-- Download Entry Forms -->
       <v-row>
         <v-col cols="12">
           <v-btn text outlined class="mb-2" @click="downloadEntryDataAsCSV">
@@ -13,6 +14,7 @@
         </v-col>
       </v-row>
   
+      <!-- Download Goal Forms -->
       <v-row class="mb-2">
         <v-col cols="12">
           <v-btn text outlined @click="downloadAllGoalDataAsCSV">
@@ -21,6 +23,7 @@
         </v-col>
       </v-row>
   
+      <!-- Download Exit Forms -->
       <v-row>
         <v-col cols="12">
           <v-btn text outlined @click="downloadAllExitDataAsCSV">

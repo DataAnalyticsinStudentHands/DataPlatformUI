@@ -202,11 +202,35 @@
 
         <!-- {{ registeredExperiences }} -->
 
+<!-- Dialog for Inputting Registration Code -->
+<v-dialog v-model="registrationDialog" max-width="400px">
+  <v-card>
+    <v-card-title nowrap>Enter Registration Code</v-card-title>
+    <v-card-text>{{ currentExperienceName }}</v-card-text>
+    <v-card-text>
+      <v-text-field
+        v-model="enteredRegistrationCode"
+        label="Registration Code"
+        required
+      ></v-text-field>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="blue darken-1" text @click="closeRegistrationDialog">Cancel</v-btn>
+      <v-btn color="blue darken-1" text @click="confirmRegistrationCode">Confirm</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+
+
+
 </template>
 
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
 
 export default {
     name: "StudentExperienceRegistration",
@@ -221,6 +245,11 @@ export default {
             availableExperiencesForRegistration: [],
             selectedExperienceIDs: [],
             markedForRemovalIDs: [],
+            registrationDialog: false,
+            enteredRegistrationCode: '',
+            currentExperience: null,
+            currentExperienceName: '',
+            experiencesToProcess: [],
         }
     },
     watch: {
@@ -286,19 +315,58 @@ export default {
             }
         },
         addSelectedToMyExperiences() {
-            this.selectedExperienceIDs.forEach(selectedID => {
-                this.availableExperiencesForRegistration.forEach(session => {
-                    const experience = session.availableExperiences.find(exp => exp._id === selectedID);
-                    if (experience && !this.isSelected(experience)) {
-                        this.selectedExperiences.push({
-                            _id: experience._id,
-                            experienceName: experience.experienceName,
-                        });
-                    }
-                });
+          this.experiencesToProcess = [];
+          this.selectedExperienceIDs.forEach(selectedID => {
+            this.availableExperiencesForRegistration.forEach(session => {
+              const experience = session.availableExperiences.find(exp => exp._id === selectedID);
+              if (experience && !this.isSelected(experience)) {
+                if (experience.registrationCode) {
+                  this.experiencesToProcess.push(experience);
+                } else {
+                  this.addExperienceToSelected(experience);
+                }
+              }
             });
-            // Clear the selectedExperienceIDs after adding them to selectedExperiences
-            this.selectedExperienceIDs = [];
+          });
+          // Clear the selectedExperienceIDs after adding them to selectedExperiences
+          this.selectedExperienceIDs = [];
+          this.processNextExperience();
+        },
+        processNextExperience() {
+          if (this.experiencesToProcess.length > 0) {
+            this.currentExperience = this.experiencesToProcess.shift();
+            this.currentExperienceName = this.currentExperience.experienceName;
+            this.registrationDialog = true;
+          }
+        },
+        addExperienceToSelected(experience) {
+          this.selectedExperiences.push({
+            _id: experience._id,
+            experienceName: experience.experienceName,
+          });
+        },
+        closeRegistrationDialog() {
+          this.registrationDialog = false;
+          this.enteredRegistrationCode = '';
+          this.currentExperience = null;
+          this.currentExperienceName = '';
+          this.experiencesToProcess = [];
+        },
+        confirmRegistrationCode() {
+          if (this.currentExperience && this.currentExperience.registrationCode === this.enteredRegistrationCode) {
+            this.addExperienceToSelected(this.currentExperience);
+            this.enteredRegistrationCode = '';
+            this.currentExperience = null;
+            this.registrationDialog = false;
+            this.processNextExperience();
+          } else {
+            // Handle incorrect registration code (optional)
+            toast.error(this.$t("Oops! Wrong Registration Code Provided. Please try again."), {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: false
+            });
+          }
         },
         toggleRemovalSelection(experience) {
             const index = this.markedForRemovalIDs.indexOf(experience._id);
@@ -353,7 +421,7 @@ export default {
               response.data.forEach(session => {
                 session.availableExperiences.sort((a, b) => a.experienceName.localeCompare(b.experienceName));
               });
-            }
+            }    
             
             this.availableExperiencesForRegistration = response.data;
           } catch (error) {

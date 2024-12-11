@@ -3,22 +3,49 @@
 <template>
   <main class="">
       <v-container>
+        <!-- Display the original activity name as the title -->
         <p class="text-center font-weight-black text-h6">Activity: {{ originalActivityName }}</p>
         <br>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="8">
+            <!-- Input field for updating the activity name -->
             <v-text-field v-model="activity.activityName" label="Activity Name"></v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
+            <!-- Cancel button to go back to the previous page -->
             <v-btn @click=goBack() class="mr-4">
               Cancel
             </v-btn>
-            <v-btn style="text-align:center;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
+            <!-- Update button to check associated instances and update activity -->
+            <div
+              v-if="!showUpdateButton"
+              v-tooltip.bottom="'Only the owner or eligible roles can update this activity.'"
+              style="display: inline-block;"
+            >
+              <v-btn
+                style="text-align:center;"
+                @click="checkAssociatedInstances('update')"
+                :loading="updateLoading"
+                :disabled="true"
+              >
+                Update
+              </v-btn>
+            </div>
+            <div v-else style="display: inline-block;">
+              <v-btn
+                style="text-align:center;"
+                @click="checkAssociatedInstances('update')"
+                :loading="updateLoading"
+              >
+                Update
+              </v-btn>
+            </div>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col cols="auto" v-if="canActivityBeDeleted">
+          <!-- Conditional delete button, shown if the activity can be deleted -->
+          <v-col cols="auto" v-if="canActivityBeDeleted && canDeleteActivity">
             <v-btn class="justify-end" @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
           </v-col>
         </v-row>
@@ -41,7 +68,22 @@
 </v-dialog>
 
 <!-- Update Dialog -->
-<v-dialog v-model="updateDialog" persistent width="auto">
+<v-dialog v-model="showUpdateDialog" persistent width="auto">
+  <v-card>
+    <v-card-title>Confirm Update</v-card-title>
+    <v-card-text>
+      Are you sure you want to update this activity?
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="red-darken-1" text @click="showUpdateDialog = false">No</v-btn>
+      <v-btn color="green-darken-1" text @click="proceedWithUpdate">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<!-- Update Dialog w Instances -->
+<v-dialog v-model="updateDialogWithInstances" persistent width="auto">
   <v-card>
     <v-card-title>
       <v-icon left>mdi-update</v-icon>
@@ -61,7 +103,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="red darken-1" text @click="updateDialog = false">No</v-btn>
+      <v-btn color="red darken-1" text @click="updateDialogWithInstances = false">No</v-btn>
       <v-btn color="green darken-1" text @click="proceedWithUpdate">Yes</v-btn>
     </v-card-actions>
   </v-card>
@@ -99,10 +141,54 @@
 
 
 <script>
+import { ref, computed } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 
 export default {
+  // We continue using setup for computed properties
+  setup() {
+    // Access the logged-in user store
+    const userStore = useLoggedInUserStore();
+
+    // Create a ref to hold the 'createdBy' once activity data is fetched
+    const createdBy = ref("");
+
+    // Computed property to check if the current user can delete an activity based on their role
+    const canDeleteActivity = computed(() => {
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        return allowedRoles.includes(userStore.role);
+    });
+
+    // Computed property to determine if the "Update" button should be visible
+    // Note: We now rely on 'createdBy' which will be set after fetchActivityData() is done.
+    const showUpdateButton = computed(() => {
+        const role = userStore.role;
+        const userId = userStore.userId;
+        // Use createdBy.value, which will be updated after activity data is fetched
+        const cb = createdBy.value;
+
+        if (role === "Org Admin" || role === "Group Admin") {
+            return true;
+        }
+
+        // If the user is a "Group Instructor", they can only update if they created the activity themselves.
+        if (role === "Group Instructor") {
+            return cb === userId;
+        }
+
+        return false;
+    });
+
+
+    return {
+        userStore,
+        canDeleteActivity,
+        showUpdateButton,
+        createdBy // return this so we can update it in fetchActivityData()
+    };
+},
+
   props: ["id"],
   data() {
     return {
@@ -114,39 +200,49 @@ export default {
       experiences: [],
       hoverId: null,
       canActivityBeDeleted: false,
+      showUpdateDialog: false,
       showDeleteDialog: false,
       updateLoading: false,
-      updateDialog: false,
+      updateDialogWithInstances: false,
       associatedInstances: [],
       deleteDialogWithInstances: false,
       deleteLoading: false
     };
   },
 
-  async mounted() {
-    await this.fetchActivityData();
-    await this.checkIfActivityCanBeDeleted();
-  },
+async mounted() {
+  // Fetch the activity data when the component is mounted
+  await this.fetchActivityData();
 
-  methods: {
-    
-    // Fetches activity data from the server based on the provided route parameter ID. Upon successful retrieval, updates the activity object with the received data including the activity name and status. Also stores the original activity name for reference.
-    async fetchActivityData() {
-      try {
-        const store = useLoggedInUserStore();
-        let token = store.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${this.$route.params.id}`;
-        const response = await axios.get(apiURL, { headers: { token }});
-        this.activity = {
-          ...this.activity,
-          activityName: response.data.activityName,
-          activityStatus: response.data.activityStatus,
-        };
-        this.originalActivityName = response.data.activityName;
-      } catch (error) {
-        this.handleError(error);
-      }
-    },
+  // Check if the activity can be deleted after fetching the data
+  await this.checkIfActivityCanBeDeleted();
+},
+
+
+methods: {
+  // Fetches activity data from the server based on the provided route parameter ID. Upon successful retrieval, updates the activity object with the received data including the activity name and status. Also stores the original activity name for reference.
+  async fetchActivityData() {
+    try {
+      const store = useLoggedInUserStore();
+      let token = store.token;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${store.navigationData.activityID}`;
+      const response = await axios.get(apiURL, { headers: { token }});
+      
+      this.activity = {
+        ...this.activity,
+        activityName: response.data.activityName,
+        activityStatus: response.data.activityStatus,
+        createdBy: response.data.createdBy
+      };
+      this.originalActivityName = response.data.activityName;
+
+      // Update createdBy ref with the fetched activity's createdBy
+      this.createdBy = response.data.createdBy;
+
+    } catch (error) {
+      this.handleError(error);
+    }
+  },
 
     // Checks if there are any associated instances with the current activity. If the action is to update, it sets a flag to indicate updating. If the action is to delete, it sets a flag to indicate deletion. Then, it sends a request to the server to check for associated instances using the activity ID. Depending on the action and the response from the server, it displays the appropriate dialog to either proceed with the update, display the update dialog with associated instances, confirm the delete action, or display the delete dialog with associated instances.
     async checkAssociatedInstances(action) {
@@ -159,22 +255,22 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${this.$route.params.id}`;
+        let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${store.navigationData.activityID}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         if (action === "update") {
-          if (checkResponse.data.expInstancesFound) {
+          if (checkResponse.data.expInstancesFound === true) {
             this.associatedInstances = checkResponse.data.instancesData;
-            this.updateDialog = true;
+            this.updateDialogWithInstances = true;
           } else {
-            this.proceedWithUpdate();
+            this.showUpdateDialog = true;
           }
         } else if (action === "delete") {
           if (checkResponse.data.expInstancesFound) {
             this.associatedInstances = checkResponse.data.instancesData;
             this.deleteDialogWithInstances = true;
           } else {
-            this.confirmDelete();
+            this.showDeleteDialog = true;
           }
         }
       } catch (error) {
@@ -196,8 +292,8 @@ export default {
         activityStatus: this.activity.activityStatus,
       };
 
-      let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${this.$route.params.id}`;
-      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${this.$route.params.id}`;
+      let activityUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${user.navigationData.activityID}`;
+      let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${user.navigationData.activityID}`;
 
       try {
         // Update the Activity
@@ -224,7 +320,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         let token = store.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/can-be-deleted/${this.$route.params.id}`;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/can-be-deleted/${store.navigationData.activityID}`;
         const response = await axios.get(apiURL, { headers: { token }});
         this.canActivityBeDeleted = response.data.canBeDeleted;
       } catch (error) {
@@ -234,15 +330,15 @@ export default {
 
     // Redirects to the instructor data management page with a toast message about the successful update.
     handleUpdateSuccess(toastMessage) {
-      this.$router.push({
-        name: 'instructorDataManagement',
-        params: {
+      useLoggedInUserStore().navigationData = {
           activeTab: 2,
           toastType: 'info',
           toastMessage: toastMessage,
           toastPosition: 'top-right',
           toastCSS: 'Toastify__toast--update'
-        }
+      };
+      this.$router.push({
+        name: 'instructorDataManagement'
       });
     },
 
@@ -257,20 +353,20 @@ export default {
       try {
         const user = useLoggedInUserStore();
         const token = user.token;
-        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${this.$route.params.id}`;
+        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${user.navigationData.activityID}`;
 
         await axios.delete(deleteURL, { headers: { token } });
 
         // Navigate to the instructorDataManagement page with success message
-        this.$router.push({
-          name: 'instructorDataManagement',
-          params: {
+        user.navigationData = {
             activeTab: 2,
             toastType: 'success',
             toastMessage: 'Activity Deleted!',
             toastPosition: 'top-right',
             toastCSS: 'Toastify__toast--create'
-          }
+        };
+        this.$router.push({
+          name: 'instructorDataManagement'
         });
       } catch (error) {
         this.handleError(error);
@@ -279,11 +375,11 @@ export default {
 
     // Redirects to the instructorDataManagement page.
     goBack() {
+      useLoggedInUserStore().navigationData = {
+        activeTab: 2
+      };
       this.$router.push({
-        name: "instructorDataManagement",
-        params: {
-          activeTab: 2
-        }
+        name: "instructorDataManagement"
       });
     },
 

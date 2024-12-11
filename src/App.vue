@@ -2,7 +2,7 @@
   <v-app>
     <v-layout class="rounded">
       <v-navigation-drawer
-        v-if="user.isLoggedIn"
+        v-if="isFullyAuthenticated"
         v-model="drawer"
         color="#c8102e"
         :rail="rail"
@@ -21,7 +21,7 @@
               icon="mdi-menu"
               @click="rail = !rail"
               class="text-white"
-            ></v-btn>
+            ></v-btn> 
           </v-list-item>
         </div>
         <div v-else>
@@ -75,9 +75,9 @@
               prepend-icon="mdi-file-document"
               value="exitForm"
               class=" tracking-wider "
-            >Exit Form</v-list-item>
+            >{{$t('Exit Form')}}</v-list-item>
           </div>
-          <div v-if="user.isLoggedIn && user.getRole === 'Instructor'">
+          <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
             <v-list-item 
               :active="activeLink === 'instructorDash'"
               to="instructorDash"
@@ -144,7 +144,7 @@
             >Find Event</v-list-item>
           </div>
 
-          <div v-if="user.isLoggedIn">
+          <div v-if="isFullyAuthenticated">
             <v-list-item>
               <hr> <!-- Horizontal line -->
             </v-list-item>
@@ -189,7 +189,7 @@
   style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
 >
   <v-btn 
-    v-if="user.isLoggedIn && !drawer"
+    v-if="isFullyAuthenticated && !drawer"
     icon 
     @click="drawer = true; rail = false"
   >
@@ -256,7 +256,12 @@ export default {
     loggedIn() {
       const store = useLoggedInUserStore();
       return store.isLoggedIn;
-    }
+    },
+  isFullyAuthenticated() {
+    const store = useLoggedInUserStore();
+    // Only show navigation if user is logged in and not a Temporary role
+    return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
+  }
   },
   methods: {
     async handleLogout() {
@@ -278,15 +283,17 @@ export default {
         'Come back soon!'
       ];
       logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
-    
+
+      // Store the logout message data in Pinia state
+      store.navigationData = {
+        toastType: 'success',
+        toastMessage: logoutMessage,
+        toastPosition: 'top-right',
+        toastCSS: 'Toastify__toast--create'
+      };
+
       this.$router.push({
-          name: 'login',
-          params: {
-            toastType: 'success',
-            toastMessage: logoutMessage,
-            toastPosition: 'top-right',
-            toastCSS: 'Toastify__toast--create'
-        },
+        name: 'login'
       });
     },
     sidebarToggle() {
@@ -301,6 +308,7 @@ export default {
   //   this.scrollPosition = event.target.scrollTop;
   // },
   },
+  
   mounted() {
     // Access the root DOM element of the v-main Vue component
     const mainContentEl = this.$refs.mainContent.$el;

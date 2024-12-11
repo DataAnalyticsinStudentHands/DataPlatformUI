@@ -1,115 +1,62 @@
 <!--'/instructorAddExperience' this view presents a form to create a new Experience-->
 <template>
   <main>
+    <!-- Form for creating a new experience -->
     <v-form @submit.prevent="handleSubmitForm">
+
       <v-container>
+        <!-- Page title -->
         <p class="font-weight-black text-h6">New Experience</p>
+
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experience.experienceCategory" label="Experience Category"></v-text-field>
+            <!-- Input for the experience category -->
+            <v-text-field v-model="experience.experienceCategory" label="Experience Category" :readonly="isReadOnly"></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
+            <!-- Input for the experience name -->
             <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
           </v-col>
         </v-row>
-        <!-- <v-row>
-          <v-col cols="6">
-            <v-card flat>
-              <v-card-title>
-                <v-row>
-                  <v-col>
-                    Selected Activities
-                  </v-col>
-                </v-row>
-              </v-card-title>
-              <v-list class="scrollable-list">
-                <v-list-item
-                  v-for="activity in selectedActivities"
-                  :key="activity._id"
-                >
-                <v-row>
-                  <v-col cols="10">
-                    {{ activity.activityName }}
-                  </v-col>
-                  <v-col>
-                    <v-icon
-                      @click.stop="removeSelectedActivity(activity)"
-                      class="mdi-close"
-                    >
-                      mdi-close
-                    </v-icon>
-                  </v-col>
-                </v-row>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-col>
-          <v-col>
-            <v-card
-              flat
-              title="Add Activities"
-            >
-              <template v-slot:text>
-                <v-text-field
-                  v-model="activitySearch"
-                  label="Search"
-                  prepend-inner-icon="mdi-magnify"
-                  single-line
-                  variant="outlined"
-                  hide-details
-                ></v-text-field>
-              </template>
-              <v-data-table
-                :headers="activityHeaders"
-                :items="activities"
-                item-value="_id"
-                items-per-page="-1"
-                class="scrollable-table"
-                hover
-                :search="activitySearch"
-              >
-                <template v-slot:body="{ items }">
-                  <template v-for="item in items" :key="item._id">
-                    <tr
-                      @click="selectActivity(item)"
-                      @mouseover="hoveredItem = item._id"
-                      @mouseleave="hoveredItem = null"
-                      class="pointer-cursor activity-row"
-                    >
-                      <td>
-                        <div class="activity-content">
-                          {{ item.activityName }}
-                          <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
-                        </div>
-                      </td>
-                    </tr>
-                  </template>
-                </template>
-                <template v-slot:bottom>
 
-                </template>
-              </v-data-table>
-            </v-card>
-          </v-col>
-        </v-row> -->
         <v-row>
           <v-col>
+            <!-- Cancel button to go back to the previous page -->
             <v-btn @click="$router.back()">
               Cancel
             </v-btn>
+            <!-- Submit button for the form -->
             <v-btn style="text-align: center; margin-left: 10px;" @click="handleSubmitForm">Submit</v-btn>
           </v-col>
         </v-row>
+
       </v-container>
+
     </v-form>
   </main>
 </template>
 
 <script>
+import { computed } from 'vue';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
+  setup() {
+    // Access the logged-in user's store
+    const userStore = useLoggedInUserStore();
+
+    // Computed property to determine if the form should be read-only
+    // Only users with roles 'Global Admin', 'Org Admin', or 'Instructor' can edit
+    const isReadOnly = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Instructor'];
+      return !allowedRoles.includes(userStore.role);
+    });
+    return {
+      userStore,
+      isReadOnly
+    };
+  },
   data() {
     return {
       experience: {
@@ -133,7 +80,18 @@ export default {
     };
   },
   beforeMount() {
+  // Scroll the window to the top
     window.scrollTo(0, 0);
+
+    // Get the logged-in user from the store
+    const user = useLoggedInUserStore();
+
+    // If the user has the 'Group Admin' role, set the experience category to the user's group
+    if (user.role === 'Group Admin') {
+      this.experience.experienceCategory = user.group;
+    }
+
+    // Fetch additional activity data before the component is mounted
     this.fetchActivityData();
   },
   methods: {
@@ -169,15 +127,16 @@ export default {
           headers: { token },
         })
         .then(() => {
+          user.navigationData = {
+            activeTab: 1,
+            toastType: 'success',
+            toastMessage: 'Experience added!',
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+          };
+
           this.$router.push({ 
-              name: 'instructorDataManagement',
-              params: {
-                activeTab: 1,
-                toastType: 'success',
-                toastMessage: 'Experience added!',
-                toastPosition: 'top-right',
-                toastCSS: 'Toastify__toast--create'
-            }
+              name: 'instructorDataManagement'
           });
         })
         .catch((error) => {

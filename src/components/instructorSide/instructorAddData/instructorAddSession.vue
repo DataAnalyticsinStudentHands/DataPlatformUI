@@ -1,11 +1,15 @@
 <!-- instructorAddSession - this view presents a form to create a new Session -->
 <template>
   <main>
+    <!-- Form for creating a new session -->
     <v-form ref="form" @submit.prevent="handleSubmitForm">
       <v-container>
+        <!-- Page title -->
         <p class="font-weight-black text-h6">New Session</p><br>
+
         <v-row>
           <v-col cols="12" md="6">
+            <!-- Input for session name with validation rules -->
             <v-text-field 
               v-model="session.sessionName" 
               label="Session Name"
@@ -13,8 +17,10 @@
             ></v-text-field>
           </v-col>
         </v-row>
+
         <v-row>
           <v-col cols="12" md="6">
+            <!-- Input for session start date with validation rules -->
             <v-text-field 
               type="date" 
               v-model="session.sessionPeriod.startDate" 
@@ -22,7 +28,9 @@
               :rules="dateRules"
             ></v-text-field>
           </v-col>
+
           <v-col cols="12" md="6">
+            <!-- Input for session end date with validation rules -->
             <v-text-field 
               type="date" 
               v-model="session.sessionPeriod.endDate" 
@@ -32,15 +40,21 @@
           </v-col>
         </v-row>
 
+        <!-- Display error message if exists -->
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+        <!-- Cancel button -->
         <v-btn @click="$router.back()">
           Cancel
         </v-btn>
+
+        <!-- Submit button -->
         <v-btn style="text-align: center; margin-left: 10px;" type="submit">Submit</v-btn>
       </v-container>
     </v-form>
   </main>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -64,6 +78,7 @@ export default {
     };
   },
   beforeMount() {
+    // Scroll to top of view
     window.scrollTo(0, 0);
   },
   methods: {
@@ -82,15 +97,15 @@ export default {
           sessionPeriod: this.session.sessionPeriod
         }, { headers: { token } })
         .then(() => {
-          this.$router.push({
-            name: 'instructorDataManagement',
-            params: {
+          user.navigationData = {
               activeTab: 0,
               toastType: 'success',
               toastMessage: 'Session added!',
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--create'
-            }
+          };
+          this.$router.push({
+            name: 'instructorDataManagement'
           });
         })
         .catch((error) => {

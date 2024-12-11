@@ -2,20 +2,22 @@ import { createApp, markRaw } from 'vue';
 import axios from 'axios';
 import handleErrorMixin from './mixins/handleErrorMixin';
 import { i18n } from './plugins/i18n';
+import { useLoggedInUserStore } from './stored/loggedInUser';
 
 
 // Setting the token as a default header if it exists in localStorage
 if (localStorage.getItem('token')) {
-    axios.defaults.headers.common['token'] = localStorage.getItem('token');
+  axios.defaults.headers['token'] = localStorage.getItem('token');
 }
+
 
 import router from './router';
 import App from './App.vue';
 import './index.css';
-import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
 
 // state management library
 import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'; 
 
 // Vuetify
 import 'vuetify/styles';
@@ -43,8 +45,9 @@ const vuetify = createVuetify({
 
 // create a pinia root store
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
 // pinia should be able to use router - has to be set up as a plugin
-pinia.use(piniaPluginPersistedState)
 pinia.use(({ store }) => {
   store.$router = markRaw(router)
 });
@@ -57,14 +60,24 @@ const app = createApp(App);
 app.mixin(handleErrorMixin);
 
 app.use(Vue3Toastify, {
-    autoClose: 5000,
-    style: {
-      opacity: '1',
-      userSelect: 'initial',
-    },
+  autoClose: 5000,
+  multiple: true,
+  style: {
+    opacity: '1',
+    userSelect: 'initial',
+  },
 });
+
 app.use(pinia);
+
 app.use(vuetify);
 app.use(router);
 app.use(i18n); 
-app.mount('#app');
+
+async function initApp() {
+  const userStore = useLoggedInUserStore();
+  await userStore.initializeStore();
+  app.mount('#app');
+}
+
+initApp();

@@ -1,101 +1,95 @@
-<!-- /updatePasswordForm -->
 <template>
-  <section class="">
-    <div class="px-10 py-20">
-      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <form
-          @submit.prevent
-          class="space-y-4 md:space-y-6"
-          action="/login"
-          method="POST"
-        >
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div>
-              <label for="email" class="block">{{$t('Current Password')}}</label>
-              <input
-                v-model="code"
-                type="password"
-                name="secretToken"
-                id="secretToken"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div>
-              <label for="email" class="block">{{$t('New Password')}}</label>
-              <input
-                v-model="newPassword"
-                type="password"
-                name="secretToken"
-                id="secretToken"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="••••••••"
-              />
-              <span class="text-black" v-if="v$.newPassword.$error">
-                <p
-                  class="text-custom-red"
-                  v-for="error of v$.newPassword.$errors"
-                  :key="error.$uid"
-                >
-                  {{ error.$message }}!
-                </p>
-              </span>
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-          >
-            <div>
-              <label for="email" class="block">{{$t('Confirm New Password')}}</label>
-              <input
-                v-model="confirmNewPassword"
-                type="Password"
-                name="secretToken"
-                id="secretToken"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
+  <main>
+    <v-container style="width: 90%; margin: 0 auto;">
+      <p class="font-weight-black text-h5 text--primary">{{$t('User Password Update Form')}}</p>
+      <p class="text-subtitle-1">
+        {{$t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again.")}}
+      </p>
+    </v-container>
 
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+    <v-form @submit.prevent="passReset">
+      <v-container style="width: 90%; margin: 0 auto;">
+
+        <v-col cols="12" md="6">
+          <v-text-field 
+            v-model="code" 
+            :label="$t('Current Password')" 
+            type="password"
+            name="currentPassword"
+            id="currentPassword"
+            placeholder="••••••••"
+            outlined
+            dense
+            :error="!!currentPasswordError"
+            :error-messages="currentPasswordError ? [currentPasswordError] : []"
+          ></v-text-field>
+        </v-col>
+        
+        <v-col cols="12" md="6">
+          <v-text-field 
+            v-model="newPassword" 
+            :label="$t('New Password')"
+            type="password"
+            name="newPassword"
+            id="newPassword"
+            placeholder="••••••••"
+            outlined
+            dense
+            :error="v$.newPassword.$error"
+            :error-messages="v$.newPassword.$errors.map(e => e.$message)"
+          ></v-text-field>
+        </v-col>
+        
+        <v-col cols="12" md="6">
+          <v-text-field 
+            v-model="confirmNewPassword" 
+            :label="$t('Confirm New Password')"
+            type="password"
+            name="confirmNewPassword"
+            id="confirmNewPassword"
+            placeholder="••••••••"
+            outlined
+            dense
+            :error="!!confirmPasswordError"
+            :error-messages="confirmPasswordError ? [confirmPasswordError] : []"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="6">
+          <!-- Any other unexpected errors can still be displayed here -->
+          <v-alert
+            v-if="error"
+            type="warning"
+            colored-border
+            elevation="2"
+            dense
           >
-            <div
-              class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
-              role="alert"
-            >
-              {{ error }}
-            </div>
-          </div>
-          <div
-            id="myDIV"
-            class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+            {{ error }}
+          </v-alert>
+        </v-col>
+
+        <v-col cols="12" md="6">
+          <v-alert
+            v-if="success"
+            type="success"
+            colored-border
+            elevation="2"
+            dense
           >
-            <div
-              class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4"
-              role="alert"
-            >
-              {{ success }}
-            </div>
-          </div>
-          <button
-            @click="activateAccount"
-            type="submit"
-            class="bg-custom-red text-white rounded"
-          >
-            {{$t('Reset Password')}}
-          </button>
-        </form>
-      </div>
-    </div>
-  </section>
+            {{ success }}
+          </v-alert>
+        </v-col>
+
+        <v-btn
+          @click="passReset"
+          :disabled="(!isConfirmPasswordValid && v$.newPassword.$error)"
+          class="bg-custom-red text-white rounded"
+        >
+          {{$t('Reset Password')}}
+        </v-btn>
+      </v-container>
+    </v-form>
+  </main>
 </template>
 
 <script>
@@ -107,6 +101,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   name: "VerifyAccount",
   created() {
+    // Redirect if no token
     if (localStorage.getItem("token") === null) {
       this.$router.push("/login");
     }
@@ -115,22 +110,7 @@ export default {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
   mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
-    this.queryData = [];
-    axios
-      .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
-      })
-      .then(
-        (resp) => {
-          this.queryData = resp.data;
-        },
-        (err) => {
-          if (err) {
-            this.$router.push("/login");
-          }
-        }
-      );
+    // Scroll to the top
     window.scrollTo(0, 0);
   },
   data() {
@@ -143,21 +123,23 @@ export default {
       success: "",
       loginLink: "",
       toggle: "hide",
+      confirmPasswordError: "",
+      currentPasswordError: "" // Initially empty
     };
   },
   methods: {
-    
-    // Validates that the new password and its confirmation match. Updates the validation state and sets an error message if they do not align.
+    // Checks if new password and confirmNewPassword match
     checkConfirmPassword() {
+      this.confirmPasswordError = "";
       this.isConfirmPasswordValid = true;
       if (this.newPassword !== this.confirmNewPassword) {
-        this.error = "Passwords do not match.";
+        this.confirmPasswordError = "Passwords do not match.";
         this.isConfirmPasswordValid = false;
       }
     },
 
-    // Validates form and password confirmation before requesting a password reset for logged-in users using a verification code. On success, navigates to the appropriate dashboard with a success message.
-    async activateAccount() {
+    // Attempts password reset
+    async passReset() {
       const isFormCorrect = await this.v$.$validate();
       this.checkConfirmPassword();
       if (isFormCorrect && this.isConfirmPasswordValid) {
@@ -167,8 +149,8 @@ export default {
           newPassword: this.newPassword,
           error: this.error,
         };
-        let apiURL =
-          import.meta.env.VITE_ROOT_API + `/userdata/password-reset/logged-in`;
+        let apiURL = import.meta.env.VITE_ROOT_API + "/userdata/password-reset/logged-in";
+
         axios
           .put(apiURL, user, {
             headers: { token: store.token },
@@ -176,42 +158,49 @@ export default {
           .then(
             (res) => {
               if (res.status == 200) {
-                //populating the success variables
-                this.success = res.data.error;
+                this.success = res.data.message;
                 this.loginLink = " Login";
                 this.error = "";
-                // Show the success message and navigate to the dashboard
-                if (store.role === 'Student') {
-                  this.$router.push({ 
-                    name: 'studentDashboard',
-                    params: {
-                      toastType: 'success',
-                      toastMessage: 'Password successfully reset!',
-                      toastPosition: 'top-right',
-                      toastCSS: 'Toastify__toast--create'
-                    }
-                  });
-                } else if (store.role === 'Instructor') {
-                  this.$router.push({ 
-                    name: 'instructorDash',
-                    params: {
-                      toastType: 'success',
-                      toastMessage: 'Password successfully reset!',
-                      toastPosition: 'top-right',
-                      toastCSS: 'Toastify__toast--create'
-                    }
-                  });
-                }
+                this.currentPasswordError = ""; // Clear any previous error
 
+                // Navigate based on role, showing toast via store.navigationData
+                if (store.role === 'Student') {
+                  store.navigationData = {
+                    toastType: 'success',
+                    toastMessage: 'Password successfully reset!',
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                  };
+                  this.$router.push({ name: 'studentDashboard' });
+                } else {
+                  store.navigationData = {
+                    toastType: 'success',
+                    toastMessage: 'Password successfully reset!',
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                  };
+                  this.$router.push({ name: 'instructorDash' });
+                }
               }
             },
             (err) => {
-              this.error = err.response.data.error;
+              this.error = err.response.data.error || "An error occurred.";
               this.success = "";
-              toast.error('An error occurred. Please try again later.', {
-                position: 'top-right',
-                toastClassName: 'Toastify__toast--delete'
-              });
+
+              // Check if the error matches the "current password" issue
+              if (this.error === "The current password does not match our records.") {
+                this.currentPasswordError = this.error;
+                // Clear the global error alert since we are now showing this as a field error
+                this.error = "";
+              }
+
+              // If using toast:
+              if (typeof toast !== "undefined") {
+                toast.error('An error occurred. Please try again later.', {
+                  position: 'top-right',
+                  toastClassName: 'Toastify__toast--delete'
+                });
+              }
             }
           );
       }

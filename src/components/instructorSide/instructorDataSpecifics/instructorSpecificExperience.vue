@@ -1,26 +1,41 @@
 <!--'/instructorSpecificExperience' - this view presents a single Experience's data -->
 <template>
   <main>
+    <!-- Form for updating or deleting an experience -->
     <v-form>
       <v-container>
+        <!-- Display the original experience name as the title -->
         <p class="font-weight-black text-h6">Experience: {{ originalExperienceName }}</p>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experience.experienceCategory" label="Experience Category"></v-text-field>
+            <!-- Input field for the experience category, read-only if applicable -->
+            <v-text-field 
+              v-model="experience.experienceCategory" 
+              label="Experience Category" 
+              :readonly="isReadOnly">
+            </v-text-field>
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="experience.experienceName" label="Experience Name"></v-text-field>
+            <!-- Input field for the experience name, read-only if applicable -->
+            <v-text-field 
+              v-model="experience.experienceName" 
+              label="Experience Name" 
+              :readonly="isReadOnly">
+            </v-text-field>
           </v-col>
         </v-row>
         <v-row class="pt-5">
           <v-col>
+            <!-- Cancel button to go back to the previous page -->
             <v-btn @click="goBack()">
               Cancel
             </v-btn>
-            <v-btn style="text-align: center; margin-left: 10px;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
+            <!-- Update button, shown if the user has permission to update the experience -->
+            <v-btn v-if="canUpdateExperience" style="text-align: center; margin-left: 10px;" @click="checkAssociatedInstances('update')" :loading="updateLoading">Update</v-btn>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col cols="auto" v-if="canExperienceBeDeleted">
+          <!-- Delete button, shown if the experience can be deleted -->
+          <v-col cols="auto" v-if="canExperienceBeDeleted && (userStore.role === 'Org Admin' || userStore.role === 'Group Admin')">
             <v-btn @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
           </v-col>
         </v-row>
@@ -97,10 +112,31 @@
 </template>
 
 <script>
+import { ref, computed } from 'vue';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
+setup() {
+  // Access the logged-in user store
+  const userStore = useLoggedInUserStore();
+
+  // Ref to determine if the experience can be updated
+  const canUpdateExperience = ref(false);
+
+  // Computed property to check if the form should be read-only based on user roles
+  const isReadOnly = computed(() => {
+    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+    return !allowedRoles.includes(userStore.role);
+  });
+
+  return {
+    userStore,
+    canUpdateExperience, // Determines if the experience can be updated
+    isReadOnly // Determines if the fields are read-only based on user roles
+  };
+},
+
   data() {
     return {
       experience: {
@@ -118,13 +154,18 @@ export default {
       deleteDialogWithInstances: false,
     };
   },
-  async mounted() {
-    const experienceID = this.$route.params.id;
-    if (experienceID) {
-      await this.fetchExperienceData(experienceID);
-      await this.checkIfExperienceCanBeDeleted(experienceID);
-    }
-  },
+
+async mounted() {
+  // Retrieve the experience ID from the user's navigation data
+  const experienceID = useLoggedInUserStore().navigationData.experienceID;
+  
+  // If an experience ID exists, fetch the experience data and check if it can be deleted
+  if (experienceID) {
+    await this.fetchExperienceData(experienceID);
+    await this.checkIfExperienceCanBeDeleted(experienceID);
+  }
+},
+
 
   methods: {
 
@@ -133,19 +174,28 @@ export default {
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
-      axios
-        .get(apiURL, { headers: { token } })
-        .then((resp) => {
-          const experienceData = resp.data;
-          this.originalExperienceName = experienceData.experienceName;
-          this.experience = {
-            experienceCategory: experienceData.experienceCategory,
-            experienceName: experienceData.experienceName,
-          };
-        })
-        .catch((error) => {
-          this.handleError(error);
-        });
+      try {
+        const resp = await axios.get(apiURL, { headers: { token } });
+        const experienceData = resp.data;
+        this.experience = {
+          experienceCategory: experienceData.experienceCategory,
+          experienceName: experienceData.experienceName,
+        };
+
+        // Update canUpdateExperience based on the user's role and experienceCategory
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        if (allowedRoles.includes(user.role)) {
+          if (user.role === 'Group Admin') {
+            this.canUpdateExperience = this.experience.experienceCategory === user.group;
+          } else {
+            this.canUpdateExperience = true;
+          }
+        } else {
+          this.canUpdateExperience = false;
+        }
+      } catch (error) {
+        this.handleError(error);
+      }
     },
 
     // Fetches data to check if the specified experience can be deleted by sending a request to the backend server. If successful, updates the local state with the boolean value indicating whether the experience can be deleted or not.
@@ -172,7 +222,7 @@ export default {
       try {
         const store = useLoggedInUserStore();
         const token = store.token;
-        const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${this.$route.params.id}`;
+        const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${store.navigationData.experienceID}`;
         const checkResponse = await axios.get(checkURL, { headers: { token } });
 
         if (action === "update") {
@@ -190,7 +240,6 @@ export default {
             this.confirmDelete();
           }
         }
-
       } catch (error) {
         this.handleError(error);
       } finally {
@@ -211,20 +260,20 @@ export default {
       try {
         const user = useLoggedInUserStore();
         const token = user.token;
-        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${this.$route.params.id}`;
+        let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${user.navigationData.experienceID}`;
 
         await axios.delete(deleteURL, { headers: { token } });
 
         // Navigate to the instructorDataManagement page with success message
-        this.$router.push({
-          name: 'instructorDataManagement',
-          params: {
+        user.navigationData = {
             activeTab: 1,
             toastType: 'success',
             toastMessage: 'Experience Deleted!',
             toastPosition: 'top-right',
             toastCSS: 'Toastify__toast--create'
-          }
+        };
+        this.$router.push({
+          name: 'instructorDataManagement'
         });
       } catch (error) {
         this.handleError(error);
@@ -237,7 +286,7 @@ export default {
       let token = user.token;
 
       // Get the experience ID
-      const experienceID = this.$route.params.id;
+      const experienceID = user.navigationData.experienceID;
       let experienceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
       let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience-update/${experienceID}`;
 
@@ -266,15 +315,15 @@ export default {
           }
 
           // Redirect after successful update
-          this.$router.push({ 
-            name: 'instructorDataManagement',
-            params: {
+          user.navigationData = {
               activeTab: 1,
               toastType: 'info',
               toastMessage: toastMessage,
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--update'
-            }
+          };
+          this.$router.push({ 
+            name: 'instructorDataManagement'
           });
         })
         .catch((error) => {
@@ -284,12 +333,9 @@ export default {
 
     // Navigates back to the previous page. If there's an activity ID specified in the route parameters, it redirects to the instructorSpecificActivity page for that activity. Otherwise, it simply goes back to the previous page in the browser history.
     goBack() {
-      if (this.$route.params.activityID) {
+      if (useLoggedInUserStore().navigationData?.activityID) {
         this.$router.push({
-          name: "instructorSpecificActivity",
-          params: {
-            id: this.$route.params.activityID
-          }
+          name: "instructorSpecificActivity"
         });
       } else {
         this.$router.back();

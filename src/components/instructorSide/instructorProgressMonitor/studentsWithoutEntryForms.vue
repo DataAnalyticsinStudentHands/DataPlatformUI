@@ -4,11 +4,13 @@
       <v-row>
         <v-col cols="12">
           <v-card>
+            <!-- Title with CSV download button for students without entry forms -->
             <v-card-title class="pa-4 d-flex justify-space-between align-center">
               Students Without Entry Form
               <progress-monitor-csv-downloader v-if="studentsWithoutEntryForm" :data="studentsWithoutEntryForm" file-name="students_without_entry_form.csv" />
             </v-card-title>
 
+            <!-- Display total number of students without entry forms -->
             <v-row>
               <v-col cols="12">
                 <div class="text-h6 pa-4">
@@ -120,24 +122,29 @@
       'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
     },
     mounted() {
+      // Fetch the list of students who haven't completed the entry form when the component is mounted
       this.fetchStudentsWithoutEntryForm();
     },
+
     computed: {
+      // Returns the students for the current page based on pagination
       paginatedStudentsWithoutEntryForm() {
         const start = (this.currentPage - 1) * this.itemsPerPage;
         const end = this.currentPage * this.itemsPerPage;
         return this.studentsWithoutEntryForm.slice(start, end);
       },
+
+      // Returns the total number of pages for pagination
       totalPaginationLength() {
         return Math.ceil(this.studentsWithoutEntryForm.length / this.itemsPerPage);
       },
-      totalPaginationLength() {
-        return Math.ceil(this.studentsWithoutEntryForm.length / this.itemsPerPage);
-      },
+
+      // Returns the total count of students without entry form
       totalStudentsCount() {
         return this.studentsWithoutEntryForm.length;
       },
     },
+
     methods: {
 
       // Fetches the students who do not have an entry form. It sends a GET request to the backend API. Upon receiving the response, it stores the data of students without an entry form in the component's state. 
@@ -157,12 +164,13 @@
         }
       },
 
+      // Toggles the navigation state and updates the button text accordingly
       toggleNavigation() {
-        this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
-        // Optionally change the button text based on state
+        this.isNavigationDisabled = !this.isNavigationDisabled;
         this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
       },
 
+      // Navigates to the student's profile if navigation is not disabled
       navigateIfEnabled(userID) {
         if (!this.isNavigationDisabled) {
           this.navigateToProfile(userID);
@@ -171,9 +179,12 @@
 
       // Navigates to the profile page of a specific student identified by their userID.
       navigateToProfile(userID) {
+        useLoggedInUserStore().navigationData = {
+          userID: userID
+        };
+
         this.$router.push({
-          name: "instructorSpecificStudent",
-          params: { userID: userID },
+          name: "instructorSpecificStudent"
         });
       },
 

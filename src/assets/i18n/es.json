@@ -20,7 +20,8 @@
     "Already have an account?": "¿Ya tienes una cuenta?",
     "Login here": "Inicia sesión aquí",
     "Please Verify Your Email": "Por favor, verifica tu correo electrónico",
-    "Please check your email for a confirmation code to verify your email address. This may take a few minutes.": "Por favor, revisa tu correo electrónico para obtener un código de confirmación y verificar tu dirección de correo. Esto puede tardar unos minutos.",
+    "A confirmation code has been sent to your email. Please enter the code below.": "Se ha enviado un código de confirmación a tu correo electrónico. Por favor, ingresa el código a continuación.",
+    "If you don't see an email, check your spam or junk folder.": "Si no ves un correo, revisa tu carpeta de spam o correo no deseado.",
     "Confirmation Code:": "Código de Confirmación:",
     "Submit": "Enviar",
     "Password Reset": "Restablecimiento de Contraseña",
@@ -396,5 +397,9 @@
     "Aspiration 1": "Aspiración 1",
     "Aspiration 2": "Aspiración 2",
     "Aspiration 3": "Aspiración 3",
-    "Previous": "Anterior"
+    "Previous": "Anterior",
+    "First name is required": "El nombre es obligatorio",
+    "Last name is required": "El apellido es obligatorio",
+    "Language preference is required": "La preferencia de idioma es obligatoria",
+    "Password should be at least 8 characters long": "La contraseña debe tener al menos 8 caracteres"
 }
