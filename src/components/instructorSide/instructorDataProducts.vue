@@ -215,9 +215,10 @@
             "goalForm.researchExperience.currentResearchExperience.2.checked": "re_here",
             "goalForm.researchExperience.currentResearchExperience.3.checked": "re_surf",
             "goalForm.researchExperience.currentResearchExperience.4.checked": "re_purs",
-            "goalForm.researchExperience.currentResearchExperience.5.checked": "re_lab",
-            "goalForm.researchExperience.currentResearchExperience.6.checked": "re_other",
-            "goalForm.researchExperience.currentResearchExperience.7.checked": "re_none",
+            "goalForm.researchExperience.currentResearchExperience.5.checked": "re_reach",
+            "goalForm.researchExperience.currentResearchExperience.6.checked": "re_lab",
+            "goalForm.researchExperience.currentResearchExperience.7.checked": "re_other",
+            "goalForm.researchExperience.currentResearchExperience.8.checked": "re_none",
             "goalForm.researchExperience.currentResearchExperienceOther": "re_other_text_entry",
             "goalForm.researchExperience.previousResearchExperience.0.checked": "re_activities_design",
             "goalForm.researchExperience.previousResearchExperience.1.checked": "re_activities_lit",
@@ -226,8 +227,9 @@
             "goalForm.researchExperience.previousResearchExperience.4.checked": "re_activities_ph",
             "goalForm.researchExperience.previousResearchExperience.5.checked": "re_activities_analysis",
             "goalForm.researchExperience.previousResearchExperience.6.checked": "re_activities_manuscript",
-            "goalForm.researchExperience.previousResearchExperience.7.checked": "re_activities_other",
-            "goalForm.researchExperience.previousResearchExperience.8.checked": "re_activities_none",
+            "goalForm.researchExperience.previousResearchExperience.7.checked": "re_activities_public_presentation",
+            "goalForm.researchExperience.previousResearchExperience.8.checked": "re_activities_other",
+            "goalForm.researchExperience.previousResearchExperience.9.checked": "re_activities_none",
             "goalForm.researchExperience.previousResearchExperienceOther": "res_activities_other_text_entry",
             "goalForm.researchExperience.familiarTools.0.checked": "re_tools_excel",
             "goalForm.researchExperience.familiarTools.1.checked": "re_tools_r",
@@ -238,8 +240,9 @@
             "goalForm.researchExperience.familiarTools.6.checked": "re_tools_nvivo",
             "goalForm.researchExperience.familiarTools.7.checked": "re_tools_tableau",
             "goalForm.researchExperience.familiarTools.8.checked": "re_tools_sas",
-            "goalForm.researchExperience.familiarTools.9.checked": "re_tools_other",
-            "goalForm.researchExperience.familiarTools.10.checked": "re_tools_none",
+            "goalForm.researchExperience.familiarTools.9.checked": "re_tools_omeka",
+            "goalForm.researchExperience.familiarTools.10.checked": "re_tools_other",
+            "goalForm.researchExperience.familiarTools.11.checked": "re_tools_none",
             "goalForm.researchExperience.familiarToolOther": "re_tools_other_text_entry",
             "goalForm.researchExperience.interestResearchService.0.checked": "interest_education",
             "goalForm.researchExperience.interestResearchService.1.checked": "interest_community_health",
@@ -248,8 +251,10 @@
             "goalForm.researchExperience.interestResearchService.4.checked": "interest_chronic_disease",
             "goalForm.researchExperience.interestResearchService.5.checked": "interest_environment",
             "goalForm.researchExperience.interestResearchService.6.checked": "interest_govt",
-            "goalForm.researchExperience.interestResearchService.7.checked": "interest_other",
-            "goalForm.researchExperience.interestResearchService.8.checked": "interest_none",
+            "goalForm.researchExperience.interestResearchService.7.checked": "interest_social_justice",
+            "goalForm.researchExperience.interestResearchService.8.checked": "interest_public_history",
+            "goalForm.researchExperience.interestResearchService.9.checked": "interest_other",
+            "goalForm.researchExperience.interestResearchService.10.checked": "interest_none",
             "goalForm.researchExperience.interestResearchServiceOther": "interest_other_text_entry",
             "goalForm.researchExperience.leadershipOption": "leadership_interest",
             "goalForm.growthGoal.problemSolvingGoal": "growth_problem_solving",
@@ -258,6 +263,8 @@
             "goalForm.growthGoal.culturalHumilityGoal": "growth_cultural_humility",
             "goalForm.growthGoal.ethicalDecisionMakingGoal": "growth_ethical_decision",
             "goalForm.growthGoal.professionalResponsibilityGoal": "growth_professional",
+            "goalForm.growthGoal.socialResponsibilityGoal": "growth_social_responsibility",
+            "goalForm.growthGoal.digitalLiteracyGoal": "growth_digital_literacy",
             "goalForm.aspirations.aspirationOne": "aspiration_1_text_entry",
             "goalForm.aspirations.aspirationTwo": "aspiration_2_text_entry",
             "goalForm.aspirations.aspirationThree": "aspiration_3_text_entry",
@@ -365,16 +372,55 @@
     
   // Converts JSON data representing exit forms to CSV format. Maps JSON variable names to CSV variable names and creates CSV data rows accordingly.
   convertExitFormToCSV(jsonData) {
-        // Define the mapping from JSON variable names to CSV variable names
+        // Update the mapping from JSON variable names to CSV variable names
         const renameMap = {
             "_id": "exit_form_id",
             "organizationID": "org_id",
             "userID": "user_id",
-            "goalSettingFormID": "goal_id",
             "sessionName": "session",
-            "createdAt": "created_at",
-            "updatedAt": "updated_at",
-            // Default to the original variable names if not provided in the renameMap
+            "experienceID": "experience_id",
+            "goalSettingFormID": "goal_id",
+            "exitForm.progressMade.aspirationOneProgressResults": "aspiration1_progress_result",
+            "exitForm.progressMade.aspirationTwoProgressResults": "aspiration2_progress_result",
+            "exitForm.progressMade.aspirationThreeProgressResults": "aspiration3_progress_result",
+            "exitForm.progressMade.aspirationOneExperienceConnection": "aspiration1_experience_connection",
+            "exitForm.progressMade.aspirationTwoExperienceConnection": "aspiration2_experience_connection",
+            "exitForm.progressMade.aspirationThreeExperienceConnection": "aspiration3_experience_connection",
+            "exitForm.progressMade.goalOneProgressResults": "goal1_progress_result",
+            "exitForm.progressMade.goalTwoProgressResults": "goal2_progress_result",
+            "exitForm.progressMade.goalThreeProgressResults": "goal3_progress_result",
+            "exitForm.progressMade.goalFourProgressResults": "goal4_progress_result",
+            "exitForm.progressMade.goalFiveProgressResults": "goal5_progress_result",
+            "exitForm.progressMade.goalOneExperienceConnection": "goal1_experience_connection",
+            "exitForm.progressMade.goalTwoExperienceConnection": "goal2_experience_connection",
+            "exitForm.progressMade.goalThreeExperienceConnection": "goal3_experience_connection",
+            "exitForm.progressMade.goalFourExperienceConnection": "goal4_experience_connection",
+            "exitForm.progressMade.goalFiveExperienceConnection": "goal5_experience_connection",
+            "exitForm.goalIssues.goals": "goals_with_issues",
+            "exitForm.goalIssues.issuesDescription": "issues_description",
+            "exitForm.activitiesContribution.goalOneContributions": "goal1_activity_contributions",
+            "exitForm.activitiesContribution.goalTwoContributions": "goal2_activity_contributions",
+            "exitForm.activitiesContribution.goalThreeContributions": "goal3_activity_contributions",
+            "exitForm.activitiesContribution.goalFourContributions": "goal4_activity_contributions",
+            "exitForm.activitiesContribution.goalFiveContributions": "goal5_activity_contributions",
+            "exitForm.activitiesContribution.noContributions": "no_activity_contributions",
+            "exitForm.likelihoodOf.enrollAnotherCourse": "likelihood_enroll_another_course",
+            "exitForm.likelihoodOf.completeMinor": "likelihood_complete_minor",
+            "exitForm.likelihoodOf.recommendCourse": "likelihood_recommend_course",
+            "exitForm.likelihoodOf.pursueCareer": "likelihood_pursue_career",
+            "exitForm.generalGrowth.problemSolving": "growth_problem_solving",
+            "exitForm.generalGrowth.effectiveCommunication": "growth_effective_communication",
+            "exitForm.generalGrowth.teamwork": "growth_teamwork",
+            "exitForm.generalGrowth.culturalHumility": "growth_cultural_humility",
+            "exitForm.generalGrowth.ethicalDecisionMaking": "growth_ethical_decision_making",
+            "exitForm.generalGrowth.professionalResponsibility": "growth_professional_responsibility",
+            "exitForm.openEnded.biggestLessons": "biggest_lessons_learned",
+            "exitForm.openEnded.supportOthers": "supporting_others",
+            "exitForm.openEnded.comments": "additional_comments",
+            "exitForm.experienceContributions": "experience_contributions",
+            "created_at": "created_at",
+            "updated_at": "updated_at",
+            "__v": "__v"
         };
 
         // Extract headers
@@ -609,25 +655,25 @@
       ordered_headers.push("goalForm.communityEngagement.engagementActivitiesToolOther");
   
       // For currentResearchExperience
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 9; i++) {
           ordered_headers.push(`goalForm.researchExperience.currentResearchExperience.${i}.checked`);
       }
       ordered_headers.push("goalForm.researchExperience.currentResearchExperienceOther");
   
       // For previousResearchExperience
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 10; i++) {
           ordered_headers.push(`goalForm.researchExperience.previousResearchExperience.${i}.checked`);
       }
       ordered_headers.push("goalForm.researchExperience.previousResearchExperienceOther");
   
       // For familiarTools
-      for (let i = 0; i < 11; i++) {
+      for (let i = 0; i < 12; i++) {
           ordered_headers.push(`goalForm.researchExperience.familiarTools.${i}.checked`);
       }
       ordered_headers.push("goalForm.researchExperience.familiarToolOther");
   
       // For interestResearchService
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 11; i++) {
           ordered_headers.push(`goalForm.researchExperience.interestResearchService.${i}.checked`);
       }
       ordered_headers.push("goalForm.researchExperience.interestResearchServiceOther");
@@ -641,6 +687,8 @@
           "goalForm.growthGoal.culturalHumilityGoal",
           "goalForm.growthGoal.ethicalDecisionMakingGoal",
           "goalForm.growthGoal.professionalResponsibilityGoal",
+          "goalForm.growthGoal.socialResponsibilityGoal", 
+          "goalForm.growthGoal.digitalLiteracyGoal",      
           "goalForm.aspirations.aspirationOne",
           "goalForm.aspirations.aspirationTwo",
           "goalForm.aspirations.aspirationThree",
@@ -719,7 +767,9 @@
                 "goalForm.growthGoal.teamworkGoal",
                 "goalForm.growthGoal.culturalHumilityGoal",
                 "goalForm.growthGoal.ethicalDecisionMakingGoal",
-                "goalForm.growthGoal.professionalResponsibilityGoal"
+                "goalForm.growthGoal.professionalResponsibilityGoal",
+                "goalForm.growthGoal.socialResponsibilityGoal",
+                "goalForm.growthGoal.digitalLiteracyGoal"
             ];
 
             if (growthFields.includes(field)) {
@@ -803,7 +853,7 @@
         return ordered_headers;
     },
 
-    // Extracts values from the given object based on the provided header keys, applying transformations as needed for specific fields. Handles array values, converts to string, and handles special characters for CSV formatting.
+    // Extracts values from the given object based on the provided header keys, applying transformations as needed for specific fields. Handles array values, converts to string, and handles special characters for CSV formatting
     getExitFormCSVRowValues(obj, header) {
         const values = [];
         

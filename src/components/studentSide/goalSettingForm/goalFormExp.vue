@@ -123,12 +123,13 @@ data() {
       hichProject: [],
       hichCheckboxItems: [
         'BREATHE',
-        'WEAR',
+        'Creative Care',
         'Operation Fusion',
         'PEERS',
-        'Creative Care',
-        'Responsive Resourcing'
-      ],
+        'Responsive Resourcing',
+        'SAIID',
+        'WEAR'
+        ],
       localExperiences: [],
       localExperienceID: null,
       prevHichProject: [],
