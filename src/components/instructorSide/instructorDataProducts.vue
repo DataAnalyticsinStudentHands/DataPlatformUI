@@ -181,7 +181,7 @@
             "organizationID": "org_id",
             "userID": "user_id",
             "sessionName": "session",
-            "experienceID": "experience",
+            "experienceName": "experience",
             "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
             "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
             "goalForm.communityEngagement.communityEngagementExperiences.2.checked": "ce_faith",
@@ -378,7 +378,7 @@
             "organizationID": "org_id",
             "userID": "user_id",
             "sessionName": "session",
-            "experienceID": "experience_id",
+            "experienceName": "experience",
             "goalSettingFormID": "goal_id",
             "exitForm.progressMade.aspirationOneProgressResults": "aspiration1_progress_result",
             "exitForm.progressMade.aspirationTwoProgressResults": "aspiration2_progress_result",
@@ -633,7 +633,7 @@
           "organizationID",
           "userID",
           "sessionName",
-          "experienceID",
+          "experienceName",
       ];
   
       // For communityEngagementExperiences
@@ -805,7 +805,7 @@
             "organizationID",
             "userID",
             "sessionName",
-            "experienceID",
+            "experienceName",
             "goalSettingFormID",
             "exitForm.progressMade.aspirationOneProgressResults",
             "exitForm.progressMade.aspirationTwoProgressResults",
