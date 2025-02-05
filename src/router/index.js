@@ -70,6 +70,12 @@ const routes = [
       beforeEnter: requireAuth(['Student']),
     },
     {
+      path: '/test',
+      name: 'test',
+      props: true,
+      component: () => import('../components/test.vue'),
+    },
+    {
       path: '/mainAuthWrap',
       props: true,
       component: () => import('../components/loginPages/mainAuthWrap.vue'),
