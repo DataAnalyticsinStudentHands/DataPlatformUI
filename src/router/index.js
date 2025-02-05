@@ -368,10 +368,9 @@ const routes = [
     },
 ]
 const router = createRouter({
-    history: createWebHistory('/platform/'), 
-    base: "/platform/", 
-    routes
-})
+  history: createWebHistory('/platform'), // base path
+  routes,
+});
 
 // Public routes
 const publicPaths = [
@@ -382,7 +381,8 @@ const publicPaths = [
   '/passResetNewEntry',
   '/verifyAccWithCode',
   '/verifyAccWithEmailCode',
-  '/sendNewCode'
+  '/sendNewCode',
+  '/test'
 ];
 
 // Global navigation guard
@@ -393,6 +393,7 @@ router.beforeEach(async (to, from, next) => {
 
   // Check if the route is public
   const isPublicRoute = publicPaths.includes(to.path);
+
 
   if (token) {
     try {
@@ -434,17 +435,20 @@ router.beforeEach(async (to, from, next) => {
       } else {
         // Invalid or expired token, log out and redirect to login
         userStore.logout();
+        console.log('1')
         next('/login');
       }
     } catch (error) {
       // Handle errors during token verification
       console.error('Token verification failed in router:', error);
       userStore.logout();
+      console.log('2')
       next('/login');
     }
   } else {
     // No token, handle public and private route access
     if (isPublicRoute) {
+      console.log('console log test')
       next(); // Allow access to public route without token
     } else {
       // No token and trying to access a private route, redirect to login

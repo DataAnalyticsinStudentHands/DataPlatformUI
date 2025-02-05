@@ -137,12 +137,48 @@ export const useLoggedInUserStore = defineStore({
     async initializeStore() {
       const token = localStorage.getItem('token');
     
+      // if (!token) {
+      //   // No token found; redirect to login to ensure the user is prompted to authenticate
+      //   this.logout(); // Clear any lingering state
+      //   this.$router.push('/login');
+      //   return;
+      // }
+
+      // // Public routes
+      // const publicPaths = [
+      //   '/login',
+      //   '/register',
+      //   '/passResetRequest',
+      //   '/passResetCode',
+      //   '/passResetNewEntry',
+      //   '/verifyAccWithCode',
+      //   '/verifyAccWithEmailCode',
+      //   '/sendNewCode',
+      //   '/test'
+      // ];
+
+      // if (!token) {
+      //   const currentRoute = this.$router.currentRoute.value.path;
+      //   if (!publicPaths.includes(currentRoute)) {
+      //     // if they're on a private route, then redirect to /login
+      //     this.logout();
+      //     this.$router.push('/login');
+      //   }
+      //   return;
+      // }
+
       if (!token) {
         // No token found; redirect to login to ensure the user is prompted to authenticate
-        this.logout(); // Clear any lingering state
-        this.$router.push('/login');
+        // Reset the store to its initial state
+        this.$reset();
+      
+        // Clear token and related local storage items
+        localStorage.removeItem('token');
+        localStorage.removeItem('pinia-loggedInUser');
+        this.removeTokenHeader();
         return;
       }
+      
     
       try {
         // Verify the token

@@ -1,11 +1,12 @@
 <template>
-
-</template>
-
-<script>
-
-</script>
-
-<style>
-
-</style>
+    <div>Hi</div>
+  </template>
+  
+  <script>
+  export default {
+    mounted() {
+      console.log("Test page visited!");
+    }
+  };
+  </script>
+  
