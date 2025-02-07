@@ -86,6 +86,9 @@
                               N/A
                             </span>
                           </div>
+                          <div>
+                            <strong>(Hidden) Registration Code:</strong> {{ item.registrationCode }}
+                          </div>
                           <!-- Button aligned to bottom right -->
                           <div class="d-flex justify-end mt-2">
                             <v-btn

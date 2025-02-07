@@ -88,6 +88,12 @@ const routes = [
       component: () => import('../components/test3.vue'),
     },
     {
+      path: '/proposedprojects',
+      name: 'proposedprojects',
+      props: true,
+      component: () => import('../components/test4.vue'),
+    },
+    {
       path: '/mainAuthWrap',
       props: true,
       component: () => import('../components/loginPages/mainAuthWrap.vue'),
@@ -396,7 +402,8 @@ const publicPaths = [
   '/sendNewCode',
   '/projectportal',
   '/createproject',
-  '/updateproject'
+  '/updateproject',
+  '/proposedprojects'
 ];
 
 // Global navigation guard
