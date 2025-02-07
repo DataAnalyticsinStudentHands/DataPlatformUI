@@ -70,10 +70,22 @@ const routes = [
       beforeEnter: requireAuth(['Student']),
     },
     {
-      path: '/test',
-      name: 'test',
+      path: '/projectportal',
+      name: 'projectportal',
       props: true,
       component: () => import('../components/test.vue'),
+    },
+    {
+      path: '/createproject',
+      name: 'createproject',
+      props: true,
+      component: () => import('../components/test2.vue'),
+    },
+    {
+      path: '/updateproject',
+      name: 'updateproject',
+      props: true,
+      component: () => import('../components/test3.vue'),
     },
     {
       path: '/mainAuthWrap',
@@ -382,7 +394,9 @@ const publicPaths = [
   '/verifyAccWithCode',
   '/verifyAccWithEmailCode',
   '/sendNewCode',
-  '/test'
+  '/projectportal',
+  '/createproject',
+  '/updateproject'
 ];
 
 // Global navigation guard
