@@ -1,12 +1,12 @@
 <template>
   <v-app>
     <!-- Top App Bar -->
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app color="white" dark>
       <v-app-bar-title>Project Portal</v-app-bar-title>
       <v-spacer />
-      <v-btn icon>
+      <!-- <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
-      </v-btn>
+      </v-btn> -->
       <v-btn icon>
         <v-icon>mdi-bell</v-icon>
       </v-btn>
