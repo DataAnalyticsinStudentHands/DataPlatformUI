@@ -73,25 +73,67 @@ const routes = [
       path: '/projectportal',
       name: 'projectportal',
       props: true,
-      component: () => import('../components/test.vue'),
+      component: () => import('../components/projectportal.vue'),
     },
     {
       path: '/createproject',
       name: 'createproject',
       props: true,
-      component: () => import('../components/test2.vue'),
+      component: () => import('../components/createproject.vue'),
+    },
+    {
+      path: '/createprojectstepper',
+      name: 'createprojectstepper',
+      props: true,
+      component: () => import('../components/createprojectstepper.vue'),
     },
     {
       path: '/updateproject',
       name: 'updateproject',
       props: true,
-      component: () => import('../components/test3.vue'),
+      component: () => import('../components/updateproject.vue'),
     },
     {
       path: '/proposedprojects',
       name: 'proposedprojects',
       props: true,
-      component: () => import('../components/test4.vue'),
+      component: () => import('../components/proposedprojects.vue'),
+    },
+    {
+      path: '/viewproject',
+      name: 'viewproject',
+      props: true,
+      component: () => import('../components/viewproject.vue'),
+    },
+    {
+      path: '/myprojects',
+      name: 'myprojects',
+      props: true,
+      component: () => import('../components/myprojects.vue'),
+    },
+    {
+      path: '/proposaldemo1',
+      name: 'proposaldemo1',
+      props: true,
+      component: () => import('../components/proposaldemo1.vue'),
+    },
+    {
+      path: '/proposaldemo2',
+      name: 'proposaldemo2',
+      props: true,
+      component: () => import('../components/proposaldemo2.vue'),
+    },
+    {
+      path: '/proposaldemo3',
+      name: 'proposaldemo3',
+      props: true,
+      component: () => import('../components/proposaldemo3.vue'),
+    },
+    {
+      path: '/proposaldemo4',
+      name: 'proposaldemo4',
+      props: true,
+      component: () => import('../components/proposaldemo4.vue'),
     },
     {
       path: '/mainAuthWrap',
@@ -402,8 +444,16 @@ const publicPaths = [
   '/sendNewCode',
   '/projectportal',
   '/createproject',
+  '/createprojectstepper',
   '/updateproject',
-  '/proposedprojects'
+  '/proposedprojects',
+  '/viewproject',
+  '/myprojects',
+  '/proposaldemo1',
+  '/proposaldemo2',
+  '/proposaldemo3',
+  '/proposaldemo4',
+  
 ];
 
 // Global navigation guard

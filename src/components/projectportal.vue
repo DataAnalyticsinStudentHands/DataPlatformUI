@@ -19,7 +19,7 @@
     <v-navigation-drawer app v-model="drawer" clipped>
       <v-list>
         <v-list-item link prepend-icon="mdi-view-dashboard" title="Dashboard" />
-        <v-list-item link prepend-icon="mdi-account-group" title="Projects" />
+        <v-list-item link prepend-icon="mdi-account-group" title="My Projects" />
       </v-list>
     </v-navigation-drawer>
 
@@ -99,6 +99,16 @@
                               Register
                             </v-btn>
                           </div>
+                          <!-- Button aligned to bottom right -->
+                          <!-- <div class="d-flex justify-end mt-2">
+                            <v-btn
+                              color="blue darken-2"
+                              depressed
+                              @click="openDialog(item)"
+                            >
+                              Update
+                            </v-btn>
+                          </div> -->
                         </v-expansion-panel-text>
                       </v-expansion-panel>
                     </v-expansion-panels>

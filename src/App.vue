@@ -144,6 +144,15 @@
             >Find Event</v-list-item>
           </div>
 
+            <v-list-item 
+              :active=true
+              to="projects"
+              prepend-icon="mdi-account-group"
+              class="tracking-wider"
+            >
+              Projects
+            </v-list-item>
+
           <div v-if="isFullyAuthenticated">
             <v-list-item>
               <hr> <!-- Horizontal line -->
