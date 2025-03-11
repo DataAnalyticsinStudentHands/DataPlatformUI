@@ -182,55 +182,47 @@ export default {
     this.fetchExperiences();
   },
   computed: {
-    // Format experiences for display in the autocomplete dropdown
-    formattedExperiences() {
-      return this.expInstances.map(instance => ({
-        text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
-        value: instance.expInstanceID
-      }));
-    },
+      // Returns the full student list based on the 'completed' flag.
+      displayedStudents() {
+        return this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
+      },
 
-    // Get paginated students who haven't completed the exit form
-    paginatedStudentsWithoutExitForm() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = this.currentPage * this.itemsPerPage;
-      return this.studentsWithoutExitForm.slice(start, end);
-    },
+      // Returns a paginated slice of the displayedStudents array.
+      paginatedDisplayedStudents() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.displayedStudents.slice(start, end);
+      },
 
-    // Get paginated students who have completed the exit form
-    paginatedStudentsWithExitForm() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = this.currentPage * this.itemsPerPage;
-      return this.displayedStudents.slice(start, end);
-    },
+      // Existing computed properties can remain or be removed if not used elsewhere.
+      formattedExperiences() {
+        return this.expInstances.map(instance => ({
+          text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
+          value: instance.expInstanceID
+        }));
+      },
 
-    // Determine the total number of pages for pagination based on the completed status
-    totalPaginationLength() {
-      // Determine which student list to use based on the `completed` flag
-      let list = this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
-      return Math.ceil(list.length / this.itemsPerPage);
-    },
+      totalPaginationLength() {
+        let list = this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
+        return Math.ceil(list.length / this.itemsPerPage);
+      },
 
-    // Return the total number of students based on the list available
-    totalStudentsCount() {
-      return this.displayedStudents.length;
-    },
-    csvFileName() {
-      if (this.selectedExperience) {
-        const selectedObj = this.expInstances.find(
-          (instance) => instance.expInstanceID === this.selectedExperience
-        );
-        if (selectedObj) {
-          const prefix = this.completed === true ? 'completed_exit_forms' : 'no_exit_form';
+      totalStudentsCount() {
+        return this.displayedStudents.length;
+      },
+
+      csvFileName() {
+        if (this.selectedExperience) {
+          const selectedObj = this.expInstances.find(
+            (instance) => instance.expInstanceID === this.selectedExperience
+          );
+          const prefix = this.completed === true ? 'completed_goal_forms' : 'no_goal_form';
           return `${prefix}_${selectedObj.experienceName}.csv`;
         } else {
-          return this.completed === true ? 'completed_exit_forms.csv' : 'no_exit_form.csv';
+          return this.completed === true ? 'completed_goal_forms.csv' : 'no_goal_form.csv';
         }
-      } else {
-        return this.completed === true ? 'completed_exit_forms.csv' : 'no_exit_form.csv';
-      }
+      },
     },
-  },
   methods: {
 
     // Fetches active experience instances for the instructor from the backend API. Upon receiving the response, it maps the instance data to a structured format and stores it in the component's state.

@@ -180,7 +180,19 @@
       this.fetchExperiences();
     },
     computed: {
-      // Format experiences for display in the autocomplete dropdown
+      // Returns the full student list based on the 'completed' flag.
+      displayedStudents() {
+        return this.completed ? this.studentsWithGoalForm : this.studentsWithoutGoalForm;
+      },
+
+      // Returns a paginated slice of the displayedStudents array.
+      paginatedDisplayedStudents() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.displayedStudents.slice(start, end);
+      },
+
+      // Existing computed properties can remain or be removed if not used elsewhere.
       formattedExperiences() {
         return this.expInstances.map(instance => ({
           text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
@@ -188,31 +200,15 @@
         }));
       },
 
-      // Get paginated students who haven't completed the goal form
-      paginatedStudentsWithoutGoalForm() {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = this.currentPage * this.itemsPerPage;
-        return this.studentsWithoutGoalForm.slice(start, end);
-      },
-
-      // Get paginated students who have completed the goal form
-      paginatedStudentsWithGoalForm() {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = this.currentPage * this.itemsPerPage;
-        return this.displayedStudents.slice(start, end);
-      },
-
-      // Determine the total number of pages for pagination based on the completed status
       totalPaginationLength() {
-        // Determine which student list to use based on the `completed` flag
         let list = this.completed ? this.studentsWithGoalForm : this.studentsWithoutGoalForm;
         return Math.ceil(list.length / this.itemsPerPage);
       },
 
-      // Return the total number of students based on the list available      
       totalStudentsCount() {
         return this.displayedStudents.length;
       },
+
       csvFileName() {
         if (this.selectedExperience) {
           const selectedObj = this.expInstances.find(
