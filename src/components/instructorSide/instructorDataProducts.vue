@@ -301,6 +301,8 @@
             "_id": "entry_id", 
             "organizationID": "org_id", 
             "userID": "user_id", 
+            "user_name": "user_name",
+            "user_email": "user_email",
             "studentInformation.cityOrigin": "place_of_origin",
             "studentInformation.primaryLanguage": "primary_language",
             "studentInformation.otherLanguages": "other_languages",
@@ -449,6 +451,8 @@
           "_id",
           "organizationID",
           "userID",
+          "user_name",
+          "user_email",
           "studentInformation.cityOrigin",
           "studentInformation.primaryLanguage",
           "studentInformation.otherLanguages",
@@ -529,8 +533,18 @@
       
       header.forEach((field) => {
           let value = obj;
+          // Special handling for user_name and user_email
+          if (field === "user_name") {
+              // Concatenate trimmed and formatted first and last names from userData
+              const firstName = this.formatName(obj.userData?.firstName);
+              const lastName = this.formatName(obj.userData?.lastName);
+              value = `${firstName} ${lastName}`.trim();
+          } else if (field === "user_email") {
+              // Use userData.email directly
+              value = obj.userData?.email || '';
+          }
           // Split and encode for the honorsMinors field
-          if (field.startsWith('h_minor_')) {   
+          else if (field.startsWith('h_minor_')) {   
             // Map the field back to the possible value in the honorsMinors array
             const valueMap = {
                 'h_minor_data_society': 'Data & Society',
@@ -1041,6 +1055,17 @@
         };
         return likelihoodMap[value] || value;
     },
+
+    // Helper method to format names: trims the input and capitalizes the first letter
+    formatName(name) {
+        if (!name) return "";
+        return name
+            .trim()
+            .split(/\s+/)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(" ");
+    },
+
   
     },
   };
