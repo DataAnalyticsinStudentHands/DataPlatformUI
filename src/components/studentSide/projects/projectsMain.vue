@@ -20,6 +20,8 @@
                 :label="$t('Project Name')"
                 :error="isNameInvalid"
                 :error-messages="nameErrorMessages"
+                :rules="nameRules"
+                :counter="100"
                 required
                 outlined
               ></v-text-field>
@@ -35,6 +37,8 @@
                 :label="$t('Describe your project idea')"
                 :error="isDescriptionInvalid"
                 :error-messages="descriptionErrorMessages"
+                :rules="descriptionRules"
+                :counter="5000"
                 auto-grow
                 rows="5"
                 outlined
@@ -112,20 +116,6 @@
         </v-container>
       </v-form>
   
-      <!-- Error jump button -->
-      <v-btn
-        v-if="hasValidationErrors"
-        @click="scrollToErrorField"
-        color="error"
-        icon
-        class="pa-1 fixed-button"
-        elevation="4"
-        size="small"
-      >
-        <v-icon>mdi-alert-circle</v-icon>
-        <v-tooltip activator="parent" location="start">Jump to Error</v-tooltip>
-      </v-btn>
-  
       <!-- Submit Confirmation Dialog -->
       <v-dialog v-model="submitDialog" persistent max-width="500px">
         <v-card>
@@ -166,6 +156,17 @@
         },
         experienceInstances: [],
         experienceInstancesLoaded: false,
+        // Rules for validation
+        nameRules: [
+          v => !!v || this.$t('Project name is required'),
+          v => (v && v.length >= 3) || this.$t('Project name must be at least 3 characters long'),
+          v => (v && v.length <= 100) || this.$t('Project name cannot exceed 100 characters')
+        ],
+        descriptionRules: [
+          v => !!v || this.$t('Project description is required'),
+          v => (v && v.length >= 10) || this.$t('Project description must be at least 10 characters long'),
+          v => (v && v.length <= 5000) || this.$t('Project description cannot exceed 5000 characters')
+        ],
         availableTags: [
           "community",
           "coding",
@@ -189,17 +190,47 @@
     computed: {
       isNameInvalid() {
         if (!this.formSubmitted) return false;
-        return !this.projectData.name || this.projectData.name.trim() === '';
+        return !this.projectData.name || 
+               this.projectData.name.trim() === '' ||
+               this.projectData.name.length < 3 ||
+               this.projectData.name.length > 100;
       },
       nameErrorMessages() {
-        return this.isNameInvalid ? [this.$t('Project name is required')] : [];
+        if (!this.formSubmitted) return [];
+        
+        const errors = [];
+        
+        if (!this.projectData.name || this.projectData.name.trim() === '') {
+          errors.push(this.$t('Project name is required'));
+        } else if (this.projectData.name.length < 3) {
+          errors.push(this.$t('Project name must be at least 3 characters long'));
+        } else if (this.projectData.name.length > 100) {
+          errors.push(this.$t('Project name cannot exceed 100 characters'));
+        }
+        
+        return errors;
       },
       isDescriptionInvalid() {
         if (!this.formSubmitted) return false;
-        return !this.projectData.description || this.projectData.description.trim() === '';
+        return !this.projectData.description || 
+               this.projectData.description.trim() === '' || 
+               this.projectData.description.length < 10 ||
+               this.projectData.description.length > 5000;
       },
       descriptionErrorMessages() {
-        return this.isDescriptionInvalid ? [this.$t('Project description is required')] : [];
+        if (!this.formSubmitted) return [];
+        
+        const errors = [];
+        
+        if (!this.projectData.description || this.projectData.description.trim() === '') {
+          errors.push(this.$t('Project description is required'));
+        } else if (this.projectData.description.length < 10) {
+          errors.push(this.$t('Project description must be at least 10 characters long'));
+        } else if (this.projectData.description.length > 5000) {
+          errors.push(this.$t('Project description cannot exceed 5000 characters'));
+        }
+        
+        return errors;
       },
       isExperienceInvalid() {
         if (!this.formSubmitted) return false;
@@ -253,11 +284,24 @@
             this.isLoadingExperiences = false;
           });
       },
-      openSubmitDialog() {
+      async openSubmitDialog() {
         this.formSubmitted = true;
         
-        // First validate the form
-        if (!this.hasValidationErrors) {
+        // Check for validation errors with the enhanced validation
+        const nameValid = this.projectData.name && 
+                         this.projectData.name.trim() !== '' && 
+                         this.projectData.name.length >= 3 && 
+                         this.projectData.name.length <= 100;
+                         
+        const descriptionValid = this.projectData.description && 
+                                this.projectData.description.trim() !== '' && 
+                                this.projectData.description.length >= 10 && 
+                                this.projectData.description.length <= 5000;
+                                
+        const experienceValid = !!this.projectData.experienceInstanceId;
+        
+        // Only proceed if all validations pass
+        if (nameValid && descriptionValid && experienceValid) {
           // If validation passes, show the confirmation dialog
           this.submitDialog = true;
         } else {
@@ -279,7 +323,7 @@
       async submitProjectProposal() {
         const user = useLoggedInUserStore();
         let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/projects/proposal`;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/proposal`;
         
         const projectPayload = {
           name: this.projectData.name,
@@ -290,42 +334,39 @@
         
         try {
           await axios.post(apiURL, projectPayload, { headers: { token } });
-          
-          // Show success message
-          toast.success(this.$t("Project proposal submitted successfully!"), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: false
-          });
+
+          user.navigationData = {
+            toastType: 'success',
+            toastMessage: 'Project proposal submitted successfully!',
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--create'
+          };
           
           // Redirect to projects list or dashboard
           this.$router.push({ name: 'studentDashboard' });
         } catch (error) {
           console.error("Error submitting project proposal:", error);
+          
+          // Check for validation errors from the backend
+          if (error.response && error.response.data && error.response.data.errors) {
+            // Show first validation error from the server
+            const serverErrors = error.response.data.errors;
+            if (serverErrors.length > 0) {
+              toast.error(serverErrors[0], {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: false
+              });
+              return;
+            }
+          }
+          
+          // Generic error message if no specific error was provided
           toast.error(this.$t("Error submitting your project proposal. Please try again later."), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete',
             multiple: false
           });
-        }
-      },
-      scrollToErrorField() {
-        // Get error fields in priority order
-        const errorFields = [
-          'name',
-          'description',
-          'experienceInstanceId'
-        ];
-        
-        // Find first invalid field and scroll to it
-        for (const field of errorFields) {
-          if (this[`is${field.charAt(0).toUpperCase() + field.slice(1)}Invalid`]) {
-            const element = document.querySelector(`[data-field="${field}"]`);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            break;
-          }
         }
       }
     }
@@ -335,13 +376,6 @@
   <style scoped>
   .error-text {
     color: #B00020;
-  }
-  
-  .fixed-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
   }
   
   /* Custom styling for selected chips with transparency */
