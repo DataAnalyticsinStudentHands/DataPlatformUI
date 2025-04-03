@@ -70,6 +70,36 @@ const routes = [
       beforeEnter: requireAuth(['Student']),
     },
     {
+      path: '/projects',
+      name: 'projects',
+      beforeEnter: (to, from, next) => {
+        const userStore = useLoggedInUserStore();
+        if (userStore.isLoggedIn) {
+          if (userStore.getRole === 'Student') {
+            next('/studentProjects');
+          } else if (['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.getRole)) {
+            next('/instructorProjects');
+          } else {
+            next('/error');
+          }
+        } else {
+          next('/login');
+        }
+      }
+    },
+    {
+      path: '/studentProjects',
+      name: 'studentProjects',
+      component: () => import('../components/studentSide/projects/projectsMain.vue'),
+      beforeEnter: requireAuth(['Student']),
+    },
+    {
+      path: '/instructorProjects',
+      name: 'instructorProjects',
+      component: () => import('../components/instructorSide/projects/projectsMain.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
       path: '/projectportal',
       name: 'projectportal',
       props: true,

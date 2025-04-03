@@ -76,6 +76,14 @@
               value="exitForm"
               class=" tracking-wider "
             >{{$t('Exit Form')}}</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'projects' || activeLink === 'studentProjects'"
+              to="projects"
+              prepend-icon="mdi-account-group"
+              class="tracking-wider"
+            >
+              {{$t('Projects')}}
+            </v-list-item>
           </div>
           <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
             <v-list-item 
@@ -106,6 +114,14 @@
               value="instructorDataManagement"
               class=" tracking-wider"
             >Data Management Console</v-list-item>
+            <v-list-item 
+              :active="activeLink === 'projects' || activeLink === 'instructorProjects'"
+              to="projects"
+              prepend-icon="mdi-account-group"
+              class="tracking-wider"
+            >
+              {{$t('Projects')}}
+            </v-list-item>
           </div>
           <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
             <v-list-item 
@@ -143,15 +159,6 @@
               class="tracking-wider"
             >Find Event</v-list-item>
           </div>
-
-            <v-list-item 
-              :active=true
-              to="projects"
-              prepend-icon="mdi-account-group"
-              class="tracking-wider"
-            >
-              Projects
-            </v-list-item>
 
           <div v-if="isFullyAuthenticated">
             <v-list-item>
