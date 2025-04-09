@@ -124,8 +124,6 @@
           </v-card-title>
           <v-card-text>
             {{ $t('Are you sure you want to submit your project proposal?') }}
-            <br><br>
-            <strong>{{ $t('Project Name') }}:</strong> {{ projectData.name }}
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>

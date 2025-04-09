@@ -120,37 +120,39 @@
     
             <!-- Buttons -->
             <v-row class="mt-6">
-              <v-col>
-                <!-- Cancel navigation button -->
+              <v-col class="d-flex align-center">
+                <!-- Back button -->
                 <v-btn 
                   @click="$router.back()"
                   class="mr-4"
                 >
                   {{ $t('Back') }}
                 </v-btn>
-  
-                <!-- Cancel Proposal button -->
-                <v-btn 
-                  @click="openCancelDialog"
-                  color="error"
-                  class="mr-4 cancel-btn"
-                  :disabled="updateLoading || cancelLoading"
-                >
-                  {{ $t('Cancel Proposal') }}
-                </v-btn>
-                
+
                 <!-- Update proposal button -->
                 <v-btn 
                   type="submit"
-                  color="primary"
                   class="update-btn"
                   :loading="updateLoading"
                   :disabled="cancelLoading"
                 >
                   {{ $t('Update Proposal') }}
                 </v-btn>
+
+                <!-- Spacer pushes the next button to the right -->
+                <v-spacer></v-spacer>
+
+                <!-- Cancel Proposal button -->
+                <v-btn 
+                  @click="openCancelDialog"
+                  class="cancel-btn"
+                  :disabled="updateLoading || cancelLoading"
+                >
+                  {{ $t('Cancel Proposal') }}
+                </v-btn>
               </v-col>
             </v-row>
+
           </template>
         </v-container>
       </v-form>
@@ -163,8 +165,6 @@
           </v-card-title>
           <v-card-text>
             {{ $t('Are you sure you want to update this project proposal?') }}
-            <br><br>
-            <strong>{{ $t('Project Name') }}:</strong> {{ projectData.name }}
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>

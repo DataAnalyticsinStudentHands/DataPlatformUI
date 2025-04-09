@@ -49,7 +49,7 @@
                 <template v-else-if="introStep === 4">
                   <v-icon size="x-large" color="#c8102e" class="mb-3">mdi-upload</v-icon>
                   <h2 class="text-h4 font-weight-bold mb-2">{{ $t('Upload Project Documents') }}</h2>
-                  <p class="text-h6 mb-4">{{ $t('Upload supporting documents to showcase your project’s details.') }}</p>
+                  <p class="text-h6 mb-4">{{ $t('Upload supporting documents to showcase your project\'s details.') }}</p>
                   <p class="text-body-1 text-grey">{{ $t('(Click to continue)') }}</p>
                 </template>
                 <!-- Slide 5: Final Call-to-Action -->
@@ -90,7 +90,13 @@
 
       <!-- Data Tables for non-intro view -->
       <div v-if="!isIntroActive">
-         <v-container> 
+        <v-container>
+          <!-- Header Row -->
+          <v-row>
+            <v-col>
+              <h1 class="text-h4 font-weight-bold">{{ $t('Projects') }}</h1>
+            </v-col>
+          </v-row>
           <v-row>
             <v-col cols="12" class="d-flex justify-space-between align-center">
               <v-card flat class="flex-grow-1">
@@ -114,7 +120,6 @@
               </v-btn>
             </v-col>
           </v-row>
-
           <v-window v-model="activeTab">
             <v-window-item value="my-projects">
               <v-row v-if="loading">
@@ -147,6 +152,18 @@
                               </v-chip>
                             </td>
                             <td>{{ formatDate(item.updatedAt) }}</td>
+                            <td @click.stop>
+                              <v-btn
+                                color="#c8102e"
+                                variant="outlined"
+                                size="small"
+                                prepend-icon="mdi-account-plus"
+                                @click="inviteMembers(item)"
+                                class="invite-btn"
+                              >
+                                {{ $t('Invite Members') }}
+                              </v-btn>
+                            </td>
                           </tr>
                         </template>
                         <template v-else>
@@ -162,7 +179,6 @@
                 </v-col>
               </v-row>
             </v-window-item>
-
             <v-window-item value="proposed-projects">
               <v-row v-if="loading">
                 <v-col>
@@ -181,7 +197,7 @@
                     >
                       <template v-slot:body="{ items }">
                         <template v-if="items.length > 0">
-                          <tr v-for="item in items" :key="item._id" @click="viewProject(item)" class="cursor-pointer">
+                          <tr v-for="item in items" :key="item._id" @click="viewProjectProposal(item)" class="cursor-pointer">
                             <td>{{ item.projectName }}</td>
                             <td>{{ item.experienceInfo }}</td>
                             <td>
@@ -194,6 +210,7 @@
                               </v-chip>
                             </td>
                             <td>{{ formatDate(item.updatedAt) }}</td>
+                            <td></td>
                           </tr>
                         </template>
                         <template v-else>
@@ -212,6 +229,7 @@
           </v-window>
         </v-container>
       </div>
+
     </template>
   </v-container>
 </template>
@@ -234,7 +252,8 @@ export default {
         { title: this.$t('Project Name'), align: "start", key: "projectName", sortable: true },
         { title: this.$t('Experience'), key: "experienceInfo", sortable: false },
         { title: this.$t('Status'), key: "status", sortable: true },
-        { title: this.$t('Last Updated'), key: "updatedAt", sortable: true }
+        { title: this.$t('Last Updated'), key: "updatedAt", sortable: true },
+        { title: this.$t(''), key: "actions", sortable: false, align: "center" }
       ],
     };
   },
@@ -297,7 +316,7 @@ export default {
     proposeNewProject() {
       this.$router.push({ name: 'proposeProject' });
     },
-    viewProject(project) {
+    viewProjectProposal(project) {
       if (!project?._id) {
         console.error('Invalid project data:', project);
         toast.error(this.$t("Error processing project data"), {
@@ -307,6 +326,28 @@ export default {
       }
       this.loggedInUserStore.navigationData = { projectID: project._id };
       this.$router.push({ name: 'editProjectProposal' });
+    },
+    inviteMembers(project) {
+      if (!project?._id) {
+        console.error('Invalid project data:', project);
+        toast.error(this.$t("Error processing project data"), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        });
+        return;
+      }
+      this.loggedInUserStore.navigationData = { projectID: project._id };
+      this.$router.push({ name: 'inviteProjectMembers', params: { id: project._id } });
+    },
+    viewProject(project) {
+      if (!project?._id) {
+        console.error('Invalid project data:', project);
+        toast.error(this.$t("Error processing project data"), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        });
+        return;
+      }
+      this.loggedInUserStore.navigationData = { projectID: project._id };
+      this.$router.push({ name: 'editProject' });
     },
     formatDate(dateString) {
       if (!dateString) return '';
@@ -365,5 +406,8 @@ export default {
 }
 .v-data-table .v-data-table__tbody tr td[colspan] {
   text-align: center;
+}
+.invite-btn {
+  white-space: nowrap;
 }
 </style>
