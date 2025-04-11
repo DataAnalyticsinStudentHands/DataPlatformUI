@@ -317,6 +317,58 @@
             </template>
           </v-banner>
           
+          <!-- Invite Code Section -->
+          <v-card variant="outlined" class="mb-4">
+            <v-card-text>
+              <v-row class="d-flex">
+                <v-col cols="12" sm="7">
+                  <span class="text-subtitle-2 font-weight-medium">{{ $t('Share this invite code') }}</span>
+                  <div class="text-caption text-grey-darken-1 mt-1">
+                    {{ $t('Anyone with this code can join your project') }}
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="5" class="d-flex align-self-center">
+                  <div class="d-flex align-center w-100">
+                    <v-text-field
+                      v-model="inviteCode"
+                      readonly
+                      variant="outlined"
+                      density="compact"
+                      bg-color="grey-lighten-4"
+                      hide-details
+                      class="flex-grow-1 mr-2"
+                    ></v-text-field>
+                    <v-btn
+                      color="#c8102e"
+                      variant="tonal"
+                      size="small"
+                      @click="copyInviteCode"
+                      :title="$t('Copy code')"
+                      class="mr-2"
+                      height="40"
+                    >
+                      <v-icon>mdi-content-copy</v-icon>
+                    </v-btn>
+                    <v-btn
+                      color="grey-darken-1"
+                      variant="tonal"
+                      size="small"
+                      @click="showRegenerateConfirmation = true"
+                      :title="$t('Generate new code')"
+                      height="40"
+                    >
+                      <v-icon>mdi-refresh</v-icon>
+                    </v-btn>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+          
+          <v-divider class="mb-4"></v-divider>
+          
+          <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite members directly') }}</div>
+          
           <!-- Search Bar with Counter -->
           <v-row class="mb-2">
             <v-col cols="12" sm="8">
@@ -330,7 +382,7 @@
                 hide-details
               ></v-text-field>
             </v-col>
-            <v-col cols="12" sm="4" class="d-flex align-center">
+            <v-col cols="12" sm="4" class="d-flex align-self-center">
               <v-badge
                 :content="selectedUsers.length.toString()"
                 :color="selectedUsers.length > 0 ? '#c8102e' : 'grey'"
@@ -406,6 +458,35 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+
+      <!-- Regenerate Confirmation Dialog -->
+      <v-dialog v-model="showRegenerateConfirmation" max-width="450px">
+        <v-card>
+          <v-card-title class="text-subtitle-1 px-4 pt-4">
+            {{ $t('Generate new invite code?') }}
+          </v-card-title>
+          <v-card-text class="px-4 pb-2">
+            <p>{{ $t('This will invalidate the current code. Anyone who has not used the current code will need the new one.') }}</p>
+          </v-card-text>
+          <v-card-actions class="px-4 pb-4">
+            <v-spacer></v-spacer>
+            <v-btn
+              variant="text"
+              color="grey-darken-1"
+              @click="showRegenerateConfirmation = false"
+            >
+              {{ $t('Cancel') }}
+            </v-btn>
+            <v-btn
+              color="#c8102e"
+              variant="tonal"
+              @click="regenerateInviteCode"
+            >
+              {{ $t('Generate New Code') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-dialog>
 
     <!-- Invitation Success Dialog -->
@@ -506,7 +587,9 @@ export default {
         "humanity",
         "social impact"
       ],
-      selectedTags: []
+      selectedTags: [],
+      inviteCode: this.generateInviteCode(), // Generate a code when the component loads
+      showRegenerateConfirmation: false,
     };
   },
   computed: {
@@ -1016,7 +1099,42 @@ export default {
       this.invitingUsers = false;
       this.inviteDialog = false;
       this.inviteSuccessDialog = true;
-    }
+    },
+    generateInviteCode() {
+      // This is a simple example - you might want to get this code from your backend instead
+      return 'PRJ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    },
+
+    copyInviteCode() {
+      navigator.clipboard.writeText(this.inviteCode)
+        .then(() => {
+          // Show a toast notification
+          toast.info(this.$t("Copied to clipboard!"), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--update',
+            multiple: false
+          });
+        })
+        .catch(err => {
+          console.error('Failed to copy code: ', err);
+          toast.error(this.$t("Failed to copy code"), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--error',
+            multiple: false
+          });
+        });
+    },
+
+    regenerateInviteCode() {
+      // Generate a new invite code
+      this.inviteCode = this.generateInviteCode();
+      
+      // Close the confirmation dialog
+      this.showRegenerateConfirmation = false;
+      
+      // Show a success notification
+      this.$emit('show-notification', this.$t('New invite code generated'));
+    },
   }
 };
 </script>
