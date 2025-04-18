@@ -1066,41 +1066,46 @@ export default {
         const user = useLoggedInUserStore();
         let token = user.token;
         
-        // In a real implementation, this would be an API call to leave the project
-        // For now, we'll just simulate it with a timeout
+        // Call the API endpoint to leave the project
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/leave`;
         
-        console.log(`User ${user.userId} is leaving project ${this.projectData._id}`);
-        
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await axios.post(apiURL, {
+          projectId: this.projectData._id
+        }, { headers: { token } });
         
         // Close the dialog
         this.leaveProjectDialog = false;
         
-        // Show success message
-        toast.info(this.$t("You have left the project successfully."), {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--info',
-          multiple: false
-        });
-        
-        // Navigate back to projects list
+        // Set navigation data for toast message on redirect
         user.navigationData = {
           toastType: 'info',
-          toastMessage: 'You have left the project.',
+          toastMessage: 'You have successfully left the project.',
           toastPosition: 'top-right',
-          toastCSS: 'Toastify__toast--info'
+          toastCSS: 'Toastify__toast--update'
         };
         
+        // Navigate back to projects list
         this.$router.push({ name: 'studentProjects' });
         
       } catch (error) {
         console.error("Error leaving project:", error);
-        toast.error(this.$t("Error leaving the project. Please try again later."), {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: false
-        });
+        
+        // Check for specific error messages from the API
+        if (error.response && error.response.data) {
+          const errorMsg = error.response.data.error || error.response.data.title || "Error leaving the project. Please try again later.";
+          toast.error(this.$t(errorMsg), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          });
+        } else {
+          // Generic error message
+          toast.error(this.$t("Error leaving the project. Please try again later."), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          });
+        }
       } finally {
         this.leavingProject = false;
       }
