@@ -77,8 +77,9 @@
                       class="text-white"
                       prepend-icon="mdi-account-group"
                       elevation="2"
+                      @click="joinProject"
                     >
-                      {{ $t('Join an Existing Project') }}
+                      {{ $t('Join a Project') }}
                     </v-btn>
                   </div>
                 </template>
@@ -117,6 +118,16 @@
                 class="ml-4"
               >
                 {{ $t('Propose New Project') }}
+              </v-btn>
+
+              <v-btn
+                @click="joinProject"
+                elevation="1"
+                prepend-icon="mdi-account-group"
+                color="#c8102e"
+                class="ml-4"
+              >
+                {{ $t('Join a Project') }}
               </v-btn>
             </v-col>
           </v-row>
@@ -231,6 +242,25 @@
       </div>
 
     </template>
+
+    <!-- Invite Members Dialog -->
+    <invite-members-dialog
+      v-model="inviteDialog"
+      :project-id="projectData._id"
+      :project-name="projectData.name"
+      :experience-instance-name="projectData.experienceInstanceName"
+      @members-invited="handleMembersInvited"
+    />
+
+    <!-- Join-Project Dialog -->
+    <join-project-dialog
+      v-model="joinDialog"
+      @join="handleJoinWithCode"
+    />
+
+
+
+
   </v-container>
 </template>
 
@@ -238,9 +268,15 @@
 import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
+import JoinProjectDialog from '@/components/reusable/JoinProjectDialog.vue';
 
 export default {
   name: "ProjectsMain",
+  components: {
+    InviteMembersDialog,
+    JoinProjectDialog
+  },
   data() {
     return {
       introStep: 0, // from 0 to 5
@@ -255,6 +291,14 @@ export default {
         { title: this.$t('Last Updated'), key: "updatedAt", sortable: true },
         { title: this.$t(''), key: "actions", sortable: false, align: "center" }
       ],
+      inviteDialog: false,
+      projectData: {
+        _id: '',
+        name: '',
+        experienceInstanceName: ''
+      },
+      projectMembers: [],
+      joinDialog: false,
     };
   },
   setup() {
@@ -331,12 +375,71 @@ export default {
       if (!project?._id) {
         console.error('Invalid project data:', project);
         toast.error(this.$t("Error processing project data"), {
-          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+          position: 'top-right', 
+          toastClassName: 'Toastify__toast--delete', 
+          multiple: false
         });
         return;
       }
-      this.loggedInUserStore.navigationData = { projectID: project._id };
-      this.$router.push({ name: 'inviteProjectMembers', params: { id: project._id } });
+
+      // Set only the minimal required data for the invite dialog
+      this.projectData = {
+        _id: project._id,
+        name: project.projectName,
+        experienceInstanceName: project.experienceInfo || this.$t('Not assigned')
+      };
+      
+      // Open the invite dialog - the dialog will fetch its own data
+      this.inviteDialog = true;
+    },
+
+
+    // method to fetch project members
+    async fetchProjectMembers(projectId) {
+      try {
+        // In a real implementation, you would make an API call here
+        // Example:
+        // const user = this.loggedInUserStore;
+        // let token = user.token;
+        // const response = await axios.get(`${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}/members`, 
+        //   { headers: { token } }
+        // );
+        // this.projectMembers = response.data.map(member => ({
+        //   id: member.id,
+        //   name: member.name,
+        //   email: member.email,
+        //   role: member.role,
+        //   isOwner: member.isOwner,
+        //   joinDate: new Date(member.joinDate)
+        // }));
+        
+        // For now, use mock data in the correct format expected by InviteMembersDialog
+        this.projectMembers = [
+          {
+            id: 'usr001',
+            name: 'John Doe',
+            email: 'john.doe@example.com',
+            role: 'Owner',
+            isOwner: true,
+            joinDate: new Date('2023-01-15')
+          },
+          {
+            id: 'usr002',
+            name: 'Jane Smith',
+            email: 'jane.smith@example.com',
+            role: 'Member',
+            isOwner: false,
+            joinDate: new Date('2023-02-20')
+          }
+        ];
+      } catch (error) {
+        console.error("Error fetching project members:", error);
+        toast.error(this.$t("Error loading project members. Using existing data."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+      } 
     },
     viewProject(project) {
       if (!project?._id) {
@@ -373,7 +476,34 @@ export default {
         case 'Under Review': return 'white';
         default: return 'black';
       }
-    }
+    },
+    handleMembersInvited(invitedUsers) {
+      // Just handle the result - no need to manage the members list in the parent
+      console.log('Users invited to project:', this.projectData.name);
+      console.log('Invited users:', invitedUsers);
+      
+      // Show a success message
+      toast.success(this.$t("Members successfully invited to the project!"), {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--update',
+        multiple: false
+      });
+      
+      // Optionally refresh project data if needed
+      // this.fetchProjects();
+    },
+    joinProject() {
+      // console.log can stay if you like:
+      console.log('Join a Project button clicked');
+      // open our dialog
+      this.joinDialog = true;
+    },
+
+    handleJoinWithCode(code) {
+      console.log('User entered invitation code:', code);
+      // TODO: call API, refresh projects, show toast, etc.
+    },
+
   }
 };
 </script>
@@ -410,4 +540,14 @@ export default {
 .invite-btn {
   white-space: nowrap;
 }
+
+.dialog-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dialog-header {
+  background: linear-gradient(135deg, #c8102e, #ff5252);
+}
+
 </style>
