@@ -182,8 +182,6 @@
           </v-card-title>
           <v-card-text>
             {{ $t('Are you sure you want to cancel this project proposal? This action cannot be undone.') }}
-            <br><br>
-            <strong>{{ $t('Project Name') }}:</strong> {{ projectData.name }}
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>

@@ -902,16 +902,16 @@ export default {
       this.projectMembers = [
         {
           id: 'usr001',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
+          name: 'John Smith',
+          email: 'john.smith@example.com',
           role: 'Owner',
           isOwner: true,
           joinDate: new Date('2023-01-15')
         },
         {
           id: 'usr002',
-          name: 'Jane Smith',
-          email: 'jane.smith@example.com',
+          name: 'Jane White',
+          email: 'jane.white@example.com',
           role: 'Member',
           isOwner: false,
           joinDate: new Date('2023-02-20')
