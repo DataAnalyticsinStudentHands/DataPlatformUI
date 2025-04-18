@@ -57,6 +57,7 @@
                     <v-icon>mdi-content-copy</v-icon>
                   </v-btn>
                   <v-btn
+                    v-if="isProjectOwner"
                     color="grey-darken-1"
                     variant="tonal"
                     size="small"
@@ -224,6 +225,7 @@
 <script>
 import { toast } from 'vue3-toastify';
 import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
   name: "InviteMembersDialog",
@@ -248,6 +250,10 @@ export default {
       type: String,
       default: ''
     }
+  },
+  setup() {
+    const loggedInUserStore = useLoggedInUserStore();
+    return { loggedInUserStore };
   },
   data() {
     return {
@@ -277,7 +283,17 @@ export default {
       set(value) {
         this.$emit('update:modelValue', value);
       }
-    }
+    },
+    isProjectOwner() {
+      // Get current user ID from store
+      const currentUserId = this.loggedInUserStore.userId;
+      
+      // Find the owner in project members
+      const ownerMember = this.projectMembers.find(member => member.isOwner === true);
+      
+      // Return true if current user is the owner
+      return ownerMember && ownerMember.id === currentUserId;
+    },
   },
   watch: {
     modelValue(newVal) {
@@ -292,16 +308,44 @@ export default {
       // Reset search and selection
       this.searchQuery = '';
       this.selectedUsers = [];
-      
-      // Generate invite code if none exists
-      if (!this.inviteCode) {
-        this.inviteCode = this.generateInviteCode();
-      }
-      
+
+      // Always fetch the current code from the backend
+      await this.fetchInviteCode();
+      // ───────────────────────────────────
+
       // Load project members first, then available users
       await this.fetchProjectMembers();
       await this.loadAvailableUsers();
     },
+
+    async fetchInviteCode() {
+      try {
+        // 1) Grab the JWT the same way you do everywhere else
+        //    (Pinia's state is reactive; usually it's just loggedInUserStore.token)
+        const token = this.loggedInUserStore.token;
+        if (!token) throw new Error('missing auth token');
+
+        // 2) API base already has /studentSideData; route itself is /projects/invite-code
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
+
+        // 3) Axios will serialize `params` into ?projectId=abc123
+        const { data } = await axios.get(apiURL, {
+          params : { projectId: this.projectId },
+          headers: { token }               // authUser middleware expects headers.token
+        });
+
+        this.inviteCode = data.inviteCode ?? '';
+      } catch (err) {
+        console.error('Error fetching invite code:', err);
+        toast.error(this.$t('Error fetching invite code.'), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--error',
+          multiple: false
+        });
+        this.inviteCode = '';
+      }
+    },
+
     
     async fetchProjectMembers() {
       this.loadingMembers = true;
@@ -514,11 +558,6 @@ export default {
       }
     },
     
-    generateInviteCode() {
-      // Generate a random code
-      return 'PRJ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-    },
-    
     copyInviteCode() {
       navigator.clipboard.writeText(this.inviteCode)
         .then(() => {
@@ -539,20 +578,41 @@ export default {
         });
     },
     
-    regenerateInviteCode() {
-      // Generate a new invite code
-      this.inviteCode = this.generateInviteCode();
-      
-      // Close the confirmation dialog
+    async regenerateInviteCode() {
+      // disable the confirmation dialog immediately
       this.showRegenerateConfirmation = false;
-      
-      // Show a notification
-      toast.info(this.$t("New invite code generated"), {
-        position: 'top-right',
-        toastClassName: 'Toastify__toast--update',
-        multiple: false
-      });
+
+      try {
+        const token = this.loggedInUserStore.token;
+        if (!token) throw new Error('missing auth token');
+
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
+
+        // PATCH { projectId }  →  { inviteCode: 'PRJ-XXXXXX' }
+        const { data } = await axios.patch(
+          apiURL,
+          { projectId: this.projectId },
+          { headers: { token } }
+        );
+
+        // Update the UI with the freshly generated code returned by the backend
+        this.inviteCode = data.inviteCode ?? '';
+
+        toast.info(this.$t('New invite code generated'), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--update',
+          multiple: false
+        });
+      } catch (err) {
+        console.error('Error regenerating invite code:', err);
+        toast.error(this.$t('Failed to regenerate invite code'), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--error',
+          multiple: false
+        });
+      }
     },
+
     
     // Utility methods
     getRoleColor(role) {

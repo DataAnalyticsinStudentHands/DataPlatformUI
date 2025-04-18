@@ -1,626 +1,777 @@
 <template>
-    <main>
+  <v-container fluid fill-height> 
+    <!-- Loader while fetching projects -->
+    <v-row v-if="loading" class="fill-height" align="center" justify="center">
+      <v-col cols="auto">
+        <v-progress-circular indeterminate color="#c8102e" size="64"></v-progress-circular>
+      </v-col>
+    </v-row>
+
+    <!-- Content displayed only when loading is finished -->
+    <template v-else>
       <v-container>
-        <!-- Page title -->
+        <!-- Header Row -->
         <v-row>
           <v-col>
-            <p class="font-weight-black text-h6">{{ $t('Projects Management') }}</p>
+            <h1 class="text-h4 font-weight-bold">{{ $t('Projects') }}</h1>
           </v-col>
         </v-row>
-  
-        <!-- Tabs for different project views -->
-        <v-tabs v-model="activeTab" background-color="transparent" show-arrows>
-          <v-tab value="pending">{{ $t('Pending Proposals') }}</v-tab>
-          <v-tab value="approved">{{ $t('Approved Projects') }}</v-tab>
-          <v-tab value="completed">{{ $t('Completed Projects') }}</v-tab>
-        </v-tabs>
-  
-        <v-card flat class="mt-5">
-          <v-window v-model="activeTab">
-            <!-- Pending Project Proposals Tab -->
-            <v-window-item value="pending">
-              <v-row v-if="pendingProjects.length === 0">
-                <v-col>
-                  <v-alert type="info">
-                    {{ $t('No pending project proposals at this time.') }}
-                  </v-alert>
-                </v-col>
-              </v-row>
-              
-              <v-row v-else>
-                <v-col cols="12">
+
+        <!-- Filters and Actions Row -->
+        <v-row class="mb-4">
+          <v-col cols="12" class="d-flex align-center flex-wrap gap-3">
+            <!-- Search -->
+            <v-text-field
+              v-model="searchQuery"
+              :label="$t('Search projects')"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="max-width-300"
+              @update:model-value="applyFilters"
+            ></v-text-field>
+
+            <!-- Experience Filter -->
+            <v-select
+              v-model="selectedExperience"
+              :items="experienceOptions"
+              :label="$t('Experience')"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="max-width-200"
+              @update:model-value="applyFilters"
+            ></v-select>
+
+            <!-- Project Member Filter -->
+            <v-select
+              v-model="selectedMember"
+              :items="memberOptions"
+              :label="$t('Project Member')"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="max-width-200"
+              @update:model-value="applyFilters"
+            ></v-select>
+
+            <!-- Status Filter -->
+            <v-select
+              v-model="selectedStatus"
+              :items="statusOptions"
+              :label="$t('Status')"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="max-width-200"
+              @update:model-value="applyFilters"
+            ></v-select>
+
+            <!-- Clear Filters -->
+            <v-btn
+              variant="text"
+              color="#c8102e"
+              @click="clearFilters"
+              :disabled="!hasActiveFilters"
+              class="ml-2"
+            >
+              {{ $t('Clear Filters') }}
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <!-- Tabs and Tables Row -->
+        <v-row>
+          <v-col cols="12">
+            <v-card flat class="mb-4">
+              <v-tabs
+                v-model="activeTab"
+                color="#c8102e"
+                align-tabs="start"
+              >
+                <v-tab value="active-projects">{{ $t('Active Projects') }}</v-tab>
+                <v-tab value="proposals">{{ $t('Project Proposals') }} 
+                  <v-badge
+                    :content="pendingProposalsCount.toString()"
+                    :model-value="pendingProposalsCount > 0"
+                    color="#c8102e"
+                    class="ml-2"
+                  ></v-badge>
+                </v-tab>
+              </v-tabs>
+            </v-card>
+
+            <v-window v-model="activeTab">
+              <!-- Active Projects Tab -->
+              <v-window-item value="active-projects">
+                <v-card flat>
                   <v-data-table
-                    :headers="pendingProjectHeaders"
-                    :items="pendingProjects"
-                    :items-per-page="10"
-                    class="elevation-1"
+                    :headers="projectHeaders"
+                    :items="filteredActiveProjects"
+                    item-key="_id"
+                    hover
+                    class="cursor-pointer"
+                    :loading="tableLoading"
+                    :no-data-text="$t('No active projects found')"
                   >
-                    <!-- Student Name column -->
-                    <template v-slot:item.studentName="{ item }">
-                      {{ item.studentFirstName }} {{ item.studentLastName }}
+                    <template v-slot:loading>
+                      <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
                     </template>
-  
-                    <!-- Date Submitted column formatted -->
-                    <template v-slot:item.submittedDate="{ item }">
-                      {{ formatDate(item.submittedDate) }}
-                    </template>
-                    
-                    <!-- Actions column with view/approve/reject buttons -->
-                    <template v-slot:item.actions="{ item }">
-                      <div class="d-flex">
-                        <v-btn
-                          icon
-                          size="small"
-                          color="primary"
-                          class="mr-2"
-                          @click="viewProjectDetails(item)"
-                        >
-                          <v-icon>mdi-eye</v-icon>
-                          <v-tooltip activator="parent">{{ $t('View Details') }}</v-tooltip>
-                        </v-btn>
-                        
-                        <v-btn
-                          icon
-                          size="small"
-                          color="success"
-                          class="mr-2"
-                          @click="approveProject(item)"
-                        >
-                          <v-icon>mdi-check</v-icon>
-                          <v-tooltip activator="parent">{{ $t('Approve') }}</v-tooltip>
-                        </v-btn>
-                        
-                        <v-btn
-                          icon
-                          size="small"
-                          color="error"
-                          @click="rejectProject(item)"
-                        >
-                          <v-icon>mdi-close</v-icon>
-                          <v-tooltip activator="parent">{{ $t('Reject') }}</v-tooltip>
-                        </v-btn>
-                      </div>
+                    <template v-slot:body="{ items }">
+                      <tr v-for="item in items" :key="item._id" @click="viewProject(item)" class="cursor-pointer">
+                        <td>{{ item.projectName }}</td>
+                        <td>{{ item.teamLeadName }}</td>
+                        <td>{{ item.experienceInfo }}</td>
+                        <td>{{ item.teamSize }}</td>
+                        <td>
+                          <v-chip
+                            size="small"
+                            :color="getStatusColor(item.status)"
+                            :text-color="getStatusTextColor(item.status)"
+                          >
+                            {{ item.status }}
+                          </v-chip>
+                        </td>
+                        <td>{{ formatDate(item.updatedAt) }}</td>
+                        <td @click.stop>
+                          <v-btn
+                            color="#c8102e"
+                            variant="text"
+                            size="small"
+                            icon="mdi-eye"
+                            @click="viewProject(item)"
+                            v-tooltip="$t('View Details')"
+                          ></v-btn>
+                        </td>
+                      </tr>
                     </template>
                   </v-data-table>
-                </v-col>
-              </v-row>
-            </v-window-item>
-  
-            <!-- Approved Projects Tab -->
-            <v-window-item value="approved">
-              <v-row v-if="approvedProjects.length === 0">
-                <v-col>
-                  <v-alert type="info">
-                    {{ $t('No approved projects at this time.') }}
-                  </v-alert>
-                </v-col>
-              </v-row>
+                </v-card>
+              </v-window-item>
               
-              <v-row v-else>
-                <v-col cols="12">
+              <!-- Proposals Tab -->
+              <v-window-item value="proposals">
+                <v-card flat>
                   <v-data-table
-                    :headers="approvedProjectHeaders"
-                    :items="approvedProjects"
-                    :items-per-page="10"
-                    class="elevation-1"
+                    :headers="proposalHeaders"
+                    :items="filteredProposals"
+                    item-key="_id"
+                    hover
+                    class="cursor-pointer"
+                    :loading="tableLoading"
+                    :no-data-text="$t('No proposals found')"
                   >
-                    <!-- Student Name column -->
-                    <template v-slot:item.studentName="{ item }">
-                      {{ item.studentFirstName }} {{ item.studentLastName }}
+                    <template v-slot:loading>
+                      <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
                     </template>
-  
-                    <!-- Date Approved column formatted -->
-                    <template v-slot:item.approvedDate="{ item }">
-                      {{ formatDate(item.approvedDate) }}
-                    </template>
-                    
-                    <!-- Actions column with view/complete buttons -->
-                    <template v-slot:item.actions="{ item }">
-                      <div class="d-flex">
-                        <v-btn
-                          icon
-                          size="small"
-                          color="primary"
-                          class="mr-2"
-                          @click="viewProjectDetails(item)"
-                        >
-                          <v-icon>mdi-eye</v-icon>
-                          <v-tooltip activator="parent">{{ $t('View Details') }}</v-tooltip>
-                        </v-btn>
-                        
-                        <v-btn
-                          icon
-                          size="small"
-                          color="success"
-                          @click="markProjectComplete(item)"
-                        >
-                          <v-icon>mdi-check-all</v-icon>
-                          <v-tooltip activator="parent">{{ $t('Mark Complete') }}</v-tooltip>
-                        </v-btn>
-                      </div>
+                    <template v-slot:body="{ items }">
+                      <tr v-for="item in items" :key="item._id" @click="reviewProposal(item)" class="cursor-pointer">
+                        <td>{{ item.projectName }}</td>
+                        <td>{{ item.studentName }}</td>
+                        <td>{{ item.experienceInfo }}</td>
+                        <td>
+                          <v-chip
+                            size="small"
+                            :color="getStatusColor(item.status)"
+                            :text-color="getStatusTextColor(item.status)"
+                          >
+                            {{ item.status }}
+                          </v-chip>
+                        </td>
+                        <td>{{ formatDate(item.submittedDate) }}</td>
+                        <td @click.stop>
+                          <v-btn-group density="comfortable" variant="outlined">
+                            <v-btn
+                              color="#c8102e"
+                              size="small"
+                              icon="mdi-check"
+                              @click="approveProposal(item)"
+                              :disabled="item.status === 'Approved'"
+                              class="ml-auto"
+                              variant="text"
+                              v-tooltip="$t('Approve')"
+                            ></v-btn>
+                            <v-btn
+                              color="warning"
+                              size="small"
+                              icon="mdi-comment-question"
+                              @click="requestRevision(item)"
+                              :disabled="item.status === 'Approved'"
+                              variant="text"
+                              v-tooltip="$t('Request Revision')"
+                            ></v-btn>
+                            <v-btn
+                              color="error"
+                              size="small"
+                              icon="mdi-close"
+                              @click="declineProposal(item)"
+                              :disabled="item.status === 'Approved'"
+                              variant="text"
+                              v-tooltip="$t('Decline')"
+                            ></v-btn>
+                          </v-btn-group>
+                        </td>
+                      </tr>
                     </template>
                   </v-data-table>
-                </v-col>
-              </v-row>
-            </v-window-item>
-  
-            <!-- Completed Projects Tab -->
-            <v-window-item value="completed">
-              <v-row v-if="completedProjects.length === 0">
-                <v-col>
-                  <v-alert type="info">
-                    {{ $t('No completed projects at this time.') }}
-                  </v-alert>
-                </v-col>
-              </v-row>
-              
-              <v-row v-else>
-                <v-col cols="12">
-                  <v-data-table
-                    :headers="completedProjectHeaders"
-                    :items="completedProjects"
-                    :items-per-page="10"
-                    class="elevation-1"
-                  >
-                    <!-- Student Name column -->
-                    <template v-slot:item.studentName="{ item }">
-                      {{ item.studentFirstName }} {{ item.studentLastName }}
-                    </template>
-  
-                    <!-- Date Completed column formatted -->
-                    <template v-slot:item.completedDate="{ item }">
-                      {{ formatDate(item.completedDate) }}
-                    </template>
-                    
-                    <!-- Actions column with view button -->
-                    <template v-slot:item.actions="{ item }">
-                      <v-btn
-                        icon
-                        size="small"
-                        color="primary"
-                        @click="viewProjectDetails(item)"
-                      >
-                        <v-icon>mdi-eye</v-icon>
-                        <v-tooltip activator="parent">{{ $t('View Details') }}</v-tooltip>
-                      </v-btn>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
-            </v-window-item>
-          </v-window>
-        </v-card>
-  
-        <!-- Project Details Dialog -->
-        <v-dialog v-model="detailsDialog" max-width="800px">
-          <v-card v-if="selectedProject">
-            <v-card-title class="text-h6 bg-primary text-white">
-              {{ selectedProject.name }}
-            </v-card-title>
-            
-            <v-card-text class="pt-4">
-              <v-row>
-                <v-col cols="12" md="6">
-                  <p class="text-subtitle-1 font-weight-bold">{{ $t('Student') }}:</p>
-                  <p>{{ selectedProject.studentFirstName }} {{ selectedProject.studentLastName }}</p>
-                </v-col>
-                
-                <v-col cols="12" md="6">
-                  <p class="text-subtitle-1 font-weight-bold">{{ $t('Experience') }}:</p>
-                  <p>{{ selectedProject.experienceName }}</p>
-                </v-col>
-              </v-row>
-              
-              <v-row>
-                <v-col cols="12">
-                  <p class="text-subtitle-1 font-weight-bold">{{ $t('Description') }}:</p>
-                  <p>{{ selectedProject.description }}</p>
-                </v-col>
-              </v-row>
-              
-              <v-row v-if="selectedProject.tags && selectedProject.tags.length">
-                <v-col cols="12">
-                  <p class="text-subtitle-1 font-weight-bold">{{ $t('Tags') }}:</p>
-                  <div>
-                    <v-chip
-                      v-for="(tag, index) in selectedProject.tags"
-                      :key="index"
-                      class="mr-2 mb-2"
-                      color="primary"
-                      variant="outlined"
-                    >
-                      {{ tag }}
-                    </v-chip>
-                  </div>
-                </v-col>
-              </v-row>
-              
-              <v-row>
-                <v-col cols="12" md="6">
-                  <p class="text-subtitle-1 font-weight-bold">{{ $t('Status') }}:</p>
-                  <v-chip
-                    :color="getStatusColor(selectedProject.status)"
-                    class="mt-1"
-                  >
-                    {{ selectedProject.status }}
-                  </v-chip>
-                </v-col>
-                
-                <v-col cols="12" md="6">
-                  <p class="text-subtitle-1 font-weight-bold">{{ $t('Submission Date') }}:</p>
-                  <p>{{ formatDate(selectedProject.submittedDate) }}</p>
-                </v-col>
-              </v-row>
-              
-              <!-- Show feedback section if project is approved or completed -->
-              <v-row v-if="['Approved', 'Completed'].includes(selectedProject.status)">
-                <v-col cols="12">
-                  <p class="text-subtitle-1 font-weight-bold">{{ $t('Feedback') }}:</p>
-                  <p v-if="selectedProject.feedback">{{ selectedProject.feedback }}</p>
-                  <p v-else class="text-caption font-italic">{{ $t('No feedback provided') }}</p>
-                </v-col>
-              </v-row>
-            </v-card-text>
-            
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn 
-                color="primary" 
-                variant="text" 
-                @click="detailsDialog = false"
-              >
-                {{ $t('Close') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-  
-        <!-- Approval Dialog -->
-        <v-dialog v-model="approvalDialog" max-width="600px">
-          <v-card v-if="selectedProject">
-            <v-card-title class="text-h6 bg-success text-white">
-              {{ $t('Approve Project') }}
-            </v-card-title>
-            
-            <v-card-text class="pt-4">
-              <p class="mb-4">{{ $t('You are approving the following project:') }} <strong>{{ selectedProject.name }}</strong></p>
-              
-              <v-textarea
-                v-model="feedbackText"
-                :label="$t('Feedback (optional)')"
-                outlined
-                auto-grow
-              ></v-textarea>
-            </v-card-text>
-            
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn 
-                color="grey" 
-                variant="text" 
-                @click="cancelApproval"
-              >
-                {{ $t('Cancel') }}
-              </v-btn>
-              <v-btn 
-                color="success" 
-                @click="confirmApproval"
-              >
-                {{ $t('Approve') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-  
-        <!-- Rejection Dialog -->
-        <v-dialog v-model="rejectionDialog" max-width="600px">
-          <v-card v-if="selectedProject">
-            <v-card-title class="text-h6 bg-error text-white">
-              {{ $t('Reject Project') }}
-            </v-card-title>
-            
-            <v-card-text class="pt-4">
-              <p class="mb-4">{{ $t('You are rejecting the following project:') }} <strong>{{ selectedProject.name }}</strong></p>
-              
-              <v-textarea
-                v-model="feedbackText"
-                :label="$t('Feedback (required)')"
-                :rules="[v => !!v || 'Feedback is required when rejecting a project']"
-                outlined
-                auto-grow
-                required
-              ></v-textarea>
-            </v-card-text>
-            
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn 
-                color="grey" 
-                variant="text" 
-                @click="cancelRejection"
-              >
-                {{ $t('Cancel') }}
-              </v-btn>
-              <v-btn 
-                color="error" 
-                @click="confirmRejection"
-                :disabled="!feedbackText"
-              >
-                {{ $t('Reject') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-  
-        <!-- Completion Dialog -->
-        <v-dialog v-model="completionDialog" max-width="600px">
-          <v-card v-if="selectedProject">
-            <v-card-title class="text-h6 bg-primary text-white">
-              {{ $t('Mark Project as Complete') }}
-            </v-card-title>
-            
-            <v-card-text class="pt-4">
-              <p class="mb-4">{{ $t('You are marking the following project as complete:') }} <strong>{{ selectedProject.name }}</strong></p>
-              
-              <v-textarea
-                v-model="feedbackText"
-                :label="$t('Final Feedback (optional)')"
-                outlined
-                auto-grow
-              ></v-textarea>
-            </v-card-text>
-            
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn 
-                color="grey" 
-                variant="text" 
-                @click="cancelCompletion"
-              >
-                {{ $t('Cancel') }}
-              </v-btn>
-              <v-btn 
-                color="primary" 
-                @click="confirmCompletion"
-              >
-                {{ $t('Mark Complete') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+                </v-card>
+              </v-window-item>
+            </v-window>
+          </v-col>
+        </v-row>
       </v-container>
-    </main>
-  </template>
-  
-  <script>
-  import { toast } from 'vue3-toastify';
-  import axios from "axios";
-  import { useLoggedInUserStore } from "@/stored/loggedInUser";
-  
-  export default {
-    name: "ProjectsMain",
-    data() {
-      return {
-        activeTab: 'pending',
-        pendingProjects: [],
-        approvedProjects: [],
-        completedProjects: [],
-        pendingProjectHeaders: [
-          { title: this.$t('Project Name'), key: 'name', sortable: true },
-          { title: this.$t('Student'), key: 'studentName', sortable: true },
-          { title: this.$t('Experience'), key: 'experienceName', sortable: true },
-          { title: this.$t('Date Submitted'), key: 'submittedDate', sortable: true },
-          { title: this.$t('Actions'), key: 'actions', sortable: false }
-        ],
-        approvedProjectHeaders: [
-          { title: this.$t('Project Name'), key: 'name', sortable: true },
-          { title: this.$t('Student'), key: 'studentName', sortable: true },
-          { title: this.$t('Experience'), key: 'experienceName', sortable: true },
-          { title: this.$t('Date Approved'), key: 'approvedDate', sortable: true },
-          { title: this.$t('Actions'), key: 'actions', sortable: false }
-        ],
-        completedProjectHeaders: [
-          { title: this.$t('Project Name'), key: 'name', sortable: true },
-          { title: this.$t('Student'), key: 'studentName', sortable: true },
-          { title: this.$t('Experience'), key: 'experienceName', sortable: true },
-          { title: this.$t('Date Completed'), key: 'completedDate', sortable: true },
-          { title: this.$t('Actions'), key: 'actions', sortable: false }
-        ],
-        selectedProject: null,
-        detailsDialog: false,
-        approvalDialog: false,
-        rejectionDialog: false,
-        completionDialog: false,
-        feedbackText: ''
-      };
+    </template>
+
+    <!-- Feedback Dialog -->
+    <v-dialog v-model="feedbackDialog" max-width="600px">
+      <v-card class="dialog-card">
+        <v-card-title class="dialog-header text-white pa-4">
+          {{ feedbackTitle }}
+        </v-card-title>
+        <v-card-text class="pa-4">
+          <v-textarea
+            v-model="feedbackText"
+            :label="$t('Feedback to student')"
+            rows="5"
+            auto-grow
+            variant="outlined"
+            class="mt-4"
+          ></v-textarea>
+        </v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn
+            color="grey-darken-1"
+            variant="text"
+            @click="feedbackDialog = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+          <v-btn
+            color="#c8102e"
+            @click="submitFeedback"
+          >
+            {{ $t('Submit') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Project Template Dialog -->
+    <v-dialog v-model="templateDialog" max-width="600px">
+      <v-card class="dialog-card">
+        <v-card-title class="dialog-header text-white pa-4">
+          {{ $t('Create Project Template') }}
+        </v-card-title>
+        <v-card-text class="pa-4">
+          <v-text-field
+            v-model="templateName"
+            :label="$t('Template Name')"
+            variant="outlined"
+            class="mt-4"
+          ></v-text-field>
+          <v-textarea
+            v-model="templateDescription"
+            :label="$t('Template Description')"
+            rows="4"
+            auto-grow
+            variant="outlined"
+          ></v-textarea>
+          <v-select
+            v-model="templateExperience"
+            :items="experienceOptions"
+            :label="$t('Associated Experience')"
+            variant="outlined"
+          ></v-select>
+        </v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn
+            color="grey-darken-1"
+            variant="text"
+            @click="templateDialog = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+          <v-btn
+            color="#c8102e"
+            @click="saveTemplate"
+          >
+            {{ $t('Save Template') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+  </v-container>
+</template>
+
+<script>
+import { toast } from 'vue3-toastify';
+import axios from "axios";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
+export default {
+  name: "InstructorProjectsMain",
+  data() {
+    return {
+      activeTab: "active-projects",
+      loading: false,
+      tableLoading: false,
+      
+      // Project data
+      proposals: [],
+      activeProjects: [],
+      
+      // Filters
+      searchQuery: '',
+      selectedExperience: '',
+      selectedStatus: '',
+      selectedMember: '',
+      
+      // Filter options
+      experienceOptions: [],
+      memberOptions: [
+        { title: 'All Members', value: '' }
+      ],
+      statusOptions: [
+        { title: 'All Statuses', value: '' },
+        { title: 'Proposed', value: 'Proposed' },
+        { title: 'Under Review', value: 'Under Review' },
+        { title: 'Approved', value: 'Approved' },
+        { title: 'Needs Revision', value: 'Needs Revision' },
+        { title: 'Active', value: 'Active' },
+        { title: 'In Progress', value: 'In Progress' },
+        { title: 'Completed', value: 'Completed' }
+      ],
+      
+      // Table headers
+      proposalHeaders: [
+        { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
+        { title: this.$t('Student'), key: 'studentName', sortable: true },
+        { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
+        { title: this.$t('Status'), key: 'status', sortable: true },
+        { title: this.$t('Submitted Date'), key: 'submittedDate', sortable: true },
+        { title: this.$t('Actions'), key: 'actions', sortable: false, align: 'end' }
+      ],
+      projectHeaders: [
+        { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
+        { title: this.$t('Team Lead'), key: 'teamLeadName', sortable: true },
+        { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
+        { title: this.$t('Team Size'), key: 'teamSize', sortable: true },
+        { title: this.$t('Status'), key: 'status', sortable: true },
+        { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true },
+        { title: this.$t('Actions'), key: 'actions', sortable: false, align: 'end' }
+      ],
+      
+      // Feedback dialog
+      feedbackDialog: false,
+      feedbackTitle: '',
+      feedbackText: '',
+      selectedProjectId: null,
+      feedbackAction: null,
+      
+      // Template dialog
+      templateDialog: false,
+      templateName: '',
+      templateDescription: '',
+      templateExperience: '',
+    };
+  },
+  setup() {
+    const loggedInUserStore = useLoggedInUserStore();
+    return { loggedInUserStore };
+  },
+  computed: {
+    pendingProposalsCount() {
+      return this.proposals.filter(p => p.status === 'Proposed' || p.status === 'Under Review').length;
     },
-    mounted() {
-      // Fetch projects when component is mounted
-      this.fetchProjects();
+    filteredProposals() {
+      return this.filterProjects(this.proposals);
     },
-    methods: {
-      fetchProjects() {
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/`;
-        
-        axios.get(apiURL, { headers: { token } })
-          .then((resp) => {
-            // Process and categorize projects by status
-            const projects = resp.data;
-            
-            this.pendingProjects = projects.filter(project => project.status === 'Pending');
-            this.approvedProjects = projects.filter(project => project.status === 'Approved');
-            this.completedProjects = projects.filter(project => project.status === 'Completed');
-          })
-          .catch((error) => {
-            console.error("Error fetching projects:", error);
-            toast.error(this.$t("Error loading projects. Please try again later."), {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--delete',
-              multiple: false
-            });
-          });
-      },
-      formatDate(dateString) {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        }).format(date);
-      },
-      getStatusColor(status) {
-        const statusColors = {
-          'Pending': 'warning',
-          'Approved': 'success',
-          'Rejected': 'error',
-          'Completed': 'info'
-        };
-        return statusColors[status] || 'primary';
-      },
-      viewProjectDetails(project) {
-        this.selectedProject = project;
-        this.detailsDialog = true;
-      },
-      approveProject(project) {
-        this.selectedProject = project;
-        this.feedbackText = '';
-        this.approvalDialog = true;
-      },
-      rejectProject(project) {
-        this.selectedProject = project;
-        this.feedbackText = '';
-        this.rejectionDialog = true;
-      },
-      markProjectComplete(project) {
-        this.selectedProject = project;
-        this.feedbackText = '';
-        this.completionDialog = true;
-      },
-      cancelApproval() {
-        this.approvalDialog = false;
-        this.selectedProject = null;
-        this.feedbackText = '';
-      },
-      cancelRejection() {
-        this.rejectionDialog = false;
-        this.selectedProject = null;
-        this.feedbackText = '';
-      },
-      cancelCompletion() {
-        this.completionDialog = false;
-        this.selectedProject = null;
-        this.feedbackText = '';
-      },
-      confirmApproval() {
-        if (!this.selectedProject) return;
-        
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/${this.selectedProject._id}/approve`;
-        
-        const payload = {
-          feedback: this.feedbackText
-        };
-        
-        axios.post(apiURL, payload, { headers: { token } })
-          .then(() => {
-            toast.success(this.$t("Project approved successfully"), {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--create',
-              multiple: false
-            });
-            
-            // Close dialog and refresh projects
-            this.approvalDialog = false;
-            this.selectedProject = null;
-            this.feedbackText = '';
-            this.fetchProjects();
-          })
-          .catch((error) => {
-            console.error("Error approving project:", error);
-            toast.error(this.$t("Error approving project. Please try again."), {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--delete',
-              multiple: false
-            });
-          });
-      },
-      confirmRejection() {
-        if (!this.selectedProject || !this.feedbackText) return;
-        
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/${this.selectedProject._id}/reject`;
-        
-        const payload = {
-          feedback: this.feedbackText
-        };
-        
-        axios.post(apiURL, payload, { headers: { token } })
-          .then(() => {
-            toast.success(this.$t("Project rejected with feedback"), {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--create',
-              multiple: false
-            });
-            
-            // Close dialog and refresh projects
-            this.rejectionDialog = false;
-            this.selectedProject = null;
-            this.feedbackText = '';
-            this.fetchProjects();
-          })
-          .catch((error) => {
-            console.error("Error rejecting project:", error);
-            toast.error(this.$t("Error rejecting project. Please try again."), {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--delete',
-              multiple: false
-            });
-          });
-      },
-      confirmCompletion() {
-        if (!this.selectedProject) return;
-        
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/${this.selectedProject._id}/complete`;
-        
-        const payload = {
-          feedback: this.feedbackText
-        };
-        
-        axios.post(apiURL, payload, { headers: { token } })
-          .then(() => {
-            toast.success(this.$t("Project marked as complete"), {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--create',
-              multiple: false
-            });
-            
-            // Close dialog and refresh projects
-            this.completionDialog = false;
-            this.selectedProject = null;
-            this.feedbackText = '';
-            this.fetchProjects();
-          })
-          .catch((error) => {
-            console.error("Error completing project:", error);
-            toast.error(this.$t("Error marking project as complete. Please try again."), {
-              position: 'top-right',
-              toastClassName: 'Toastify__toast--delete',
-              multiple: false
-            });
-          });
-      }
+    filteredActiveProjects() {
+      return this.filterProjects(this.activeProjects);
+    },
+    hasActiveFilters() {
+      return this.searchQuery || this.selectedExperience || this.selectedStatus;
     }
-  };
-  </script>
-  
-  <style scoped>
-  .v-data-table {
-    width: 100%;
+  },
+  async mounted() {
+    await this.fetchProjects();
+    await this.fetchExperiences();
+    
+    const loggedInUserStore = useLoggedInUserStore();
+    if (loggedInUserStore.navigationData?.toastType) {
+      toast[loggedInUserStore.navigationData.toastType](this.$t(loggedInUserStore.navigationData.toastMessage), {
+        position: loggedInUserStore.navigationData.toastPosition,
+        toastClassName: loggedInUserStore.navigationData.toastCSS
+      });
+      loggedInUserStore.navigationData = null;
+    }
+  },
+  methods: {
+    // Fetching data
+    async fetchProjects() {
+      this.loading = true;
+      this.tableLoading = true;
+      try {
+        const user = this.loggedInUserStore;
+        let token = user.token;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/instructor/projects`; 
+        
+        console.log('Fetching projects for instructor:', user.userId);
+        const response = await axios.get(apiURL, { headers: { token } });
+        
+        if (response.data && response.data.projects) {
+          const projects = response.data.projects.map(project => {
+            const experienceInfo = project.experiences?.length > 0 
+              ? project.experiences[0].experienceName
+              : this.$t('Not assigned');
+              
+            // Add teamSize property for active projects
+            const teamSize = project.members?.length || 1;
+            
+            // Add team lead name
+            const teamLeadName = project.members?.find(m => m.isOwner)?.name || project.createdBy?.name || this.$t('Unknown');
+            
+            // Add student name for proposals
+            const studentName = project.createdBy?.name || this.$t('Unknown');
+            
+            // Add submitted date for proposals
+            const submittedDate = project.createdAt;
+            
+            return { 
+              ...project, 
+              experienceInfo, 
+              teamSize, 
+              teamLeadName, 
+              studentName, 
+              submittedDate 
+            };
+          });
+          
+          this.proposals = projects.filter(p => ['Proposed', 'Under Review', 'Needs Revision'].includes(p.status));
+          this.activeProjects = projects.filter(p => ['Active', 'In Progress', 'Completed', 'Approved'].includes(p.status));
+          
+          // Extract unique project members for the member filter
+          const allMembers = new Set();
+          projects.forEach(project => {
+            if (project.members && project.members.length > 0) {
+              project.members.forEach(member => {
+                if (member.name) {
+                  allMembers.add(member.name);
+                }
+              });
+            }
+            // Also add the creator/student name
+            if (project.createdBy?.name) {
+              allMembers.add(project.createdBy.name);
+            }
+          });
+          
+          this.memberOptions = [
+            { title: 'All Members', value: '' },
+            ...Array.from(allMembers).sort().map(name => ({
+              title: name,
+              value: name
+            }))
+          ];
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        toast.error(this.$t("Error loading projects. Please try again later."), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        });
+      } finally {
+        this.loading = false;
+        this.tableLoading = false;
+      }
+    },
+    
+    async fetchExperiences() {
+      try {
+        const user = this.loggedInUserStore;
+        let token = user.token;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences`;
+        
+        const response = await axios.get(apiURL, { headers: { token } });
+        
+        if (response.data && response.data.experiences) {
+          this.experienceOptions = [
+            { title: 'All Experiences', value: '' },
+            ...response.data.experiences.map(exp => ({
+              title: exp.experienceName,
+              value: exp._id
+            }))
+          ];
+        }
+      } catch (error) {
+        console.error("Error fetching experiences:", error);
+        this.experienceOptions = [{ title: 'All Experiences', value: '' }];
+      }
+    },
+    
+    // Filtering
+    filterProjects(projects) {
+      return projects.filter(project => {
+        // Search query filter
+        const searchLower = this.searchQuery.toLowerCase();
+        const matchesSearch = !this.searchQuery || 
+          project.projectName.toLowerCase().includes(searchLower) ||
+          (project.studentName && project.studentName.toLowerCase().includes(searchLower)) ||
+          (project.teamLeadName && project.teamLeadName.toLowerCase().includes(searchLower));
+        
+        // Experience filter
+        const matchesExperience = !this.selectedExperience || 
+          project.experienceId === this.selectedExperience;
+        
+        // Status filter
+        const matchesStatus = !this.selectedStatus || 
+          project.status === this.selectedStatus;
+        
+        return matchesSearch && matchesExperience && matchesStatus;
+      });
+    },
+    
+    applyFilters() {
+      this.tableLoading = true;
+      // Simulate filtering delay
+      setTimeout(() => {
+        this.tableLoading = false;
+      }, 500);
+    },
+    
+    clearFilters() {
+      this.searchQuery = '';
+      this.selectedExperience = '';
+      this.selectedStatus = '';
+      this.applyFilters();
+    },
+    
+    // Project actions
+    reviewProposal(project) {
+      if (!project?._id) {
+        console.error('Invalid project data:', project);
+        toast.error(this.$t("Error processing project data"), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        });
+        return;
+      }
+      
+      this.loggedInUserStore.navigationData = { projectID: project._id };
+      this.$router.push({ name: 'reviewProjectProposal' });
+    },
+    
+    viewProject(project) {
+      if (!project?._id) {
+        console.error('Invalid project data:', project);
+        toast.error(this.$t("Error processing project data"), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        });
+        return;
+      }
+      
+      this.loggedInUserStore.navigationData = { projectID: project._id };
+      this.$router.push({ name: 'editProject' });
+    },
+    
+    // Proposal actions
+    approveProposal(project) {
+      this.selectedProjectId = project._id;
+      this.feedbackTitle = this.$t('Approve Project Proposal');
+      this.feedbackText = '';
+      this.feedbackAction = 'approve';
+      this.feedbackDialog = true;
+    },
+    
+    requestRevision(project) {
+      this.selectedProjectId = project._id;
+      this.feedbackTitle = this.$t('Request Revision');
+      this.feedbackText = '';
+      this.feedbackAction = 'revision';
+      this.feedbackDialog = true;
+    },
+    
+    declineProposal(project) {
+      this.selectedProjectId = project._id;
+      this.feedbackTitle = this.$t('Decline Project Proposal');
+      this.feedbackText = '';
+      this.feedbackAction = 'decline';
+      this.feedbackDialog = true;
+    },
+    
+    async submitFeedback() {
+      if (!this.feedbackText.trim()) {
+        toast.warning(this.$t("Please provide feedback for the student."), {
+          position: 'top-right', toastClassName: 'Toastify__toast--warning', multiple: false
+        });
+        return;
+      }
+      
+      this.feedbackDialog = false;
+      
+      try {
+        const user = this.loggedInUserStore;
+        let token = user.token;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/${this.selectedProjectId}/feedback`;
+        
+        const response = await axios.post(apiURL, {
+          feedback: this.feedbackText,
+          action: this.feedbackAction
+        }, { headers: { token } });
+        
+        if (response.data && response.data.success) {
+          // Show success message
+          let message = '';
+          switch (this.feedbackAction) {
+            case 'approve':
+              message = this.$t("Project proposal approved successfully!");
+              break;
+            case 'revision':
+              message = this.$t("Revision requested successfully!");
+              break;
+            case 'decline':
+              message = this.$t("Project proposal declined.");
+              break;
+          }
+          
+          toast.success(message, {
+            position: 'top-right', toastClassName: 'Toastify__toast--update', multiple: false
+          });
+          
+          // Refresh projects
+          await this.fetchProjects();
+        }
+      } catch (error) {
+        console.error("Error submitting feedback:", error);
+        toast.error(this.$t("Error submitting feedback. Please try again."), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        });
+      }
+    },
+    
+    // Template actions
+    createProjectTemplate() {
+      this.templateName = '';
+      this.templateDescription = '';
+      this.templateExperience = '';
+      this.templateDialog = true;
+    },
+    
+    async saveTemplate() {
+      if (!this.templateName.trim()) {
+        toast.warning(this.$t("Please provide a template name."), {
+          position: 'top-right', toastClassName: 'Toastify__toast--warning', multiple: false
+        });
+        return;
+      }
+      
+      this.templateDialog = false;
+      
+      try {
+        const user = this.loggedInUserStore;
+        let token = user.token;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/project-templates`;
+        
+        const response = await axios.post(apiURL, {
+          name: this.templateName,
+          description: this.templateDescription,
+          experienceId: this.templateExperience
+        }, { headers: { token } });
+        
+        if (response.data && response.data.success) {
+          toast.success(this.$t("Project template created successfully!"), {
+            position: 'top-right', toastClassName: 'Toastify__toast--update', multiple: false
+          });
+        }
+      } catch (error) {
+        console.error("Error creating template:", error);
+        toast.error(this.$t("Error creating template. Please try again."), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        });
+      }
+    },
+    
+    // Export action
+    exportProjectData() {
+      toast.info(this.$t("Exporting project data..."), {
+        position: 'top-right', toastClassName: 'Toastify__toast--info', multiple: false
+      });
+      
+      // Placeholder for actual export functionality
+      setTimeout(() => {
+        toast.success(this.$t("Project data exported successfully!"), {
+          position: 'top-right', toastClassName: 'Toastify__toast--update', multiple: false
+        });
+      }, 1500);
+    },
+    
+    // Utility methods
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+    },
+    
+    getStatusColor(status) {
+      switch (status) {
+        case 'Active': return 'green';
+        case 'In Progress': return 'blue';
+        case 'Completed': return 'success';
+        case 'Approved': return 'green-darken-1';
+        case 'Proposed': return 'amber-darken-1';
+        case 'Under Review': return 'blue-darken-1';
+        case 'Needs Revision': return 'orange';
+        default: return 'grey';
+      }
+    },
+    
+    getStatusTextColor(status) {
+      return 'white'; // All our status chips have white text
+    }
   }
-  </style>
+};
+</script>
+
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.max-width-300 {
+  max-width: 300px;
+}
+
+.max-width-200 {
+  max-width: 200px;
+}
+
+.dialog-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dialog-header {
+  background: linear-gradient(135deg, #c8102e, #ff5252);
+}
+
+.v-data-table .v-data-table__tbody tr td[colspan] {
+  text-align: center;
+}
+
+/* For v-tooltip support */
+[v-tooltip] {
+  position: relative;
+}
+
+/* Fix table row hover effect */
+.v-data-table .v-data-table__tbody tr:hover td {
+  background-color: rgba(200, 16, 46, 0.05);
+}
+
+/* Gap utility class */
+.gap-3 {
+  gap: 12px;
+}
+</style>

@@ -499,9 +499,32 @@ export default {
       this.joinDialog = true;
     },
 
-    handleJoinWithCode(code) {
-      console.log('User entered invitation code:', code);
-      // TODO: call API, refresh projects, show toast, etc.
+    // Add this method to your projectsMain.vue component
+    async handleJoinWithCode(joinData) {
+      // Log the join data for debugging (optional)
+      console.log('Project join successful:', joinData);
+      
+      // The dialog already shows a success toast, so we don't need to show another one
+      
+      // Refresh the projects list to include the newly joined project
+      await this.fetchProjects();
+      
+      // You might want to highlight the newly joined project or scroll to it
+      // This example uses setTimeout to wait for the DOM to update after fetchProjects
+      if (joinData && joinData.projectId) {
+        setTimeout(() => {
+          const projectElement = document.getElementById(`project-${joinData.projectId}`);
+          if (projectElement) {
+            projectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Optionally highlight the element
+            projectElement.classList.add('newly-joined');
+            // Remove highlight after a few seconds
+            setTimeout(() => {
+              projectElement.classList.remove('newly-joined');
+            }, 3000);
+          }
+        }, 300);
+      }
     },
 
   }
@@ -548,6 +571,41 @@ export default {
 
 .dialog-header {
   background: linear-gradient(135deg, #c8102e, #ff5252);
+}
+
+/* Add this to your projectsMain.vue <style> section */
+.newly-joined {
+  animation: highlight-pulse 3s ease-in-out;
+}
+
+@keyframes highlight-pulse {
+  0% { 
+    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.4);
+    transform: scale(1);
+  }
+  
+  25% { 
+    box-shadow: 0 0 0 10px rgba(200, 16, 46, 0.0);
+    transform: scale(1.02);
+    background-color: rgba(200, 16, 46, 0.1);
+  }
+  
+  50% { 
+    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.0);
+    transform: scale(1);
+  }
+  
+  75% { 
+    box-shadow: 0 0 0 5px rgba(200, 16, 46, 0.0);
+    transform: scale(1.01);
+    background-color: rgba(200, 16, 46, 0.05);
+  }
+  
+  100% { 
+    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.0);
+    transform: scale(1);
+    background-color: transparent;
+  }
 }
 
 </style>

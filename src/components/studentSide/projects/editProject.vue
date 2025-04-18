@@ -45,6 +45,7 @@
                     :error-messages="nameErrorMessages"
                     :rules="nameRules"
                     :counter="100"
+                    :readonly="!isProjectOwner"
                     required
                     outlined
                     class="mb-4"
@@ -59,6 +60,7 @@
                     :error-messages="descriptionErrorMessages"
                     :rules="descriptionRules"
                     :counter="5000"
+                    :readonly="!isProjectOwner"
                     auto-grow
                     rows="5"
                     outlined
@@ -83,6 +85,7 @@
                     column
                     multiple
                     selected-class="red-chip"
+                    :disabled="!isProjectOwner"
                   >
                     <v-chip
                       v-for="(tag, index) in availableTags"
@@ -250,24 +253,39 @@
             </v-col>
           </v-row>
           
-          <!-- Original buttons positioning -->
+          <!-- Buttons positioning -->
           <v-row class="mt-6">
-            <v-col class="d-flex align-center">
-              <!-- Back button -->
-              <v-btn 
-                @click="$router.back()"
-                class="mr-4"
-              >
-                {{ $t('Back') }}
-              </v-btn>
+            <v-col class="d-flex align-center justify-space-between">
+              <div>
+                <!-- Back button -->
+                <v-btn 
+                  @click="$router.back()"
+                  class="mr-4"
+                >
+                  {{ $t('Back') }}
+                </v-btn>
 
-              <!-- Update project button -->
+                <!-- Update project button - only for owners -->
+                <v-btn 
+                  v-if="isProjectOwner"
+                  type="submit"
+                  color="primary"
+                  class="update-btn"
+                  :loading="updateLoading"
+                >
+                  {{ $t('Update Project') }}
+                </v-btn>
+              </div>
+              
+              <!-- Leave Project button - only for non-owners -->
               <v-btn 
-                type="submit"
-                class="update-btn"
-                :loading="updateLoading"
+                v-if="!isProjectOwner"
+                color="error"
+                variant="outlined"
+                prepend-icon="mdi-exit-to-app"
+                @click="openLeaveProjectDialog"
               >
-                {{ $t('Update Project') }}
+                {{ $t('Leave Project') }}
               </v-btn>
             </v-col>
           </v-row>
@@ -298,7 +316,6 @@
       :project-id="projectData._id"
       :project-name="projectData.name"
       :experience-instance-name="projectData.experienceInstanceName"
-      :project-members="projectMembers"
       @members-invited="handleMembersInvited"
     />
 
@@ -325,6 +342,37 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Leave Project Confirmation Dialog -->
+    <v-dialog v-model="leaveProjectDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="bg-error-lighten-5 py-4">
+          <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
+          {{ $t('Leave Project?') }}
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <p>{{ $t('Are you sure you want to leave this project?') }}</p>
+          <p>{{ $t('You will lose access to project resources and will need to be invited again to rejoin.') }}</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="text"
+            @click="leaveProjectDialog = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="text"
+            @click="leaveProject"
+            :loading="leavingProject"
+          >
+            {{ $t('Leave') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </main>
 </template>
 
@@ -346,8 +394,10 @@ export default {
       submitDialog: false,
       inviteDialog: false,
       inviteSuccessDialog: false,
+      leaveProjectDialog: false,
       updateLoading: false,
       invitingUsers: false,
+      leavingProject: false,
       isLoadingExperiences: false,
       loadingUsers: false,
       projectData: {
@@ -410,6 +460,15 @@ export default {
     };
   },
   computed: {
+    // Determine if current user is the project owner
+    isProjectOwner() {
+      const user = useLoggedInUserStore();
+      return this.projectData && 
+             this.projectMembers && 
+             this.projectMembers.some(member => 
+               member.isOwner && member.id === user.userId
+             );
+    },
     isNameInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.name || 
@@ -542,6 +601,11 @@ export default {
           
           // Set project members
           this.projectMembers = project.members || [];
+          
+          // Check if the current user is the project owner
+          console.log("Current user ID:", user.userId);
+          console.log("Project members:", this.projectMembers);
+          console.log("Is current user the owner:", this.isProjectOwner);
         } else {
           console.error('No project found in response');
           toast.error(this.$t("Error loading project data"), {
@@ -592,6 +656,16 @@ export default {
     },
     
     async openSubmitDialog() {
+      // Only project owners should be able to update
+      if (!this.isProjectOwner) {
+        toast.error(this.$t("You don't have permission to update this project."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
+      
       this.formSubmitted = true;
       
       // Check for validation errors with the enhanced validation
@@ -628,6 +702,16 @@ export default {
     },
     
     async updateProject() {
+      // Double-check that the user is the project owner
+      if (!this.isProjectOwner) {
+        toast.error(this.$t("You don't have permission to update this project."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
+      
       this.updateLoading = true;
       
       try {
@@ -716,24 +800,27 @@ export default {
     // Methods for invitation functionality
     initializeMockData() {
       // Mock data for current project members
-      this.projectMembers = [
-        {
-          id: 'usr001',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          role: 'Owner',
-          isOwner: true,
-          joinDate: new Date('2023-01-15')
-        },
-        {
-          id: 'usr002',
-          name: 'Jane Smith',
-          email: 'jane.smith@example.com',
-          role: 'Member',
-          isOwner: false,
-          joinDate: new Date('2023-02-20')
-        }
-      ];
+      if (this.projectMembers.length === 0) {
+        const user = useLoggedInUserStore();
+        this.projectMembers = [
+          {
+            id: user.userId,  // Set current user as owner for testing
+            name: `${user.firstName} ${user.lastName}`,
+            email: user.email || "user@example.com",
+            role: 'Owner',
+            isOwner: true,
+            joinDate: new Date('2023-01-15')
+          },
+          {
+            id: 'usr002',
+            name: 'Jane Smith',
+            email: 'jane.smith@example.com',
+            role: 'Member',
+            isOwner: false,
+            joinDate: new Date('2023-02-20')
+          }
+        ];
+      }
       
       // Mock data for available users to invite
       this.availableUsers = [
@@ -943,6 +1030,16 @@ export default {
     },
 
     regenerateInviteCode() {
+      // Only allow project owners to regenerate the invite code
+      if (!this.isProjectOwner) {
+        toast.error(this.$t("You don't have permission to regenerate the invite code."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
+      
       // Generate a new invite code
       this.inviteCode = this.generateInviteCode();
       
@@ -956,6 +1053,57 @@ export default {
     handleMembersInvited(invitedUsers) {
       // Handle the newly invited users
       console.log('Users invited:', invitedUsers);
+    },
+
+    openLeaveProjectDialog() {
+      this.leaveProjectDialog = true;
+    },
+
+    async leaveProject() {
+      this.leavingProject = true;
+      
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        
+        // In a real implementation, this would be an API call to leave the project
+        // For now, we'll just simulate it with a timeout
+        
+        console.log(`User ${user.userId} is leaving project ${this.projectData._id}`);
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Close the dialog
+        this.leaveProjectDialog = false;
+        
+        // Show success message
+        toast.info(this.$t("You have left the project successfully."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--info',
+          multiple: false
+        });
+        
+        // Navigate back to projects list
+        user.navigationData = {
+          toastType: 'info',
+          toastMessage: 'You have left the project.',
+          toastPosition: 'top-right',
+          toastCSS: 'Toastify__toast--info'
+        };
+        
+        this.$router.push({ name: 'studentProjects' });
+        
+      } catch (error) {
+        console.error("Error leaving project:", error);
+        toast.error(this.$t("Error leaving the project. Please try again later."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+      } finally {
+        this.leavingProject = false;
+      }
     }
   }
 };
