@@ -225,7 +225,7 @@
               </v-card>
               
               <!-- Project activity timeline card -->
-              <v-card class="mb-6">
+              <!-- <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-clock-outline" class="mr-2"></v-icon>
                   {{ $t('Project Timeline') }}
@@ -249,7 +249,7 @@
                     </v-timeline-item>
                   </v-timeline>
                 </v-card-text>
-              </v-card>
+              </v-card> -->
             </v-col>
           </v-row>
           
