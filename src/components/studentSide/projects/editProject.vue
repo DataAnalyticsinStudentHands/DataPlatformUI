@@ -45,6 +45,7 @@
                     :error-messages="nameErrorMessages"
                     :rules="nameRules"
                     :counter="100"
+                    :readonly="!isProjectOwner"
                     required
                     outlined
                     class="mb-4"
@@ -59,6 +60,7 @@
                     :error-messages="descriptionErrorMessages"
                     :rules="descriptionRules"
                     :counter="5000"
+                    :readonly="!isProjectOwner"
                     auto-grow
                     rows="5"
                     outlined
@@ -83,6 +85,7 @@
                     column
                     multiple
                     selected-class="red-chip"
+                    :disabled="!isProjectOwner"
                   >
                     <v-chip
                       v-for="(tag, index) in availableTags"
@@ -222,7 +225,7 @@
               </v-card>
               
               <!-- Project activity timeline card -->
-              <v-card class="mb-6">
+              <!-- <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-clock-outline" class="mr-2"></v-icon>
                   {{ $t('Project Timeline') }}
@@ -246,28 +249,43 @@
                     </v-timeline-item>
                   </v-timeline>
                 </v-card-text>
-              </v-card>
+              </v-card> -->
             </v-col>
           </v-row>
           
-          <!-- Original buttons positioning -->
+          <!-- Buttons positioning -->
           <v-row class="mt-6">
-            <v-col class="d-flex align-center">
-              <!-- Back button -->
-              <v-btn 
-                @click="$router.back()"
-                class="mr-4"
-              >
-                {{ $t('Back') }}
-              </v-btn>
+            <v-col class="d-flex align-center justify-space-between">
+              <div>
+                <!-- Back button -->
+                <v-btn 
+                  @click="$router.back()"
+                  class="mr-4"
+                >
+                  {{ $t('Back') }}
+                </v-btn>
 
-              <!-- Update project button -->
+                <!-- Update project button - only for owners -->
+                <v-btn 
+                  v-if="isProjectOwner"
+                  type="submit"
+                  color="primary"
+                  class="update-btn"
+                  :loading="updateLoading"
+                >
+                  {{ $t('Update Project') }}
+                </v-btn>
+              </div>
+              
+              <!-- Leave Project button - only for non-owners -->
               <v-btn 
-                type="submit"
-                class="update-btn"
-                :loading="updateLoading"
+                v-if="!isProjectOwner"
+                color="error"
+                variant="outlined"
+                prepend-icon="mdi-exit-to-app"
+                @click="openLeaveProjectDialog"
               >
-                {{ $t('Update Project') }}
+                {{ $t('Leave Project') }}
               </v-btn>
             </v-col>
           </v-row>
@@ -293,201 +311,13 @@
     </v-dialog>
 
     <!-- Invite Members Dialog -->
-    <v-dialog v-model="inviteDialog" max-width="800px">
-      <v-card>
-        <v-toolbar color="#c8102e" dark>
-          <v-toolbar-title>{{ $t('Invite Members to Project') }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="inviteDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        
-        <v-card-text class="py-4">
-          <v-banner
-            lines="one"
-            icon="mdi-information-outline"
-            class="mb-4"
-          >
-            <template v-slot:text>
-              <div class="d-flex align-center">
-                {{ $t('You can only invite users who are enrolled in') }}
-                <strong class="ml-1">{{ projectData.experienceInstanceName }}</strong>
-              </div>
-            </template>
-          </v-banner>
-          
-          <!-- Invite Code Section -->
-          <v-card variant="outlined" class="mb-4">
-            <v-card-text>
-              <v-row class="d-flex">
-                <v-col cols="12" sm="7">
-                  <span class="text-subtitle-2 font-weight-medium">{{ $t('Share this invite code') }}</span>
-                  <div class="text-caption text-grey-darken-1 mt-1">
-                    {{ $t('Anyone with this code can join your project') }}
-                  </div>
-                </v-col>
-                <v-col cols="12" sm="5" class="d-flex align-self-center">
-                  <div class="d-flex align-center w-100">
-                    <v-text-field
-                      v-model="inviteCode"
-                      readonly
-                      variant="outlined"
-                      density="compact"
-                      bg-color="grey-lighten-4"
-                      hide-details
-                      class="flex-grow-1 mr-2"
-                    ></v-text-field>
-                    <v-btn
-                      color="#c8102e"
-                      variant="tonal"
-                      size="small"
-                      @click="copyInviteCode"
-                      :title="$t('Copy code')"
-                      class="mr-2"
-                      height="40"
-                    >
-                      <v-icon>mdi-content-copy</v-icon>
-                    </v-btn>
-                    <v-btn
-                      color="grey-darken-1"
-                      variant="tonal"
-                      size="small"
-                      @click="showRegenerateConfirmation = true"
-                      :title="$t('Generate new code')"
-                      height="40"
-                    >
-                      <v-icon>mdi-refresh</v-icon>
-                    </v-btn>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-          
-          <v-divider class="mb-4"></v-divider>
-          
-          <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite members directly') }}</div>
-          
-          <!-- Search Bar with Counter -->
-          <v-row class="mb-2">
-            <v-col cols="12" sm="8">
-              <v-text-field
-                v-model="searchQuery"
-                :label="$t('Search by name or email')"
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                density="comfortable"
-                @update:model-value="filterUsers"
-                hide-details
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="4" class="d-flex align-self-center">
-              <v-badge
-                :content="selectedUsers.length.toString()"
-                :color="selectedUsers.length > 0 ? '#c8102e' : 'grey'"
-                location="top start"
-                offset-x="15"
-                offset-y="15"
-              >
-                <v-btn
-                  :color="selectedUsers.length > 0 ? '#c8102e' : 'grey'"
-                  :disabled="selectedUsers.length === 0"
-                  variant="tonal"
-                  block
-                  @click="clearSelection"
-                  prepend-icon="mdi-account-multiple"
-                >
-                  {{ selectedUsers.length === 0 ? $t('No users selected') : $t('users selected') }}
-                </v-btn>
-              </v-badge>
-            </v-col>
-          </v-row>
-          
-          <!-- Users Table with Custom Styling -->
-          <v-card variant="outlined" class="mt-2">
-            <v-data-table
-              v-model="selectedUsers"
-              :headers="userHeaders"
-              :items="filteredUsers"
-              :loading="loadingUsers"
-              item-value="id"
-              density="comfortable"
-              hover
-              show-select
-            >
-              <template v-slot:item.name="{ item }">
-                <div class="py-1">
-                  {{ item.firstName }} {{ item.lastName }}
-                </div>
-              </template>
-              <template v-slot:item.invitation="{ item }">
-                <v-chip
-                  v-if="item.invitationStatus"
-                  size="small"
-                  :color="item.invitationStatus === 'Invited' ? 'blue' : 'grey-lighten-1'"
-                >
-                  {{ item.invitationStatus }}
-                </v-chip>
-                <span v-else></span>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-card-text>
-        
-        <v-divider></v-divider>
-        
-        <v-card-actions class="pa-4">
-          <v-btn
-            variant="text"
-            color="grey-darken-1"
-            @click="inviteDialog = false"
-          >
-            {{ $t('Cancel') }}
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn
-            :disabled="selectedUsers.length === 0"
-            :loading="invitingUsers"
-            color="#c8102e"
-            variant="elevated"
-            @click="sendInvitations"
-          >
-            <v-icon class="mr-1">mdi-send</v-icon>
-            {{ $t('Send Invitations') }} ({{ selectedUsers.length }})
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-
-      <!-- Regenerate Confirmation Dialog -->
-      <v-dialog v-model="showRegenerateConfirmation" max-width="450px">
-        <v-card>
-          <v-card-title class="text-subtitle-1 px-4 pt-4">
-            {{ $t('Generate new invite code?') }}
-          </v-card-title>
-          <v-card-text class="px-4 pb-2">
-            <p>{{ $t('This will invalidate the current code. Anyone who has not used the current code will need the new one.') }}</p>
-          </v-card-text>
-          <v-card-actions class="px-4 pb-4">
-            <v-spacer></v-spacer>
-            <v-btn
-              variant="text"
-              color="grey-darken-1"
-              @click="showRegenerateConfirmation = false"
-            >
-              {{ $t('Cancel') }}
-            </v-btn>
-            <v-btn
-              color="#c8102e"
-              variant="tonal"
-              @click="regenerateInviteCode"
-            >
-              {{ $t('Generate New Code') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-dialog>
+    <invite-members-dialog
+      v-model="inviteDialog"
+      :project-id="projectData._id"
+      :project-name="projectData.name"
+      :experience-instance-name="projectData.experienceInstanceName"
+      @members-invited="handleMembersInvited"
+    />
 
     <!-- Invitation Success Dialog -->
     <v-dialog v-model="inviteSuccessDialog" max-width="500px">
@@ -512,6 +342,37 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Leave Project Confirmation Dialog -->
+    <v-dialog v-model="leaveProjectDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="bg-error-lighten-5 py-4">
+          <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
+          {{ $t('Leave Project?') }}
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <p>{{ $t('Are you sure you want to leave this project?') }}</p>
+          <p>{{ $t('You will lose access to project resources and will need to be invited again to rejoin.') }}</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="text"
+            @click="leaveProjectDialog = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="text"
+            @click="leaveProject"
+            :loading="leavingProject"
+          >
+            {{ $t('Leave') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </main>
 </template>
 
@@ -519,9 +380,13 @@
 import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
 
 export default {
   name: "EditProject",
+  components: {
+    InviteMembersDialog
+  },
   data() {
     return {
       loading: true,
@@ -529,8 +394,10 @@ export default {
       submitDialog: false,
       inviteDialog: false,
       inviteSuccessDialog: false,
+      leaveProjectDialog: false,
       updateLoading: false,
       invitingUsers: false,
+      leavingProject: false,
       isLoadingExperiences: false,
       loadingUsers: false,
       projectData: {
@@ -593,6 +460,15 @@ export default {
     };
   },
   computed: {
+    // Determine if current user is the project owner
+    isProjectOwner() {
+      const user = useLoggedInUserStore();
+      return this.projectData && 
+             this.projectMembers && 
+             this.projectMembers.some(member => 
+               member.isOwner && member.id === user.userId
+             );
+    },
     isNameInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.name || 
@@ -725,6 +601,11 @@ export default {
           
           // Set project members
           this.projectMembers = project.members || [];
+          
+          // Check if the current user is the project owner
+          console.log("Current user ID:", user.userId);
+          console.log("Project members:", this.projectMembers);
+          console.log("Is current user the owner:", this.isProjectOwner);
         } else {
           console.error('No project found in response');
           toast.error(this.$t("Error loading project data"), {
@@ -775,6 +656,16 @@ export default {
     },
     
     async openSubmitDialog() {
+      // Only project owners should be able to update
+      if (!this.isProjectOwner) {
+        toast.error(this.$t("You don't have permission to update this project."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
+      
       this.formSubmitted = true;
       
       // Check for validation errors with the enhanced validation
@@ -811,6 +702,16 @@ export default {
     },
     
     async updateProject() {
+      // Double-check that the user is the project owner
+      if (!this.isProjectOwner) {
+        toast.error(this.$t("You don't have permission to update this project."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
+      
       this.updateLoading = true;
       
       try {
@@ -899,24 +800,27 @@ export default {
     // Methods for invitation functionality
     initializeMockData() {
       // Mock data for current project members
-      this.projectMembers = [
-        {
-          id: 'usr001',
-          name: 'John Smith',
-          email: 'john.smith@example.com',
-          role: 'Owner',
-          isOwner: true,
-          joinDate: new Date('2023-01-15')
-        },
-        {
-          id: 'usr002',
-          name: 'Jane White',
-          email: 'jane.white@example.com',
-          role: 'Member',
-          isOwner: false,
-          joinDate: new Date('2023-02-20')
-        }
-      ];
+      if (this.projectMembers.length === 0) {
+        const user = useLoggedInUserStore();
+        this.projectMembers = [
+          {
+            id: user.userId,  // Set current user as owner for testing
+            name: `${user.firstName} ${user.lastName}`,
+            email: user.email || "user@example.com",
+            role: 'Owner',
+            isOwner: true,
+            joinDate: new Date('2023-01-15')
+          },
+          {
+            id: 'usr002',
+            name: 'Jane Smith',
+            email: 'jane.smith@example.com',
+            role: 'Member',
+            isOwner: false,
+            joinDate: new Date('2023-02-20')
+          }
+        ];
+      }
       
       // Mock data for available users to invite
       this.availableUsers = [
@@ -1126,6 +1030,16 @@ export default {
     },
 
     regenerateInviteCode() {
+      // Only allow project owners to regenerate the invite code
+      if (!this.isProjectOwner) {
+        toast.error(this.$t("You don't have permission to regenerate the invite code."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
+      
       // Generate a new invite code
       this.inviteCode = this.generateInviteCode();
       
@@ -1135,6 +1049,67 @@ export default {
       // Show a success notification
       this.$emit('show-notification', this.$t('New invite code generated'));
     },
+
+    handleMembersInvited(invitedUsers) {
+      // Handle the newly invited users
+      console.log('Users invited:', invitedUsers);
+    },
+
+    openLeaveProjectDialog() {
+      this.leaveProjectDialog = true;
+    },
+
+    async leaveProject() {
+      this.leavingProject = true;
+      
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        
+        // Call the API endpoint to leave the project
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/leave`;
+        
+        const response = await axios.post(apiURL, {
+          projectId: this.projectData._id
+        }, { headers: { token } });
+        
+        // Close the dialog
+        this.leaveProjectDialog = false;
+        
+        // Set navigation data for toast message on redirect
+        user.navigationData = {
+          toastType: 'info',
+          toastMessage: 'You have successfully left the project.',
+          toastPosition: 'top-right',
+          toastCSS: 'Toastify__toast--update'
+        };
+        
+        // Navigate back to projects list
+        this.$router.push({ name: 'studentProjects' });
+        
+      } catch (error) {
+        console.error("Error leaving project:", error);
+        
+        // Check for specific error messages from the API
+        if (error.response && error.response.data) {
+          const errorMsg = error.response.data.error || error.response.data.title || "Error leaving the project. Please try again later.";
+          toast.error(this.$t(errorMsg), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          });
+        } else {
+          // Generic error message
+          toast.error(this.$t("Error leaving the project. Please try again later."), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          });
+        }
+      } finally {
+        this.leavingProject = false;
+      }
+    }
   }
 };
 </script>
