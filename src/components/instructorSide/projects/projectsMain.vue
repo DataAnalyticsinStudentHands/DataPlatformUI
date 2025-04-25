@@ -17,69 +17,6 @@
           </v-col>
         </v-row>
 
-        <!-- Filters and Actions Row -->
-        <v-row class="mb-4">
-          <v-col cols="12" class="d-flex align-center flex-wrap gap-3">
-            <!-- Search -->
-            <v-text-field
-              v-model="searchQuery"
-              :label="$t('Search projects')"
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="max-width-300"
-              @update:model-value="applyFilters"
-            ></v-text-field>
-
-            <!-- Experience Filter -->
-            <v-select
-              v-model="selectedExperience"
-              :items="experienceOptions"
-              :label="$t('Experience')"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="max-width-200"
-              @update:model-value="applyFilters"
-            ></v-select>
-
-            <!-- Project Member Filter -->
-            <v-select
-              v-model="selectedMember"
-              :items="memberOptions"
-              :label="$t('Project Member')"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="max-width-200"
-              @update:model-value="applyFilters"
-            ></v-select>
-
-            <!-- Status Filter -->
-            <v-select
-              v-model="selectedStatus"
-              :items="statusOptions"
-              :label="$t('Status')"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="max-width-200"
-              @update:model-value="applyFilters"
-            ></v-select>
-
-            <!-- Clear Filters -->
-            <v-btn
-              variant="text"
-              color="#c8102e"
-              @click="clearFilters"
-              :disabled="!hasActiveFilters"
-              class="ml-2"
-            >
-              {{ $t('Clear Filters') }}
-            </v-btn>
-          </v-col>
-        </v-row>
 
         <!-- Tabs and Tables Row -->
         <v-row>
@@ -101,6 +38,71 @@
                 </v-tab>
               </v-tabs>
             </v-card>
+
+
+            <!-- Filters and Actions Row -->
+            <v-row class="mb-4">
+              <v-col cols="12" class="d-flex align-center flex-wrap gap-3">
+                <!-- Search -->
+                <v-text-field
+                  v-model="searchQuery"
+                  :label="$t('Search projects')"
+                  prepend-inner-icon="mdi-magnify"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  class="max-width-300"
+                  @update:model-value="applyFilters"
+                ></v-text-field>
+
+                <!-- Experience Filter -->
+                <v-select
+                  v-model="selectedExperience"
+                  :items="experienceOptions"
+                  :label="$t('Experience')"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  class="max-width-200"
+                  @update:model-value="applyFilters"
+                ></v-select>
+
+                <!-- Project Member Filter -->
+                <v-select
+                  v-model="selectedMember"
+                  :items="memberOptions"
+                  :label="$t('Project Member')"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  class="max-width-200"
+                  @update:model-value="applyFilters"
+                ></v-select>
+
+                <!-- Status Filter -->
+                <v-select
+                  v-model="selectedStatus"
+                  :items="statusOptions"
+                  :label="$t('Status')"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  class="max-width-200"
+                  @update:model-value="applyFilters"
+                ></v-select>
+
+                <!-- Clear Filters -->
+                <!-- <v-btn
+                  variant="text"
+                  color="#c8102e"
+                  @click="clearFilters"
+                  :disabled="!hasActiveFilters"
+                  class="ml-2"
+                >
+                  {{ $t('Clear Filters') }}
+                </v-btn> -->
+              </v-col>
+            </v-row>
 
             <v-window v-model="activeTab">
               <!-- Active Projects Tab -->
