@@ -27,8 +27,8 @@
 
         <template v-else>
           <v-row>
-            <!-- Main project information column -->
-            <v-col cols="12" md="8">
+            <!-- Main project information column - reduced width from md="8" to md="7" -->
+            <v-col cols="12" md="7">
               <!-- Project details card -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
@@ -167,8 +167,8 @@
               </v-card>
             </v-col>
             
-            <!-- Side panel with additional info -->
-            <v-col cols="12" md="4">
+            <!-- Side panel with additional info - increased width from md="4" to md="5" -->
+            <v-col cols="12" md="5">
               <!-- Experience & Instructor info card -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
@@ -208,48 +208,29 @@
                     </template>
                   </v-tooltip>
                   
-                  <!-- Instructor - Redesigned without avatar as requested -->
-                  <p class="font-weight-black text-h8 mb-2">
-                    {{ $t('Associated Instructor') }}
-                  </p>
-                  <v-card variant="outlined" class="pa-3 mb-3 bg-grey-lighten-5">
-                    <div>
-                      <div class="text-body-1 font-weight-medium">{{ projectData.instructorName || $t('Not Assigned') }}</div>
-                      <div class="text-caption d-flex align-center">
-                        <v-icon size="small" class="mr-1">mdi-email-outline</v-icon>
-                        {{ projectData.instructorEmail || $t('No email available') }}
+                  <!-- Instructor - Only show if instructorId exists -->
+                  <template v-if="projectData.instructorId">
+                    <p class="font-weight-black text-h8 mb-2">
+                      {{ $t('Associated Instructor') }}
+                    </p>
+                    <v-card variant="outlined" class="pa-3 mb-3 bg-grey-lighten-5">
+                      <div>
+                        <div class="text-body-1 font-weight-medium">{{ projectData.instructorName || $t('Not Assigned') }}</div>
+                        <div class="text-caption d-flex align-center">
+                          <v-icon size="small" class="mr-1">mdi-email-outline</v-icon>
+                          {{ projectData.instructorEmail || $t('No email available') }}
+                        </div>
                       </div>
-                    </div>
-                  </v-card>
+                    </v-card>
+                  </template>
                 </v-card-text>
               </v-card>
               
-              <!-- Project activity timeline card -->
-              <!-- <v-card class="mb-6">
-                <v-card-title class="bg-grey-lighten-4 py-3 px-4">
-                  <v-icon start icon="mdi-clock-outline" class="mr-2"></v-icon>
-                  {{ $t('Project Timeline') }}
-                </v-card-title>
-                
-                <v-card-text class="pa-4">
-                  <v-timeline density="compact" class="mb-0">
-                    <v-timeline-item
-                      dot-color="#c8102e"
-                      size="small"
-                    >
-                      <div class="text-caption text-grey mb-1">{{ new Date().toLocaleDateString() }}</div>
-                      <div class="text-body-2">{{ $t('Project updated') }}</div>
-                    </v-timeline-item>
-                    <v-timeline-item
-                      dot-color="grey"
-                      size="small"
-                    >
-                      <div class="text-caption text-grey mb-1">{{ new Date(new Date().setDate(new Date().getDate() - 5)).toLocaleDateString() }}</div>
-                      <div class="text-body-2">{{ $t('Project created') }}</div>
-                    </v-timeline-item>
-                  </v-timeline>
-                </v-card-text>
-              </v-card> -->
+              <!-- Project Documents card - Moved from left column to right column -->
+              <ProjectDocuments 
+                :project-id="projectData._id"
+                :is-project-owner="isProjectOwner"
+              />
             </v-col>
           </v-row>
           
@@ -312,6 +293,7 @@
 
     <!-- Invite Members Dialog -->
     <invite-members-dialog
+      v-if="inviteDialog && projectData._id"
       v-model="inviteDialog"
       :project-id="projectData._id"
       :project-name="projectData.name"
@@ -381,11 +363,13 @@ import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
+import ProjectDocuments from '@/components/reusable/projectDocuments.vue';
 
 export default {
   name: "EditProject",
   components: {
-    InviteMembersDialog
+    InviteMembersDialog,
+    ProjectDocuments 
   },
   data() {
     return {
