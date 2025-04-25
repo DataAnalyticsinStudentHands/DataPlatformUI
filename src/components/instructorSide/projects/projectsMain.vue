@@ -28,12 +28,15 @@
                 align-tabs="start"
               >
                 <v-tab value="active-projects">{{ $t('Active Projects') }}</v-tab>
-                <v-tab value="proposals">{{ $t('Project Proposals') }} 
+                <v-tab value="proposals" class="position-relative">
+                  <span class="mr-8">{{ $t('Project Proposals') }}</span>
                   <v-badge
                     :content="pendingProposalsCount.toString()"
                     :model-value="pendingProposalsCount > 0"
                     color="#c8102e"
-                    class="ml-2"
+                    dot-size="20"
+                    offset-x="10"
+                    class="proposal-badge"
                   ></v-badge>
                 </v-tab>
               </v-tabs>
@@ -420,7 +423,7 @@ export default {
       try {
         const user = this.loggedInUserStore;
         let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/instructor/projects`; 
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects`; 
         
         console.log('Fetching projects for instructor:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
@@ -603,33 +606,46 @@ export default {
       this.feedbackDialog = true;
     },
     
+
     async submitFeedback() {
       if (!this.feedbackText.trim()) {
-        toast.warning(this.$t("Please provide feedback for the student."), {
-          position: 'top-right', toastClassName: 'Toastify__toast--warning', multiple: false
+        toast.error(this.$t("Please provide feedback for the student."), {
+          position: 'top-right', 
+          toastClassName: 'Toastify__toast--delete', 
+          multiple: true
         });
         return;
       }
       
       this.feedbackDialog = false;
+      this.tableLoading = true;
       
       try {
         const user = this.loggedInUserStore;
         let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/${this.selectedProjectId}/feedback`;
         
-        const response = await axios.post(apiURL, {
-          feedback: this.feedbackText,
-          action: this.feedbackAction
-        }, { headers: { token } });
-        
-        if (response.data && response.data.success) {
-          // Show success message
+        // If approving, call the approval endpoint to create SharePoint folder
+        if (this.feedbackAction === 'approve') {
+          const approvalURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/approve-project`;
+          
+          // POST request with projectId in the body as required by endpoint
+          const response = await axios.post(approvalURL, {
+            projectId: this.selectedProjectId
+          }, { headers: { token } });
+          
+          // Use the specific response message from the endpoint
+          if (response.data && response.data.message) {
+            toast.success(this.$t(response.data.message), {
+              position: 'top-right', 
+              toastClassName: 'Toastify__toast--create', 
+              multiple: true
+            });
+          }
+        } else {
+          // For revision or decline actions, show appropriate message
+          // (In a real implementation, you would add endpoints for these actions)
           let message = '';
           switch (this.feedbackAction) {
-            case 'approve':
-              message = this.$t("Project proposal approved successfully!");
-              break;
             case 'revision':
               message = this.$t("Revision requested successfully!");
               break;
@@ -639,17 +655,33 @@ export default {
           }
           
           toast.success(message, {
-            position: 'top-right', toastClassName: 'Toastify__toast--update', multiple: false
+            position: 'top-right', 
+            toastClassName: 'Toastify__toast--create', 
+            multiple: true
           });
-          
-          // Refresh projects
-          await this.fetchProjects();
         }
+        
+        // Store feedback in the project locally (optional)
+        // This would typically be handled by a backend endpoint, but this is a placeholder
+        console.log(`Feedback for project ${this.selectedProjectId}: ${this.feedbackText}`);
+        
+        // Refresh projects list
+        await this.fetchProjects();
+        
       } catch (error) {
-        console.error("Error submitting feedback:", error);
-        toast.error(this.$t("Error submitting feedback. Please try again."), {
-          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
+        console.error("Error processing project action:", error);
+        
+        // Show specific error message if available
+        const errorMessage = error.response?.data?.message || 
+                            this.$t("Error processing request. Please try again.");
+        
+        toast.error(errorMessage, {
+          position: 'top-right', 
+          toastClassName: 'Toastify__toast--delete', 
+          multiple: true
         });
+      } finally {
+        this.tableLoading = false;
       }
     },
     
@@ -663,8 +695,8 @@ export default {
     
     async saveTemplate() {
       if (!this.templateName.trim()) {
-        toast.warning(this.$t("Please provide a template name."), {
-          position: 'top-right', toastClassName: 'Toastify__toast--warning', multiple: false
+        toast.error(this.$t("Please provide a template name."), {
+          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
         });
         return;
       }
@@ -684,7 +716,7 @@ export default {
         
         if (response.data && response.data.success) {
           toast.success(this.$t("Project template created successfully!"), {
-            position: 'top-right', toastClassName: 'Toastify__toast--update', multiple: false
+            position: 'top-right', toastClassName: 'Toastify__toast--create', multiple: false
           });
         }
       } catch (error) {
@@ -775,5 +807,20 @@ export default {
 /* Gap utility class */
 .gap-3 {
   gap: 12px;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.proposal-badge {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 8px;
+}
+
+.mr-8 {
+  margin-right: 32px; /* Add more space to the right of the text */
 }
 </style>

@@ -245,12 +245,14 @@
 
     <!-- Invite Members Dialog -->
     <invite-members-dialog
+      v-if="inviteDialog && projectData._id"
       v-model="inviteDialog"
       :project-id="projectData._id"
       :project-name="projectData.name"
       :experience-instance-name="projectData.experienceInstanceName"
       @members-invited="handleMembersInvited"
     />
+
 
     <!-- Join-Project Dialog -->
     <join-project-dialog
