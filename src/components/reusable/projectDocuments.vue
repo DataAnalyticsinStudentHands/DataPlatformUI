@@ -484,8 +484,10 @@ export default {
     },
     
     viewDocument(document) {
-      // Open document in a new tab
-      if (document.sharePointUrl) {
+      // Use anonymous link if available, otherwise fallback to original behavior
+      if (document.anonymousLink) {
+        window.open(document.anonymousLink, '_blank');
+      } else if (document.sharePointUrl) {
         window.open(document.sharePointUrl, '_blank');
       } else {
         this.downloadDocument(document);
