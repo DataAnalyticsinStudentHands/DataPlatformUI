@@ -150,7 +150,8 @@
         projectData: {
           name: '',
           description: '',
-          experienceInstanceId: null
+          experienceInstanceId: null,
+          tags: []
         },
         experienceInstances: [],
         experienceInstancesLoaded: false,
@@ -344,6 +345,16 @@
           this.$router.push({ name: 'studentProjects' });
         } catch (error) {
           console.error("Error submitting project proposal:", error);
+
+         // 🔄 duplicate-project (409) is new
+         if (error.response?.status === 409) {
+           toast.error(this.$t('A project for this experience already exists.'), {
+             position: 'top-right',
+             toastClassName: 'Toastify__toast--delete',
+             multiple: false
+           });
+           return;
+         }
           
           // Check for validation errors from the backend
           if (error.response && error.response.data && error.response.data.errors) {

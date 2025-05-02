@@ -10,9 +10,9 @@
                 <p class="font-weight-black text-h6 mb-0 mr-3">{{ $t('Edit Project') }}</p>
                 <p class="text-h6 text-grey-darken-1 mb-0">{{ projectData.name || $t('Untitled Project') }}</p>
               </div>
-              <div v-if="projectData.status !== 'Proposed'" class="status-badge d-inline-flex align-center px-3 py-1">
-                <v-icon size="small" :color="getStatusColor(projectData.status)" class="mr-1">mdi-circle</v-icon>
-                <span :class="`text-${getStatusColor(projectData.status)}`">{{ projectData.status }}</span>
+              <div v-if="projectData.projectStatus !== 'Proposed'" class="status-badge d-inline-flex align-center px-3 py-1">
+                <v-icon size="small" :color="getStatusColor(projectData.projectStatus)" class="mr-1">mdi-circle</v-icon>
+                <span :class="`text-${getStatusColor(projectData.projectStatus)}`">{{ projectData.projectStatus }}</span>
               </div>
             </div>
           </v-col>
@@ -393,7 +393,7 @@ export default {
         instructorId: null,
         instructorName: '',
         instructorEmail: '',
-        status: 'Proposed'
+        projectStatus: 'Proposed'  // Updated from status to projectStatus
       },
       experienceInstances: [],
       experienceInstancesLoaded: false,
@@ -438,9 +438,7 @@ export default {
         "humanity",
         "social impact"
       ],
-      selectedTags: [],
-      inviteCode: this.generateInviteCode(), // Generate a code when the component loads
-      showRegenerateConfirmation: false,
+      selectedTags: []
     };
   },
   computed: {
@@ -530,9 +528,6 @@ export default {
     // Continue with normal flow
     await this.fetchProjectData(user.navigationData.projectID);
     await this.fetchStudentExperienceInstances();
-    
-    // Initialize mock data for testing
-    this.initializeMockData();
   },
   methods: {
     async fetchProjectData(projectId) {
@@ -553,7 +548,7 @@ export default {
         
         console.log('Fetching project data for ID:', projectId);
         
-        // Use the new GET project endpoint for a single project
+        // Use the new endpoint that fetches a single project
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
         
         const response = await axios.get(apiURL, { headers: { token } });
@@ -563,20 +558,18 @@ export default {
           
           console.log('Received project data:', project);
           
-          // Set project data
+          // Set project data using the new structure
           this.projectData = {
             _id: project._id,
             name: project.projectName,
             description: project.projectDescription,
-            status: project.status,
-            experienceInstanceId: project.experiences && project.experiences.length > 0 
-              ? project.experiences[0].id 
-              : null,
-            experienceInstanceName: project.experiences && project.experiences.length > 0 
-              ? project.experiences[0].experienceName 
-              : 'Unknown Experience',
+            projectStatus: project.projectStatus,
+            // Handle the experience object (not an array anymore)
+            experienceInstanceId: project.experience ? project.experience.id : null,
+            experienceInstanceName: project.experience ? project.experience.experienceName : this.$t('Not assigned'),
+            // Handle instructor data
             instructorId: project.instructor ? project.instructor.id : null,
-            instructorName: project.instructor ? project.instructor.name : 'Not Assigned',
+            instructorName: project.instructor ? project.instructor.name : this.$t('Not assigned'),
             instructorEmail: project.instructor ? project.instructor.email : ''
           };
           
@@ -701,6 +694,7 @@ export default {
       try {
         const user = useLoggedInUserStore();
         let token = user.token;
+        // Use the same endpoint path as specified
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/update`;
         
         const projectPayload = {
@@ -754,269 +748,47 @@ export default {
     
     getStatusColor(status) {
       switch (status) {
-        case 'Active':
-          return 'green';
-        case 'In Progress':
-          return 'blue';
-        case 'Proposed':
-        case 'Pending':
-        case 'Under Review':
-          return 'orange';
-        default:
-          return 'grey';
+        case 'Active': return 'green';
+        case 'In Progress': return 'blue';
+        case 'Proposed': return 'orange';
+        case 'Archived': return 'grey';
+        default: return 'grey';
       }
     },
     
     getStatusTextColor(status) {
-      // For better contrast
-      switch (status) {
-        case 'Active':
-        case 'In Progress':
-        case 'Proposed':
-        case 'Pending':
-        case 'Under Review':
-          return 'white';
-        default:
-          return 'black';
-      }
-    },
-    
-    // Methods for invitation functionality
-    initializeMockData() {
-      // Mock data for current project members
-      if (this.projectMembers.length === 0) {
-        const user = useLoggedInUserStore();
-        this.projectMembers = [
-          {
-            id: user.userId,  // Set current user as owner for testing
-            name: `${user.firstName} ${user.lastName}`,
-            email: user.email || "user@example.com",
-            role: 'Owner',
-            isOwner: true,
-            joinDate: new Date('2023-01-15')
-          },
-          {
-            id: 'usr002',
-            name: 'Jane Smith',
-            email: 'jane.smith@example.com',
-            role: 'Member',
-            isOwner: false,
-            joinDate: new Date('2023-02-20')
-          }
-        ];
-      }
-      
-      // Mock data for available users to invite
-      this.availableUsers = [
-        {
-          id: 'usr003',
-          firstName: 'Alice',
-          lastName: 'Johnson',
-          email: 'alice.johnson@example.com',
-          role: 'Student',
-          userStatus: 'Active',
-          invitationStatus: '',
-          organizationID: ['org123']
-        },
-        {
-          id: 'usr004',
-          firstName: 'Bob',
-          lastName: 'Williams',
-          email: 'bob.williams@example.com',
-          role: 'Student',
-          userStatus: 'Active',
-          invitationStatus: 'Invited',
-          organizationID: ['org123']
-        },
-        {
-          id: 'usr005',
-          firstName: 'Carol',
-          lastName: 'Martinez',
-          email: 'carol.martinez@example.com',
-          role: 'Student',
-          userStatus: 'Active',
-          invitationStatus: '',
-          organizationID: ['org123']
-        },
-        {
-          id: 'usr006',
-          firstName: 'Dave',
-          lastName: 'Brown',
-          email: 'dave.brown@example.com',
-          role: 'Student',
-          userStatus: 'Active',
-          invitationStatus: '',
-          organizationID: ['org123']
-        },
-        {
-          id: 'usr007',
-          firstName: 'Ethan',
-          lastName: 'Garcia',
-          email: 'ethan.garcia@example.com',
-          role: 'Student',
-          userStatus: 'Pending',
-          invitationStatus: 'Invited',
-          organizationID: ['org123']
-        },
-        {
-          id: 'usr008',
-          firstName: 'Fiona',
-          lastName: 'Rodriguez',
-          email: 'fiona.rodriguez@example.com',
-          role: 'Student',
-          userStatus: 'Active',
-          invitationStatus: '',
-          organizationID: ['org123']
-        },
-        {
-          id: 'usr009',
-          firstName: 'George',
-          lastName: 'Wilson',
-          email: 'george.wilson@example.com',
-          role: 'Student',
-          userStatus: 'Active',
-          invitationStatus: '',
-          organizationID: ['org123']
-        },
-        {
-          id: 'usr010',
-          firstName: 'Hannah',
-          lastName: 'Thomas',
-          email: 'hannah.thomas@example.com',
-          role: 'Student',
-          userStatus: 'Active',
-          invitationStatus: '',
-          organizationID: ['org123']
-        }
-      ];
-      
-      // Initialize filtered users
-      this.filteredUsers = [...this.availableUsers];
+      // All statuses use white text for better contrast
+      return 'white';
     },
     
     openInviteDialog() {
       this.searchQuery = '';
       this.roleFilter = 'All Roles';
       this.selectedUsers = [];
-      this.filterUsers();
       this.inviteDialog = true;
     },
     
-    filterUsers() {
-      this.loadingUsers = true;
+    handleMembersInvited(invitedUsers) {
+      // Handle the newly invited users
+      console.log('Users invited:', invitedUsers);
       
-      // Filter by search query
-      let result = this.availableUsers.filter(user => {
-        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-        const email = user.email.toLowerCase();
-        const query = this.searchQuery.toLowerCase();
-        
-        return fullName.includes(query) || email.includes(query);
+      // Add the new members to the current list
+      if (invitedUsers && invitedUsers.length > 0) {
+        this.projectMembers = [...this.projectMembers, ...invitedUsers];
+      }
+      
+      // Show success message
+      toast.success(this.$t("Members successfully invited to the project!"), {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--update',
+        multiple: false
       });
-      
-      // Exclude users who are already members
-      const existingMemberIds = this.projectMembers.map(member => member.id);
-      result = result.filter(user => !existingMemberIds.includes(user.id));
-      
-      this.filteredUsers = result;
-      
-      // Simulate loading
-      setTimeout(() => {
-        this.loadingUsers = false;
-      }, 300);
-    },
-    
-    clearSelection() {
-      this.selectedUsers = [];
-    },
-    
-    getRoleColor(role) {
-      switch (role) {
-        case 'Student':
-          return 'green';
-        case 'Instructor':
-          return 'blue';
-        default:
-          return 'grey';
-      }
-    },
-    
-    getStatusChipColor(status) {
-      switch (status) {
-        case 'Active':
-          return 'success';
-        case 'Pending':
-          return 'warning';
-        case 'Inactive':
-          return 'error';
-        default:
-          return 'grey';
-      }
-    },
-    
-    async sendInvitations() {
-      if (this.selectedUsers.length === 0) {
-        return;
-      }
-      
-      this.invitingUsers = true;
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Get the selected user details
-      const selectedUserDetails = this.availableUsers.filter(user => 
-        this.selectedUsers.includes(user.id)
-      );
-      
-      console.log('Inviting users:', selectedUserDetails);
-      
-      // Add the invited users to the project members (for demo purposes)
-      const newMembers = selectedUserDetails.map(user => ({
-        id: user.id,
-        name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        role: 'Member',
-        isOwner: false,
-        joinDate: new Date()
-      }));
-      
-      this.projectMembers = [...this.projectMembers, ...newMembers];
-      
-      // Close the invite dialog and show success dialog
-      this.invitingUsers = false;
-      this.inviteDialog = false;
-      this.inviteSuccessDialog = true;
-    },
-    generateInviteCode() {
-      // This is a simple example - you might want to get this code from your backend instead
-      return 'PRJ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     },
 
-    copyInviteCode() {
-      navigator.clipboard.writeText(this.inviteCode)
-        .then(() => {
-          // Show a toast notification
-          toast.info(this.$t("Copied to clipboard!"), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--update',
-            multiple: false
-          });
-        })
-        .catch(err => {
-          console.error('Failed to copy code: ', err);
-          toast.error(this.$t("Failed to copy code"), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--error',
-            multiple: false
-          });
-        });
-    },
-
-    regenerateInviteCode() {
-      // Only allow project owners to regenerate the invite code
-      if (!this.isProjectOwner) {
-        toast.error(this.$t("You don't have permission to regenerate the invite code."), {
+    openLeaveProjectDialog() {
+      // Only non-owners can leave
+      if (this.isProjectOwner) {
+        toast.error(this.$t("Project owners cannot leave their projects. Transfer ownership first or archive the project."), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
           multiple: false
@@ -1024,22 +796,6 @@ export default {
         return;
       }
       
-      // Generate a new invite code
-      this.inviteCode = this.generateInviteCode();
-      
-      // Close the confirmation dialog
-      this.showRegenerateConfirmation = false;
-      
-      // Show a success notification
-      this.$emit('show-notification', this.$t('New invite code generated'));
-    },
-
-    handleMembersInvited(invitedUsers) {
-      // Handle the newly invited users
-      console.log('Users invited:', invitedUsers);
-    },
-
-    openLeaveProjectDialog() {
       this.leaveProjectDialog = true;
     },
 

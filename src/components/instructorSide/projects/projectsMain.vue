@@ -17,7 +17,6 @@
           </v-col>
         </v-row>
 
-
         <!-- Tabs and Tables Row -->
         <v-row>
           <v-col cols="12">
@@ -41,7 +40,6 @@
                 </v-tab>
               </v-tabs>
             </v-card>
-
 
             <!-- Filters and Actions Row -->
             <v-row class="mb-4">
@@ -95,7 +93,7 @@
                 ></v-select>
 
                 <!-- Clear Filters -->
-                <!-- <v-btn
+                <v-btn
                   variant="text"
                   color="#c8102e"
                   @click="clearFilters"
@@ -103,7 +101,7 @@
                   class="ml-2"
                 >
                   {{ $t('Clear Filters') }}
-                </v-btn> -->
+                </v-btn>
               </v-col>
             </v-row>
 
@@ -132,10 +130,10 @@
                         <td>
                           <v-chip
                             size="small"
-                            :color="getStatusColor(item.status)"
-                            :text-color="getStatusTextColor(item.status)"
+                            :color="getStatusColor(item.projectStatus)"
+                            :text-color="getStatusTextColor(item.projectStatus)"
                           >
-                            {{ item.status }}
+                            {{ item.projectStatus }}
                           </v-chip>
                         </td>
                         <td>{{ formatDate(item.updatedAt) }}</td>
@@ -178,10 +176,10 @@
                         <td>
                           <v-chip
                             size="small"
-                            :color="getStatusColor(item.status)"
-                            :text-color="getStatusTextColor(item.status)"
+                            :color="getStatusColor(item.projectStatus)"
+                            :text-color="getStatusTextColor(item.projectStatus)"
                           >
-                            {{ item.status }}
+                            {{ item.projectStatus }}
                           </v-chip>
                         </td>
                         <td>{{ formatDate(item.submittedDate) }}</td>
@@ -192,7 +190,7 @@
                               size="small"
                               icon="mdi-check"
                               @click="approveProposal(item)"
-                              :disabled="item.status === 'Approved'"
+                              :disabled="item.projectStatus !== 'Proposed'"
                               class="ml-auto"
                               variant="text"
                               v-tooltip="$t('Approve')"
@@ -202,7 +200,7 @@
                               size="small"
                               icon="mdi-comment-question"
                               @click="requestRevision(item)"
-                              :disabled="item.status === 'Approved'"
+                              :disabled="item.projectStatus !== 'Proposed'"
                               variant="text"
                               v-tooltip="$t('Request Revision')"
                             ></v-btn>
@@ -211,7 +209,7 @@
                               size="small"
                               icon="mdi-close"
                               @click="declineProposal(item)"
-                              :disabled="item.status === 'Approved'"
+                              :disabled="item.projectStatus !== 'Proposed'"
                               variant="text"
                               v-tooltip="$t('Decline')"
                             ></v-btn>
@@ -343,12 +341,8 @@ export default {
       statusOptions: [
         { title: 'All Statuses', value: '' },
         { title: 'Proposed', value: 'Proposed' },
-        { title: 'Under Review', value: 'Under Review' },
-        { title: 'Approved', value: 'Approved' },
-        { title: 'Needs Revision', value: 'Needs Revision' },
         { title: 'Active', value: 'Active' },
-        { title: 'In Progress', value: 'In Progress' },
-        { title: 'Completed', value: 'Completed' }
+        { title: 'Archived', value: 'Archived' }
       ],
       
       // Table headers
@@ -356,7 +350,7 @@ export default {
         { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
         { title: this.$t('Student'), key: 'studentName', sortable: true },
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
-        { title: this.$t('Status'), key: 'status', sortable: true },
+        { title: this.$t('Status'), key: 'projectStatus', sortable: true },
         { title: this.$t('Submitted Date'), key: 'submittedDate', sortable: true },
         { title: this.$t('Actions'), key: 'actions', sortable: false, align: 'end' }
       ],
@@ -365,7 +359,7 @@ export default {
         { title: this.$t('Team Lead'), key: 'teamLeadName', sortable: true },
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
         { title: this.$t('Team Size'), key: 'teamSize', sortable: true },
-        { title: this.$t('Status'), key: 'status', sortable: true },
+        { title: this.$t('Status'), key: 'projectStatus', sortable: true },
         { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true },
         { title: this.$t('Actions'), key: 'actions', sortable: false, align: 'end' }
       ],
@@ -390,7 +384,7 @@ export default {
   },
   computed: {
     pendingProposalsCount() {
-      return this.proposals.filter(p => p.status === 'Proposed' || p.status === 'Under Review').length;
+      return this.proposals.filter(p => p.projectStatus === 'Proposed').length;
     },
     filteredProposals() {
       return this.filterProjects(this.proposals);
@@ -399,7 +393,7 @@ export default {
       return this.filterProjects(this.activeProjects);
     },
     hasActiveFilters() {
-      return this.searchQuery || this.selectedExperience || this.selectedStatus;
+      return this.searchQuery || this.selectedExperience || this.selectedStatus || this.selectedMember;
     }
   },
   async mounted() {
@@ -423,6 +417,8 @@ export default {
       try {
         const user = this.loggedInUserStore;
         let token = user.token;
+        
+        // Update API URL to match backend endpoint
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects`; 
         
         console.log('Fetching projects for instructor:', user.userId);
@@ -430,15 +426,18 @@ export default {
         
         if (response.data && response.data.projects) {
           const projects = response.data.projects.map(project => {
-            const experienceInfo = project.experiences?.length > 0 
+            // Extract experience info from nested structure
+            const experienceInfo = project.experiences?.length
               ? project.experiences[0].experienceName
               : this.$t('Not assigned');
               
             // Add teamSize property for active projects
             const teamSize = project.members?.length || 1;
             
-            // Add team lead name
-            const teamLeadName = project.members?.find(m => m.isOwner)?.name || project.createdBy?.name || this.$t('Unknown');
+            // Add team lead name - check for owner in members array
+            const teamLeadName = project.members?.find(m => m.isOwner)?.name || 
+                               project.createdBy?.name || 
+                               this.$t('Unknown');
             
             // Add student name for proposals
             const studentName = project.createdBy?.name || this.$t('Unknown');
@@ -456,8 +455,9 @@ export default {
             };
           });
           
-          this.proposals = projects.filter(p => ['Proposed', 'Under Review', 'Needs Revision'].includes(p.status));
-          this.activeProjects = projects.filter(p => ['Active', 'In Progress', 'Completed', 'Approved'].includes(p.status));
+          // Filter projects by projectStatus
+          this.proposals = projects.filter(p => p.projectStatus === 'Proposed');
+          this.activeProjects = projects.filter(p => p.projectStatus === 'Active');
           
           // Extract unique project members for the member filter
           const allMembers = new Set();
@@ -529,13 +529,18 @@ export default {
         
         // Experience filter
         const matchesExperience = !this.selectedExperience || 
-          project.experienceId === this.selectedExperience;
+          project.experiences?.some(exp => exp._id === this.selectedExperience);
         
         // Status filter
         const matchesStatus = !this.selectedStatus || 
-          project.status === this.selectedStatus;
+          project.projectStatus === this.selectedStatus;
+          
+        // Member filter
+        const matchesMember = !this.selectedMember || 
+          project.members?.some(member => member.name === this.selectedMember) ||
+          project.createdBy?.name === this.selectedMember;
         
-        return matchesSearch && matchesExperience && matchesStatus;
+        return matchesSearch && matchesExperience && matchesStatus && matchesMember;
       });
     },
     
@@ -551,6 +556,7 @@ export default {
       this.searchQuery = '';
       this.selectedExperience = '';
       this.selectedStatus = '';
+      this.selectedMember = '';
       this.applyFilters();
     },
     
@@ -606,7 +612,6 @@ export default {
       this.feedbackDialog = true;
     },
     
-
     async submitFeedback() {
       if (!this.feedbackText.trim()) {
         toast.error(this.$t("Please provide feedback for the student."), {
@@ -626,6 +631,7 @@ export default {
         
         // If approving, call the approval endpoint to create SharePoint folder
         if (this.feedbackAction === 'approve') {
+          // Update API URL to match backend endpoint
           const approvalURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/approve-project`;
           
           // POST request with projectId in the body as required by endpoint
@@ -685,62 +691,6 @@ export default {
       }
     },
     
-    // Template actions
-    createProjectTemplate() {
-      this.templateName = '';
-      this.templateDescription = '';
-      this.templateExperience = '';
-      this.templateDialog = true;
-    },
-    
-    async saveTemplate() {
-      if (!this.templateName.trim()) {
-        toast.error(this.$t("Please provide a template name."), {
-          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
-        });
-        return;
-      }
-      
-      this.templateDialog = false;
-      
-      try {
-        const user = this.loggedInUserStore;
-        let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/project-templates`;
-        
-        const response = await axios.post(apiURL, {
-          name: this.templateName,
-          description: this.templateDescription,
-          experienceId: this.templateExperience
-        }, { headers: { token } });
-        
-        if (response.data && response.data.success) {
-          toast.success(this.$t("Project template created successfully!"), {
-            position: 'top-right', toastClassName: 'Toastify__toast--create', multiple: false
-          });
-        }
-      } catch (error) {
-        console.error("Error creating template:", error);
-        toast.error(this.$t("Error creating template. Please try again."), {
-          position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
-        });
-      }
-    },
-    
-    // Export action
-    exportProjectData() {
-      toast.info(this.$t("Exporting project data..."), {
-        position: 'top-right', toastClassName: 'Toastify__toast--info', multiple: false
-      });
-      
-      // Placeholder for actual export functionality
-      setTimeout(() => {
-        toast.success(this.$t("Project data exported successfully!"), {
-          position: 'top-right', toastClassName: 'Toastify__toast--update', multiple: false
-        });
-      }, 1500);
-    },
-    
     // Utility methods
     formatDate(dateString) {
       if (!dateString) return '';
@@ -751,13 +701,9 @@ export default {
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'green';
-        case 'In Progress': return 'blue';
-        case 'Completed': return 'success';
-        case 'Approved': return 'green-darken-1';
         case 'Proposed': return 'amber-darken-1';
-        case 'Under Review': return 'blue-darken-1';
-        case 'Needs Revision': return 'orange';
-        default: return 'grey';
+        case 'Archived': return 'grey';
+        default: return 'blue';
       }
     },
     

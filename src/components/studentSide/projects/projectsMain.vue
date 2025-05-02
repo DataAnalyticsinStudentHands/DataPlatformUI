@@ -156,10 +156,10 @@
                             <td>
                               <v-chip
                                 size="small"
-                                :color="getStatusColor(item.status)"
-                                :text-color="getStatusTextColor(item.status)"
+                                :color="getStatusColor(item.projectStatus)"
+                                :text-color="getStatusTextColor(item.projectStatus)"
                               >
-                                {{ item.status }}
+                                {{ item.projectStatus }}
                               </v-chip>
                             </td>
                             <td>{{ formatDate(item.updatedAt) }}</td>
@@ -214,10 +214,10 @@
                             <td>
                               <v-chip
                                 size="small"
-                                :color="getStatusColor(item.status)"
-                                :text-color="getStatusTextColor(item.status)"
+                                :color="getStatusColor(item.projectStatus)"
+                                :text-color="getStatusTextColor(item.projectStatus)"
                               >
-                                {{ item.status }}
+                                {{ item.projectStatus }}
                               </v-chip>
                             </td>
                             <td>{{ formatDate(item.updatedAt) }}</td>
@@ -289,7 +289,7 @@ export default {
       projectHeaders: [
         { title: this.$t('Project Name'), align: "start", key: "projectName", sortable: true },
         { title: this.$t('Experience'), key: "experienceInfo", sortable: false },
-        { title: this.$t('Status'), key: "status", sortable: true },
+        { title: this.$t('Status'), key: "projectStatus", sortable: true },
         { title: this.$t('Last Updated'), key: "updatedAt", sortable: true },
         { title: this.$t(''), key: "actions", sortable: false, align: "center" }
       ],
@@ -336,19 +336,28 @@ export default {
       try {
         const user = this.loggedInUserStore;
         let token = user.token;
+        // Keep the original API URL with 'studentSideData' prefix as you indicated
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`; 
         console.log('Fetching projects for user:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
         console.log('API Response:', response.data);
         if (response.data && response.data.projects) {
           const projects = response.data.projects.map(project => {
-            const experienceInfo = project.experiences?.length > 0 
-              ? project.experiences[0].experienceName
-              : this.$t('Not assigned');
-            return { ...project, experienceInfo };
+            // Extract experience info from the new data structure
+            let experienceInfo = this.$t('Not assigned');
+            if (project.experience) {
+              experienceInfo = project.experience.experienceName;
+            }
+            
+            return { 
+              ...project, 
+              experienceInfo
+            };
           });
-          this.myProjects = projects.filter(p => ['Active', 'In Progress'].includes(p.status));
-          this.proposedProjects = projects.filter(p => ['Proposed', 'Pending', 'Under Review'].includes(p.status));
+          
+          // Use projectStatus field to filter projects
+          this.myProjects = projects.filter(p => p.projectStatus === 'Active');
+          this.proposedProjects = projects.filter(p => p.projectStatus === 'Proposed');
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -390,6 +399,8 @@ export default {
         name: project.projectName,
         experienceInstanceName: project.experienceInfo || this.$t('Not assigned')
       };
+      
+      console.log('Opening invite dialog for project:', this.projectData);
       
       // Open the invite dialog - the dialog will fetch its own data
       this.inviteDialog = true;
@@ -462,22 +473,13 @@ export default {
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'green';
-        case 'In Progress': return 'blue';
-        case 'Proposed': 
-        case 'Pending': 
-        case 'Under Review': return 'orange';
+        case 'Proposed': return 'orange';
+        case 'Archived': return 'grey';
         default: return 'grey';
       }
     },
     getStatusTextColor(status) {
-      switch (status) {
-        case 'Active': 
-        case 'In Progress': 
-        case 'Proposed': 
-        case 'Pending': 
-        case 'Under Review': return 'white';
-        default: return 'black';
-      }
+      return 'white'; // All our status chips have white text
     },
     handleMembersInvited(invitedUsers) {
       // Just handle the result - no need to manage the members list in the parent

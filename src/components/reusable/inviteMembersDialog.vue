@@ -303,15 +303,23 @@ export default {
       }
     }
   },
+  // Add mounted hook to initialize if dialog is already open when component mounts
+  mounted() {
+    if (this.modelValue) {
+      console.log('Dialog mounted with open state, initializing');
+      this.initializeDialog();
+    }
+  },
   methods: {
     async initializeDialog() {
+      console.log('Initializing dialog for project ID:', this.projectId);
+      
       // Reset search and selection
       this.searchQuery = '';
       this.selectedUsers = [];
 
       // Always fetch the current code from the backend
       await this.fetchInviteCode();
-      // ───────────────────────────────────
 
       // Load project members first, then available users
       await this.fetchProjectMembers();
@@ -319,21 +327,22 @@ export default {
     },
 
     async fetchInviteCode() {
+      console.log('Fetching invite code for project ID:', this.projectId);
       try {
-        // 1) Grab the JWT the same way you do everywhere else
-        //    (Pinia's state is reactive; usually it's just loggedInUserStore.token)
+        // 1) Grab the JWT token
         const token = this.loggedInUserStore.token;
         if (!token) throw new Error('missing auth token');
 
-        // 2) API base already has /studentSideData; route itself is /projects/invite-code
+        // 2) API endpoint for getting invite code
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
 
-        // 3) Axios will serialize `params` into ?projectId=abc123
+        // 3) Make the API call with projectId as query parameter
         const { data } = await axios.get(apiURL, {
-          params : { projectId: this.projectId },
-          headers: { token }               // authUser middleware expects headers.token
+          params: { projectId: this.projectId },
+          headers: { token }
         });
 
+        console.log('Invite code response:', data);
         this.inviteCode = data.inviteCode ?? '';
       } catch (err) {
         console.error('Error fetching invite code:', err);
@@ -364,7 +373,7 @@ export default {
         
         this.projectMembers = [
           {
-            id: 'usr001',
+            id: this.loggedInUserStore.userId, // Use actual user ID from store
             name: 'John Doe',
             email: 'john.doe@example.com',
             role: 'Owner',
@@ -516,13 +525,22 @@ export default {
       try {
         // In a real implementation, you would make an API call here
         // Example:
-        // const payload = {
-        //   projectId: this.projectId,
-        //   userIds: this.selectedUsers
-        // };
-        // await axios.post(`${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`, payload);
+        const token = this.loggedInUserStore.token;
+        const payload = {
+          projectId: this.projectId,
+          userIds: this.selectedUsers
+        };
         
-        // Simulate API call
+        console.log('Sending invitation payload:', payload);
+        
+        // Uncomment to enable real API call
+        // await axios.post(
+        //   `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`, 
+        //   payload,
+        //   { headers: { token } }
+        // );
+        
+        // Simulate API call for now
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         // Get the selected user details for emitting back to parent
@@ -588,6 +606,8 @@ export default {
 
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
 
+        console.log('Regenerating invite code for project:', this.projectId);
+        
         // PATCH { projectId }  →  { inviteCode: 'PRJ-XXXXXX' }
         const { data } = await axios.patch(
           apiURL,
@@ -595,6 +615,8 @@ export default {
           { headers: { token } }
         );
 
+        console.log('New invite code received:', data);
+        
         // Update the UI with the freshly generated code returned by the backend
         this.inviteCode = data.inviteCode ?? '';
 
@@ -612,7 +634,6 @@ export default {
         });
       }
     },
-
     
     // Utility methods
     getRoleColor(role) {
