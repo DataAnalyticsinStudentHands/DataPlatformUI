@@ -535,14 +535,15 @@ export default {
                     // Update form completion status in the user store or wherever it's needed
                     user.checkFormCompletion();
                     // Navigate to dashboard with success message
+
+                    user.navigationData = {
+                        toastType: 'success',
+                        toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
+                        toastPosition: 'top-right',
+                        toastCSS: 'Toastify__toast--create'
+                    };
                     this.$router.push({ 
-                        name: 'studentDashboard',
-                        params: {
-                            toastType: 'success',
-                            toastMessage: this.$t('Thank you for completing the Student Entry Form!'),
-                            toastPosition: 'top-right',
-                            toastCSS: 'Toastify__toast--create'
-                        }
+                        name: 'studentDashboard'
                     });
                 })
                 .catch(error => {

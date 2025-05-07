@@ -63,7 +63,8 @@
             </v-col>
             <v-spacer class="d-none d-sm-flex"></v-spacer>
             <!-- View Archived Students Button -->
-            <v-col lg="auto" md="4" sm="auto" class="d-none d-sm-flex justify-end align-self-center">
+             <!-- KEEP - FOR FUTURE USE -->
+            <!-- <v-col lg="auto" md="4" sm="auto" class="d-none d-sm-flex justify-end align-self-center">
             <v-btn
                 v-if="!selectedStudents.length"
                 @click="toggleArchivedStudents"
@@ -84,7 +85,7 @@
                 {{ viewArchivedStudents ? "Restore" : "Archive" }}
                 </span>
             </v-btn>
-            </v-col>
+            </v-col> -->
         </v-row>
         <!-- Chips Row -->
         <v-row v-if="showChipsRow" dense>
@@ -134,9 +135,10 @@
             class="pointer-cursor"
             @click="viewStudent(item)"
             >
-            <td>
-                <v-checkbox density="compact" class="d-flex"></v-checkbox>
-            </td>
+            <!-- KEEP - FOR FUTURE USE -->
+            <!-- <td @click.stop>
+                <v-checkbox @update:modelValue="toggleSelection(item)" density="compact" class="d-flex"></v-checkbox>
+            </td> -->
             <td>{{ formatName(item.firstName, item.lastName) }}</td>
             <td>{{ item.email }}</td>
             <td>{{ formatPronouns(item.studentInformation?.pronouns) }}</td>
@@ -213,7 +215,6 @@
     
 
 <script>
-import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { DateTime } from "luxon";
@@ -234,13 +235,8 @@ data() {
         selectedStudents: [],
         studentData: [],
         filteredStudentData: [],
+        // When adding archives: add this to studentHeaders: { title: "", sortable: false, align: "center", width: "30px" },
         studentHeaders: [
-            {
-            title: "",
-            sortable: false,
-            align: "center",
-            width: "30px"
-            },
             {
             title: "Student Name",
             value: "formattedName",
@@ -291,10 +287,12 @@ data() {
 },
 
 mounted() {
+    // Fetch the student data when the component is mounted
     this.fetchStudentData();
 },
 
 watch: {
+    // Reset the date range if the graduation date filter is set to "Between"
     graduationDateFilterType(newVal) {
         if (newVal === "Between") {
             this.beginningDateRange = null;
@@ -304,13 +302,17 @@ watch: {
 },
 
 computed: {
+    // Return the loading state from the user store
     loading() {
         return useLoggedInUserStore().loading;
     },
 
+    // Show the chips row if search criteria are present
     showChipsRow() {
         return this.searchCriteria.length > 0;
     },
+
+    // Format the selected graduation date range if "Between" is chosen
     formattedSelectedGraduationDate() {
         if (this.graduationDateFilterType === "Between") {
             let text = "";
@@ -330,6 +332,8 @@ computed: {
             ? DateTime.fromJSDate(this.selectedGraduationDate).toFormat('MM-dd-yyyy')
             : "";
     },
+
+    // Return the appropriate title for the graduation date filter
     graduationDateTitle() {
         switch (this.graduationDateFilterType) {
             case "On":
@@ -344,6 +348,8 @@ computed: {
                 return "Graduation Date On";
         }
     },
+
+    // Allow date submission only if both beginning and end dates are selected for "Between"
     canApplyGraduationDates() {
         if (this.graduationDateFilterType === "Between") {
             // Allow submission only if both beginning and end date ranes are selected
@@ -432,9 +438,11 @@ methods: {
 
     // Navigates to the specific student view page with the student's ID as a parameter.
     viewStudent(student) {
+        useLoggedInUserStore().navigationData = {
+            userID: student._id,
+        };
         this.$router.push({
-            name: "instructorSpecificStudent",
-            params: { userID: student._id },
+            name: "instructorSpecificStudent"
         });
     },
 
@@ -523,29 +531,57 @@ methods: {
                 });
             } else if (category === "Graduation Date") {
                 return searchGroups[category].every(term => {
-                    const formattedGraduationDate = this.formatGraduationDate(student.studentInformation?.enrolledUHInfo?.expectedGraduationData);
-                    if (!formattedGraduationDate) {
-                        return false; // Skip if formatted graduation date is not valid or not present
+                    const graduationDateISO = student.studentInformation?.enrolledUHInfo?.expectedGraduationData;
+                    if (!graduationDateISO) {
+                        return false;
+                    }
+
+                    // Parse the student's graduation date from ISO
+                    const studentDateObj = DateTime.fromISO(graduationDateISO);
+                    if (!studentDateObj.isValid) {
+                        return false;
                     }
 
                     if (term.startsWith('<')) {
-                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
-                        return formattedGraduationDate < comparisonDate;
+                        const comparisonDateStr = term.slice(2).trim();
+                        const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy');
+                        return comparisonDateObj.isValid && studentDateObj < comparisonDateObj;
+
                     } else if (term.startsWith('>')) {
-                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
-                        return formattedGraduationDate > comparisonDate;
+                        const comparisonDateStr = term.slice(2).trim();
+                        const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy');
+                        return comparisonDateObj.isValid && studentDateObj > comparisonDateObj;
+
                     } else if (term.startsWith('=')) {
-                        const comparisonDate = term.slice(2).trim(); // Expected format: 'MM-dd-yyyy'
-                        return formattedGraduationDate === comparisonDate;
+                        const comparisonDateStr = term.slice(2).trim();
+                        const comparisonDateObj = DateTime.fromFormat(comparisonDateStr, 'MM-dd-yyyy');
+                        // Check if they're on the same day
+                        return comparisonDateObj.isValid && studentDateObj.hasSame(comparisonDateObj, 'day');
+
                     } else if (term.startsWith('between')) {
                         let [startDateStr, endDateStr] = term.slice(8).split(' and ');
-                        return formattedGraduationDate >= startDateStr && formattedGraduationDate <= endDateStr;
+                        const startDateObj = DateTime.fromFormat(startDateStr.trim(), 'MM-dd-yyyy');
+                        const endDateObj = DateTime.fromFormat(endDateStr.trim(), 'MM-dd-yyyy');
+                        return startDateObj.isValid && endDateObj.isValid && (studentDateObj >= startDateObj && studentDateObj <= endDateObj);
                     }
-                    return true; // If the term format is not recognized, do not exclude the student
+
+                    return true; // If not recognized, don't exclude
                 });
             }
             });
         });
+    },
+
+    // Toggles an student's selection state: if the student is already selected, it is removed from the selection; if it is not selected, it is added to the selection.
+    toggleSelection(student) {
+        const index = this.selectedStudents.findIndex((selectedStudent) => selectedStudent._id === student._id);
+        if (index >= 0) {
+            // Already selected, remove it
+            this.selectedStudents.splice(index, 1);
+        } else {
+            // Not selected, add it
+            this.selectedStudents.push(student);
+        }
     },
 
     // Toggles the selection state of a search chip and updates the filtered student data accordingly.

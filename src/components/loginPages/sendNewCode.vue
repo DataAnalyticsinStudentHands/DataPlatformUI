@@ -1,14 +1,16 @@
-<!-- /sendNewCode -->
+<!-- sendNewCode.vue - Allows users to request a new verification code by providing their email address. -->
 <template>
     <section class="">
       <div class="px-10 py-20">
         <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+          <!-- Form for requesting a new verification code -->
           <form
             @submit.prevent
             class="space-y-4 md:space-y-6"
             action="/login"
             method="POST"
           >
+            <!-- Email Input Field -->
             <div
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
             >
@@ -26,6 +28,7 @@
                 />
               </div>
             </div>
+            <!-- Error Message Section -->
             <div
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
             >
@@ -36,6 +39,8 @@
                 {{ error }}
               </div>
             </div>
+
+            <!-- Success Message Section -->
             <div
               id="myDIV"
               class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
@@ -47,6 +52,8 @@
                 {{ success }}
               </div>
             </div>
+
+            <!-- Submit Button -->
             <button
               @click="activateAccount"
               type="submit"

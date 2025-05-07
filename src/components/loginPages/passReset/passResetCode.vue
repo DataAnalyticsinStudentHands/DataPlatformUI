@@ -1,7 +1,11 @@
+<!-- passResetCode.vue - This component handles the password reset code verification process. Users input the code sent to their email, and the code is verified before allowing them to reset their password. -->
+
+
 <template>
     <v-card-text>
             <v-row>
                 <v-col cols="12" class="pb-0">
+                    <!-- Title asking the user to input the reset code -->
                     <h2 class="font-bold text-2xl text-custom-red tracking-widest">
                         {{$t('Password Reset Code')}}
                     </h2>
@@ -9,6 +13,7 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
+                    <!-- Instructions to input the password reset code -->
                     {{$t('Please check your email and input the password reset code.')}}
                     <br>
                     {{$t('If you do not see an email, please check your Spam folder, or ')}}
@@ -17,6 +22,8 @@
                         @click="$router.push('/register')"
                     >{{$t('Register for an Account.')}}</span>
                 </v-col>
+
+            <!-- Form to enter the reset code -->
             </v-row>
                 <v-row justify="center">
                     <v-col cols="12" md="8">
@@ -31,7 +38,7 @@
                                 >
                                 </v-text-field>
 
-                                <!-- Flex container to center the buttons -->
+                                <!-- Button container for navigating back to login and submitting the code -->
                                 <div class="d-flex justify-center align-center">
                                     <v-btn 
                                         @click="goBackToLogin"
@@ -63,6 +70,7 @@ export default {
             loading: false,
             code: null,
             rules: [
+                // Validation rule for the reset code
                 v => {
                     if (!v) {
                         return this.$t('Code is required');
@@ -72,9 +80,11 @@ export default {
             ],
         };
     },
+    
+    // When the component is mounted, retrieve the user ID from the store's navigation data
     mounted() {
-        if (this.$route.params && this.$route.params.userID) {
-            this.userID = this.$route.params.userID; 
+        if (useLoggedInUserStore().navigationData && useLoggedInUserStore().navigationData.userID) {
+            this.userID = useLoggedInUserStore().navigationData.userID; 
         }
     },
     methods: {
@@ -105,16 +115,18 @@ export default {
                     if (response.status === 200) {
                         // Set token as global header
                         loggedInUserStore.setTokenHeader(response.data.token);
+
+                        useLoggedInUserStore().navigationData = {
+                            userID: this.userID,
+                            toastType: 'success',
+                            toastMessage: this.$t('Success! You may now reset your password.'),
+                            toastPosition: 'top-right',
+                            toastCSS: 'Toastify__toast--create'
+                        };
+
                         
                         this.$router.push({
-                            name: 'passResetNewEntry',
-                            params: { 
-                                userID: this.userID,
-                                toastType: 'success',
-                                toastMessage: this.$t('Success! You may now reset your password.'),
-                                toastPosition: 'top-right',
-                                toastCSS: 'Toastify__toast--create'
-                            }
+                            name: 'passResetNewEntry'
                         });
 
                     } else {

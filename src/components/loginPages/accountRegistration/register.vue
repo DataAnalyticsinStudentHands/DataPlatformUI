@@ -1,6 +1,7 @@
-<!-- /registerForm -->
+<!-- /registerForm - where users register for a new account -->
 <template>
     <v-container>
+      <!-- Title -->
         <v-row justify="center">
             <v-col cols="12" class="text-center">
                 <h1 class="font-bold text-2xl text-custom-red tracking-widest mt-3 mb-5">
@@ -145,6 +146,7 @@
   import { toast } from 'vue3-toastify';
   import 'vue3-toastify/dist/index.css';
   import useVuelidate from "@vuelidate/core";
+  import { helpers } from "@vuelidate/validators";
   import { minLength, required } from "@vuelidate/validators";
   import axios from "axios";
   import swal from "sweetalert";
@@ -194,78 +196,81 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
           });
         }
       },
-      // Submits the user registration form after validating the entire form, confirming password and email match. On successful submission, displays a success message and clears the form, then redirects to verification with the user's ID. 
+      // Submits the user registration form after validating the entire form, confirming password and email match. On successful submission, displays a success message and clears the form, then redirects to verification with the user's ID.
       async userSubmitForm() {
-        // Checks to see if there are any errors in validation
-        const isFormCorrect = await this.v$.$validate();
-        this.checkConfirmPassword();
-        // If no errors found. isFormCorrect = True then the form is submitted
-        if (
-          isFormCorrect &&
-          this.isConfirmPasswordValid &&
-          this.isConfirmEmailValid
-        ) {
-          this.loading = true;
-          let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/register`;
-          axios.post(apiURL, this.user).then(
-            async (response) => {
-              //using swal from sweetalert.js for customizeble alerts
-              swal(
-                this.$t("You have registered successfully!"),
-                this.$t("Please check your email and follow the steps to verify your account."),
-                "success"
-              );
+          const isFormCorrect = await this.v$.$validate();
+          this.checkConfirmPassword();
 
-              this.user = {
-                firstName: "",
-                lastName: "",
-                email: "",
-                password: "",
-                role: "",
-                error: "",
-              };
+          if (
+              isFormCorrect &&
+              this.isConfirmPasswordValid &&
+              this.isConfirmEmailValid
+          ) {
+              this.loading = true;
+              let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/register`;
 
-              const userID = response.data.userID;
+              axios.post(apiURL, this.user).then(
+                  async (response) => {
+                      // Clear the form
+                      this.user = {
+                          firstName: "",
+                          lastName: "",
+                          email: "",
+                          password: "",
+                          role: "",
+                          error: "",
+                      };
 
-              const store = useLoggedInUserStore();
+                      const userID = response.data.userID;
+                      const store = useLoggedInUserStore();
 
-              await store.verifyExistingAcc(response.data);
+                      // Update Pinia store with the received data
+                      await store.verifyExistingAcc(response.data);
 
-              this.$router.push({ 
-                name: 'verifyAccWithCode', 
-                params: { id: userID } 
+                      // Set navigation data to pass user ID to the verification view
+                      store.navigationData = {
+                          id: userID
+                      };
+
+                      // Redirect to verification page
+                      this.$router.push({
+                          name: 'verifyAccWithCode'
+                      });
+                  },
+                  (err) => {
+                      this.handleError(err);
+                  }
+              ).finally(() => {
+                  this.loading = false;
               });
-            },
-            (err) => {
-              if (err.response && err.response.data.title === 'Registration Failed.') {
-                toast.error(this.$t(err.response.data.error), {
-                  position: 'top-right',
-                  toastClassName: 'Toastify__toast--delete'
-                });
-              } else {
-                this.handleError(err);
-              }
-            }
-          ).finally(() => {
-            this.loading = false;
-          });
-        }
-      },
+          }
+      }
+
     },
+    // Validations for user input fields
     validations() {
       return {
         user: {
-          firstName: { required },
-          lastName: { required },
-          languagePreference: { required },
-          password: {
-            required,
-            minLengthValue: minLength(8),
+          firstName: {
+            required: helpers.withMessage(() => this.$t('First name is required'), required)
           },
-          email: { required },
+          lastName: {
+            required: helpers.withMessage(() => this.$t('Last name is required'), required)
+          },
+          languagePreference: {
+            required: helpers.withMessage(() => this.$t('Language preference is required'), required)
+          },
+          password: {
+            required: helpers.withMessage(() => this.$t('Password is required'), required),
+            minLength: helpers.withMessage(() => this.$t('Password should be at least 8 characters long'), minLength(8))
+          },
+          email: {
+            required: helpers.withMessage(() => this.$t('Email is required'), required)
+          },
         },
       };
     },
+
   };
   </script>
   

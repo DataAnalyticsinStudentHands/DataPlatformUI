@@ -38,7 +38,6 @@
             rows="3"
         ></v-textarea>
 
-
         <v-textarea
             ref="aspiration2Ref"
             :label="$t('Aspiration 2:')"

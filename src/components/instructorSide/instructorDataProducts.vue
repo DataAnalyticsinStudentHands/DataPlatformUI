@@ -5,6 +5,7 @@
 -->
 <template>
     <v-container>
+        <!-- Download Entry Forms -->
       <v-row>
         <v-col cols="12">
           <v-btn text outlined class="mb-2" @click="downloadEntryDataAsCSV">
@@ -13,6 +14,7 @@
         </v-col>
       </v-row>
   
+      <!-- Download Goal Forms -->
       <v-row class="mb-2">
         <v-col cols="12">
           <v-btn text outlined @click="downloadAllGoalDataAsCSV">
@@ -21,6 +23,7 @@
         </v-col>
       </v-row>
   
+      <!-- Download Exit Forms -->
       <v-row>
         <v-col cols="12">
           <v-btn text outlined @click="downloadAllExitDataAsCSV">
@@ -178,7 +181,7 @@
             "organizationID": "org_id",
             "userID": "user_id",
             "sessionName": "session",
-            "experienceID": "experience",
+            "experienceName": "experience",
             "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
             "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
             "goalForm.communityEngagement.communityEngagementExperiences.2.checked": "ce_faith",
@@ -298,6 +301,8 @@
             "_id": "entry_id", 
             "organizationID": "org_id", 
             "userID": "user_id", 
+            "user_name": "user_name",
+            "user_email": "user_email",
             "studentInformation.cityOrigin": "place_of_origin",
             "studentInformation.primaryLanguage": "primary_language",
             "studentInformation.otherLanguages": "other_languages",
@@ -375,7 +380,7 @@
             "organizationID": "org_id",
             "userID": "user_id",
             "sessionName": "session",
-            "experienceID": "experience_id",
+            "experienceName": "experience",
             "goalSettingFormID": "goal_id",
             "exitForm.progressMade.aspirationOneProgressResults": "aspiration1_progress_result",
             "exitForm.progressMade.aspirationTwoProgressResults": "aspiration2_progress_result",
@@ -446,6 +451,8 @@
           "_id",
           "organizationID",
           "userID",
+          "user_name",
+          "user_email",
           "studentInformation.cityOrigin",
           "studentInformation.primaryLanguage",
           "studentInformation.otherLanguages",
@@ -526,8 +533,18 @@
       
       header.forEach((field) => {
           let value = obj;
+          // Special handling for user_name and user_email
+          if (field === "user_name") {
+              // Concatenate trimmed and formatted first and last names from userData
+              const firstName = this.formatName(obj.userData?.firstName);
+              const lastName = this.formatName(obj.userData?.lastName);
+              value = `${firstName} ${lastName}`.trim();
+          } else if (field === "user_email") {
+              // Use userData.email directly
+              value = obj.userData?.email || '';
+          }
           // Split and encode for the honorsMinors field
-          if (field.startsWith('h_minor_')) {   
+          else if (field.startsWith('h_minor_')) {   
             // Map the field back to the possible value in the honorsMinors array
             const valueMap = {
                 'h_minor_data_society': 'Data & Society',
@@ -630,7 +647,7 @@
           "organizationID",
           "userID",
           "sessionName",
-          "experienceID",
+          "experienceName",
       ];
   
       // For communityEngagementExperiences
@@ -802,7 +819,7 @@
             "organizationID",
             "userID",
             "sessionName",
-            "experienceID",
+            "experienceName",
             "goalSettingFormID",
             "exitForm.progressMade.aspirationOneProgressResults",
             "exitForm.progressMade.aspirationTwoProgressResults",
@@ -1038,6 +1055,17 @@
         };
         return likelihoodMap[value] || value;
     },
+
+    // Helper method to format names: trims the input and capitalizes the first letter
+    formatName(name) {
+        if (!name) return "";
+        return name
+            .trim()
+            .split(/\s+/)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(" ");
+    },
+
   
     },
   };

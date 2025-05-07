@@ -11,8 +11,7 @@
     
     
     
-    
-        </v-row>
+        </v-row> 
             <p 
             class="font-weight-black text-h6 mb-4">{{ $t('Demographics Information') }}</p>
             <p 

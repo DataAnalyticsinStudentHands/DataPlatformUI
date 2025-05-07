@@ -1,10 +1,15 @@
+<!-- errorView.vue -->
+<!-- Displays an error page for "Page Not Found" with a title and a button to navigate to the login page -->
+
 <template>
   <v-container fluid>
     <v-row align="center" justify="center" class="fill-height">
       <v-col cols="12" class="text-center mt-10">
+        <!-- Title -->
         <h1 :class="fontSizeClass" class="font-bold text-red-700 tracking-widest">
           Oops! Page Not Found
         </h1>
+        <!-- Go to Login Button -->
         <v-btn @click="navigateToLogin" :class="buttonClass" class="mt-5">
           Go to Login
         </v-btn>
@@ -12,6 +17,7 @@
     </v-row>
   </v-container>
 </template>
+
 
 <script>
 export default {
@@ -36,6 +42,7 @@ export default {
     }
   },
   methods: {
+    // Navigates the user to the login page
     navigateToLogin() {
       this.$router.push({ name: 'login' });
     }

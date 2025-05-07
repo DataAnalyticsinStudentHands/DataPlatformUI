@@ -3,8 +3,10 @@
     <v-row>
       <v-col cols="12" sm="10" md="8" lg="6" class="mx-auto pt-5">
         
+        <!-- Main Card with Login/Register tabs -->
         <v-card class="pa-5 mb-12" :class="{'fill-height': $vuetify.display.xs}" :elevation="$vuetify.display.xs ? 0 : 8">
           
+          <!-- Tabs for Login and Register, switching between routes -->
           <v-tabs 
             v-model="tab" 
             centered 
@@ -19,6 +21,7 @@
               <span class="font-semibold text-custom-red">{{$t('Register')}}</span>
             </v-tab>
           </v-tabs>
+          <!-- Language Toggle Switch -->
           <v-row class="mb-n4 align-center justify-end">
             <!-- Language toggle -->
             <v-col cols="auto" class="pt-3 pb-0 pr-1">
@@ -35,8 +38,7 @@
             </v-col>
           </v-row>
 
-          
-  
+          <!-- Router View to load either Login or Register components dynamically -->
           <router-view 
             v-slot="{ Component }" 
             @navigateTo="changeRoute"
@@ -73,6 +75,7 @@ export default {
     };
   },
   mounted() {
+      // Set initial language state based on current locale
       this.language = this.$i18n.locale === 'es';
   },
   setup() {
@@ -115,10 +118,13 @@ export default {
         // For simple string routes (backward compatibility)
         this.$router.push(payload);
       } else if (payload && payload.routeName && payload.userID) {
+        useLoggedInUserStore().navigationData = {
+          userID: payload.userID
+        };
+
         // Payload is an object containing the routeName and userID
         this.$router.push({
-          name: payload.routeName, // use the route's name
-          params: { userID: payload.userID } // passing userID as a route parameter
+          name: payload.routeName
         });
       }
     },

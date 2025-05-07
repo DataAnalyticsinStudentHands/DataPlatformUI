@@ -1,5 +1,6 @@
 <!-- progressMonitorCSVDownloader - this component is a button that allows an export of data to a CSV file for the Progress Monitor -->
 <template>
+  <!-- Export Button -->
     <v-btn @click="exportToCSV">
       Export to CSV
     </v-btn>

@@ -2,9 +2,11 @@
 <template>
   <v-container>
 
+    <!-- Card for the Exit Form Completion Tracker -->
     <v-row>
       <v-col cols="12">
           <v-card>
+              <!-- Title with CSV download button, shown if an experience is selected and there are students without exit forms -->
               <v-card-title class="pa-4 d-flex justify-space-between align-center">
                 Exit Form Completion Tracker
                 <progress-monitor-csv-downloader
@@ -14,6 +16,7 @@
                 />
               </v-card-title>
               
+              <!-- Subtitle  -->
               <v-card-subtitle class="text-h6">
                 <v-row>
                   <v-col>
@@ -25,6 +28,7 @@
               <v-container>
               <v-row>
                   <v-col cols="12" sm="8" md="8">
+                  <!-- Autocomplete for selecting an experience -->
                   <v-autocomplete
                       v-model="selectedExperience"
                       :items="formattedExperiences"
@@ -37,6 +41,7 @@
                   </v-col>
               </v-row>
 
+              <!-- Buttons to toggle between completed and uncompleted states -->
               <v-row class="mt-0 mb-2">
                 <v-col>
                     <v-btn 
@@ -51,6 +56,7 @@
                 </v-col>
               </v-row>
 
+              <!-- Display the total number of students if an experience is selected -->
               <v-row v-if="selectedExperience">
               <v-col cols="12">
                 <div class="text-h6 pa-4">
@@ -157,11 +163,14 @@ export default {
     'progress-monitor-csv-downloader': ProgressMonitorCSVDownloader
   },
   watch: {
+    // Watch for changes in the selected experience
     selectedExperience(newVal) {
       if (newVal !== null && this.completed !== null) {
         this.fetchStudents();
       }
     },
+
+    // Watch for changes in the completed status
     completed(newVal, oldVal) {
       if (newVal !== null && this.selectedExperience !== null) {
         this.fetchStudents();
@@ -169,51 +178,51 @@ export default {
     },
   },
   mounted() {
+    // Fetch Experiences upon mount
     this.fetchExperiences();
   },
   computed: {
-    formattedExperiences() {
-      return this.expInstances.map(instance => ({
-        text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
-        value: instance.expInstanceID
-      }));
-    },
-    displayedStudents() {
-      if (this.completed === true) {
-        return this.studentsWithExitForm;
-      } else if (this.completed === false) {
-        return this.studentsWithoutExitForm;
-      } else {
-        return [];
-      }
-    },
-    paginatedDisplayedStudents() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = this.currentPage * this.itemsPerPage;
-      return this.displayedStudents.slice(start, end);
-    },
-    totalPaginationLength() {
-      return Math.ceil(this.displayedStudents.length / this.itemsPerPage);
-    },
-    totalStudentsCount() {
-      return this.displayedStudents.length;
-    },
-    csvFileName() {
-      if (this.selectedExperience) {
-        const selectedObj = this.expInstances.find(
-          (instance) => instance.expInstanceID === this.selectedExperience
-        );
-        if (selectedObj) {
-          const prefix = this.completed === true ? 'completed_exit_forms' : 'no_exit_form';
+      // Returns the full student list based on the 'completed' flag.
+      displayedStudents() {
+        return this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
+      },
+
+      // Returns a paginated slice of the displayedStudents array.
+      paginatedDisplayedStudents() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.displayedStudents.slice(start, end);
+      },
+
+      // Existing computed properties can remain or be removed if not used elsewhere.
+      formattedExperiences() {
+        return this.expInstances.map(instance => ({
+          text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
+          value: instance.expInstanceID
+        }));
+      },
+
+      totalPaginationLength() {
+        let list = this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
+        return Math.ceil(list.length / this.itemsPerPage);
+      },
+
+      totalStudentsCount() {
+        return this.displayedStudents.length;
+      },
+
+      csvFileName() {
+        if (this.selectedExperience) {
+          const selectedObj = this.expInstances.find(
+            (instance) => instance.expInstanceID === this.selectedExperience
+          );
+          const prefix = this.completed === true ? 'completed_goal_forms' : 'no_goal_form';
           return `${prefix}_${selectedObj.experienceName}.csv`;
         } else {
-          return this.completed === true ? 'completed_exit_forms.csv' : 'no_exit_form.csv';
+          return this.completed === true ? 'completed_goal_forms.csv' : 'no_goal_form.csv';
         }
-      } else {
-        return this.completed === true ? 'completed_exit_forms.csv' : 'no_exit_form.csv';
-      }
+      },
     },
-  },
   methods: {
 
     // Fetches active experience instances for the instructor from the backend API. Upon receiving the response, it maps the instance data to a structured format and stores it in the component's state.
@@ -276,6 +285,7 @@ export default {
       }
     },
 
+    // Changes whether the user can navigate
     toggleNavigation() {
         this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
         // Optionally change the button text based on state
@@ -290,9 +300,12 @@ export default {
 
     // Navigates to the profile page of a specific student identified by their userID.
     navigateToProfile(userID) {
+      useLoggedInUserStore().navigationData = {
+        userID: userID
+      };
+
       this.$router.push({
-        name: "instructorSpecificStudent",
-        params: { userID: userID },
+        name: "instructorSpecificStudent"
       });
     },
 

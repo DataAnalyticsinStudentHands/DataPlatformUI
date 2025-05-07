@@ -1,5 +1,8 @@
+<!-- login.vue - Handle the Login process and navigation to password reset/account verification views -->
+
 <template>
   <div>
+    <!-- Main Title -->
     <v-card-text>
       <h2 class="font-bold text-2xl text-custom-red tracking-widest text-center mt-3 mb-5">
           {{$t('Welcome to')}} {{ appName }}
@@ -7,34 +10,36 @@
 
       <!-- Login form -->
       <v-form ref="loginForm">
+        <!-- Email Input Field -->
         <v-text-field
           :label="$t('Email:')"
           v-model="email"
-          :rules="emailRules"
-          required
           prepend-icon="mdi-email"
           @keydown.enter="login"
+          :error="showErrors && translatedEmailError !== ''"
+          :error-messages="showErrors ? translatedEmailError : ''"
         ></v-text-field>
 
+        <!-- Password Input Field -->
         <v-text-field
           :label="$t('Password:')"
           :type="showPassword ? 'text' : 'password'"
           v-model="password"
-          :rules="requiredRule"
-          required
           prepend-icon="mdi-lock"
           @keydown.enter="login"
+          :error="showErrors && translatedPasswordError !== ''"
+          :error-messages="showErrors ? translatedPasswordError : ''"
         >
+          <!-- Password Visibility Icon -->
           <template v-slot:append-inner>
-            <v-icon
-              @click="showPassword = !showPassword"
-            >
+            <v-icon @click="showPassword = !showPassword">
               mdi-eye
             </v-icon>
           </template>
         </v-text-field>
       </v-form>
 
+      <!-- Forgot Your Password? Navigation -->
       <v-row>
         <v-col cols="12" class="pl-0 pt-6">
           <span
@@ -45,6 +50,8 @@
           </span>
         </v-col>
       </v-row>
+
+      <!-- Have a Confirmation Code? Navigation -->
       <v-row class="mt-0">
         <v-col cols="12" class="pl-0">
           <span
@@ -56,6 +63,7 @@
         </v-col>
       </v-row>
 
+      <!-- Login Button -->
       <v-row justify="center">
         <v-col cols="8">
           <v-btn
@@ -87,24 +95,15 @@ export default {
         password: "",
         error: "",
         loading: false,
-        emailRules: [
-            v => {
-                if (!v) {
-                    return this.$t('Email is required');
-                } else if (!/.+@.+/.test(v)) {
-                    return this.$t('Email must be valid');
-                }
-                return true;
-            }
-        ],
-        requiredRule: [v => !!v || this.$t('This field is required')],
         appName: "",
         showPassword: false,
+        showErrors: false,
       };
   },
   setup() {
     const store = useLoggedInUserStore();
 
+    // Computed property to dynamically assign the application name based on the organization name
     const appName = computed(() => {
       return store.orgName === 'Data & Society' ? 'Engaged Data' : store.orgName;
     });
@@ -115,22 +114,44 @@ export default {
     };
   },
   mounted() {
-    if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
-        position: this.$route.params.toastPosition,
-        toastClassName: this.$route.params.toastCSS
+    // Check if there's toast data in the navigationData to show any notifications
+    if (useLoggedInUserStore().navigationData?.toastType) {
+      toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, { 
+        position: useLoggedInUserStore().navigationData.toastPosition,
+        toastClassName: useLoggedInUserStore().navigationData.toastCSS
       });
-    }
-    },
-  methods: {
-    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role. Displays notifications for login feedback. Handles special cases for unverified accounts and incomplete student entry forms.
-    async login() {
-      // Check if there are any errors in the form
-      await this.$refs.loginForm.validate();
-      const hasErrors = this.$refs.loginForm.errors.length > 0;
 
-      // If no errors, proceed with login
-      if (!hasErrors) {
+      useLoggedInUserStore().navigationData = null;
+    }
+  },
+  computed: {
+    translatedEmailError() {
+      if (!this.email) {
+        return this.$t('Email is required');
+      } else if (!/.+@.+/.test(this.email)) {
+        return this.$t('Email must be valid');
+      }
+      return "";
+    },
+    translatedPasswordError() {
+      if (!this.password) {
+        return this.$t('Password is required');
+      } else if (this.password.length < 8) {
+        return this.$t('Password must be at least 8 characters long');
+      }
+      return "";
+    }
+  },
+  methods: {
+    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role.
+    async login() {
+      // Show validation errors
+      this.showErrors = true;
+      // Run custom validation
+      const isValid = this.translatedEmailError === "" && this.translatedPasswordError === "";
+
+      // If the form is valid, proceed with login
+      if (isValid) {
         this.loading = true;
         try {
           // Attempt to login
@@ -144,8 +165,9 @@ export default {
               multiple: false
             });
           }
+
           // Navigate to the appropriate dashboard based on the user's role
-          if (this.store.role === 'Instructor') {
+          if (this.store.role === 'Instructor' || this.store.role === 'Group Instructor' || this.store.role === 'Group Admin' || this.store.role === 'Org Admin') {
             this.$router.push("/instructorDash");
           } else if (this.store.role === 'Student') {
             if (this.store.hasCompletedEntryForm) {
@@ -158,7 +180,7 @@ export default {
           } else {
             this.$router.push("/");
           }
-          // If invalid login, error message will appear from Pinia store
+
           // If unverified account, send to verification view
           if (this.store.unverified === true) {
             this.sendNewCode();
@@ -182,9 +204,12 @@ export default {
         .then((res) => {
           if (res.status == 200) {
             let userID = res.data.userID; // Extract the userID from the response
+            useLoggedInUserStore().navigationData = {
+              id: userID
+            };
+
             this.$router.push({ 
-              name: 'verifyAccWithCode', 
-              params: { id: userID } 
+              name: 'verifyAccWithCode'
             });
           } else {
             console.log('Unexpected response status:', res.status);
@@ -232,7 +257,5 @@ select:focus {
     box-shadow: none !important;
     border-color: currentColor !important;
 }
-
-
 
 </style>

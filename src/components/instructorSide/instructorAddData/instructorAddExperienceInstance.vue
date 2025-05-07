@@ -2,20 +2,25 @@
 <template>
 <div>
 <v-container>
+    <!-- Main form to create Experience Instance -->
     <v-form
         ref="form"
         @submit.prevent="handleSubmitForm"
     >
+
+    <!-- Title -->
         <v-row>
             <v-col>
                 <p class="font-weight-black text-h6">New Experience Instances</p><br>
             </v-col>
         </v-row>
 
+        <!-- Assign to Session -->
         <v-row>
             <p class="font-weight-black text-h7">Session</p>
         </v-row>
 
+        <!-- Session Selection -->
         <v-row>
             <v-col>
                 <v-autocomplete
@@ -30,17 +35,19 @@
             </v-col>
         </v-row>
 
+        <!-- Assign Experiences -->
         <v-row>
             <p class="font-weight-black text-h7">Experiences</p>
         </v-row>
 
+        <!-- Experience Selection -->
         <v-row>
             <v-col>
                 <v-autocomplete
                     :items="experienceData"
                     item-title="experienceName"
                     item-value="_id"
-                    label="Please Select Experiences"
+                    label="Please Select an Experience"
                     v-model="selectedExperiences"
                     :rules="experienceRules"
                     multiple
@@ -51,6 +58,7 @@
             </v-col>
         </v-row>
 
+        <!-- Assign Activities -->
         <v-row>
             <p class="font-weight-black text-h7">Activities</p>
         </v-row>
@@ -58,95 +66,113 @@
         <v-row>
             <v-col v-if="selectedExperiences && selectedExperiences.length">
                 <v-card>
-                    <v-tabs
-                        v-model="activitiesTab"
-                    >
-                        <v-tab
-                            v-for="experience in selectedExperiences"
-                            :key="experience._id"
-                            :value="experience._id"
-                        >
+                    <!-- Experience Tabs -->
+                    <v-tabs v-model="activitiesTab">
+                        <v-tab v-for="experience in selectedExperiences" :key="experience._id" :value="experience._id">
                             {{ experience.experienceName }}
                         </v-tab>
                     </v-tabs>
 
                     <v-card-text>
-                        <v-window>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-card flat>
-                                        <v-card-title>
-                                            <v-row>
-                                                <v-col>Selected Activities</v-col>
-                                            </v-row>
-                                        </v-card-title>
-                                        <v-list class="scrollable-list">
-                                            <v-list-item
-                                                v-for="activity in selectedActivities"
-                                                :key="activity._id"
-                                            >
+                        <v-window v-model="activitiesTab">
+                            <v-window-item v-for="experience in selectedExperiences" :key="experience._id" :value="experience._id">
+                                <v-row>
+                                    <v-col cols="6">
+
+                                        <!-- Selected Activities Section -->
+                                        <v-card flat>
+                                            <v-card-title>
                                                 <v-row>
-                                                    <v-col cols="10">
-                                                        {{ activity.activityName }}
-                                                    </v-col>
-                                                    <v-col>
-                                                        <v-icon
-                                                            @click.stop="removeActivity(activity)"
-                                                        >
-                                                            mdi-close
-                                                        </v-icon>
-                                                    </v-col>
+                                                    <v-col>Selected Activities</v-col>
                                                 </v-row>
-                                            </v-list-item>
-                                        </v-list>
-                                    </v-card>
-                                </v-col>
-                                <v-col>
-                                    <v-card
-                                        flat
-                                        title="Add Activities"
-                                    >
-                                        <template v-slot:text>
-                                            <v-text-field
-                                                v-model="activitySearch"
-                                                label="Search"
-                                                prepend-inner-icon="mdi-magnify"
-                                                single-line
-                                                variant="outlined"
-                                                hide-details
-                                            ></v-text-field>
-                                        </template>
-                                        <v-data-table
-                                            :headers="activityHeaders"
-                                            :items="filteredActivityData"
-                                            item-value="_id"
-                                            items-per-page="-1"
-                                            class="scrollable-table"
-                                            hover
-                                            :search="activitySearch"
-                                        >
-                                            <template v-slot:body="{ items }">
-                                                <template v-for="item in items" :key="item._id">
-                                                    <tr
-                                                        @click="selectActivity(item)"
-                                                        @mouseover="hoveredItem = item._id"
-                                                        @mouseleave="hoveredItem = null"
-                                                        class="pointer-cursor activity-row"
-                                                    >
-                                                        <td>
-                                                            <div class="activity-content">
-                                                                {{ item.activityName }}
-                                                                <v-icon v-if="hoveredItem === item._id">mdi-plus</v-icon>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </template>
+                                            </v-card-title>
+
+                                            <v-list class="scrollable-list">
+                                                <v-list-item v-for="activity in selectedActivities" :key="activity._id">
+                                                    <v-row>
+                                                        <v-col cols="10">
+                                                            {{ activity.activityName }}
+                                                        </v-col>
+                                                        <v-col>
+                                                            <v-icon @click.stop="removeActivity(activity)">
+                                                                mdi-close
+                                                            </v-icon>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-card>
+
+                                    </v-col>
+                                    <v-col>
+                                        <!-- Add Activities Section -->
+                                        <v-card flat title="Add Activities">
+                                            <template v-slot:text>
+                                                <v-text-field
+                                                    v-model="activitySearch"
+                                                    label="Search"
+                                                    prepend-inner-icon="mdi-magnify"
+                                                    single-line
+                                                    variant="outlined"
+                                                    hide-details
+                                                ></v-text-field>
                                             </template>
-                                            <template v-slot:bottom></template>
-                                        </v-data-table>
-                                    </v-card>
-                                </v-col>
-                            </v-row>
+                                            <v-data-table
+                                                :headers="activityHeaders"
+                                                :items="filteredActivityData"
+                                                item-value="_id"
+                                                items-per-page="-1"
+                                                class="scrollable-table"
+                                                hover
+                                                :search="activitySearch"
+                                            >
+                                                <template v-slot:body="{ items }">
+                                                    <template v-for="item in items" :key="item._id">
+                                                        <tr
+                                                            @click="selectActivity(item)"
+                                                            @mouseover="hoveredItem = item._id"
+                                                            @mouseleave="hoveredItem = null"
+                                                            class="pointer-cursor activity-row"
+                                                        >
+                                                            <td>
+                                                                <div class="activity-content">
+                                                                    {{ item.activityName }}
+                                                                    <v-icon v-if="hoveredItem === item._id">
+                                                                        mdi-plus
+                                                                    </v-icon>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </template>
+                                                <template v-slot:bottom></template>
+                                            </v-data-table>
+                                        </v-card>
+
+                                    </v-col>
+                                </v-row>
+
+                                <!-- Optional Registration Code -->
+                                <v-row>
+                                    <v-col>
+                                        <v-checkbox
+                                            v-model="registrationCodes[experience._id].include"
+                                            :label="'Include Registration Code for ' + experience.experienceName"
+                                            hide-details
+                                        ></v-checkbox>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row v-if="registrationCodes[experience._id].include">
+                                    <v-col cols="6">
+                                        <v-text-field
+                                            v-model="registrationCodes[experience._id].code"
+                                            label="Enter Registration Code"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+
+                            </v-window-item>
                         </v-window>
                     </v-card-text>
                 </v-card>
@@ -156,12 +182,12 @@
             </v-col>
         </v-row>
 
+        <!-- Exit Form Release Date Section -->
         <v-row>
             <p class="font-weight-black text-h7">Exit Form Release Date</p>
         </v-row>
-        <!-- Main Row for Experiences and Button -->
+
         <v-row>
-            <!-- Column for the Button -->
             <v-col cols="12" md="4" v-if="selectedExperiences && selectedExperiences.length">
                 <v-btn 
                     @click="openDatePicker" 
@@ -175,11 +201,8 @@
                 <p class="font-italic">Please Select an Experience</p>
             </v-col>
 
-
-
-            <!-- Column for Experiences -->
+            <!-- Section for selecting experiences to set the release date -->
             <v-col cols="12" md="8">
-                <!-- Section for selecting experiences to set the release date -->
                 <div v-if="selectedExperiences && selectedExperiences.some(e => !e.exitFormReleaseDate)">
                     <p :class="{'error-text': showExitFormError}" class="text-subtitle-2">Select Experiences to Set an Exit Form Release Date</p>
                     <v-chip-group v-model="selectedExperiencesForExitFormReleaseDate" multiple>
@@ -215,11 +238,15 @@
                 </div>
             </v-col>
         </v-row>
+
         <v-row>
             <v-col>
+                <!-- Cancel Button -->
                 <v-btn @click="goBack" style="margin-right: 10px;">
                 Cancel
                 </v-btn>
+
+                <!-- Submit Button -->
                 <v-btn style="text-align: center;" type="submit">Submit</v-btn>
             </v-col>
         </v-row>
@@ -240,41 +267,8 @@
         </v-card-actions>
     </v-card>
 </v-dialog>
-<!-- <br><br><br><br>
-<br><br><br><br>
-selectedExperience:
-<br>
-{{ selectedExperience }}
-<br><br><br><br>
-selectedExperiences:
-<br>
-{{ selectedExperiences }}
-<br><br><br><br>
-activitiesTab:
-<br>
-{{ activitiesTab }}
-<br><br><br><br>
-selectedActivities:
-<br>
-{{ selectedActivities }}
-<br><br><br><br>
-activityData:
-<br>
-{{ activityData }}
-<br><br><br><br>
-experienceData:
-<br>
-{{ experienceData }}
-<br><br><br><br>
-selectedSession:
-<br>
-{{ selectedSession }} -->
 </div>
 </template>
-
-
-
-
     
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -322,91 +316,138 @@ export default {
             activitySearch: "",
             hoveredItem: null,
             selectedExperience: null,
+            registrationCodes: {}
         }
     },
 
     created() {
+        // Fetch activity data
         this.fetchActivityData();
+
+        // Fetch active sessions and handle the result
         this.fetchActiveSessions().then(() => {
-            if (this.$route.params.id) {
-                const matchingSession = this.sessionData.find(session => session._id === this.$route.params.id);
-                if (matchingSession) {
-                    this.selectedSession = matchingSession;
-                }
+            // Check if there is navigation data with an ID
+            if (useLoggedInUserStore().navigationData?.id) {
+            // Find a session in the sessionData array that matches the stored ID
+            const matchingSession = this.sessionData.find(session => session._id === useLoggedInUserStore().navigationData?.id);
+            
+            // If a matching session is found, set it as the selected session
+            if (matchingSession) {
+                this.selectedSession = matchingSession;
+            }
             }
         });
     },
 
+
     watch: {
-        selectedSession(newVal, oldVal) {
+        // Watch for changes to the selectedSession
+        selectedSession(newVal) {
+            // If the new value of selectedSession has a valid _id
             if (newVal && newVal._id) {
                 this.selectedExperiences = [];
+                
+                // Fetch active experiences based on the new session's _id
                 this.fetchActiveExperiences(newVal._id);
             } else {
                 this.experienceData = [];
             }
         },
 
+        // Watch for changes to the selectedExperiences array
         selectedExperiences(newVal) {
+            // If there are new experiences selected
             if (newVal && newVal.length > 0) {
+                // Set the first experience as the active tab
                 this.activitiesTab = newVal[0]._id;
+
+                // Initialize registration codes for each new experience
+                newVal.forEach(exp => {
+                    if (!this.registrationCodes.hasOwnProperty(exp._id)) {
+                    this.registrationCodes = { 
+                            ...this.registrationCodes, 
+                            [exp._id]: { include: false, code: '' } 
+                        };
+                    }
+                });
             } else if (newVal.length === 0) {
+                // Clear selected experience and activity tab if no experiences are selected
                 this.selectedExperience = {};
                 this.activitiesTab = null;
             }
         },
-        
+
+        // Watch for changes to the activitiesTab (_id of the selected experience)
         activitiesTab(newVal) {
-            // Find the experience that matches the newVal (which is the _id of the experience)
+            // Find the experience that matches the new activitiesTab value
             let matchingExperience = this.selectedExperiences.find(experience => experience._id === newVal);
+            
+            // If a matching experience is found, set it as the selectedExperience
             if (matchingExperience) {
                 this.selectedExperience = matchingExperience;
             } else {
+                // Log if no matching experience is found
                 console.log('no matching experience');
             }
-        }
+        },
     },    
 
     computed: {
+        // Groups selected experiences by their exit form release date
         groupedExperiences() {
+            // Return an empty object if no experiences are selected
             if (!this.selectedExperiences) {
                 return {};
             }
 
+            // Group experiences by the formatted release date
             const grouped = this.selectedExperiences.reduce((acc, exp) => {
                 if (exp.exitFormReleaseDate) {
-                    const dateStr = new Date(exp.exitFormReleaseDate).toLocaleDateString();
-                    if (!acc[dateStr]) {
-                        acc[dateStr] = [];
-                    }
-                    acc[dateStr].push(exp);
+                const dateStr = new Date(exp.exitFormReleaseDate).toLocaleDateString();
+                if (!acc[dateStr]) {
+                    acc[dateStr] = [];
+                }
+                acc[dateStr].push(exp);
                 }
                 return acc;
             }, {});
+
             return grouped;
         },
 
+        // Determines whether the "Set Date" button should be disabled
         isSetDateButtonDisabled() {
+            // Checks if there are no experiences selected
             const noExperiences = !this.selectedExperiences || this.selectedExperiences.length === 0;
+
+            // Checks if all selected experiences already have exit form release dates
             const allHaveDates = this.selectedExperiences?.every(e => e.exitFormReleaseDate);
+
+            // Checks if there are any experiences without a date but none selected for setting the date
             const noneSelected = this.selectedExperiences?.some(e => !e.exitFormReleaseDate) &&
                                 this.selectedExperiencesForExitFormReleaseDate.length === 0;
 
-
+            // Disable the button if no experiences, all have dates, or none are selected for date setting
             return noExperiences || allHaveDates || noneSelected;
         },
 
+        // Filters activities based on the currently selected experience
         selectedActivities() {
-            return this.activityData.filter(activity => this.selectedExperience?.activities?.includes(activity._id));
+            // Returns the activities associated with the selected experience
+            return this.activityData.filter(activity => 
+            this.selectedExperience?.activities?.includes(activity._id)
+            );
         },
 
+        // Filters out activities that are already selected, leaving only unselected activities
         filteredActivityData() {
             // Get IDs of selected activities
             const selectedActivityIDs = this.selectedActivities.map(activity => activity._id);
 
-            // Filter activityData to exclude activities that are in selectedActivities
+            // Return activity data excluding the selected activities
             return this.activityData.filter(activity => !selectedActivityIDs.includes(activity._id));
-        }
+        },
+        
     },
 
     methods: {
@@ -526,11 +567,18 @@ export default {
                 return;
             }
 
-
             // Prepare the experience data for the API call
             const experienceData = this.selectedExperiences.map(exp => ({
                 id: exp._id,
-                exitFormReleaseDate: exp.exitFormReleaseDate
+                exitFormReleaseDate: exp.exitFormReleaseDate,
+                activities: exp.activities.map(actId => {
+                    const activity = this.activityData.find(activity => activity._id === actId);
+                    return {
+                        id: actId,
+                        name: activity ? activity.activityName : undefined
+                    };
+                }),
+                registrationCode: this.registrationCodes[exp._id].include ? this.registrationCodes[exp._id].code : undefined
             }));
 
             // API call
@@ -540,34 +588,22 @@ export default {
 
                 let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances/multiple`;
 
-                // Prepare the experience data for the API call
-                const experienceData = this.selectedExperiences.map(exp => ({
-                    id: exp._id,
-                    exitFormReleaseDate: exp.exitFormReleaseDate,
-                    activities: exp.activities.map(actId => {
-                        const activity = this.activityData.find(activity => activity._id === actId);
-                        return {
-                            id: actId,
-                            name: activity ? activity.activityName : undefined
-                        };
-                    })
-                }));
-
                 await axios.post(apiURL, {
                     sessionID: this.selectedSession._id,
                     experienceData
                 }, { headers: { token } });
 
                 // Handle response here, e.g., redirecting or displaying a success message
-                this.$router.push({ 
-                    name: 'instructorDataManagement',
-                    params: {
-                        activeTab: 0,
-                        toastType: 'success',
-                        toastMessage: 'Experience Instance added!',
-                        toastPosition: 'top-right',
-                        toastCSS: 'Toastify__toast--create'
-                    }
+                user.navigationData = {
+                    activeTab: 0,
+                    toastType: 'success',
+                    toastMessage: 'Experience Instance added!',
+                    toastPosition: 'top-right',
+                    toastCSS: 'Toastify__toast--create'
+                };
+
+                this.$router.push({
+                    name: 'instructorDataManagement'
                 });
             } catch (error) {
                 // Handle error
@@ -598,11 +634,11 @@ export default {
 
         // Navigate backwards
         goBack() {
+            useLoggedInUserStore().navigationData = {
+                activeTab: 0,
+            };
             this.$router.push({
-                name: 'instructorDataManagement',
-                params: {
-                    activeTab: 0,
-                }
+                name: 'instructorDataManagement'
             });
         },
 
