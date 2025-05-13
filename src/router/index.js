@@ -107,12 +107,24 @@ const routes = [
       component: () => import('../components/studentSide/projects/editProjectProposal.vue'),
       beforeEnter: requireAuth(['Student']),
     },
+    {
+      path: '/viewProjectProposal',
+      name: 'viewProjectProposal',
+      component: () => import('../components/instructorSide/projects/viewProjectProposal.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
     // Route for editing a project:
     {
-      path: '/editProject',
-      name: 'editProject',
+      path: '/editProjectStudent',
+      name: 'editProjectStudent',
       component: () => import('../components/studentSide/projects/editProject.vue'),
       beforeEnter: requireAuth(['Student']),
+    },
+    {
+      path: '/editProjectInstructor',
+      name: 'editProjectInstructor',
+      component: () => import('../components/instructorSide/projects/editProject.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
     {
       path: '/instructorProjects',

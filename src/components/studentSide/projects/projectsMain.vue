@@ -463,7 +463,7 @@ export default {
         return;
       }
       this.loggedInUserStore.navigationData = { projectID: project._id };
-      this.$router.push({ name: 'editProject' });
+      this.$router.push({ name: 'editProjectStudent' });
     },
     formatDate(dateString) {
       if (!dateString) return '';

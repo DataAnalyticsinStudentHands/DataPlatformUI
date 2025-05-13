@@ -75,10 +75,10 @@
         
         <v-divider class="mb-4"></v-divider>
         
-        <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite members directly') }}</div>
+        <!-- <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite members directly') }}</div> -->
         
         <!-- Search Bar with Counter -->
-        <v-row class="mb-2">
+        <!-- <v-row class="mb-2">
           <v-col cols="12" sm="8">
             <v-text-field
               v-model="searchQuery"
@@ -110,10 +110,10 @@
               </v-btn>
             </v-badge>
           </v-col>
-        </v-row>
+        </v-row> -->
         
         <!-- Users Table with Custom Styling -->
-        <v-card variant="outlined" class="mt-2">
+        <!-- <v-card variant="outlined" class="mt-2">
           <v-data-table
             v-model="selectedUsers"
             :headers="userHeaders"
@@ -140,10 +140,10 @@
               <span v-else></span>
             </template>
           </v-data-table>
-        </v-card>
+        </v-card> -->
       </v-card-text>
       
-      <v-divider></v-divider>
+      <!-- <v-divider></v-divider>
       
       <v-card-actions class="pa-4">
         <v-btn
@@ -164,7 +164,7 @@
           <v-icon class="mr-1">mdi-send</v-icon>
           {{ $t('Send Invitations') }} ({{ selectedUsers.length }})
         </v-btn>
-      </v-card-actions>
+      </v-card-actions> -->
     </v-card>
   </v-dialog>
 
@@ -349,7 +349,7 @@ export default {
         toast.error(this.$t('Error fetching invite code.'), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--error',
-          multiple: false
+          multiple: true
         });
         this.inviteCode = '';
       }
@@ -396,7 +396,7 @@ export default {
         toast.error(this.$t("Error loading project members"), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
-          multiple: false
+          multiple: true
         });
         this.projectMembers = [];
       } finally {
@@ -478,7 +478,7 @@ export default {
         toast.error(this.$t("Error loading available users."), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
-          multiple: false
+          multiple: true
         });
         this.availableUsers = [];
         this.filteredUsers = [];
@@ -569,7 +569,7 @@ export default {
         toast.error(this.$t("Error sending invitations. Please try again later."), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
-          multiple: false
+          multiple: true
         });
       } finally {
         this.invitingUsers = false;
@@ -583,7 +583,7 @@ export default {
           toast.info(this.$t("Copied to clipboard!"), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--update',
-            multiple: false
+            multiple: true
           });
         })
         .catch(err => {
@@ -591,7 +591,7 @@ export default {
           toast.error(this.$t("Failed to copy code"), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--error',
-            multiple: false
+            multiple: true
           });
         });
     },
@@ -623,14 +623,14 @@ export default {
         toast.info(this.$t('New invite code generated'), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--update',
-          multiple: false
+          multiple: true
         });
       } catch (err) {
         console.error('Error regenerating invite code:', err);
         toast.error(this.$t('Failed to regenerate invite code'), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--error',
-          multiple: false
+          multiple: true
         });
       }
     },

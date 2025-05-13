@@ -1,4 +1,10 @@
-<template>
+approveProject() {
+      this.feedbackTitle = this.$t('Approve Project');
+      this.feedbackAction = 'approve';
+      this.feedbackActionLabel = this.$t('Approve');
+      this.dialogFeedback = '';
+      this.feedbackDialog = true;
+    },<template>
   <main>
     <v-form ref="form" @submit.prevent="openSubmitDialog">
       <v-container>
@@ -7,10 +13,10 @@
           <v-col>
             <div class="d-flex align-center justify-space-between">
               <div class="d-flex align-center">
-                <p class="font-weight-black text-h6 mb-0 mr-3">{{ $t('Edit Project') }}</p>
+                <p class="font-weight-black text-h6 mb-0 mr-3">{{ $t('Review Project') }}</p>
                 <p class="text-h6 text-grey-darken-1 mb-0">{{ projectData.name || $t('Untitled Project') }}</p>
               </div>
-              <div v-if="projectData.projectStatus !== 'Proposed'" class="status-badge d-inline-flex align-center px-3 py-1">
+              <div class="status-badge d-inline-flex align-center px-3 py-1">
                 <v-icon size="small" :color="getStatusColor(projectData.projectStatus)" class="mr-1">mdi-circle</v-icon>
                 <span :class="`text-${getStatusColor(projectData.projectStatus)}`">{{ projectData.projectStatus }}</span>
               </div>
@@ -27,7 +33,7 @@
 
         <template v-else>
           <v-row>
-            <!-- Main project information column - reduced width from md="8" to md="7" -->
+            <!-- Main project information column -->
             <v-col cols="12" md="7">
               <!-- Project details card -->
               <v-card class="mb-6">
@@ -45,7 +51,6 @@
                     :error-messages="nameErrorMessages"
                     :rules="nameRules"
                     :counter="100"
-                    :readonly="!isProjectOwner"
                     required
                     outlined
                     class="mb-4"
@@ -55,12 +60,11 @@
                   <p class="font-weight-black text-h8 mb-2">{{ $t('Project Description') }}</p>
                   <v-textarea 
                     v-model="projectData.description" 
-                    :label="$t('Describe your project idea')"
+                    :label="$t('Project description')"
                     :error="isDescriptionInvalid"
                     :error-messages="descriptionErrorMessages"
                     :rules="descriptionRules"
                     :counter="5000"
-                    :readonly="!isProjectOwner"
                     auto-grow
                     rows="5"
                     outlined
@@ -85,7 +89,6 @@
                     column
                     multiple
                     selected-class="red-chip"
-                    :disabled="!isProjectOwner"
                   >
                     <v-chip
                       v-for="(tag, index) in availableTags"
@@ -102,35 +105,16 @@
                 </v-card-text>
               </v-card>
               
-              <!-- Project Members card - Using Design 1 version -->
+              <!-- Project Members card -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-account-group" class="mr-2"></v-icon>
                   {{ $t('Project Members') }}
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    size="small"
-                    color="#c8102e"
-                    variant="flat"
-                    @click="openInviteDialog"
-                    prepend-icon="mdi-account-plus"
-                  >
-                    {{ $t('Invite') }}
-                  </v-btn>
                 </v-card-title>
                 
                 <div v-if="projectMembers.length === 0" class="text-center my-6 pa-6">
                   <v-icon icon="mdi-account-group-outline" size="x-large" color="grey" class="mb-2"></v-icon>
                   <p class="text-grey">{{ $t('No members have been added to this project yet.') }}</p>
-                  <v-btn
-                    variant="tonal"
-                    color="#c8102e"
-                    class="mt-3"
-                    @click="openInviteDialog"
-                    prepend-icon="mdi-account-plus"
-                  >
-                    {{ $t('Start inviting people') }}
-                  </v-btn>
                 </div>
                 
                 <v-list v-else lines="two">
@@ -138,7 +122,7 @@
                     v-for="member in projectMembers"
                     :key="member.id"
                     :title="member.name"
-                    :subtitle="member.email"
+                    :subtitle="member.email || ''"
                     rounded
                     class="mb-1"
                   >
@@ -167,9 +151,9 @@
               </v-card>
             </v-col>
             
-            <!-- Side panel with additional info - increased width from md="4" to md="5" -->
+            <!-- Side panel with additional info -->
             <v-col cols="12" md="5">
-              <!-- Experience & Instructor info card -->
+              <!-- Experience info card -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-school" class="mr-2"></v-icon>
@@ -177,59 +161,40 @@
                 </v-card-title>
                 
                 <v-card-text class="pa-4">
-                  <!-- Experience - Made more visible with tooltip on entire component -->
+                  <!-- Experience section -->
                   <p class="font-weight-black text-h8 mb-2">
                     {{ $t('Associated Experience') }}
                   </p>
-                  <v-tooltip
-                    location="bottom"
-                    text="The associated experience cannot be changed after project creation"
-                    :offset="2"
-                    open-delay="200"
-                    class="tooltip-close"
-                  >
-                    <template v-slot:activator="{ props }">
-                      <div v-bind="props">
-                        <v-select
-                          v-model="projectData.experienceInstanceId"
-                          :items="experienceInstances"
-                          item-title="experienceInstanceName"
-                          item-value="experienceInstanceId"
-                          :label="$t('Experience')"
-                          :error="isExperienceInvalid"
-                          :error-messages="experienceErrorMessages"
-                          :loading="isLoadingExperiences"
-                          required
-                          outlined
-                          readonly
-                          class="mb-4"
-                        ></v-select>
-                      </div>
-                    </template>
-                  </v-tooltip>
+                  <v-card variant="outlined" class="pa-3 mb-4 bg-grey-lighten-5">
+                    <div class="text-body-1 font-weight-medium">
+                      {{ projectData.experienceInstanceName || $t('Not assigned') }}
+                    </div>
+                    <div v-if="projectData.sessionData" class="text-caption d-flex align-center">
+                      <v-icon size="small" class="mr-1">mdi-calendar-outline</v-icon>
+                      {{ projectData.sessionData.name || $t('No session available') }}
+                    </div>
+                  </v-card>
                   
-                  <!-- Instructor - Only show if instructorId exists -->
-                  <template v-if="projectData.instructorId">
-                    <p class="font-weight-black text-h8 mb-2">
-                      {{ $t('Associated Instructor') }}
-                    </p>
-                    <v-card variant="outlined" class="pa-3 mb-3 bg-grey-lighten-5">
-                      <div>
-                        <div class="text-body-1 font-weight-medium">{{ projectData.instructorName || $t('Not Assigned') }}</div>
-                        <div class="text-caption d-flex align-center">
-                          <v-icon size="small" class="mr-1">mdi-email-outline</v-icon>
-                          {{ projectData.instructorEmail || $t('No email available') }}
-                        </div>
-                      </div>
-                    </v-card>
-                  </template>
+                  <!-- Instructor section -->
+                  <p class="font-weight-black text-h8 mb-2">
+                    {{ $t('Associated Instructor') }}
+                  </p>
+                  <v-card variant="outlined" class="pa-3 mb-3 bg-grey-lighten-5">
+                    <div class="text-body-1 font-weight-medium">{{ projectData.instructorName || $t('Not Assigned') }}</div>
+                    <div class="text-caption d-flex align-center">
+                      <v-icon size="small" class="mr-1">mdi-email-outline</v-icon>
+                      {{ projectData.instructorEmail || $t('No email available') }}
+                    </div>
+                  </v-card>
                 </v-card-text>
               </v-card>
               
-              <!-- Project Documents card - Moved from left column to right column -->
+              <!-- Removed Instructor Feedback section as requested -->
+              
+              <!-- Project Documents card -->
               <ProjectDocuments 
                 :project-id="projectData._id"
-                :is-project-owner="isProjectOwner"
+                :is-project-owner="true"
               />
             </v-col>
           </v-row>
@@ -237,18 +202,17 @@
           <!-- Buttons positioning -->
           <v-row class="mt-6">
             <v-col class="d-flex align-center justify-space-between">
-              <div>
+              <div class="d-flex gap-3">
                 <!-- Back button -->
                 <v-btn 
                   @click="$router.back()"
-                  class="mr-4"
+                  variant="outlined"
                 >
                   {{ $t('Back') }}
                 </v-btn>
 
-                <!-- Update project button - only for owners -->
+                <!-- Update project button -->
                 <v-btn 
-                  v-if="isProjectOwner"
                   type="submit"
                   color="primary"
                   class="update-btn"
@@ -258,16 +222,42 @@
                 </v-btn>
               </div>
               
-              <!-- Leave Project button - only for non-owners -->
-              <v-btn 
-                v-if="!isProjectOwner"
-                color="error"
-                variant="outlined"
-                prepend-icon="mdi-exit-to-app"
-                @click="openLeaveProjectDialog"
-              >
-                {{ $t('Leave Project') }}
-              </v-btn>
+              <div>
+                <!-- Action buttons based on project status -->
+                <div v-if="projectData.projectStatus === 'Proposed'" class="d-flex gap-3">
+                  <v-btn
+                    color="success"
+                    variant="flat"
+                    prepend-icon="mdi-check"
+                    @click="approveProject"
+                    :loading="approvingProject"
+                  >
+                    {{ $t('Approve Project') }}
+                  </v-btn>
+                  
+                  <v-btn
+                    color="error"
+                    variant="outlined"
+                    prepend-icon="mdi-close"
+                    @click="rejectProject"
+                    :loading="rejectingProject"
+                  >
+                    {{ $t('Reject Project') }}
+                  </v-btn>
+                </div>
+                
+                <!-- Archive button (only for Active projects) -->
+                <v-btn 
+                  v-if="projectData.projectStatus === 'Active'"
+                  color="grey"
+                  variant="outlined"
+                  prepend-icon="mdi-archive"
+                  @click="archiveProject"
+                  :loading="archivingProject"
+                >
+                  {{ $t('Archive Project') }}
+                </v-btn>
+              </div>
             </v-col>
           </v-row>
         </template>
@@ -291,66 +281,32 @@
       </v-card>
     </v-dialog>
 
-    <!-- Invite Members Dialog -->
-    <invite-members-dialog
-      v-if="inviteDialog && projectData._id"
-      v-model="inviteDialog"
-      :project-id="projectData._id"
-      :project-name="projectData.name"
-      :experience-instance-name="projectData.experienceInstanceName"
-      @members-invited="handleMembersInvited"
-    />
-
-    <!-- Invitation Success Dialog -->
-    <v-dialog v-model="inviteSuccessDialog" max-width="500px">
+    <!-- Feedback Dialog -->
+    <v-dialog v-model="feedbackDialog" persistent max-width="500px">
       <v-card>
-        <v-card-title class="bg-success-lighten-5 py-4">
-          <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
-          {{ $t('Invitations Sent') }}
+        <v-card-title class="headline bg-grey-lighten-4">
+          {{ feedbackTitle }}
         </v-card-title>
         <v-card-text class="pt-4">
-          <p>{{ $t('The selected users have been invited to join your project.') }}</p>
-          <p>{{ $t('They will receive a notification and can accept or decline the invitation.') }}</p>
+          <v-textarea
+            v-model="dialogFeedback"
+            :label="$t('Feedback to student')"
+            auto-grow
+            rows="5"
+            variant="outlined"
+            class="mt-2"
+          ></v-textarea>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            variant="text"
-            @click="inviteSuccessDialog = false"
+          <v-btn text @click="feedbackDialog = false">{{ $t('Cancel') }}</v-btn>
+          <v-btn 
+            :color="feedbackAction === 'approve' ? 'success' : feedbackAction === 'revision' ? 'warning' : 'error'" 
+            text 
+            @click="submitActionWithFeedback"
+            :loading="processingAction"
           >
-            {{ $t('Close') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Leave Project Confirmation Dialog -->
-    <v-dialog v-model="leaveProjectDialog" max-width="500px">
-      <v-card>
-        <v-card-title class="bg-error-lighten-5 py-4">
-          <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
-          {{ $t('Leave Project?') }}
-        </v-card-title>
-        <v-card-text class="pt-4">
-          <p>{{ $t('Are you sure you want to leave this project?') }}</p>
-          <p>{{ $t('You will lose access to project resources and will need to be invited again to rejoin.') }}</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            variant="text"
-            @click="leaveProjectDialog = false"
-          >
-            {{ $t('Cancel') }}
-          </v-btn>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="leaveProject"
-            :loading="leavingProject"
-          >
-            {{ $t('Leave') }}
+            {{ feedbackActionLabel }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -362,13 +318,11 @@
 import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
-import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
 import ProjectDocuments from '@/components/reusable/projectDocuments.vue';
 
 export default {
-  name: "EditProject",
+  name: "InstructorEditProject",
   components: {
-    InviteMembersDialog,
     ProjectDocuments 
   },
   data() {
@@ -376,40 +330,33 @@ export default {
       loading: true,
       formSubmitted: false,
       submitDialog: false,
-      inviteDialog: false,
-      inviteSuccessDialog: false,
-      leaveProjectDialog: false,
+      feedbackDialog: false,
+      dialogFeedback: '',
+      feedbackTitle: '',
+      feedbackAction: null,
+      feedbackActionLabel: '',
+      instructorFeedback: '',
       updateLoading: false,
-      invitingUsers: false,
-      leavingProject: false,
-      isLoadingExperiences: false,
-      loadingUsers: false,
+      sendingFeedback: false,
+      approvingProject: false,
+      requestingRevision: false,
+      rejectingProject: false,
+      archivingProject: false,
+      processingAction: false,
       projectData: {
         _id: null,
         name: '',
         description: '',
         experienceInstanceId: null,
         experienceInstanceName: '',
+        sessionData: null,
         instructorId: null,
         instructorName: '',
         instructorEmail: '',
-        projectStatus: 'Proposed'  // Updated from status to projectStatus
+        projectStatus: 'Proposed'
       },
-      experienceInstances: [],
-      experienceInstancesLoaded: false,
       // Current project members
       projectMembers: [],
-      // For inviting users
-      searchQuery: '',
-      roleFilter: 'All Roles',
-      userHeaders: [
-        { title: 'Name', key: 'name' },
-        { title: 'Email', key: 'email' },
-        { title: 'Invitation', key: 'invitation' }
-      ],
-      availableUsers: [], // Will be populated with mock data
-      filteredUsers: [],
-      selectedUsers: [],
       // Rules for validation
       nameRules: [
         v => !!v || this.$t('Project name is required'),
@@ -442,15 +389,6 @@ export default {
     };
   },
   computed: {
-    // Determine if current user is the project owner
-    isProjectOwner() {
-      const user = useLoggedInUserStore();
-      return this.projectData && 
-             this.projectMembers && 
-             this.projectMembers.some(member => 
-               member.isOwner && member.id === user.userId
-             );
-    },
     isNameInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.name || 
@@ -495,20 +433,13 @@ export default {
       
       return errors;
     },
-    isExperienceInvalid() {
-      if (!this.formSubmitted) return false;
-      return !this.projectData.experienceInstanceId;
-    },
-    experienceErrorMessages() {
-      return this.isExperienceInvalid ? [this.$t('Please select an experience')] : [];
-    },
     hasValidationErrors() {
       if (!this.formSubmitted) return false;
-      return this.isNameInvalid || this.isDescriptionInvalid || this.isExperienceInvalid;
+      return this.isNameInvalid || this.isDescriptionInvalid;
     }
   },
   async mounted() {
-    console.log('EditProject mounted');
+    console.log('InstructorEditProject mounted');
     // In case navigation data is lost, retrieve from query param if available
     const user = useLoggedInUserStore();
     
@@ -519,17 +450,14 @@ export default {
         toastClassName: 'Toastify__toast--delete',
         multiple: false
       });
-      this.$router.push({ name: 'studentProjects' });
+      this.$router.push({ name: 'instructorProjects' });
       return;
     }
     
     console.log('Found project ID in navigation data:', user.navigationData.projectID);
     
-    // Continue with normal flow
+    // Fetch project data
     await this.fetchProjectData(user.navigationData.projectID);
-    if (this.isProjectOwner) {
-      await this.fetchStudentExperienceInstances();
-    }
   },
   methods: {
     async fetchProjectData(projectId) {
@@ -544,13 +472,13 @@ export default {
             toastClassName: 'Toastify__toast--delete',
             multiple: false
           });
-          this.$router.push({ name: 'studentProjects' });
+          this.$router.push({ name: 'instructorProjects' });
           return;
         }
         
         console.log('Fetching project data for ID:', projectId);
         
-        // Use the new endpoint that fetches a single project
+        // Use instructor endpoint to fetch project
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
         
         const response = await axios.get(apiURL, { headers: { token } });
@@ -560,16 +488,15 @@ export default {
           
           console.log('Received project data:', project);
           
-          // Set project data using the new structure
+          // Set project data
           this.projectData = {
             _id: project._id,
             name: project.projectName,
             description: project.projectDescription,
             projectStatus: project.projectStatus,
-            // Handle the experience object (not an array anymore)
             experienceInstanceId: project.experience ? project.experience.id : null,
             experienceInstanceName: project.experience ? project.experience.experienceName : this.$t('Not assigned'),
-            // Handle instructor data
+            sessionData: project.experience ? project.experience.session : null,
             instructorId: project.instructor ? project.instructor.id : null,
             instructorName: project.instructor ? project.instructor.name : this.$t('Not assigned'),
             instructorEmail: project.instructor ? project.instructor.email : ''
@@ -581,10 +508,6 @@ export default {
           // Set project members
           this.projectMembers = project.members || [];
           
-          // Check if the current user is the project owner
-          console.log("Current user ID:", user.userId);
-          console.log("Project members:", this.projectMembers);
-          console.log("Is current user the owner:", this.isProjectOwner);
         } else {
           console.error('No project found in response');
           toast.error(this.$t("Error loading project data"), {
@@ -605,49 +528,25 @@ export default {
       }
     },
     
-    async fetchStudentExperienceInstances() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
-      let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/registered-experiences`;
-      
-      this.isLoadingExperiences = true;
-      
-      try {
-        const resp = await axios.get(apiURL, { headers: { token } });
-        
-        // Map the returned data to the format we need for the dropdown
-        this.experienceInstances = resp.data.map(registration => ({
-          experienceInstanceId: registration.experienceInstance.id,
-          experienceInstanceName: `${registration.experienceInstance.name} (${registration.session.name})`
-        }));
-        
-        this.experienceInstancesLoaded = true;
-      } catch (error) {
-        console.error("Error fetching registered experiences:", error);
-        toast.error(this.$t("Error loading your experiences. Please try again later."), {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: false
-        });
-      } finally {
-        this.isLoadingExperiences = false;
+    getStatusColor(status) {
+      switch (status) {
+        case 'Active': return 'green';
+        case 'In Progress': return 'blue';
+        case 'Proposed': return 'orange';
+        case 'Archived': return 'grey';
+        default: return 'grey';
       }
     },
     
+    getStatusTextColor(status) {
+      // All statuses use white text for better contrast
+      return 'white';
+    },
+    
     async openSubmitDialog() {
-      // Only project owners should be able to update
-      if (!this.isProjectOwner) {
-        toast.error(this.$t("You don't have permission to update this project."), {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: false
-        });
-        return;
-      }
-      
       this.formSubmitted = true;
       
-      // Check for validation errors with the enhanced validation
+      // Check for validation errors
       const nameValid = this.projectData.name && 
                        this.projectData.name.trim() !== '' && 
                        this.projectData.name.length >= 3 && 
@@ -681,30 +580,19 @@ export default {
     },
     
     async updateProject() {
-      // Double-check that the user is the project owner
-      if (!this.isProjectOwner) {
-        toast.error(this.$t("You don't have permission to update this project."), {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: false
-        });
-        return;
-      }
-      
       this.updateLoading = true;
       
       try {
         const user = useLoggedInUserStore();
         let token = user.token;
-        // Use the same endpoint path as specified
+        // Use the instructor endpoint for project updates
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/update`;
         
         const projectPayload = {
           projectId: this.projectData._id,
           name: this.projectData.name,
           description: this.projectData.description,
-          tags: this.selectedTags,
-          notes: 'Updated via web interface'
+          tags: this.selectedTags
         };
         
         console.log('Updating project with payload:', projectPayload);
@@ -719,7 +607,7 @@ export default {
         };
         
         // Redirect to projects list
-        this.$router.push({ name: 'studentProjects' });
+        this.$router.push({ name: 'instructorProjects' });
       } catch (error) {
         console.error("Error updating project:", error);
         
@@ -738,7 +626,7 @@ export default {
         }
         
         // Generic error message if no specific error was provided
-        toast.error(this.$t("Error updating your project. Please try again later."), {
+        toast.error(this.$t("Error updating the project. Please try again later."), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
           multiple: false
@@ -748,49 +636,53 @@ export default {
       }
     },
     
-    getStatusColor(status) {
-      switch (status) {
-        case 'Active': return 'green';
-        case 'In Progress': return 'blue';
-        case 'Proposed': return 'orange';
-        case 'Archived': return 'grey';
-        default: return 'grey';
+    async rejectProject() {
+      this.feedbackTitle = this.$t('Reject Project');
+      this.feedbackAction = 'reject';
+      this.feedbackActionLabel = this.$t('Reject');
+      this.dialogFeedback = '';
+      this.feedbackDialog = true;
+    },
+    
+    async archiveProject() {
+      this.archivingProject = true;
+      
+      try {
+        const user = useLoggedInUserStore();
+        let token = user.token;
+        
+        // Use the new PATCH endpoint for archiving
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/archive/${this.projectData._id}`;
+        
+        await axios.patch(apiURL, {}, { headers: { token } });
+        
+        user.navigationData = {
+          toastType: 'info',
+          toastMessage: 'Project archived successfully!',
+          toastPosition: 'top-right',
+          toastCSS: 'Toastify__toast--update'
+        };
+        
+        // Redirect to projects list
+        this.$router.push({ name: 'instructorProjects' });
+      } catch (error) {
+        console.error("Error archiving project:", error);
+        toast.error(this.$t("Error archiving project. Please try again later."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+      } finally {
+        this.archivingProject = false;
       }
     },
     
-    getStatusTextColor(status) {
-      // All statuses use white text for better contrast
-      return 'white';
-    },
-    
-    openInviteDialog() {
-      this.searchQuery = '';
-      this.roleFilter = 'All Roles';
-      this.selectedUsers = [];
-      this.inviteDialog = true;
-    },
-    
-    handleMembersInvited(invitedUsers) {
-      // Handle the newly invited users
-      console.log('Users invited:', invitedUsers);
-      
-      // Add the new members to the current list
-      if (invitedUsers && invitedUsers.length > 0) {
-        this.projectMembers = [...this.projectMembers, ...invitedUsers];
-      }
-      
-      // Show success message
-      toast.success(this.$t("Members successfully invited to the project!"), {
-        position: 'top-right',
-        toastClassName: 'Toastify__toast--update',
-        multiple: false
-      });
-    },
-
-    openLeaveProjectDialog() {
-      // Only non-owners can leave
-      if (this.isProjectOwner) {
-        toast.error(this.$t("Project owners cannot leave their projects. Transfer ownership first or archive the project."), {
+    async submitActionWithFeedback() {
+      // For approve action, feedback is optional
+      if (this.feedbackAction === 'approve' && !this.dialogFeedback.trim()) {
+        // Allow empty feedback for approvals
+      } else if (!this.dialogFeedback.trim()) {
+        toast.error(this.$t("Please provide feedback before submitting."), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
           multiple: false
@@ -798,58 +690,58 @@ export default {
         return;
       }
       
-      this.leaveProjectDialog = true;
-    },
-
-    async leaveProject() {
-      this.leavingProject = true;
+      this.processingAction = true;
       
       try {
         const user = useLoggedInUserStore();
         let token = user.token;
         
-        // Call the API endpoint to leave the project
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/leave`;
-        
-        const response = await axios.post(apiURL, {
-          projectId: this.projectData._id
-        }, { headers: { token } });
-        
-        // Close the dialog
-        this.leaveProjectDialog = false;
-        
-        // Set navigation data for toast message on redirect
-        user.navigationData = {
-          toastType: 'info',
-          toastMessage: 'You have successfully left the project.',
-          toastPosition: 'top-right',
-          toastCSS: 'Toastify__toast--update'
-        };
-        
-        // Navigate back to projects list
-        this.$router.push({ name: 'studentProjects' });
-        
-      } catch (error) {
-        console.error("Error leaving project:", error);
-        
-        // Check for specific error messages from the API
-        if (error.response && error.response.data) {
-          const errorMsg = error.response.data.error || error.response.data.title || "Error leaving the project. Please try again later.";
-          toast.error(this.$t(errorMsg), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: false
-          });
-        } else {
-          // Generic error message
-          toast.error(this.$t("Error leaving the project. Please try again later."), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: false
-          });
+        switch (this.feedbackAction) {
+          case 'approve':
+            // Use the approve-project endpoint
+            const approveURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/approve-project`;
+            await axios.post(approveURL, {
+              projectId: this.projectData._id
+            }, { headers: { token } });
+            
+            user.navigationData = {
+              toastType: 'success',
+              toastMessage: 'Project approved successfully!',
+              toastPosition: 'top-right',
+              toastCSS: 'Toastify__toast--update'
+            };
+            break;
+            
+          case 'reject':
+            // For rejection, use the PATCH endpoint to set status to 'Archived'
+            const rejectURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/archive/${this.projectData._id}`;
+            await axios.patch(rejectURL, {}, { headers: { token } });
+            
+            user.navigationData = {
+              toastType: 'info',
+              toastMessage: 'Project rejected successfully!',
+              toastPosition: 'top-right',
+              toastCSS: 'Toastify__toast--update'
+            };
+            break;
+            
+          default:
+            throw new Error('Invalid action');
         }
+        
+        this.feedbackDialog = false;
+        
+        // Redirect to projects list
+        this.$router.push({ name: 'instructorProjects' });
+      } catch (error) {
+        console.error(`Error processing ${this.feedbackAction} action:`, error);
+        toast.error(this.$t(`Error processing request. Please try again later.`), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
       } finally {
-        this.leavingProject = false;
+        this.processingAction = false;
       }
     }
   }
@@ -876,9 +768,9 @@ export default {
   font-size: 0.875rem;
 }
 
-/* Make tooltip closer to the select field */
-:deep(.tooltip-close .v-overlay__content) {
-  margin-top: 0 !important;
+/* Gap utility class */
+.gap-3 {
+  gap: 12px;
 }
 
 .position-relative {

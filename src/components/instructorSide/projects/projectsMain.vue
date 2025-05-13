@@ -137,16 +137,6 @@
                           </v-chip>
                         </td>
                         <td>{{ formatDate(item.updatedAt) }}</td>
-                        <td @click.stop>
-                          <v-btn
-                            color="#c8102e"
-                            variant="text"
-                            size="small"
-                            icon="mdi-eye"
-                            @click="viewProject(item)"
-                            v-tooltip="$t('View Details')"
-                          ></v-btn>
-                        </td>
                       </tr>
                     </template>
                   </v-data-table>
@@ -169,7 +159,7 @@
                       <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
                     </template>
                     <template v-slot:body="{ items }">
-                      <tr v-for="item in items" :key="item._id" @click="reviewProposal(item)" class="cursor-pointer">
+                      <tr v-for="item in items" :key="item._id" @click="viewProposal(item)" class="cursor-pointer">
                         <td>{{ item.projectName }}</td>
                         <td>{{ item.studentName }}</td>
                         <td>{{ item.experienceInfo }}</td>
@@ -183,38 +173,6 @@
                           </v-chip>
                         </td>
                         <td>{{ formatDate(item.submittedDate) }}</td>
-                        <td @click.stop>
-                          <v-btn-group density="comfortable" variant="outlined">
-                            <v-btn
-                              color="#c8102e"
-                              size="small"
-                              icon="mdi-check"
-                              @click="approveProposal(item)"
-                              :disabled="item.projectStatus !== 'Proposed'"
-                              class="ml-auto"
-                              variant="text"
-                              v-tooltip="$t('Approve')"
-                            ></v-btn>
-                            <v-btn
-                              color="warning"
-                              size="small"
-                              icon="mdi-comment-question"
-                              @click="requestRevision(item)"
-                              :disabled="item.projectStatus !== 'Proposed'"
-                              variant="text"
-                              v-tooltip="$t('Request Revision')"
-                            ></v-btn>
-                            <v-btn
-                              color="error"
-                              size="small"
-                              icon="mdi-close"
-                              @click="declineProposal(item)"
-                              :disabled="item.projectStatus !== 'Proposed'"
-                              variant="text"
-                              v-tooltip="$t('Decline')"
-                            ></v-btn>
-                          </v-btn-group>
-                        </td>
                       </tr>
                     </template>
                   </v-data-table>
@@ -225,41 +183,6 @@
         </v-row>
       </v-container>
     </template>
-
-    <!-- Feedback Dialog -->
-    <v-dialog v-model="feedbackDialog" max-width="600px">
-      <v-card class="dialog-card">
-        <v-card-title class="dialog-header text-white pa-4">
-          {{ feedbackTitle }}
-        </v-card-title>
-        <v-card-text class="pa-4">
-          <v-textarea
-            v-model="feedbackText"
-            :label="$t('Feedback to student')"
-            rows="5"
-            auto-grow
-            variant="outlined"
-            class="mt-4"
-          ></v-textarea>
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-spacer></v-spacer>
-          <v-btn
-            color="grey-darken-1"
-            variant="text"
-            @click="feedbackDialog = false"
-          >
-            {{ $t('Cancel') }}
-          </v-btn>
-          <v-btn
-            color="#c8102e"
-            @click="submitFeedback"
-          >
-            {{ $t('Submit') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <!-- Project Template Dialog -->
     <v-dialog v-model="templateDialog" max-width="600px">
@@ -351,8 +274,7 @@ export default {
         { title: this.$t('Student'), key: 'studentName', sortable: true },
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
         { title: this.$t('Status'), key: 'projectStatus', sortable: true },
-        { title: this.$t('Submitted Date'), key: 'submittedDate', sortable: true },
-        { title: this.$t('Actions'), key: 'actions', sortable: false, align: 'end' }
+        { title: this.$t('Submitted Date'), key: 'submittedDate', sortable: true }
       ],
       projectHeaders: [
         { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
@@ -360,16 +282,8 @@ export default {
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
         { title: this.$t('Team Size'), key: 'teamSize', sortable: true },
         { title: this.$t('Status'), key: 'projectStatus', sortable: true },
-        { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true },
-        { title: this.$t('Actions'), key: 'actions', sortable: false, align: 'end' }
+        { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true }
       ],
-      
-      // Feedback dialog
-      feedbackDialog: false,
-      feedbackTitle: '',
-      feedbackText: '',
-      selectedProjectId: null,
-      feedbackAction: null,
       
       // Template dialog
       templateDialog: false,
@@ -561,7 +475,7 @@ export default {
     },
     
     // Project actions
-    reviewProposal(project) {
+    viewProposal(project) {
       if (!project?._id) {
         console.error('Invalid project data:', project);
         toast.error(this.$t("Error processing project data"), {
@@ -571,7 +485,7 @@ export default {
       }
       
       this.loggedInUserStore.navigationData = { projectID: project._id };
-      this.$router.push({ name: 'reviewProjectProposal' });
+      this.$router.push({ name: 'viewProjectProposal' });
     },
     
     viewProject(project) {
@@ -584,111 +498,7 @@ export default {
       }
       
       this.loggedInUserStore.navigationData = { projectID: project._id };
-      this.$router.push({ name: 'editProject' });
-    },
-    
-    // Proposal actions
-    approveProposal(project) {
-      this.selectedProjectId = project._id;
-      this.feedbackTitle = this.$t('Approve Project Proposal');
-      this.feedbackText = '';
-      this.feedbackAction = 'approve';
-      this.feedbackDialog = true;
-    },
-    
-    requestRevision(project) {
-      this.selectedProjectId = project._id;
-      this.feedbackTitle = this.$t('Request Revision');
-      this.feedbackText = '';
-      this.feedbackAction = 'revision';
-      this.feedbackDialog = true;
-    },
-    
-    declineProposal(project) {
-      this.selectedProjectId = project._id;
-      this.feedbackTitle = this.$t('Decline Project Proposal');
-      this.feedbackText = '';
-      this.feedbackAction = 'decline';
-      this.feedbackDialog = true;
-    },
-    
-    async submitFeedback() {
-      if (!this.feedbackText.trim()) {
-        toast.error(this.$t("Please provide feedback for the student."), {
-          position: 'top-right', 
-          toastClassName: 'Toastify__toast--delete', 
-          multiple: true
-        });
-        return;
-      }
-      
-      this.feedbackDialog = false;
-      this.tableLoading = true;
-      
-      try {
-        const user = this.loggedInUserStore;
-        let token = user.token;
-        
-        // If approving, call the approval endpoint to create SharePoint folder
-        if (this.feedbackAction === 'approve') {
-          // Update API URL to match backend endpoint
-          const approvalURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/approve-project`;
-          
-          // POST request with projectId in the body as required by endpoint
-          const response = await axios.post(approvalURL, {
-            projectId: this.selectedProjectId
-          }, { headers: { token } });
-          
-          // Use the specific response message from the endpoint
-          if (response.data && response.data.message) {
-            toast.success(this.$t(response.data.message), {
-              position: 'top-right', 
-              toastClassName: 'Toastify__toast--create', 
-              multiple: true
-            });
-          }
-        } else {
-          // For revision or decline actions, show appropriate message
-          // (In a real implementation, you would add endpoints for these actions)
-          let message = '';
-          switch (this.feedbackAction) {
-            case 'revision':
-              message = this.$t("Revision requested successfully!");
-              break;
-            case 'decline':
-              message = this.$t("Project proposal declined.");
-              break;
-          }
-          
-          toast.success(message, {
-            position: 'top-right', 
-            toastClassName: 'Toastify__toast--create', 
-            multiple: true
-          });
-        }
-        
-        // Store feedback in the project locally (optional)
-        // This would typically be handled by a backend endpoint, but this is a placeholder
-        console.log(`Feedback for project ${this.selectedProjectId}: ${this.feedbackText}`);
-        
-        // Refresh projects list
-        await this.fetchProjects();
-        
-      } catch (error) {
-        console.error("Error processing project action:", error);
-        
-        // Show specific error message if available
-        const errorMessage = error.response?.data?.message || 
-                            this.$t("Error processing request. Please try again.");
-        
-        toast.error(errorMessage, {
-          position: 'top-right', 
-          toastClassName: 'Toastify__toast--delete', 
-          multiple: true
-        });
-      } finally {
-        this.tableLoading = false;
-      }
+      this.$router.push({ name: 'editProjectInstructor' });
     },
     
     // Utility methods
