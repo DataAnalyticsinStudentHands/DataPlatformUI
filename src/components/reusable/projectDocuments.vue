@@ -389,7 +389,7 @@ export default {
     async fetchDocuments() {
       this.loading = true;
       try {
-        const response = await axios.get(`${API}/sharePoint/projects/${this.projectId}/documents`);
+        const response = await axios.get(`${API}/clowder/projects/${this.projectId}/documents`);
         
         if (response.data.success) {
           this.projectDocuments = response.data.documents;
@@ -496,7 +496,7 @@ export default {
     
     async downloadDocument(document) {
       try {
-        const response = await axios.get(`${API}/sharePoint/projects/${this.projectId}/documents/${document.id}/download`);
+        const response = await axios.get(`${API}/clowder/projects/${this.projectId}/documents/${document.id}/download`);
         
         if (response.data.success && response.data.downloadUrl) {
           // Open the download URL in a new tab
@@ -545,7 +545,7 @@ export default {
       
       try {
         const response = await axios.delete(
-          `${API}/sharePoint/projects/${this.projectId}/documents/${this.documentToDelete.id}`
+          `${API}/clowder/projects/${this.projectId}/documents/${this.documentToDelete.id}`
         );
         
         if (response.data.success) {
@@ -603,7 +603,7 @@ export default {
         
         // Upload the file with progress tracking
         const response = await axios.post(
-          `${API}/sharePoint/projects/${this.projectId}/upload`,
+          `${API}/clowder/projects/${this.projectId}/upload`,
           formData,
           {
             headers: {
@@ -651,7 +651,7 @@ export default {
 
     async viewVersionHistory(documentId) {
       try {
-        const response = await axios.get(`${API}/sharePoint/projects/${this.projectId}/documents/${documentId}/versions`);
+        const response = await axios.get(`${API}/clowder/projects/${this.projectId}/documents/${documentId}/versions`);
         
         if (response.data.success) {
           this.versionHistory = response.data.versions;
@@ -706,7 +706,7 @@ export default {
     async downloadVersion(version) {
       try {
         const { data } = await axios.get(
-          `${API}/sharePoint/projects/${this.projectId}/documents/${version.documentId}/versions/${version.id}/download`
+          `${API}/clowder/projects/${this.projectId}/documents/${version.documentId}/versions/${version.id}/download`
         );
         if (data?.downloadUrl) window.open(data.downloadUrl, '_blank');
       } catch (err) {
