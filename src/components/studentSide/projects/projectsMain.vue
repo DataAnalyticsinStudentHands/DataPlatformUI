@@ -1,5 +1,5 @@
 <template>
-  <v-container :class="{ 'pa-0': isIntroActive }" fluid fill-height> 
+  <v-container :class="{ 'pa-0': isWelcomeActive }" fluid fill-height> 
     <!-- Loader while fetching projects -->
     <v-row v-if="loading" class="fill-height" align="center" justify="center">
       <v-col cols="auto">
@@ -9,88 +9,46 @@
 
     <!-- Content displayed only when loading is finished -->
     <template v-else>
-      <!-- Intro Section -->
-      <v-row v-if="isIntroActive" class="text-center fill-height" align="center" justify="center"
-        @click="advanceIntro"
-        :style="{ cursor: introStep < 5 ? 'pointer' : 'default', background: 'white' }" 
+      <!-- Welcome Section -->
+      <v-row v-if="isWelcomeActive" class="text-center fill-height" align="center" justify="center"
+        :style="{ background: 'white' }" 
       >
         <v-col cols="12" md="8" lg="6"> 
-          <div class="intro-content-container">
-            <!-- Consolidated transition wrapper -->
-            <v-slide-y-transition mode="out-in">
-              <div :key="introStep">
-                <!-- Slide 0: Welcome -->
-                <template v-if="introStep === 0">
-                  <h1 class="text-h3 font-weight-bold mb-4">{{ $t('Welcome to Projects!') }}</h1>
-                  <p class="text-body-1 text-grey">{{ $t('(Click to continue)') }}</p>
-                </template>
-                <!-- Slide 1: Propose -->
-                <template v-else-if="introStep === 1">
-                  <v-icon size="x-large" color="#c8102e" class="mb-3">mdi-pencil-outline</v-icon>
-                  <h2 class="text-h4 font-weight-bold mb-2">{{ $t('Propose') }}</h2>
-                  <p class="text-h6 mb-4">{{ $t('Create a project proposal describing your idea and goals.') }}</p>
-                  <p class="text-body-1 text-grey">{{ $t('(Click to continue)') }}</p>
-                </template>
-                <!-- Slide 2: Review -->
-                <template v-else-if="introStep === 2">
-                  <v-icon size="x-large" color="#c8102e" class="mb-3">mdi-account-check</v-icon>
-                  <h2 class="text-h4 font-weight-bold mb-2">{{ $t('Review') }}</h2>
-                  <p class="text-h6 mb-4">{{ $t('Your instructor reviews and approves your proposal.') }}</p>
-                  <p class="text-body-1 text-grey">{{ $t('(Click to continue)') }}</p>
-                </template>
-                <!-- Slide 3: Invite -->
-                <template v-else-if="introStep === 3">
-                  <v-icon size="x-large" color="#c8102e" class="mb-3">mdi-account-plus</v-icon>
-                  <h2 class="text-h4 font-weight-bold mb-2">{{ $t('Invite') }}</h2>
-                  <p class="text-h6 mb-4">{{ $t('Invite project members to collaborate on your project.') }}</p>
-                  <p class="text-body-1 text-grey">{{ $t('(Click to continue)') }}</p>
-                </template>
-                <!-- Slide 4: Upload Project Documents -->
-                <template v-else-if="introStep === 4">
-                  <v-icon size="x-large" color="#c8102e" class="mb-3">mdi-upload</v-icon>
-                  <h2 class="text-h4 font-weight-bold mb-2">{{ $t('Upload Project Documents') }}</h2>
-                  <p class="text-h6 mb-4">{{ $t('Upload supporting documents to showcase your project\'s details.') }}</p>
-                  <p class="text-body-1 text-grey">{{ $t('(Click to continue)') }}</p>
-                </template>
-                <!-- Slide 5: Final Call-to-Action -->
-                <template v-else-if="introStep === 5">
-                  <div class="d-flex align-center justify-center mb-4">
-                    <v-icon size="x-large" color="#c8102e" class="mr-2">mdi-trophy</v-icon>
-                    <p class="text-h5 mb-0">
-                      {{ $t('Good luck with your progress!') }}
-                    </p>
-                  </div>
-                  <div class="d-flex flex-column align-center">
-                    <v-btn
-                      @click.stop="proposeNewProject" 
-                      color="#c8102e"
-                      size="x-large" 
-                      class="text-white mb-4"
-                      prepend-icon="mdi-plus"
-                      elevation="2"
-                    >
-                      {{ $t('Propose My First Project') }}
-                    </v-btn>
-                    <v-btn
-                      color="#c8102e"
-                      size="x-large"
-                      class="text-white"
-                      prepend-icon="mdi-account-group"
-                      elevation="2"
-                      @click="joinProject"
-                    >
-                      {{ $t('Join a Project') }}
-                    </v-btn>
-                  </div>
-                </template>
-              </div>
-            </v-slide-y-transition>
+          <div class="welcome-content-container">
+            <div class="text-center mb-4">
+              <v-icon size="x-large" color="#c8102e" class="mb-3">mdi-trophy</v-icon>
+              <h1 class="text-h4 font-weight-bold">
+                {{ $t('Welcome to Projects!') }}
+              </h1>
+            </div>
+            <div class="d-flex flex-column align-center">
+              <v-btn
+                @click="proposeNewProject" 
+                color="#c8102e"
+                size="x-large" 
+                class="text-white mb-4"
+                prepend-icon="mdi-plus"
+                elevation="2"
+              >
+                {{ $t('Propose My First Project') }}
+              </v-btn>
+              <v-btn
+                color="#c8102e"
+                size="x-large"
+                class="text-white"
+                prepend-icon="mdi-account-group"
+                elevation="2"
+                @click="joinProject"
+              >
+                {{ $t('Join a Project') }}
+              </v-btn>
+            </div>
           </div>
         </v-col>
       </v-row>
 
-      <!-- Data Tables for non-intro view -->
-      <div v-if="!isIntroActive">
+      <!-- Data Tables for non-welcome view -->
+      <div v-if="!isWelcomeActive">
         <v-container>
           <!-- Header Row -->
           <v-row>
@@ -106,10 +64,26 @@
                   color="#c8102e"
                   align-tabs="start"
                 >
-                  <v-tab value="my-projects">{{ $t('My Projects') }}</v-tab>
+                  <!-- MODIFIED: Dynamic tab title for My Projects -->
+                  <v-tab value="my-projects">
+                    {{ activeTab === 'my-projects' && viewingArchivedProjects ? $t('My Archived Projects') : $t('My Projects') }}
+                  </v-tab>
                   <v-tab value="proposed-projects">{{ $t('Proposed Projects') }}</v-tab>
                 </v-tabs>
               </v-card>
+              
+              <!-- ADDED: View Archive Button -->
+              <v-btn
+                v-if="activeTab === 'my-projects'"
+                @click="toggleArchivedProjectsView"
+                elevation="1"
+                :append-icon="viewingArchivedProjects ? '' : 'mdi-archive-arrow-down-outline'"
+                :prepend-icon="viewingArchivedProjects ? 'mdi-folder-open-outline' : ''"
+                class="ml-2"
+              >
+                {{ viewingArchivedProjects ? $t('View Active') : $t('View Archive') }}
+              </v-btn>
+              
               <v-btn
                 @click="proposeNewProject"
                 elevation="1"
@@ -143,7 +117,7 @@
                   <v-card flat>
                     <v-data-table
                       :headers="projectHeaders"
-                      :items="myProjects"
+                      :items="filteredMyProjects"
                       item-key="_id"
                       hover
                       class="cursor-pointer"
@@ -163,24 +137,12 @@
                               </v-chip>
                             </td>
                             <td>{{ formatDate(item.updatedAt) }}</td>
-                            <td @click.stop>
-                              <v-btn
-                                color="#c8102e"
-                                variant="outlined"
-                                size="small"
-                                prepend-icon="mdi-account-plus"
-                                @click="inviteMembers(item)"
-                                class="invite-btn"
-                              >
-                                {{ $t('Invite Members') }}
-                              </v-btn>
-                            </td>
                           </tr>
                         </template>
                         <template v-else>
                           <tr>
                             <td :colspan="projectHeaders.length" class="text-center py-6">
-                              {{ $t('You are not associated with any active projects yet.') }}
+                              {{ viewingArchivedProjects ? $t('You have no archived projects.') : $t('You are not associated with any active projects yet.') }}
                             </td>
                           </tr>
                         </template>
@@ -221,7 +183,6 @@
                               </v-chip>
                             </td>
                             <td>{{ formatDate(item.updatedAt) }}</td>
-                            <td></td>
                           </tr>
                         </template>
                         <template v-else>
@@ -281,17 +242,16 @@ export default {
   },
   data() {
     return {
-      introStep: 0, // from 0 to 5
       activeTab: "my-projects",
       loading: false,
-      myProjects: [],
+      allMyProjects: [], // ADDED: Store all non-proposed projects (Active and Archived)
       proposedProjects: [],
+      viewingArchivedProjects: false, // ADDED: Toggle state for archive view
       projectHeaders: [
         { title: this.$t('Project Name'), align: "start", key: "projectName", sortable: true },
         { title: this.$t('Experience'), key: "experienceInfo", sortable: false },
         { title: this.$t('Status'), key: "projectStatus", sortable: true },
-        { title: this.$t('Last Updated'), key: "updatedAt", sortable: true },
-        { title: this.$t(''), key: "actions", sortable: false, align: "center" }
+        { title: this.$t('Last Updated'), key: "updatedAt", sortable: true }
       ],
       inviteDialog: false,
       projectData: {
@@ -308,8 +268,29 @@ export default {
     return { loggedInUserStore };
   },
   computed: {
-    isIntroActive() {
-      return !this.loading && this.myProjects.length === 0 && this.proposedProjects.length === 0;
+    isWelcomeActive() {
+      // MODIFIED: Check allMyProjects instead of myProjects
+      return !this.loading && this.allMyProjects.length === 0 && this.proposedProjects.length === 0;
+    },
+    // ADDED: Computed property to filter projects based on archive state
+    myProjects() {
+      if (this.viewingArchivedProjects) {
+        return this.allMyProjects.filter(p => p.projectStatus === 'Archived');
+      } else {
+        return this.allMyProjects.filter(p => p.projectStatus === 'Active');
+      }
+    },
+    // ADDED: Alias for consistency with the template
+    filteredMyProjects() {
+      return this.myProjects;
+    }
+  },
+  watch: {
+    // ADDED: Reset archive view when switching tabs
+    activeTab(newTab) {
+      if (newTab !== 'my-projects' && this.viewingArchivedProjects) {
+        this.viewingArchivedProjects = false;
+      }
     }
   },
   async mounted() {
@@ -324,19 +305,16 @@ export default {
     await this.fetchProjects();
   },
   methods: {
-    advanceIntro() {
-      if (this.introStep < 5) {
-        this.introStep++;
-      }
-    },
     async fetchProjects() {
       this.loading = true;
-      this.myProjects = [];
+      this.allMyProjects = []; // MODIFIED
       this.proposedProjects = [];
       try {
         const user = this.loggedInUserStore;
         let token = user.token;
         // Keep the original API URL with 'studentSideData' prefix as you indicated
+        // NOTE: Backend endpoint should return ALL projects (Active, Archived, and Proposed)
+        // to properly support the archive view functionality
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`; 
         console.log('Fetching projects for user:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
@@ -355,8 +333,8 @@ export default {
             };
           });
           
-          // Use projectStatus field to filter projects
-          this.myProjects = projects.filter(p => p.projectStatus === 'Active');
+          // MODIFIED: Store Active and Archived in allMyProjects
+          this.allMyProjects = projects.filter(p => p.projectStatus === 'Active' || p.projectStatus === 'Archived');
           this.proposedProjects = projects.filter(p => p.projectStatus === 'Proposed');
         }
       } catch (error) {
@@ -367,6 +345,10 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    // ADDED: Method to toggle archive view
+    toggleArchivedProjectsView() {
+      this.viewingArchivedProjects = !this.viewingArchivedProjects;
     },
     proposeNewProject() {
       this.$router.push({ name: 'proposeProject' });
@@ -542,30 +524,16 @@ export default {
 .v-container.fill-height {
   min-height: 80vh;
 }
-.intro-content-container {
+.welcome-content-container {
   min-height: 250px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;   /* Stack children vertically */
+  align-items: center;      /* Center horizontally */
+  justify-content: center;  /* Center vertically */
   overflow: hidden;
-}
-.v-slide-y-transition > div {
-  width: 100%;
-}
-.v-slide-y-transition-enter-active,
-.v-slide-y-transition-leave-active {
-  transition: transform 0.6s ease, opacity 0.6s ease;
-}
-.v-slide-y-transition-enter-from,
-.v-slide-y-transition-leave-to {
-  transform: translateY(20px);
-  opacity: 0;
 }
 .v-data-table .v-data-table__tbody tr td[colspan] {
   text-align: center;
-}
-.invite-btn {
-  white-space: nowrap;
 }
 
 .dialog-card {

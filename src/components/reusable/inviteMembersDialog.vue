@@ -57,7 +57,7 @@
                     <v-icon>mdi-content-copy</v-icon>
                   </v-btn>
                   <v-btn
-                    v-if="isProjectOwner"
+                    v-if="canRegenerateCode"
                     color="grey-darken-1"
                     variant="tonal"
                     size="small"
@@ -249,6 +249,11 @@ export default {
     experienceInstanceName: {
       type: String,
       default: ''
+    },
+    associatedInstructorId: { type: String, default: null },
+    isProjectOwner: {
+      type: Boolean,
+      default: false
     }
   },
   setup() {
@@ -284,17 +289,19 @@ export default {
         this.$emit('update:modelValue', value);
       }
     },
-    isProjectOwner() {
-      // Get current user ID from store
-      const currentUserId = this.loggedInUserStore.userId;
-      
-      // Find the owner in project members
-      const ownerMember = this.projectMembers.find(member => member.isOwner === true);
-      
-      // Return true if current user is the owner
-      return ownerMember && ownerMember.id === currentUserId;
-    },
+  canRegenerateCode() {
+    const currentUserId = this.loggedInUserStore.userId;
+
+   // parent tells us directly if user is owner; no need to recompute
+   if (this.isProjectOwner) return true;
+
+   // user may still be the course instructor
+   return (
+     this.associatedInstructorId &&
+     this.associatedInstructorId === currentUserId
+   );
   },
+},
   watch: {
     modelValue(newVal) {
       if (newVal === true) {
@@ -368,12 +375,12 @@ export default {
         // );
         // this.projectMembers = response.data;
         
-        // For now, mock data
+        // For now, mock data - FIXED: Use userID to match schema
         await new Promise(resolve => setTimeout(resolve, 300));
         
         this.projectMembers = [
           {
-            id: this.loggedInUserStore.userId, // Use actual user ID from store
+            userID: this.loggedInUserStore.userId, // FIXED: Use userID instead of id
             name: 'John Doe',
             email: 'john.doe@example.com',
             role: 'Owner',
@@ -381,7 +388,7 @@ export default {
             joinDate: new Date('2023-01-15')
           },
           {
-            id: 'usr002',
+            userID: 'usr002', // FIXED: Use userID instead of id
             name: 'Jane Smith',
             email: 'jane.smith@example.com',
             role: 'Member',
@@ -499,8 +506,8 @@ export default {
         return fullName.includes(query) || email.includes(query);
       });
       
-      // Exclude users who are already members
-      const existingMemberIds = this.projectMembers.map(member => member.id);
+      // Exclude users who are already members - FIXED: Use userID for comparison
+      const existingMemberIds = this.projectMembers.map(member => member.userID);
       result = result.filter(user => !existingMemberIds.includes(user.id));
       
       this.filteredUsers = result;

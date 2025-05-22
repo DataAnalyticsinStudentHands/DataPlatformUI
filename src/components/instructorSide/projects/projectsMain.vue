@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid fill-height> 
+  <v-container fluid fill-height>
     <!-- Loader while fetching projects -->
     <v-row v-if="loading" class="fill-height" align="center" justify="center">
       <v-col cols="auto">
@@ -13,6 +13,7 @@
         <!-- Header Row -->
         <v-row>
           <v-col>
+            <!-- MODIFIED: Dynamic tab title -->
             <h1 class="text-h4 font-weight-bold">{{ $t('Projects') }}</h1>
           </v-col>
         </v-row>
@@ -26,7 +27,10 @@
                 color="#c8102e"
                 align-tabs="start"
               >
-                <v-tab value="active-projects">{{ $t('Active Projects') }}</v-tab>
+                <!-- MODIFIED: Dynamic tab title for the first tab -->
+                <v-tab value="active-projects">
+                  {{ activeTab === 'active-projects' && viewingArchivedProjects ? $t('Archived Projects') : $t('Active Projects') }}
+                </v-tab>
                 <v-tab value="proposals" class="position-relative">
                   <span class="mr-8">{{ $t('Project Proposals') }}</span>
                   <v-badge
@@ -41,82 +45,104 @@
               </v-tabs>
             </v-card>
 
-            <!-- Filters and Actions Row -->
-            <v-row class="mb-4">
-              <v-col cols="12" class="d-flex align-center flex-wrap gap-3">
-                <!-- Search -->
+<!-- Filters and Actions Row -->
+            <v-row class="mb-2">
+              <v-col cols="12" md="8" lg="7" class="d-flex align-center flex-wrap gap-3">
+                <!-- Unified Search Field with Dropdown -->
                 <v-text-field
                   v-model="searchQuery"
-                  :label="$t('Search projects')"
-                  prepend-inner-icon="mdi-magnify"
-                  variant="outlined"
+                  :label="$t(searchLabel)"
                   density="compact"
-                  hide-details
-                  class="max-width-300"
-                  @update:model-value="applyFilters"
-                ></v-text-field>
-
-                <!-- Experience Filter -->
-                <v-select
-                  v-model="selectedExperience"
-                  :items="experienceOptions"
-                  :label="$t('Experience')"
                   variant="outlined"
-                  density="compact"
                   hide-details
-                  class="max-width-200"
-                  @update:model-value="applyFilters"
-                ></v-select>
-
-                <!-- Project Member Filter -->
-                <v-select
-                  v-model="selectedMember"
-                  :items="memberOptions"
-                  :label="$t('Project Member')"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="max-width-200"
-                  @update:model-value="applyFilters"
-                ></v-select>
-
-                <!-- Status Filter -->
-                <v-select
-                  v-model="selectedStatus"
-                  :items="statusOptions"
-                  :label="$t('Status')"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="max-width-200"
-                  @update:model-value="applyFilters"
-                ></v-select>
-
-                <!-- Clear Filters -->
-                <v-btn
-                  variant="text"
-                  color="#c8102e"
-                  @click="clearFilters"
-                  :disabled="!hasActiveFilters"
-                  class="ml-2"
+                  clearable
+                  class="flex-grow-1 max-width-400"
+                  @keyup.enter="addSearchChipAndSelect"
+                  @click:clear="clearSearchField"
                 >
-                  {{ $t('Clear Filters') }}
+                  <template v-slot:prepend-inner>
+                    <v-menu location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <div v-bind="props" class="pointer-cursor d-flex align-center">
+                          <v-icon>mdi-magnify</v-icon>
+                          <v-icon size="small">mdi-chevron-down</v-icon>
+                        </div>
+                      </template>
+                      <v-list density="compact">
+                        <v-list-item
+                          v-for="item in searchMenuItems"
+                          :key="item.value"
+                          @click="updateSearchCriteria(item)"
+                        >
+                          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </template>
+                  <template v-slot:append-inner>
+                    <div class="pointer-cursor" @click="addSearchChipAndSelect">
+                      <v-icon>mdi-arrow-right-thin-circle-outline</v-icon> 
+                    </div>
+                  </template>
+                </v-text-field>
+
+                <!-- Status Filter v-select block has been completely removed -->
+
+              </v-col>
+              <v-col cols="12" md="4" lg="5" class="d-flex justify-start justify-md-end align-center">
+                <!-- ADDED: View Archived Projects Button -->
+                <v-btn
+                    v-if="activeTab === 'active-projects'"
+                    @click="toggleArchivedProjectsView"
+                    elevation="1"
+                    :append-icon="viewingArchivedProjects ? '' : 'mdi-archive-arrow-down-outline'"
+                    :prepend-icon="viewingArchivedProjects ? 'mdi-folder-open-outline' : ''"
+                    class="ml-2"
+                >
+                    {{ viewingArchivedProjects ? $t('View Active') : $t('View Archive') }}
                 </v-btn>
               </v-col>
             </v-row>
 
+
+            <!-- Chips Row -->
+            <v-row v-if="searchChips.length > 0" class="mt-0 mb-2" dense>
+              <v-col cols="12">
+                <v-chip-group 
+                    v-model="selectedChipIndices" 
+                    column 
+                    multiple
+                    @update:model-value="applyFiltersDebounced" 
+                >
+                  <v-chip
+                    v-for="(chip, index) in searchChips"
+                    :key="chip.category + chip.term + chip.categoryDisplayName + index"
+                    filter              
+                    variant="outlined"
+                    class="ma-2"
+                    :value="index"
+                  >
+                    {{ $t(chip.categoryDisplayName) + '="' + chip.term + '"' }}
+                    <v-icon
+                      end
+                      @click.stop="removeSearchChip(chip, index)"
+                    >mdi-close</v-icon>
+                  </v-chip>
+                </v-chip-group>
+              </v-col>
+            </v-row>
+
             <v-window v-model="activeTab">
-              <!-- Active Projects Tab -->
+              <!-- Tabs Content -->
               <v-window-item value="active-projects">
                 <v-card flat>
                   <v-data-table
                     :headers="projectHeaders"
                     :items="filteredActiveProjects"
-                    item-key="_id"
                     hover
                     class="cursor-pointer"
                     :loading="tableLoading"
-                    :no-data-text="$t('No active projects found')"
+                    :no-data-text="viewingArchivedProjects ? $t('No archived projects found') : $t('No active projects found')"
                   >
                     <template v-slot:loading>
                       <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
@@ -133,7 +159,8 @@
                             :color="getStatusColor(item.projectStatus)"
                             :text-color="getStatusTextColor(item.projectStatus)"
                           >
-                            {{ item.projectStatus }}
+                            <!-- MODIFIED: Translate status text -->
+                            {{ $t(item.projectStatus) }}
                           </v-chip>
                         </td>
                         <td>{{ formatDate(item.updatedAt) }}</td>
@@ -143,7 +170,6 @@
                 </v-card>
               </v-window-item>
               
-              <!-- Proposals Tab -->
               <v-window-item value="proposals">
                 <v-card flat>
                   <v-data-table
@@ -169,7 +195,8 @@
                             :color="getStatusColor(item.projectStatus)"
                             :text-color="getStatusTextColor(item.projectStatus)"
                           >
-                            {{ item.projectStatus }}
+                            <!-- MODIFIED: Translate status text -->
+                            {{ $t(item.projectStatus) }}
                           </v-chip>
                         </td>
                         <td>{{ formatDate(item.submittedDate) }}</td>
@@ -184,7 +211,7 @@
       </v-container>
     </template>
 
-    <!-- Project Template Dialog -->
+    <!-- Project Template Dialog (No changes here) -->
     <v-dialog v-model="templateDialog" max-width="600px">
       <v-card class="dialog-card">
         <v-card-title class="dialog-header text-white pa-4">
@@ -206,7 +233,7 @@
           ></v-textarea>
           <v-select
             v-model="templateExperience"
-            :items="experienceOptions"
+            :items="templateExperienceOptions" 
             :label="$t('Associated Experience')"
             variant="outlined"
           ></v-select>
@@ -222,7 +249,8 @@
           </v-btn>
           <v-btn
             color="#c8102e"
-            @click="saveTemplate"
+            @click="saveTemplate" 
+            disabled 
           >
             {{ $t('Save Template') }}
           </v-btn>
@@ -233,7 +261,9 @@
   </v-container>
 </template>
 
+
 <script>
+
 import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -246,29 +276,35 @@ export default {
       loading: false,
       tableLoading: false,
       
-      // Project data
-      proposals: [],
-      activeProjects: [],
+      proposals: [], // Stores 'Proposed' projects
+      // MODIFIED: activeProjects is removed, allNonProposalProjects holds Active & Archived
+      // activeProjects: [], 
+      allNonProposalProjects: [], // Stores 'Active' and 'Archived' projects
+      viewingArchivedProjects: false, // To toggle between Active and Archived in the first tab
       
-      // Filters
-      searchQuery: '',
-      selectedExperience: '',
-      selectedStatus: '',
-      selectedMember: '',
-      
-      // Filter options
-      experienceOptions: [],
-      memberOptions: [
-        { title: 'All Members', value: '' }
+      // Filter Models & Chips
+      searchQuery: '', 
+      // selectedStatus: '', // REMOVED
+      searchLabel: 'Search All Fields', 
+      currentSearchCategory: 'All Fields', 
+      searchMenuItems: [ 
+        { title: 'Search All Fields', value: 'All Fields' },
+        { title: 'Search by Experience', value: 'Experience' },
+        { title: 'Search by Project Member', value: 'Member' },
       ],
-      statusOptions: [
-        { title: 'All Statuses', value: '' },
-        { title: 'Proposed', value: 'Proposed' },
-        { title: 'Active', value: 'Active' },
-        { title: 'Archived', value: 'Archived' }
-      ],
+      searchChips: [], 
+      selectedChipIndices: [], 
+      filterDebounceTimer: null,
       
-      // Table headers
+      // Template Dialog Data
+      templateDialog: false,
+      templateName: '',
+      templateDescription: '',
+      templateExperience: '',
+      templateExperienceOptions: [],
+
+      // Table Headers & Options
+      // statusOptions: [], // REMOVED
       proposalHeaders: [
         { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
         { title: this.$t('Student'), key: 'studentName', sortable: true },
@@ -276,20 +312,14 @@ export default {
         { title: this.$t('Status'), key: 'projectStatus', sortable: true },
         { title: this.$t('Submitted Date'), key: 'submittedDate', sortable: true }
       ],
-      projectHeaders: [
+      projectHeaders: [ // Headers for the first tab (Active/Archived)
         { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
         { title: this.$t('Team Lead'), key: 'teamLeadName', sortable: true },
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
         { title: this.$t('Team Size'), key: 'teamSize', sortable: true },
-        { title: this.$t('Status'), key: 'projectStatus', sortable: true },
+        { title: this.$t('Status'), key: 'projectStatus', sortable: true }, // Keep Status to see Active/Archived
         { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true }
       ],
-      
-      // Template dialog
-      templateDialog: false,
-      templateName: '',
-      templateDescription: '',
-      templateExperience: '',
     };
   },
   setup() {
@@ -298,21 +328,42 @@ export default {
   },
   computed: {
     pendingProposalsCount() {
-      return this.proposals.filter(p => p.projectStatus === 'Proposed').length;
+      // MODIFIED: Directly use proposals length
+      return this.proposals.length;
+    },
+    // ADDED: Computed property to get the current list for the first tab (Active or Archived)
+    currentActiveOrArchivedList() {
+        if (this.viewingArchivedProjects) {
+            return this.allNonProposalProjects.filter(p => p.projectStatus === 'Archived');
+        } else {
+            return this.allNonProposalProjects.filter(p => p.projectStatus === 'Active');
+        }
+    },
+    filteredActiveProjects() {
+      // MODIFIED: Filters the new currentActiveOrArchivedList
+      return this.filterProjects(this.currentActiveOrArchivedList);
     },
     filteredProposals() {
       return this.filterProjects(this.proposals);
     },
-    filteredActiveProjects() {
-      return this.filterProjects(this.activeProjects);
-    },
-    hasActiveFilters() {
-      return this.searchQuery || this.selectedExperience || this.selectedStatus || this.selectedMember;
+    hasActiveFilters() { 
+      return this.selectedChipIndices.length > 0;
+    }
+  },
+  watch: {
+    // ADDED: Watcher for activeTab to reset viewingArchivedProjects if desired
+    activeTab(newTab) {
+        if (newTab !== 'active-projects' && this.viewingArchivedProjects) {
+            this.viewingArchivedProjects = false; // Reset to viewing active if tab changes
+        }
+        // Optionally clear filters when tabs change
+        // this.clearAllFilters(); 
     }
   },
   async mounted() {
-    await this.fetchProjects();
-    await this.fetchExperiences();
+    this.loading = true; 
+    await this.fetchProjects(); 
+    await this.fetchExperiencesForTemplateDialog(); 
     
     const loggedInUserStore = useLoggedInUserStore();
     if (loggedInUserStore.navigationData?.toastType) {
@@ -322,42 +373,29 @@ export default {
       });
       loggedInUserStore.navigationData = null;
     }
+    this.loading = false; 
   },
   methods: {
-    // Fetching data
     async fetchProjects() {
-      this.loading = true;
       this.tableLoading = true;
       try {
         const user = this.loggedInUserStore;
         let token = user.token;
-        
-        // Update API URL to match backend endpoint
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects`; 
         
-        console.log('Fetching projects for instructor:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
         
         if (response.data && response.data.projects) {
-          const projects = response.data.projects.map(project => {
-            // Extract experience info from nested structure
+          const allFetchedProjects = response.data.projects.map(project => { // Renamed
             const experienceInfo = project.experiences?.length
               ? project.experiences[0].experienceName
               : this.$t('Not assigned');
-              
-            // Add teamSize property for active projects
-            const teamSize = project.members?.length || 1;
-            
-            // Add team lead name - check for owner in members array
+            const teamSize = project.members?.length || 1; 
             const teamLeadName = project.members?.find(m => m.isOwner)?.name || 
                                project.createdBy?.name || 
                                this.$t('Unknown');
-            
-            // Add student name for proposals
-            const studentName = project.createdBy?.name || this.$t('Unknown');
-            
-            // Add submitted date for proposals
-            const submittedDate = project.createdAt;
+            const studentName = project.createdBy?.name || this.$t('Unknown'); 
+            const submittedDate = project.createdAt; 
             
             return { 
               ...project, 
@@ -369,112 +407,190 @@ export default {
             };
           });
           
-          // Filter projects by projectStatus
-          this.proposals = projects.filter(p => p.projectStatus === 'Proposed');
-          this.activeProjects = projects.filter(p => p.projectStatus === 'Active');
-          
-          // Extract unique project members for the member filter
-          const allMembers = new Set();
-          projects.forEach(project => {
-            if (project.members && project.members.length > 0) {
-              project.members.forEach(member => {
-                if (member.name) {
-                  allMembers.add(member.name);
-                }
-              });
-            }
-            // Also add the creator/student name
-            if (project.createdBy?.name) {
-              allMembers.add(project.createdBy.name);
-            }
-          });
-          
-          this.memberOptions = [
-            { title: 'All Members', value: '' },
-            ...Array.from(allMembers).sort().map(name => ({
-              title: name,
-              value: name
-            }))
-          ];
+          this.proposals = allFetchedProjects.filter(p => p.projectStatus === 'Proposed');
+          // MODIFIED: Populate allNonProposalProjects
+          this.allNonProposalProjects = allFetchedProjects.filter(p => p.projectStatus !== 'Proposed');
+          // this.activeProjects = projects.filter(p => p.projectStatus === 'Active'); // REMOVED
+        } else {
+          this.proposals = [];
+          this.allNonProposalProjects = []; // MODIFIED
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
         toast.error(this.$t("Error loading projects. Please try again later."), {
           position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
         });
+        this.proposals = [];
+        this.allNonProposalProjects = []; // MODIFIED
       } finally {
-        this.loading = false;
         this.tableLoading = false;
       }
     },
     
-    async fetchExperiences() {
+    async fetchExperiencesForTemplateDialog() {
       try {
         const user = this.loggedInUserStore;
         let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences`;
-        
         const response = await axios.get(apiURL, { headers: { token } });
-        
         if (response.data && response.data.experiences) {
-          this.experienceOptions = [
-            { title: 'All Experiences', value: '' },
+          this.templateExperienceOptions = [
             ...response.data.experiences.map(exp => ({
               title: exp.experienceName,
-              value: exp._id
+              value: exp._id 
             }))
           ];
+        } else {
+          this.templateExperienceOptions = [];
         }
       } catch (error) {
-        console.error("Error fetching experiences:", error);
-        this.experienceOptions = [{ title: 'All Experiences', value: '' }];
+        console.error("Error fetching experiences for template dialog:", error);
+        this.templateExperienceOptions = [];
       }
     },
     
-    // Filtering
-    filterProjects(projects) {
-      return projects.filter(project => {
-        // Search query filter
-        const searchLower = this.searchQuery.toLowerCase();
-        const matchesSearch = !this.searchQuery || 
-          project.projectName.toLowerCase().includes(searchLower) ||
-          (project.studentName && project.studentName.toLowerCase().includes(searchLower)) ||
-          (project.teamLeadName && project.teamLeadName.toLowerCase().includes(searchLower));
-        
-        // Experience filter
-        const matchesExperience = !this.selectedExperience || 
-          project.experiences?.some(exp => exp._id === this.selectedExperience);
-        
-        // Status filter
-        const matchesStatus = !this.selectedStatus || 
-          project.projectStatus === this.selectedStatus;
-          
-        // Member filter
-        const matchesMember = !this.selectedMember || 
-          project.members?.some(member => member.name === this.selectedMember) ||
-          project.createdBy?.name === this.selectedMember;
-        
-        return matchesSearch && matchesExperience && matchesStatus && matchesMember;
+    updateSearchCriteria(item) {
+      this.currentSearchCategory = item.value;
+      this.searchLabel = item.title; 
+      if (this.searchQuery && this.searchQuery.trim() !== '') {
+        this.addSearchChipAndSelect();
+      }
+    },
+
+    addSearchChipAndSelect() {
+      const term = this.searchQuery.trim();
+      if (!term) return;
+
+      const category = this.currentSearchCategory;
+      const categoryDisplayName = this.searchLabel;
+
+      const existingExactChipIndex = this.searchChips.findIndex(
+        (chip) =>
+          chip.category === category &&
+          chip.term.toLowerCase() === term.toLowerCase()
+      );
+
+      if (existingExactChipIndex !== -1) {
+        if (!this.selectedChipIndices.includes(existingExactChipIndex)) {
+          this.selectedChipIndices.push(existingExactChipIndex);
+          this.selectedChipIndices.sort((a, b) => a - b);
+        }
+        this.searchQuery = ""; 
+        this.applyFiltersDebounced(); 
+        return;
+      }
+
+      this.searchChips.push({ category, term, categoryDisplayName });
+      const newChipGeneratedIndex = this.searchChips.length - 1;
+
+      if (!this.selectedChipIndices.includes(newChipGeneratedIndex)) {
+        this.selectedChipIndices.push(newChipGeneratedIndex);
+        this.selectedChipIndices.sort((a, b) => a - b);
+      }
+
+      this.searchQuery = ""; 
+      this.applyFiltersDebounced();
+    },
+
+    clearSearchField() {
+        this.searchQuery = '';
+    },
+    
+    // handleStatusChangeAndSelect(statusValue) { ... } // ENTIRE METHOD REMOVED
+
+    removeSearchChip(chipToRemove, indexOfChipRemoved) {
+      this.searchChips.splice(indexOfChipRemoved, 1);
+
+      const selectedIndexPos = this.selectedChipIndices.indexOf(indexOfChipRemoved);
+      if (selectedIndexPos > -1) {
+        this.selectedChipIndices.splice(selectedIndexPos, 1);
+      }
+      this.selectedChipIndices = this.selectedChipIndices.map(i => (i > indexOfChipRemoved ? i - 1 : i));
+      
+      // if (chipToRemove.category === 'Status') { // REMOVED: No longer need to handle selectedStatus
+      //   if (this.selectedStatus !== '') this.selectedStatus = ''; 
+      // }
+      this.applyFiltersDebounced();
+    },
+    
+    applyFiltersDebounced() {
+      if (this.filterDebounceTimer) {
+        clearTimeout(this.filterDebounceTimer);
+      }
+      this.filterDebounceTimer = setTimeout(() => {
+        this.applyFilters();
+      }, 300); 
+    },
+
+    applyFilters() {
+      this.tableLoading = true;
+      setTimeout(() => {
+        this.tableLoading = false;
+      }, 100);
+    },
+    
+    // MODIFIED: clearAllFilters to remove status handling
+    clearAllFilters() {
+      this.searchQuery = '';
+      // No selectedStatus to clear
+      this.searchChips = [];
+      this.selectedChipIndices = [];
+      this.searchLabel = 'Search All Fields'; 
+      this.currentSearchCategory = 'All Fields'; 
+      this.applyFiltersDebounced();
+    },
+
+    filterProjects(projectsToFilter) {
+      if (this.selectedChipIndices.length === 0) {
+        return projectsToFilter; 
+      }
+      const activeFilterChips = this.selectedChipIndices
+        .map(index => this.searchChips[index])
+        .filter(chip => chip); 
+
+      if (activeFilterChips.length === 0) return projectsToFilter;
+
+      return projectsToFilter.filter(project => {
+        const groupedFilters = activeFilterChips.reduce((acc, chip) => {
+            acc[chip.category] = acc[chip.category] || [];
+            acc[chip.category].push(chip.term.toLowerCase());
+            return acc;
+        }, {});
+
+        return Object.entries(groupedFilters).every(([category, terms]) => {
+            return terms.some(termLower => {
+                switch (category) {
+                    case 'All Fields':
+                    return (project.projectName?.toLowerCase().includes(termLower)) ||
+                            (project.studentName?.toLowerCase().includes(termLower)) || 
+                            (project.teamLeadName?.toLowerCase().includes(termLower)) ||
+                            (project.experienceInfo?.toLowerCase().includes(termLower)); 
+                    case 'Experience':
+                    return project.experienceInfo?.toLowerCase().includes(termLower);
+                    case 'Member':
+                    const createdByMatch = project.createdBy?.name?.toLowerCase().includes(termLower);
+                    const memberMatch = project.members?.some(member => member.name?.toLowerCase().includes(termLower));
+                    return createdByMatch || memberMatch;
+                    // case 'Status': // REMOVED from switch as Status chips are no longer generated by UI
+                    // return project.projectStatus?.toLowerCase() === termLower;
+                    default:
+                    return true;
+                }
+            });
+        });
       });
     },
     
-    applyFilters() {
-      this.tableLoading = true;
-      // Simulate filtering delay
-      setTimeout(() => {
-        this.tableLoading = false;
-      }, 500);
+    // ADDED: Method to toggle the view of archived projects
+    toggleArchivedProjectsView() {
+        this.viewingArchivedProjects = !this.viewingArchivedProjects;
+        // The computed property `filteredActiveProjects` will automatically update.
+        // If you want to clear search chips when toggling this view, uncomment below:
+        // this.searchChips = [];
+        // this.selectedChipIndices = [];
+        // this.applyFiltersDebounced();
     },
-    
-    clearFilters() {
-      this.searchQuery = '';
-      this.selectedExperience = '';
-      this.selectedStatus = '';
-      this.selectedMember = '';
-      this.applyFilters();
-    },
-    
-    // Project actions
+        
     viewProposal(project) {
       if (!project?._id) {
         console.error('Invalid project data:', project);
@@ -483,7 +599,6 @@ export default {
         });
         return;
       }
-      
       this.loggedInUserStore.navigationData = { projectID: project._id };
       this.$router.push({ name: 'viewProjectProposal' });
     },
@@ -496,16 +611,20 @@ export default {
         });
         return;
       }
-      
       this.loggedInUserStore.navigationData = { projectID: project._id };
       this.$router.push({ name: 'editProjectInstructor' });
     },
+
+    saveTemplate() {
+      console.log("Save template:", this.templateName, this.templateDescription, this.templateExperience);
+      toast.info(this.$t("Template saving not yet implemented."), { position: 'top-right' });
+      this.templateDialog = false;
+    },
     
-    // Utility methods
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
-      return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+      return new Intl.DateTimeFormat(this.$i18n.locale || 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
     },
     
     getStatusColor(status) {
@@ -517,24 +636,36 @@ export default {
       }
     },
     
-    getStatusTextColor(status) {
-      return 'white'; // All our status chips have white text
+    getStatusTextColor() { 
+      return 'white'; 
+    }
+  },
+  beforeUnmount() {
+    if (this.filterDebounceTimer) {
+      clearTimeout(this.filterDebounceTimer);
     }
   }
 };
 </script>
 
 <style scoped>
-.cursor-pointer {
+/* Styles remain the same as your provided version */
+.pointer-cursor {
   cursor: pointer;
 }
 
-.max-width-300 {
-  max-width: 300px;
+.max-width-400 { 
+  max-width: 400px;
+  min-width: 250px;
 }
 
-.max-width-200 {
-  max-width: 200px;
+.max-width-200 { /* This class can be removed if no other element uses it now */
+  /* max-width: 200px;
+  min-width: 150px; */
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
 }
 
 .dialog-card {
@@ -550,17 +681,10 @@ export default {
   text-align: center;
 }
 
-/* For v-tooltip support */
-[v-tooltip] {
-  position: relative;
-}
-
-/* Fix table row hover effect */
 .v-data-table .v-data-table__tbody tr:hover td {
   background-color: rgba(200, 16, 46, 0.05);
 }
 
-/* Gap utility class */
 .gap-3 {
   gap: 12px;
 }
@@ -573,10 +697,18 @@ export default {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  right: 8px;
+  right: 8px; 
 }
 
 .mr-8 {
-  margin-right: 32px; /* Add more space to the right of the text */
+  margin-right: 32px; 
+}
+
+.v-text-field .v-input__prepend-inner .v-icon,
+.v-text-field .v-input__append-inner .v-icon {
+  align-self: center;
+}
+
+.v-chip .v-chip__content {
 }
 </style>
