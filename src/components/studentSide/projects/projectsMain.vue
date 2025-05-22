@@ -232,7 +232,7 @@ import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
-import JoinProjectDialog from '@/components/reusable/JoinProjectDialog.vue';
+import JoinProjectDialog from '@/components/reusable/joinProjectDialog.vue';
 
 export default {
   name: "ProjectsMain",
