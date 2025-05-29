@@ -45,7 +45,7 @@
                     :error-messages="nameErrorMessages"
                     :rules="nameRules"
                     :counter="100"
-                    :readonly="!isProjectOwner"
+                    :readonly="!isProjectOwner || projectData.projectStatus === 'Archived'"
                     required
                     outlined
                     class="mb-4"
@@ -60,7 +60,7 @@
                     :error-messages="descriptionErrorMessages"
                     :rules="descriptionRules"
                     :counter="5000"
-                    :readonly="!isProjectOwner"
+                    :readonly="!isProjectOwner || projectData.projectStatus === 'Archived'"
                     auto-grow
                     rows="5"
                     outlined
@@ -85,7 +85,7 @@
                     column
                     multiple
                     selected-class="red-chip"
-                    :disabled="!isProjectOwner"
+                    :disabled="!isProjectOwner || projectData.projectStatus === 'Archived'"
                   >
                     <v-chip
                       v-for="(tag, index) in availableTags"
@@ -109,6 +109,7 @@
                   {{ $t('Project Members') }}
                   <v-spacer></v-spacer>
                   <v-btn
+                    v-if="projectData.projectStatus !== 'Archived'"
                     size="small"
                     color="#c8102e"
                     variant="flat"
@@ -123,6 +124,7 @@
                   <v-icon icon="mdi-account-group-outline" size="x-large" color="grey" class="mb-2"></v-icon>
                   <p class="text-grey">{{ $t('No members have been added to this project yet.') }}</p>
                   <v-btn
+                    v-if="projectData.projectStatus !== 'Archived'"
                     variant="tonal"
                     color="#c8102e"
                     class="mt-3"
@@ -237,9 +239,9 @@
                   {{ $t('Back') }}
                 </v-btn>
 
-                <!-- Update project button - only for owners -->
+                <!-- Update project button - only for owners and not archived -->
                 <v-btn 
-                  v-if="isProjectOwner"
+                  v-if="isProjectOwner && projectData.projectStatus !== 'Archived'"
                   type="submit"
                   color="primary"
                   class="update-btn mr-3"
@@ -276,7 +278,7 @@
               
               <!-- Leave Project button - only for non-owners -->
               <v-btn 
-                v-if="!isProjectOwner"
+                v-if="!isProjectOwner && projectData.projectStatus !== 'Archived'"
                 color="error"
                 variant="outlined"
                 prepend-icon="mdi-exit-to-app"
@@ -602,6 +604,11 @@ export default {
         toast.error(this.$t("You don't have permission to update this project."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
         return;
       }
+      // Check if project is archived
+      if (this.projectData.projectStatus === 'Archived') {
+        toast.error(this.$t("Cannot update an archived project. Please restore it first."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
+        return;
+      }
       this.formSubmitted = true;
       if (!this.hasValidationErrors) {
         this.submitDialog = true;
@@ -614,7 +621,7 @@ export default {
       this.updateProject();
     },
     async updateProject() {
-      if (!this.isProjectOwner) return;
+      if (!this.isProjectOwner || this.projectData.projectStatus === 'Archived') return;
       this.updateLoading = true;
       try {
         const user = useLoggedInUserStore();
@@ -652,6 +659,11 @@ export default {
     },
     // getStatusTextColor not used, can be removed if not planned.
     openInviteDialog() {
+      // Check if project is archived
+      if (this.projectData.projectStatus === 'Archived') {
+        toast.error(this.$t("Cannot invite members to an archived project."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
+        return;
+      }
       this.inviteDialog = true;
     },
     handleMembersInvited(invitedUsers) {

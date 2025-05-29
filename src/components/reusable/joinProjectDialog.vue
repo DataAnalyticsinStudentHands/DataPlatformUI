@@ -68,9 +68,11 @@
                     variant="outlined"
                     size="small"
                     prepend-icon="mdi-account-school"
-                    @click="redirectToExperiences"
+                    @click="registerForExperience"
+                    :loading="isRegistering"
+                    :disabled="isRegistering"
                   >
-                    {{ $t('Go to Experiences') }}
+                    {{ $t('Register') }}
                   </v-btn>
                 </div>
               </div>
@@ -188,6 +190,7 @@ export default {
       invitationCode: '',
       isLoading: false,
       isJoining: false,
+      isRegistering: false,
       showProjectDetails: false,
       projectData: {
         id: '',
@@ -195,6 +198,7 @@ export default {
         description: '',
         experience: '',
         session: '',
+        experienceInstanceId: '', // Added to store the experience instance ID
         members: [],
         isRegistered: false
       }
@@ -270,8 +274,14 @@ export default {
           console.log('Registration status:', registrationStatus);
           
           // Extract experience and session info from the instanceId field
-          const experienceName = project.instanceId?.experience?.name || 'Unknown Experience';
-          const sessionName = project.instanceId?.sessionID?.sessionName || 'Unknown Session';
+          // Log the instance field to debug casing issues
+          console.log('Instance field:', project.instanceId || project.instanceID);
+          const experienceName = project.instanceId?.experience?.name || 
+                                project.instanceID?.experience?.name || 
+                                'Unknown Experience';
+          const sessionName = project.instanceId?.sessionID?.sessionName || 
+                             project.instanceID?.sessionID?.sessionName || 
+                             'Unknown Session';
           
           // Map API data to component's data structure
           this.projectData = {
@@ -280,6 +290,8 @@ export default {
             description: project.projectDescription,
             experience: experienceName,
             session: sessionName,
+            // Check both possible casing variants of the instance ID field
+            experienceInstanceId: project.instanceId?._id || project.instanceID?._id,
             members: this.mapProjectMembers(project),
             isRegistered: registrationStatus.isRegistered
           };
@@ -349,6 +361,39 @@ export default {
     
     backToCode() {
       this.showProjectDetails = false;
+    },
+    
+    // New method to register for experience directly
+    async registerForExperience() {
+      if (!this.projectData.experienceInstanceId) {
+        toast.error(this.$t('Experience ID not found. Please try again.'), {
+          position: "top-right",
+          toastClassName: "Toastify__toast--delete",
+          multiple: true,
+        });
+        return;
+      }
+      
+      this.isRegistering = true;
+      
+      try {
+        // Get user store
+        const user = useLoggedInUserStore();
+        
+        // Call the updateRegisteredExperiences method with the experience to register
+        // Store method already handles success/error toasts
+        await user.updateRegisteredExperiences([
+          { _id: this.projectData.experienceInstanceId }
+        ]);
+        
+        // Update the registration status to enable the Join button
+        this.projectData.isRegistered = true;
+      } catch (error) {
+        console.error('Error registering for experience:', error);
+        // No need for toast here - the store action already handles error toasts
+      } finally {
+        this.isRegistering = false;
+      }
     },
     
     redirectToExperiences() {
