@@ -355,64 +355,128 @@ export const useLoggedInUserStore = defineStore({
         this.handleError(error);
       }
     },     
-    async updateRegisteredExperiences(selectedExperiences) {
-      const token = this.token;
-      const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
-      const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
-    
+async updateRegisteredExperiences(selectedExperiences) {
+  const token = this.token;
+  const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
+  const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
+
+  try {
+    // Determine experiences to register and to deregister
+    const experiencesToRegister = selectedExperiences.filter(se => 
+      !this.registeredExperiences.some(re => re.experienceInstance.id === se._id));
+    const experiencesToDeregister = this.registeredExperiences.filter(re => 
+      !selectedExperiences.some(se => se._id === re.experienceInstance.id));
+    const originalRegisteredExperiences = JSON.parse(JSON.stringify(this.registeredExperiences));
+
+    // Track if there were any errors during the process
+    let hasErrors = false;
+
+    // Register new experiences
+    if (experiencesToRegister.length > 0) {
+      await axios.post(registerUrl, {
+        expInstanceIDs: experiencesToRegister.map(e => e._id)
+      }, { headers: { token } });
+    }
+
+    // Deregister experiences
+    if (experiencesToDeregister.length > 0) {
       try {
-        // Determine experiences to register and to deregister
-        const experiencesToRegister = selectedExperiences.filter(se => 
-          !this.registeredExperiences.some(re => re.experienceInstance.id === se._id));
-        const experiencesToDeregister = this.registeredExperiences.filter(re => 
-          !selectedExperiences.some(se => se._id === re.experienceInstance.id));
-        const originalRegisteredExperiences = JSON.parse(JSON.stringify(this.registeredExperiences));
-    
-        // Register new experiences
-        if (experiencesToRegister.length > 0) {
-          await axios.post(registerUrl, {
-            expInstanceIDs: experiencesToRegister.map(e => e._id)
-          }, { headers: { token } });
-        }
-    
-        // Deregister experiences
-        if (experiencesToDeregister.length > 0) {
-          const response = await axios.delete(deregisterUrl, {
-            headers: { token },
-            data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
-          });
-    
-          if (response.status === 207) {
-            const { cannotDeleteRegistrations } = response.data;
-            const cannotDeleteNames = cannotDeleteRegistrations.map(id => {
+        const response = await axios.delete(deregisterUrl, {
+          headers: { token },
+          data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
+        });
+
+        if (response.status === 207) {
+          hasErrors = true; // Mark that we had partial completion errors
+          const { cannotDeleteRegistrations, projectConstraints } = response.data;
+          
+          // Handle project constraint notifications with generic message to avoid formatting issues
+          if (projectConstraints && projectConstraints.length > 0) {
+            for (const constraint of projectConstraints) {
+              // Find the corresponding experience registration
+              const experience = originalRegisteredExperiences.find(re => re._id === constraint.registrationId);
+              
+              // Safely extract the experience name
+              let experienceName = 'this experience';
+              if (experience && experience.experienceInstance && experience.experienceInstance.name) {
+                experienceName = experience.experienceInstance.name;
+              }
+              
+              // Create a generic message that doesn't depend on constraint.projects structure
+              toast.error(`Cannot deregister from "${experienceName}": You must leave all associated projects first.`, {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: true
+              });
+            }
+          }
+          
+          // Handle other constraints (like completed forms)
+          const remainingIds = cannotDeleteRegistrations.filter(id => 
+            !projectConstraints || !projectConstraints.some(pc => pc.registrationId === id)
+          );
+          
+          if (remainingIds.length > 0) {
+            for (const id of remainingIds) {
+              // Find the corresponding experience registration
               const experience = originalRegisteredExperiences.find(re => re._id === id);
-              return experience ? experience.experienceInstance.name : id;
-            });
-            cannotDeleteNames.forEach(name => {
-              toast.info(`Cannot deregister: ${name}`, {
+              
+              // Safely extract the name
+              let name = 'this experience';
+              if (experience && experience.experienceInstance && experience.experienceInstance.name) {
+                name = experience.experienceInstance.name;
+              }
+              
+              toast.info(`Cannot deregister: "${name}" (you have completed forms for this experience)`, {
                 position: 'top-right',
                 toastClassName: 'Toastify__toast--update',
                 multiple: true
               });
-            });
+            }
           }
         }
-    
-        // Fetch updated registered experiences
-        await this.fetchRegisteredExperiences();
-        toast.success(i18n.global.t('Experiences Registered') + '!', {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--create',
-          multiple: true
-        });
-    
-        // Call Student Checklist
-        await this.checkFormCompletion();
-    
-      } catch (error) {
-        this.handleError(error);
+      } catch (deregisterError) {
+        hasErrors = true;
+        console.error("Error during deregistration:", deregisterError);
+        
+        if (deregisterError.response && deregisterError.response.data && deregisterError.response.data.message) {
+          toast.error(deregisterError.response.data.message, {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: true
+          });
+        } else {
+          toast.error("Could not complete all deregistrations. Some experiences have dependencies.", {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: true
+          });
+        }
       }
-    },    
+    }
+
+    // Fetch updated registered experiences
+    await this.fetchRegisteredExperiences();
+    
+    // Only show success message if there were no errors and we actually made changes
+    if (!hasErrors && (experiencesToRegister.length > 0 || experiencesToDeregister.length > 0)) {
+      toast.success(i18n.global.t('Experiences Updated') + '!', {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--create',
+        multiple: true
+      });
+    }
+
+    // Call Student Checklist
+    await this.checkFormCompletion();
+
+  } catch (error) {
+    this.handleError(error);
+  }
+},
+
+
+
     async handleError(error) {
       console.log(error);
       toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {

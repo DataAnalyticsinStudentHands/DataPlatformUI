@@ -366,6 +366,7 @@
       v-model="inviteDialog"
       :project-id="projectData._id"
       :project-name="projectData.name"
+      :experience-instance-id="projectData.instanceId"
       :experience-instance-name="projectData.experienceInstanceName"
       :instructor-id="projectData.associatedInstructorId"
       @members-invited="handleMembersInvited"
