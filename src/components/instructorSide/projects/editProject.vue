@@ -45,6 +45,7 @@
                     :error-messages="nameErrorMessages"
                     :rules="nameRules"
                     :counter="100"
+                    :readonly="projectData.projectStatus === 'Archived'"
                     required
                     outlined
                     class="mb-4"
@@ -59,6 +60,7 @@
                     :error-messages="descriptionErrorMessages"
                     :rules="descriptionRules"
                     :counter="5000"
+                    :readonly="projectData.projectStatus === 'Archived'"
                     auto-grow
                     rows="5"
                     outlined
@@ -83,6 +85,7 @@
                     column
                     multiple
                     selected-class="red-chip"
+                    :disabled="projectData.projectStatus === 'Archived'"
                   >
                     <v-chip
                       v-for="(tag, index) in availableTags"
@@ -106,6 +109,7 @@
                   {{ $t('Project Members') }}
                   <v-spacer></v-spacer>
                   <v-btn
+                    v-if="projectData.projectStatus !== 'Archived'"
                     size="small"
                     color="#c8102e"
                     variant="flat"
@@ -119,6 +123,16 @@
                 <div v-if="projectMembers.length === 0" class="text-center my-6 pa-6">
                   <v-icon icon="mdi-account-group-outline" size="x-large" color="grey" class="mb-2"></v-icon>
                   <p class="text-grey">{{ $t('No members have been added to this project yet.') }}</p>
+                  <v-btn
+                    v-if="projectData.projectStatus !== 'Archived'"
+                    variant="tonal"
+                    color="#c8102e"
+                    class="mt-3"
+                    @click="openInviteDialog"
+                    prepend-icon="mdi-account-plus"
+                  >
+                    {{ $t('Start inviting people') }}
+                  </v-btn>
                 </div>
                 
                 <v-list v-else lines="two">
@@ -173,7 +187,7 @@
                     <div class="text-body-1 font-weight-medium">
                       {{ projectData.experienceInstanceName || $t('Not assigned') }}
                     </div>
-                    <div v-if="projectData.sessionData" class="text-caption d-flex align-center">
+                    <div v-if="projectData.sessionData" class="text-caption d-flex align-center mt-1">
                       <v-icon size="small" class="mr-1">mdi-calendar-outline</v-icon>
                       {{ projectData.sessionData.name || $t('No session available') }}
                     </div>
@@ -185,7 +199,7 @@
                   </p>
                   <v-card variant="outlined" class="pa-3 mb-3 bg-grey-lighten-5">
                     <div class="text-body-1 font-weight-medium">{{ projectData.instructorName || $t('Not Assigned') }}</div>
-                    <div class="text-caption d-flex align-center">
+                    <div class="text-caption d-flex align-center mt-1">
                       <v-icon size="small" class="mr-1">mdi-email-outline</v-icon>
                       {{ projectData.instructorEmail || $t('No email available') }}
                     </div>
@@ -213,8 +227,9 @@
                   {{ $t('Back') }}
                 </v-btn>
 
-                <!-- Update project button -->
+                <!-- Update project button - hide when archived -->
                 <v-btn 
+                  v-if="projectData.projectStatus !== 'Archived'"
                   type="submit"
                   color="primary"
                   class="update-btn"
@@ -302,7 +317,7 @@
           {{ $t('Archive Project?') }}
         </v-card-title>
         <v-card-text>
-          {{ $t('Are you sure you want to archive this project?') }}
+          {{ $t('Are you sure you want to archive this project? You can restore it later if needed.') }}
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -591,6 +606,16 @@ export default {
     },
     
     async openSubmitDialog() {
+      // Check if project is archived
+      if (this.projectData.projectStatus === 'Archived') {
+        toast.error(this.$t("Cannot update an archived project. Please restore it first."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
+      
       this.formSubmitted = true;
       const nameValid = this.projectData.name && 
                        this.projectData.name.trim() !== '' && 
@@ -617,6 +642,8 @@ export default {
     },
     
     async updateProject() {
+      if (this.projectData.projectStatus === 'Archived') return;
+      
       this.updateLoading = true;
       try {
         const user = useLoggedInUserStore();
@@ -696,7 +723,8 @@ export default {
         this.$router.push({ name: 'instructorProjects' });
       } catch (error) {
         console.error("Error archiving project:", error);
-        toast.error(this.$t("Error archiving project. Please try again later."), {
+        const errorMsg = error.response?.data?.error || this.$t("Error archiving project. Please try again later.");
+        toast.error(errorMsg, {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
           multiple: false
@@ -799,6 +827,15 @@ export default {
       }
     },
     openInviteDialog() {
+      // Check if project is archived
+      if (this.projectData.projectStatus === 'Archived') {
+        toast.error(this.$t("Cannot invite members to an archived project."), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+        return;
+      }
       this.inviteDialog = true;
     },
     handleMembersInvited() { 
