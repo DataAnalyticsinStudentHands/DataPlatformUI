@@ -59,7 +59,8 @@ and archive view toggle. Includes project review workflow and template creation.
                   v-model="searchQuery"
                   :label="$t(searchLabel)"
                   density="compact"
-                  variant="outlined"
+                  variant="solo-filled"
+                  flat
                   hide-details
                   clearable
                   class="flex-grow-1 max-width-400"
@@ -70,8 +71,8 @@ and archive view toggle. Includes project review workflow and template creation.
                     <v-menu location="bottom">
                       <template v-slot:activator="{ props }">
                         <div v-bind="props" class="pointer-cursor d-flex align-center">
-                          <v-icon>mdi-magnify</v-icon>
-                          <v-icon size="small">mdi-chevron-down</v-icon>
+                          <v-icon size="small">mdi-magnify</v-icon>
+                          <v-icon size="x-small">mdi-chevron-down</v-icon>
                         </div>
                       </template>
                       <v-list density="compact">
@@ -87,7 +88,7 @@ and archive view toggle. Includes project review workflow and template creation.
                   </template>
                   <template v-slot:append-inner>
                     <div class="pointer-cursor" @click="addSearchChipAndSelect">
-                      <v-icon>mdi-arrow-right-thin-circle-outline</v-icon> 
+                      <v-icon size="small">mdi-chevron-right</v-icon>
                     </div>
                   </template>
                 </v-text-field>
