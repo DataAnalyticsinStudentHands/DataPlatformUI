@@ -393,19 +393,30 @@ export default {
       try {
         const user = useLoggedInUserStore();
         
-        // Use store method to handle experience registration
-        await user.updateRegisteredExperiences([
-          { _id: this.projectData.experienceInstanceId }
-        ]);
+        // Use the store's registerSingleExperience method
+        const success = await user.registerSingleExperience(this.projectData.experienceInstanceId);
         
-        this.projectData.isRegistered = true;
+        if (success) {
+          toast.success(this.$t('Successfully registered for the experience!'), {
+            position: "top-right",
+            toastClassName: "Toastify__toast--create",
+            multiple: true,
+          });
+          
+          this.projectData.isRegistered = true;
+        }
       } catch (error) {
         console.error('Error registering for experience:', error);
+        toast.error(this.$t('Failed to register for experience. Please try again.'), {
+          position: "top-right",
+          toastClassName: "Toastify__toast--delete",
+          multiple: true,
+        });
       } finally {
         this.isRegistering = false;
       }
     },
-    
+        
     // Navigate to experiences page for manual registration
     redirectToExperiences() {
       this.close();

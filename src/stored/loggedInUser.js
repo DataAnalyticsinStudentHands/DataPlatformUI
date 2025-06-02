@@ -455,25 +455,50 @@ async updateRegisteredExperiences(selectedExperiences) {
       }
     }
 
-    // Fetch updated registered experiences
-    await this.fetchRegisteredExperiences();
-    
-    // Only show success message if there were no errors and we actually made changes
-    if (!hasErrors && (experiencesToRegister.length > 0 || experiencesToDeregister.length > 0)) {
-      toast.success(i18n.global.t('Experiences Updated') + '!', {
-        position: 'top-right',
-        toastClassName: 'Toastify__toast--create',
-        multiple: true
-      });
-    }
+        // Fetch updated registered experiences
+        await this.fetchRegisteredExperiences();
+        
+        // Only show success message if there were no errors and we actually made changes
+        if (!hasErrors && (experiencesToRegister.length > 0 || experiencesToDeregister.length > 0)) {
+          toast.success(i18n.global.t('Experiences Updated') + '!', {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--create',
+            multiple: true
+          });
+        }
 
-    // Call Student Checklist
-    await this.checkFormCompletion();
+        // Call Student Checklist
+        await this.checkFormCompletion();
 
-  } catch (error) {
-    this.handleError(error);
-  }
-},
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+
+
+    async registerSingleExperience(experienceInstanceId) {
+      const token = this.token;
+      const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
+
+      try {
+        // Register the single experience
+        await axios.post(registerUrl, {
+          expInstanceIDs: [experienceInstanceId]
+        }, { headers: { token } });
+
+        // Fetch updated registered experiences
+        await this.fetchRegisteredExperiences();
+        
+        // Update form completion status
+        await this.checkFormCompletion();
+
+        return true; // Success
+      } catch (error) {
+        this.handleError(error);
+        return false; // Failed
+      }
+    },
 
 
 
