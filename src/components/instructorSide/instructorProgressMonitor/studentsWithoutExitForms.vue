@@ -181,6 +181,11 @@ export default {
     // Fetch Experiences upon mount
     this.fetchExperiences();
   },
+
+
+
+
+
   computed: {
     // Format experiences for display in the autocomplete dropdown
     formattedExperiences() {
@@ -190,31 +195,34 @@ export default {
       }));
     },
 
-    // Get paginated students who haven't completed the exit form
-    paginatedStudentsWithoutExitForm() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = this.currentPage * this.itemsPerPage;
-      return this.studentsWithoutExitForm.slice(start, end);
+    // Determine which students to display based on completed status
+    displayedStudents() {
+      if (this.completed === true) {
+        return this.studentsWithExitForm;
+      } else if (this.completed === false) {
+        return this.studentsWithoutExitForm;
+      }
+      return [];
     },
 
-    // Get paginated students who have completed the exit form
-    paginatedStudentsWithExitForm() {
+    // Get the paginated version of displayed students
+    paginatedDisplayedStudents() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = this.currentPage * this.itemsPerPage;
       return this.displayedStudents.slice(start, end);
     },
 
-    // Determine the total number of pages for pagination based on the completed status
+    // Determine the total number of pages for pagination
     totalPaginationLength() {
-      // Determine which student list to use based on the `completed` flag
-      let list = this.completed ? this.studentsWithExitForm : this.studentsWithoutExitForm;
-      return Math.ceil(list.length / this.itemsPerPage);
+      return Math.ceil(this.displayedStudents.length / this.itemsPerPage);
     },
 
-    // Return the total number of students based on the list available
+    // Return the total number of students
     totalStudentsCount() {
       return this.displayedStudents.length;
     },
+
+    // Generate CSV filename based on completion status
     csvFileName() {
       if (this.selectedExperience) {
         const selectedObj = this.expInstances.find(
@@ -231,6 +239,10 @@ export default {
       }
     },
   },
+
+
+
+
   methods: {
 
     // Fetches active experience instances for the instructor from the backend API. Upon receiving the response, it maps the instance data to a structured format and stores it in the component's state.
