@@ -1,9 +1,13 @@
+<!-- 
+projectProposal.vue
+Student-side interface for creating new project proposals. Allows students to submit 
+project ideas by providing basic information, selecting an associated experience, 
+and categorizing the project with tags.
+-->
+
 <template>
     <main>
-      <v-form
-        ref="form"
-        @submit.prevent="openSubmitDialog"
-      >
+      <v-form ref="form" @submit.prevent="openSubmitDialog">
         <v-container>
           <!-- Page title -->
           <v-row>
@@ -12,7 +16,7 @@
             </v-col>
           </v-row>
   
-          <!-- Project Name -->
+          <!-- Project name input -->
           <v-row>
             <v-col cols="12" md="6">
               <v-text-field 
@@ -28,7 +32,7 @@
             </v-col>
           </v-row>
   
-          <!-- Project Description -->
+          <!-- Project description input -->
           <v-row>
             <v-col cols="12" md="10">
               <p class="font-weight-black text-h8">{{ $t('Project Description') }}</p>
@@ -46,7 +50,7 @@
             </v-col>
           </v-row>
   
-          <!-- Experience Instance Selection -->
+          <!-- Experience instance selection -->
           <v-row>
             <v-col cols="12" md="6">
               <p 
@@ -68,7 +72,7 @@
             </v-col>
           </v-row>
   
-          <!-- Project Tags - Chips with transparent red selection color -->
+          <!-- Project tags selection -->
           <v-row>
             <v-col cols="12">
               <p class="font-weight-black text-h8">{{ $t('Project Tags (Select all that apply)') }}</p>
@@ -94,10 +98,10 @@
             </v-col>
           </v-row>
   
-          <!-- Buttons -->
+          <!-- Action buttons -->
           <v-row class="mt-6">
             <v-col>
-              <!-- Cancel button -->
+              <!-- Cancel navigation button -->
               <v-btn 
                 @click="$router.back()"
                 class="mr-4"
@@ -105,7 +109,7 @@
                 {{ $t('Cancel') }}
               </v-btn>
               
-              <!-- Submit button -->
+              <!-- Submit proposal button -->
               <v-btn 
                 type="submit"
               >
@@ -116,7 +120,7 @@
         </v-container>
       </v-form>
   
-      <!-- Submit Confirmation Dialog -->
+      <!-- Submit confirmation dialog -->
       <v-dialog v-model="submitDialog" persistent max-width="500px">
         <v-card>
           <v-card-title class="headline">
@@ -144,18 +148,24 @@
     name: "ProjectProposal",
     data() {
       return {
+        // Form and dialog states
         formSubmitted: false,
         submitDialog: false,
         isLoadingExperiences: false,
+        
+        // Project proposal data
         projectData: {
           name: '',
           description: '',
           experienceInstanceId: null,
           tags: []
         },
+        
+        // Experience data
         experienceInstances: [],
         experienceInstancesLoaded: false,
-        // Rules for validation
+        
+        // Form validation rules
         nameRules: [
           v => !!v || this.$t('Project name is required'),
           v => (v && v.length >= 3) || this.$t('Project name must be at least 3 characters long'),
@@ -166,27 +176,18 @@
           v => (v && v.length >= 10) || this.$t('Project description must be at least 10 characters long'),
           v => (v && v.length <= 5000) || this.$t('Project description cannot exceed 5000 characters')
         ],
+        
+        // Available project tags
         availableTags: [
-          "community",
-          "coding",
-          "outreach",
-          "education",
-          "innovation",
-          "campus",
-          "technology",
-          "empowerment",
-          "collaboration",
-          "digital",
-          "learning",
-          "network",
-          "nonprofit",
-          "humanity",
-          "social impact"
+          "community", "coding", "outreach", "education", "innovation", "campus", 
+          "technology", "empowerment", "collaboration", "digital", "learning", 
+          "network", "nonprofit", "humanity", "social impact"
         ],
         selectedTags: []
       };
     },
     computed: {
+      // Project name validation state
       isNameInvalid() {
         if (!this.formSubmitted) return false;
         return !this.projectData.name || 
@@ -194,11 +195,11 @@
                this.projectData.name.length < 3 ||
                this.projectData.name.length > 100;
       },
+      
+      // Project name error messages
       nameErrorMessages() {
         if (!this.formSubmitted) return [];
-        
         const errors = [];
-        
         if (!this.projectData.name || this.projectData.name.trim() === '') {
           errors.push(this.$t('Project name is required'));
         } else if (this.projectData.name.length < 3) {
@@ -206,9 +207,10 @@
         } else if (this.projectData.name.length > 100) {
           errors.push(this.$t('Project name cannot exceed 100 characters'));
         }
-        
         return errors;
       },
+      
+      // Project description validation state
       isDescriptionInvalid() {
         if (!this.formSubmitted) return false;
         return !this.projectData.description || 
@@ -216,11 +218,11 @@
                this.projectData.description.length < 10 ||
                this.projectData.description.length > 5000;
       },
+      
+      // Project description error messages
       descriptionErrorMessages() {
         if (!this.formSubmitted) return [];
-        
         const errors = [];
-        
         if (!this.projectData.description || this.projectData.description.trim() === '') {
           errors.push(this.$t('Project description is required'));
         } else if (this.projectData.description.length < 10) {
@@ -228,26 +230,34 @@
         } else if (this.projectData.description.length > 5000) {
           errors.push(this.$t('Project description cannot exceed 5000 characters'));
         }
-        
         return errors;
       },
+      
+      // Experience selection validation state
       isExperienceInvalid() {
         if (!this.formSubmitted) return false;
         return !this.projectData.experienceInstanceId;
       },
+      
+      // Experience selection error messages
       experienceErrorMessages() {
         return this.isExperienceInvalid ? [this.$t('Please select an experience')] : [];
       },
+      
+      // Overall form validation state
       hasValidationErrors() {
         if (!this.formSubmitted) return false;
         return this.isNameInvalid || this.isDescriptionInvalid || this.isExperienceInvalid;
       }
     },
+    
+    // Component initialization
     mounted() {
-      // Fetch the student's experience instances when component is mounted
       this.fetchStudentExperienceInstances();
     },
+    
     methods: {
+      // Fetch available experience instances for the student
       fetchStudentExperienceInstances() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -257,7 +267,7 @@
         
         axios.get(apiURL, { headers: { token } })
           .then((resp) => {
-            // Map the returned data to the format we need for the dropdown
+            // Map response data to dropdown format
             this.experienceInstances = resp.data.map(registration => ({
               experienceInstanceId: registration.experienceInstance.id,
               experienceInstanceName: `${registration.experienceInstance.name} (${registration.session.name})`
@@ -265,7 +275,7 @@
             
             this.experienceInstancesLoaded = true;
             
-            // If there's only one experience instance, preselect it
+            // Auto-select if only one experience available
             if (this.experienceInstances.length === 1) {
               this.projectData.experienceInstanceId = this.experienceInstances[0].experienceInstanceId;
             }
@@ -283,10 +293,12 @@
             this.isLoadingExperiences = false;
           });
       },
+      
+      // Open submit confirmation dialog with validation
       async openSubmitDialog() {
         this.formSubmitted = true;
         
-        // Check for validation errors with the enhanced validation
+        // Validate all required fields
         const nameValid = this.projectData.name && 
                          this.projectData.name.trim() !== '' && 
                          this.projectData.name.length >= 3 && 
@@ -299,12 +311,9 @@
                                 
         const experienceValid = !!this.projectData.experienceInstanceId;
         
-        // Only proceed if all validations pass
         if (nameValid && descriptionValid && experienceValid) {
-          // If validation passes, show the confirmation dialog
           this.submitDialog = true;
         } else {
-          // If validation fails, show error toast
           toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete',
@@ -312,13 +321,14 @@
           });
         }
       },
+      
+      // Confirm and proceed with submission
       confirmSubmit() {
-        // Close the dialog
         this.submitDialog = false;
-        
-        // Submit the project proposal
         this.submitProjectProposal();
       },
+      
+      // Submit project proposal to API
       async submitProjectProposal() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -341,24 +351,22 @@
             toastCSS: 'Toastify__toast--create'
           };
           
-          // Redirect to projects list after successful submission
           this.$router.push({ name: 'studentProjects' });
         } catch (error) {
           console.error("Error submitting project proposal:", error);
 
-         // 🔄 duplicate-project (409) is new
-         if (error.response?.status === 409) {
-           toast.error(this.$t('A project for this experience already exists.'), {
-             position: 'top-right',
-             toastClassName: 'Toastify__toast--delete',
-             multiple: false
-           });
-           return;
-         }
+          // Handle duplicate project error
+          if (error.response?.status === 409) {
+            toast.error(this.$t('A project for this experience already exists.'), {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--delete',
+              multiple: false
+            });
+            return;
+          }
           
-          // Check for validation errors from the backend
+          // Handle server validation errors
           if (error.response && error.response.data && error.response.data.errors) {
-            // Show first validation error from the server
             const serverErrors = error.response.data.errors;
             if (serverErrors.length > 0) {
               toast.error(serverErrors[0], {
@@ -370,7 +378,6 @@
             }
           }
           
-          // Generic error message if no specific error was provided
           toast.error(this.$t("Error submitting your project proposal. Please try again later."), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete',
@@ -387,9 +394,8 @@
     color: #B00020;
   }
   
-  /* Custom styling for selected chips with transparency */
   :deep(.red-chip) {
-    background-color: rgba(200, 16, 46, 0.80) !important; /* UH red with 80% opacity */
+    background-color: rgba(200, 16, 46, 0.80) !important;
     color: white !important;
     border-color: #c8102e !important;
   }

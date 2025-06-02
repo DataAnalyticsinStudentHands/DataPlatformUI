@@ -1,12 +1,5 @@
-<!-- 
-inviteMembersDialog.vue
-Reusable dialog component for inviting members to projects via invite codes. 
-Provides code sharing functionality with copy and regenerate options. Includes 
-confirmation dialogs and success feedback for user actions.
--->
-
 <template>
-  <!-- Main invite members dialog -->
+  <!-- Invite Members Dialog -->
   <v-dialog v-model="localDialog" max-width="800px">
     <v-card>
       <v-toolbar color="#c8102e" dark>
@@ -18,7 +11,6 @@ confirmation dialogs and success feedback for user actions.
       </v-toolbar>
       
       <v-card-text class="py-4">
-        <!-- Information banner -->
         <v-banner
           lines="one"
           icon="mdi-information-outline"
@@ -32,7 +24,7 @@ confirmation dialogs and success feedback for user actions.
           </template>
         </v-banner>
         
-        <!-- Invite code sharing section -->
+        <!-- Invite Code Section -->
         <v-card variant="outlined" class="mb-4">
           <v-card-text>
             <v-row class="d-flex">
@@ -44,7 +36,6 @@ confirmation dialogs and success feedback for user actions.
               </v-col>
               <v-col cols="12" sm="5" class="d-flex align-self-center">
                 <div class="d-flex align-center w-100">
-                  <!-- Read-only invite code display -->
                   <v-text-field
                     v-model="inviteCode"
                     readonly
@@ -54,7 +45,6 @@ confirmation dialogs and success feedback for user actions.
                     hide-details
                     class="flex-grow-1 mr-2"
                   ></v-text-field>
-                  <!-- Copy code button -->
                   <v-btn
                     color="#c8102e"
                     variant="tonal"
@@ -66,7 +56,6 @@ confirmation dialogs and success feedback for user actions.
                   >
                     <v-icon>mdi-content-copy</v-icon>
                   </v-btn>
-                  <!-- Regenerate code button (conditional) -->
                   <v-btn
                     v-if="canRegenerateCode"
                     color="grey-darken-1"
@@ -86,11 +75,151 @@ confirmation dialogs and success feedback for user actions.
         
         <v-divider class="mb-4"></v-divider>
         
+        
+        <!-- Direct Invite Section -->
+        <!-- <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite classmates directly') }}</div> -->
+        
+        <!-- Search and Selection Counter -->
+        <!-- <v-row class="mb-3">
+          <v-col cols="12" md="8">
+            <v-text-field
+              v-model="searchQuery"
+              :label="$t('Search by name or email')"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              density="comfortable"
+              clearable
+              hide-details
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="4" class="d-flex align-center">
+            <v-chip
+              :color="selectedUsers.length > 0 ? '#c8102e' : 'grey'"
+              variant="tonal"
+              class="w-100 justify-center"
+              size="large"
+            >
+              <v-icon start>mdi-account-check</v-icon>
+              {{ selectedUsers.length }} {{ $t('selected') }}
+            </v-chip>
+          </v-col>
+        </v-row> -->
+        
+        <!-- Students List - Simplified without avatars -->
+        <!-- <v-card variant="outlined" :loading="loadingRegisteredUsers">
+          <v-card-text class="pa-0">
+            <v-virtual-scroll
+              :items="filteredRegisteredUsers"
+              :height="Math.min(400, filteredRegisteredUsers.length * 72 + 16)"
+              item-height="60"
+            >
+              <template v-slot:default="{ item }">
+                <v-hover v-slot:default="{ isHovering, props }">
+                  <v-list-item
+                    v-bind="props"
+                    :class="{ 'bg-grey-lighten-4': isHovering }"
+                    class="px-4"
+                    density="compact"
+                  >
+                    <template v-slot:prepend>
+                      <v-checkbox
+                        :model-value="isUserSelected(item.userID)"
+                        @update:model-value="toggleUserSelection(item)"
+                        color="#c8102e"
+                        hide-details
+                        class="mr-2"
+                      ></v-checkbox>
+                    </template>
+                    
+                    <v-list-item-title class="font-weight-medium">
+                      {{ item.firstName }} {{ item.lastName }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ item.email }}
+                    </v-list-item-subtitle>
+                    
+                    <template v-slot:append>
+                      <v-chip
+                        v-if="isAlreadyMember(item.userID)"
+                        size="small"
+                        color="success"
+                        variant="tonal"
+                      >
+                        <v-icon start size="x-small">mdi-check</v-icon>
+                        {{ $t('Already member') }}
+                      </v-chip>
+                      <v-chip
+                        v-else-if="item.invitationStatus === 'pending'"
+                        size="small"
+                        color="orange"
+                        variant="tonal"
+                      >
+                        <v-icon start size="x-small">mdi-clock-outline</v-icon>
+                        {{ $t('Invitation pending') }}
+                      </v-chip>
+                    </template>
+                  </v-list-item>
+                </v-hover>
+              </template>
+            </v-virtual-scroll>
+            
+            <div v-if="filteredRegisteredUsers.length === 0 && !loadingRegisteredUsers" class="text-center py-8">
+              <v-icon size="48" color="grey-lighten-1">mdi-account-search-outline</v-icon>
+              <p class="text-grey mt-2">{{ searchQuery ? $t('No students found matching your search') : $t('No students found in this experience') }}</p>
+            </div>
+          </v-card-text>
+        </v-card> -->
+        
+        <!-- Loading State -->
+        <!-- <div v-if="loadingRegisteredUsers" class="text-center py-4">
+          <v-progress-circular indeterminate color="#c8102e"></v-progress-circular>
+        </div> -->
       </v-card-text>
+      
+      <!-- <v-divider></v-divider> -->
+      
+      <!-- <v-card-actions class="pa-4">
+        <v-btn
+          variant="text"
+          color="grey-darken-1"
+          @click="closeDialog"
+        >
+          {{ $t('Cancel') }}
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn
+          v-if="selectedUsers.length > 0"
+          variant="text"
+          color="#c8102e"
+          @click="clearSelection"
+          class="mr-2"
+        >
+          <v-icon start>mdi-close</v-icon>
+          {{ $t('Clear selection') }}
+        </v-btn>
+        <v-btn
+          :disabled="selectedUsers.length === 0"
+          :loading="invitingUsers"
+          color="#c8102e"
+          variant="elevated"
+          @click="sendInvitations"
+          prepend-icon="mdi-send"
+        >
+          {{ $t('Send Invitations') }} 
+          <v-badge
+            v-if="selectedUsers.length > 0"
+            :content="selectedUsers.length"
+            color="white"
+            text-color="#c8102e"
+            inline
+            class="ml-2"
+          ></v-badge>
+        </v-btn>
+      </v-card-actions> -->
     </v-card>
   </v-dialog>
 
-  <!-- Regenerate code confirmation dialog -->
+  <!-- Regenerate Confirmation Dialog -->
   <v-dialog v-model="showRegenerateConfirmation" max-width="450px">
     <v-card>
       <v-card-title class="text-subtitle-1 px-4 pt-4">
@@ -119,7 +248,7 @@ confirmation dialogs and success feedback for user actions.
     </v-card>
   </v-dialog>
 
-  <!-- Invitation success feedback dialog -->
+  <!-- Invitation Success Dialog -->
   <v-dialog v-model="inviteSuccessDialog" max-width="500px">
     <v-card>
       <v-card-title class="d-flex align-center pa-4">
@@ -180,10 +309,7 @@ export default {
       type: String,
       required: true
     },
-    associatedInstructorId: { 
-      type: String, 
-      default: null 
-    },
+    associatedInstructorId: { type: String, default: null },
     isProjectOwner: {
       type: Boolean,
       default: false
@@ -199,25 +325,17 @@ export default {
   },
   data() {
     return {
-      // Dialog state management
       inviteSuccessDialog: false,
-      showRegenerateConfirmation: false,
-      
-      // Loading states
       invitingUsers: false,
       loadingRegisteredUsers: false,
-      
-      // Search and selection data
       searchQuery: '',
       registeredUsers: [],
       selectedUsers: [],
-      
-      // Invite code data
-      inviteCode: ''
+      inviteCode: '',
+      showRegenerateConfirmation: false,
     };
   },
   computed: {
-    // Two-way binding for dialog visibility
     localDialog: {
       get() {
         return this.modelValue;
@@ -226,8 +344,6 @@ export default {
         this.$emit('update:modelValue', value);
       }
     },
-    
-    // Check if current user can regenerate invite codes
     canRegenerateCode() {
       const currentUserId = this.loggedInUserStore.userId;
       if (this.isProjectOwner) return true;
@@ -236,8 +352,6 @@ export default {
         this.associatedInstructorId === currentUserId
       );
     },
-    
-    // Filter registered users based on search and membership status
     filteredRegisteredUsers() {
       if (!this.searchQuery) {
         return this.registeredUsers.filter(user => !this.isAlreadyMember(user.userID));
@@ -254,15 +368,12 @@ export default {
     }
   },
   watch: {
-    // Initialize dialog when opened
     modelValue(newVal) {
       if (newVal === true) {
         console.log('Dialog opened, calling initializeDialog');
         this.initializeDialog();
       }
     },
-    
-    // Log experience instance changes
     experienceInstanceId: {
       immediate: true,
       handler(newVal) {
@@ -270,33 +381,28 @@ export default {
       }
     }
   },
-  
-  // Component initialization
   mounted() {
     if (this.modelValue) {
       console.log('Dialog mounted with open state, initializing');
       this.initializeDialog();
     }
   },
-  
   methods: {
-    // Initialize dialog data when opened
     async initializeDialog() {
       console.log('Initializing dialog for project ID:', this.projectId);
       console.log('Experience Instance ID:', this.experienceInstanceId);
       
-      // Reset search and selection state
+      // Reset search and selection
       this.searchQuery = '';
       this.selectedUsers = [];
 
-      // Fetch required data
+      // Fetch necessary data
       await Promise.all([
         this.fetchInviteCode(),
         this.fetchRegisteredUsers()
       ]);
     },
 
-    // Fetch current invite code for the project
     async fetchInviteCode() {
       console.log('Fetching invite code for project ID:', this.projectId);
       try {
@@ -322,7 +428,6 @@ export default {
       }
     },
     
-    // Fetch users registered for the associated experience
     async fetchRegisteredUsers() {
       this.loadingRegisteredUsers = true;
       try {
@@ -360,12 +465,10 @@ export default {
       }
     },
     
-    // Check if user is currently selected for invitation
     isUserSelected(userID) {
       return this.selectedUsers.some(user => user.userID === userID);
     },
     
-    // Toggle user selection for invitation
     toggleUserSelection(user) {
       const index = this.selectedUsers.findIndex(u => u.userID === user.userID);
       if (index > -1) {
@@ -375,29 +478,24 @@ export default {
       }
     },
     
-    // Check if user is already a project member
     isAlreadyMember(userID) {
       return this.projectMembers.some(member => member.userID === userID);
     },
     
-    // Clear all selected users
     clearSelection() {
       this.selectedUsers = [];
     },
     
-    // Close the main dialog
     closeDialog() {
       this.localDialog = false;
     },
     
-    // Close success dialog and emit results
     closeSuccessDialog() {
       this.inviteSuccessDialog = false;
       this.localDialog = false;
       this.$emit('members-invited', this.selectedUsers);
     },
     
-    // Send invitations to selected users
     async sendInvitations() {
       if (this.selectedUsers.length === 0) {
         return;
@@ -410,7 +508,7 @@ export default {
         const payload = {
           projectId: this.projectId,
           userIds: this.selectedUsers.map(user => user.userID),
-          notificationType: 'in-app'
+          notificationType: 'in-app' // Specify in-app notification
         };
         
         console.log('Sending invitation payload:', payload);
@@ -421,9 +519,10 @@ export default {
           { headers: { token } }
         );
         
+        // Show success dialog
         this.inviteSuccessDialog = true;
         
-        // Format invited members for parent component
+        // Format the invited members for emitting to parent
         const invitedMembers = this.selectedUsers.map(user => ({
           userID: user.userID,
           firstName: user.firstName,
@@ -447,7 +546,6 @@ export default {
       }
     },
     
-    // Copy invite code to clipboard
     copyInviteCode() {
       navigator.clipboard.writeText(this.inviteCode)
         .then(() => {
@@ -467,7 +565,6 @@ export default {
         });
     },
     
-    // Generate new invite code for the project
     async regenerateInviteCode() {
       this.showRegenerateConfirmation = false;
 
@@ -505,10 +602,12 @@ export default {
 </script>
 
 <style scoped>
+/* Smooth transitions for list items */
 .v-list-item {
   transition: background-color 0.2s ease;
 }
 
+/* Custom scrollbar for virtual scroll */
 :deep(.v-virtual-scroll__container) {
   scrollbar-width: thin;
   scrollbar-color: #c8102e20 transparent;
@@ -531,10 +630,12 @@ export default {
   background-color: #c8102e40;
 }
 
+/* Chip animations */
 .v-chip {
   transition: all 0.2s ease;
 }
 
+/* Loading overlay animation */
 :deep(.v-card__loader) {
   opacity: 0.8;
 }

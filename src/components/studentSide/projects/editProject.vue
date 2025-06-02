@@ -1,8 +1,15 @@
+<!-- 
+editProject.vue
+Student-side project editing interface that allows project owners to update project details, 
+manage members, archive/restore projects, and handle invitations. Non-owners can view 
+project information and leave the project.
+-->
+
 <template>
   <main>
     <v-form ref="form" @submit.prevent="openSubmitDialog">
       <v-container>
-        <!-- Updated Page title with Project Name and Status Badge -->
+        <!-- Page header with project title and status -->
         <v-row>
           <v-col>
             <div class="d-flex align-center justify-space-between">
@@ -18,7 +25,7 @@
           </v-col>
         </v-row>
 
-        <!-- Loading Indicator -->
+        <!-- Loading state -->
         <v-row v-if="loading">
           <v-col class="text-center">
             <v-progress-circular indeterminate color="#c8102e"></v-progress-circular>
@@ -27,9 +34,9 @@
 
         <template v-else>
           <v-row>
-            <!-- Main project information column -->
+            <!-- Main content column -->
             <v-col cols="12" md="7">
-              <!-- Project details card -->
+              <!-- Project details form -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-information-outline" class="mr-2"></v-icon>
@@ -37,7 +44,7 @@
                 </v-card-title>
                 
                 <v-card-text class="px-4 pt-4">
-                  <!-- Project Name -->
+                  <!-- Project name input -->
                   <v-text-field 
                     v-model="projectData.name" 
                     :label="$t('Project Name')"
@@ -51,7 +58,7 @@
                     class="mb-4"
                   ></v-text-field>
                   
-                  <!-- Project Description -->
+                  <!-- Project description input -->
                   <p class="font-weight-black text-h8 mb-2">{{ $t('Project Description') }}</p>
                   <v-textarea 
                     v-model="projectData.description" 
@@ -68,7 +75,7 @@
                 </v-card-text>
               </v-card>
               
-              <!-- Project tags card -->
+              <!-- Project tags selection -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-tag-multiple" class="mr-2"></v-icon>
@@ -102,7 +109,7 @@
                 </v-card-text>
               </v-card>
               
-              <!-- Project Members card -->
+              <!-- Project members management -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-account-group" class="mr-2"></v-icon>
@@ -120,6 +127,7 @@
                   </v-btn>
                 </v-card-title>
                 
+                <!-- Empty state for no members -->
                 <div v-if="projectMembers.length === 0" class="text-center my-6 pa-6">
                   <v-icon icon="mdi-account-group-outline" size="x-large" color="grey" class="mb-2"></v-icon>
                   <p class="text-grey">{{ $t('No members have been added to this project yet.') }}</p>
@@ -135,6 +143,7 @@
                   </v-btn>
                 </div>
                 
+                <!-- Members list -->
                 <v-list v-else lines="two">
                   <v-list-item
                     v-for="member in projectMembers"
@@ -169,9 +178,9 @@
               </v-card>
             </v-col>
             
-            <!-- Side panel with additional info -->
+            <!-- Sidebar with course information -->
             <v-col cols="12" md="5">
-              <!-- Experience & Instructor info card -->
+              <!-- Course and instructor details -->
               <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-school" class="mr-2"></v-icon>
@@ -179,7 +188,7 @@
                 </v-card-title>
                 
                 <v-card-text class="pa-4">
-                  <!-- Experience section -->
+                  <!-- Associated experience section -->
                   <p class="font-weight-black text-h8 mb-2">
                     {{ $t('Associated Experience') }}
                   </p>
@@ -199,7 +208,7 @@
                     </div>
                   </v-card>
 
-                  <!-- Instructor section -->
+                  <!-- Associated instructor section -->
                   <p class="font-weight-black text-h8 mb-2">
                     {{ $t('Associated Instructor') }}
                   </p>
@@ -217,20 +226,14 @@
                   </v-card>
                 </v-card-text>
               </v-card>
-              
-              <!-- Project Documents card -->
-              <!-- <ProjectDocuments 
-                :project-id="projectData._id"
-                :is-project-owner="isProjectOwner"
-              /> -->
             </v-col>
           </v-row>
           
-          <!-- Buttons positioning -->
+          <!-- Action buttons -->
           <v-row class="mt-6">
             <v-col class="d-flex align-center justify-space-between">
-              <div class="d-flex align-items-center"> <!-- Removed gap-3 for manual margin -->
-                <!-- Back button -->
+              <div class="d-flex align-items-center">
+                <!-- Navigation and project management buttons -->
                 <v-btn 
                   @click="$router.back()"
                   variant="outlined"
@@ -239,7 +242,6 @@
                   {{ $t('Back') }}
                 </v-btn>
 
-                <!-- Update project button - only for owners and not archived -->
                 <v-btn 
                   v-if="isProjectOwner && projectData.projectStatus !== 'Archived'"
                   type="submit"
@@ -250,7 +252,6 @@
                   {{ $t('Update Project') }}
                 </v-btn>
 
-                <!-- Archive button (if Active and Owner) -->
                 <v-btn
                   v-if="isProjectOwner && projectData.projectStatus === 'Active'"
                   color="grey"
@@ -263,7 +264,6 @@
                   {{ $t('Archive Project') }}
                 </v-btn>
 
-                <!-- Restore button (if Archived and Owner) -->
                 <v-btn
                   v-if="isProjectOwner && projectData.projectStatus === 'Archived'"
                   color="orange"
@@ -276,7 +276,7 @@
                 </v-btn>
               </div>
               
-              <!-- Leave Project button - only for non-owners -->
+              <!-- Leave project button for non-owners -->
               <v-btn 
                 v-if="!isProjectOwner && projectData.projectStatus !== 'Archived'"
                 color="error"
@@ -292,7 +292,7 @@
       </v-container>
     </v-form>
 
-    <!-- Submit Confirmation Dialog -->
+    <!-- Project update confirmation dialog -->
     <v-dialog v-model="submitDialog" persistent max-width="500px">
       <v-card>
         <v-card-title class="headline">
@@ -309,7 +309,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- Archive Confirmation Dialog -->
+    <!-- Archive project confirmation dialog -->
     <v-dialog v-model="archiveConfirmDialog" persistent max-width="500px">
       <v-card>
         <v-card-title class="headline">
@@ -326,7 +326,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- Restore Confirmation Dialog -->
+    <!-- Restore project confirmation dialog -->
     <v-dialog v-model="restoreConfirmDialog" persistent max-width="500px">
       <v-card>
         <v-card-title class="headline">
@@ -343,7 +343,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- Invite Members Dialog -->
+    <!-- Member invitation dialog -->
     <invite-members-dialog
       v-if="inviteDialog && projectData._id"
       v-model="inviteDialog"
@@ -357,7 +357,7 @@
       @members-invited="handleMembersInvited"
     />
 
-    <!-- Invitation Success Dialog -->
+    <!-- Invitation success notification dialog -->
     <v-dialog v-model="inviteSuccessDialog" max-width="500px">
       <v-card>
         <v-card-title class="bg-success-lighten-5 py-4">
@@ -381,7 +381,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- Leave Project Confirmation Dialog -->
+    <!-- Leave project confirmation dialog -->
     <v-dialog v-model="leaveProjectDialog" max-width="500px">
       <v-card>
         <v-card-title class="bg-error-lighten-5 py-4">
@@ -419,7 +419,7 @@ import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
-import ProjectDocuments from '@/components/reusable/projectDocuments.vue'; // Assuming this is still used or might be in future
+import ProjectDocuments from '@/components/reusable/projectDocuments.vue';
 
 export default {
   name: "EditProject",
@@ -429,21 +429,28 @@ export default {
   },
   data() {
     return {
+      // Loading and form states
       loading: true,
       formSubmitted: false,
+      
+      // Dialog visibility states
       submitDialog: false,
-      archiveConfirmDialog: false, // For archive confirmation
-      restoreConfirmDialog: false, // For restore confirmation
+      archiveConfirmDialog: false,
+      restoreConfirmDialog: false,
       inviteDialog: false,
       inviteSuccessDialog: false,
       leaveProjectDialog: false,
+      
+      // Loading states for different operations
       updateLoading: false,
-      archivingProject: false,     // Loading state for archive
-      restoringProject: false,     // Loading state for restore
+      archivingProject: false,
+      restoringProject: false,
       invitingUsers: false,
       leavingProject: false,
       isLoadingExperiences: false,
       loadingUsers: false,
+      
+      // Main project data object
       projectData: {
         _id: null,
         name: '',
@@ -455,9 +462,13 @@ export default {
         instructorEmail: '',
         projectStatus: 'Proposed'
       },
+      
+      // Additional data arrays
       experienceInstances: [],
       experienceInstancesLoaded: false,
       projectMembers: [],
+      
+      // User search and filtering
       searchQuery: '',
       roleFilter: 'All Roles',
       userHeaders: [
@@ -468,6 +479,8 @@ export default {
       availableUsers: [], 
       filteredUsers: [],
       selectedUsers: [],
+      
+      // Form validation rules
       nameRules: [
         v => !!v || this.$t('Project name is required'),
         v => (v && v.length >= 3) || this.$t('Project name must be at least 3 characters long'),
@@ -478,6 +491,8 @@ export default {
         v => (v && v.length >= 10) || this.$t('Project description must be at least 10 characters long'),
         v => (v && v.length <= 5000) || this.$t('Project description cannot exceed 5000 characters')
       ],
+      
+      // Available project tags
       availableTags: [
         "community", "coding", "outreach", "education", "innovation", "campus", 
         "technology", "empowerment", "collaboration", "digital", "learning", 
@@ -487,14 +502,17 @@ export default {
     };
   },
   computed: {
+    // Check if current user is the project owner
     isProjectOwner() {
       const user = useLoggedInUserStore();
       return this.projectData && 
              this.projectMembers && 
              this.projectMembers.some(member => 
-               member.isOwner && member.id === user.userId // Make sure to use user.userId from Pinia store
+               member.isOwner && member.id === user.userId
              );
     },
+    
+    // Project name validation state
     isNameInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.name || 
@@ -502,6 +520,8 @@ export default {
              this.projectData.name.length < 3 ||
              this.projectData.name.length > 100;
     },
+    
+    // Project name error messages
     nameErrorMessages() {
       if (!this.formSubmitted) return [];
       const errors = [];
@@ -514,6 +534,8 @@ export default {
       }
       return errors;
     },
+    
+    // Project description validation state
     isDescriptionInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.description || 
@@ -521,6 +543,8 @@ export default {
              this.projectData.description.length < 10 ||
              this.projectData.description.length > 5000;
     },
+    
+    // Project description error messages
     descriptionErrorMessages() {
       if (!this.formSubmitted) return [];
       const errors = [];
@@ -533,17 +557,15 @@ export default {
       }
       return errors;
     },
-    // isExperienceInvalid and experienceErrorMessages seem to be from an older version, 
-    // as the experience selection UI isn't present for editing in this student view.
-    // I will keep them commented out or remove if not needed.
-    // isExperienceInvalid() { /* ... */ },
-    // experienceErrorMessages() { /* ... */ },
+    
+    // Overall form validation state
     hasValidationErrors() {
       if (!this.formSubmitted) return false;
-      // return this.isNameInvalid || this.isDescriptionInvalid || this.isExperienceInvalid;
-      return this.isNameInvalid || this.isDescriptionInvalid; // Adjusted as experience selection is not here
+      return this.isNameInvalid || this.isDescriptionInvalid;
     }
   },
+  
+  // Component initialization
   async mounted() {
     console.log('EditProject mounted');
     const user = useLoggedInUserStore();
@@ -557,9 +579,10 @@ export default {
     }
     console.log('Found project ID in navigation data:', user.navigationData.projectID);
     await this.fetchProjectData(user.navigationData.projectID);
-    // No need to fetch experiences here as it's not editable by students post-creation in this view
   },
+  
   methods: {
+    // Fetch project data from API
     async fetchProjectData(projectId) {
       this.loading = true;
       try {
@@ -581,7 +604,7 @@ export default {
             projectStatus: project.projectStatus,
             experienceInstanceId: project.experience ? project.experience.id : null,
             experienceInstanceName: project.experience ? project.experience.experienceName : this.$t('Not assigned'),
-            sessionData: project.experience ? project.experience.session : null, // Added to match instructor side if available
+            sessionData: project.experience ? project.experience.session : null,
             instructorId: project.instructor ? project.instructor.id : null,
             instructorName: project.instructor ? project.instructor.name : this.$t('Not assigned'),
             instructorEmail: project.instructor ? project.instructor.email : ''
@@ -598,15 +621,13 @@ export default {
         this.loading = false;
       }
     },
-    // fetchStudentExperienceInstances is likely not needed here if students cannot change experience post-creation.
-    // async fetchStudentExperienceInstances() { /* ... */ },
     
+    // Open project update confirmation dialog
     async openSubmitDialog() {
       if (!this.isProjectOwner) {
         toast.error(this.$t("You don't have permission to update this project."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
         return;
       }
-      // Check if project is archived
       if (this.projectData.projectStatus === 'Archived') {
         toast.error(this.$t("Cannot update an archived project. Please restore it first."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
         return;
@@ -618,10 +639,14 @@ export default {
         toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
       }
     },
+    
+    // Confirm and proceed with project update
     confirmUpdate() {
       this.submitDialog = false;
       this.updateProject();
     },
+    
+    // Update project data via API
     async updateProject() {
       if (!this.isProjectOwner || this.projectData.projectStatus === 'Archived') return;
       this.updateLoading = true;
@@ -650,32 +675,35 @@ export default {
         this.updateLoading = false;
       }
     },
+    
+    // Get color for project status badge
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'green';
-        // case 'In Progress': return 'blue'; // Not in schema
         case 'Proposed': return 'orange';
         case 'Archived': return 'grey';
         default: return 'grey';
       }
     },
-    // getStatusTextColor not used, can be removed if not planned.
+    
+    // Open member invitation dialog
     openInviteDialog() {
-      // Check if project is archived
       if (this.projectData.projectStatus === 'Archived') {
         toast.error(this.$t("Cannot invite members to an archived project."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
         return;
       }
       this.inviteDialog = true;
     },
+    
+    // Handle successful member invitations
     handleMembersInvited(invitedUsers) {
       if (invitedUsers && invitedUsers.length > 0) {
-        // Assuming invitedUsers is an array of member objects
-        // A more robust way would be to refetch project data or merge carefully
         this.fetchProjectData(this.projectData._id); 
       }
-      this.inviteSuccessDialog = true; // Show generic success from provided template
+      this.inviteSuccessDialog = true;
     },
+    
+    // Open leave project confirmation dialog
     openLeaveProjectDialog() {
       if (this.isProjectOwner) {
         toast.error(this.$t("Project owners cannot leave their projects. Transfer ownership or archive the project."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
@@ -683,6 +711,8 @@ export default {
       }
       this.leaveProjectDialog = true;
     },
+    
+    // Process leaving the project
     async leaveProject() {
       this.leavingProject = true;
       try {
@@ -705,11 +735,13 @@ export default {
       }
     },
 
-    // --- Archive/Restore Methods ---
+    // Open archive project confirmation dialog
     openArchiveConfirmDialog() {
       if (!this.isProjectOwner) return;
       this.archiveConfirmDialog = true;
     },
+    
+    // Archive the project
     async confirmArchiveProject() {
       if (!this.isProjectOwner) return;
       this.archivingProject = true;
@@ -725,8 +757,7 @@ export default {
           toastPosition: 'top-right',
           toastCSS: 'Toastify__toast--update'
         };
-        // Update local status and re-route or just re-route
-        this.projectData.projectStatus = 'Archived'; // Optimistic update
+        this.projectData.projectStatus = 'Archived';
         this.$router.push({ name: 'studentProjects' }); 
       } catch (error) {
         console.error("Error archiving project:", error);
@@ -736,10 +767,14 @@ export default {
         this.archivingProject = false;
       }
     },
+    
+    // Open restore project confirmation dialog
     openRestoreConfirmDialog() {
       if (!this.isProjectOwner) return;
       this.restoreConfirmDialog = true;
     },
+    
+    // Restore the archived project
     async confirmRestoreProject() {
       if (!this.isProjectOwner) return;
       this.restoringProject = true;
@@ -755,7 +790,7 @@ export default {
           toastPosition: 'top-right',
           toastCSS: 'Toastify__toast--update'
         };
-        this.projectData.projectStatus = 'Active'; // Optimistic update
+        this.projectData.projectStatus = 'Active';
         this.$router.push({ name: 'studentProjects' });
       } catch (error) {
         console.error("Error restoring project:", error);
@@ -787,20 +822,11 @@ export default {
   font-size: 0.875rem;
 }
 
-/* .gap-3 was removed from template, so this style might not be needed if using mr-3/ml-3 instead */
-/* .gap-3 {
-  gap: 12px; 
-} */
-
 .position-relative {
   position: relative;
 }
+
 .position-absolute {
   position: absolute;
 }
-
-/* Ensure buttons in the same group are aligned well */
-/* .d-flex.align-items-center > .v-btn {
-  margin-right: 0; 
-} */
 </style>

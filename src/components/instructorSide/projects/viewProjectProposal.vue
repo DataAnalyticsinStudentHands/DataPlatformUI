@@ -1,7 +1,14 @@
+<!-- 
+viewProjectProposal.vue (Instructor Side)
+Instructor interface for reviewing student project proposals in detail. Provides 
+read-only view of proposal information with approve/reject workflow functionality. 
+Includes confirmation dialogs and navigation back to main projects dashboard.
+-->
+
 <template>
   <main>
     <v-container>
-      <!-- Page title with status badge -->
+      <!-- Page header with proposal title and status -->
       <v-row>
         <v-col>
           <div class="d-flex align-center justify-space-between">
@@ -18,7 +25,7 @@
         </v-col>
       </v-row>
 
-      <!-- Loading Indicator -->
+      <!-- Loading state -->
       <v-row v-if="loading">
         <v-col class="text-center">
           <v-progress-circular indeterminate color="#c8102e"></v-progress-circular>
@@ -26,7 +33,7 @@
       </v-row>
 
       <template v-else>
-        <!-- Project Details Section -->
+        <!-- Project proposal details card -->
         <v-card class="mb-6">
           <v-card-title class="bg-grey-lighten-4 py-3 px-4">
             <v-icon start icon="mdi-information-outline" class="mr-2"></v-icon>
@@ -34,19 +41,19 @@
           </v-card-title>
           
           <v-card-text class="pa-4">
-            <!-- Project Name -->
+            <!-- Project name display -->
             <p class="font-weight-bold mb-1">{{ $t('Project Name') }}</p>
             <p class="text-body-1 mb-4">{{ projectData.name }}</p>
             
-            <!-- Project Description -->
+            <!-- Project description display -->
             <p class="font-weight-bold mb-1">{{ $t('Project Description') }}</p>
             <p class="text-body-1 mb-4" style="white-space: pre-line">{{ projectData.description }}</p>
             
-            <!-- Associated Experience -->
+            <!-- Associated experience display -->
             <p class="font-weight-bold mb-1">{{ $t('Associated Experience') }}</p>
             <p class="text-body-1 mb-4">{{ experienceInstanceName }}</p>
             
-            <!-- Project Tags -->
+            <!-- Project tags display -->
             <p class="font-weight-bold mb-1">{{ $t('Project Tags') }}</p>
             <div class="d-flex flex-wrap mb-4">
               <v-chip
@@ -62,7 +69,7 @@
               <p v-if="selectedTags.length === 0" class="text-body-2 text-grey">{{ $t('No tags selected') }}</p>
             </div>
             
-            <!-- Submission Info -->
+            <!-- Submission information display -->
             <p class="font-weight-bold mb-1">{{ $t('Submitted By') }}</p>
             <p class="text-body-1 mb-1">{{ projectData.studentName || 'Unknown' }}</p>
             
@@ -71,9 +78,10 @@
           </v-card-text>
         </v-card>
         
-        <!-- Action Buttons -->
+        <!-- Action buttons section -->
         <v-row class="mt-6">
           <v-col class="d-flex align-center justify-space-between">
+            <!-- Navigation button -->
             <v-btn 
               @click="$router.back()"
               variant="outlined"
@@ -81,6 +89,7 @@
               {{ $t('Back to Projects') }}
             </v-btn>
             
+            <!-- Proposal review buttons (only for Proposed status) -->
             <div v-if="projectData.projectStatus === 'Proposed'" class="d-flex gap-3">
               <v-btn
                 color="error"
@@ -109,7 +118,7 @@
       </template>
     </v-container>
 
-    <!-- Approve Confirmation Dialog -->
+    <!-- Approve confirmation dialog -->
     <v-dialog v-model="approveDialog" persistent max-width="500px">
       <v-card>
         <v-card-title class="headline bg-success-lighten-4">
@@ -126,7 +135,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- Reject Confirmation Dialog -->
+    <!-- Reject confirmation dialog -->
     <v-dialog v-model="rejectDialog" persistent max-width="500px">
       <v-card>
         <v-card-title class="headline bg-error-lighten-4">
@@ -154,11 +163,16 @@ export default {
   name: "ViewProjectProposal",
   data() {
     return {
+      // Loading and dialog states
       loading: true,
       approveDialog: false,
       rejectDialog: false,
+      
+      // Operation loading states
       approveLoading: false,
       rejectLoading: false,
+      
+      // Project proposal data
       projectData: {
         _id: null,
         name: '',
@@ -169,13 +183,16 @@ export default {
         studentName: '',
         submittedDate: null
       },
+      
+      // Additional proposal details
       experienceInstanceName: '',
       selectedTags: []
     };
   },
+  
+  // Component initialization
   async mounted() {
     console.log('ViewProjectProposal mounted');
-    // In case navigation data is lost, retrieve from query param if available
     const user = useLoggedInUserStore();
     
     if (!user.navigationData || !user.navigationData.projectID) {
@@ -190,11 +207,11 @@ export default {
     }
     
     console.log('Found project ID in navigation data:', user.navigationData.projectID);
-    
-    // Fetch project data
     await this.fetchProjectData(user.navigationData.projectID);
   },
+  
   methods: {
+    // Fetch project proposal data from API
     async fetchProjectData(projectId) {
       try {
         const user = useLoggedInUserStore();
@@ -212,17 +229,14 @@ export default {
         }
         
         console.log('Fetching project data for ID:', projectId);
-        
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
-        
         const response = await axios.get(apiURL, { headers: { token } });
         
         if (response.data) {
           const project = response.data;
-          
           console.log('Received project data:', project);
           
-          // Set project data
+          // Map project data for display
           this.projectData = {
             _id: project._id,
             name: project.projectName,
@@ -234,10 +248,7 @@ export default {
             submittedDate: project.createdAt
           };
           
-          // Set the experience name
           this.experienceInstanceName = project.experience ? project.experience.experienceName : this.$t('Not assigned');
-          
-          // Set selected tags
           this.selectedTags = project.tags || [];
           
         } else {
@@ -260,6 +271,7 @@ export default {
       }
     },
     
+    // Format date for display with time
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
@@ -272,6 +284,7 @@ export default {
       }).format(date);
     },
     
+    // Get color for project status badge
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'green';
@@ -282,18 +295,22 @@ export default {
       }
     },
     
+    // Get text color for project status badge
     getStatusTextColor(status) {
-      return 'white'; // All our status chips have white text
+      return 'white';
     },
     
+    // Open approve confirmation dialog
     openApproveDialog() {
       this.approveDialog = true;
     },
     
+    // Open reject confirmation dialog
     openRejectDialog() {
       this.rejectDialog = true;
     },
     
+    // Approve project proposal and make it active
     async approveProject() {
       this.approveDialog = false;
       this.approveLoading = true;
@@ -302,9 +319,7 @@ export default {
         const user = useLoggedInUserStore();
         let token = user.token;
         
-        // Call the update-status endpoint with 'Active' status
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
-        
         await axios.post(apiURL, {
           projectId: this.projectData._id,
           status: 'Active'
@@ -317,12 +332,9 @@ export default {
           toastCSS: 'Toastify__toast--create'
         };
         
-        // Redirect to projects list
         this.$router.push({ name: 'instructorProjects' });
       } catch (error) {
         console.error("Error approving project:", error);
-        
-        // Show specific error message if available
         const errorMessage = error.response?.data?.message || 
                             this.$t("Error approving project. Please try again later.");
         
@@ -336,44 +348,50 @@ export default {
       }
     },
     
+    // Reject project proposal and mark it “Rejected”
     async rejectProject() {
       this.rejectDialog = false;
       this.rejectLoading = true;
-      
+
       try {
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        
-        // Use the PATCH archive endpoint to reject/archive the project
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/archive/${this.projectData._id}`;
-        
-        await axios.patch(apiURL, {}, { headers: { token } });
-        
+        const user  = useLoggedInUserStore();
+        const token = user.token;
+
+        // NEW: update-status endpoint (POST) — no projectId in the URL
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
+
+        await axios.post(
+          apiURL,
+          {
+            projectId: this.projectData._id,   // payload field the backend expects
+            status: "Rejected"                 // must be “Active” or “Rejected”
+          },
+          { headers: { token } }               // unchanged auth header
+        );
+
         user.navigationData = {
-          toastType: 'info',
-          toastMessage: 'Project rejected and archived.',
-          toastPosition: 'top-right',
-          toastCSS: 'Toastify__toast--update'
+          toastType   : "info",
+          toastMessage: "Project rejected.",
+          toastPosition: "top-right",
+          toastCSS    : "Toastify__toast--update"
         };
-        
-        // Redirect to projects list
-        this.$router.push({ name: 'instructorProjects' });
+
+        this.$router.push({ name: "instructorProjects" });
       } catch (error) {
         console.error("Error rejecting project:", error);
-        
-        // Show specific error message if available
-        const errorMessage = error.response?.data?.message || 
-                            this.$t("Error rejecting project. Please try again later.");
-        
+        const errorMessage =
+          error.response?.data?.message ||
+          this.$t("Error rejecting project. Please try again later.");
+
         toast.error(errorMessage, {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
+          position: "top-right",
+          toastClassName: "Toastify__toast--delete",
           multiple: false
         });
       } finally {
         this.rejectLoading = false;
       }
-    }
+    },
   }
 };
 </script>

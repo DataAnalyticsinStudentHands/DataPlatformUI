@@ -1,9 +1,13 @@
+<!-- 
+editProjectProposal.vue
+Student-side interface for editing project proposals in the "Proposed" status. 
+Allows students to update project details, modify tags, and cancel proposals 
+before they are approved by instructors.
+-->
+
 <template>
   <main>
-    <v-form
-      ref="form"
-      @submit.prevent="openSubmitDialog"
-    >
+    <v-form ref="form" @submit.prevent="openSubmitDialog">
       <v-container>
         <!-- Page title -->
         <v-row>
@@ -12,7 +16,7 @@
           </v-col>
         </v-row>
 
-        <!-- Loading Indicator -->
+        <!-- Loading state -->
         <v-row v-if="loading">
           <v-col class="text-center">
             <v-progress-circular indeterminate color="#c8102e"></v-progress-circular>
@@ -20,7 +24,7 @@
         </v-row>
 
         <template v-else>
-          <!-- Project Name -->
+          <!-- Project name input -->
           <v-row>
             <v-col cols="12" md="6">
               <v-text-field 
@@ -36,7 +40,7 @@
             </v-col>
           </v-row>
   
-          <!-- Project Description -->
+          <!-- Project description input -->
           <v-row>
             <v-col cols="12" md="10">
               <p class="font-weight-black text-h8">{{ $t('Project Description') }}</p>
@@ -54,7 +58,7 @@
             </v-col>
           </v-row>
   
-          <!-- Experience Instance Selection -->
+          <!-- Experience instance selection (disabled for proposals) -->
           <v-row>
             <v-col cols="12" md="6">
               <p 
@@ -77,7 +81,7 @@
             </v-col>
           </v-row>
   
-          <!-- Project Tags - Chips with transparent red selection color -->
+          <!-- Project tags selection -->
           <v-row>
             <v-col cols="12">
               <p class="font-weight-black text-h8">{{ $t('Project Tags (Select all that apply)') }}</p>
@@ -103,7 +107,7 @@
             </v-col>
           </v-row>
   
-          <!-- Project Status (if not Proposed) -->
+          <!-- Project status display (if not Proposed) -->
           <v-row v-if="projectData.projectStatus !== 'Proposed'">
             <v-col cols="12" md="6">
               <p class="font-weight-black text-h8">{{ $t('Project Status') }}</p>
@@ -118,10 +122,10 @@
             </v-col>
           </v-row>
   
-          <!-- Buttons -->
+          <!-- Action buttons -->
           <v-row class="mt-6">
             <v-col class="d-flex align-center">
-              <!-- Back button -->
+              <!-- Navigation button -->
               <v-btn 
                 @click="$router.back()"
                 class="mr-4"
@@ -139,10 +143,9 @@
                 {{ $t('Update Proposal') }}
               </v-btn>
 
-              <!-- Spacer pushes the next button to the right -->
               <v-spacer></v-spacer>
 
-              <!-- Cancel Proposal button -->
+              <!-- Cancel proposal button -->
               <v-btn 
                 @click="openCancelDialog"
                 class="cancel-btn"
@@ -157,7 +160,7 @@
       </v-container>
     </v-form>
 
-    <!-- Submit Confirmation Dialog -->
+    <!-- Update proposal confirmation dialog -->
     <v-dialog v-model="submitDialog" persistent max-width="500px">
       <v-card>
         <v-card-title class="headline">
@@ -174,7 +177,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- Cancel Proposal Confirmation Dialog -->
+    <!-- Cancel proposal confirmation dialog -->
     <v-dialog v-model="cancelDialog" persistent max-width="500px">
       <v-card>
         <v-card-title class="headline text-error">
@@ -202,13 +205,20 @@ export default {
   name: "EditProjectProposal",
   data() {
     return {
+      // Loading and form states
       loading: true,
       formSubmitted: false,
+      
+      // Dialog visibility states
       submitDialog: false,
       cancelDialog: false,
+      
+      // Operation loading states
       updateLoading: false,
       cancelLoading: false,
       isLoadingExperiences: false,
+      
+      // Project data object
       projectData: {
         _id: null,
         name: '',
@@ -216,9 +226,12 @@ export default {
         experienceInstanceId: null,
         projectStatus: 'Proposed'
       },
+      
+      // Experience data
       experienceInstances: [],
       experienceInstancesLoaded: false,
-      // Rules for validation
+      
+      // Form validation rules
       nameRules: [
         v => !!v || this.$t('Project name is required'),
         v => (v && v.length >= 3) || this.$t('Project name must be at least 3 characters long'),
@@ -229,27 +242,18 @@ export default {
         v => (v && v.length >= 10) || this.$t('Project description must be at least 10 characters long'),
         v => (v && v.length <= 5000) || this.$t('Project description cannot exceed 5000 characters')
       ],
+      
+      // Available project tags
       availableTags: [
-        "community",
-        "coding",
-        "outreach",
-        "education",
-        "innovation",
-        "campus",
-        "technology",
-        "empowerment",
-        "collaboration",
-        "digital",
-        "learning",
-        "network",
-        "nonprofit",
-        "humanity",
-        "social impact"
+        "community", "coding", "outreach", "education", "innovation", "campus", 
+        "technology", "empowerment", "collaboration", "digital", "learning", 
+        "network", "nonprofit", "humanity", "social impact"
       ],
       selectedTags: []
     };
   },
   computed: {
+    // Project name validation state
     isNameInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.name || 
@@ -257,11 +261,11 @@ export default {
              this.projectData.name.length < 3 ||
              this.projectData.name.length > 100;
     },
+    
+    // Project name error messages
     nameErrorMessages() {
       if (!this.formSubmitted) return [];
-      
       const errors = [];
-      
       if (!this.projectData.name || this.projectData.name.trim() === '') {
         errors.push(this.$t('Project name is required'));
       } else if (this.projectData.name.length < 3) {
@@ -269,9 +273,10 @@ export default {
       } else if (this.projectData.name.length > 100) {
         errors.push(this.$t('Project name cannot exceed 100 characters'));
       }
-      
       return errors;
     },
+    
+    // Project description validation state
     isDescriptionInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.description || 
@@ -279,11 +284,11 @@ export default {
              this.projectData.description.length < 10 ||
              this.projectData.description.length > 5000;
     },
+    
+    // Project description error messages
     descriptionErrorMessages() {
       if (!this.formSubmitted) return [];
-      
       const errors = [];
-      
       if (!this.projectData.description || this.projectData.description.trim() === '') {
         errors.push(this.$t('Project description is required'));
       } else if (this.projectData.description.length < 10) {
@@ -291,24 +296,30 @@ export default {
       } else if (this.projectData.description.length > 5000) {
         errors.push(this.$t('Project description cannot exceed 5000 characters'));
       }
-      
       return errors;
     },
+    
+    // Experience selection validation state
     isExperienceInvalid() {
       if (!this.formSubmitted) return false;
       return !this.projectData.experienceInstanceId;
     },
+    
+    // Experience selection error messages
     experienceErrorMessages() {
       return this.isExperienceInvalid ? [this.$t('Please select an experience')] : [];
     },
+    
+    // Overall form validation state
     hasValidationErrors() {
       if (!this.formSubmitted) return false;
       return this.isNameInvalid || this.isDescriptionInvalid || this.isExperienceInvalid;
     }
   },
+  
+  // Component initialization
   async mounted() {
     console.log('EditProjectProposal mounted');
-    // In case navigation data is lost, retrieve from query param if available
     const user = useLoggedInUserStore();
     
     if (!user.navigationData || !user.navigationData.projectID) {
@@ -323,12 +334,12 @@ export default {
     }
     
     console.log('Found project ID in navigation data:', user.navigationData.projectID);
-    
-    // Continue with normal flow
     await this.fetchProjectData();
     await this.fetchStudentExperienceInstances();
   },
+  
   methods: {
+    // Fetch project data from API
     async fetchProjectData() {
       try {
         const user = useLoggedInUserStore();
@@ -349,8 +360,6 @@ export default {
         console.log('Fetching project data for ID:', projectId);
         
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`;
-        
-        // First get all projects to find the specific one
         const response = await axios.get(apiURL, { headers: { token } });
         
         if (response.data && response.data.projects) {
@@ -370,7 +379,7 @@ export default {
           
           console.log('Found project:', project);
           
-          // Set project data with updated field names
+          // Set project data with field mapping
           this.projectData = {
             _id: project._id,
             name: project.projectName,
@@ -379,7 +388,6 @@ export default {
             experienceInstanceId: project.experience ? project.experience.id : null
           };
           
-          // Set selected tags
           this.selectedTags = project.tags || [];
         } else {
           console.error('No projects found in response');
@@ -401,6 +409,7 @@ export default {
       }
     },
     
+    // Fetch available experience instances for the student
     async fetchStudentExperienceInstances() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -411,7 +420,7 @@ export default {
       try {
         const resp = await axios.get(apiURL, { headers: { token } });
         
-        // Map the returned data to the format we need for the dropdown
+        // Map the response data to dropdown format
         this.experienceInstances = resp.data.map(registration => ({
           experienceInstanceId: registration.experienceInstance.id,
           experienceInstanceName: `${registration.experienceInstance.name} (${registration.session.name})`
@@ -430,10 +439,11 @@ export default {
       }
     },
     
+    // Open update confirmation dialog with validation
     async openSubmitDialog() {
       this.formSubmitted = true;
       
-      // Check for validation errors with the enhanced validation
+      // Validate form fields
       const nameValid = this.projectData.name && 
                        this.projectData.name.trim() !== '' && 
                        this.projectData.name.length >= 3 && 
@@ -443,13 +453,10 @@ export default {
                               this.projectData.description.trim() !== '' && 
                               this.projectData.description.length >= 10 && 
                               this.projectData.description.length <= 5000;
-                              
-      // Only proceed if all validations pass
+      
       if (nameValid && descriptionValid) {
-        // If validation passes, show the confirmation dialog
         this.submitDialog = true;
       } else {
-        // If validation fails, show error toast
         toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -458,33 +465,30 @@ export default {
       }
     },
 
+    // Open cancel proposal confirmation dialog
     openCancelDialog() {
       this.cancelDialog = true;
     },
     
+    // Confirm and proceed with update
     confirmUpdate() {
-      // Close the dialog
       this.submitDialog = false;
-      
-      // Update the project
       this.updateProject();
     },
 
+    // Confirm and proceed with cancellation
     confirmCancel() {
-      // Close the dialog
       this.cancelDialog = false;
-      
-      // Cancel the project
       this.cancelProject();
     },
     
+    // Update project proposal via API
     async updateProject() {
       this.updateLoading = true;
       
       try {
         const user = useLoggedInUserStore();
         let token = user.token;
-        // Keep the studentSideData prefix as requested
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/update`;
         
         const projectPayload = {
@@ -496,7 +500,6 @@ export default {
         };
         
         console.log('Updating project with payload:', projectPayload);
-        
         await axios.put(apiURL, projectPayload, { headers: { token } });
 
         user.navigationData = {
@@ -506,14 +509,12 @@ export default {
           toastCSS: 'Toastify__toast--update'
         };
         
-        // Redirect to projects list
         this.$router.push({ name: 'studentProjects' });
       } catch (error) {
         console.error("Error updating project:", error);
         
-        // Check for validation errors from the backend
+        // Handle server validation errors
         if (error.response && error.response.data && error.response.data.errors) {
-          // Show first validation error from the server
           const serverErrors = error.response.data.errors;
           if (serverErrors.length > 0) {
             toast.error(serverErrors[0], {
@@ -525,7 +526,6 @@ export default {
           }
         }
         
-        // Generic error message if no specific error was provided
         toast.error(this.$t("Error updating your project proposal. Please try again later."), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -536,13 +536,13 @@ export default {
       }
     },
 
+    // Cancel project proposal via API
     async cancelProject() {
       this.cancelLoading = true;
       
       try {
         const user = useLoggedInUserStore();
         let token = user.token;
-        // Keep the studentSideData prefix as requested
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/cancel`;
         
         const projectPayload = {
@@ -550,8 +550,6 @@ export default {
         };
         
         console.log('Cancelling project with payload:', projectPayload);
-        
-        // Real API call
         await axios.post(apiURL, projectPayload, { headers: { token } });
 
         user.navigationData = {
@@ -561,12 +559,11 @@ export default {
           toastCSS: 'Toastify__toast--create'
         };
         
-        // Redirect to projects list
         this.$router.push({ name: 'studentProjects' });
       } catch (error) {
         console.error("Error cancelling project:", error);
         
-        // Check for validation errors from the backend
+        // Handle server error messages
         if (error.response && error.response.data && error.response.data.error) {
           toast.error(error.response.data.error, {
             position: 'top-right',
@@ -586,6 +583,7 @@ export default {
       }
     },
     
+    // Get color for project status badge
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'green';
@@ -596,9 +594,9 @@ export default {
       }
     },
     
+    // Get text color for project status badge
     getStatusTextColor(status) {
-      // For better contrast
-      return 'white'; // All our status chips have white text
+      return 'white';
     }
   }
 };
@@ -609,14 +607,12 @@ export default {
   color: #B00020;
 }
 
-/* Custom styling for selected chips with transparency */
 :deep(.red-chip) {
-  background-color: rgba(200, 16, 46, 0.80) !important; /* UH red with 80% opacity */
+  background-color: rgba(200, 16, 46, 0.80) !important;
   color: white !important;
   border-color: #c8102e !important;
 }
 
-/* Position the cancel proposal button */
 .cancel-proposal-btn {
   color: #B00020 !important;
 }

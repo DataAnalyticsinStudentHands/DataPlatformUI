@@ -1,24 +1,29 @@
+<!-- 
+projectsMain.vue (Instructor Side)
+Main instructor dashboard for managing projects and proposals. Features tabbed interface 
+for active/archived projects and proposals, advanced search and filtering capabilities, 
+and archive view toggle. Includes project review workflow and template creation.
+-->
+
 <template>
   <v-container fluid fill-height>
-    <!-- Loader while fetching projects -->
+    <!-- Loading state while fetching projects -->
     <v-row v-if="loading" class="fill-height" align="center" justify="center">
       <v-col cols="auto">
         <v-progress-circular indeterminate color="#c8102e" size="64"></v-progress-circular>
       </v-col>
     </v-row>
 
-    <!-- Content displayed only when loading is finished -->
     <template v-else>
       <v-container>
-        <!-- Header Row -->
+        <!-- Page header -->
         <v-row>
           <v-col>
-            <!-- MODIFIED: Dynamic tab title -->
             <h1 class="text-h4 font-weight-bold">{{ $t('Projects') }}</h1>
           </v-col>
         </v-row>
 
-        <!-- Tabs and Tables Row -->
+        <!-- Main tabs interface -->
         <v-row>
           <v-col cols="12">
             <v-card flat class="mb-4">
@@ -27,10 +32,11 @@
                 color="#c8102e"
                 align-tabs="start"
               >
-                <!-- MODIFIED: Dynamic tab title for the first tab -->
+                <!-- Dynamic tab title based on archive view state -->
                 <v-tab value="active-projects">
                   {{ activeTab === 'active-projects' && viewingArchivedProjects ? $t('Archived Projects') : $t('Active Projects') }}
                 </v-tab>
+                <!-- Proposals tab with notification badge -->
                 <v-tab value="proposals" class="position-relative">
                   <span class="mr-8">{{ $t('Project Proposals') }}</span>
                   <v-badge
@@ -45,10 +51,10 @@
               </v-tabs>
             </v-card>
 
-<!-- Filters and Actions Row -->
+            <!-- Search and filter controls -->
             <v-row class="mb-2">
               <v-col cols="12" md="8" lg="7" class="d-flex align-center flex-wrap gap-3">
-                <!-- Unified Search Field with Dropdown -->
+                <!-- Advanced search field with category dropdown -->
                 <v-text-field
                   v-model="searchQuery"
                   :label="$t(searchLabel)"
@@ -85,12 +91,9 @@
                     </div>
                   </template>
                 </v-text-field>
-
-                <!-- Status Filter v-select block has been completely removed -->
-
               </v-col>
               <v-col cols="12" md="4" lg="5" class="d-flex justify-start justify-md-end align-center">
-                <!-- ADDED: View Archived Projects Button -->
+                <!-- Archive view toggle button -->
                 <v-btn
                     v-if="activeTab === 'active-projects'"
                     @click="toggleArchivedProjectsView"
@@ -104,8 +107,7 @@
               </v-col>
             </v-row>
 
-
-            <!-- Chips Row -->
+            <!-- Active filter chips display -->
             <v-row v-if="searchChips.length > 0" class="mt-0 mb-2" dense>
               <v-col cols="12">
                 <v-chip-group 
@@ -132,8 +134,9 @@
               </v-col>
             </v-row>
 
+            <!-- Tab content windows -->
             <v-window v-model="activeTab">
-              <!-- Tabs Content -->
+              <!-- Active/Archived projects tab -->
               <v-window-item value="active-projects">
                 <v-card flat>
                   <v-data-table
@@ -159,7 +162,6 @@
                             :color="getStatusColor(item.projectStatus)"
                             :text-color="getStatusTextColor(item.projectStatus)"
                           >
-                            <!-- MODIFIED: Translate status text -->
                             {{ $t(item.projectStatus) }}
                           </v-chip>
                         </td>
@@ -170,6 +172,7 @@
                 </v-card>
               </v-window-item>
               
+              <!-- Project proposals tab -->
               <v-window-item value="proposals">
                 <v-card flat>
                   <v-data-table
@@ -195,7 +198,6 @@
                             :color="getStatusColor(item.projectStatus)"
                             :text-color="getStatusTextColor(item.projectStatus)"
                           >
-                            <!-- MODIFIED: Translate status text -->
                             {{ $t(item.projectStatus) }}
                           </v-chip>
                         </td>
@@ -211,7 +213,7 @@
       </v-container>
     </template>
 
-    <!-- Project Template Dialog (No changes here) -->
+    <!-- Project template creation dialog -->
     <v-dialog v-model="templateDialog" max-width="600px">
       <v-card class="dialog-card">
         <v-card-title class="dialog-header text-white pa-4">
@@ -261,9 +263,7 @@
   </v-container>
 </template>
 
-
 <script>
-
 import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -272,19 +272,18 @@ export default {
   name: "InstructorProjectsMain",
   data() {
     return {
+      // Tab and view state
       activeTab: "active-projects",
       loading: false,
       tableLoading: false,
+      viewingArchivedProjects: false,
       
-      proposals: [], // Stores 'Proposed' projects
-      // MODIFIED: activeProjects is removed, allNonProposalProjects holds Active & Archived
-      // activeProjects: [], 
-      allNonProposalProjects: [], // Stores 'Active' and 'Archived' projects
-      viewingArchivedProjects: false, // To toggle between Active and Archived in the first tab
+      // Project data arrays
+      proposals: [],
+      allNonProposalProjects: [],
       
-      // Filter Models & Chips
+      // Search and filter state
       searchQuery: '', 
-      // selectedStatus: '', // REMOVED
       searchLabel: 'Search All Fields', 
       currentSearchCategory: 'All Fields', 
       searchMenuItems: [ 
@@ -296,15 +295,14 @@ export default {
       selectedChipIndices: [], 
       filterDebounceTimer: null,
       
-      // Template Dialog Data
+      // Template dialog data
       templateDialog: false,
       templateName: '',
       templateDescription: '',
       templateExperience: '',
       templateExperienceOptions: [],
 
-      // Table Headers & Options
-      // statusOptions: [], // REMOVED
+      // Table configuration
       proposalHeaders: [
         { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
         { title: this.$t('Student'), key: 'studentName', sortable: true },
@@ -312,14 +310,14 @@ export default {
         { title: this.$t('Status'), key: 'projectStatus', sortable: true },
         { title: this.$t('Submitted Date'), key: 'submittedDate', sortable: true }
       ],
-      projectHeaders: [ // Headers for the first tab (Active/Archived)
+      projectHeaders: [
         { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
         { title: this.$t('Team Lead'), key: 'teamLeadName', sortable: true },
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
         { title: this.$t('Team Size'), key: 'teamSize', sortable: true },
-        { title: this.$t('Status'), key: 'projectStatus', sortable: true }, // Keep Status to see Active/Archived
+        { title: this.$t('Status'), key: 'projectStatus', sortable: true },
         { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true }
-      ],
+      ]
     };
   },
   setup() {
@@ -327,11 +325,12 @@ export default {
     return { loggedInUserStore };
   },
   computed: {
+    // Count of pending proposals for badge display
     pendingProposalsCount() {
-      // MODIFIED: Directly use proposals length
       return this.proposals.length;
     },
-    // ADDED: Computed property to get the current list for the first tab (Active or Archived)
+    
+    // Current list for active/archived projects tab
     currentActiveOrArchivedList() {
         if (this.viewingArchivedProjects) {
             return this.allNonProposalProjects.filter(p => p.projectStatus === 'Archived');
@@ -339,32 +338,38 @@ export default {
             return this.allNonProposalProjects.filter(p => p.projectStatus === 'Active');
         }
     },
+    
+    // Filtered active/archived projects based on search criteria
     filteredActiveProjects() {
-      // MODIFIED: Filters the new currentActiveOrArchivedList
       return this.filterProjects(this.currentActiveOrArchivedList);
     },
+    
+    // Filtered proposals based on search criteria
     filteredProposals() {
       return this.filterProjects(this.proposals);
     },
+    
+    // Check if any filters are currently active
     hasActiveFilters() { 
       return this.selectedChipIndices.length > 0;
     }
   },
   watch: {
-    // ADDED: Watcher for activeTab to reset viewingArchivedProjects if desired
+    // Reset archive view when switching tabs
     activeTab(newTab) {
         if (newTab !== 'active-projects' && this.viewingArchivedProjects) {
-            this.viewingArchivedProjects = false; // Reset to viewing active if tab changes
+            this.viewingArchivedProjects = false;
         }
-        // Optionally clear filters when tabs change
-        // this.clearAllFilters(); 
     }
   },
+  
+  // Component initialization
   async mounted() {
     this.loading = true; 
     await this.fetchProjects(); 
     await this.fetchExperiencesForTemplateDialog(); 
     
+    // Handle navigation toast messages
     const loggedInUserStore = useLoggedInUserStore();
     if (loggedInUserStore.navigationData?.toastType) {
       toast[loggedInUserStore.navigationData.toastType](this.$t(loggedInUserStore.navigationData.toastMessage), {
@@ -375,7 +380,9 @@ export default {
     }
     this.loading = false; 
   },
+  
   methods: {
+    // Fetch all projects from API and categorize by status
     async fetchProjects() {
       this.tableLoading = true;
       try {
@@ -386,7 +393,8 @@ export default {
         const response = await axios.get(apiURL, { headers: { token } });
         
         if (response.data && response.data.projects) {
-          const allFetchedProjects = response.data.projects.map(project => { // Renamed
+          const allFetchedProjects = response.data.projects.map(project => {
+            // Extract project information for table display
             const experienceInfo = project.experiences?.length
               ? project.experiences[0].experienceName
               : this.$t('Not assigned');
@@ -407,13 +415,12 @@ export default {
             };
           });
           
+          // Separate projects by status
           this.proposals = allFetchedProjects.filter(p => p.projectStatus === 'Proposed');
-          // MODIFIED: Populate allNonProposalProjects
           this.allNonProposalProjects = allFetchedProjects.filter(p => p.projectStatus !== 'Proposed');
-          // this.activeProjects = projects.filter(p => p.projectStatus === 'Active'); // REMOVED
         } else {
           this.proposals = [];
-          this.allNonProposalProjects = []; // MODIFIED
+          this.allNonProposalProjects = [];
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -421,12 +428,13 @@ export default {
           position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false
         });
         this.proposals = [];
-        this.allNonProposalProjects = []; // MODIFIED
+        this.allNonProposalProjects = [];
       } finally {
         this.tableLoading = false;
       }
     },
     
+    // Fetch available experiences for template dialog
     async fetchExperiencesForTemplateDialog() {
       try {
         const user = this.loggedInUserStore;
@@ -449,6 +457,7 @@ export default {
       }
     },
     
+    // Update search category from dropdown selection
     updateSearchCriteria(item) {
       this.currentSearchCategory = item.value;
       this.searchLabel = item.title; 
@@ -457,6 +466,7 @@ export default {
       }
     },
 
+    // Add search term as chip and apply filter
     addSearchChipAndSelect() {
       const term = this.searchQuery.trim();
       if (!term) return;
@@ -464,6 +474,7 @@ export default {
       const category = this.currentSearchCategory;
       const categoryDisplayName = this.searchLabel;
 
+      // Check for existing exact match
       const existingExactChipIndex = this.searchChips.findIndex(
         (chip) =>
           chip.category === category &&
@@ -480,6 +491,7 @@ export default {
         return;
       }
 
+      // Create new search chip
       this.searchChips.push({ category, term, categoryDisplayName });
       const newChipGeneratedIndex = this.searchChips.length - 1;
 
@@ -492,12 +504,12 @@ export default {
       this.applyFiltersDebounced();
     },
 
+    // Clear search input field
     clearSearchField() {
         this.searchQuery = '';
     },
-    
-    // handleStatusChangeAndSelect(statusValue) { ... } // ENTIRE METHOD REMOVED
 
+    // Remove search chip and update indices
     removeSearchChip(chipToRemove, indexOfChipRemoved) {
       this.searchChips.splice(indexOfChipRemoved, 1);
 
@@ -507,12 +519,10 @@ export default {
       }
       this.selectedChipIndices = this.selectedChipIndices.map(i => (i > indexOfChipRemoved ? i - 1 : i));
       
-      // if (chipToRemove.category === 'Status') { // REMOVED: No longer need to handle selectedStatus
-      //   if (this.selectedStatus !== '') this.selectedStatus = ''; 
-      // }
       this.applyFiltersDebounced();
     },
     
+    // Apply filters with debounce to prevent excessive updates
     applyFiltersDebounced() {
       if (this.filterDebounceTimer) {
         clearTimeout(this.filterDebounceTimer);
@@ -522,6 +532,7 @@ export default {
       }, 300); 
     },
 
+    // Apply current filters to table display
     applyFilters() {
       this.tableLoading = true;
       setTimeout(() => {
@@ -529,10 +540,9 @@ export default {
       }, 100);
     },
     
-    // MODIFIED: clearAllFilters to remove status handling
+    // Clear all active filters and search criteria
     clearAllFilters() {
       this.searchQuery = '';
-      // No selectedStatus to clear
       this.searchChips = [];
       this.selectedChipIndices = [];
       this.searchLabel = 'Search All Fields'; 
@@ -540,6 +550,7 @@ export default {
       this.applyFiltersDebounced();
     },
 
+    // Filter projects based on active search chips
     filterProjects(projectsToFilter) {
       if (this.selectedChipIndices.length === 0) {
         return projectsToFilter; 
@@ -571,8 +582,6 @@ export default {
                     const createdByMatch = project.createdBy?.name?.toLowerCase().includes(termLower);
                     const memberMatch = project.members?.some(member => member.name?.toLowerCase().includes(termLower));
                     return createdByMatch || memberMatch;
-                    // case 'Status': // REMOVED from switch as Status chips are no longer generated by UI
-                    // return project.projectStatus?.toLowerCase() === termLower;
                     default:
                     return true;
                 }
@@ -581,16 +590,12 @@ export default {
       });
     },
     
-    // ADDED: Method to toggle the view of archived projects
+    // Toggle between active and archived project views
     toggleArchivedProjectsView() {
         this.viewingArchivedProjects = !this.viewingArchivedProjects;
-        // The computed property `filteredActiveProjects` will automatically update.
-        // If you want to clear search chips when toggling this view, uncomment below:
-        // this.searchChips = [];
-        // this.selectedChipIndices = [];
-        // this.applyFiltersDebounced();
     },
         
+    // Navigate to proposal review page
     viewProposal(project) {
       if (!project?._id) {
         console.error('Invalid project data:', project);
@@ -603,6 +608,7 @@ export default {
       this.$router.push({ name: 'viewProjectProposal' });
     },
     
+    // Navigate to project editing page
     viewProject(project) {
       if (!project?._id) {
         console.error('Invalid project data:', project);
@@ -615,18 +621,21 @@ export default {
       this.$router.push({ name: 'editProjectInstructor' });
     },
 
+    // Save project template (placeholder implementation)
     saveTemplate() {
       console.log("Save template:", this.templateName, this.templateDescription, this.templateExperience);
       toast.info(this.$t("Template saving not yet implemented."), { position: 'top-right' });
       this.templateDialog = false;
     },
     
+    // Format date for table display
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
       return new Intl.DateTimeFormat(this.$i18n.locale || 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
     },
     
+    // Get color for project status badges
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'green';
@@ -636,10 +645,13 @@ export default {
       }
     },
     
+    // Get text color for project status badges
     getStatusTextColor() { 
       return 'white'; 
     }
   },
+  
+  // Cleanup on component unmount
   beforeUnmount() {
     if (this.filterDebounceTimer) {
       clearTimeout(this.filterDebounceTimer);
@@ -649,7 +661,6 @@ export default {
 </script>
 
 <style scoped>
-/* Styles remain the same as your provided version */
 .pointer-cursor {
   cursor: pointer;
 }
@@ -657,11 +668,6 @@ export default {
 .max-width-400 { 
   max-width: 400px;
   min-width: 250px;
-}
-
-.max-width-200 { /* This class can be removed if no other element uses it now */
-  /* max-width: 200px;
-  min-width: 150px; */
 }
 
 .flex-grow-1 {
@@ -707,8 +713,5 @@ export default {
 .v-text-field .v-input__prepend-inner .v-icon,
 .v-text-field .v-input__append-inner .v-icon {
   align-self: center;
-}
-
-.v-chip .v-chip__content {
 }
 </style>
