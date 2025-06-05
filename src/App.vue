@@ -216,9 +216,9 @@
   <v-spacer></v-spacer>
 
   <!-- Advertisement text -->
-  <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
+  <!-- <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
     Developed by Data Analytics in Student Hands for Engaged Data
-  </span>
+  </span> -->
 
   <!-- Spacer to push content to the sides -->
   <!-- <v-spacer></v-spacer> -->
