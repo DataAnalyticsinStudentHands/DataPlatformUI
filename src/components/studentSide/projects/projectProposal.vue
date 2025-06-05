@@ -73,7 +73,7 @@ and categorizing the project with tags.
           </v-row>
   
           <!-- Project tags selection -->
-          <v-row>
+          <!-- <v-row>
             <v-col cols="12">
               <p class="font-weight-black text-h8">{{ $t('Project Tags (Select all that apply)') }}</p>
               
@@ -96,7 +96,7 @@ and categorizing the project with tags.
                 </v-chip>
               </v-chip-group>
             </v-col>
-          </v-row>
+          </v-row> -->
   
           <!-- Action buttons -->
           <v-row class="mt-6">

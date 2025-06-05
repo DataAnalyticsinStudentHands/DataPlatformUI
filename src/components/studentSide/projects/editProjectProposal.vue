@@ -82,7 +82,7 @@ before they are approved by instructors.
           </v-row>
   
           <!-- Project tags selection -->
-          <v-row>
+          <!-- <v-row>
             <v-col cols="12">
               <p class="font-weight-black text-h8">{{ $t('Project Tags (Select all that apply)') }}</p>
               
@@ -105,7 +105,7 @@ before they are approved by instructors.
                 </v-chip>
               </v-chip-group>
             </v-col>
-          </v-row>
+          </v-row> -->
   
           <!-- Project status display (if not Proposed) -->
           <v-row v-if="projectData.projectStatus !== 'Proposed'">

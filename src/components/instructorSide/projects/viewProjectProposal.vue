@@ -54,7 +54,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
             <p class="text-body-1 mb-4">{{ experienceInstanceName }}</p>
             
             <!-- Project tags display -->
-            <p class="font-weight-bold mb-1">{{ $t('Project Tags') }}</p>
+            <!-- <p class="font-weight-bold mb-1">{{ $t('Project Tags') }}</p>
             <div class="d-flex flex-wrap mb-4">
               <v-chip
                 v-for="tag in selectedTags"
@@ -67,7 +67,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
                 {{ tag }}
               </v-chip>
               <p v-if="selectedTags.length === 0" class="text-body-2 text-grey">{{ $t('No tags selected') }}</p>
-            </div>
+            </div> -->
             
             <!-- Submission information display -->
             <p class="font-weight-bold mb-1">{{ $t('Submitted By') }}</p>

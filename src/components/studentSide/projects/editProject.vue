@@ -76,7 +76,7 @@ project information and leave the project.
               </v-card>
               
               <!-- Project tags selection -->
-              <v-card class="mb-6">
+              <!-- <v-card class="mb-6">
                 <v-card-title class="bg-grey-lighten-4 py-3 px-4">
                   <v-icon start icon="mdi-tag-multiple" class="mr-2"></v-icon>
                   {{ $t('Project Tags') }}
@@ -107,7 +107,7 @@ project information and leave the project.
                     </v-chip>
                   </v-chip-group>
                 </v-card-text>
-              </v-card>
+              </v-card> -->
               
               <!-- Project members management -->
               <v-card class="mb-6">
