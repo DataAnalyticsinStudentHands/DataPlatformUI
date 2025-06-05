@@ -3,6 +3,7 @@ projectsMain.vue (Instructor Side)
 Main instructor dashboard for managing projects and proposals. Features tabbed interface 
 for active/archived projects and proposals, advanced search and filtering capabilities, 
 and archive view toggle. Includes project review workflow and template creation.
+With state persistence via Pinia store.
 -->
 
 <template>
@@ -147,6 +148,10 @@ and archive view toggle. Includes project review workflow and template creation.
                     class="cursor-pointer"
                     :loading="tableLoading"
                     :no-data-text="viewingArchivedProjects ? $t('No archived projects found') : $t('No active projects found')"
+                    v-model:items-per-page="activeProjectsItemsPerPage"
+                    v-model:page="activeProjectsCurrentPage"
+                    v-model:sort-by="activeProjectsSortBy"
+                    :items-per-page-options="itemsPerPageOptions"
                   >
                     <template v-slot:loading>
                       <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
@@ -184,6 +189,10 @@ and archive view toggle. Includes project review workflow and template creation.
                     class="cursor-pointer"
                     :loading="tableLoading"
                     :no-data-text="$t('No proposals found')"
+                    v-model:items-per-page="proposalsItemsPerPage"
+                    v-model:page="proposalsCurrentPage"
+                    v-model:sort-by="proposalsSortBy"
+                    :items-per-page-options="itemsPerPageOptions"
                   >
                     <template v-slot:loading>
                       <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
@@ -268,22 +277,26 @@ and archive view toggle. Includes project review workflow and template creation.
 import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { useInstructorViewsStore } from "@/stored/instructorViews";
 
 export default {
   name: "InstructorProjectsMain",
+  setup() {
+    const loggedInUserStore = useLoggedInUserStore();
+    const viewsStore = useInstructorViewsStore();
+    return { loggedInUserStore, viewsStore };
+  },
   data() {
     return {
-      // Tab and view state
-      activeTab: "active-projects",
+      // Loading states
       loading: false,
       tableLoading: false,
-      viewingArchivedProjects: false,
       
       // Project data arrays
       proposals: [],
       allNonProposalProjects: [],
       
-      // Search and filter state
+      // Search state
       searchQuery: '', 
       searchLabel: 'Search All Fields', 
       currentSearchCategory: 'All Fields', 
@@ -292,8 +305,6 @@ export default {
         { title: 'Search by Experience', value: 'Experience' },
         { title: 'Search by Project Member', value: 'Member' },
       ],
-      searchChips: [], 
-      selectedChipIndices: [], 
       filterDebounceTimer: null,
       
       // Template dialog data
@@ -304,6 +315,13 @@ export default {
       templateExperienceOptions: [],
 
       // Table configuration
+      itemsPerPageOptions: [
+        {value: 5, title: "5"},
+        {value: 10, title: "10"},
+        {value: 15, title: "15"},
+        {value: 20, title: "20"},
+        {value: -1, title: "$vuetify.dataFooter.itemsPerPageAll"},
+      ],
       proposalHeaders: [
         { title: this.$t('Project Name'), align: 'start', key: 'projectName', sortable: true },
         { title: this.$t('Student'), key: 'studentName', sortable: true },
@@ -321,11 +339,103 @@ export default {
       ]
     };
   },
-  setup() {
-    const loggedInUserStore = useLoggedInUserStore();
-    return { loggedInUserStore };
-  },
   computed: {
+    // Sync with store - active tab
+    activeTab: {
+      get() {
+        return this.viewsStore.getProjectsActiveTab;
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSettings({ activeTab: value });
+      }
+    },
+    
+    // Sync with store - viewing archived projects
+    viewingArchivedProjects: {
+      get() {
+        return this.viewsStore.isViewingArchivedProjects;
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSettings({ viewingArchivedProjects: value });
+      }
+    },
+    
+    // Sync with store - search chips
+    searchChips: {
+      get() {
+        return this.viewsStore.getProjectsSearchChips;
+      },
+      set(value) {
+        this.viewsStore.setProjectsSearchChips(value);
+      }
+    },
+    
+    // Sync with store - selected chip indices
+    selectedChipIndices: {
+      get() {
+        return this.viewsStore.getProjectsSelectedChipIndices;
+      },
+      set(value) {
+        this.viewsStore.setProjectsSelectedChipIndices(value);
+      }
+    },
+    
+    // Pagination and sorting for active projects
+    activeProjectsItemsPerPage: {
+      get() {
+        return this.viewsStore.getProjectsItemsPerPage('activeProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('activeProjects', { itemsPerPage: value });
+      }
+    },
+    
+    activeProjectsCurrentPage: {
+      get() {
+        return this.viewsStore.getProjectsCurrentPage('activeProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('activeProjects', { currentPage: value });
+      }
+    },
+    
+    activeProjectsSortBy: {
+      get() {
+        return this.viewsStore.getProjectsSortBy('activeProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSorting('activeProjects', value);
+      }
+    },
+    
+    // Pagination and sorting for proposals
+    proposalsItemsPerPage: {
+      get() {
+        return this.viewsStore.getProjectsItemsPerPage('proposals');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('proposals', { itemsPerPage: value });
+      }
+    },
+    
+    proposalsCurrentPage: {
+      get() {
+        return this.viewsStore.getProjectsCurrentPage('proposals');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('proposals', { currentPage: value });
+      }
+    },
+    
+    proposalsSortBy: {
+      get() {
+        return this.viewsStore.getProjectsSortBy('proposals');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSorting('proposals', value);
+      }
+    },
+    
     // Count of pending proposals for badge display
     pendingProposalsCount() {
       return this.proposals.length;
@@ -484,8 +594,7 @@ export default {
 
       if (existingExactChipIndex !== -1) {
         if (!this.selectedChipIndices.includes(existingExactChipIndex)) {
-          this.selectedChipIndices.push(existingExactChipIndex);
-          this.selectedChipIndices.sort((a, b) => a - b);
+          this.selectedChipIndices = [...this.selectedChipIndices, existingExactChipIndex].sort((a, b) => a - b);
         }
         this.searchQuery = ""; 
         this.applyFiltersDebounced(); 
@@ -493,12 +602,12 @@ export default {
       }
 
       // Create new search chip
-      this.searchChips.push({ category, term, categoryDisplayName });
-      const newChipGeneratedIndex = this.searchChips.length - 1;
+      const newChips = [...this.searchChips, { category, term, categoryDisplayName }];
+      this.searchChips = newChips;
+      const newChipGeneratedIndex = newChips.length - 1;
 
       if (!this.selectedChipIndices.includes(newChipGeneratedIndex)) {
-        this.selectedChipIndices.push(newChipGeneratedIndex);
-        this.selectedChipIndices.sort((a, b) => a - b);
+        this.selectedChipIndices = [...this.selectedChipIndices, newChipGeneratedIndex].sort((a, b) => a - b);
       }
 
       this.searchQuery = ""; 
@@ -512,13 +621,12 @@ export default {
 
     // Remove search chip and update indices
     removeSearchChip(chipToRemove, indexOfChipRemoved) {
-      this.searchChips.splice(indexOfChipRemoved, 1);
+      const newChips = this.searchChips.filter((_, index) => index !== indexOfChipRemoved);
+      this.searchChips = newChips;
 
-      const selectedIndexPos = this.selectedChipIndices.indexOf(indexOfChipRemoved);
-      if (selectedIndexPos > -1) {
-        this.selectedChipIndices.splice(selectedIndexPos, 1);
-      }
-      this.selectedChipIndices = this.selectedChipIndices.map(i => (i > indexOfChipRemoved ? i - 1 : i));
+      let newSelectedIndices = this.selectedChipIndices.filter(i => i !== indexOfChipRemoved);
+      newSelectedIndices = newSelectedIndices.map(i => (i > indexOfChipRemoved ? i - 1 : i));
+      this.selectedChipIndices = newSelectedIndices;
       
       this.applyFiltersDebounced();
     },

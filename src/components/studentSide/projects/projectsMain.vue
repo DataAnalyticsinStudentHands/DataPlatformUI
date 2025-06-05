@@ -4,6 +4,7 @@ Student-side main projects dashboard. Displays project listings in tabbed interf
 with options to view active/archived projects, proposed projects, create new proposals, 
 and join existing projects. Includes welcome screen for first-time users.
 Mobile-optimized version with xs breakpoint support.
+With state persistence via Pinia store.
 -->
 
 <template>
@@ -283,6 +284,10 @@ Mobile-optimized version with xs breakpoint support.
                       hover
                       class="cursor-pointer"
                       :mobile-breakpoint="600"
+                      v-model:items-per-page="myProjectsItemsPerPage"
+                      v-model:page="myProjectsCurrentPage"
+                      v-model:sort-by="myProjectsSortBy"
+                      :items-per-page-options="itemsPerPageOptions"
                     >
                       <template v-slot:body="{ items }">
                         <template v-if="items.length > 0">
@@ -332,6 +337,10 @@ Mobile-optimized version with xs breakpoint support.
                       hover
                       class="cursor-pointer"
                       :mobile-breakpoint="600"
+                      v-model:items-per-page="proposedProjectsItemsPerPage"
+                      v-model:page="proposedProjectsCurrentPage"
+                      v-model:sort-by="proposedProjectsSortBy"
+                      :items-per-page-options="itemsPerPageOptions"
                     >
                       <template v-slot:body="{ items }">
                         <template v-if="items.length > 0">
@@ -471,6 +480,7 @@ Mobile-optimized version with xs breakpoint support.
 import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { useStudentViewsStore } from "@/stored/studentViews";
 import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
 import JoinProjectDialog from '@/components/reusable/joinProjectDialog.vue';
 
@@ -480,12 +490,15 @@ export default {
     InviteMembersDialog,
     JoinProjectDialog
   },
+  setup() {
+    const loggedInUserStore = useLoggedInUserStore();
+    const viewsStore = useStudentViewsStore();
+    return { loggedInUserStore, viewsStore };
+  },
   data() {
     return {
-      // Tab and view state
-      activeTab: "my-projects",
+      // Loading state
       loading: false,
-      viewingArchivedProjects: false,
       
       // Project data arrays
       allMyProjects: [],
@@ -501,12 +514,17 @@ export default {
         "Experience"
         // "Status"
       ],
-      searchChips: [],
-      selectedSearchChips: [],
       xsdialogSearch: false,
       xsSearchFilterSelection: null,
       
       // Table configuration
+      itemsPerPageOptions: [
+        {value: 5, title: "5"},
+        {value: 10, title: "10"},
+        {value: 15, title: "15"},
+        {value: 20, title: "20"},
+        {value: -1, title: "$vuetify.dataFooter.itemsPerPageAll"},
+      ],
       projectHeaders: [
         { title: this.$t('Project Name'), align: "start", key: "projectName", sortable: true },
         { title: this.$t('Experience'), key: "experienceInfo", sortable: false },
@@ -525,11 +543,103 @@ export default {
       projectMembers: []
     };
   },
-  setup() {
-    const loggedInUserStore = useLoggedInUserStore();
-    return { loggedInUserStore };
-  },
   computed: {
+    // Sync with store - active tab
+    activeTab: {
+      get() {
+        return this.viewsStore.getProjectsActiveTab;
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSettings({ activeTab: value });
+      }
+    },
+    
+    // Sync with store - viewing archived projects
+    viewingArchivedProjects: {
+      get() {
+        return this.viewsStore.isViewingArchivedProjects;
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSettings({ viewingArchivedProjects: value });
+      }
+    },
+    
+    // Sync with store - search chips
+    searchChips: {
+      get() {
+        return this.viewsStore.getProjectsSearchChips;
+      },
+      set(value) {
+        this.viewsStore.setProjectsSearchChips(value);
+      }
+    },
+    
+    // Sync with store - selected search chips
+    selectedSearchChips: {
+      get() {
+        return this.viewsStore.getProjectsSelectedSearchChips;
+      },
+      set(value) {
+        this.viewsStore.setProjectsSelectedSearchChips(value);
+      }
+    },
+    
+    // Pagination and sorting for my projects
+    myProjectsItemsPerPage: {
+      get() {
+        return this.viewsStore.getProjectsItemsPerPage('myProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('myProjects', { itemsPerPage: value });
+      }
+    },
+    
+    myProjectsCurrentPage: {
+      get() {
+        return this.viewsStore.getProjectsCurrentPage('myProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('myProjects', { currentPage: value });
+      }
+    },
+    
+    myProjectsSortBy: {
+      get() {
+        return this.viewsStore.getProjectsSortBy('myProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSorting('myProjects', value);
+      }
+    },
+    
+    // Pagination and sorting for proposed projects
+    proposedProjectsItemsPerPage: {
+      get() {
+        return this.viewsStore.getProjectsItemsPerPage('proposedProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('proposedProjects', { itemsPerPage: value });
+      }
+    },
+    
+    proposedProjectsCurrentPage: {
+      get() {
+        return this.viewsStore.getProjectsCurrentPage('proposedProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsPagination('proposedProjects', { currentPage: value });
+      }
+    },
+    
+    proposedProjectsSortBy: {
+      get() {
+        return this.viewsStore.getProjectsSortBy('proposedProjects');
+      },
+      set(value) {
+        this.viewsStore.updateProjectsSorting('proposedProjects', value);
+      }
+    },
+    
     // Show welcome screen when user has no projects
     isWelcomeActive() {
       return !this.loading && this.allMyProjects.length === 0 && this.proposedProjects.length === 0;
@@ -665,12 +775,14 @@ export default {
     // Add a new search chip
     addSearchChip() {
       if (this.projectSearch) {
-        this.searchChips.push({
+        // Create new array with the new chip
+        const newChips = [...this.searchChips, {
           category: this.searchLabel.replace("Search ", ""),
           term: this.projectSearch
-        });
+        }];
+        this.searchChips = newChips;
         // Select the new chip by default
-        this.selectedSearchChips.push(this.searchChips.length - 1);
+        this.selectedSearchChips = [...this.selectedSearchChips, newChips.length - 1];
         // Clear the input field after adding the chip
         this.projectSearch = "";
       }
@@ -690,11 +802,14 @@ export default {
     
     // Remove a search chip
     removeSearchChip(index) {
-      this.searchChips.splice(index, 1);
+      // Create new chips array without the removed chip
+      const newChips = this.searchChips.filter((_, i) => i !== index);
+      this.searchChips = newChips;
       // Update selectedSearchChips to reflect the removal
-      this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
+      let newSelectedChips = this.selectedSearchChips.filter(i => i !== index);
       // Adjust the indexes of the remaining selected chips
-      this.selectedSearchChips = this.selectedSearchChips.map(i => i > index ? i - 1 : i);
+      newSelectedChips = newSelectedChips.map(i => i > index ? i - 1 : i);
+      this.selectedSearchChips = newSelectedChips;
     },
     
     // Cancel search dialog for mobile
@@ -709,23 +824,26 @@ export default {
     // Apply search filters from mobile dialog
     xsApplySearchFilters() {
       if (this.xsSearchFilterSelection === "Project Name" && this.projectSearch) {
-        this.searchChips.push({
+        const newChips = [...this.searchChips, {
           category: "Project Name",
           term: this.projectSearch
-        });
-        this.selectedSearchChips.push(this.searchChips.length - 1);
+        }];
+        this.searchChips = newChips;
+        this.selectedSearchChips = [...this.selectedSearchChips, newChips.length - 1];
       } else if (this.xsSearchFilterSelection === "Experience" && this.experienceSearch) {
-        this.searchChips.push({
+        const newChips = [...this.searchChips, {
           category: "Experience",
           term: this.experienceSearch
-        });
-        this.selectedSearchChips.push(this.searchChips.length - 1);
+        }];
+        this.searchChips = newChips;
+        this.selectedSearchChips = [...this.selectedSearchChips, newChips.length - 1];
       } else if (this.xsSearchFilterSelection === "Status" && this.statusSearch) {
-        this.searchChips.push({
+        const newChips = [...this.searchChips, {
           category: "Status",
           term: this.statusSearch
-        });
-        this.selectedSearchChips.push(this.searchChips.length - 1);
+        }];
+        this.searchChips = newChips;
+        this.selectedSearchChips = [...this.selectedSearchChips, newChips.length - 1];
       }
       
       this.xsCancelSearchDialog();

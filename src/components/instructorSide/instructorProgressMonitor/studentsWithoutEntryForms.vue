@@ -29,7 +29,7 @@
                   label="Students per page:"
                   dense
                   outlined
-                  @change="currentPage = 1"
+                  @change="handleItemsPerPageChange"
                 ></v-text-field>
               </v-col>
               
@@ -103,19 +103,21 @@
   <script>
   import axios from 'axios';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import { useInstructorViewsStore } from "@/stored/instructorViews";
   import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
   import { DateTime } from "luxon";
   
   export default {
     name: "StudentsWithoutEntryForms",
+    setup() {
+      const viewsStore = useInstructorViewsStore();
+      return { viewsStore };
+    },
     data() {
       return {
         studentsWithoutEntryForm: [],
         hoverId: null,
         loading: false,
-        currentPage: 1,
-        itemsPerPage: 10,
-        isNavigationDisabled: false,
       };
     },
     components: {
@@ -127,6 +129,40 @@
     },
 
     computed: {
+      // Use computed properties with getters/setters to sync with store
+      itemsPerPage: {
+        get() {
+          return this.viewsStore.getEntryFormMonitorSettings.itemsPerPage;
+        },
+        set(value) {
+          this.viewsStore.updateEntryFormMonitorSettings({ 
+            itemsPerPage: parseInt(value) || 10 
+          });
+        }
+      },
+      
+      isNavigationDisabled: {
+        get() {
+          return this.viewsStore.getEntryFormMonitorSettings.isNavigationDisabled;
+        },
+        set(value) {
+          this.viewsStore.updateEntryFormMonitorSettings({ 
+            isNavigationDisabled: value 
+          });
+        }
+      },
+      
+      currentPage: {
+        get() {
+          return this.viewsStore.getEntryFormMonitorSettings.currentPage;
+        },
+        set(value) {
+          this.viewsStore.updateEntryFormMonitorSettings({ 
+            currentPage: value 
+          });
+        }
+      },
+
       // Returns the students for the current page based on pagination
       paginatedStudentsWithoutEntryForm() {
         const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -164,10 +200,14 @@
         }
       },
 
-      // Toggles the navigation state and updates the button text accordingly
+      // Toggles the navigation state
       toggleNavigation() {
         this.isNavigationDisabled = !this.isNavigationDisabled;
-        this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
+      },
+
+      // Handles changes to items per page and resets to page 1
+      handleItemsPerPageChange() {
+        this.currentPage = 1;
       },
 
       // Navigates to the student's profile if navigation is not disabled
@@ -208,4 +248,3 @@
   padding-top: 20px; 
 }
   </style>
-  

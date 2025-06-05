@@ -75,7 +75,7 @@
                       label="Students per page:"
                       dense
                       outlined
-                      @change="currentPage = 1"
+                      @change="handleItemsPerPageChange"
                     ></v-text-field>
                   </v-col>
                   
@@ -139,22 +139,22 @@
   <script>
   import axios from 'axios';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import { useInstructorViewsStore } from "@/stored/instructorViews";
   import ProgressMonitorCSVDownloader from './progressMonitorCSVDownloader.vue';
   import { DateTime } from "luxon";
   
   export default {
     name: "StudentsWithoutGoalForms",
+    setup() {
+      const viewsStore = useInstructorViewsStore();
+      return { viewsStore };
+    },
     data() {
       return {
-        selectedExperience: null,
         expInstances: [],
         studentsWithoutGoalForm: [],
         hoverId: null,
-        currentPage: 1,
-        itemsPerPage: 10,
-        completed: null,
         studentsWithGoalForm: [],
-        isNavigationDisabled: false,
       };
     },
     components: {
@@ -177,11 +177,73 @@
     },
     mounted() {
       // Fetch the list of experiences when the component is mounted
-      this.fetchExperiences();
+      this.fetchExperiences().then(() => {
+        // After experiences are loaded, check if we need to fetch students
+        // This happens when returning to the view with saved state
+        if (this.selectedExperience !== null && this.completed !== null) {
+          this.fetchStudents();
+        }
+      });
     },
 
     
     computed: {
+      // Use computed properties with getters/setters to sync with store
+      selectedExperience: {
+        get() {
+          return this.viewsStore.getGoalFormMonitorSettings.selectedExperience;
+        },
+        set(value) {
+          this.viewsStore.updateGoalFormMonitorSettings({ 
+            selectedExperience: value 
+          });
+        }
+      },
+
+      completed: {
+        get() {
+          return this.viewsStore.getGoalFormMonitorSettings.completed;
+        },
+        set(value) {
+          this.viewsStore.updateGoalFormMonitorSettings({ 
+            completed: value 
+          });
+        }
+      },
+
+      itemsPerPage: {
+        get() {
+          return this.viewsStore.getGoalFormMonitorSettings.itemsPerPage;
+        },
+        set(value) {
+          this.viewsStore.updateGoalFormMonitorSettings({ 
+            itemsPerPage: parseInt(value) || 10 
+          });
+        }
+      },
+
+      isNavigationDisabled: {
+        get() {
+          return this.viewsStore.getGoalFormMonitorSettings.isNavigationDisabled;
+        },
+        set(value) {
+          this.viewsStore.updateGoalFormMonitorSettings({ 
+            isNavigationDisabled: value 
+          });
+        }
+      },
+
+      currentPage: {
+        get() {
+          return this.viewsStore.getGoalFormMonitorSettings.currentPage;
+        },
+        set(value) {
+          this.viewsStore.updateGoalFormMonitorSettings({ 
+            currentPage: value 
+          });
+        }
+      },
+
       // Format experiences for display in the autocomplete dropdown
       formattedExperiences() {
         return this.expInstances.map(instance => ({
@@ -297,13 +359,15 @@
       },
 
 
-      // Toggles the navigation state and optionally changes the button text
+      // Toggles the navigation state
       toggleNavigation() {
-        this.isNavigationDisabled = !this.isNavigationDisabled; // Toggle the navigation state
-        // Optionally change the button text based on state
-        this.navigationButtonText = this.isNavigationDisabled ? "Enable Student Navigation" : "Disable Student Navigation";
+        this.isNavigationDisabled = !this.isNavigationDisabled;
       },
 
+      // Handles changes to items per page and resets to page 1
+      handleItemsPerPageChange() {
+        this.currentPage = 1;
+      },
 
       // Navigates to the student's profile if navigation is enabled
       navigateIfEnabled(userID) {
@@ -363,4 +427,3 @@
 
 
   </style>
-  

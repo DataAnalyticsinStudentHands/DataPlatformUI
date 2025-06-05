@@ -25,7 +25,7 @@
       <!-- Tabs for navigating between monitors (Entry Form, Goal Form, Exit Form, Pending) -->
       <v-row>
         <v-col cols="12">
-          <v-tabs v-model="tab" grow>
+          <v-tabs v-model="activeTab" grow>
             <v-tab value="entryForms" v-if="showStudentsWithoutEntryForms">
               Entry Form Monitor
             </v-tab>
@@ -41,22 +41,22 @@
           </v-tabs>
 
           <!-- Content for Entry Form Monitor -->
-          <div v-if="tab === 'entryForms'">
+          <div v-if="activeTab === 'entryForms'">
             <StudentsWithoutEntryForms />
           </div>
   
           <!-- Content for Goal Form Monitor -->
-          <div v-if="tab === 'goalForms'">
+          <div v-if="activeTab === 'goalForms'">
             <StudentsWithoutGoalForms />
           </div>
 
           <!-- Content for Exit Form Monitor -->
-          <div v-if="tab === 'exitForms'">
+          <div v-if="activeTab === 'exitForms'">
             <StudentsWithoutExitForms />
           </div>
 
           <!-- Content for Pending Status -->
-          <div v-if="tab === 'pending'">
+          <div v-if="activeTab === 'pending'">
             <PendingStudents />
           </div>
 
@@ -68,39 +68,47 @@
   <script>
   import { computed } from 'vue';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  import { useInstructorViewsStore } from "@/stored/instructorViews";
   import StudentsWithoutGoalForms from './studentsWithoutGoalForms.vue';
   import StudentsWithoutEntryForms from './studentsWithoutEntryForms.vue';
   import PendingStudents from './pendingStudents.vue';
   import StudentsWithoutExitForms from './studentsWithoutExitForms.vue';
   
   export default {
-setup() {
-  // Access the logged-in user store
-  const userStore = useLoggedInUserStore();
+    setup() {
+      // Access the logged-in user store
+      const userStore = useLoggedInUserStore();
+      // Access the instructor views store
+      const viewsStore = useInstructorViewsStore();
 
-  // Computed property to determine if the "Students Without Entry Forms" tab should be shown based on user roles
-  const showStudentsWithoutEntryForms = computed(() => {
-    const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-    return allowedRoles.includes(userStore.role);
-  });
+      // Computed property to determine if the "Students Without Entry Forms" tab should be shown based on user roles
+      const showStudentsWithoutEntryForms = computed(() => {
+        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+        return allowedRoles.includes(userStore.role);
+      });
 
-  return {
-    userStore,
-    showStudentsWithoutEntryForms: showStudentsWithoutEntryForms.value // Determines if the Entry Form tab is shown
-  };
-},
-
+      return {
+        userStore,
+        viewsStore,
+        showStudentsWithoutEntryForms: showStudentsWithoutEntryForms.value // Determines if the Entry Form tab is shown
+      };
+    },
     components: {
       StudentsWithoutGoalForms,
       StudentsWithoutEntryForms,
       PendingStudents,
       StudentsWithoutExitForms
     },
-    data() {
-      return {
-        tab: 'entryForms',
-      };
-    },
+    computed: {
+      // Use v-model with a computed property to sync with the store
+      activeTab: {
+        get() {
+          return this.viewsStore.getProgressMonitorTab;
+        },
+        set(value) {
+          this.viewsStore.setProgressMonitorTab(value);
+        }
+      }
+    }
   };
   </script>
-  
