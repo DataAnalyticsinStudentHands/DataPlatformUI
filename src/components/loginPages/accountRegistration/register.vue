@@ -1,4 +1,13 @@
-<!-- /registerForm - where users register for a new account -->
+<!--
+register.vue - User Registration Component
+
+This component provides a comprehensive registration form for new users to create accounts.
+It includes fields for personal information (first name, last name, email), language preference,
+and password with confirmation. The form features real-time validation using Vuelidate,
+password visibility toggles, and internationalization support. Upon successful registration,
+users are automatically redirected to the account verification page to confirm their email.
+-->
+
 <template>
     <v-container>
       <!-- Title -->
@@ -132,7 +141,6 @@
                   >{{$t('Create an account')}}</v-btn>
                   <p class="text-sm font-medium text-gray-500 mt-4 text-center">
                   {{$t('Already have an account?')}}
-                  <!-- Updated this line to use @click and router.push -->
                   <span class="font-bold text-custom-red hover:underline cursor-pointer" @click="$router.push('/login')">{{$t('Login here')}}</span>
                   </p>
               </v-col>
@@ -155,9 +163,11 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
   export default {
     name: "RegisterForm",
     setup() {
+      // Initialize Vuelidate for form validation with auto-dirty tracking
       return { v$: useVuelidate({ $autoDirty: true }) };
     },
     data() {
+      // Component state for form fields and validation flags
       return {
         isConfirmPasswordValid: false,
         isConfirmEmailValid: false,
@@ -176,7 +186,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
       };
     },
     methods: {
-      // Validates that the user's confirmed password and email match their respective inputs. Displays a toast notification if there is a mismatch.
+      // Validates that the user's confirmed password and email match their respective inputs
       checkConfirmPassword() {
         this.isConfirmPasswordValid = true;
         this.isConfirmEmailValid = true;
@@ -196,7 +206,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
           });
         }
       },
-      // Submits the user registration form after validating the entire form, confirming password and email match. On successful submission, displays a success message and clears the form, then redirects to verification with the user's ID.
+      // Submits the registration form after validation and redirects to verification page
       async userSubmitForm() {
           const isFormCorrect = await this.v$.$validate();
           this.checkConfirmPassword();
@@ -247,7 +257,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
       }
 
     },
-    // Validations for user input fields
+    // Vuelidate validation rules with internationalized error messages
     validations() {
       return {
         user: {
@@ -275,7 +285,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
   </script>
   
   <style scoped>
-  /* Style for the radio button itself */
+  /* Custom radio button styling */
   input[type="radio"] {
       appearance: none;
       border: 1px solid black;
@@ -283,16 +293,15 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
       height: 16px;
       border-radius: 50%;
       outline: none;
-      margin-right: 4px; /* Reduced margin for proximity to the label */
+      margin-right: 4px;
       position: relative;
       background-color: white;
       transition: background 0.3s, border-color 0.3s;
   }
   
-  /* Style when the radio button is checked */
+  /* Radio button checked state */
   input[type="radio"]:checked {
-      border: 2px solid #333; /* Darker border when checked */
+      border: 2px solid #333;
       background-color: gray;
   }
   </style>
-  

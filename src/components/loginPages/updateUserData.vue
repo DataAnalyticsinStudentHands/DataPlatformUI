@@ -1,4 +1,12 @@
-<!-- updateUserData.vue - Allows users to update their personal information such as name, email, and language preference. -->
+<!--
+updateUserData.vue - User Profile Update Component
+
+This component provides a form interface for authenticated users to update their personal
+information including first name, last name, email address, and language preference.
+The form requires password confirmation for security and includes real-time validation.
+After successful update, users are redirected to their appropriate dashboard with a
+notification message in their preferred language.
+-->
 
 <template>
   <main>
@@ -83,6 +91,7 @@
 
   export default {
     data() {
+      // Component state for form fields and validation rules
       return {
         userData: [],
         firstName: '',
@@ -106,7 +115,7 @@
       };
     },
     mounted() {
-      // Fetch the current user data and fill the form fields with existing values.
+      // Fetch current user data and populate form fields
       const user = useLoggedInUserStore();
       let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/user/`;
@@ -137,11 +146,12 @@
     },
 
     computed: {
-      // shows a loading spinner when data is being fetched or submitted.
+      // Loading state from the store
       loading() {
         const store = useLoggedInUserStore();
         return store.loading;
       },
+      // Email validation with internationalized error messages
       emailError() {
         if (!this.email) {
           return this.$t('Email is required');
@@ -150,6 +160,7 @@
         }
         return "";
       },
+      // Password validation with internationalized error messages
       passwordError() {
         if (!this.confirmPassword) {
           return this.$t('Password is required');
@@ -158,12 +169,14 @@
         }
         return "";
       },
+      // First name validation
       firstNameError() {
         if (!this.firstName) {
           return this.$t('First name is required');
         }
         return "";
       },
+      // Last name validation
       lastNameError() {
         if (!this.lastName) {
           return this.$t('Last name is required');
@@ -173,8 +186,7 @@
     },
 
     methods: {
-
-      // Updates user information based on input fields and navigates to the respective dashboard with a language-specific toast message indicating successful update.
+      // Updates user information and navigates to appropriate dashboard with success notification
       async handleSubmitForm() {
         this.showErrors = true;
 
@@ -182,7 +194,7 @@
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/update-user-data`;
 
-        // Check if form is valid before submitting
+        // Validate form before submission
         if (!this.emailError && !this.passwordError && !this.firstNameError && !this.lastNameError) {
           try {
             await axios.put(apiURL, {
@@ -195,10 +207,11 @@
               headers: { token }
             });
 
-            // Update the Pinia store directly
+            // Update store with new user information
             user.firstName = this.firstName;
             user.lastName = this.lastName;
 
+            // Prepare success notification in user's preferred language
             let toastMessage = user.languagePreference === 'English' 
               ? 'User information updated!' 
               : '¡Información del Usuario actualizada!';
@@ -210,6 +223,7 @@
               toastCSS: 'Toastify__toast--update',
             };
             
+            // Navigate to appropriate dashboard based on user role
             this.$router.push({ name: user.role === 'Student' ? 'studentDashboard' : 'instructorDash' });
 
           } catch (error) {
@@ -223,6 +237,7 @@
 </script>
 
 <style scoped>
+/* Centered loading spinner container */
 .loading-container {
   display: flex;
   justify-content: center;

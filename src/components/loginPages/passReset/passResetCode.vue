@@ -1,5 +1,12 @@
-<!-- passResetCode.vue - This component handles the password reset code verification process. Users input the code sent to their email, and the code is verified before allowing them to reset their password. -->
+<!--
+passResetCode.vue - Password Reset Code Verification Component
 
+This component handles the second step of the password reset process where users enter
+the verification code sent to their email. It validates the code against the server,
+and upon successful verification, redirects users to the password reset entry page.
+The component includes navigation options to return to login or register for a new account
+if users haven't received the reset email.
+-->
 
 <template>
     <v-card-text>
@@ -65,12 +72,13 @@ import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
     data() {
+        // Component state for reset code verification
         return {
             userID: null,
             loading: false,
             code: null,
             rules: [
-                // Validation rule for the reset code
+                // Required field validation for reset code
                 v => {
                     if (!v) {
                         return this.$t('Code is required');
@@ -81,24 +89,21 @@ export default {
         };
     },
     
-    // When the component is mounted, retrieve the user ID from the store's navigation data
     mounted() {
+        // Retrieve user ID from navigation data if available
         if (useLoggedInUserStore().navigationData && useLoggedInUserStore().navigationData.userID) {
             this.userID = useLoggedInUserStore().navigationData.userID; 
         }
     },
     methods: {
-
-        // Validates the password reset form and, if no errors are found, submits a request to verify the password reset code. On successful verification, updates the user token in the store and navigates to the password reset entry page with a success toast message.
+        // Validates and submits the password reset code for verification
         async passFormSubmit() {
-            // Check if there are any errors in the form
+            // Validate form fields
             await this.$refs.passForm.validate();
             const passFormInvalid = this.$refs.passForm.errors.length > 0;
 
-            // Instantiate the store
             const loggedInUserStore = useLoggedInUserStore();
 
-            // If no errors, proceed
             if (!passFormInvalid) {
                 this.loading = true;
                 
@@ -113,9 +118,10 @@ export default {
                     const response = await axios.post(apiURL, requestData);
 
                     if (response.status === 200) {
-                        // Set token as global header
+                        // Set authentication token for password reset
                         loggedInUserStore.setTokenHeader(response.data.token);
 
+                        // Prepare success notification for next page
                         useLoggedInUserStore().navigationData = {
                             userID: this.userID,
                             toastType: 'success',
@@ -124,7 +130,7 @@ export default {
                             toastCSS: 'Toastify__toast--create'
                         };
 
-                        
+                        // Navigate to password reset entry page
                         this.$router.push({
                             name: 'passResetNewEntry'
                         });
@@ -146,7 +152,7 @@ export default {
             }
         },
 
-        // Navigate to Login screen.
+        // Navigate back to login page
         goBackToLogin() {
             this.$router.push({name: 'login'});
         },

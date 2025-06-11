@@ -1,33 +1,38 @@
-// jwtVerifier.js
-// Handles JWT verification using a public key for authentication.
+/**
+ * src/auth/jwtVerifier.js
+ * 
+ * JWT token verification module using RSA public key authentication. Handles secure validation
+ * of JWT tokens by importing a base64-encoded public key from environment variables and using
+ * it to verify token signatures. Caches the imported public key for performance optimization.
+ */
 
 import { jwtVerify, importSPKI } from 'jose';
 
 let publicKeyPromise = null;
 
+// Import and cache the RSA public key from environment configuration
 async function getPublicKey() {
   if (!publicKeyPromise) {
     const publicKeyBase64 = import.meta.env.VITE_PUBLIC_KEY_B64;
-    
-    // Convert the public key from base64 to PEM
+   
+    // Decode base64 to PEM format
     const publicKeyPem = window.atob(publicKeyBase64);
-    
-    // Import the public key in the correct format (RS256 algorithm)
+   
+    // Import public key for RS256 algorithm
     publicKeyPromise = importSPKI(publicKeyPem, 'RS256');
   }
-  
+ 
   return publicKeyPromise;
 }
 
+// Verify JWT token signature and return payload or null if invalid
 export async function verifyJWT(token) {
   try {
-    // Get the public key and verify the token
     const publicKey = await getPublicKey();
     const { payload } = await jwtVerify(token, publicKey);
-    
+   
     return payload;
   } catch (error) {
-    // Log any issues with token verification
     console.error('JWT verification failed:', error);
     return null;
   }

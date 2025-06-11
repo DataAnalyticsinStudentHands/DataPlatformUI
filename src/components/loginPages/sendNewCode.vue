@@ -1,4 +1,12 @@
-<!-- sendNewCode.vue - Allows users to request a new verification code by providing their email address. -->
+<!--
+sendNewCode.vue - Verification Code Request Component
+
+This component provides a form interface for users to request a new verification code
+for account activation. Users enter their registered email address and receive a new
+code via email. The component displays success or error messages based on the API
+response and uses conditional styling to show/hide feedback messages.
+-->
+
 <template>
     <section class="">
       <div class="px-10 py-20">
@@ -39,7 +47,6 @@
                 {{ error }}
               </div>
             </div>
-
             <!-- Success Message Section -->
             <div
               id="myDIV"
@@ -52,7 +59,6 @@
                 {{ success }}
               </div>
             </div>
-
             <!-- Submit Button -->
             <button
               @click="activateAccount"
@@ -66,12 +72,13 @@
       </div>
     </section>
   </template>
-  
+ 
   <script>
   import axios from "axios";
   export default {
     name: "VerifyAccount",
     data() {
+      // Component state for form inputs and message display
       return {
         email: "",
         error: "",
@@ -81,27 +88,29 @@
       };
     },
     methods: {
-      
-      // Requests a new verification code for account activation and displays a success message upon successful request.
+      // Requests a new verification code for account activation and displays a success message upon successful request
       activateAccount() {
         let user = {
           email: this.email,
           error: this.error,
         };
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/send-new-code`;
+        
+        // Send request to API endpoint for new verification code
         axios.put(apiURL, user).then(
           (res) => {
             if (res.status == 200) {
-              //removing the hide class from the success message div
+              // Display success message by removing hide class
               var element = document.getElementById("myDIV");
               element.classList.remove("hide");
-              //populating the success variables
+              // Update success message and clear error
               this.success = res.data.error;
               this.loginLink = " Login";
               this.error = "";
             }
           },
           (err) => {
+            // Display error message and clear success message
             this.error = err.response.data.error;
             this.success = "";
           }
@@ -110,4 +119,3 @@
     },
   };
   </script>
-  

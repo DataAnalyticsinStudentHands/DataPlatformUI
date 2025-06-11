@@ -1,3 +1,13 @@
+<!--
+updatePassword.vue - Authenticated Password Update Component
+
+This component allows logged-in users to update their password by providing their current
+password and a new password with confirmation. It features real-time validation using
+Vuelidate, password strength requirements, and matching password verification. The component
+displays specific error messages for incorrect current passwords and redirects users to
+their appropriate dashboard upon successful password update with a success notification.
+-->
+
 <template>
   <main>
     <v-container style="width: 90%; margin: 0 auto;">
@@ -101,19 +111,21 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   name: "VerifyAccount",
   created() {
-    // Redirect if no token
+    // Redirect to login if user is not authenticated
     if (localStorage.getItem("token") === null) {
       this.$router.push("/login");
     }
   },
   setup() {
+    // Initialize Vuelidate for form validation with auto-dirty tracking
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
   mounted() {
-    // Scroll to the top
+    // Scroll to top of page on component mount
     window.scrollTo(0, 0);
   },
   data() {
+    // Component state for password fields and validation messages
     return {
       isConfirmPasswordValid: false,
       code: "",
@@ -124,11 +136,11 @@ export default {
       loginLink: "",
       toggle: "hide",
       confirmPasswordError: "",
-      currentPasswordError: "" // Initially empty
+      currentPasswordError: ""
     };
   },
   methods: {
-    // Checks if new password and confirmNewPassword match
+    // Validates that new password and confirmation password match
     checkConfirmPassword() {
       this.confirmPasswordError = "";
       this.isConfirmPasswordValid = true;
@@ -138,7 +150,7 @@ export default {
       }
     },
 
-    // Attempts password reset
+    // Validates form and submits password reset request for authenticated users
     async passReset() {
       const isFormCorrect = await this.v$.$validate();
       this.checkConfirmPassword();
@@ -161,9 +173,9 @@ export default {
                 this.success = res.data.message;
                 this.loginLink = " Login";
                 this.error = "";
-                this.currentPasswordError = ""; // Clear any previous error
+                this.currentPasswordError = "";
 
-                // Navigate based on role, showing toast via store.navigationData
+                // Navigate to appropriate dashboard with success notification
                 if (store.role === 'Student') {
                   store.navigationData = {
                     toastType: 'success',
@@ -187,14 +199,13 @@ export default {
               this.error = err.response.data.error || "An error occurred.";
               this.success = "";
 
-              // Check if the error matches the "current password" issue
+              // Display current password error as field-specific error
               if (this.error === "The current password does not match our records.") {
                 this.currentPasswordError = this.error;
-                // Clear the global error alert since we are now showing this as a field error
                 this.error = "";
               }
 
-              // If using toast:
+              // Show toast notification for other errors
               if (typeof toast !== "undefined") {
                 toast.error('An error occurred. Please try again later.', {
                   position: 'top-right',
@@ -206,6 +217,7 @@ export default {
       }
     },
   },
+  // Vuelidate validation rules for password requirements
   validations() {
     return {
       newPassword: {

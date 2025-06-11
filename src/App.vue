@@ -1,6 +1,17 @@
+/**
+ * src/App.vue
+ * 
+ * Root component of the application that provides the main layout structure including
+ * a responsive navigation drawer, app bar, and router view container. Handles user
+ * authentication state, role-based navigation menu rendering, and logout functionality.
+ * The navigation drawer adapts between rail and full modes on desktop, and temporary
+ * drawer on mobile devices.
+ */
+
 <template>
   <v-app>
     <v-layout class="rounded">
+      <!-- Navigation drawer with role-based menu items -->
       <v-navigation-drawer
         v-if="isFullyAuthenticated"
         v-model="drawer"
@@ -11,6 +22,7 @@
         :permanent="isMdAndUp"
         :temporary="!isMdAndUp"
       >
+        <!-- Collapsed rail state shows only menu icon -->
         <div v-if="rail">
           <v-list-item
             lines="two"
@@ -24,6 +36,7 @@
             ></v-btn> 
           </v-list-item>
         </div>
+        <!-- Expanded state shows full navigation menu -->
         <div v-else>
           <v-list-item
             v-if="loggedIn"
@@ -44,6 +57,7 @@
           </v-list-item>
 
         <v-list density="compact" nav class="text-white">
+          <!-- Student role navigation items -->
           <div v-if="user.isLoggedIn && user.getRole === 'Student'">
             <v-list-item 
               :active="activeLink === 'studentDashboard'"
@@ -85,6 +99,7 @@
               {{$t('Projects')}}
             </v-list-item>
           </div>
+          <!-- Instructor and admin role navigation items -->
           <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
             <v-list-item 
               :active="activeLink === 'instructorDash'"
@@ -123,6 +138,7 @@
               {{$t('Projects')}}
             </v-list-item>
           </div>
+          <!-- Basic role navigation items -->
           <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
             <v-list-item 
               :active="activeLink === 'dashboard'"
@@ -160,9 +176,10 @@
             >Find Event</v-list-item>
           </div>
 
+          <!-- Common navigation items for all authenticated users -->
           <div v-if="isFullyAuthenticated">
             <v-list-item>
-              <hr> <!-- Horizontal line -->
+              <hr>
             </v-list-item>
             <v-list-item 
               :active="activeLink === 'profile'"
@@ -200,41 +217,29 @@
       </div>
       </v-navigation-drawer>
 
+      <!-- App bar with gradient background and organization name -->
       <v-app-bar 
-  scroll-target="#main"
-  style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
->
-  <v-btn 
-    v-if="isFullyAuthenticated && !drawer"
-    icon 
-    @click="drawer = true; rail = false"
-  >
-    <v-icon>mdi-menu</v-icon>
-  </v-btn>
+        scroll-target="#main"
+        style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+      >
+        <v-btn 
+          v-if="isFullyAuthenticated && !drawer"
+          icon 
+          @click="drawer = true; rail = false"
+        >
+          <v-icon>mdi-menu</v-icon>
+        </v-btn>
 
-  <!-- Placeholder for left side content -->
-  <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
 
-  <!-- Advertisement text -->
-  <!-- <span v-if="!$vuetify.display.xs" class="text-xs text-white mr-4">
-    Developed by Data Analytics in Student Hands for Engaged Data
-  </span> -->
+        <h1 class="text-2xl text-white mr-10">{{ user.orgName }}</h1>
+      </v-app-bar>
 
-  <!-- Spacer to push content to the sides -->
-  <!-- <v-spacer></v-spacer> -->
-
-  <!-- Organization Name on the right -->
-  <h1 class="text-2xl text-white mr-10">{{ user.orgName }}</h1>
-</v-app-bar>
-
-
-
-
-
-    <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content">
-      <router-view></router-view>
-    </v-main>
-  </v-layout>
+      <!-- Main content area containing router view -->
+      <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content">
+        <router-view></router-view>
+      </v-main>
+    </v-layout>
   </v-app>
 </template>
 
@@ -253,33 +258,37 @@ export default {
       activeLink: this.$route.name,
       rail: this.isMdAndUp,
       drawer: null,
-      // scrollPosition: 0,
     };
   },
   watch: {
+    // Update active navigation link when route changes
     $route(to, from) {
       this.activeLink = to.name;
     }
   },
   computed: {
+    // Check if viewport is medium size or larger
     isMdAndUp() {
       return this.$vuetify.display.mdAndUp;
     },
+    // Concatenate user's first and last name
     fullName() {
       const store = useLoggedInUserStore();
       return (store.firstName.trim() + ' ' + store.lastName.trim());
     },
+    // Check if user is logged in
     loggedIn() {
       const store = useLoggedInUserStore();
       return store.isLoggedIn;
     },
-  isFullyAuthenticated() {
-    const store = useLoggedInUserStore();
-    // Only show navigation if user is logged in and not a Temporary role
-    return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
-  }
+    // Check if user is logged in and not in temporary role
+    isFullyAuthenticated() {
+      const store = useLoggedInUserStore();
+      return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
+    }
   },
   methods: {
+    // Handle user logout and display random success message
     async handleLogout() {
       const store = useLoggedInUserStore();
       
@@ -300,7 +309,7 @@ export default {
       ];
       logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
 
-      // Store the logout message data in Pinia state
+      // Store toast notification data in Pinia state
       store.navigationData = {
         toastType: 'success',
         toastMessage: logoutMessage,
@@ -312,6 +321,7 @@ export default {
         name: 'login'
       });
     },
+    // Toggle navigation drawer between rail and full modes
     sidebarToggle() {
       if (this.isMdAndUp) {
         this.rail = !this.rail;
@@ -319,38 +329,29 @@ export default {
         this.drawer = !this.drawer;
       }
     },
-  //   handleScroll(event) {
-  //   // scroll handling logic
-  //   this.scrollPosition = event.target.scrollTop;
-  // },
   },
   
   mounted() {
-    // Access the root DOM element of the v-main Vue component
+    // Attach scroll listener to main content area
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.addEventListener('scroll', this.handleScroll);
   },
 
   beforeUnmount() {
+    // Clean up scroll listener
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.removeEventListener('scroll', this.handleScroll);
   },
 
-  // provide() {
-  //   return {
-  //     scrollPosition: this.scrollPosition
-  //   };
-  // },
-
   setup() {
-    // function that checks if a user is logged in
+    // Initialize user store
     const user = useLoggedInUserStore();
     return { user };
   },
   created() {
+    // Fetch organization name from API
     const user = useLoggedInUserStore();
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
-    // const user = useLoggedInUserStore();
     axios
       .get(apiURL, {
         headers: { token: user.token },
@@ -362,24 +363,26 @@ export default {
 };
 </script>
 <style scoped>
+/* Legacy container styling */
 #_container {
   background-color: #c8102e;
   color: white;
   padding: 18px;
 }
 
+/* Fixed sidebar positioning */
 .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        overflow-y: auto;
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
 
-    .main-content {
-        overflow-y: auto;
-        height: 100vh;
-        padding-bottom: 5vh;
-    }
-
+/* Main content scrollable area */
+.main-content {
+  overflow-y: auto;
+  height: 100vh;
+  padding-bottom: 5vh;
+}
 </style>

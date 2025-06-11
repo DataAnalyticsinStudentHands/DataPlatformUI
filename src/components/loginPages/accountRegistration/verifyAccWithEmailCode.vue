@@ -1,5 +1,12 @@
-<!-- verifyAccWithEmailCode.vue - This component handles the email verification process for existing users. It presents a form to enter an email address and confirmation code, and submits the code to verify and activate the user's account. -->
+<!--
+verifyAccWithEmailCode.vue - Email Verification Component for Existing Users
 
+This component provides a verification interface for users who have registered but not yet verified
+their email addresses. Users enter both their email address and the confirmation code they received
+to activate their account. The component handles code validation, expired code scenarios by automatically
+sending new codes, and provides navigation back to the login page. Upon successful verification,
+users are redirected to login with a success message.
+-->
 
 <template>
     <v-card-text>
@@ -78,11 +85,12 @@ export default {
   name: "VerifyExisting",
   props: ["id"],
   data() {
+    // Component state for form inputs and validation rules
     return {
       email: null,
       code: null,
       loading: false,
-      // Validation rules for the email input
+      // Email validation with format checking
       emailRules: [
         v => {
             if (!v) {
@@ -93,7 +101,7 @@ export default {
             return true;
         }
       ],
-      // Validation rules for the confirmation code input
+      // Required field validation for confirmation code
       codeRules: [
         v => {
             if (!v) {
@@ -105,16 +113,15 @@ export default {
     };
   },
   methods: {
-    // Called when Form is submitted. Activates the account if there are no errors in the form.
+    // Validates form and triggers account activation
     formSubmit() {
-        // Check if form has errors
         if (!this.code) {
             return;
         }
         this.activateAccount();
     },
 
-    // Activates the account using an email and a verification code. On successful activation, navigates to the login page with a success toast message. If the activation fails due to an invalid email or code, displays an error toast. For expired codes, attempts to resend a new code.
+    // Activates the account using email and verification code, handling success, invalid codes, and expired codes
     async activateAccount() {
         this.loading = true;
         let user = {
@@ -126,6 +133,7 @@ export default {
             const res = await axios.put(apiURL, user);
 
             if (res.status === 200) {
+                // Set success notification for login page
                 useLoggedInUserStore().navigationData = {
                     toastType: 'success',
                     toastMessage: this.$t('Your account is activated! You may now login.'),
@@ -138,12 +146,14 @@ export default {
                 });
             }
         } catch (err) {
+            // Handle invalid email or code
             if (err.response.data.title === 'Invalid') {
                 toast.error(this.$t('Invalid Email or Code.'), {
                     position: 'top-right',
                     toastClassName: 'Toastify__toast--delete'
                 });
             }
+            // Handle expired code by sending new one
             if (err.response.data.title === 'Expired') {
                 try {
                     await this.sendNewCode();
@@ -159,7 +169,7 @@ export default {
         }
     },
     
-    // Sends a request to generate and send a new verification code to the user's email. Notifies the user with a toast message when a new code is sent successfully.
+    // Requests a new verification code and notifies the user
     async sendNewCode() {
         let user = {
         email: this.email,
@@ -184,7 +194,7 @@ export default {
         });
     },
 
-    // Navigate to Login screen
+    // Navigate back to login page
     goBackToLogin() {
         this.$router.push({name: 'login'});
     },

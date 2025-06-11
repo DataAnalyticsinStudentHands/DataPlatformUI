@@ -1,5 +1,12 @@
-<!-- passResetRequest.vue - This component allows users to initiate the password reset process by entering their email. If the email exists in the records, a confirmation code is sent to the user's email to proceed with resetting their password. -->
+<!--
+passResetRequest.vue - Password Reset Initiation Component
 
+This component provides the first step in the password reset process where users enter
+their email address to request a password reset. The component validates the email format,
+sends a request to the server, and if the email exists in the system, initiates the
+reset process by sending a confirmation code. Users are then automatically redirected
+to the code verification page. The component includes navigation back to login if needed.
+-->
 
 <template>
     <v-card-text>
@@ -60,11 +67,12 @@ import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
     data() {
+        // Component state for email validation and submission
         return {
             userID: "",
             loading: false,
             email: null,
-            // Validation rules for the email input
+            // Email validation with format checking
             rules: [
                 v => {
                     if (!v) {
@@ -78,14 +86,12 @@ export default {
         };
     },
     methods: {
-        
-        // Validates the email form and initiates the password reset process for the given email. On successful initiation, stores the user ID and token received from the response, then navigates to the password reset code  verification page.
+        // Validates email and initiates the password reset process
         async emailFormSubmit() {
-            // Check if there are any errors in the form
+            // Validate form fields
             await this.$refs.emailForm.validate();
             const emailFormInvalid = this.$refs.emailForm.errors.length > 0;
 
-            // If no errors, proceed with login
             if (!emailFormInvalid) {
                 this.loading = true;
                 let user = {
@@ -98,8 +104,8 @@ export default {
                     const response = await axios.put(apiURL, user);
 
                     if (response.status === 200) {
+                        // Store user ID and token from response
                         this.userID = response.data.userID;
-                        // Grab the token from the response
                         this.token = response.data.token;
                     } else {
                         toast.error(this.$t('An error occurred. Please try again.'), {
@@ -114,20 +120,20 @@ export default {
                     });
                 } finally {
                     this.loading = false;
+                    // Pass user ID to next step
                     useLoggedInUserStore().navigationData = {
                         userID: this.userID
                     };
 
+                    // Navigate to code verification page
                     this.$router.push({
                         name: 'passResetCode'
                     });
-
-
                 }
             }
         },
 
-        // Navigate to Login screen
+        // Navigate back to login page
         goBackToLogin() {
             this.$router.push({name: 'login'});
         },

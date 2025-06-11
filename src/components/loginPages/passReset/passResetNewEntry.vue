@@ -1,5 +1,12 @@
-<!-- passResetNewEntry.vue - This component allows non-logged-in users to update their password by entering a new password and confirming it. After the password is reset, the user is redirected to the login screen. -->
+<!--
+passResetNewEntry.vue - Password Reset Entry Component
 
+This component provides the final step in the password reset process where users create
+a new password. It features password strength validation, matching password confirmation,
+and real-time validation feedback. Upon successful password update, users are automatically
+redirected to the login page with a success notification. The component includes secure
+token handling that clears authentication headers when the user navigates away.
+-->
 
 <template>
     <v-card-text>
@@ -73,6 +80,7 @@ import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
     data() {
+        // Component state for password fields and validation rules
         return {
             awaitingEmailInput: true,
             awaitingConfirmationCode: false,
@@ -80,7 +88,7 @@ export default {
             loading: false,
             newPassword: null,
             reEnterPassword: null,
-            // Validation rules for the password fields
+            // Password validation with length and matching requirements
             newPassRules: [
                 v => {
                     if (!v) {
@@ -118,7 +126,7 @@ export default {
         };
     },
     mounted() {
-        // Show toast message if navigationData contains one
+        // Display any navigation toast messages from previous page
         if (useLoggedInUserStore().navigationData?.toastMessage) {
             toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, {
                 position: useLoggedInUserStore().navigationData.toastPosition || 'top-right',
@@ -126,43 +134,36 @@ export default {
             });
         }
     },
-    // clear out the temporary token when user leaves view
     beforeDestroy() {
+        // Clear temporary authentication token when leaving the component
         const loggedInUserStore = useLoggedInUserStore();
         loggedInUserStore.removeTokenHeader();
     },
     watch: {
-        // Watch for changes in the new password and validate the re-entered password
+        // Trigger validation when passwords change to ensure they match
         newPassword(newVal, oldVal) {
             if (newVal !== oldVal) {
-                // Validate reEnterPassword when newPassword changes
                 this.$refs.passForm.validate('reEnterPassword');
             }
         },
-        // Watch for changes in the re-entered password and validate the new password
         reEnterPassword(newVal, oldVal) {
             if (newVal !== oldVal) {
-                // Validate newPassword when reEnterPassword changes
                 this.$refs.passForm.validate('newPassword');
             }
         }
     },
     methods: {
-        
-        // Validates the password reset form and submits a request to update the password using the new password provided. On successful password update, redirects the user to the login page with a success toast message indicating the password has been reset.
+        // Validates and submits the new password to complete the reset process
         async passFormSubmit() {
-            // Check if there are any errors in the form
+            // Validate form fields
             await this.$refs.passForm.validate();
             const passFormInvalid = this.$refs.passForm.errors.length > 0;
 
-            // Instantiate the store
             const loggedInUserStore = useLoggedInUserStore();
 
-            // If no errors, proceed with updating the password
             if (!passFormInvalid) {
                 this.loading = true;
                 
-                // We're sending the new password for reset, no need to send email
                 let dataToSend = {
                     password: this.newPassword,
                 };
@@ -177,10 +178,7 @@ export default {
                     });
 
                     if (response.status === 200) {
-
-
-                        // Redirecting the user to login after password reset
-
+                        // Prepare success notification and redirect to login
                         useLoggedInUserStore().navigationData = {
                             toastType: 'success',
                             toastMessage: this.$t('Password Reset! You may now login.'),
@@ -207,7 +205,7 @@ export default {
             }
         },
 
-        // Navigate to Login screen
+        // Navigate back to login page
         goBackToLogin() {
             this.$router.push({name: 'login'});
         },

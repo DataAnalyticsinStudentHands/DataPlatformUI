@@ -1,3 +1,12 @@
+/**
+ * src/stored/loggedInUser.js
+ * 
+ * Pinia store managing authenticated user state and session management. Handles user login/logout,
+ * JWT token verification, role-based access control, form completion tracking for students, and
+ * automatic session expiration. Persists user data across page refreshes using localStorage while
+ * maintaining security through token validation.
+ */
+
 import { defineStore } from 'pinia'
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
@@ -6,7 +15,6 @@ import 'vue3-toastify/dist/index.css';
 import { i18n } from '@/plugins/i18n';
 import { verifyJWT } from '@/auth/jwtVerifier';
 
-// Defining a store
 export const useLoggedInUserStore = defineStore({
   id: 'loggedInUser',
   state: () => {
@@ -36,26 +44,28 @@ export const useLoggedInUserStore = defineStore({
       logoutTimer: null,
     }
   },
-  getters: { //getting the roles
+  getters: {
+    // Get the current user's role
     getRole() {
       return this.role
     }
   },
   actions: {
+    // Authenticate user with email and password
     async login(email, password) {
       try {
         const response = await axios.post(`${apiURL}/userdata/login`, { email, password });
         if (response) {
           const token = response.data.token;
 
-          // Verify the token on the frontend
+          // Verify token validity on frontend
           const payload = await verifyJWT(token);
           if (!payload) {
             this.handleError(new Error('Invalid token received from backend.'));
             return;
           }
 
-          // Use payload to get user information
+          // Update store with user information from JWT payload
           this.$patch({
             role: payload.userRole,
             userId: payload.userID,
@@ -64,13 +74,12 @@ export const useLoggedInUserStore = defineStore({
             group: payload.group || response.data.group || null,
           });
 
-          // Save token to localStorage
+          // Persist token and set axios headers
           localStorage.setItem('token', token);
           this.token = token;
-          // Set token header
           this.setTokenHeader(token);
 
-          // Handle other login logic
+          // Handle pending user verification
           if (payload.userStatus === 'Pending') {
             this.$patch({
               isLoggedIn: false,
@@ -82,13 +91,13 @@ export const useLoggedInUserStore = defineStore({
 
           await this.getFullName();
 
-          // Fetch additional data or handle role-specific logic
+          // Load student-specific data
           if (payload.userRole === 'Student') {
             await this.checkFormCompletion();
             await this.fetchRegisteredExperiences();
           }
 
-          // Officially log the user in if not "Temporary"
+          // Complete login for non-temporary users
           if (payload.userRole !== 'Temporary') {
             this.$patch({
               isLoggedIn: true,
@@ -109,137 +118,100 @@ export const useLoggedInUserStore = defineStore({
         }
       }
     },
+    // Clear user session and redirect to login
     logout(reset = false) {
-      // Save the orgName before resetting the store
+      // Preserve organization name across logout
       const orgName = this.orgName;
     
-      // Clear the auto-logout timer
+      // Clear session timer
       if (this.logoutTimer) {
         clearTimeout(this.logoutTimer);
         this.logoutTimer = null;
       }
     
-      // Reset the store to its initial state
+      // Reset store state
       this.$reset();
     
-      // Restore the orgName after reset
+      // Restore organization name
       this.orgName = orgName;
     
-      // Clear token and related local storage items
+      // Clean up authentication data
       localStorage.removeItem('token');
       localStorage.removeItem('pinia-loggedInUser');
       this.removeTokenHeader();
     
-      // Redirect to the login page
       this.$router.push('/login');
     },    
 
+    // Initialize store from saved session on app load
     async initializeStore() {
       const token = localStorage.getItem('token');
-    
-      // if (!token) {
-      //   // No token found; redirect to login to ensure the user is prompted to authenticate
-      //   this.logout(); // Clear any lingering state
-      //   this.$router.push('/login');
-      //   return;
-      // }
-
-      // // Public routes
-      // const publicPaths = [
-      //   '/login',
-      //   '/register',
-      //   '/passResetRequest',
-      //   '/passResetCode',
-      //   '/passResetNewEntry',
-      //   '/verifyAccWithCode',
-      //   '/verifyAccWithEmailCode',
-      //   '/sendNewCode',
-      //   '/test'
-      // ];
-
-      // if (!token) {
-      //   const currentRoute = this.$router.currentRoute.value.path;
-      //   if (!publicPaths.includes(currentRoute)) {
-      //     // if they're on a private route, then redirect to /login
-      //     this.logout();
-      //     this.$router.push('/login');
-      //   }
-      //   return;
-      // }
 
       if (!token) {
-        // No token found; redirect to login to ensure the user is prompted to authenticate
-        // Reset the store to its initial state
+        // Clear any remaining session data
         this.$reset();
       
-        // Clear token and related local storage items
         localStorage.removeItem('token');
         localStorage.removeItem('pinia-loggedInUser');
         this.removeTokenHeader();
         return;
       }
       
-    
       try {
-        // Verify the token
+        // Validate existing token
         const payload = await verifyJWT(token);
     
         if (!payload) {
-          // The token is invalid; treat this as a logout scenario
+          // Invalid token requires re-authentication
           this.logout();
           this.$router.push('/login');
           return;
         }
     
-        // Check if the token is expired
-        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        // Check token expiration
+        const currentTime = Math.floor(Date.now() / 1000);
         if (payload.exp && payload.exp < currentTime) {
-          // Token is expired; clear session and redirect to login
           this.logout();
           this.$router.push('/login');
           return;
         }
     
-        // Token is valid; update the store with user information
+        // Restore user session from token
         this.$patch({
           userId: payload.userID,
           role: payload.userRole,
-          token: token // Store the token in memory for app use
+          token: token
         });
     
-        // Mark as logged in if the user is not 'Temporary'
+        // Complete login for non-temporary users
         if (payload.userRole !== 'Temporary') {
           this.$patch({ isLoggedIn: true });
         }
     
-        // Set the global default header for axios
         this.setTokenHeader(token);
-    
-        // Set up auto logout to handle token expiration
         this.setAutoLogout(payload.exp);
     
       } catch (error) {
-        // Handle errors during token verification (e.g., invalid token, network issues)
         console.error('Token verification failed:', error);
-        this.logout(); // Ensure session is cleared
+        this.logout();
         this.$router.push('/login');
       }
     },    
     
+    // Schedule automatic logout when token expires
     setAutoLogout(expirationTime) {
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const timeUntilExpiration = (expirationTime - currentTime) * 1000; // Time until expiration in milliseconds
+      const currentTime = Math.floor(Date.now() / 1000);
+      const timeUntilExpiration = (expirationTime - currentTime) * 1000;
 
       if (timeUntilExpiration > 0) {
-        // Clear any existing timer
+        // Cancel existing timer
         if (this.logoutTimer) {
           clearTimeout(this.logoutTimer);
         }
 
-        // Set a new timer
+        // Schedule logout at token expiration
         this.logoutTimer = setTimeout(() => {
           this.logout();
-          // Redirect to login page
           this.$router.push('/login');
           toast.info('Session expired. Please log in again.', {
             position: 'top-right',
@@ -254,6 +226,7 @@ export const useLoggedInUserStore = defineStore({
       }
     },
 
+    // Fetch user's full name from API
     async getFullName() {
       let token = localStorage.getItem("token");
       let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
@@ -270,11 +243,11 @@ export const useLoggedInUserStore = defineStore({
         this.handleError(error);
     }
     },
+    // Complete account verification process
     async verifyExistingAcc(responseData) {
-      // Extract the required details from the responseData
       const { token, userID, userRole, languagePreference } = responseData;
 
-      // Update the Pinia store with the extracted details
+      // Update store with verified user data
       this.$patch({
         role: userRole,
         userId: userID,
@@ -282,22 +255,21 @@ export const useLoggedInUserStore = defineStore({
         languagePreference: languagePreference
       });
 
-      // Save the new token to localStorage
       localStorage.setItem("token", token);
-
-      // Set the global default header for axios
       this.setTokenHeader(token);
 
-      // Only mark the user as logged in if their role is not "Temporary"
+      // Complete login for non-temporary users
       if (userRole !== 'Temporary') {
         this.$patch({
           isLoggedIn: true,
         });
       }
     },
+    // Update user's language preference
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
     },
+    // Check student's form completion status
     async checkFormCompletion() {
       try {
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
@@ -305,38 +277,42 @@ export const useLoggedInUserStore = defineStore({
         });
     
         if (response && response.data) {
-          // Completely replace the state with the new data
+          // Update all form completion states
           this.hasCompletedEntryForm = response.data.entryFormCompleted;
           this.hasRegisteredExperiences = response.data.hasRegisteredExperiences;
           this.goalSettingFormCompletion = { ...response.data.goalSettingFormCompletion };
           this.exitFormCompletion = { ...response.data.exitFormCompletion };
     
-          // Check if there are forms to complete
-            const exitIds = Object.keys(this.exitFormCompletion);
-            // Check if there's at least one goal setting form ID that is not in the exit form completion IDs
-            this.hasGoalFormsToComplete = Object.keys(this.goalSettingFormCompletion).some(key => !exitIds.includes(key));
+          // Determine if forms need completion
+          const exitIds = Object.keys(this.exitFormCompletion);
+          this.hasGoalFormsToComplete = Object.keys(this.goalSettingFormCompletion).some(key => !exitIds.includes(key));
           this.hasExitFormsToComplete = exitIds.length > 0;
         }
       } catch (error) {
         this.handleError(error);
       }
     },      
+    // Set authorization header for all axios requests
     setTokenHeader(token) {
       if (token) {
         axios.defaults.headers['token'] = token;
         this.token = token;
       }
     },
+    // Remove authorization header from axios
     removeTokenHeader() {
       delete axios.defaults.headers['token'];
       this.token = "";
     },     
+    // Set loading state to true
     startLoading() {
       this.loading = true;
     },
+    // Set loading state to false
     stopLoading() {
       this.loading = false;
     },
+    // Fetch student's registered experiences
     async fetchRegisteredExperiences() {
       const token = localStorage.getItem("token");
       const url = `${apiURL}/studentSideData/registered-experiences`;
@@ -344,7 +320,6 @@ export const useLoggedInUserStore = defineStore({
       try {
         const response = await axios.get(url, { headers: { token } });
         if (response.data && response.data.length > 0) {
-          // Directly assign the response data to registeredExperiences
           this.registeredExperiences = response.data;
           this.hasRegisteredExperiences = true;
         } else {
@@ -355,110 +330,104 @@ export const useLoggedInUserStore = defineStore({
         this.handleError(error);
       }
     },     
-async updateRegisteredExperiences(selectedExperiences) {
-  const token = this.token;
-  const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
-  const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
+    // Update student's experience registrations
+    async updateRegisteredExperiences(selectedExperiences) {
+      const token = this.token;
+      const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
+      const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
 
-  try {
-    // Determine experiences to register and to deregister
-    const experiencesToRegister = selectedExperiences.filter(se => 
-      !this.registeredExperiences.some(re => re.experienceInstance.id === se._id));
-    const experiencesToDeregister = this.registeredExperiences.filter(re => 
-      !selectedExperiences.some(se => se._id === re.experienceInstance.id));
-    const originalRegisteredExperiences = JSON.parse(JSON.stringify(this.registeredExperiences));
-
-    // Track if there were any errors during the process
-    let hasErrors = false;
-
-    // Register new experiences
-    if (experiencesToRegister.length > 0) {
-      await axios.post(registerUrl, {
-        expInstanceIDs: experiencesToRegister.map(e => e._id)
-      }, { headers: { token } });
-    }
-
-    // Deregister experiences
-    if (experiencesToDeregister.length > 0) {
       try {
-        const response = await axios.delete(deregisterUrl, {
-          headers: { token },
-          data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
-        });
+        // Calculate registration changes
+        const experiencesToRegister = selectedExperiences.filter(se => 
+          !this.registeredExperiences.some(re => re.experienceInstance.id === se._id));
+        const experiencesToDeregister = this.registeredExperiences.filter(re => 
+          !selectedExperiences.some(se => se._id === re.experienceInstance.id));
+        const originalRegisteredExperiences = JSON.parse(JSON.stringify(this.registeredExperiences));
 
-        if (response.status === 207) {
-          hasErrors = true; // Mark that we had partial completion errors
-          const { cannotDeleteRegistrations, projectConstraints } = response.data;
-          
-          // Handle project constraint notifications with generic message to avoid formatting issues
-          if (projectConstraints && projectConstraints.length > 0) {
-            for (const constraint of projectConstraints) {
-              // Find the corresponding experience registration
-              const experience = originalRegisteredExperiences.find(re => re._id === constraint.registrationId);
+        let hasErrors = false;
+
+        // Process new registrations
+        if (experiencesToRegister.length > 0) {
+          await axios.post(registerUrl, {
+            expInstanceIDs: experiencesToRegister.map(e => e._id)
+          }, { headers: { token } });
+        }
+
+        // Process deregistrations with constraint handling
+        if (experiencesToDeregister.length > 0) {
+          try {
+            const response = await axios.delete(deregisterUrl, {
+              headers: { token },
+              data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
+            });
+
+            if (response.status === 207) {
+              hasErrors = true;
+              const { cannotDeleteRegistrations, projectConstraints } = response.data;
               
-              // Safely extract the experience name
-              let experienceName = 'this experience';
-              if (experience && experience.experienceInstance && experience.experienceInstance.name) {
-                experienceName = experience.experienceInstance.name;
+              // Notify about project dependencies
+              if (projectConstraints && projectConstraints.length > 0) {
+                for (const constraint of projectConstraints) {
+                  const experience = originalRegisteredExperiences.find(re => re._id === constraint.registrationId);
+                  
+                  let experienceName = 'this experience';
+                  if (experience && experience.experienceInstance && experience.experienceInstance.name) {
+                    experienceName = experience.experienceInstance.name;
+                  }
+                  
+                  toast.error(`Cannot deregister from "${experienceName}": You must leave all associated projects first.`, {
+                    position: 'top-right',
+                    toastClassName: 'Toastify__toast--delete',
+                    multiple: true
+                  });
+                }
               }
               
-              // Create a generic message that doesn't depend on constraint.projects structure
-              toast.error(`Cannot deregister from "${experienceName}": You must leave all associated projects first.`, {
+              // Notify about form completion constraints
+              const remainingIds = cannotDeleteRegistrations.filter(id => 
+                !projectConstraints || !projectConstraints.some(pc => pc.registrationId === id)
+              );
+              
+              if (remainingIds.length > 0) {
+                for (const id of remainingIds) {
+                  const experience = originalRegisteredExperiences.find(re => re._id === id);
+                  
+                  let name = 'this experience';
+                  if (experience && experience.experienceInstance && experience.experienceInstance.name) {
+                    name = experience.experienceInstance.name;
+                  }
+                  
+                  toast.info(`Cannot deregister: "${name}" (you have completed forms for this experience)`, {
+                    position: 'top-right',
+                    toastClassName: 'Toastify__toast--update',
+                    multiple: true
+                  });
+                }
+              }
+            }
+          } catch (deregisterError) {
+            hasErrors = true;
+            console.error("Error during deregistration:", deregisterError);
+            
+            if (deregisterError.response && deregisterError.response.data && deregisterError.response.data.message) {
+              toast.error(deregisterError.response.data.message, {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: true
+              });
+            } else {
+              toast.error("Could not complete all deregistrations. Some experiences have dependencies.", {
                 position: 'top-right',
                 toastClassName: 'Toastify__toast--delete',
                 multiple: true
               });
             }
           }
-          
-          // Handle other constraints (like completed forms)
-          const remainingIds = cannotDeleteRegistrations.filter(id => 
-            !projectConstraints || !projectConstraints.some(pc => pc.registrationId === id)
-          );
-          
-          if (remainingIds.length > 0) {
-            for (const id of remainingIds) {
-              // Find the corresponding experience registration
-              const experience = originalRegisteredExperiences.find(re => re._id === id);
-              
-              // Safely extract the name
-              let name = 'this experience';
-              if (experience && experience.experienceInstance && experience.experienceInstance.name) {
-                name = experience.experienceInstance.name;
-              }
-              
-              toast.info(`Cannot deregister: "${name}" (you have completed forms for this experience)`, {
-                position: 'top-right',
-                toastClassName: 'Toastify__toast--update',
-                multiple: true
-              });
-            }
-          }
         }
-      } catch (deregisterError) {
-        hasErrors = true;
-        console.error("Error during deregistration:", deregisterError);
-        
-        if (deregisterError.response && deregisterError.response.data && deregisterError.response.data.message) {
-          toast.error(deregisterError.response.data.message, {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: true
-          });
-        } else {
-          toast.error("Could not complete all deregistrations. Some experiences have dependencies.", {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: true
-          });
-        }
-      }
-    }
 
-        // Fetch updated registered experiences
+        // Refresh data and show success if applicable
         await this.fetchRegisteredExperiences();
         
-        // Only show success message if there were no errors and we actually made changes
         if (!hasErrors && (experiencesToRegister.length > 0 || experiencesToDeregister.length > 0)) {
           toast.success(i18n.global.t('Experiences Updated') + '!', {
             position: 'top-right',
@@ -467,7 +436,6 @@ async updateRegisteredExperiences(selectedExperiences) {
           });
         }
 
-        // Call Student Checklist
         await this.checkFormCompletion();
 
       } catch (error) {
@@ -475,33 +443,27 @@ async updateRegisteredExperiences(selectedExperiences) {
       }
     },
 
-
-
+    // Register a single experience for the student
     async registerSingleExperience(experienceInstanceId) {
       const token = this.token;
       const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
 
       try {
-        // Register the single experience
         await axios.post(registerUrl, {
           expInstanceIDs: [experienceInstanceId]
         }, { headers: { token } });
 
-        // Fetch updated registered experiences
         await this.fetchRegisteredExperiences();
-        
-        // Update form completion status
         await this.checkFormCompletion();
 
-        return true; // Success
+        return true;
       } catch (error) {
         this.handleError(error);
-        return false; // Failed
+        return false;
       }
     },
 
-
-
+    // Display generic error message to user
     async handleError(error) {
       console.log(error);
       toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
@@ -510,9 +472,11 @@ async updateRegisteredExperiences(selectedExperiences) {
           limit: 1,
       });
     },
+    // Update organization name
     setOrgName(name) {
       this.orgName = name;
     },
+    // Update experience instance creation details
     updateexperienceInstanceCreationDetails(sessions) {
       this.experienceInstanceCreationDetails = sessions;
     }
@@ -520,7 +484,7 @@ async updateRegisteredExperiences(selectedExperiences) {
   persist: {
     enabled: true,
     storage: window.localStorage,
-    // Specify which paths to persist
+    // Specify state properties to persist across sessions
     paths: [
       'userId',
       'role',
@@ -542,7 +506,6 @@ async updateRegisteredExperiences(selectedExperiences) {
       'experienceInstanceCreationDetails',
       'instructorDataManagementActiveTab',
       'group'
-      // Include other properties to persist
     ],
   },
 });

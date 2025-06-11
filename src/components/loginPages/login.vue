@@ -1,4 +1,11 @@
-<!-- login.vue - Handle the Login process and navigation to password reset/account verification views -->
+<!-- 
+login.vue - User Authentication Component
+
+This component handles the user login process, including form validation, authentication,
+and navigation to appropriate dashboards based on user roles. It also provides links
+to password reset and account verification features. The component integrates with
+the Pinia store for state management and uses Vue3-Toastify for notifications.
+-->
 
 <template>
   <div>
@@ -90,6 +97,7 @@ export default {
   name: "LoginForm",
   props: ["tab"],
   data() {
+      // Component state for form inputs and UI controls
       return {
         email: "",
         password: "",
@@ -101,9 +109,10 @@ export default {
       };
   },
   setup() {
+    // Initialize store and computed properties for reactive data
     const store = useLoggedInUserStore();
 
-    // Computed property to dynamically assign the application name based on the organization name
+    // Dynamically assign the application name based on the organization name
     const appName = computed(() => {
       return store.orgName === 'Data & Society' ? 'Engaged Data' : store.orgName;
     });
@@ -114,7 +123,7 @@ export default {
     };
   },
   mounted() {
-    // Check if there's toast data in the navigationData to show any notifications
+    // Display any navigation-related toast notifications on component mount
     if (useLoggedInUserStore().navigationData?.toastType) {
       toast[useLoggedInUserStore().navigationData.toastType](useLoggedInUserStore().navigationData.toastMessage, { 
         position: useLoggedInUserStore().navigationData.toastPosition,
@@ -125,6 +134,7 @@ export default {
     }
   },
   computed: {
+    // Email validation with internationalized error messages
     translatedEmailError() {
       if (!this.email) {
         return this.$t('Email is required');
@@ -133,6 +143,7 @@ export default {
       }
       return "";
     },
+    // Password validation with internationalized error messages
     translatedPasswordError() {
       if (!this.password) {
         return this.$t('Password is required');
@@ -143,14 +154,14 @@ export default {
     }
   },
   methods: {
-    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role.
+    // Manages user login by validating the form, authenticating credentials, and redirecting based on the user's role
     async login() {
       // Show validation errors
       this.showErrors = true;
       // Run custom validation
       const isValid = this.translatedEmailError === "" && this.translatedPasswordError === "";
 
-      // If the form is valid, proceed with login
+      // Process login if validation passes
       if (isValid) {
         this.loading = true;
         try {
@@ -181,7 +192,7 @@ export default {
             this.$router.push("/");
           }
 
-          // If unverified account, send to verification view
+          // Send verification code if account is unverified
           if (this.store.unverified === true) {
             this.sendNewCode();
           }
@@ -192,7 +203,7 @@ export default {
         }
       }
     },
-    // Initiates sending a new verification code to the user's email and navigates to the verification page with the user's ID upon successful request.
+    // Initiates sending a new verification code to the user's email and navigates to the verification page
     async sendNewCode() {
       let user = {
         email: this.email,
@@ -226,6 +237,7 @@ export default {
 
 
 <style scoped>
+/* Prevent text selection on interactive elements */
 .no-select {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Safari */
@@ -235,6 +247,7 @@ export default {
     user-select: none;           /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
 }
 
+/* Remove focus outline and ring effects on form inputs */
 [type='text']:focus, 
 [type='email']:focus, 
 [type='url']:focus, 

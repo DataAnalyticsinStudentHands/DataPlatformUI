@@ -1,5 +1,12 @@
-<!-- verifyAccWithCode.vue - This component handles the email verification process for users. It presents a form to enter a confirmation code and submits the code to verify and activate the user's account. -->
+<!--
+verifyAccWithCode.vue - Email Verification Component
 
+This component handles the email verification process for newly registered users or password reset requests.
+Users enter a confirmation code sent to their email to activate their account. The component validates
+the code, activates the account, and redirects users to the appropriate dashboard based on their role.
+It also handles expired codes by automatically sending new ones and provides proper error messaging
+for invalid codes. The component supports both account activation and password reset workflows.
+-->
 
 <template>
     <v-card-text>
@@ -61,12 +68,13 @@ export default {
   name: "VerifyNew",
   props: ["id"],
   data() {
+    // Component state for verification code and form validation
     return {
       code: "",
       loading: false,
       userID: null,
       rules: [
-        // Validation rules for the confirmation code field
+        // Validation rule for required confirmation code
         value => {
             if (value) return true
             return this.$t('Code is required.')
@@ -75,22 +83,21 @@ export default {
     };
   },
   mounted() {
-    // Set the user ID if available in navigation data
+    // Set the user ID from navigation data if available
     if (useLoggedInUserStore().navigationData && useLoggedInUserStore().navigationData.id) {
         this.userID = useLoggedInUserStore().navigationData.id;
     }
   },
   methods: {
-    // Official Form Submission. Checks if there are errors. If not, proceed to activating account.
+    // Validates form and initiates account activation
     formSubmit() {
-        // Check if form has errors
         if (!this.code) {
             return;
         }
         this.activateAccount();
     },
 
-    // Activates the account using a verification code and user ID. On successful account activation, updates user status, retrieves full name, sets the user as logged in, and navigates to the appropriate dashboard based on the user's role. If the account activation fails due to an expired or invalid code, attempts to send a new code and notifies the user accordingly.
+    // Activates the account using verification code and handles both regular activation and password reset flows
     async activateAccount() {
         this.loading = true;
         let user = {
@@ -111,36 +118,31 @@ export default {
 
             if (res.status === 200) {
                 if (res.data.action && res.data.action === 'password-reset') {
-
-                    // Update store and localStorage with the new token that includes password-reset action
+                    // Handle password reset flow
                     store.$patch({
                         token: res.data.token
                     });
                     localStorage.setItem("token", res.data.token);
                     store.setTokenHeader(res.data.token);
 
-                    // Redirect to password reset page if the token action is 'password-reset'
                     this.$router.push("/passResetNewEntry");
                 } else {
-                    // Update store and localStorage with new JWT for regular account activation
+                    // Handle regular account activation
                     store.$patch({
                         role: res.data.userRole,
                         userId: res.data.userID,
                         token: res.data.token,
                         languagePreference: res.data.languagePreference,
-                        permissions: res.data.permissions // Include permissions if necessary
+                        permissions: res.data.permissions
                     });
 
-                    // Save the new token to localStorage
                     localStorage.setItem("token", res.data.token);
-
-                    // Set the global default header for axios
                     store.setTokenHeader(res.data.token);
 
                     await store.getFullName();
                     store.isLoggedIn = true;
 
-                    // Navigate to the appropriate dashboard based on the user's role
+                    // Navigate to appropriate dashboard based on user role
                     if (store.role === 'Instructor' || store.role === 'Group Instructor' || store.role === 'Group Admin' || store.role === 'Org Admin') {
                         this.$router.push("/instructorDash");
                     } else if (store.role === 'Student') {
@@ -163,6 +165,7 @@ export default {
                 });
             }
         } catch (err) {
+            // Handle expired or invalid codes
             if (err.response && err.response.status === 401) {
                 if (err.response.data.title === 'Expired code') {
                     try {
@@ -192,7 +195,7 @@ export default {
         }
     },
 
-// Sends a request to reissue a new verification code for the user, identified by userID. On successful request, the userID is extracted from the response.
+    // Requests a new verification code for the user
     async sendNewCode() {
         let user = {
         userID: this.userID,
@@ -203,7 +206,7 @@ export default {
         axios.put(apiURL, user)
         .then((res) => {
             if (res.status == 200) {
-            let userID = res.data.userID; // Extract the userID from the response
+            let userID = res.data.userID;
             } else {
             console.log('Unexpected response status:', res.status);
             }

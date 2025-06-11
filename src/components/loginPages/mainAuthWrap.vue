@@ -1,3 +1,12 @@
+<!--
+mainAuthWrap.vue - Authentication Wrapper Component
+
+This component serves as the main authentication container that provides tab navigation
+between login and registration forms. It includes language switching functionality
+between English and Spanish, and manages routing between different authentication views.
+The component uses a card-based layout with expandable transitions for smooth view changes.
+-->
+
 <template>
   <v-container>
     <v-row>
@@ -67,6 +76,7 @@ export default {
     RegisterForm,
   },
   data() {
+    // Component state for tab navigation and language preference
     return {
       tab: 'login',
       forgotPassword: null,
@@ -75,19 +85,20 @@ export default {
     };
   },
   mounted() {
-      // Set initial language state based on current locale
-      this.language = this.$i18n.locale === 'es';
+    // Set initial language state based on current locale
+    this.language = this.$i18n.locale === 'es';
   },
   setup() {
+    // Initialize the user store for authentication state management
     const store = useLoggedInUserStore()
     return {
       store,
     }
   },
   watch: {
-    // Watch the route and update the tab accordingly
+    // Synchronize tab selection with route changes
     '$route.path': {
-      immediate: true, // Execute the handler function immediately upon registration
+      immediate: true,
       handler(newValue) {
         if (newValue === '/login') {
           this.tab = 'login';
@@ -98,44 +109,36 @@ export default {
     }
   },
   methods: {
-    
-    // Attempts to log in the user with provided credentials and checks form completion status upon successful login.
+    // Attempts to log in the user with provided credentials and checks form completion status
     async login() {
       try {
-        // Attempt to login
         await this.store.login(this.email, this.password);
-        // After successful login, check if the user has completed forms
         await this.store.checkFormCompletion();
       } catch (error) {
         this.handleError(error);
       }
     },
 
-    
-    // Navigates to different routes within the application. Supports simple string routes for backward compatibility and object payloads containing both the route name and a userID for more complex navigations.
+    // Navigates to different routes, supporting both string routes and object payloads with userID
     changeRoute(payload) {
       if (typeof payload === 'string') {
-        // For simple string routes (backward compatibility)
         this.$router.push(payload);
       } else if (payload && payload.routeName && payload.userID) {
         useLoggedInUserStore().navigationData = {
           userID: payload.userID
         };
 
-        // Payload is an object containing the routeName and userID
         this.$router.push({
           name: payload.routeName
         });
       }
     },
 
-    // Toggles the application's language between English and Spanish based on the current language setting.
+    // Toggles the application's language between English and Spanish
     changeLanguage() {
       if (this.language) {
-        // set the app to Spanish
         this.$i18n.locale = 'es';
       } else {
-        // set the app to English
         this.$i18n.locale = 'en';
       }
     },
@@ -145,20 +148,21 @@ export default {
 </script>
 
 <style scoped>
+/* Scale down the language switch for compact appearance */
 .switch-container {
   transform: scale(0.7);
 }
 
+/* Position adjustment for translation icon */
 .v-input__prepend .mdi-translate {
-    /* Adjust the top value to move the icon up or down */
     top: 0; 
-    /* Adjust the left value to move the icon left or right */
     left: 0; 
     position: relative;
 }
 
+/* Bottom spacing for card layout */
 .card-spacing {
-  margin-bottom: 50px; /* Adjust this value based on your requirements */
+  margin-bottom: 50px;
 }
 
 </style>

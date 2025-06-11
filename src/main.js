@@ -1,25 +1,33 @@
+/**
+ * src/main.js
+ * 
+ * Main entry point for the Vue application. This file initializes the Vue app with all necessary
+ * plugins and configurations including Vuetify for UI components, Pinia for state management,
+ * Vue Router for navigation, i18n for internationalization, and axios for HTTP requests.
+ * The app initialization is deferred until the user store is properly initialized.
+ */
+
+// Core Vue and utility imports
 import { createApp, markRaw } from 'vue';
 import axios from 'axios';
 import handleErrorMixin from './mixins/handleErrorMixin';
 import { i18n } from './plugins/i18n';
 import { useLoggedInUserStore } from './stored/loggedInUser';
 
-
-// Setting the token as a default header if it exists in localStorage
+// Configure axios default headers with authentication token if available
 if (localStorage.getItem('token')) {
   axios.defaults.headers['token'] = localStorage.getItem('token');
 }
-
 
 import router from './router';
 import App from './App.vue';
 import './index.css';
 
-// state management library
+// Pinia state management imports
 import { createPinia } from 'pinia';
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'; 
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
-// Vuetify
+// Vuetify UI framework imports
 import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
 import { createVuetify } from 'vuetify';
@@ -27,7 +35,7 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
-
+// Initialize Vuetify with Material Design Icons
 const vuetify = createVuetify({
     components,
     directives,
@@ -40,25 +48,23 @@ const vuetify = createVuetify({
     },
 });
 
-
-
-
-// create a pinia root store
+// Initialize Pinia store with persistence plugin
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
-// pinia should be able to use router - has to be set up as a plugin
+// Enable router access within Pinia stores
 pinia.use(({ store }) => {
   store.$router = markRaw(router)
 });
 
-// Setting up vue3-toastify
+// Toast notification imports
 import Vue3Toastify from 'vue3-toastify';
 
+// Create and configure Vue application instance
 const app = createApp(App);
-
 app.mixin(handleErrorMixin);
 
+// Configure toast notifications with default settings
 app.use(Vue3Toastify, {
   autoClose: 5000,
   multiple: true,
@@ -68,12 +74,13 @@ app.use(Vue3Toastify, {
   },
 });
 
+// Register Vue plugins
 app.use(pinia);
-
 app.use(vuetify);
 app.use(router);
-app.use(i18n); 
+app.use(i18n);
 
+// Initialize user store before mounting the application
 async function initApp() {
   const userStore = useLoggedInUserStore();
   await userStore.initializeStore();

@@ -1,7 +1,18 @@
+/**
+ * src/router/index.js
+ * 
+ * Vue Router configuration defining all application routes with role-based access control.
+ * Implements JWT token verification for protected routes and manages navigation guards for
+ * authentication. Routes are organized by user roles (Student, Instructor, Admin) with
+ * appropriate middleware checks. Handles automatic redirects based on authentication status
+ * and user roles.
+ */
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { useLoggedInUserStore } from '../stored/loggedInUser'; 
 import { verifyJWT } from '../auth/jwtVerifier';
 
+// Verify user authentication status
 async function isLoggedIn(to, from, next) {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -10,22 +21,19 @@ async function isLoggedIn(to, from, next) {
   }
 
   try {
-    // Verify the token
     const payload = await verifyJWT(token);
     if (!payload) {
-      next('/error'); // Invalid token, redirect to error page
+      next('/error');
       return;
     }
 
-    next(); // Proceed to the next route
+    next();
   } catch (error) {
-    next('/error'); // If JWT verification fails, redirect to error page
+    next('/error');
   }
 }
 
-
-
-
+// Create role-based authentication guard
 function requireAuth(allowedRoles) {
   return async (to, from, next) => {
     const token = localStorage.getItem('token');
@@ -49,6 +57,7 @@ function requireAuth(allowedRoles) {
   };
 }
 
+// Route definitions
 const routes = [
     {
       path: '/',
@@ -93,14 +102,12 @@ const routes = [
       component: () => import('../components/studentSide/projects/projectsMain.vue'),
       beforeEnter: requireAuth(['Student']),
     },
-    // Route for proposing a project:
     {
       path: '/proposeProject',
       name: 'proposeProject',
       component: () => import('../components/studentSide/projects/projectProposal.vue'),
       beforeEnter: requireAuth(['Student']),
     },
-    // Route for editing a project proposal:
     {
       path: '/editProjectProposal',
       name: 'editProjectProposal',
@@ -113,7 +120,6 @@ const routes = [
       component: () => import('../components/instructorSide/projects/viewProjectProposal.vue'),
       beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
     },
-    // Route for editing a project:
     {
       path: '/editProjectStudent',
       name: 'editProjectStudent',
@@ -490,12 +496,14 @@ const routes = [
       component: () => import('../components/error/errorView.vue')
     },
 ]
+
+// Create router instance with base path
 const router = createRouter({
-  history: createWebHistory('/platform'), // base path
+  history: createWebHistory('/platform'),
   routes,
 });
 
-// Public routes
+// Define public routes accessible without authentication
 const publicPaths = [
   '/login',
   '/register',
@@ -516,26 +524,23 @@ const publicPaths = [
   '/proposaldemo2',
   '/proposaldemo3',
   '/proposaldemo4',
-  
 ];
 
-// Global navigation guard
+// Global navigation guard for authentication and role-based routing
 router.beforeEach(async (to, from, next) => {
   const userStore = useLoggedInUserStore();
   const token = localStorage.getItem('token');
-  const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+  const currentTime = Math.floor(Date.now() / 1000);
 
-  // Check if the route is public
   const isPublicRoute = publicPaths.includes(to.path);
-
 
   if (token) {
     try {
-      // Verify JWT to determine its validity and extract role
+      // Validate token and extract user information
       const payload = await verifyJWT(token);
 
       if (payload && payload.exp && payload.exp > currentTime) {
-        // Token is valid and not expired
+        // Update store with valid token data
         userStore.$patch({
           isLoggedIn: true,
           role: payload.userRole,
@@ -543,56 +548,49 @@ router.beforeEach(async (to, from, next) => {
           token: token,
         });
 
-        // Check the user's role to determine behavior
+        // Handle temporary role users
         if (payload.userRole === 'Temporary') {
-          // Allow users with Temporary role to access public routes
           if (isPublicRoute) {
-            next(); // Let them proceed to the public route, like verifyAccWithCode
+            next();
           } else {
-            next('/verifyAccWithCode'); // Redirect to account verification if accessing private route
+            next('/verifyAccWithCode');
           }
         } else {
-          // For authenticated roles, redirect based on their role
+          // Redirect authenticated users away from public routes
           if (isPublicRoute) {
-            // Redirect user based on role if they are already logged in
             if (['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.role)) {
               next('/instructorDash');
             } else if (userStore.role === 'Student') {
               next('/studentDashboard');
             } else {
-              next('/'); // Default route or a generic dashboard
+              next('/');
             }
           } else {
-            next(); // Allow access to private route
+            next();
           }
         }
       } else {
-        // Invalid or expired token, log out and redirect to login
+        // Handle expired token
         userStore.logout();
         console.log('1')
         next('/login');
       }
     } catch (error) {
-      // Handle errors during token verification
+      // Handle token verification errors
       console.error('Token verification failed in router:', error);
       userStore.logout();
       console.log('2')
       next('/login');
     }
   } else {
-    // No token, handle public and private route access
+    // Handle unauthenticated access
     if (isPublicRoute) {
       console.log('console log test')
-      next(); // Allow access to public route without token
+      next();
     } else {
-      // No token and trying to access a private route, redirect to login
       next('/login');
     }
   }
 });
-
-
-
-
 
 export default router;
