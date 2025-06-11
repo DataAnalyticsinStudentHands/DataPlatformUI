@@ -1,4 +1,10 @@
-<!-- instructorAddSession - this view presents a form to create a new Session -->
+<!--
+  instructorAddSession.vue
+  
+  Form component for instructors to create new sessions with name and date period validation.
+  Features comprehensive form validation, error handling, and navigation to data management 
+  page upon successful session creation with toast notifications.
+-->
 <template>
   <main>
     <!-- Form for creating a new session -->
@@ -65,6 +71,7 @@ export default {
   name: 'instructorAddSession',
   data() {
     return {
+      // Session object containing form data for name and date period
       session: {
         sessionName: "",
         sessionPeriod: {
@@ -72,7 +79,9 @@ export default {
           endDate: ""
         }
       },
+      // Error message display for API response errors
       errorMessage: "",
+      // Validation rules for session name and date fields
       nameRules: [v => !!v || 'Session name is required'],
       dateRules: [v => !!v || 'Date is required'],
     };
@@ -129,6 +138,7 @@ export default {
 </script>
 
 <style>
+/* Navigation styling and error message display for session creation form */
 #contentNavbar .nav-link.router-link-exact-active {
   background-color: #eee;
 }

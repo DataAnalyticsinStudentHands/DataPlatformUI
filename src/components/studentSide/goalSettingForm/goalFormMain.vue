@@ -1,5 +1,12 @@
+<!--
+goalFormMain.vue
+Main component for the goal setting form with a multi-step stepper interface.
+Handles form validation, data persistence, and navigation between different sections
+including experience selection, background, growth goals, aspirations, and final review.
+-->
+
 <template>
-<!-- Title -->
+<!-- Title and help dialog -->
 <v-container style="width: 100%; margin: 0 auto;">
     <div style="display: flex; align-items:center;">
         <p class="font-weight-black text-h5 text--primary">
@@ -39,7 +46,7 @@
     <p class="text-subtitle-1">{{$t("Fill out the required details and hit the submit button. Don't worry, you'll be able to edit these details again later.")}}</p>
 </v-container>
 
-<!-- Stepper Component -->
+<!-- Main stepper component with form sections -->
 <v-container>
     <v-row>
         <v-col>
@@ -49,6 +56,7 @@
                 :mobile="$vuetify.display.xs"
                 :flat="$vuetify.display.xs"
             >
+                <!-- Stepper header with navigation steps -->
                 <v-stepper-header>
                     <v-stepper-item
                         ref="step0"
@@ -120,11 +128,10 @@
                     ></v-stepper-item>
                 </v-stepper-header>
 
-
-                <!-- Progress Bar -->
+                <!-- Progress bar indicator -->
                 <div id="progress-bar" :style="{ width: progressBarWidth }"></div>
 
-                <!-- Non-Mobile View -->
+                <!-- Desktop/tablet view with window items -->
                 <v-container>
                 <v-stepper-window v-if="$vuetify.display.smAndUp">
                     <v-stepper-window-item value="0">
@@ -203,7 +210,7 @@
                 </v-stepper-window>
                 </v-container>
 
-                <!-- Mobile View with Vuetify Slide Transition -->
+                <!-- Mobile view with slide transitions -->
                 <v-container v-if="$vuetify.display.xs" class="pa-0 ma-0">
                     <v-scroll-x-reverse-transition group hide-on-leave>
                     <div v-show="currentStep === 0" key="step0">
@@ -282,7 +289,7 @@
                     </v-scroll-x-reverse-transition>
                 </v-container>
 
-                <!-- Previous, Next, and Submit buttons -->
+                <!-- Navigation buttons (Previous, Next, Submit) -->
                 <v-row justify="space-between" class="ma-1">
                     <v-col cols="auto">
                         <v-btn
@@ -295,7 +302,7 @@
                         </v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <!-- Conditional rendering for Submit Form button -->
+                        <!-- Submit button for final step -->
                         <v-btn 
                             v-if="currentStep === 5" 
                             type="submit" 
@@ -304,15 +311,13 @@
                         >
                             {{$t('Submit Form')}}
                         </v-btn>
-                        <!-- Edit and Looks Good! buttons for step 1 when form exists -->
+                        <!-- Edit and confirmation buttons for background step when form exists -->
                         <template v-if="currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive && $vuetify.display.smAndUp">
                             <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Edit</v-btn>
                             <v-btn type="submit" @click="triggerValidation">Looks Good!</v-btn>
                         </template>
-                        <!-- Edit and Looks Good! buttons for step 1 when form exists, but for mobile -->
+                        <!-- Mobile layout for edit and confirmation buttons -->
                         <template v-if="currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive && $vuetify.display.xs">
-                            <!-- <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Editxs</v-btn>
-                            <v-btn type="submit" @click="triggerValidation">Looks Good!xs</v-btn> -->
                             <v-row>
                                 <v-col>
                                     <v-btn @click="handleBackgroundEditClick" class="mr-5" append-icon="mdi-pencil">Edit</v-btn>
@@ -324,7 +329,7 @@
                                 </v-col>
                             </v-row>
                         </template>
-                        <!-- Next button for other steps -->
+                        <!-- Next button for regular navigation -->
                         <v-btn 
                             v-else-if="currentStep !== 5 && !(currentStep === 1 && hasCompletedGoalForm && !isBackgroundEditActive)" 
                             type="submit" 
@@ -335,14 +340,12 @@
                         </v-btn>
                     </v-col>
                 </v-row>
-
-
-
             </v-stepper>
         </v-col>
     </v-row>
 </v-container>
-<!-- Confirm Leave Dialog -->
+
+<!-- Confirmation dialog for leaving with unsaved changes -->
 <v-dialog v-model="leaveDialog" persistent max-width="500px">
     <v-card>
         <v-card-title class="text-h5">
@@ -363,7 +366,7 @@
     </v-card>
 </v-dialog>
 
-<!-- Incomplete Form Found Dialog -->
+<!-- Dialog for resuming incomplete form -->
 <v-dialog v-model="showIncompleteFormFoundDialog" persistent max-width="500px">
     <v-card>
         <v-card-title class="text-h5">
@@ -410,25 +413,34 @@ components: {
 },
 data() {
     return {
+        // Current step and navigation control
         currentStep: 0,
         allowedStepsForJump: [0],
+        
+        // Error states for each form section
         expError: false,
         commResError: false,
         growthError: false,
         aspError: false,
         goalsError: false,
+        
+        // Form state and tracking
         foundDocumentId: null,
         hasCompletedGoalForm: false,
         goalSettingFormBackground: null,
         isBackgroundEditActive: false,
         selectedExperience: null,
         formSubmitSuccess: false,
+        
+        // Experience data
         experiences:[{
             experienceIDFromList:'',
             experienceCategory:'',
             experienceName:''
         }],
         experienceID: null,
+        
+        // Main goal form data structure
         goalForm: {
         communityEngagement: {
             communityEngagementExperiences: [
@@ -548,43 +560,46 @@ data() {
         hichProject: [],
         },
         originalGoalForm: {},
+        
+        // Dialog and navigation state
         leaveDialog: false,
         nextFunction: null,
+        
+        // Form persistence and incomplete form handling
         isFirstInput: true,
         incompleteFormID: null,
         showIncompleteFormFoundDialog: false,
         tempIncompleteForm: {},
         expRegistrationIDFromIncomplete: null,
         initialDataLoaded: false,
-
     }
 },
 async created() {
-    // Initialize the debounced function
+    // Initialize debounced function and fetch existing form data
     this.debouncedUpdateGoalForm = debounce(this.updateGoalForm, 1000);
     await this.fetchLatestGoalSettingForm();
 },
 async mounted() {
+    // Check for incomplete forms when component mounts
     await this.checkIncompleteForm();
 },
 watch: {
+    // Track current step changes and update allowed navigation
     currentStep(newVal) {
-        const newStep = Number(newVal); // Convert newVal to a number
-
-        // Update currentStep with the new value
+        const newStep = Number(newVal);
         this.currentStep = newStep;
 
-        // Specifically track visitation to step 5
+        // Allow navigation to step 5 once visited
         if (newStep === 5 && !this.allowedStepsForJump.includes(newStep)) {
             this.allowedStepsForJump.push(newStep);
         }
     },
+    // Watch for goal form changes and trigger auto-save
     goalForm: {
         handler(newVal, oldVal) {
             if (this.initialDataLoaded && this.isFirstInput) {
                 this.handleFirstInput();
             } else if (this.initialDataLoaded) {
-                // Use the debounced method for subsequent updates
                 this.handleInput();
             }
         },
@@ -592,6 +607,7 @@ watch: {
     },
 },
 computed: {
+    // Determine if stepper should show alternative labels based on screen size
     showAltLabels() {
         if (this.$vuetify.display.mdAndUp || this.$vuetify.display.xs) {
             return false;
@@ -600,23 +616,25 @@ computed: {
         }
     },
 
+    // Calculate progress bar width based on current step
     progressBarWidth() {
         const stepWidth = 16.66;
         return `${stepWidth * (this.currentStep + 1)}%`
     },
 
+    // Check if HICH project data should be included in submission
     shouldIncludeHichProject() {
-        // Access the child component's computed property via a ref
-        // Ensure to handle cases where the child component or the computed property is not available
         return this.$refs.GoalFormExpRef?.shouldShowHichCheckboxes && this.goalForm.hichProject.length > 0;
     },
 
+    // Check user login status from store
     isUserLoggedIn() {
         const store = useLoggedInUserStore();
         return store.isLoggedIn;
     },
 },
 methods: {
+    // Fetch the latest completed goal setting form for background data
     async fetchLatestGoalSettingForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -625,12 +643,10 @@ methods: {
         try {
             const response = await axios.get(apiURL, { headers: { token } });
 
-            // Check if a goal setting form was found
             if (response.data.formFound) {
                 this.hasCompletedGoalForm = true;
                 this.goalSettingFormBackground = response.data.goalSettingFormBackground;
                 this.updateGoalFormWithBackgroundData();
-                // Wait for the next DOM update cycle to complete
                 await this.$nextTick();
             } else {
                 this.hasCompletedGoalForm = false;
@@ -639,16 +655,15 @@ methods: {
         } catch (error) {
             this.handleError(error);
         } finally {
-            // Set initialDataLoaded to true after handling both found and not found cases
             this.initialDataLoaded = true;
         }
     },
 
+    // Update current form with background data from previous submission
     updateGoalFormWithBackgroundData() {
         if (this.goalSettingFormBackground && this.goalSettingFormBackground.goalForm) {
             const { communityEngagement, researchExperience } = this.goalSettingFormBackground.goalForm;
 
-            // Update communityEngagement
             this.goalForm.communityEngagement = {
                 ...this.goalForm.communityEngagement,
                 communityEngagementExperiences: communityEngagement.communityEngagementExperiences,
@@ -659,7 +674,6 @@ methods: {
                 engagementActivitiesToolOther: communityEngagement.engagementActivitiesToolOther,
             };
 
-            // Update researchExperience
             this.goalForm.researchExperience = {
                 ...this.goalForm.researchExperience,
                 currentResearchExperience: researchExperience.currentResearchExperience,
@@ -675,15 +689,17 @@ methods: {
         }
     },
 
+    // Enable editing mode for background section
     handleBackgroundEditClick() {
         this.isBackgroundEditActive = true;
     },
 
-
+    // Handle successful form validation and advance to next step
     handleFormValid() {
         this.currentStep++;
     },
 
+    // Update methods for child component data
     updateHichProject(newVal) {
         this.goalForm.hichProject = newVal;
     },
@@ -692,6 +708,7 @@ methods: {
         this.originalGoalForm = this.deepClone(newVal);
     },
     
+    // Set error states for form sections
     handleFormInvalid(section) {
         if (section === "exp") {
             this.expError = true;
@@ -706,12 +723,14 @@ methods: {
         }
     },
 
+    // Scroll to error element for better user experience
     handleScrollToError(element) {
         if (element && element.scrollIntoView) {
             element.scrollIntoView({ behavior: "smooth", block: "center" });
         }
     },
 
+    // Update validation state for form sections
     handleValidationChange(section, { isValid }) {
         if (section === "exp") {
             this.expError = !isValid;
@@ -726,6 +745,7 @@ methods: {
         }
     },
 
+    // Trigger validation for current step
     triggerValidation() {
         if (this.currentStep === 0) {
             this.triggerExpValidation();
@@ -740,6 +760,7 @@ methods: {
         }
     },
 
+    // Individual validation triggers for each form section
     triggerExpValidation() {
         if (this.$refs.GoalFormExpRef) {
             this.$refs.GoalFormExpRef.handleValidations();
@@ -770,10 +791,12 @@ methods: {
         }
     },
 
+    // Update selected experience from child component
     handleSelectedExperience(value) {
         this.selectedExperience = value;
     },
 
+    // Determine if user can jump to a specific step
     checkJump(step) {
         const stepToSectionMap = {
             1: 'backgroundSection',
@@ -786,11 +809,10 @@ methods: {
         const isCurrentStepValid = this.isStepValid(this.currentStep);
         const isSectionEdited = this.isSectionEdited(section);
 
-        // User can jump if the current step is valid and the corresponding section is edited
         return isCurrentStepValid && (isSectionEdited || this.allowedStepsForJump.includes(step));
     },
 
-
+    // Check if current step has valid data
     isStepValid(step) {
         switch(step) {
             case 0: return !this.expError;
@@ -802,55 +824,42 @@ methods: {
         }
     },
 
+    // Check if a form section has been edited
     isSectionEdited(section) {
         if (section === 'backgroundSection') {
-            // Compare the relevant parts of goalForm against their original values
             const originalCommunityEngagement = this.originalGoalForm.communityEngagement;
             const currentCommunityEngagement = this.goalForm.communityEngagement;
             const originalResearchExperience = this.originalGoalForm.researchExperience;
             const currentResearchExperience = this.goalForm.researchExperience;
 
-            // Use lodash's isEqual to perform deep comparison
             const communityEngagementEdited = !isEqual(originalCommunityEngagement, currentCommunityEngagement);
             const researchExperienceEdited = !isEqual(originalResearchExperience, currentResearchExperience);
 
-            // Also check for Growth goal -> if filled then Background should be navigatable
             const originalGrowthGoal = this.originalGoalForm.growthGoal;
             const currentGrowthGoal = this.goalForm.growthGoal;
             const growthGoalEdited = !isEqual(originalGrowthGoal, currentGrowthGoal);
 
             return communityEngagementEdited || researchExperienceEdited || growthGoalEdited;
         } else if (section === 'growthSection') {
-            // Compare the growthGoal part of the form against its original values
             const originalGrowthGoal = this.originalGoalForm.growthGoal;
             const currentGrowthGoal = this.goalForm.growthGoal;
-
-            // Use lodash's isEqual to perform a deep comparison
             return !isEqual(originalGrowthGoal, currentGrowthGoal);
         } else if (section === 'aspirationsSection') {
-            // Compare the growthGoal part of the form against its original values
             const originalAspirations = this.originalGoalForm.aspirations;
             const currentAspirations = this.goalForm.aspirations;
-
-            // Use lodash's isEqual to perform a deep comparison
             return !isEqual(originalAspirations, currentAspirations);
         } else if (section === 'goalsSection') {
-            // Compare the growthGoal part of the form against its original values
             const originalGoals = this.originalGoalForm.goals;
             const currentGoals = this.goalForm.goals;
-
-            // Use lodash's isEqual to perform a deep comparison
             return !isEqual(originalGoals, currentGoals);
         }
     },
 
+    // Handle previous button click with validation check
     handlePreviousClick() {
-        // Check if the current step has errors
         if (this.isStepValid(this.currentStep)) {
-            // Navigate to the previous step if there are no errors
             this.currentStep = Math.max(this.currentStep - 1, 0);
         } else {
-            // Show the toast error message
             toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
                 position: 'top-right',
                 toastClassName: 'Toastify__toast--delete',
@@ -859,8 +868,9 @@ methods: {
         }
     },
 
+    // Clean up form data and submit
     submitFormCleanup() {
-        // Check condition for "Other" text fields
+        // Clear "Other" text fields if corresponding checkbox not checked
         const isOtherCommunityEngagementExperiencesChecked = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.label === "Other")?.checked || false;
 
         if (!isOtherCommunityEngagementExperiencesChecked) {
@@ -903,7 +913,7 @@ methods: {
         this.goalForm.researchExperience.interestResearchServiceOther= '';
         }
 
-        //Check conditions for having not filled out form previously for semester (nested dependencies)
+        // Clear all background data if form was previously filled
         if (this.isGoalSettingFormFilled === 'Yes') {
         this.goalForm.communityEngagement.communityEngagementExperiences.forEach(experience => {
             experience.checked = false;
@@ -943,24 +953,19 @@ methods: {
         this.goalForm.researchExperience.leadershipOption = '';
     }
 
-    // Ensure that aspirations and goals are in order
-
-    // Extract the aspirations from the goalForm
+    // Reorder aspirations and goals to remove gaps
         const aspirationsArray = [
             this.goalForm.aspirations.aspirationOne,
             this.goalForm.aspirations.aspirationTwo,
             this.goalForm.aspirations.aspirationThree
         ];
 
-        // Filter out empty aspirations
         const filledAspirations = aspirationsArray.filter(aspiration => aspiration && aspiration.trim() !== '');
 
-        // Reset the aspirations in the goalForm
         this.goalForm.aspirations.aspirationOne = filledAspirations[0] || '';
         this.goalForm.aspirations.aspirationTwo = filledAspirations[1] || '';
         this.goalForm.aspirations.aspirationThree = filledAspirations[2] || '';
 
-        // Extract the goals from the goalForm
         const goalsArray = [
             this.goalForm.goals.goalOne,
             this.goalForm.goals.goalTwo,
@@ -969,25 +974,23 @@ methods: {
             this.goalForm.goals.goalFive
         ];
 
-        // Filter out empty goals
         const filledGoals = goalsArray.filter(goal => goal && goal.trim() !== '');
 
-        // Reset the goals in the goalForm
         this.goalForm.goals.goalOne = filledGoals[0] || '';
         this.goalForm.goals.goalTwo = filledGoals[1] || '';
         this.goalForm.goals.goalThree = filledGoals[2] || '';
         this.goalForm.goals.goalFour = filledGoals[3] || '';
         this.goalForm.goals.goalFive = filledGoals[4] || '';
 
-        // After cleaning up the data, check whether to update or create
+        // Submit as update or new form based on existing document
         if (this.foundDocumentId) {
             this.handleUpdateForm();
         } else {
-            // If previously filled document wasn't found, create new document
             this.handleSubmitForm();
         }
     },
 
+    // Submit new goal form
     async handleSubmitForm() {
         try {
             const user = useLoggedInUserStore();
@@ -1006,7 +1009,6 @@ methods: {
             ];
             const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
 
-            // Update pinia store
             this.updateChecklistStore();
 
             user.navigationData = {
@@ -1016,7 +1018,6 @@ methods: {
                 toastCSS: 'Toastify__toast--create'
             };
 
-        
             this.$router.push({ 
                 name: 'studentDashboard'
             });
@@ -1026,11 +1027,13 @@ methods: {
         }
     },
 
+    // Update user's checklist completion status
     async updateChecklistStore() {
         const user = useLoggedInUserStore();
         await user.checkFormCompletion();
     },
 
+    // Update existing goal form
     async handleUpdateForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -1038,7 +1041,6 @@ methods: {
 
         let updatedGoalForm = {
             goalForm: this.goalForm,
-            // Conditionally add hichProject if it should be included
             ...(this.shouldIncludeHichProject && { hichProject: this.goalForm.hichProject }),
             tempIncompleteFormID: this.incompleteFormID
         };
@@ -1055,7 +1057,6 @@ methods: {
                 ];
                 const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
                 
-                // Update pinia store
                 this.updateChecklistStore();
 
                 user.navigationData = {
@@ -1074,6 +1075,7 @@ methods: {
             });
     },
 
+    // Utility methods for object operations
     deepClone(obj) {
         return JSON.parse(JSON.stringify(obj));
     },
@@ -1082,6 +1084,7 @@ methods: {
         return JSON.stringify(obj1) === JSON.stringify(obj2);
     },
 
+    // Dialog handling methods
     cancelLeave() {
         this.leaveDialog = false;
     },
@@ -1090,10 +1093,11 @@ methods: {
         this.dialog = false;
         if (this.nextFunction) {
             this.nextFunction();
-            this.nextFunction = null; // Clear the stored next function
+            this.nextFunction = null;
         }
     },
 
+    // Create initial incomplete form on first user input
     async handleFirstInput() {
         if (this.isFirstInput) {
             this.isFirstInput = false;
@@ -1102,9 +1106,8 @@ methods: {
                 const user = useLoggedInUserStore();
                 const token = user.token;
                 let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
-                // Find the expRegistrationID corresponding to the selected experience
+                
                 const selectedExp = this.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
-
                 const expRegistrationID = selectedExp.expRegistrationID;
 
                 const goalFormSubmission = {
@@ -1154,13 +1157,12 @@ methods: {
                         },
                     },
                 }
-                // Conditionally add hichProject if it should be included
+                
                 if (this.shouldIncludeHichProject) {
                     goalFormSubmission.hichProject = this.goalForm.hichProject;
                 }
 
                 const response = await axios.post(apiURL, goalFormSubmission, { headers: { token } });
-
                 this.incompleteFormID = response.data.goalForm._id;
             } catch (error) {
                     this.handleError(error);
@@ -1168,6 +1170,7 @@ methods: {
         }
     },
 
+    // Auto-save form data as user types
     updateGoalForm() {
         const user = useLoggedInUserStore();
         const token = user.token;
@@ -1189,10 +1192,12 @@ methods: {
             });
     },
 
+    // Trigger debounced auto-save
     handleInput() {
         this.debouncedUpdateGoalForm();
     },
 
+    // Check for existing incomplete forms
     async checkIncompleteForm() {
         const user = useLoggedInUserStore();
         const token = user.token;
@@ -1208,6 +1213,7 @@ methods: {
         }
     },
 
+    // Delete incomplete form and start fresh
     async startNew() {
         const user = useLoggedInUserStore();
         const token = user.token;
@@ -1222,6 +1228,7 @@ methods: {
         }
     },
 
+    // Continue with incomplete form data
     continueProgress() {
         this.isFirstInput = false;
         this.goalForm = this.tempIncompleteForm.incompleteForm.goalForm;
@@ -1230,7 +1237,7 @@ methods: {
         this.goalForm.hichProject = this.tempIncompleteForm.incompleteForm.hichProject;
         this.showIncompleteFormFoundDialog = false;
 
-        // Trigger Validations
+        // Trigger validations for all sections
         this.$nextTick(() => {
             this.triggerCommResValidation();
             this.triggerGrowthValidation();
@@ -1238,30 +1245,27 @@ methods: {
             this.triggerGoalsValidation();
         });
     },
-
-
 },
 
+// Navigation guard to prevent data loss
 beforeRouteLeave(to, from, next) {
-    // If the user is logged out, allow navigation without confirmation
     if (!this.isUserLoggedIn || this.formSubmitSuccess) {
         next();
         return;
     }
 
-    // If there are unsaved changes and user is still logged in
     if (!this.isObjectEqual(this.goalForm, this.originalGoalForm)) {
         this.nextFunction = next;
         this.leaveDialog = true;
     } else {
-        next(); // Proceed with navigation
+        next();
     }
 },
-
 }
 </script>
 
 <style scoped>
+/* Progress bar styling */
 #progress-bar {
     height: 4px;
     background-color: #c8102e;

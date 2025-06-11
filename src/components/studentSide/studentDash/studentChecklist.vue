@@ -1,15 +1,18 @@
+<!--
+src/components/studentSide/studentDash/studentChecklist.vue
+A checklist component that displays student progress through required forms and experience registration.
+Shows completion status for entry forms, experience registration, goal setting forms, and exit forms.
+-->
+
 <template>
-    <!-- registeredExperiences: {{ registeredExperiences }}
-    <br><br><br>
-    goalSettingFormCompletion: {{ goalSettingFormCompletion }}
-    <br><br><br>
-    exitFormCompletion: {{ exitFormCompletion }} -->
-      <v-card
+    <!-- Main checklist card container -->
+    <v-card
       class="mx-auto elevation-12"
       color="#385F73"
       width="100%"
       >
       <v-list>
+          <!-- Checklist header -->
           <v-list-item>
               <v-list-item-title class="flex-grow-1 text-center">
                   <span class="font-weight-black text-lg">{{$t('Checklist')}}</span>
@@ -17,7 +20,7 @@
               </v-list-item-title>
           </v-list-item>
 
-          <!-- Entry Form -->
+          <!-- Entry Form completion section -->
           <v-list-group value="Entry Form">
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props" :color="hasCompletedEntryForm ? 'green darken-4' : ''" :class="hasCompletedEntryForm ? 'light-green-bg' : 'light-red-bg'" class="font-weight-black text-base">
@@ -40,8 +43,7 @@
             </v-list-item>
         </v-list-group>
 
-
-        <!-- Register for Experiences -->
+        <!-- Experience registration section -->
         <v-list-group v-if="hasCompletedEntryForm" value="Register Experiences">
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props" :class="registeredExperiences.length === 0 ? 'light-red-bg' : 'light-green-bg'" @click="registeredExperiences.length === 0">
@@ -57,14 +59,14 @@
                 <div class="flex items-center no-right-margin">
                     <v-icon :class="registeredExperiences.length === 0 ? 'text-red-800' : 'text-green-800'" size="small">mdi-flag-checkered</v-icon>
                     <span :class="registeredExperiences.length === 0 ? 'text-sm text-red-800' : 'text-sm text-green-800'">
-                        <span v-if="registeredExperiences.length === 0">{{$t('Please use the “Add/Remove Experiences” button to register!')}}</span>
+                        <span v-if="registeredExperiences.length === 0">{{$t('Please use the "Add/Remove Experiences" button to register!')}}</span>
                         <span v-else>{{$t('Congratulations on registering for your experiences! Good luck!')}}</span>
                     </span>
                 </div>
             </v-list-item>
         </v-list-group>
 
-        <!-- Goal Forms -->
+        <!-- Goal setting forms section -->
         <v-list-group value="Goal Form" v-if="hasGoalFormsToComplete" :class="areAllGoalsSet ? 'light-green-bg' : 'light-red-bg'">
             <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props">
@@ -81,7 +83,7 @@
                     </template>
                 </v-list-item>
             </template>
-            <!-- Loop through filteredGoalFormCompletion to create a dropdown item for each one -->
+            <!-- Individual goal form items for each registered experience -->
             <v-list-item 
                 v-for="(completed, registrationId) in filteredGoalFormCompletion" 
                 :key="registrationId" 
@@ -96,7 +98,6 @@
                     >
                         {{ findExperienceName(registrationId) }}
                     </a>
-                    <!-- Render the experience name -->
                     <span v-else :class="completed ? 'text-green-800' : 'text-red-800'">
                         {{ findExperienceName(registrationId) }}
                     </span>
@@ -104,8 +105,7 @@
             </v-list-item>
         </v-list-group>
 
-
-       <!-- Exit Forms -->
+       <!-- Exit forms section -->
        <v-list-group 
         v-if="hasExitFormsToComplete" 
         :class="areAllExitFormsCompleted ? 'light-green-bg' : 'light-red-bg'">
@@ -124,7 +124,7 @@
                     </template>
                 </v-list-item>
             </template>
-            <!-- Loop through exitFormCompletion to get each completed form's ID -->
+            <!-- Individual exit form items for each experience -->
             <v-list-item 
                 v-for="registrationId in Object.keys(exitFormCompletion)" 
                 :key="registrationId"
@@ -138,8 +138,6 @@
                     >
                         {{ findExperienceName(registrationId) }}
                     </a>
-
-                    <!-- Display the name from the registeredExperiences -->
                     <span v-else class="'text-green-800'">
                         {{ findExperienceName(registrationId) }}
                     </span>
@@ -157,7 +155,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
     name: 'StudentChecklist',
     computed: {
-        // Access store and its state
+        // Store access and basic user data
         store() {
             return useLoggedInUserStore();
         },
@@ -167,41 +165,20 @@ export default {
         exitFormsReleased() {
             return this.store.exitFormsReleased;
         },
+        registeredExperiences() {
+            return this.store.registeredExperiences;
+        },
+
+        // Goal form completion logic
         areAllGoalsSet() {
-            // First, filter out goal settings that are also in exit forms
+            // Filter out goal settings that are also in exit forms
             const relevantGoals = Object.keys(this.goalSettingFormCompletion).filter(key => 
                 !Object.keys(this.exitFormCompletion).includes(key));
 
-            // Check if all relevant goal settings are set to true
             return relevantGoals.every(key => this.goalSettingFormCompletion[key]);
         },
         goalSettingFormCompletion() {
             return this.store.goalSettingFormCompletion;
-        },
-        exitFormCompletion() {
-            return this.store.exitFormCompletion;
-        },
-        areAllExitFormsCompleted() {
-            if (!this.exitFormCompletion) {
-                return false;
-            }
-            return this.store.registeredExperiences.every(experience => {
-                return this.exitFormCompletion[experience._id];
-            });
-        },
-        registeredExperiences() {
-            return this.store.registeredExperiences;
-        },
-        hasGoalFormsToComplete() {
-            const exitIds = Object.keys(this.exitFormCompletion);
-            // Check if there's at least one goal setting form ID that is not in the exit form completion IDs
-            return Object.keys(this.goalSettingFormCompletion).some(key => !exitIds.includes(key));
-        },
-        hasExitFormsToComplete() {
-            return Object.keys(this.exitFormCompletion).length > 0;
-        },
-        areAllExitFormsCompleted() {
-            return Object.keys(this.exitFormCompletion).every(key => this.exitFormCompletion[key]);
         },
         filteredGoalFormCompletion() {
             const exitIds = Object.keys(this.exitFormCompletion);
@@ -212,27 +189,45 @@ export default {
                 return acc;
             }, {});
         },
+        hasGoalFormsToComplete() {
+            const exitIds = Object.keys(this.exitFormCompletion);
+            return Object.keys(this.goalSettingFormCompletion).some(key => !exitIds.includes(key));
+        },
+
+        // Exit form completion logic
+        exitFormCompletion() {
+            return this.store.exitFormCompletion;
+        },
+        areAllExitFormsCompleted() {
+            return Object.keys(this.exitFormCompletion).every(key => this.exitFormCompletion[key]);
+        },
+        hasExitFormsToComplete() {
+            return Object.keys(this.exitFormCompletion).length > 0;
+        },
     },
     methods: {
+        // Form completion status checkers
         isGoalFormCompleted(registrationId) {
             return this.goalSettingFormCompletion[registrationId];
         },
         isExitFormCompleted(experienceId) {
             return this.exitFormCompletion && this.exitFormCompletion[experienceId];
         },
+
+        // Experience name lookup
         findExperienceName(registrationId) {
             const experience = this.registeredExperiences.find(exp => exp._id === registrationId);
             return experience ? experience.experienceInstance.name : 'Unknown Experience';
         },
+
+        // Navigation methods
         navigateToGoalSettingForm(registrationId) {
             const store = useLoggedInUserStore();
 
-            // Store the registration ID in Pinia's navigationData
             store.navigationData = {
                 registrationID: registrationId
             };
 
-            // Navigate to the goalSettingForm route
             this.$router.push({ 
             name: 'goalSettingForm'
             });
@@ -240,12 +235,10 @@ export default {
         navigateToExitForm(registrationId) {
             const store = useLoggedInUserStore();
 
-            // Store the registration ID in Pinia's navigationData
             store.navigationData = {
                 registrationID: registrationId
             };
 
-            // Navigate to the exitForm route
             this.$router.push({ 
                 name: 'exitForm'
             });

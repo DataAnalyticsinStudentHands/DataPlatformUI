@@ -1,5 +1,14 @@
+<!--
+goalFormExp.vue
+Form component for experience selection in the goal setting process.
+Allows users to select which experience they're completing the form for,
+checks for existing forms, and conditionally displays HICH project selection
+with validation and loading states.
+-->
+
 <template>
 <div>
+<!-- Main form wrapper with validation handling -->
 <v-form
     ref="form"
     @submit.prevent="handleValidations"
@@ -14,6 +23,8 @@
         </v-row>
         <v-row></v-row>
         <v-col cols="12"></v-col>
+        
+        <!-- Experience selection section -->
         <v-row dense>
             <v-col cols="11" md="10">
                 <div>
@@ -38,24 +49,24 @@
             </v-col>
         </v-row>
 
+        <!-- Experience status feedback section -->
         <v-row dense style="padding-bottom: 1rem;" v-show="selectedExperience">
             <v-col cols="11">
-                <!-- Container without min-height -->
                 <div style="display: flex; flex-direction: column; align-items: flex-start; min-height: 3.8rem; justify-content: center;">
-                <!-- Loading wheel -->
+                <!-- Loading indicator for form checking -->
                 <v-progress-circular 
                     v-show="isLoadingExpCheck"
                     indeterminate 
                     size="20"
                 ></v-progress-circular>
 
-                <!-- Message when experienceFoundWarning is true -->
+                <!-- Warning message when form already exists -->
                 <div v-if="experienceFoundWarning" style="display: flex; align-items: center; color: #4A90E2; font-weight: bold;">
                     <v-icon left small style="margin-right: 0.5rem; color: #4A90E2;">mdi-alert-circle</v-icon>
                     {{$t('Hi there! You have already filled out a Goal Setting Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.')}}
                 </div>
 
-                <!-- Message when experienceFoundWarning is false -->
+                <!-- Success message when no existing form found -->
                 <div v-if="experienceFoundWarning === false" style="display: flex; align-items: center; color: #4CAF50; font-weight: bold;">
                     <v-icon left small style="margin-right: 0.5rem; color: #4CAF50;">mdi-check-circle</v-icon>
                     {{$t("You haven't filled out a Goal Setting form for this experience. Complete this form to start your progress!")}}
@@ -63,7 +74,8 @@
                 </div>
             </v-col>
         </v-row>
-        <!-- HICH Projects -->
+        
+        <!-- HICH Projects conditional selection section -->
         <v-fade-transition>
             <v-row v-if="shouldShowHichCheckboxes">
                 <v-col cols="12">
@@ -108,6 +120,7 @@ props: {
 emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form", "update-experiences", "update-experienceID"],
 data() {
     return {
+        // Form state and validation
         formSubmitted: false,
         selectedExperience: null,
         experienceIDRules: [
@@ -118,8 +131,12 @@ data() {
             return true;
             }
       ],
+      
+      // Loading and status indicators
       isLoadingExpCheck: false,
       experienceFoundWarning: null,
+      
+      // HICH project data
       hichProject: [],
       hichCheckboxItems: [
         'BREATHE',
@@ -130,20 +147,20 @@ data() {
         'SAIID',
         'WEAR'
         ],
+        
+      // Local data management
       localExperiences: [],
       localExperienceID: null,
       prevHichProject: [],
     }
 },
 mounted() {
+    // Set up language preference and fetch initial data
     const user = useLoggedInUserStore();
 
-    // Translations
     if (user.languagePreference === "Spanish") {
-        // Set to Spanish
         this.$i18n.locale = 'es';
     } else {
-        // Default to English
         this.$i18n.locale = 'en';
     }
     user.startLoading();
@@ -155,13 +172,13 @@ mounted() {
         });
 
     } catch (error) {
-        // Handle any errors that occur during the fetch operations
         this.handleError('Error:', error);
     } finally {
         user.stopLoading();
     }
 },
 watch: {
+    // Watch for experience selection changes
     selectedExperience(newVal, oldVal) {
       if (newVal && newVal !== oldVal) {
         this.checkExistingForm(newVal);
@@ -171,29 +188,31 @@ watch: {
         this.experienceFoundWarning = null;
       }
 
-        // Reset hichProject if shouldShowHichCheckboxes becomes false
+        // Reset HICH project selection when not applicable
         if (!this.shouldShowHichCheckboxes) {
             this.hichProject = [];
         }
     },
 
+    // Emit validation state changes to parent
     hasValidationErrors(newValue, oldValue) {
         if (newValue !== oldValue) {
             this.$emit('validation-change', { isValid: !newValue });
         }
     },
 
+    // Sync goal form data with local HICH project selection
     goalForm: {
         handler(newVal) {
             if (newVal && newVal.hichProject) {
-                // Assuming hichProject in goalForm is an array of selected project names
                 this.hichProject = newVal.hichProject;
             }
         },
-        deep: true, // This is to ensure we react to nested property changes
-        immediate: true, // This ensures the watcher runs on initial load
+        deep: true,
+        immediate: true,
     },
 
+    // Emit HICH project updates to parent
     hichProject(newVal) {
         if ((this.prevHichProject.length > 0 && newVal.length === 0) || newVal.length > 0) {
             this.$emit("update-hich-project", newVal);
@@ -201,6 +220,7 @@ watch: {
         this.prevHichProject = [...newVal];
     },
 
+    // Handle registration ID from incomplete forms
     expRegistrationID(newVal) {
         if (newVal) {
             this.selectExperienceMatchingRegistrationID();
@@ -208,11 +228,13 @@ watch: {
     },
 },
 computed: {
+    // Validate experience selection
     isExperienceIDInvalid() {
       if (!this.formSubmitted) return false;
       return this.selectedExperience === null || this.selectedExperience === '';
     },
 
+    // Format experiences for dropdown display
     formattedExperiences() {
       return this.experiences.map(experience => ({
         text: `${experience.experienceCategory}: ${experience.experienceName}`,
@@ -220,23 +242,26 @@ computed: {
       }));
     },
 
+    // Determine if HICH project checkboxes should be shown
     shouldShowHichCheckboxes() {
         const experienceText = this.findExperienceText(this.selectedExperience);
         return experienceText.includes('HICH - Project Volunteer') || experienceText.includes('HICH - Project Head');
     },
 
+    // Validate HICH project selection when required
     isHICHProjectInvalid() {
         if (!this.formSubmitted) return false;
-        // Return true if HICH Project checkboxes should be shown but no option is selected
         return this.shouldShowHichCheckboxes && this.hichProject.length === 0;
     },
 
+    // Overall form validation state
     hasValidationErrors() {
         if (!this.formSubmitted) return false;
         return this.isExperienceIDInvalid || this.isHICHProjectInvalid;
     },
 },
 methods: {
+    // Fetch available experiences from API
     async fetchExperiences() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -257,6 +282,7 @@ methods: {
       }
     },
 
+    // Check if user has previously filled goal setting form
     async fetchHasFilledForm() {
         const user = useLoggedInUserStore();
         let token = user.token;
@@ -279,6 +305,7 @@ methods: {
         }
     },
 
+    // Check if form already exists for selected experience
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
         const experienceID = this.selectedExperience;
@@ -293,15 +320,12 @@ methods: {
             }
             });
 
-
-            // If the document wasn't found
             if (response.data.documentFound === false) {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
             return;
             }
 
-            // If a document was found
             if (response.data && response.data.id) {
                 this.$emit('update-found-document-id', response.data.id);
                 this.experienceFoundWarning = true;
@@ -316,38 +340,32 @@ methods: {
         }
     },
 
+    // Handle experience selection and emit updates
     updateExperienceID(selected) {
         if (!selected) {
             this.localExperienceID = null;
-            this.$emit("update-selected-experience", null); // Emit null if no experience is selected
+            this.$emit("update-selected-experience", null);
             this.$emit("update-experienceID", this.localExperienceID);
             return;
         }
 
-        // The selected variable already has the experienceID
         this.localExperienceID = selected;
-
-        // Find the text corresponding to the selected value
         const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
 
-        // Emit an object with both text and value
         this.$emit("update-selected-experience", { text: selectedExperienceText, value: selected });
         this.$emit("update-experienceID", this.localExperienceID);
     },
 
+    // Select experience based on route parameter
     selectExperienceFromRouteParam() {
         const experienceRegistrationIDFromRoute = useLoggedInUserStore().navigationData.registrationID;
         if (experienceRegistrationIDFromRoute) {
-            // Find the experience in the array that matches the expRegistrationID
             const matchingExperience = this.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
             if (matchingExperience) {
-                // Set the selectedExperience to the experienceID of the matching experience
                 this.selectedExperience = matchingExperience.experienceID;
-                // Find the text corresponding to the selected value
                 const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
 
-                // Emit an object with both text and value
                 this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience });
             } else {
                 console.log('No matching experience found for the given expRegistrationID');
@@ -355,11 +373,11 @@ methods: {
         }
     },    
 
+    // Handle form validation with HICH project checks
     async handleValidations() {
         this.formSubmitted = true;
         const { valid } = await this.$refs.form.validate();
 
-        // Check for HICH Project selection if required
         let hichProjectValid = true;
         if (this.shouldShowHichCheckboxes && this.hichProject.length === 0) {
             hichProjectValid = false;
@@ -382,26 +400,25 @@ methods: {
         }
     },
 
+    // Find experience text by ID for display purposes
     findExperienceText(experienceID) {
         const experience = this.formattedExperiences.find(exp => exp.value === experienceID);
         return experience ? experience.text.trim() : '';
     },
 
+    // Select experience that matches registration ID
     selectExperienceMatchingRegistrationID() {
-        // Ensure experiences are loaded and expRegistrationID is present
         if (this.expRegistrationID && this.experiences.length) {
             const foundExperience = this.experiences.find(experience => experience.expRegistrationID === this.expRegistrationID);
             if (foundExperience) {
-                // Update selectedExperience to the found experience's ID
                 this.selectedExperience = foundExperience.experienceID;
-                // If you have a method to update and emit changes based on selected experience, call it here
                 this.updateExperienceID(this.selectedExperience);
             }
         }
     },
 
+    // Update incomplete form with new experience selection
     async updateIncompleteForm(value) {
-        // Find the experience object from localExperiences that matches the selectedExperience
         const selectedExperienceObject = this.localExperiences.find(exp => exp.experienceID === this.selectedExperience);
         if (this.incompleteFormID) {
             try {
@@ -415,7 +432,6 @@ methods: {
                 this.formSubmitted = true;
                 const { valid } = await this.$refs.form.validate();
 
-                // Check for HICH Project selection if required
                 let hichProjectValid = true;
                 if (this.shouldShowHichCheckboxes && this.hichProject.length === 0) {
                     hichProjectValid = false;
@@ -437,32 +453,27 @@ methods: {
             }
         }
     }
-
-
-
-
 },
 }
 </script>
 
 <style scoped>
+/* Error text styling */
 .error-text {
     color: rgb(176, 0, 32);
 }
 
-
+/* Section title styling */
 .section-title {
-    font-size: 1.25rem; /* Adjusted for larger section titles */
+    font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
-
+/* Review section title styling */
 .review-section-title {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 10px;
 }
-
-
 </style>

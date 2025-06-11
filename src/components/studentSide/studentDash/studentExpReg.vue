@@ -1,81 +1,80 @@
+<!--
+src/components/studentSide/studentDash/studentExpReg.vue
+Student experience registration component that allows students to view, add, and remove experiences.
+Handles experience selection, registration codes, and session-based grouping of experiences.
+-->
+
 <template>
-
-
-
-      <v-card
-          class="mx-auto elevation-12"
-          color="#385F73"
-          width="100%"
-        >
-          <v-list>
-            <v-list-item>
-                <v-list-item-title class="flex-grow-1 text-center">
-                  <span class="font-weight-black text-base">{{$t('My Experiences')}}</span>
-                  <v-dialog width="500">
-                    <template v-slot:activator="{ props }">
-                      <v-btn
-                        size="x-small"
-                        class="pb-3"
-                        variant="text"
-                        icon="mdi-help-circle-outline"
-                        flat
-                        v-bind="props"
-                      >
-                      </v-btn>
-                    </template>
-
-                    <template v-slot:default="{ isActive }">
-                      <v-card :title="$t('Registered Experiences')">
-                        <v-card-text>
-                          {{$t('Experiences are courses, projects, research, and other opportunities for growth. Select the Experiences you are a part of!')}}
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-
-                          <v-btn
-                            :text="$t('Close')"
-                            @click="isActive.value = false"
-                          ></v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </template>
-                  </v-dialog>
-                </v-list-item-title>
-
-                <!-- Iterate over each session -->
-                <div v-for="(session, sessionId) in sessionGroupedExperiences" :key="sessionId">
-                  <v-list-item class="grey lighten-1">
-                    <v-list-item-title class="flex-grow-1 text-center">
-                      <span class="font-weight-black text-base">{{ session.sessionName }}</span>
-                    </v-list-item-title>
-                  </v-list-item>
-
-                  <!-- Iterate over experiences in the session -->
-                  <v-list-item
-                      v-for="experience in session.experiences"
-                      :key="experience._id"
+  <!-- Main experience registration card -->
+  <v-card
+      class="mx-auto elevation-12"
+      color="#385F73"
+      width="100%"
+    >
+      <v-list>
+        <v-list-item>
+            <!-- Header with help dialog -->
+            <v-list-item-title class="flex-grow-1 text-center">
+              <span class="font-weight-black text-base">{{$t('My Experiences')}}</span>
+              <v-dialog width="500">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    size="x-small"
+                    class="pb-3"
+                    variant="text"
+                    icon="mdi-help-circle-outline"
+                    flat
+                    v-bind="props"
                   >
-                      <v-list-item-title>
-                          {{ experience.experienceName }}
-                      </v-list-item-title>
-                  </v-list-item>
+                  </v-btn>
+                </template>
 
-                  <!-- Display message when there are no experiences in the session -->
-                  <v-list-item v-if="session.experiences.length === 0">
-                      <v-list-item-title>(No Registered Experiences)</v-list-item-title>
-                  </v-list-item>
-                </div>
+                <template v-slot:default="{ isActive }">
+                  <v-card :title="$t('Registered Experiences')">
+                    <v-card-text>
+                      {{$t('Experiences are courses, projects, research, and other opportunities for growth. Select the Experiences you are a part of!')}}
+                    </v-card-text>
 
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
 
+                      <v-btn
+                        :text="$t('Close')"
+                        @click="isActive.value = false"
+                      ></v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </template>
+              </v-dialog>
+            </v-list-item-title>
 
-            </v-list-item>
+            <!-- Display experiences grouped by session -->
+            <div v-for="(session, sessionId) in sessionGroupedExperiences" :key="sessionId">
+              <v-list-item class="grey lighten-1">
+                <v-list-item-title class="flex-grow-1 text-center">
+                  <span class="font-weight-black text-base">{{ session.sessionName }}</span>
+                </v-list-item-title>
+              </v-list-item>
 
+              <!-- Individual experiences within the session -->
+              <v-list-item
+                  v-for="experience in session.experiences"
+                  :key="experience._id"
+              >
+                  <v-list-item-title>
+                      {{ experience.experienceName }}
+                  </v-list-item-title>
+              </v-list-item>
 
+              <!-- Empty state message -->
+              <v-list-item v-if="session.experiences.length === 0">
+                  <v-list-item-title>(No Registered Experiences)</v-list-item-title>
+              </v-list-item>
+            </div>
 
+        </v-list-item>
 
-
-          <!-- Add Experiences Button -->
+        <!-- Add/Remove experiences button with tooltip -->
         <v-list-item>
           <v-row class="justify-center">
             <v-col cols="auto">
@@ -98,6 +97,7 @@
                   <span>{{$t('Register Here!')}}</span>
               </v-tooltip>
 
+              <!-- Main experience selection dialog -->
               <v-dialog
                 v-model="dialog"
                 persistent
@@ -111,10 +111,9 @@
                   <v-card-text>
                     <v-row>
 
-                      <!-- All Experiences Column -->
+                      <!-- Available experiences column -->
                       <v-col cols="12" md="5">
                         <v-list density="compact">
-                          <!-- Iterate over each session and its experiences -->
                           <template v-for="session in availableExperiencesForRegistration" :key="session.session.id">
                             <v-list-item-subtitle>{{ session.session.name }}</v-list-item-subtitle>
                             <v-list-item
@@ -136,8 +135,7 @@
                         </v-list>
                       </v-col>
 
-
-                      <!-- Action Buttons Column -->
+                      <!-- Action buttons column -->
                       <v-col cols="12" md="2" class="text-center d-flex align-center justify-center">
                         <div>
                           <v-row class="mb-2">
@@ -153,7 +151,7 @@
                         </div>
                       </v-col>
 
-                      <!-- My Experiences Column -->
+                      <!-- Selected experiences column -->
                       <v-col cols="12" md="5">
                         <v-list density="compact">
                           <v-list-subheader>{{$t('My Experiences')}}</v-list-subheader>
@@ -169,7 +167,6 @@
                             </v-list-item>
                         </v-list>
                       </v-col>
-
 
                     </v-row>
                   </v-card-text>
@@ -200,9 +197,7 @@
         </v-list>
         </v-card>
 
-        <!-- {{ registeredExperiences }} -->
-
-<!-- Dialog for Inputting Registration Code -->
+<!-- Registration code input dialog -->
 <v-dialog v-model="registrationDialog" max-width="400px">
   <v-card>
     <v-card-title nowrap>Enter Registration Code</v-card-title>
@@ -222,9 +217,6 @@
   </v-card>
 </v-dialog>
 
-
-
-
 </template>
 
 <script>
@@ -236,9 +228,9 @@ export default {
     name: "StudentExperienceRegistration",
     data() {
         return {
-            allExperiences: [], // Will contain all experiences from API
-            selectedExperiences: [], // Currently selected experience from "allExperiences"
-            unselectedExperience: null, // Currently selected experience from "selectedExperiences"
+            allExperiences: [],
+            selectedExperiences: [],
+            unselectedExperience: null,
             dialog: false,
             selectedListItem: null, 
             shouldShowTooltip: false,
@@ -252,23 +244,18 @@ export default {
             experiencesToProcess: [],
         }
     },
-    watch: {
-        // dialog(newVal) {
-        //     if (newVal) {
-        //         const store = useLoggedInUserStore();
-        //         // Directly use the registered experiences from the store
-        //         this.selectedExperiences = [...store.registeredExperiences];
-        //     }
-        // }
-    },
     computed: {
-        // Access registeredExperiences from the store
+        // Store data access
         registeredExperiences() {
           const store = useLoggedInUserStore();
           return store.registeredExperiences;
         },
+        semesterName() {
+            const store = useLoggedInUserStore();
+            return store.semesterName;
+        },
 
-        // Group registered experiences by their sessions
+        // Group registered experiences by their sessions for display
         sessionGroupedExperiences() {
           const grouped = {};
 
@@ -284,19 +271,14 @@ export default {
             grouped[sessionID].experiences.push({
               _id: exp._id,
               experienceName: exp.experienceInstance.name,
-              // Include any other necessary experience properties here
             });
           });
 
           return grouped;
         },
-
-        semesterName() {
-            const store = useLoggedInUserStore();
-            return store.semesterName;
-        },
     },
     methods: {
+      // Experience selection management
       toggleExperienceSelection(experience) {
           const index = this.selectedExperienceIDs.indexOf(experience._id);
           if (index === -1) {
@@ -308,155 +290,147 @@ export default {
       isSelectedForAddition(experience) {
           return this.selectedExperienceIDs.includes(experience._id) && !this.isSelected(experience);
       },
-        removeFromMyExperiences(experience) {
-            const index = this.selectedExperiences.findIndex(exp => exp._id === experience._id);
-            if (index !== -1) {
-                this.selectedExperiences.splice(index, 1);
-            }
-        },
-        addSelectedToMyExperiences() {
-          this.experiencesToProcess = [];
-          this.selectedExperienceIDs.forEach(selectedID => {
-            this.availableExperiencesForRegistration.forEach(session => {
-              const experience = session.availableExperiences.find(exp => exp._id === selectedID);
-              if (experience && !this.isSelected(experience)) {
-                if (experience.registrationCode) {
-                  this.experiencesToProcess.push(experience);
-                } else {
-                  this.addExperienceToSelected(experience);
-                }
+      isSelected(experience) {
+          return this.selectedExperiences.some(selectedExp => selectedExp._id === experience._id);
+      },
+
+      // Experience addition and processing
+      addSelectedToMyExperiences() {
+        this.experiencesToProcess = [];
+        this.selectedExperienceIDs.forEach(selectedID => {
+          this.availableExperiencesForRegistration.forEach(session => {
+            const experience = session.availableExperiences.find(exp => exp._id === selectedID);
+            if (experience && !this.isSelected(experience)) {
+              if (experience.registrationCode) {
+                this.experiencesToProcess.push(experience);
+              } else {
+                this.addExperienceToSelected(experience);
               }
-            });
+            }
           });
-          // Clear the selectedExperienceIDs after adding them to selectedExperiences
-          this.selectedExperienceIDs = [];
-          this.processNextExperience();
-        },
-        processNextExperience() {
-          if (this.experiencesToProcess.length > 0) {
-            this.currentExperience = this.experiencesToProcess.shift();
-            this.currentExperienceName = this.currentExperience.experienceName;
-            this.registrationDialog = true;
-          }
-        },
-        addExperienceToSelected(experience) {
-          this.selectedExperiences.push({
-            _id: experience._id,
-            experienceName: experience.experienceName,
-          });
-        },
-        closeRegistrationDialog() {
-          this.registrationDialog = false;
+        });
+        this.selectedExperienceIDs = [];
+        this.processNextExperience();
+      },
+      processNextExperience() {
+        if (this.experiencesToProcess.length > 0) {
+          this.currentExperience = this.experiencesToProcess.shift();
+          this.currentExperienceName = this.currentExperience.experienceName;
+          this.registrationDialog = true;
+        }
+      },
+      addExperienceToSelected(experience) {
+        this.selectedExperiences.push({
+          _id: experience._id,
+          experienceName: experience.experienceName,
+        });
+      },
+
+      // Registration code handling
+      closeRegistrationDialog() {
+        this.registrationDialog = false;
+        this.enteredRegistrationCode = '';
+        this.currentExperience = null;
+        this.currentExperienceName = '';
+        this.experiencesToProcess = [];
+      },
+      confirmRegistrationCode() {
+        if (this.currentExperience && this.currentExperience.registrationCode === this.enteredRegistrationCode) {
+          this.addExperienceToSelected(this.currentExperience);
           this.enteredRegistrationCode = '';
           this.currentExperience = null;
-          this.currentExperienceName = '';
-          this.experiencesToProcess = [];
-        },
-        confirmRegistrationCode() {
-          if (this.currentExperience && this.currentExperience.registrationCode === this.enteredRegistrationCode) {
-            this.addExperienceToSelected(this.currentExperience);
-            this.enteredRegistrationCode = '';
-            this.currentExperience = null;
-            this.registrationDialog = false;
-            this.processNextExperience();
+          this.registrationDialog = false;
+          this.processNextExperience();
+        } else {
+          toast.error(this.$t("Oops! Wrong Registration Code Provided. Please try again."), {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--delete',
+              multiple: false
+          });
+        }
+      },
+
+      // Experience removal management
+      toggleRemovalSelection(experience) {
+          const index = this.markedForRemovalIDs.indexOf(experience._id);
+          if (index === -1) {
+              this.markedForRemovalIDs.push(experience._id);
           } else {
-            // Handle incorrect registration code (optional)
-            toast.error(this.$t("Oops! Wrong Registration Code Provided. Please try again."), {
-                position: 'top-right',
-                toastClassName: 'Toastify__toast--delete',
-                multiple: false
-            });
+              this.markedForRemovalIDs.splice(index, 1);
           }
-        },
-        toggleRemovalSelection(experience) {
-            const index = this.markedForRemovalIDs.indexOf(experience._id);
-            if (index === -1) {
-                this.markedForRemovalIDs.push(experience._id);
-            } else {
-                this.markedForRemovalIDs.splice(index, 1);
-            }
-        },
-        isMarkedForRemoval(experience) {
-            return this.markedForRemovalIDs.includes(experience._id);
-        },
-        removeMarkedFromSelected() {
-            this.markedForRemovalIDs.forEach(removalID => {
-                const index = this.selectedExperiences.findIndex(exp => exp._id === removalID);
-                if (index !== -1) {
-                    this.selectedExperiences.splice(index, 1);
-                }
-            });
-            this.markedForRemovalIDs = [];
-        },
-        clearSelectedExperiences() {
-            // Clear the selections without affecting the registered experiences
-            this.selectedExperienceIDs = [];
-            this.markedForRemovalIDs = [];
-            
-            // Close the dialog
-            this.dialog = false;
-        },
+      },
+      isMarkedForRemoval(experience) {
+          return this.markedForRemovalIDs.includes(experience._id);
+      },
+      removeMarkedFromSelected() {
+          this.markedForRemovalIDs.forEach(removalID => {
+              const index = this.selectedExperiences.findIndex(exp => exp._id === removalID);
+              if (index !== -1) {
+                  this.selectedExperiences.splice(index, 1);
+              }
+          });
+          this.markedForRemovalIDs = [];
+      },
 
-        isSelected(experience) {
-            // Check if the experience is already selected based on its ID
-            return this.selectedExperiences.some(selectedExp => selectedExp._id === experience._id);
-        },
-        saveExperiences() {
+      // Dialog and data management
+      clearSelectedExperiences() {
+          this.selectedExperienceIDs = [];
+          this.markedForRemovalIDs = [];
+          this.dialog = false;
+      },
+      saveExperiences() {
+        const store = useLoggedInUserStore();
+        store.updateRegisteredExperiences(this.selectedExperiences);
+        this.clearSelectedExperiences();
+      },
+
+      // API and initialization
+      async fetchAvailableExperiencesForRegistration() {
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experience-instances/available-for-registration';
+
+        try {
+          const response = await axios.get(apiURL, { headers: { token } });
+          if (response.data && response.data.length > 0) {
+            response.data.sort((a, b) => a.session.name.localeCompare(b.session.name));
+
+            response.data.forEach(session => {
+              session.availableExperiences.sort((a, b) => a.experienceName.localeCompare(b.experienceName));
+            });
+          }    
+          
+          this.availableExperiencesForRegistration = response.data;
+        } catch (error) {
+          this.handleError(error);
+        }
+      },
+      openDialog() {
+        this.fetchAvailableExperiencesForRegistration().then(() => {
           const store = useLoggedInUserStore();
-          store.updateRegisteredExperiences(this.selectedExperiences);
-          this.clearSelectedExperiences(); // Clear selections and Close the dialog
-        },
-        async fetchAvailableExperiencesForRegistration() {
-          const user = useLoggedInUserStore();
-          const token = user.token;
-          let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experience-instances/available-for-registration';
+          const newSelectedExperiences = [];
 
-          try {
-            const response = await axios.get(apiURL, { headers: { token } });
-            if (response.data && response.data.length > 0) {
-              // Sort sessions by name
-              response.data.sort((a, b) => a.session.name.localeCompare(b.session.name));
-
-              // Sort experiences within each session
-              response.data.forEach(session => {
-                session.availableExperiences.sort((a, b) => a.experienceName.localeCompare(b.experienceName));
-              });
-            }    
-            
-            this.availableExperiencesForRegistration = response.data;
-          } catch (error) {
-            this.handleError(error);
-          }
-        },
-        openDialog() {
-          this.fetchAvailableExperiencesForRegistration().then(() => {
-            const store = useLoggedInUserStore();
-            const newSelectedExperiences = [];
-
-            // Update newSelectedExperiences based on registeredExperiences
-            store.registeredExperiences.forEach(registeredExp => {
-              this.availableExperiencesForRegistration.forEach(session => {
-                session.availableExperiences.forEach(availableExp => {
-                  if (availableExp._id === registeredExp.experienceInstance.id) {
-                    newSelectedExperiences.push({
-                      _id: availableExp._id,
-                      experienceName: availableExp.experienceName,
-                    });
-                  }
-                });
+          store.registeredExperiences.forEach(registeredExp => {
+            this.availableExperiencesForRegistration.forEach(session => {
+              session.availableExperiences.forEach(availableExp => {
+                if (availableExp._id === registeredExp.experienceInstance.id) {
+                  newSelectedExperiences.push({
+                    _id: availableExp._id,
+                    experienceName: availableExp.experienceName,
+                  });
+                }
               });
             });
-
-            // Update selectedExperiences with new array to trigger reactivity
-            this.selectedExperiences = [...newSelectedExperiences];
           });
 
-          this.dialog = true;
-        },
+          this.selectedExperiences = [...newSelectedExperiences];
+        });
+
+        this.dialog = true;
+      },
     }
 }
 </script>
-
 
 <style scoped>
 .custom-tooltip {
@@ -467,7 +441,6 @@ export default {
 }
 
 .selected-experience {
-    cursor: default; /* Change cursor to indicate non-selectability */
+    cursor: default;
 }
-
 </style>

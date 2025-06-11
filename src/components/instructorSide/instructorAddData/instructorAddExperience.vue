@@ -1,4 +1,10 @@
-<!--'/instructorAddExperience' this view presents a form to create a new Experience-->
+<!--
+  instructorAddExperience.vue
+  
+  Form component for instructors to create new experiences with associated activities. Provides role-based 
+  access control, activity selection functionality, and handles experience category assignment based on user roles.
+  Supports activity management through selection and removal with proper state maintenance.
+-->
 <template>
   <main>
     <!-- Form for creating a new experience -->
@@ -59,12 +65,16 @@ export default {
   },
   data() {
     return {
+      // Experience object containing form data
       experience: {
         experienceCategory: '',
         experienceName: '',
       },
+      // Available activities that can be selected for the experience
       activities: [],
+      // Backup copy of original activities for proper state management
       originalActivities: [],
+      // Table headers configuration for activity display
       activityHeaders: [
         {
           title: "Activity Name",
@@ -74,13 +84,17 @@ export default {
           sortable: true
         }
       ],
+      // Activities selected to be included in the experience
       selectedActivities: [],
+      // Search term for filtering activities
       activitySearch: "",
+      // Currently hovered activity item for UI interaction
       hoveredItem: null,
     };
   },
+  // Component initialization and data setup
   beforeMount() {
-  // Scroll the window to the top
+    // Scroll the window to the top
     window.scrollTo(0, 0);
 
     // Get the logged-in user from the store
@@ -174,6 +188,7 @@ export default {
 </script>
 
 <style scoped>
+/* Navigation styling and responsive design for activity management interface */
 #contentNavbar .nav-link.router-link-exact-active {
   background-color: #eee;
 }
@@ -205,6 +220,7 @@ export default {
   cursor: pointer;
 }
 
+/* Scrollable container styling for activity tables and lists */
 .scrollable-table {
     height: 300px; /* Adjust the height as needed */
     overflow-y: auto;

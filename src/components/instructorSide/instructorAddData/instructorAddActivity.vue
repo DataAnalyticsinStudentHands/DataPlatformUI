@@ -1,4 +1,9 @@
-<!--'/instructorAddActivity' this page presents a form to create a new Activity-->
+<!--
+  instructorAddActivity.vue
+  
+  Form component for instructors to create new activities. Provides a simple interface with activity name input,
+  cancel and submit functionality. Redirects to data management page with success notification upon completion.
+-->
 <template>
     <main>
       <!-- Form for creating a new activity -->
@@ -6,20 +11,16 @@
         <v-container>
           <!-- Page title -->
           <p class="font-weight-black text-h6">New Activity</p>
-
             <v-row>
               <v-col cols="12" md="6">
                 <!-- Input for the activity name -->
                 <v-text-field v-model="activity.activityName" label="Activity's Name"></v-text-field>
               </v-col>
             </v-row>
-
             <!-- Cancel button to go back to the previous page -->
             <v-btn @click="$router.back()" style="margin-right: 10px;">
               Cancel
             </v-btn>
-
-
             <!-- Submit button -->
             <v-btn style="text-align: center;" @click="handleSubmitForm">Submit</v-btn>
         </v-container>
@@ -30,27 +31,26 @@
   <script>
   import axios from "axios";
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
+  
   export default {
     data() {
       return {
+        // Activity object to hold form data
         activity: {
           activityName:''
         }
       };
     },
-    
+   
     methods: {
-
       // Submits an activity to the backend and redirects to the data management view with a success toast message indicating the activity has been added.
       async handleSubmitForm() {
         try {
           const user = useLoggedInUserStore();
           let token = user.token;
           let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/`;
-
           // Await the POST request to the backend
           const response = await axios.post(apiURL, this.activity, { headers: { token } });
-
           // Check if the status is 201 (Created)
           if (response.status === 201) {
             // Set the navigation data with a success toast
@@ -61,9 +61,8 @@
               toastPosition: 'top-right',
               toastCSS: 'Toastify__toast--create'
             };
-
             // Redirect to the instructor data management view
-            this.$router.push({ 
+            this.$router.push({
               name: 'instructorDataManagement'
             });
           }
@@ -72,19 +71,18 @@
           this.handleError(error);
         }
       },
-      
+     
     }
-
   }
   </script>
-  
+ 
   <style>
+  /* Navigation styling for active router links and responsive design */
   #contentNavbar .nav-link.router-link-exact-active{
       background-color: #eee;
   }
   /* Medium Devices, Desktops */
   @media only screen and (min-width : 992px) {
-
       #contentNavbar .nav-item {
           border: 3px solid black;
           border-right: none;

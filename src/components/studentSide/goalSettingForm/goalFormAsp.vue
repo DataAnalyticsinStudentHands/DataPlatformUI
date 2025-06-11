@@ -1,4 +1,12 @@
+<!--
+goalFormAsp.vue
+Form component for collecting user aspirations in the goal setting process.
+Validates that users provide at least 2 out of 3 possible long-term aspirations
+with examples and guidance for what constitutes an aspiration.
+-->
+
 <template>
+<!-- Main form wrapper with validation handling -->
 <v-form
     ref="form"
     @submit.prevent="handleValidations"
@@ -11,7 +19,8 @@
             >{{$t('Aspirations')}}</p>
         </v-col>
     </v-row>
-    <!-- Aspirations -->
+    
+    <!-- Aspirations section with instructions and examples -->
     <v-col cols="12" md="10">
         <p 
         :class="{'error-text': isAspirationsInvalid}"
@@ -23,12 +32,13 @@
             <br> {{$t('Examples:')}}
             <br>
             <ul>
-            <li>{{$t('“I want to focus my career on cancer disparities”')}}</li>
-            <li>{{$t('“I want to lead a non-profit that addresses food insecurity”')}}</li>
-            <li>{{$t('“I want to teach English in a different country”')}}</li>
+            <li>{{$t('"I want to focus my career on cancer disparities"')}}</li>
+            <li>{{$t('"I want to lead a non-profit that addresses food insecurity"')}}</li>
+            <li>{{$t('"I want to teach English in a different country"')}}</li>
             </ul>  
         </p>
 
+        <!-- Three aspiration text areas with validation -->
         <v-textarea
             ref="aspiration1Ref"
             :label="$t('Aspiration 1:')"
@@ -71,11 +81,13 @@ props: {
 emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change"],
 data() {
     return {
+        // Form submission and validation state
         formSubmitted: false,
         isAspirationsValid: true,
     }
 },
 watch: {
+    // Emit validation changes to parent component
     hasValidationErrors(newValue, oldValue) {
         if (newValue !== oldValue) {
             this.$emit('validation-change', { isValid: !newValue });
@@ -83,20 +95,20 @@ watch: {
     },
 },
 computed: {
+    // Check if aspirations are invalid based on minimum requirement
     isAspirationsInvalid() {
         if (!this.formSubmitted) return false;
         return this.filledAspirationsCount < 2;
     },
+    
+    // Count how many aspirations have been filled out
     filledAspirationsCount() {
-      // Extract the aspirations from the goalForm
       const { aspirationOne, aspirationTwo, aspirationThree } = this.goalForm.aspirations;
-
-      // Create an array of the aspirations
       const aspirationsArray = [aspirationOne, aspirationTwo, aspirationThree];
-
-      // Filter the array to only include non-empty values and return its length
       return aspirationsArray.filter(aspiration => aspiration && aspiration.trim() !== '').length;
     },
+    
+    // Generate error messages for aspirations validation
     aspirationsErrorMessages() {
         if (this.formSubmitted && this.filledAspirationsCount < 2) {
             this.isAspirationsValid = false;
@@ -105,16 +117,18 @@ computed: {
         this.isAspirationsValid = true;
         return [];
     },
+    
+    // Overall validation state for the form
     hasValidationErrors() {
         if (!this.formSubmitted) return false;
             return this.isAspirationsInvalid;
     },
 },
 methods: {
+    // Handle form validation and emit appropriate events
     async handleValidations() {
         this.formSubmitted = true;
 
-        // Check the validity of the aspirations directly
         if (!this.isAspirationsInvalid) {
             this.$emit('form-valid');
         } else {
@@ -131,15 +145,16 @@ methods: {
 </script>
 
 <style scoped>
+/* Error text styling */
 .error-text {
     color: rgb(176, 0, 32);
 }
 
+/* Fixed positioning for buttons (if needed) */
 .fixed-button {
     position: fixed;
-    bottom: 20px; /* Adjust the bottom value as needed */
-    right: 20px; /* Adjust the right value as needed */
+    bottom: 20px;
+    right: 20px;
     z-index: 1000;
 }
-
 </style>

@@ -1,4 +1,11 @@
-<!-- instructorAddExperienceInstance - this view presents a form to create a new Experience Instance -->
+<!--
+  instructorAddExperienceInstance.vue
+  
+  Complex form component for creating experience instances with session assignment, multiple experience selection,
+  activity management per experience, registration code configuration, and exit form release date scheduling.
+  Features tabbed interface for managing activities across different experiences, date picker integration,
+  and comprehensive validation before submission to backend API.
+-->
 <template>
 <div>
 <v-container>
@@ -280,14 +287,18 @@ export default {
 
     data() {
         return {
+            // Session data and selection state
             sessionData: [],
             selectedSession: null,
+            // Experience data and selection state
             experienceData: [],
             originalExperienceData: [],
             selectedExperiences: null,
+            // Date fields for registration and exit form timing
             registrationStartDate: null,
             registrationEndDate: null,
             exitFormReleaseDate: null,
+            // Form validation rules
             sessionRules: [v => !!v || 'Session is required'],
             experienceRules: [
                 v => {
@@ -297,10 +308,12 @@ export default {
                 }
             ],
             dateRules: [v => !!v || 'Date is required'],
+            // Exit form date management
             selectedExperiencesForExitFormReleaseDate: [],
             showDatePicker: false,
             selectedDate: new Date(),
             showExitFormError: false,
+            // Activity management state
             activitiesTab: null,
             activityData: [],
             originalActivityData: [],
@@ -316,10 +329,12 @@ export default {
             activitySearch: "",
             hoveredItem: null,
             selectedExperience: null,
+            // Registration code configuration per experience
             registrationCodes: {}
         }
     },
 
+    // Component initialization and data fetching
     created() {
         // Fetch activity data
         this.fetchActivityData();
@@ -339,7 +354,7 @@ export default {
         });
     },
 
-
+    // Reactive data watchers for form state management
     watch: {
         // Watch for changes to the selectedSession
         selectedSession(newVal) {
@@ -647,6 +662,7 @@ export default {
 </script>
 
 <style scoped>
+/* Error styling and interactive elements for form validation and user experience */
 .error-text {
     color: red;
 }
@@ -666,6 +682,7 @@ export default {
     cursor: pointer;
 }
 
+/* Scrollable container styling for tables and lists with custom scrollbar appearance */
 .scrollable-table {
     height: 300px; /* Adjust the height as needed */
     overflow-y: auto;

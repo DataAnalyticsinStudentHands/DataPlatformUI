@@ -1,10 +1,20 @@
+<!--
+  File: src/components/studentSide/exitForm/exitFormGrowth.vue
+  
+  This component handles the growth assessment and reflection section of the exit form. It evaluates
+  how the course experience contributed to the student's professional goals and personal growth
+  across various competencies. For Data & Society courses, it includes additional questions about
+  future academic and career intentions. The component also collects reflections on key lessons
+  learned and plans for applying that knowledge. Both mobile and desktop layouts are provided.
+-->
+
 <template>
 <v-container>
 <v-form
     ref="form"
     @submit.prevent="handleValidations"
 >
-    <!-- Experience contribution to Graduate/Professional Goals -->
+    <!-- Experience Contribution Section -->
     <v-row class="mt-5">
         <v-col cols="12">
             <p ref="experienceContributionGradProfField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red' : isExperienceContributionGradProfInvalid && formSubmitted}">
@@ -26,12 +36,10 @@
             </v-col>
     </v-row>
 
-      <!-- Data & Society likelihood questions -->
-
-    <!-- If Experience is not Data & Society, hide -->
+    <!-- Data & Society Specific Questions -->
     <div v-if="dataAndSociety">
 
-    <!-- Mobile View -->
+    <!-- Mobile Likelihood View -->
     <div class="d-sm-none">
     <v-row>
         <v-col cols="12">
@@ -89,9 +97,7 @@
     </v-row>
     </div>
 
-
-
-    <!-- Non-Mobile View -->  
+    <!-- Desktop Likelihood View -->
     <v-row class="d-none d-sm-inline">
         <v-row>
         <v-col cols="12">
@@ -147,8 +153,7 @@
     </v-row>
     </div>
 
-
-    <!-- Growth -->
+    <!-- Growth Assessment Section -->
     <v-row>
         <v-col cols="12">
             <p ref="growthProblemSolvingField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProblemSolvingInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('problem solving')}}</u>.</p>
@@ -216,7 +221,7 @@
         </v-col>
     </v-row>
 
-    <!-- Biggest Lessons and Key Takeaways -->
+    <!-- Key Lessons Reflection -->
     <v-row>
         <v-col cols="12">
             <p ref="biggestLessonsField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isBiggestLessonsInvalid && formSubmitted }">
@@ -238,7 +243,7 @@
         </v-col>
     </v-row>
 
-    <!-- Engage and Support -->
+    <!-- Pay It Forward Section -->
     <v-row>
         <v-col cols="12">
             <p ref="supportOthersField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isSupportOthersInvalid && formSubmitted }">
@@ -260,7 +265,7 @@
         </v-col>
     </v-row>
 
-    <!-- Other Comments/Recommendations -->
+    <!-- Optional Comments Section -->
     <v-row>
         <v-col cols="12">
             <p class="font-weight-black text-h8 mb-2">
@@ -281,10 +286,9 @@
         </v-col>
     </v-row>
 
-
 </v-form>
 
-
+<!-- Floating error navigation button -->
 <v-btn
       v-if="hasValidationErrors"
       @click="scrollToErrorField"
@@ -297,7 +301,6 @@
       <v-icon>mdi-alert-circle</v-icon>
       <v-tooltip activator="parent" location="start" v-model="jumpToErrorTooltip">Jump to Error</v-tooltip>
     </v-btn>
-
 
 </v-container>
 </template>
@@ -315,24 +318,25 @@ export default {
     data() {
         return {
             formSubmitted: false,
+            // Validation rule that only applies after form submission
             requiredRule: value => {
-                // If form has not been submitted, pass validation
                 if (!this.formSubmitted) {
                     return true;
                 }
-                // Otherwise, check if the value is present
                 return !!value || this.$t('Information is required.');
             },
         }
     },
 
     mounted() {
+        // Scroll to top on component mount
         this.$nextTick(() => {
             window.scrollTo(0, 0);
         });
     },
 
     watch: {
+      // Emit validation state changes and control tooltip
       hasValidationErrors(newValue, oldValue) {
           if (newValue !== oldValue) {
               this.$emit('validation-change', { isValid: !newValue });
@@ -346,9 +350,12 @@ export default {
     },
 
     computed: {
+        // Validate experience contribution field
         isExperienceContributionGradProfInvalid() {
             return !this.exitForm.experienceContributions || this.exitForm.experienceContributions.trim() === '';
         },
+        
+        // Validate growth assessment fields
         isGrowthProblemSolvingInvalid() {
             return !this.exitForm.generalGrowth.problemSolving;
         },
@@ -367,19 +374,24 @@ export default {
         isGrowthProfResInvalid() {
             return !this.exitForm.generalGrowth.professionalResponsibility;
         },
+        
+        // Validate open-ended reflection fields
         isBiggestLessonsInvalid() {
             return !this.exitForm.openEnded.biggestLessons;
         },
         isSupportOthersInvalid() {
             return !this.exitForm.openEnded.supportOthers;
         },
+        
+        // Validate Data & Society likelihood fields
         isLikelihoodInvalid() {
             return !this.exitForm.likelihoodOf.enrollAnotherCourseSelected || !this.exitForm.likelihoodOf.completeMinorSelected || !this.exitForm.likelihoodOf.recommendCourseSelected || !this.exitForm.likelihoodOf.pursueCareerSelected;
         },
+        
+        // Overall validation state with conditional likelihood check
         hasValidationErrors() {
             if (!this.formSubmitted) return false;
             
-            // List of all common validations
             const commonValidations = this.isExperienceContributionGradProfInvalid || 
                                     this.isGrowthProblemSolvingInvalid || 
                                     this.isGrowthEffCommInvalid || 
@@ -390,7 +402,7 @@ export default {
                                     this.isBiggestLessonsInvalid || 
                                     this.isSupportOthersInvalid;
 
-            // Add the likelihood validation only if dataAndSociety is true
+            // Include likelihood validation only for Data & Society courses
             if (this.dataAndSociety) {
                 return commonValidations || this.isLikelihoodInvalid;
             } else {
@@ -400,6 +412,7 @@ export default {
     },
 
     methods: {
+        // Validate form and emit result
         async handleValidations() {
             this.formSubmitted = true;
             const { valid } = await this.$refs.form.validate();
@@ -416,6 +429,7 @@ export default {
             }
         },
 
+        // Navigate to first error field
         scrollToErrorField() {
               const errorFields = [
                   'experienceContributionGradProfField',
@@ -432,15 +446,15 @@ export default {
   
               for (let i = 0; i < errorFields.length; i++) {
                   if (this.isFieldInvalid(errorFields[i])) {
-                      // Emit the actual DOM element or component reference
                       const ref = this.$refs[errorFields[i]];
-                      const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                      const element = ref.$el ? ref.$el : ref;
                       this.$emit('scroll-to-error', element);
                       break;
                   }
               }
           },
       
+          // Check if specific field is invalid
           isFieldInvalid(fieldRef) {
                 switch (fieldRef) {
                     case 'experienceContributionGradProfField':
@@ -474,10 +488,11 @@ export default {
 </script>
 
 <style scoped>
+/* Floating error button positioning */
 .fixed-button {
     position: fixed;
-    bottom: 20px; /* Adjust the bottom value as needed */
-    right: 20px; /* Adjust the right value as needed */
+    bottom: 20px;
+    right: 20px;
     z-index: 1000;
 }
 </style>

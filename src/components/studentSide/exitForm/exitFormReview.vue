@@ -1,7 +1,17 @@
+<!--
+  File: src/components/studentSide/exitForm/exitFormReview.vue
+  
+  This component provides a comprehensive review of all information entered in the exit form
+  before final submission. It displays the selected experience, progress on aspirations and goals,
+  barriers encountered, activity contributions, personal growth assessments, and open-ended
+  reflections. Each section includes edit buttons that navigate back to the specific form step
+  for modifications. The layout adapts for mobile and desktop views.
+-->
+
 <template>
 <v-container>
 <v-form disabled>
-<!-- Section: Selected Experience -->
+<!-- Review Header -->
 <v-row>
     <v-col>
         <p 
@@ -10,12 +20,14 @@
     </v-col>
 </v-row>
 <v-row><v-col></v-col></v-row>
+
+<!-- Selected Experience Section -->
 <div class="review-section">
 <v-row>
     <v-col sm="10" xs="12" class="pb-0">
         <h3 class="review-section-title">
             {{ $t('Selected Experience') }}
-            <!-- Mobile View Edit Button -->
+            <!-- Mobile edit button -->
             <v-btn v-if="$vuetify.display.xs"
                 icon
                 size="small"
@@ -27,7 +39,7 @@
             </v-btn>
         </h3>
     </v-col>
-    <!-- Non-Mobile View Edit Button -->
+    <!-- Desktop edit button -->
     <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
         <v-btn
             icon
@@ -49,11 +61,11 @@
 </div>
 
 <div v-if="goalFormExists">
-    <!-- Aspirations Review -->
+    <!-- Aspirations Progress Section -->
     <v-row>
         <v-col sm="10" xs="12">
             <h2 class="section-title mb-0">{{$t('Aspirations Progress')}}
-                <!-- Mobile View Edit Button -->
+                <!-- Mobile edit button -->
                 <v-btn v-if="$vuetify.display.xs"
                     icon
                     size="small"
@@ -65,7 +77,7 @@
                 </v-btn>
             </h2>
         </v-col>
-        <!-- Non-Mobile View Edit Button -->
+        <!-- Desktop edit button -->
         <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
             <v-btn
                 icon
@@ -97,11 +109,12 @@
             </v-list-item>
         </v-col>
     </v-row>
-    <!-- Goals Progress Review -->
+    
+    <!-- Goals Progress Section -->
     <v-row>
         <v-col sm="10" xs="12">
             <h2 class="section-title mb-0">{{$t('Goals Progress')}}
-                <!-- Mobile View Edit Button -->
+                <!-- Mobile edit button -->
                 <v-btn v-if="$vuetify.display.xs"
                     icon
                     size="small"
@@ -113,7 +126,7 @@
                 </v-btn>
             </h2>
         </v-col>
-        <!-- Non-Mobile View Edit Button -->
+        <!-- Desktop edit button -->
         <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
             <v-btn
                 icon
@@ -145,11 +158,12 @@
             </v-list-item>
         </v-col>
     </v-row>
-    <!-- Goals Barriers -->
+    
+    <!-- Goal Barriers Section -->
     <v-row>
         <v-col sm="10" xs="12">
             <h2 class="section-title mb-0">{{$t('Goal Barriers')}}
-                <!-- Mobile View Edit Button -->
+                <!-- Mobile edit button -->
                 <v-btn v-if="$vuetify.display.xs"
                     icon
                     size="small"
@@ -161,7 +175,7 @@
                 </v-btn>
             </h2>
         </v-col>
-        <!-- Non-Mobile View Edit Button -->
+        <!-- Desktop edit button -->
         <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
             <v-btn
                 icon
@@ -195,11 +209,13 @@
             <p class="subtitle-enhanced">{{ exitForm.goalIssues.issuesDescription || $t('No barriers were described.') }}</p>
         </v-col>
     </v-row>
+    
+    <!-- Activity Contributions Section -->
     <div v-if="activitiesExist">
         <v-row>
             <v-col sm="10" xs="12">
                 <h2 class="section-title mb-0">{{$t('Activity Contributions to Goals')}}
-                <!-- Mobile View Edit Button -->
+                <!-- Mobile edit button -->
                 <v-btn v-if="$vuetify.display.xs"
                     icon
                     size="small"
@@ -211,7 +227,7 @@
                 </v-btn>
                 </h2>
             </v-col>
-            <!-- Non-Mobile View Edit Button -->
+            <!-- Desktop edit button -->
             <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
                 <v-btn
                     icon
@@ -256,11 +272,12 @@
         </v-row>
     </div>
 </div>
-<!-- Experience Contribution to Graduate/Professional Goals -->
+
+<!-- Growth and Reflection Section -->
 <v-row class="mt-5">
     <v-col sm="10" xs="12">
         <h2 class="section-title mb-0">{{$t('Growth')}}
-                <!-- Mobile View Edit Button -->
+                <!-- Mobile edit button -->
                 <v-btn v-if="$vuetify.display.xs"
                     icon
                     size="small"
@@ -272,7 +289,7 @@
                 </v-btn>
         </h2>
     </v-col>
-    <!-- Non-Mobile View Edit Button -->
+    <!-- Desktop edit button -->
     <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
         <v-btn
             icon
@@ -284,6 +301,8 @@
         </v-btn>
     </v-col>
 </v-row>
+
+<!-- Professional Goals Contribution -->
 <v-row>
     <v-col>
         <p>{{$t('How this experience contributed to your graduate/professional goals:')}}</p>
@@ -294,7 +313,8 @@
         <div class="subtitle-enhanced" style="white-space: pre-line;">{{ exitForm.experienceContributions }}</div>
     </v-col>
 </v-row>
-<!-- Problem Solving Growth Review Section -->
+
+<!-- Growth Assessment Reviews -->
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
@@ -315,7 +335,6 @@
         </div>
     </v-col>
 </v-row>
-<!-- Teamwork Growth Review Section -->
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
@@ -326,7 +345,6 @@
         </div>
     </v-col>
 </v-row>
-<!-- Cultural Humility Growth Review Section -->
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
@@ -337,7 +355,6 @@
         </div>
     </v-col>
 </v-row>
-<!-- Ethical Decision Making Growth Review Section -->
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
@@ -348,7 +365,6 @@
         </div>
     </v-col>
 </v-row>
-<!-- Professional Responsibility Growth Review Section -->
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
@@ -359,7 +375,8 @@
         </div>
     </v-col>
 </v-row>
-<!-- Biggest Lessons and Key Takeaways Review Section -->
+
+<!-- Open-Ended Reflections -->
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
@@ -370,7 +387,6 @@
         </div>
     </v-col>
 </v-row>
-<!-- Engage and Support Review Section -->
 <v-row class="mt-5">
     <v-col cols="12">
         <p>
@@ -381,7 +397,6 @@
         </div>
     </v-col>
 </v-row>
-<!-- Other Comments/Recommendations Review Section -->
 <v-row v-if="exitForm.openEnded.comments && exitForm.openEnded.comments.length" class="mt-5">
     <v-col cols="12">
         <p>
@@ -393,15 +408,9 @@
     </v-col>
 </v-row>
 
-
-
-
-
 </v-form>
-
 </v-container>
 </template>
-
 
 <script>
 export default {
@@ -415,11 +424,13 @@ export default {
     },
     emits: ["change-step"],
     mounted() {
+        // Scroll to top on component mount
         this.$nextTick(() => {
             window.scrollTo(0, 0);
         });
     },
     computed: {
+        // Format aspirations with progress and connection data
         aspirations() {
             return [
                 {
@@ -437,8 +448,10 @@ export default {
                     progressSelected: this.exitForm.progressMade.aspirationThreeProgressSelected || "",
                     experienceConnectionSelected: this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || ""
                 }
-            ].filter(aspiration => aspiration.text);  // Filter out undefined or empty aspirations
+            ].filter(aspiration => aspiration.text);
         },
+        
+        // Format goals with progress and connection data
         goals() {
             return [
                 {
@@ -466,17 +479,20 @@ export default {
                     progressMade: this.exitForm.progressMade.goalFiveProgressSelected || "",
                     experienceConnection: this.exitForm.progressMade.goalFiveExperienceConnectionSelected || ""
                 }
-            ].filter(goal => goal.text); // Filters out undefined or empty goals
+            ].filter(goal => goal.text);
         },
+        
+        // Get goals that had barriers
         goalsWithBarriers() {
             return this.exitForm.goalIssues.goals
                 .map((goal, index) => ({ label: this.exitForm['goal' + (index + 1)], checked: goal.checked }))
                 .filter(goal => goal.checked);
         },
+        
+        // Map activity contributions to goal descriptions
         goalsContributions() {
             return (activityID) => {
                 let contributions = [];
-                // Map contributions to goal descriptions
                 if (this.exitForm.activitiesContribution.goalOneContributions.includes(activityID)) {
                     contributions.push(this.exitForm.goal1);
                 }
@@ -492,25 +508,24 @@ export default {
                 if (this.exitForm.activitiesContribution.goalFiveContributions.includes(activityID)) {
                     contributions.push(this.exitForm.goal5);
                 }
-                return contributions; // Returns an array of descriptions for goals to which the activity contributes
+                return contributions;
             }
         },
+        
+        // Display experience text from selected or incomplete form
         displayExperienceText() {
-            // Check if selectedExperience exists and has a non-empty text property
             if (this.selectedExperience && this.selectedExperience.text) {
                 return this.selectedExperience.text;
             } else if (this.expRegistrationIDFromIncompleteBackup) {
-                // Find the experience in exitForm.experiences that matches expRegistrationIDFromIncomplete
                 const matchingExperience = this.exitForm.experiences.find(experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup);
-                // If a matching experience is found, return the formatted string
                 if (matchingExperience) {
                     return `${matchingExperience.experienceCategory}: ${matchingExperience.experienceName}`;
                 }
             }
         }
-
     },
     methods: {
+        // Navigate to specific form step based on form configuration
         emitStepChange(stepNumber) {
             if (this.goalFormExists && this.activitiesExist) {
                 this.$emit('change-step', stepNumber);
@@ -532,8 +547,8 @@ export default {
 }
 </script>
 
-
 <style scoped>
+/* Review section container styling */
 .review-section {
   border: 1px solid #ddd;
   padding: 15px;
@@ -542,56 +557,62 @@ export default {
   background-color: #f9f9f9;
 }
 
+/* Section title styling */
 .review-section-title {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 15px;
 }
 
+/* Experience content box styling */
 .review-section-content {
-    font-size: 1.1rem; /* Adjust the size as needed */
-    margin: 10px 0; /* Vertical spacing for separation */
-    padding: 8px; /* Padding for better readability */
-    background-color: #f9f9f9; /* A light background to distinguish the area */
-    border: 1px solid #ddd; /* A subtle border */
-    border-radius: 4px; /* Rounded corners for a smooth look */
+    font-size: 1.1rem;
+    margin: 10px 0;
+    padding: 8px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-
+/* Form label styling */
 .form-label {
   font-weight: 500;
   margin-bottom: 10px;
   font-size: 0.9rem;
-  color: #555; /* Darker grey for better readability */
+  color: #555;
 }
 
+/* List item configuration */
 .v-list-item {
-  min-width: 0; /* Override minimum width */
+  min-width: 0;
 }
 
+/* List item title styling */
 .v-list-item-title {
-  font-size: 1.1rem; /* Larger font size for main items */
-  font-weight: bold; /* Adding bold to emphasize the titles */
-  margin-bottom: 5px; /* Space between title and subtitle */
-  white-space: normal; /* Allows text to wrap */
-  overflow: hidden; /* Keeps the text bound within the container */
-  text-overflow: clip; /* Prevents text from being clipped with ellipses */
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
-
+/* Subtitle styling */
 .v-list-item-subtitle {
-  font-size: 1rem; /* Slightly larger subtitle */
-  color: #333; /* Darker font color for better readability */
-  margin-bottom: 10px; /* Increased spacing */
-  line-height: 1.4; /* Increase line height to prevent cutting off text */
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+  line-height: 1.4;
 }
 
+/* Main section titles */
 .section-title {
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 20px;
 }
 
+/* Aspiration and goal titles */
 .aspiration-title, .goal-title {
   font-size: 1.1rem;
   font-weight: bold;
@@ -599,31 +620,31 @@ export default {
   margin-bottom: 10px;
 }
 
+/* Enhanced subtitle with wrapping */
 .subtitle-enhanced {
-  font-size: 1rem; /* Appropriate font size for detail text */
-  color: #2c2c2c; /* Dark gray for better readability */
-  line-height: 1.4; /* Sufficient line spacing for easy reading */
-  padding: 8px 16px; /* Padding for visual space around the text */
-  background-color: #f0f0f0; /* Light background to distinguish this item */
-  margin: 4px 0; /* Margins to space out list items */
-  border-radius: 4px; /* Slightly rounded corners for a soft look */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-  display: block; /* Ensure it takes up full width available */
-  overflow-wrap: break-word; /* Allows long words to break and wrap onto the next line */
+  font-size: 1rem;
+  color: #2c2c2c;
+  line-height: 1.4;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  margin: 4px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: block;
+  overflow-wrap: break-word;
 }
 
+/* Enhanced subtitle without wrapping */
 .subtitle-enhanced-nowrap {
-  font-size: 1rem; /* Appropriate font size for detail text */
-  color: #2c2c2c; /* Dark gray for better readability */
-  padding: 8px 16px; /* Padding for visual space around the text */
-  background-color: #f0f0f0; /* Light background to distinguish this item */
-  margin: 4px 0; /* Margins to space out list items */
-  border-radius: 4px; /* Slightly rounded corners for a soft look */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-  white-space: nowrap; /* Prevents text from wrapping to the next line */
-  overflow: hidden; /* Hides text that overflows the container's width */
-  text-overflow: ellipsis; /* Adds an ellipsis (...) when text overflows */
+  font-size: 1rem;
+  color: #2c2c2c;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  margin: 4px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
-
 </style>

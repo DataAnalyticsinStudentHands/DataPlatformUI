@@ -1,7 +1,16 @@
+<!--
+goalFormReview.vue
+Final review component for the goal setting form that displays all entered information
+in a read-only format with edit buttons to navigate back to specific sections.
+Shows selected experience, HICH projects, background data, growth goals, aspirations,
+and goals with responsive layout for mobile and desktop views.
+-->
+
 <template>
+<!-- Disabled form wrapper for read-only display -->
 <v-form disabled>
 <v-container>
-<!-- Section: Selected Experience -->
+<!-- Review section title -->
 <v-row>
     <v-col>
         <p 
@@ -10,12 +19,14 @@
     </v-col>
 </v-row>
 <v-row><v-col></v-col></v-row>
+
+<!-- Selected experience section with responsive edit buttons -->
 <div class="review-section">
 <v-row>
     <v-col cols="10" class="pb-0">
         <h3 class="review-section-title">
             {{ $t('Selected Experience') }}
-            <!-- Mobile View Edit Button -->
+            <!-- Mobile edit button -->
             <v-btn v-if="$vuetify.display.xs"
                 icon
                 size="small"
@@ -27,7 +38,7 @@
             </v-btn>
         </h3>
     </v-col>
-    <!-- Non-Mobile View Edit Button -->
+    <!-- Desktop edit button -->
     <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
         <v-btn
             icon
@@ -47,7 +58,8 @@
     </v-col>
 </v-row>
 </div>
-<!-- Section: HichProject Items -->
+
+<!-- HICH Projects section (conditional display) -->
 <div v-if="hichProject && hichProject.length > 0">
     <v-row>
         <v-col cols="12">
@@ -63,21 +75,19 @@
     </v-row>
 </div>
 
-
+<!-- Background section (conditional display based on edit state) -->
 <div v-if="isBackgroundEditActive || !hasCompletedGoalForm">
-<!-- Background Title -->
+<!-- Background title with responsive edit buttons -->
 <v-row class="d-flex justify-center align-center">
-    <!-- Empty Column for Space -->
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
-    <!-- Title Column -->
     <v-col cols="10" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Background') }}
         </h2>
     </v-col>
     <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
+        <!-- Mobile edit button -->
         <v-btn v-if="$vuetify.display.xs"
             icon
             size="small"
@@ -87,7 +97,7 @@
             <v-icon>mdi-pencil</v-icon>
         </v-btn>
     </v-col>
-    <!-- Non-Mobile View Edit Button -->
+    <!-- Desktop edit button -->
     <v-col cols="1" class="d-none d-sm-flex">
         <v-btn
             icon
@@ -100,8 +110,7 @@
     </v-col>
 </v-row>
 
-
-<!-- Section: Community Engagement Experiences -->
+<!-- Community engagement experiences review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title mb-1">{{ $t('Community Engagement Experiences') }}</h3>
@@ -119,7 +128,7 @@
     </v-col>
 </v-row>
 
-<!-- Section: Previous Community Engagement Experiences -->
+<!-- Previous community engagement experiences review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title mb-1">{{ $t('Previous Community Engagement Experiences') }}</h3>
@@ -137,7 +146,7 @@
     </v-col>
 </v-row>
 
-<!-- Section: Engagement Activities Tools -->
+<!-- Engagement activities tools review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title mb-1">{{ $t('Engagement Activities Tools') }}</h3>
@@ -155,7 +164,7 @@
     </v-col>
 </v-row>
 
-<!-- Section: Current Research Experience -->
+<!-- Current research experience review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title mb-1">{{ $t('Current Research Experience') }}</h3>
@@ -173,7 +182,7 @@
     </v-col>
 </v-row>
 
-<!-- Section: Previous Research Experience -->
+<!-- Previous research experience review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title mb-1">{{ $t('Previous Research Experience') }}</h3>
@@ -191,7 +200,7 @@
     </v-col>
 </v-row>
 
-<!-- Section: Familiar Tools -->
+<!-- Familiar tools review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title mb-1">{{ $t('Familiar Tools') }}</h3>
@@ -209,7 +218,7 @@
     </v-col>
 </v-row>
 
-<!-- Section: Research/Service Interests -->
+<!-- Research/service interests review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Research/Service Interests') }}</h3>
@@ -227,7 +236,7 @@
     </v-col>
 </v-row>
 
-<!-- Section: Leadership Position Interest -->
+<!-- Leadership position interest review -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Leadership Position Interest') }}</h3>
@@ -235,22 +244,19 @@
         <p class="review-section-content">{{ $t(goalForm.researchExperience.leadershipOption) }}</p>
     </v-col>
 </v-row>
-
 </div>
 
-<!-- Growth Title -->
+<!-- Growth goals section with responsive edit buttons -->
 <v-row class="d-flex justify-center align-center">
-    <!-- Empty Column for Space -->
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
-    <!-- Title Column -->
     <v-col cols="10" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Growth Goals') }}
         </h2>
     </v-col>
     <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
+        <!-- Mobile edit button -->
         <v-btn v-if="$vuetify.display.xs"
             icon
             size="small"
@@ -260,7 +266,7 @@
             <v-icon>mdi-pencil</v-icon>
         </v-btn>
     </v-col>
-    <!-- Non-Mobile View Edit Button -->
+    <!-- Desktop edit button -->
     <v-col cols="1" class="d-none d-sm-flex">
         <v-btn
             icon
@@ -273,7 +279,7 @@
     </v-col>
 </v-row>
 
-<!-- Problem Solving Goal -->
+<!-- Individual growth goal reviews -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Problem Solving Goal') }}</h3>
@@ -284,7 +290,6 @@
     </v-col>
 </v-row>
 
-<!-- Effective Communication Goal -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Effective Communication Goal') }}</h3>
@@ -295,7 +300,6 @@
     </v-col>
 </v-row>
 
-<!-- Teamwork Goal -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Teamwork Goal') }}</h3>
@@ -306,7 +310,6 @@
     </v-col>
 </v-row>
 
-<!-- Cultural Humility Goal -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Cultural Humility Goal') }}</h3>
@@ -317,8 +320,6 @@
     </v-col>
 </v-row>
 
-
-<!-- Ethical Decision Making Goal -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Ethical Decision Making Goal') }}</h3>
@@ -329,7 +330,6 @@
     </v-col>
 </v-row>
 
-<!-- Professional Responsibility Goal -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Professional Responsibility Goal') }}</h3>
@@ -340,7 +340,6 @@
     </v-col>
 </v-row>
 
-<!-- Social Responsibility Goal -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Social Responsibility Goal') }}</h3>
@@ -351,7 +350,6 @@
     </v-col>
 </v-row>
 
-<!-- Digital Literacy Goal -->
 <v-row>
     <v-col cols="12">
         <h3 class="review-section-title">{{ $t('Digital Literacy Goal') }}</h3>
@@ -362,20 +360,17 @@
     </v-col>
 </v-row>
 
-
-<!-- Aspirations Title -->
+<!-- Aspirations section with responsive edit buttons -->
 <v-row class="d-flex justify-center align-center">
-    <!-- Empty Column for Space -->
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
-    <!-- Title Column -->
     <v-col cols="10" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Aspirations') }}
         </h2>
     </v-col>
     <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
+        <!-- Mobile edit button -->
         <v-btn v-if="$vuetify.display.xs"
             icon
             size="small"
@@ -385,7 +380,7 @@
             <v-icon>mdi-pencil</v-icon>
         </v-btn>
     </v-col>
-    <!-- Non-Mobile View Edit Button -->
+    <!-- Desktop edit button -->
     <v-col cols="1" class="d-none d-sm-flex">
         <v-btn
             icon
@@ -398,8 +393,7 @@
     </v-col>
 </v-row>
 
-
-<!-- Aspirations Section -->
+<!-- Aspirations content display -->
 <v-row>
     <v-col cols="12">
         <p class="form-label">
@@ -408,33 +402,29 @@
             {{$t('Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.')}}
         </p>
         
-        <!-- Aspiration 1 -->
+        <!-- Individual aspirations with conditional display -->
         <h4 class="aspiration-title">{{ $t('Aspiration 1') }}</h4>
         <p class="review-section-content pl-3">{{ $t(goalForm.aspirations.aspirationOne) }}</p>
 
-        <!-- Aspiration 2 -->
         <h4 v-if="goalForm.aspirations.aspirationTwo" class="aspiration-title">{{ $t('Aspiration 2') }}</h4>
         <p v-if="goalForm.aspirations.aspirationTwo" class="review-section-content pl-3">{{ $t(goalForm.aspirations.aspirationTwo) }}</p>
 
-        <!-- Aspiration 3 -->
         <h4 v-if="goalForm.aspirations.aspirationThree" class="aspiration-title">{{ $t('Aspiration 3') }}</h4>
         <p v-if="goalForm.aspirations.aspirationThree" class="review-section-content pl-3">{{ $t(goalForm.aspirations.aspirationThree) }}</p>
     </v-col>
 </v-row>
 
-<!-- Goals Title -->
+<!-- Goals section with responsive edit buttons -->
 <v-row class="d-flex justify-center align-center">
-    <!-- Empty Column for Space -->
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
     <v-col cols="1" class="d-sm-none"></v-col>
-    <!-- Title Column -->
     <v-col cols="10" class="pb-0">
         <h2 class="section-title text-center">
             {{ $t('Goals') }}
         </h2>
     </v-col>
     <v-col cols="1" class="d-sm-none">
-        <!-- Mobile View Edit Button -->
+        <!-- Mobile edit button -->
         <v-btn v-if="$vuetify.display.xs"
             icon
             size="small"
@@ -444,7 +434,7 @@
             <v-icon>mdi-pencil</v-icon>
         </v-btn>
     </v-col>
-    <!-- Non-Mobile View Edit Button -->
+    <!-- Desktop edit button -->
     <v-col cols="1" class="d-none d-sm-flex">
         <v-btn
             icon
@@ -457,7 +447,7 @@
     </v-col>
 </v-row>
 
-<!-- Goals Section -->
+<!-- Goals content display -->
 <v-row>
     <v-col cols="12">
         <p class="form-label">
@@ -466,33 +456,27 @@
             {{$t('Goals are statements that describe what it means for an experience to be a success from your perspective,')}}
         </p>
         
-        <!-- Goal 1 -->
+        <!-- Individual goals with conditional display -->
         <h4 v-if="goalForm.goals.goalOne" class="goal-title">{{ $t('Goal 1') }}</h4>
         <p v-if="goalForm.goals.goalOne" class="review-section-content pl-3">{{ $t(goalForm.goals.goalOne) }}</p>
 
-        <!-- Goal 2 -->
         <h4 v-if="goalForm.goals.goalTwo" class="goal-title">{{ $t('Goal 2') }}</h4>
         <p v-if="goalForm.goals.goalTwo" class="review-section-content pl-3">{{ $t(goalForm.goals.goalTwo) }}</p>
 
-        <!-- Goal 3 -->
         <h4 v-if="goalForm.goals.goalThree" class="goal-title">{{ $t('Goal 3') }}</h4>
         <p v-if="goalForm.goals.goalThree" class="review-section-content pl-3">{{ $t(goalForm.goals.goalThree) }}</p>
 
-        <!-- Goal 4 -->
         <h4 v-if="goalForm.goals.goalFour" class="goal-title">{{ $t('Goal 4') }}</h4>
         <p v-if="goalForm.goals.goalFour" class="review-section-content pl-3">{{ $t(goalForm.goals.goalFour) }}</p>
 
-        <!-- Goal 5 -->
         <h4 v-if="goalForm.goals.goalFive" class="goal-title">{{ $t('Goal 5') }}</h4>
         <p v-if="goalForm.goals.goalFive" class="review-section-content pl-3">{{ $t(goalForm.goals.goalFive) }}</p>
     </v-col>
 </v-row>
 
-
 </v-container>
 </v-form>
 </template>
-
 
 <script>
 export default {
@@ -506,10 +490,11 @@ export default {
     },
     emits: ["change-step"],
     computed: {
+        // Data processing computed properties for background review display
         processedCommunityEngagementExperiences() {
             const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.communityEngagementExperiences
-                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above')
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -522,7 +507,7 @@ export default {
         processedPreviousEngagementExperiences() {
             const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.previousEngagementExperiences
-                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above')
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -535,7 +520,7 @@ export default {
         processedEngagementActivitiesTools() {
             const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.communityEngagement.engagementActivitiesTools
-                .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
+                .filter(tool => tool.label !== 'None of the above')
                 .map(tool => ({
                     ...tool,
                     checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
@@ -548,7 +533,7 @@ export default {
         processedCurrentResearchExperience() {
             const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.researchExperience.currentResearchExperience
-                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above')
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -561,7 +546,7 @@ export default {
         processedPreviousResearchExperience() {
             const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.researchExperience.previousResearchExperience
-                .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+                .filter(experience => experience.label !== 'None of the above')
                 .map(experience => ({
                     ...experience,
                     checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -574,7 +559,7 @@ export default {
         processedFamiliarTools() {
             const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.researchExperience.familiarTools
-                .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
+                .filter(tool => tool.label !== 'None of the above')
                 .map(tool => ({
                     ...tool,
                     checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
@@ -587,7 +572,7 @@ export default {
         processedInterestResearchService() {
             const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.label === 'None of the above' && interest.checked);
             return this.goalForm.researchExperience.interestResearchService
-                .filter(interest => interest.label !== 'None of the above') // Exclude "None of the above"
+                .filter(interest => interest.label !== 'None of the above')
                 .map(interest => ({
                     ...interest,
                     checked: noneSelected ? 'No' : (interest.checked ? 'Yes' : 'No')
@@ -599,6 +584,7 @@ export default {
         },
     },
     methods: {
+        // Emit step change event to parent for navigation
         emitStepChange(stepNumber) {
             this.$emit('change-step', stepNumber);
         },
@@ -606,8 +592,8 @@ export default {
 }
 </script>
 
-
 <style scoped>
+/* Review section container styling */
 .review-section {
   border: 1px solid #ddd;
   padding: 15px;
@@ -616,31 +602,27 @@ export default {
   background-color: #f9f9f9;
 }
 
+/* Review section title styling */
 .review-section-title {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.review-section {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
+/* Review section content styling */
 .review-section-content {
     font-size: 1rem;
     margin-bottom: 10px;
 }
 
+/* Text wrapping for content and labels */
 .review-section-content, .form-label {
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
 }
 
+/* Form label styling */
 .form-label {
   font-weight: 500;
   margin-bottom: 5px;
@@ -648,20 +630,23 @@ export default {
   color: grey;
 }
 
+/* List item styling for responsive layout */
 .v-list-item {
-    min-width: 0; /* Override minimum width */
+    min-width: 0;
 }
 
 .v-list-item-title {
-    white-space: normal; /* Allow text to wrap */
+    white-space: normal;
 }
 
+/* Section title styling */
 .section-title {
-    font-size: 1.25rem; /* Adjusted for larger section titles */
+    font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
+/* Aspiration title styling */
 .aspiration-title {
     font-size: 1rem;
     font-weight: bold;
@@ -669,12 +654,11 @@ export default {
     margin-bottom: 5px;
 }
 
+/* Goal title styling */
 .goal-title {
     font-size: 1rem;
     font-weight: bold;
     margin-top: 15px;
     margin-bottom: 5px;
 }
-
-
 </style>

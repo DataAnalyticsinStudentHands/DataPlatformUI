@@ -1,14 +1,21 @@
+<!--
+  File: src/components/studentSide/exitForm/exitFormAct.vue
+  
+  This component handles the activities contribution section of the exit form. It allows students
+  to map which course activities helped them make progress towards their specific goals. The
+  component provides both mobile and desktop views with different layouts - mobile uses a list
+  format while desktop uses a table format. Students can select multiple goals per activity or
+  indicate that an activity didn't contribute to any goals.
+-->
+
 <template>
     <v-container>
     <v-form
         ref="form"
         @submit.prevent="handleValidations"
     >
-        <!-- Activity Progress -->
-    
         <!-- Mobile View -->
         <div class="d-sm-none">
-    
             <v-row>
                 <v-col cols="12">
                     <p ref="goalActivityProgressMobileField" class="font-weight-black text-h8 mb-2" :class="{'text-custom-red': isGoalActivityProgressMobileInvalidTitle && formSubmitted}">
@@ -17,6 +24,7 @@
                 </v-col>
             </v-row>
     
+            <!-- Activity list with goal checkboxes -->
             <v-row>
                 <v-col cols="12">
                     <div v-for="activity in exitForm.experienceActivities" :key="activity.activityID">
@@ -83,7 +91,7 @@
                             @change="updateContribution(activity.activityID, 'noContributions', $event)"
                             density="compact"
                         ></v-checkbox>
-                        <!-- Dummy Text Fields for Group Validation -->
+                        <!-- Hidden field for validation -->
                         <v-text-field
                             v-show="false"
                             :rules="[() => validateGoalActivityProgress(activity)]"
@@ -94,8 +102,9 @@
             </v-row>
         </div>
     
-        <!-- Non-Mobile View -->
+        <!-- Desktop View -->
         <div class="d-none d-sm-inline">
+            <!-- Goals summary -->
             <v-row>
                 <v-col cols="12">
                     <p class="font-weight-black text-h8 mb-2">
@@ -124,6 +133,7 @@
                 </v-col>
             </v-row>
     
+            <!-- Activities contribution table -->
             <v-row>
                 <v-col cols="12">
                     <v-table>
@@ -207,7 +217,7 @@
                                     
                                 ></v-checkbox>
                                 </td>
-                                <!-- Dummy Text Fields for Group Validation -->
+                                <!-- Hidden field for validation -->
                                 <v-text-field
                                 v-show="false"
                                 :rules="[() => validateGoalActivityProgress(activity)]"
@@ -221,7 +231,7 @@
         </div>
     </v-form>
     
-    
+    <!-- Floating error navigation button -->
     <v-btn
           v-if="hasValidationErrors"
           @click="scrollToErrorField"
@@ -256,13 +266,15 @@
         },
     
         mounted() {
+            // Scroll to top on component mount
             this.$nextTick(() => {
                 window.scrollTo(0, 0);
             });
         },
     
         watch: {
-          hasValidationErrors(newValue, oldValue) {
+            // Emit validation state changes and control tooltip
+            hasValidationErrors(newValue, oldValue) {
               if (newValue !== oldValue) {
                   this.$emit('validation-change', { isValid: !newValue });
               }
@@ -275,6 +287,7 @@
         },
     
         computed: {
+            // Validate each activity in mobile view
             isGoalActivityProgressMobileInvalid() {
                 let validity = {};
                 this.exitForm.experienceActivities.forEach(activity => {
@@ -288,17 +301,19 @@
                         this.exitForm.activitiesContribution.noContributions
                     ].some(contributions => contributions.includes(activityID));
     
-                    // Set the validity for each activity
                     validity[activityID] = isAnyChecked;
                 });
                 return validity;
             },
+            
+            // Check if any activity is invalid in mobile view
             isGoalActivityProgressMobileInvalidTitle() {
-                // Check if any activity is invalid
                 return Object.values(this.isGoalActivityProgressMobileInvalid).includes(false);
             },
+            
+            // Validate activities in desktop view
             isGoalActivityProgressInvalid() {
-                // Generate an array of contribution property names based on existing goals
+                // Map existing goals to contribution property names
                 const goalContributionProperties = this.existingGoals.map((_, index) => {
                     const goalNumber = index + 1;
                     const suffix = goalNumber === 1 ? 'One'
@@ -312,15 +327,16 @@
                 return this.exitForm.experienceActivities.some(activity => {
                     const activityID = activity.activityID;
                     
-                    // Check if the activity contributes to any of the active goals or "None"
+                    // Check if activity is mapped to any goal or marked as no contribution
                     const isAnyChecked = goalContributionProperties.some(prop => 
                         this.exitForm.activitiesContribution[prop].includes(activityID)
                     ) || this.exitForm.activitiesContribution.noContributions.includes(activityID);
                     
-                    // If no checkboxes are checked for the activity, return true (invalid)
                     return !isAnyChecked;
                 });
             },
+            
+            // Overall validation state
             hasValidationErrors() {
                 if (!this.formSubmitted) return false;
                     return this.isGoalActivityProgressMobileInvalidTitle || this.isGoalActivityProgressInvalid
@@ -328,6 +344,7 @@
         },
     
         methods: {
+            // Validate form and emit result
             async handleValidations() {
                 this.formSubmitted = true;
                 const { valid } = await this.$refs.form.validate();
@@ -343,28 +360,29 @@
                 }
             },
     
+            // Handle checkbox selection logic
             updateContribution(activityId, goal, checked) {
                 if (goal === 'noContributions') {
                 let newActivitiesContribution = { ...this.exitForm.activitiesContribution };
     
                 if (checked) {
-                    // Clear the activityId from all other goals
+                    // Clear activity from all goal contributions when "No Goals" is selected
                     ['goalOneContributions', 'goalTwoContributions', 'goalThreeContributions', 
                     'goalFourContributions', 'goalFiveContributions'].forEach(g => {
                         newActivitiesContribution[g] = newActivitiesContribution[g].filter(id => id !== activityId);
                     });
                 } else {
-                    // Remove the activityId from 'noContributions' if it's present
+                    // Remove from 'noContributions' when unchecked
                     newActivitiesContribution['noContributions'] = newActivitiesContribution['noContributions'].filter(id => id !== activityId);
                 }
     
-                // Assign the new object to ensure Vue tracks the update
+                // Trigger Vue reactivity
                 this.exitForm.activitiesContribution = newActivitiesContribution;
                 }
             },
     
+            // Validate individual activity has at least one selection
             validateGoalActivityProgress(activity) {
-                // Check if at least one checkbox is selected for the activity
                 const activityID = activity.activityID;
                 const isAnyChecked = Object.values(this.exitForm.activitiesContribution).some(contributions => 
                     contributions.includes(activityID)
@@ -372,6 +390,7 @@
                 return isAnyChecked || this.$t('At least one checkbox must be selected for each activity.');
             },
     
+            // Navigate to first error field
             scrollToErrorField() {
                   const errorFields = [
                       'goalActivityProgressField'
@@ -379,15 +398,15 @@
       
                   for (let i = 0; i < errorFields.length; i++) {
                       if (this.isFieldInvalid(errorFields[i])) {
-                          // Emit the actual DOM element or component reference
                           const ref = this.$refs[errorFields[i]];
-                          const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                          const element = ref.$el ? ref.$el : ref;
                           this.$emit('scroll-to-error', element);
                           break;
                       }
                   }
               },
           
+              // Check if specific field is invalid
               isFieldInvalid(fieldRef) {
                     switch (fieldRef) {
                         case 'goalActivityProgressField':
@@ -401,10 +420,11 @@
     </script>
     
     <style scoped>
+    /* Floating error button positioning */
     .fixed-button {
         position: fixed;
-        bottom: 20px; /* Adjust the bottom value as needed */
-        right: 20px; /* Adjust the right value as needed */
+        bottom: 20px;
+        right: 20px;
         z-index: 1000;
     }
     </style>

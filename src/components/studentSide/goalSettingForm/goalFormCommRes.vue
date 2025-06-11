@@ -1,5 +1,12 @@
-<template>
+<!--
+goalFormCommRes.vue
+Form component for collecting community engagement and research experience background data.
+Displays previously completed data for review or provides editable form sections for each category
+with validation, checkbox groupings, and conditional "Other" text fields.
+-->
 
+<template>
+  <!-- Review mode: Display previously completed background data -->
   <v-container v-if="hasCompletedGoalForm && !isBackgroundEditActive">
   <v-row class="mb-4">
       <v-col>
@@ -9,9 +16,9 @@
         </p>
       </v-col>
     </v-row>
-  <!-- Background Title -->
+  
+  <!-- Background section title -->
   <v-row class="d-flex justify-center align-center">
-      <!-- Title Column -->
       <v-col class="pb-0">
           <h2 class="section-title text-center">
               {{ $t('Background') }}
@@ -19,8 +26,7 @@
       </v-col>
   </v-row>
   
-  
-  <!-- Section: Community Engagement Experiences -->
+  <!-- Community engagement experiences review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title mb-1">{{ $t('Community Engagement Experiences') }}</h3>
@@ -38,7 +44,7 @@
       </v-col>
   </v-row>
   
-  <!-- Section: Previous Community Engagement Experiences -->
+  <!-- Previous community engagement experiences review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title mb-1">{{ $t('Previous Community Engagement Experiences') }}</h3>
@@ -56,7 +62,7 @@
       </v-col>
   </v-row>
   
-  <!-- Section: Engagement Activities Tools -->
+  <!-- Engagement activities tools review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title mb-1">{{ $t('Engagement Activities Tools') }}</h3>
@@ -74,7 +80,7 @@
       </v-col>
   </v-row>
   
-  <!-- Section: Current Research Experience -->
+  <!-- Current research experience review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title mb-1">{{ $t('Current Research Experience') }}</h3>
@@ -92,7 +98,7 @@
       </v-col>
   </v-row>
   
-  <!-- Section: Previous Research Experience -->
+  <!-- Previous research experience review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title mb-1">{{ $t('Previous Research Experience') }}</h3>
@@ -110,7 +116,7 @@
       </v-col>
   </v-row>
   
-  <!-- Section: Familiar Tools -->
+  <!-- Familiar tools review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title mb-1">{{ $t('Familiar Tools') }}</h3>
@@ -128,7 +134,7 @@
       </v-col>
   </v-row>
   
-  <!-- Section: Research/Service Interests -->
+  <!-- Research/service interests review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title">{{ $t('Research/Service Interests') }}</h3>
@@ -146,7 +152,7 @@
       </v-col>
   </v-row>
   
-  <!-- Section: Leadership Position Interest -->
+  <!-- Leadership position interest review section -->
   <v-row>
       <v-col cols="12">
           <h3 class="review-section-title">{{ $t('Leadership Position Interest') }}</h3>
@@ -155,6 +161,8 @@
       </v-col>
   </v-row>
   </v-container>
+  
+  <!-- Edit mode: Editable form sections -->
   <v-form
       v-show="!hasCompletedGoalForm || isBackgroundEditActive"
       ref="form"
@@ -168,6 +176,8 @@
             >{{$t('Background')}}</p>
         </v-col>
     </v-row>
+    
+    <!-- Community engagement experiences section -->
       <v-col cols="12" md="10">
     <p 
       :class="{'error-text': formSubmitted && isCommunityEngagementExperiencesInvalid}"
@@ -177,14 +187,14 @@
       {{$t('What kind of community engagement experiences, if any, have you had? Check all that apply.')}}
     </p>
 
-  <!-- Invisible Checkbox for Form Validation -->
+  <!-- Hidden validation checkbox -->
   <v-checkbox
     v-model="invisibleCheckboxModel"
     :rules="communityEngagementExperiencesRules"
     style="display: none"
   />
   
-    <!-- Loop through all checkboxes -->
+    <!-- Community engagement checkboxes with hover effects -->
     <div 
       v-for="engagementExperience in goalForm.communityEngagement.communityEngagementExperiences" 
       :key="engagementExperience.id"
@@ -203,8 +213,7 @@
       >
       </v-checkbox>
   
-  
-      <!-- "Please Specify" text field for the 'Other' option -->
+      <!-- Conditional "Other" specification field -->
       <transition name="slide-y-transition">
       <v-row v-show="engagementExperience.label === 'Other' && engagementExperience.checked">
           <v-col cols="12">
@@ -224,7 +233,7 @@
     <div v-if="isCommunityEngagementExperiencesInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
   </v-col>
   
-  
+  <!-- Previous engagement experiences section -->
   <v-col cols="12" md="10">
     <p 
       :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
@@ -234,14 +243,14 @@
       {{$t('From your previous community engagement experiences, which of the following activities have you engaged in?')}}
     </p>
 
-  <!-- Invisible Checkbox for Form Validation -->
+  <!-- Hidden validation checkbox -->
   <v-checkbox
     v-model="invisibleCheckboxModel"
     :rules="communityEngagementExperiencesRules"
     style="display: none"
   />
 
-  <!-- Loop through checkboxes -->
+  <!-- Previous engagement checkboxes -->
     <div v-for="previousExperience in goalForm.communityEngagement.previousEngagementExperiences" :key="previousExperience.id"
     :class="{'error-text': isPreviousEngagementExperiencesInvalid}"
     @mouseover="hoveredCheckboxID2 = previousExperience.id" 
@@ -257,7 +266,7 @@
         >
         </v-checkbox>
   
-  
+        <!-- Conditional "Other" specification field -->
         <transition name="slide-y-transition">
         <v-row v-show="previousExperience.label === 'Other' && previousExperience.checked">
           <v-col cols="12">
@@ -276,6 +285,7 @@
       <div v-if="isPreviousEngagementExperiencesInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
   </v-col>
   
+  <!-- Engagement activities tools section -->
   <v-col cols="12" md="10">
     <p 
     :class="{'error-text': isEngagementActivitiesToolsInvalid}"
@@ -284,15 +294,14 @@
       {{$t('What, if any, tools have you used for community engagement activities?')}}
     </p>
 
-  <!-- Invisible Checkbox for Form Validation -->
+  <!-- Hidden validation checkbox -->
   <v-checkbox
     v-model="invisibleCheckboxModel"
     :rules="communityEngagementExperiencesRules"
     style="display: none"
   />
 
-  
-    <!-- Loop through all checkboxes -->
+    <!-- Engagement tools checkboxes -->
     <div v-for="activitiesTool in goalForm.communityEngagement.engagementActivitiesTools" :key="activitiesTool.id"
     :class="{'error-text': isEngagementActivitiesToolsInvalid}"
     @mouseover="hoveredCheckboxID3 = activitiesTool.id" 
@@ -308,8 +317,7 @@
       >
       </v-checkbox>
   
-  
-      <!-- "Please Specify" text field for the 'Other' option -->
+      <!-- Conditional "Other" specification field -->
       <transition name="slide-y-transition">
       <v-row v-show="activitiesTool.label === 'Other' && activitiesTool.checked">
           <v-col cols="12">
@@ -328,7 +336,7 @@
     <div v-if="isEngagementActivitiesToolsInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
   </v-col>
   
-  
+  <!-- Current research experience section -->
   <v-col cols="12" md="10">
     <p 
     :class="{'error-text': isCurrentResearchExperienceInvalid}"
@@ -337,16 +345,14 @@
       {{$t('What kind of research experiences, if any, have you had? Check all that apply.')}}
     </p>
 
-
-  <!-- Invisible Checkbox for Form Validation -->
+  <!-- Hidden validation checkbox -->
   <v-checkbox
     v-model="invisibleCheckboxModel"
     :rules="communityEngagementExperiencesRules"
     style="display: none"
   />
 
-  
-    <!-- Loop through all checkboxes -->
+    <!-- Current research experience checkboxes -->
     <div v-for="currentExperience in goalForm.researchExperience.currentResearchExperience" :key="currentExperience.id"
     class="relative"
     @mouseover="hoveredCheckboxID4 = currentExperience.id" 
@@ -362,9 +368,7 @@
       >
       </v-checkbox>
   
-   
-  
-      <!-- "Please Specify" text field for the 'Other' option -->
+      <!-- Conditional "Other" specification field -->
       <transition name="slide-y-transition">
       <v-row v-show="currentExperience.label === 'Other' && currentExperience.checked">
           <v-col cols="12">
@@ -383,7 +387,7 @@
     <div v-if="isCurrentResearchExperienceInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
   </v-col>
   
-  
+  <!-- Previous research experience section -->
   <v-col cols="12" md="10">
     <p 
     :class="{'error-text': isPreviousResearchExperienceInvalid}"
@@ -392,15 +396,14 @@
       {{$t('From your previous research experiences, which of the following activities have you engaged in?')}}
     </p>
 
-  <!-- Invisible Checkbox for Form Validation -->
+  <!-- Hidden validation checkbox -->
   <v-checkbox
     v-model="invisibleCheckboxModel"
     :rules="communityEngagementExperiencesRules"
     style="display: none"
   />
 
-  
-    <!-- Loop through all checkboxes -->
+    <!-- Previous research experience checkboxes -->
     <div v-for="previousExperience in goalForm.researchExperience.previousResearchExperience" :key="previousExperience.id"
     :class="{'error-text': isPreviousResearchExperienceInvalid}"
     @mouseover="hoveredCheckboxID5 = previousExperience.id" 
@@ -415,8 +418,7 @@
       >
       </v-checkbox>
   
-  
-      <!-- "Please Specify" text field for the 'Other' option -->
+      <!-- Conditional "Other" specification field -->
       <transition name="slide-y-transition">
       <v-row v-show="previousExperience.label === 'Other' && previousExperience.checked">
           <v-col cols="12">
@@ -435,7 +437,7 @@
     <div v-if="isPreviousResearchExperienceInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
   </v-col>
   
-  
+  <!-- Familiar tools section -->
   <v-col cols="12" md="10">
     <p 
     :class="{'error-text': isFamiliarToolsInvalid}"
@@ -444,15 +446,14 @@
       {{$t('What, if any, tools are you familiar with?')}}
     </p>
 
-  <!-- Invisible Checkbox for Form Validation -->
+  <!-- Hidden validation checkbox -->
   <v-checkbox
     v-model="invisibleCheckboxModel"
     :rules="communityEngagementExperiencesRules"
     style="display: none"
   />
 
-  
-    <!-- Loop through all checkboxes -->
+    <!-- Familiar tools checkboxes -->
     <div v-for="familiarTool in goalForm.researchExperience.familiarTools" :key="familiarTool.id"
     :class="{'error-text': isFamiliarToolsInvalid}"
     @mouseover="hoveredCheckboxID6 = familiarTool.id" 
@@ -467,8 +468,7 @@
       >
       </v-checkbox>
   
-  
-      <!-- "Please Specify" text field for the 'Other' option -->
+      <!-- Conditional "Other" specification field -->
       <transition name="slide-y-transition">
       <v-row v-show="familiarTool.label === 'Other' && familiarTool.checked">
           <v-col cols="12">
@@ -487,7 +487,7 @@
     <div v-if="isFamiliarToolsInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
   </v-col>
   
-  
+  <!-- Research/service interests section -->
   <v-col cols="12" md="10">
     <p 
     :class="{'error-text': isInterestResearchServiceInvalid}"
@@ -496,15 +496,14 @@
       {{$t('What are your research/service interests? Check all that apply.')}}
     </p>
 
-  <!-- Invisible Checkbox for Form Validation -->
+  <!-- Hidden validation checkbox -->
   <v-checkbox
     v-model="invisibleCheckboxModel"
     :rules="communityEngagementExperiencesRules"
     style="display: none"
   />
 
-  
-    <!-- Loop through all checkboxes -->
+    <!-- Research/service interests checkboxes -->
     <div v-for="interest in goalForm.researchExperience.interestResearchService" :key="interest.id"
     :class="{'error-text': isInterestResearchServiceInvalid}"
     @mouseover="hoveredCheckboxID7 = interest.id" 
@@ -519,8 +518,7 @@
       >
       </v-checkbox>
   
-  
-      <!-- "Please Specify" text field for the 'Other' option -->
+      <!-- Conditional "Other" specification field -->
       <transition name="slide-y-transition">
       <v-row v-show="interest.label === 'Other' && interest.checked">
           <v-col cols="12">
@@ -539,7 +537,7 @@
     <div v-if="isInterestResearchServiceInvalid" class="v-input__details error-text">{{$t('Information is required.')}}</div>
   </v-col>
   
-  
+  <!-- Leadership position interest section -->
   <v-col cols="12" md="10">
     <p 
     :class="{'error-text': isLeadershipOptionInvalid}"
@@ -557,7 +555,7 @@
   </v-container>
   </v-form>
   
-  <!-- Scroll to Error Button -->
+  <!-- Floating error navigation button -->
   <v-btn
       v-if="hasValidationErrors"
       @click="scrollToErrorField"
@@ -586,7 +584,10 @@
   emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change"],
   data() {
       return {
+          // Form state tracking
           formSubmitted: false,
+          
+          // Hover state tracking for checkbox interactions
           hoveredCheckboxID1: null,
           hoveredCheckboxID2: null,
           hoveredCheckboxID3: null,
@@ -594,8 +595,12 @@
           hoveredCheckboxID5: null,
           hoveredCheckboxID6: null,
           hoveredCheckboxID7: null,
+          
+          // UI state
           jumpToErrorTooltip: false,
           invisibleCheckboxModel: null,
+          
+          // Validation rules for each form section
           communityEngagementExperiencesRules: [
               () => {
               if (!this.formSubmitted) {
@@ -611,7 +616,6 @@
                   
                   const otherExperience = this.goalForm.communityEngagement.communityEngagementExperiences.find(p => p.label === 'Other');
   
-                  // If the condition for v-show is false (Other not checked), validation passes automatically
                   if (!otherExperience || !otherExperience.checked) return true;
   
                   return !!v || this.$t("If 'Other' is selected, please specify.");
@@ -632,7 +636,6 @@
                       
                       const previousExperience = this.goalForm.communityEngagement.previousEngagementExperiences.find(p => p.label === 'Other');
   
-                      // If the condition for v-show is false (Other not checked), validation passes automatically
                       if (!previousExperience || !previousExperience.checked) return true;
   
                       return !!v || this.$t("If 'Other' is selected, please specify.");
@@ -653,7 +656,6 @@
                       
                       const engagementActivitiesTool = this.goalForm.communityEngagement.engagementActivitiesTools.find(p => p.label === 'Other');
   
-                      // If the condition for v-show is false (Other not checked), validation passes automatically
                       if (!engagementActivitiesTool || !engagementActivitiesTool.checked) return true;
   
                       return !!v || this.$t("If 'Other' is selected, please specify.");
@@ -674,7 +676,6 @@
                       
                       const researchExperience = this.goalForm.researchExperience.currentResearchExperience.find(p => p.label === 'Other');
   
-                      // If the condition for v-show is false (Other not checked), validation passes automatically
                       if (!researchExperience || !researchExperience.checked) return true;
   
                       return !!v || this.$t("If 'Other' is selected, please specify.");
@@ -695,7 +696,6 @@
                       
                       const previousExperience = this.goalForm.researchExperience.previousResearchExperience.find(p => p.label === 'Other');
   
-                      // If the condition for v-show is false (Other not checked), validation passes automatically
                       if (!previousExperience || !previousExperience.checked) return true;
   
                       return !!v || this.$t("If 'Other' is selected, please specify.");
@@ -716,7 +716,6 @@
                       
                       const familiarTool = this.goalForm.researchExperience.familiarTools.find(p => p.label === 'Other');
   
-                      // If the condition for v-show is false (Other not checked), validation passes automatically
                       if (!familiarTool || !familiarTool.checked) return true;
   
                       return !!v || this.$t("If 'Other' is selected, please specify.");
@@ -737,7 +736,6 @@
                       
                       const researchService = this.goalForm.researchExperience.interestResearchService.find(p => p.label === 'Other');
   
-                      // If the condition for v-show is false (Other not checked), validation passes automatically
                       if (!researchService || !researchService.checked) return true;
   
                       return !!v || this.$t("If 'Other' is selected, please specify.");
@@ -750,17 +748,15 @@
                       return !!v || this.$t('Information is required.');
                   },
           ],
-  
       }
   },
   watch: {
+    // Watch community engagement experiences and handle "none of the above" logic
     'goalForm.communityEngagement.communityEngagementExperiences': {
       deep: true,
       handler(newVal) {
-        // Find the last checkbox
         const lastCheckbox = newVal[newVal.length - 1];
   
-        // If the last checkbox is checked, uncheck all other checkboxes
         if (lastCheckbox && lastCheckbox.checked) {
           newVal.forEach(engagementExperience => {
             if (engagementExperience.id !== lastCheckbox.id) {
@@ -771,7 +767,6 @@
   
         const otherExperience = newVal.find(exp => exp.label === 'Other');
         if (otherExperience && otherExperience.checked && this.formSubmitted) {
-          // Use the dynamic ref name based on the id
           const dynamicRef = this.$refs[`otherExperienceRef-${otherExperience.id}`];
           if (dynamicRef && dynamicRef.length > 0) {
             dynamicRef[0].validate();
@@ -779,13 +774,12 @@
         }
       }
     },
+    // Watch previous engagement experiences with similar logic
     'goalForm.communityEngagement.previousEngagementExperiences': {
       deep: true,
       handler(newVal) {
-        // Find the last checkbox
         const lastCheckbox = newVal[newVal.length - 1];
   
-        // If the last checkbox is checked, uncheck all other checkboxes
         if (lastCheckbox && lastCheckbox.checked) {
           newVal.forEach(experience => {
             if (experience.id !== lastCheckbox.id) {
@@ -796,21 +790,19 @@
   
         const previousExperience = newVal.find(exp => exp.label === 'Other');
         if (previousExperience && previousExperience.checked && this.formSubmitted) {
-          // Use the dynamic ref name based on the id
           const dynamicRef = this.$refs[`previousEngagementExperiencesOtherRef-${previousExperience.id}`];
           if (dynamicRef && dynamicRef.length > 0) {
-            dynamicRef[0].validate(); // Assuming there's only one element in the array
+            dynamicRef[0].validate();
           }
         }
       }
     },
+    // Watch engagement activities tools with similar logic
       'goalForm.communityEngagement.engagementActivitiesTools': {
         deep: true,
         handler(newVal) {
-          // Find the last checkbox
           const lastCheckbox = newVal[newVal.length - 1];
   
-          // If the last checkbox is checked, uncheck all other checkboxes
           if (lastCheckbox && lastCheckbox.checked) {
             newVal.forEach(tool => {
               if (tool.id !== lastCheckbox.id) {
@@ -821,7 +813,6 @@
   
           const engagementActivitiesTool = newVal.find(exp => exp.label === 'Other');
           if (engagementActivitiesTool && engagementActivitiesTool.checked && this.formSubmitted) {
-            // Use the dynamic ref name based on the id
             const dynamicRef = this.$refs[`engagementActivitiesToolOtherRef-${engagementActivitiesTool.id}`];
             if (dynamicRef && dynamicRef.length > 0) {
               dynamicRef[0].validate();
@@ -829,13 +820,12 @@
           }
         }
       },
+      // Watch current research experience with similar logic
       'goalForm.researchExperience.currentResearchExperience': {
         deep: true,
         handler(newVal) {
-          // Find the last checkbox
           const lastCheckbox = newVal[newVal.length - 1];
   
-          // If the last checkbox is checked, uncheck all other checkboxes
           if (lastCheckbox && lastCheckbox.checked) {
             newVal.forEach(experience => {
               if (experience.id !== lastCheckbox.id) {
@@ -846,7 +836,6 @@
   
           const researchExperience = newVal.find(exp => exp.label === 'Other');
           if (researchExperience && researchExperience.checked && this.formSubmitted) {
-            // Use the dynamic ref name based on the id
             const dynamicRef = this.$refs[`currentResearchExperienceOtherRef-${researchExperience.id}`];
             if (dynamicRef && dynamicRef.length > 0) {
               dynamicRef[0].validate();
@@ -854,13 +843,12 @@
           }
         }
       },
+      // Watch previous research experience with similar logic
       'goalForm.researchExperience.previousResearchExperience': {
         deep: true,
         handler(newVal) {
-          // Find the last checkbox
           const lastCheckbox = newVal[newVal.length - 1];
   
-          // If the last checkbox is checked, uncheck all other checkboxes
           if (lastCheckbox && lastCheckbox.checked) {
             newVal.forEach(experience => {
               if (experience.id !== lastCheckbox.id) {
@@ -871,7 +859,6 @@
   
           const previousExperience = newVal.find(exp => exp.label === 'Other');
           if (previousExperience && previousExperience.checked && this.formSubmitted) {
-            // Use the dynamic ref name based on the id
             const dynamicRef = this.$refs[`previousResearchExperienceOtherRef-${previousExperience.id}`];
             if (dynamicRef && dynamicRef.length > 0) {
               dynamicRef[0].validate(); 
@@ -879,13 +866,12 @@
           }
         }
       },
+      // Watch familiar tools with similar logic
       'goalForm.researchExperience.familiarTools': {
         deep: true,
         handler(newVal) {
-          // Find the last checkbox
           const lastCheckbox = newVal[newVal.length - 1];
   
-          // If the last checkbox is checked, uncheck all other checkboxes
           if (lastCheckbox && lastCheckbox.checked) {
             newVal.forEach(tool => {
               if (tool.id !== lastCheckbox.id) {
@@ -896,7 +882,6 @@
   
           const familiarTool = newVal.find(exp => exp.label === 'Other');
           if (familiarTool && familiarTool.checked && this.formSubmitted) {
-            // Use the dynamic ref name based on the id
             const dynamicRef = this.$refs[`familiarToolOtherRef-${familiarTool.id}`];
             if (dynamicRef && dynamicRef.length > 0) {
               dynamicRef[0].validate();
@@ -904,13 +889,12 @@
           }
         }
       },
+      // Watch research/service interests with similar logic
       'goalForm.researchExperience.interestResearchService': {
         deep: true,
         handler(newVal) {
-          // Find the last checkbox
           const lastCheckbox = newVal[newVal.length - 1];
   
-          // If the last checkbox is checked, uncheck all other checkboxes
           if (lastCheckbox && lastCheckbox.checked) {
             newVal.forEach(interestItem => {
               if (interestItem.id !== lastCheckbox.id) {
@@ -921,7 +905,6 @@
   
           const researchService = newVal.find(exp => exp.label === 'Other');
           if (researchService && researchService.checked && this.formSubmitted) {
-            // Use the dynamic ref name based on the id
             const dynamicRef = this.$refs[`interestResearchServiceOtherRef-${researchService.id}`];
             if (dynamicRef && dynamicRef.length > 0) {
               dynamicRef[0].validate(); 
@@ -929,6 +912,7 @@
           }
         }
       },
+      // Watch overall validation state changes
       hasValidationErrors(newValue, oldValue) {
           if (newValue !== oldValue) {
               this.$emit('validation-change', { isValid: !newValue });
@@ -939,11 +923,10 @@
       },
   },
   computed: {
+      // Validation computed properties for each form section
       isCommunityEngagementExperiencesInvalid() {
-          // If form hasn't been submitted then skip validation
           if (!this.formSubmitted) return '';
   
-          // Check if at least one checkbox is checked
           if (!this.goalForm.communityEngagement.communityEngagementExperiences.some(exp => exp.checked)) {
           return this.$t('Information is required.');
           }
@@ -957,7 +940,6 @@
       isPreviousEngagementExperiencesInvalid() {
           if (!this.formSubmitted) return '';
   
-          // Check if at least one checkbox is checked
           if (!this.goalForm.communityEngagement.previousEngagementExperiences.some(exp => exp.checked)) {
           return this.$t('Information is required.');
           }
@@ -971,7 +953,6 @@
       isEngagementActivitiesToolsInvalid() {
           if (!this.formSubmitted) return '';
   
-          // Check if at least one checkbox is checked
           if (!this.goalForm.communityEngagement.engagementActivitiesTools.some(exp => exp.checked)) {
           return this.$t('Information is required.');
           }
@@ -985,7 +966,6 @@
       isCurrentResearchExperienceInvalid() {
           if (!this.formSubmitted) return '';
   
-          // Check if at least one checkbox is checked
           if (!this.goalForm.researchExperience.currentResearchExperience.some(exp => exp.checked)) {
           return this.$t('Information is required.');
           }
@@ -999,7 +979,6 @@
       isPreviousResearchExperienceInvalid() {
           if (!this.formSubmitted) return '';
   
-          // Check if at least one checkbox is checked
           if (!this.goalForm.researchExperience.previousResearchExperience.some(exp => exp.checked)) {
           return this.$t('Information is required.');
           }
@@ -1013,7 +992,6 @@
       isFamiliarToolsInvalid() {
           if (!this.formSubmitted) return '';
   
-          // Check if at least one checkbox is checked
           if (!this.goalForm.researchExperience.familiarTools.some(exp => exp.checked)) {
           return this.$t('Information is required.');
           }
@@ -1027,7 +1005,6 @@
       isInterestResearchServiceInvalid() {
           if (!this.formSubmitted) return '';
   
-          // Check if at least one checkbox is checked
           if (!this.goalForm.researchExperience.interestResearchService.some(exp => exp.checked)) {
               return this.$t('Information is required.');
           }
@@ -1047,10 +1024,12 @@
           if (!this.formSubmitted) return false;
               return this.isCommunityEngagementExperiencesInvalid || this.isOtherEngagementExperienceInvalid || this.isPreviousEngagementExperiencesInvalid || this.isPreviousEngagementExperiencesOtherInvalid || this.isEngagementActivitiesToolsInvalid || this.isEngagementActivitiesToolOtherInvalid || this.isCurrentResearchExperienceInvalid || this.isCurrentResearchExperienceOtherInvalid || this.isPreviousResearchExperienceInvalid || this.isPreviousResearchExperienceOtherInvalid || this.isFamiliarToolsInvalid || this.isFamiliarToolOtherInvalid || this.isInterestResearchServiceInvalid || this.isInterestResearchServiceOtherInvalid || this.isLeadershipOptionInvalid;
       },
+      
+      // Data processing computed properties for review display
       processedCommunityEngagementExperiences() {
           const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
           return this.goalForm.communityEngagement.communityEngagementExperiences
-              .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+              .filter(experience => experience.label !== 'None of the above')
               .map(experience => ({
                   ...experience,
                   checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -1063,7 +1042,7 @@
       processedPreviousEngagementExperiences() {
           const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
           return this.goalForm.communityEngagement.previousEngagementExperiences
-              .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+              .filter(experience => experience.label !== 'None of the above')
               .map(experience => ({
                   ...experience,
                   checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -1076,7 +1055,7 @@
       processedEngagementActivitiesTools() {
           const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.label === 'None of the above' && tool.checked);
           return this.goalForm.communityEngagement.engagementActivitiesTools
-              .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
+              .filter(tool => tool.label !== 'None of the above')
               .map(tool => ({
                   ...tool,
                   checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
@@ -1089,7 +1068,7 @@
       processedCurrentResearchExperience() {
           const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
           return this.goalForm.researchExperience.currentResearchExperience
-              .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+              .filter(experience => experience.label !== 'None of the above')
               .map(experience => ({
                   ...experience,
                   checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -1102,7 +1081,7 @@
       processedPreviousResearchExperience() {
           const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
           return this.goalForm.researchExperience.previousResearchExperience
-              .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
+              .filter(experience => experience.label !== 'None of the above')
               .map(experience => ({
                   ...experience,
                   checked: noneSelected ? 'No' : (experience.checked ? 'Yes' : 'No')
@@ -1115,7 +1094,7 @@
       processedFamiliarTools() {
           const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.label === 'None of the above' && tool.checked);
           return this.goalForm.researchExperience.familiarTools
-              .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
+              .filter(tool => tool.label !== 'None of the above')
               .map(tool => ({
                   ...tool,
                   checked: noneSelected ? 'No' : (tool.checked ? 'Yes' : 'No')
@@ -1128,7 +1107,7 @@
       processedInterestResearchService() {
           const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.label === 'None of the above' && interest.checked);
           return this.goalForm.researchExperience.interestResearchService
-              .filter(interest => interest.label !== 'None of the above') // Exclude "None of the above"
+              .filter(interest => interest.label !== 'None of the above')
               .map(interest => ({
                   ...interest,
                   checked: noneSelected ? 'No' : (interest.checked ? 'Yes' : 'No')
@@ -1138,9 +1117,9 @@
       displayInterestResearchServiceOther() {
           return this.goalForm.researchExperience.interestResearchService.find(interest => interest.label === 'Other')?.checked;
       },
-  
   },
   methods: {
+      // Handle form validation and emit appropriate events
       async handleValidations() {
           this.formSubmitted = true;
           const { valid } = await this.$refs.form.validate();
@@ -1156,6 +1135,7 @@
           }
       },
   
+      // Scroll to first error field and emit scroll event
       scrollToErrorField() {
           const errorFields = [
               'communityEngagementExperiencesRef',
@@ -1177,8 +1157,7 @@
   
           for (let i = 0; i < errorFields.length; i++) {
               if (this.isFieldInvalid(errorFields[i])) {
-  
-                // HARDCODED ID VALUES - NEED TO MAINTAIN - OPTIMIZE IN FUTURE
+                // Handle dynamic refs with hardcoded IDs
                   let ref;
                   switch (errorFields[i]) {
                       case 'otherExperienceRef':
@@ -1207,7 +1186,6 @@
                           break;
                   }
   
-  
                   if (ref) {
                       const element = ref.$el ? ref.$el : ref;
                       this.$emit('scroll-to-error', element);
@@ -1217,6 +1195,7 @@
           }
       },
   
+      // Check if specific field has validation errors
       isFieldInvalid(fieldRef) {
           switch (fieldRef) {
               case 'communityEngagementExperiencesRef':
@@ -1258,31 +1237,34 @@
   </script>
   
   <style scoped>
+  /* Error text styling */
   .error-text {
       color: rgb(176, 0, 32);
   }
   
+  /* Fixed error navigation button */
   .fixed-button {
       position: fixed;
-      bottom: 20px; /* Adjust the bottom value as needed */
-      right: 20px; /* Adjust the right value as needed */
+      bottom: 20px;
+      right: 20px;
       z-index: 1000;
   }
   
-  
+  /* Section title styling */
   .section-title {
-      font-size: 1.25rem; /* Adjusted for larger section titles */
+      font-size: 1.25rem;
       font-weight: bold;
       margin-bottom: 10px;
   }
   
-  
+  /* Review section styling */
   .review-section-title {
     font-size: 1rem;
     font-weight: bold;
     margin-bottom: 10px;
   }
   
+  /* Form label styling */
   .form-label {
     font-weight: 500;
     margin-bottom: 5px;
@@ -1290,6 +1272,7 @@
     color: grey;
   }
   
+  /* Info text styling */
   .info-text {
     color: #0f5db0;
     font-weight: 500;

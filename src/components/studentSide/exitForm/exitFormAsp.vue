@@ -1,3 +1,13 @@
+<!--
+  File: src/components/studentSide/exitForm/exitFormAsp.vue
+  
+  This component handles the aspirations assessment section of the exit form. It displays the
+  student's aspirations from the beginning of the semester and asks them to evaluate their
+  progress on each aspiration. The component includes two evaluation tables: one for overall
+  progress made and another for how much the course contributed to that progress. Both mobile
+  and desktop views are supported with different layouts optimized for each screen size.
+-->
+
 <template>
 <v-container>
   <v-form 
@@ -5,8 +15,9 @@
     @submit.prevent="handleValidations"
   >
 
-    <!-- Aspirations -->
+    <!-- Aspirations Section -->
     <div v-if="goalFormExists">
+      <!-- Introduction and aspirations list -->
       <v-row dense>
           <v-col cols="12">
           <p class="font-weight-black text-h8">{{$t('At the beginning of the semester, we asked you to share two to three aspirations. Now we would like to know about your progress towards these aspirations. Below is a list of your aspirations from the beginning of the semester.')}}</p>
@@ -27,7 +38,7 @@
           </v-col>
       </v-row>
 
-      <!-- Aspirations Progress Table -->
+      <!-- Progress Assessment Section -->
       <v-row>
           <v-col cols="12">
             <p
@@ -36,11 +47,11 @@
           </v-col>
       </v-row>
 
-    <!-- Mobile View -->
+    <!-- Mobile Progress View -->
     <v-row class="d-sm-none">
         <v-col cols="12">
           <div v-if="exitForm.aspiration1">
-              <div class="font-semibold italic">“{{ exitForm.aspiration1 }}”</div>
+              <div class="font-semibold italic">"{{ exitForm.aspiration1 }}"</div>
               <v-radio-group v-model="exitForm.progressMade.aspirationOneProgressSelected" :rules="[requiredRule]">
               <v-radio
                   v-for="option in exitForm.progressMade.aspirationOneProgressResults"
@@ -51,7 +62,7 @@
               </v-radio-group>
           </div>
           <div v-if="exitForm.aspiration2">
-              <div class="font-semibold italic">“{{ exitForm.aspiration2 }}”</div>
+              <div class="font-semibold italic">"{{ exitForm.aspiration2 }}"</div>
               <v-radio-group v-model="exitForm.progressMade.aspirationTwoProgressSelected"  :rules="[requiredRule]">
               <v-radio
                   v-for="option in exitForm.progressMade.aspirationTwoProgressResults"
@@ -62,7 +73,7 @@
               </v-radio-group>
           </div>
           <div v-if="exitForm.aspiration3">
-              <div class="font-semibold italic">“{{ exitForm.aspiration3 }}”</div>
+              <div class="font-semibold italic">"{{ exitForm.aspiration3 }}"</div>
               <v-radio-group v-model="exitForm.progressMade.aspirationThreeProgressSelected"  :rules="[requiredRule]">
               <v-radio
                   v-for="option in exitForm.progressMade.aspirationThreeProgressResults"
@@ -75,7 +86,7 @@
         </v-col>
     </v-row>
 
-    <!-- Non-Mobile View -->  
+    <!-- Desktop Progress View -->
     <v-row class="d-none d-sm-flex">
         <v-col cols="12">
           <v-card>
@@ -117,20 +128,20 @@
       </v-col>
     </v-row>
 
-    <!-- Aspirations Connection Table -->
+    <!-- Course Connection Assessment Section -->
     <v-row>
       <v-col cols="12">
           <p ref="aspirationConnectionField" :class="{'text-custom-red': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
       </v-col>
     </v-row>
 
-    <!-- Mobile View -->
+    <!-- Mobile Connection View -->
     <v-row class="d-sm-none">
       <v-col cols="12">
           <v-row>
             <v-col cols="12">
                 <div v-if="exitForm.aspiration1">
-                    <div class="font-semibold italic">“{{ exitForm.aspiration1 }}”</div>
+                    <div class="font-semibold italic">"{{ exitForm.aspiration1 }}"</div>
                     <p class="text-caption text-gray-500">{{$t('The progress I made towards this aspiration was...')}}</p>
                     <v-radio-group v-model="exitForm.progressMade.aspirationOneExperienceConnectionSelected"  :rules="[requiredRule]">
                       <v-radio
@@ -142,7 +153,7 @@
                     </v-radio-group>
                 </div>
                 <div v-if="exitForm.aspiration2">
-                    <div class="font-semibold italic">“{{ exitForm.aspiration2 }}”</div>
+                    <div class="font-semibold italic">"{{ exitForm.aspiration2 }}"</div>
                     <p class="text-caption text-gray-500">{{$t('The progress I made towards this aspiration was...')}}</p>
                     <v-radio-group v-model="exitForm.progressMade.aspirationTwoExperienceConnectionSelected"  :rules="[requiredRule]">
                       <v-radio
@@ -154,7 +165,7 @@
                     </v-radio-group>
                 </div>
                 <div v-if="exitForm.aspiration3">
-                    <div class="font-semibold italic">“{{ exitForm.aspiration3 }}”</div>
+                    <div class="font-semibold italic">"{{ exitForm.aspiration3 }}"</div>
                     
                     <p class="text-caption text-gray-500">{{$t('The progress I made towards this aspiration was...')}}</p>
                     <v-radio-group v-model="exitForm.progressMade.aspirationThreeExperienceConnectionSelected"  :rules="[requiredRule]">
@@ -171,8 +182,7 @@
       </v-col>
     </v-row>
 
-
-    <!-- Non-Mobile View -->
+    <!-- Desktop Connection View -->
     <v-row>
       <v-col cols="12">
           <v-card>
@@ -214,10 +224,10 @@
       </v-col>
     </v-row>
 
-
     </div>
   </v-form>
 
+  <!-- Floating error navigation button -->
   <v-btn
       v-if="hasValidationErrors"
       @click="scrollToErrorField"
@@ -247,24 +257,25 @@ import { toast } from 'vue3-toastify';
     data() {
       return {
         formSubmitted: false,
+        // Validation rule that only applies after form submission
         requiredRule: value => {
-          // If form has not been submitted, pass validation
           if (!this.formSubmitted) {
               return true;
           }
-          // Otherwise, check if the value is present
           return !!value || this.$t('Information is required.');
           },
       }
     },
 
     mounted() {
+      // Scroll to top on component mount
       this.$nextTick(() => {
           window.scrollTo(0, 0);
       });
     },
 
     watch: {
+      // Emit validation state changes and control tooltip
       hasValidationErrors(newValue, oldValue) {
           if (newValue !== oldValue) {
               this.$emit('validation-change', { isValid: !newValue });
@@ -278,18 +289,19 @@ import { toast } from 'vue3-toastify';
     },
 
     computed: {
+      // Validate progress selections for all aspirations
       isAspirationProgressInvalid() {
-          // Check the first two aspirations for validity as they are required.
+          // First two aspirations are required
           const isAspirationOneInvalid = !this.exitForm.progressMade.aspirationOneProgressSelected;
           const isAspirationTwoInvalid = !this.exitForm.progressMade.aspirationTwoProgressSelected;
           
-          // Check if the third aspiration exists. If it doesn't, don't validate it.
+          // Third aspiration is only validated if it exists
           const isAspirationThreeInvalid = this.exitForm.aspiration3 && !this.exitForm.progressMade.aspirationThreeProgressSelected;
 
-          // The form is invalid if the first two are invalid or if the third one is invalid when it exists.
           return isAspirationOneInvalid || isAspirationTwoInvalid || isAspirationThreeInvalid;
       },
 
+      // Validate course connection selections for all aspirations
       isAspirationConnectionInvalid() {
           const isAspirationOneConnectionInvalid = !this.exitForm.progressMade.aspirationOneExperienceConnectionSelected;
           const isAspirationTwoConnectionInvalid = !this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected;
@@ -299,6 +311,7 @@ import { toast } from 'vue3-toastify';
           return isAspirationOneConnectionInvalid || isAspirationTwoConnectionInvalid || isAspirationThreeConnectionInvalid;
       },
 
+      // Overall validation state
       hasValidationErrors() {
           if (!this.formSubmitted) return false;
               return this.isAspirationProgressInvalid || this.isAspirationConnectionInvalid
@@ -306,6 +319,7 @@ import { toast } from 'vue3-toastify';
     },
 
     methods: {
+      // Validate form and emit result
       async handleValidations() {
           this.formSubmitted = true;
           const { valid } = await this.$refs.form.validate();
@@ -321,7 +335,8 @@ import { toast } from 'vue3-toastify';
           }
       },
 
-          scrollToErrorField() {
+      // Navigate to first error field
+      scrollToErrorField() {
               const errorFields = [
                   'aspirationProgressField',
                   'aspirationConnectionField',
@@ -329,15 +344,15 @@ import { toast } from 'vue3-toastify';
   
               for (let i = 0; i < errorFields.length; i++) {
                   if (this.isFieldInvalid(errorFields[i])) {
-                      // Emit the actual DOM element or component reference
                       const ref = this.$refs[errorFields[i]];
-                      const element = ref.$el ? ref.$el : ref; // If ref is a Vue component, use ref.$el to get the DOM element
+                      const element = ref.$el ? ref.$el : ref;
                       this.$emit('scroll-to-error', element);
                       break;
                   }
               }
           },
       
+          // Check if specific field is invalid
           isFieldInvalid(fieldRef) {
                 switch (fieldRef) {
                     case 'aspirationProgressField':
@@ -354,12 +369,11 @@ import { toast } from 'vue3-toastify';
 </script>
 
 <style scoped>
-    
+  /* Floating error button positioning */
   .fixed-button {
     position: fixed;
-    bottom: 20px; /* Adjust the bottom value as needed */
-    right: 20px; /* Adjust the right value as needed */
+    bottom: 20px;
+    right: 20px;
     z-index: 1000;
   }
-  
 </style>
