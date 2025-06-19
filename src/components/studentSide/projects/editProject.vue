@@ -357,30 +357,6 @@ project information and leave the project.
       @members-invited="handleMembersInvited"
     />
 
-    <!-- Invitation success notification dialog -->
-    <v-dialog v-model="inviteSuccessDialog" max-width="500px">
-      <v-card>
-        <v-card-title class="bg-success-lighten-5 py-4">
-          <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
-          {{ $t('Invitations Sent') }}
-        </v-card-title>
-        <v-card-text class="pt-4">
-          <p>{{ $t('The selected users have been invited to join your project.') }}</p>
-          <p>{{ $t('They will receive a notification and can accept or decline the invitation.') }}</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            variant="text"
-            @click="inviteSuccessDialog = false"
-          >
-            {{ $t('Close') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <!-- Leave project confirmation dialog -->
     <v-dialog v-model="leaveProjectDialog" max-width="500px">
       <v-card>
@@ -438,7 +414,6 @@ export default {
       archiveConfirmDialog: false,
       restoreConfirmDialog: false,
       inviteDialog: false,
-      inviteSuccessDialog: false,
       leaveProjectDialog: false,
       
       // Loading states for different operations
@@ -700,7 +675,6 @@ export default {
       if (invitedUsers && invitedUsers.length > 0) {
         this.fetchProjectData(this.projectData._id); 
       }
-      this.inviteSuccessDialog = true;
     },
     
     // Open leave project confirmation dialog

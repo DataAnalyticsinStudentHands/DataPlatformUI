@@ -392,7 +392,13 @@ With state persistence via Pinia store.
     <!-- Join project dialog -->
     <join-project-dialog
       v-model="joinDialog"
+      :invitations="pendingInvitations"
+      :loading-invitations="loadingInvitations"
+      :invitations-only="dialogInvitationsOnlyMode"
       @join="handleJoinWithCode"
+      @accept-invitation="handleAcceptInvitation"
+      @decline-invitation="handleDeclineInvitation"
+      @invitations-processed="handleInvitationsProcessed"
     />
 
     <!-- Dialog for Search Fields for xs Screens -->
@@ -540,7 +546,13 @@ export default {
         name: '',
         experienceInstanceName: ''
       },
-      projectMembers: []
+      projectMembers: [],
+
+      // Project invitations dialog
+      pendingInvitations: [],
+      loadingInvitations: false,
+
+      dialogInvitationsOnlyMode: false,
     };
   },
   computed: {
@@ -675,7 +687,19 @@ export default {
       if (newTab !== 'my-projects' && this.viewingArchivedProjects) {
         this.viewingArchivedProjects = false;
       }
-    }
+    },
+
+    joinDialog(newVal) {
+      if (newVal && this.loggedInUserStore.getRole === 'Student') {
+        // Refresh invitations when dialog opens
+        this.fetchPendingInvitations();
+      } else if (!newVal) {
+        // Reset mode when dialog closes
+        setTimeout(() => {
+          this.dialogInvitationsOnlyMode = false;
+        }, 300);
+      }
+    },
   },
   
   // Component initialization
@@ -688,9 +712,13 @@ export default {
       });
       loggedInUserStore.navigationData = null;
     }
+    
     await this.fetchProjects();
+    
+    // Check for pending invitations after loading projects
+    await this.checkAndShowInvitations();
   },
-  
+    
   methods: {
     // Fetch all projects from API
     async fetchProjects() {
@@ -969,14 +997,21 @@ export default {
       
       toast.success(this.$t("Members successfully invited to the project!"), {
         position: 'top-right',
-        toastClassName: 'Toastify__toast--update',
+        toastClassName: 'Toastify__toast--create',
         multiple: false
       });
     },
     
     // Open join project dialog
-    joinProject() {
+    async joinProject() {
       console.log('Join a Project button clicked');
+      
+      // Fetch latest invitations before opening dialog
+      if (this.loggedInUserStore.getRole === 'Student') {
+        await this.fetchPendingInvitations();
+      }
+      
+      this.dialogInvitationsOnlyMode = false; // Set to full mode (with tabs)
       this.joinDialog = true;
     },
 
@@ -999,6 +1034,136 @@ export default {
             }, 3000);
           }
         }, 300);
+      }
+    },
+
+    // Fetch pending project invitations
+    async fetchPendingInvitations() {
+      this.loadingInvitations = true;
+      try {
+        const token = this.loggedInUserStore.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations`;
+        
+        const response = await axios.get(apiURL, { headers: { token } });
+        
+        if (response.data && response.data.invitations) {
+          this.pendingInvitations = response.data.invitations;
+          console.log(`Found ${this.pendingInvitations.length} pending invitations`);
+        }
+      } catch (error) {
+        console.error("Error fetching invitations:", error);
+        toast.error(this.$t("Error loading project invitations"), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+      } finally {
+        this.loadingInvitations = false;
+      }
+    },
+
+    // Check and show invitations dialog if needed
+    async checkAndShowInvitations() {
+      console.log('=== Checking for pending invitations ===');
+      console.log('User store hasPendingInvitations:', this.loggedInUserStore.hasPendingInvitations);
+      
+      await this.fetchPendingInvitations();
+      
+      console.log('Fetched invitations:', this.pendingInvitations);
+      console.log('Number of invitations:', this.pendingInvitations.length);
+      
+      if (this.pendingInvitations.length > 0) {
+        console.log('Opening join dialog in invitations-only mode');
+        this.dialogInvitationsOnlyMode = true; // Set to invitations-only mode
+        this.joinDialog = true;
+      } else {
+        console.log('No pending invitations found');
+        this.loggedInUserStore.projectInvitationCount = 0;
+      }
+    },
+
+    // Accepting invitations
+    async handleAcceptInvitation(invitationId) {
+      try {
+        const token = this.loggedInUserStore.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations/${invitationId}/respond`;
+        
+        const response = await axios.post(apiURL, 
+          { accept: true }, 
+          { headers: { token } }
+        );
+        
+        if (response.data) {
+          // Decrement the invitation count
+          this.loggedInUserStore.decrementInvitationCount();
+          
+          toast.success(response.data.message || this.$t("Successfully joined the project!"), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--create',
+            multiple: false
+          });
+        }
+      } catch (error) {
+        console.error('Error accepting invitation:', error);
+        toast.error(
+          error.response?.data?.error || this.$t("Failed to accept invitation"),
+          {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          }
+        );
+        throw error; // Re-throw so dialog knows it failed
+      }
+    },
+
+    // Declining invitations
+    async handleDeclineInvitation(invitationId) {
+      try {
+        const token = this.loggedInUserStore.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations/${invitationId}/respond`;
+        
+        const response = await axios.post(apiURL, 
+          { accept: false }, 
+          { headers: { token } }
+        );
+        
+        if (response.data) {
+          // Decrement the invitation count
+          this.loggedInUserStore.decrementInvitationCount();
+          
+          toast.info(response.data.message || this.$t("Invitation declined"), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--update',
+            multiple: false
+          });
+        }
+      } catch (error) {
+        console.error('Error declining invitation:', error);
+        toast.error(
+          error.response?.data?.error || this.$t("Failed to decline invitation"),
+          {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          }
+        );
+        throw error; // Re-throw so dialog knows it failed
+      }
+    },
+
+    async handleInvitationsProcessed() {
+      console.log('All invitations processed, refreshing data...');
+      
+      // Refresh the invitation count from the server
+      await this.loggedInUserStore.fetchProjectInvitationCount();
+      
+      // Refresh the projects list to show newly joined projects
+      await this.fetchProjects();
+      
+      // If in invitations-only mode and no more invitations, close the dialog
+      if (this.dialogInvitationsOnlyMode && this.pendingInvitations.length === 0) {
+        this.joinDialog = false;
       }
     }
   }

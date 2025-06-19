@@ -97,6 +97,10 @@
               class="tracking-wider"
             >
               {{$t('Projects')}}
+              <span 
+                v-if="user.hasPendingInvitations" 
+                class="projects-notification-dot"
+              ></span>
             </v-list-item>
           </div>
           <!-- Instructor and admin role navigation items -->
@@ -247,6 +251,7 @@
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import 'vue3-toastify/dist/index.css';
+import { useSSENotifications } from '@/composables/useSSENotifications';
 
 export default {
   name: "App",
@@ -258,13 +263,30 @@ export default {
       activeLink: this.$route.name,
       rail: this.isMdAndUp,
       drawer: null,
+      invitationCheckInterval: null,
+      sseNotifications: null,
     };
   },
   watch: {
     // Update active navigation link when route changes
     $route(to, from) {
       this.activeLink = to.name;
+      // Check for invitations when navigating to projects page
+      if (to.name === 'projects' && this.user.getRole === 'Student') {
+        this.user.fetchProjectInvitationCount();
+      }
+    },
+
+    isFullyAuthenticated(newVal) {
+      if (newVal && this.user.getRole === 'Student') {
+        // Establish SSE connection when user logs in
+        this.sseNotifications.connect();
+      } else if (!newVal && this.sseNotifications) {
+        // Disconnect when user logs out
+        this.sseNotifications.disconnect();
+      }
     }
+    
   },
   computed: {
     // Check if viewport is medium size or larger
@@ -291,6 +313,17 @@ export default {
     // Handle user logout and display random success message
     async handleLogout() {
       const store = useLoggedInUserStore();
+
+      // Clean up SSE connection
+      if (this.sseNotifications) {
+        this.sseNotifications.disconnect();
+      }
+      
+      // Clear invitation check interval
+      if (this.invitationCheckInterval) {
+        clearInterval(this.invitationCheckInterval);
+        this.invitationCheckInterval = null;
+      }
       
       await store.logout();
       let logoutMessage = "";
@@ -329,25 +362,55 @@ export default {
         this.drawer = !this.drawer;
       }
     },
+    // Set up periodic invitation checking for students
+    setupInvitationChecking() {
+      if (this.user.getRole === 'Student') {
+        // Check invitations every 5 minutes
+        this.invitationCheckInterval = setInterval(() => {
+          this.user.fetchProjectInvitationCount();
+        }, 5 * 60 * 1000); // 5 minutes
+      }
+    },
   },
   
   mounted() {
     // Attach scroll listener to main content area
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.addEventListener('scroll', this.handleScroll);
+    
+    // Set up invitation checking if user is a student
+    if (this.isFullyAuthenticated) {
+      this.setupInvitationChecking();
+    }
+
+    // Set up SSE connection for real-time notifications
+    if (this.isFullyAuthenticated && this.user.getRole === 'Student') {
+      this.sseNotifications.connect();
+    }
   },
 
   beforeUnmount() {
     // Clean up scroll listener
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.removeEventListener('scroll', this.handleScroll);
+    
+    // Clear invitation check interval
+    if (this.invitationCheckInterval) {
+      clearInterval(this.invitationCheckInterval);
+    }
+
+    // Clean up SSE connection
+    if (this.sseNotifications) {
+      this.sseNotifications.disconnect();
+    }
   },
 
   setup() {
-    // Initialize user store
     const user = useLoggedInUserStore();
-    return { user };
+    const sseNotifications = useSSENotifications();
+    return { user, sseNotifications };
   },
+
   created() {
     // Fetch organization name from API
     const user = useLoggedInUserStore();
@@ -384,5 +447,24 @@ export default {
   overflow-y: auto;
   height: 100vh;
   padding-bottom: 5vh;
+}
+
+/* Projects notification dot - only affects this specific element */
+.projects-notification-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #64B5F6; /* light-blue-lighten-2 */
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* Position dot in rail mode */
+:deep(.v-navigation-drawer--rail) .projects-notification-dot {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>
