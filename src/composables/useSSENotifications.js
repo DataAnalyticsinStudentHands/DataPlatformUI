@@ -77,40 +77,58 @@ export function useSSENotifications() {
     }
   }
   
-  /**
-   * Handle incoming notification
-   * @param {Object} data - Notification data from server
-   */
-  function handleNotification(data) {
-    console.log('SSE: Received notification', data);
-    
-    switch (data.type) {
-      case 'connected':
-        // Connection confirmation - no action needed
-        break;
-        
-      case 'projectInvitation':
-        // Increment invitation count in store
-        loggedInUserStore.projectInvitationCount++;
-        
-        // Show toast notification
-        toast.info(`You've been invited to join "${data.projectName}"!`, {
+/**
+ * Handle incoming notification
+ * @param {Object} data - Notification data from server
+ */
+function handleNotification(data) {
+  console.log('SSE: Received notification', data);
+ 
+  switch (data.type) {
+    case 'connected':
+      // Connection confirmation - no action needed
+      break;
+     
+    case 'projectInvitation':
+      // Increment invitation count in store
+      loggedInUserStore.projectInvitationCount++;
+     
+      // Show toast notification
+      toast.info(`You've been invited to join "${data.projectName}"!`, {
+        position: 'top-right',
+        toastClassName: 'Toastify__toast--update',
+        autoClose: 5000,
+        onClick: () => {
+          // Optional: Navigate to projects page when toast is clicked
+          window.location.href = '#/projects';
+        }
+      });
+     
+      console.log(`SSE: Updated invitation count to ${loggedInUserStore.projectInvitationCount}`);
+      break;
+     
+    case 'invitationRetracted':
+      // Decrement invitation count in store
+      loggedInUserStore.decrementInvitationCount();
+     
+      // Show notification about retraction
+      const retractedByText = data.retractedBy ? ` by ${data.retractedBy}` : '';
+      toast.warning(
+        `Your invitation to "${data.projectName}" has been retracted${retractedByText}.`,
+        {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--update',
-          autoClose: 5000,
-          onClick: () => {
-            // Optional: Navigate to projects page when toast is clicked
-            window.location.href = '#/projects';
-          }
-        });
-        
-        console.log(`SSE: Updated invitation count to ${loggedInUserStore.projectInvitationCount}`);
-        break;
-        
-      default:
-        console.log('SSE: Unknown notification type', data.type);
-    }
+          toastClassName: 'Toastify__toast--warning',
+          autoClose: 7000
+        }
+      );
+     
+      console.log(`SSE: Invitation retracted for project ${data.projectId}, updated count to ${loggedInUserStore.projectInvitationCount}`);
+      break;
+     
+    default:
+      console.log('SSE: Unknown notification type', data.type);
   }
+}
   
   /**
    * Close SSE connection

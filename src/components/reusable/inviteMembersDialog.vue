@@ -132,14 +132,24 @@ with search and selection capabilities.
                     density="compact"
                   >
                     <template v-slot:prepend>
+                      <!-- Show checkbox for users who can be invited -->
                       <v-checkbox
+                        v-if="!isAlreadyMember(item.userID) && !isAlreadyInvited(item.userID)"
                         :model-value="isUserSelected(item.userID)"
                         @update:model-value="toggleUserSelection(item)"
                         color="#c8102e"
                         hide-details
                         class="mr-2"
-                        :disabled="isAlreadyMember(item.userID)"
                       ></v-checkbox>
+                      <!-- Show icon for members and invited users -->
+                      <div v-else class="mr-2" style="width: 40px; display: flex; justify-content: center;">
+                        <v-icon
+                          :color="isAlreadyMember(item.userID) ? 'success' : 'orange'"
+                          size="small"
+                        >
+                          {{ isAlreadyMember(item.userID) ? 'mdi-check-circle' : 'mdi-clock-outline' }}
+                        </v-icon>
+                      </div>
                     </template>
                     
                     <v-list-item-title class="font-weight-medium">
@@ -150,6 +160,7 @@ with search and selection capabilities.
                     </v-list-item-subtitle>
                     
                     <template v-slot:append>
+                      <!-- Already member chip -->
                       <v-chip
                         v-if="isAlreadyMember(item.userID)"
                         size="small"
@@ -159,6 +170,31 @@ with search and selection capabilities.
                         <v-icon start size="x-small">mdi-check</v-icon>
                         {{ $t('Already member') }}
                       </v-chip>
+                      
+                      <!-- Already invited chip with retract option -->
+                      <div v-else-if="isAlreadyInvited(item.userID)" class="d-flex align-center">
+                        <v-chip
+                          size="small"
+                          color="orange"
+                          variant="tonal"
+                          class="mr-2"
+                        >
+                          <v-icon start size="x-small">mdi-clock-outline</v-icon>
+                          {{ $t('Invited') }}
+                        </v-chip>
+                        
+                        <!-- Retract invitation button -->
+                        <v-btn
+                          size="small"
+                          color="grey-darken-1"
+                          variant="tonal"
+                          @click="confirmRetractInvitation(item)"
+                          :loading="retractingUsers.has(item.userID)"
+                          :title="$t('Retract invitation')"
+                        >
+                          <v-icon size="small">mdi-cancel</v-icon>
+                        </v-btn>
+                      </div>
                     </template>
                   </v-list-item>
                 </v-hover>
@@ -258,6 +294,44 @@ with search and selection capabilities.
           prepend-icon="mdi-send"
         >
           {{ $t('Send Invitations') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Retract invitation confirmation dialog -->
+  <v-dialog v-model="showRetractConfirmation" max-width="450px">
+    <v-card>
+      <v-card-title class="d-flex align-center pa-4">
+        <v-icon color="orange" size="28" class="mr-2">mdi-cancel</v-icon>
+        <span>{{ $t('Retract Invitation') }}</span>
+      </v-card-title>
+      <v-card-text class="px-4 pb-2">
+        <p class="mb-3" v-if="userToRetract">
+          {{ $t('Are you sure you want to retract the invitation for') }}
+          <strong>{{ userToRetract.firstName }} {{ userToRetract.lastName }}</strong>?
+        </p>
+        <p class="text-grey-darken-1">
+          {{ $t('They will no longer be able to join the project using their current invitation.') }}
+        </p>
+      </v-card-text>
+      <v-card-actions class="px-4 pb-4">
+        <v-spacer></v-spacer>
+        <v-btn
+          variant="text"
+          color="grey-darken-1"
+          @click="showRetractConfirmation = false"
+        >
+          {{ $t('Cancel') }}
+        </v-btn>
+        <v-btn
+          color="orange"
+          variant="elevated"
+          @click="retractInvitation"
+          :loading="retractingUsers.has(userToRetract?.userID)"
+          prepend-icon="mdi-cancel"
+        >
+          {{ $t('Retract Invitation') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -381,21 +455,27 @@ export default {
       inviteSuccessDialog: false,
       showRegenerateConfirmation: false,
       showSendInviteConfirmation: false,
+      showRetractConfirmation: false,
       
       // Loading states
       invitingUsers: false,
       loadingRegisteredUsers: false,
+      retractingUsers: new Set(),
       
       // Search and selection data
       searchQuery: '',
       registeredUsers: [],
       selectedUsers: [],
+      pendingInvitations: [], // Track users with pending invitations
       
       // Invite code data
       inviteCode: '',
       
       // Track successfully invited users count
-      invitedUsersCount: 0
+      invitedUsersCount: 0,
+      
+      // User to retract invitation for
+      userToRetract: null
     };
   },
   computed: {
@@ -475,12 +555,31 @@ export default {
       this.searchQuery = '';
       this.selectedUsers = [];
       this.invitedUsersCount = 0;
+      this.retractingUsers.clear();
 
       // Fetch required data
       await Promise.all([
         this.fetchInviteCode(),
-        this.fetchRegisteredUsers()
+        this.fetchRegisteredUsers(),
+        this.fetchPendingInvitations() // Fetch pending invitations
       ]);
+    },
+
+    // Fetch users with pending invitations for this project
+    async fetchPendingInvitations() {
+      try {
+        const token = this.loggedInUserStore.token;
+        const response = await axios.get(
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${this.projectId}/pending-invitations`,
+          { headers: { token } }
+        );
+        
+        this.pendingInvitations = response.data.pendingInvitations || [];
+        console.log('Pending invitations loaded:', this.pendingInvitations.length);
+      } catch (error) {
+        console.error("Error fetching pending invitations:", error);
+        this.pendingInvitations = [];
+      }
     },
 
     // Fetch current invite code for the project
@@ -568,6 +667,11 @@ export default {
       return this.projectMembers.some(member => member.userID === userID);
     },
     
+    // Check if user already has a pending invitation
+    isAlreadyInvited(userID) {
+      return this.pendingInvitations.some(invitation => invitation.userID === userID);
+    },
+    
     // Clear all selected users
     clearSelection() {
       this.selectedUsers = [];
@@ -633,6 +737,9 @@ export default {
         // Show success dialog
         this.inviteSuccessDialog = true;
         
+        // Refresh pending invitations to update UI
+        await this.fetchPendingInvitations();
+        
         // Format invited members for parent component
         const invitedMembers = (invitedUsers || []).map(user => ({
           userID: user.userID,
@@ -677,6 +784,75 @@ export default {
         }
       } finally {
         this.invitingUsers = false;
+      }
+    },
+    
+    // Confirm retraction of invitation
+    confirmRetractInvitation(user) {
+      this.userToRetract = user;
+      this.showRetractConfirmation = true;
+    },
+    
+    // Retract invitation for a user
+    async retractInvitation() {
+      if (!this.userToRetract) return;
+      
+      const userID = this.userToRetract.userID;
+      this.retractingUsers.add(userID);
+      this.showRetractConfirmation = false;
+      
+      try {
+        const token = this.loggedInUserStore.token;
+        const payload = {
+          projectId: this.projectId,
+          userIdToRetract: userID
+        };
+        
+        console.log('Retracting invitation payload:', payload);
+        
+        const response = await axios.delete(
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/retract-invitation`,
+          { 
+            headers: { token },
+            data: payload
+          }
+        );
+        
+        console.log('Invitation retracted successfully:', response.data);
+        
+        // Refresh pending invitations to update UI
+        await this.fetchPendingInvitations();
+        
+        // Show success message
+        toast.success(
+          this.$t(`Invitation retracted for ${this.userToRetract.firstName} ${this.userToRetract.lastName}`),
+          {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--create',
+            multiple: true
+          }
+        );
+        
+      } catch (error) {
+        console.error("Error retracting invitation:", error.response || error);
+        
+        // Handle specific error messages from backend
+        if (error.response?.data?.error) {
+          toast.error(this.$t(error.response.data.error), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--error',
+            multiple: true
+          });
+        } else {
+          toast.error(this.$t("Error retracting invitation. Please try again later."), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--error',
+            multiple: true
+          });
+        }
+      } finally {
+        this.retractingUsers.delete(userID);
+        this.userToRetract = null;
       }
     },
     

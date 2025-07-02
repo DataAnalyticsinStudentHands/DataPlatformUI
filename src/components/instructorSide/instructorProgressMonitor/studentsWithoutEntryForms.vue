@@ -21,7 +21,7 @@
 
             <!-- Pagination Controls -->
             <v-row justify="space-between">
-              <v-col cols="auto" class="ml-4">
+              <v-col cols="2" class="ml-4">
                 <v-text-field
                   v-model="itemsPerPage"
                   type="number"
