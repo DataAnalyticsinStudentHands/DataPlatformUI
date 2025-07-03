@@ -87,7 +87,7 @@ with search and selection capabilities.
         <v-divider class="mb-4"></v-divider>
         
         <!-- Direct Invite Section -->
-        <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite classmates directly') }}</div>
+        <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite members directly') }}</div>
         
         <!-- Search and Selection Counter -->
         <v-row class="mb-3">
