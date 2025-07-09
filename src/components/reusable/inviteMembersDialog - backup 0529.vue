@@ -21,7 +21,7 @@
               {{ $t('You can only invite users who are enrolled in') }}
               <strong class="ml-1">{{ experienceInstanceName }}</strong>
             </div>
-          </template>
+          </template> 
         </v-banner>
         
         <!-- Invite Code Section -->
