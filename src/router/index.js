@@ -429,6 +429,12 @@ const routes = [
       name: 'errorView',
       component: () => import('../components/error/errorView.vue')
     },
+    {
+    path: '/admin/backup',
+    name: 'AdminBackupManager',
+    component: () => import('@/components/admin/BackupDashboard.vue'),
+    beforeEnter: requireAuth(['Org Admin']),
+  }
 ]
 
 // Create router instance with base path
