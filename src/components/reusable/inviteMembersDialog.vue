@@ -772,13 +772,13 @@ export default {
         if (error.response?.data?.error) {
           toast.error(this.$t(error.response.data.error), {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--error',
+            toastClassName: 'Toastify__toast--delete',
             multiple: true
           });
         } else {
           toast.error(this.$t("Error sending invitations. Please try again later."), {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--error',
+            toastClassName: 'Toastify__toast--delete',
             multiple: true
           });
         }

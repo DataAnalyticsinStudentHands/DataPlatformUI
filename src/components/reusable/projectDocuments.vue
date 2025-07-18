@@ -44,7 +44,7 @@
         rounded
         class="mb-1 document-list-item"
         link
-        @click="viewDocument(document)"
+        @click="downloadDocument(document)"
       >
         <template v-slot:prepend>
           <v-avatar color="grey-lighten-2" class="mr-3">
@@ -84,12 +84,6 @@
                   @click.stop="confirmDeleteDocument(document)"
                   class="text-error"
                 ></v-list-item>
-                <v-list-item
-                  prepend-icon="mdi-history"
-                  title="Version history"
-                  @click.stop="viewVersionHistory(document.id)"
-                ></v-list-item>
-
               </v-list>
             </v-menu>
           </div>
@@ -249,42 +243,6 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="versionHistoryDialog" max-width="600px">
-      <v-card>
-        <v-card-title class="bg-grey-lighten-4 py-4">
-          <v-icon start icon="mdi-history" class="mr-2" />{{ $t('Version History') }}
-        </v-card-title>
-
-        <v-card-text>
-          <v-list lines="two" density="compact">
-            <v-list-item
-              v-for="v in versionHistory"
-              :key="v.id"
-              :title="`v${v.versionLabel}`"
-              :subtitle="formatDate(v.createdDateTime)"
-              rounded
-            >
-              <template #append>
-                <v-btn
-                  icon="mdi-download"
-                  variant="text"
-                  size="small"
-                  @click.stop="downloadVersion(v)"
-                />
-              </template>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="versionHistoryDialog = false">
-            {{ $t('Close') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
   </v-card>
 </template>
 
@@ -325,9 +283,7 @@ export default {
       selectedFileSize: '',
       isDragOver: false,
       canUpload: false,
-      currentUser: null,
-      versionHistoryDialog: false,
-      versionHistory: [],
+      currentUser: null
     };
   },
   created() {
@@ -335,11 +291,21 @@ export default {
     const userStore = useLoggedInUserStore();
     this.currentUser = userStore;    
     
+    // Decode JWT to get permissions (one time only)
+    if (userStore.token) {
+      try {
+        const payload = JSON.parse(atob(userStore.token.split('.')[1]));
+        this.currentUser = { ...userStore, permissions: payload.permissions };
+      } catch (e) {
+        console.error('Error decoding token:', e);
+      }
+    }
+    
     // Determine if user can upload based on permissions
     this.canUpload = this.isProjectOwner || 
-                    (userStore?.permissions?.projects &&
+                    (this.currentUser?.permissions?.projects &&
                     ['own', 'member', 'all']
-                    .includes(userStore.permissions.projects.uploadDocs));
+                    .includes(this.currentUser.permissions.projects.uploadDocs));
   },
   mounted() {
     this.fetchDocuments();
@@ -393,13 +359,6 @@ export default {
         
         if (response.data.success) {
           this.projectDocuments = response.data.documents;
-        } else {
-          console.error('Error fetching documents:', response.data);
-          toast.error(this.$t('Failed to load documents'), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: true
-          });
         }
       } catch (error) {
         console.error('Error fetching documents:', error);
@@ -482,32 +441,23 @@ export default {
       // Reset the file input value
       this.$refs.fileInput.value = '';
     },
-    
-    viewDocument(document) {
-      // Use anonymous link if available, otherwise fallback to original behavior
-      if (document.anonymousLink) {
-        window.open(document.anonymousLink, '_blank');
-      } else if (document.sharePointUrl) {
-        window.open(document.sharePointUrl, '_blank');
-      } else {
-        this.downloadDocument(document);
-      }
-    },
-    
-    async downloadDocument(document) {
+
+    async downloadDocument(doc) {
       try {
-        const response = await axios.get(`${API}/clowder/projects/${this.projectId}/documents/${document.id}/download`);
+        const response = await axios.get(
+          `${API}/clowder/projects/${this.projectId}/documents/${doc.id}/download`,
+          {
+            responseType: 'blob'
+          }
+        );
         
-        if (response.data.success && response.data.downloadUrl) {
-          // Open the download URL in a new tab
-          window.open(response.data.downloadUrl, '_blank');
-        } else {
-          toast.error(this.$t('Failed to download document'), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: true
-          });
-        }
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.name;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
       } catch (error) {
         console.error('Error downloading document:', error);
         toast.error(this.$t('Failed to download document'), {
@@ -521,18 +471,21 @@ export default {
     canDelete(document) {
       if (this.isProjectOwner) return true;
       
+      
       // Check if user has permission to delete based on ownership
-      const isDocumentOwner = document.uploaderId === this.currentUser?.id;
+      const isDocumentOwner = document.uploaderId === this.currentUser?.userId;
       
       if (this.currentUser?.permissions?.projects?.deleteDocs === 'own') {
         return isDocumentOwner;
       }
       
-      return ['group', 'all'].includes(
+      const hasGroupOrAll = ['group', 'all'].includes(
         this.currentUser?.permissions?.projects?.deleteDocs || ''
       );
+      
+      return hasGroupOrAll;
     },
-    
+        
     confirmDeleteDocument(document) {
       this.documentToDelete = document;
       this.deleteDialog = true;
@@ -649,30 +602,6 @@ export default {
       return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
     },
 
-    async viewVersionHistory(documentId) {
-      try {
-        const response = await axios.get(`${API}/clowder/projects/${this.projectId}/documents/${documentId}/versions`);
-        
-        if (response.data.success) {
-          this.versionHistory = response.data.versions;
-          this.versionHistoryDialog = true;
-        } else {
-          toast.error(this.$t('Failed to fetch version history'), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: true
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching version history:', error);
-        toast.error(this.$t('Failed to fetch version history'), {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: true
-        });
-      }
-    },
-
     async uploadDocumentWithRetry(maxRetries = 3) {
       let retries = 0;
       
@@ -701,22 +630,7 @@ export default {
           });
         }
       }
-    },
-
-    async downloadVersion(version) {
-      try {
-        const { data } = await axios.get(
-          `${API}/clowder/projects/${this.projectId}/documents/${version.documentId}/versions/${version.id}/download`
-        );
-        if (data?.downloadUrl) window.open(data.downloadUrl, '_blank');
-      } catch (err) {
-        toast.error(this.$t('Failed to download version'), { 
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: true
-        });
-      }
-    },
+    }
   }
 };
 </script>

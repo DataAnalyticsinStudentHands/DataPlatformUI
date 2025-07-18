@@ -226,6 +226,13 @@ project information and leave the project.
                   </v-card>
                 </v-card-text>
               </v-card>
+
+              <!-- Project documents component -->
+              <project-documents
+                v-if="projectData._id"
+                :project-id="projectData._id"
+                :is-project-owner="isProjectOwner"
+              />
             </v-col>
           </v-row>
           

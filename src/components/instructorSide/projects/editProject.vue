@@ -215,6 +215,13 @@ archive/restore projects. Includes comprehensive project review capabilities.
                   </v-card>
                 </v-card-text>
               </v-card>
+
+              <!-- Project documents component -->
+              <project-documents
+                v-if="projectData._id"
+                :project-id="projectData._id"
+                :is-project-owner="true"
+              />
             </v-col>
           </v-row>
           
