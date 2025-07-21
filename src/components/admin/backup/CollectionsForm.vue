@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div v-if="loading" class="text-center py-3">
       Loading…
     </div>
@@ -15,8 +14,9 @@
         </button>
       </div>
 
+      <!-- Scrollable checkbox list -->
       <div
-        class="border rounded p-2 mb-3"
+        class="scroll-area rounded p-2 mb-3"
         style="max-height: 200px; overflow-y: auto;"
       >
         <div
@@ -37,6 +37,7 @@
         </div>
       </div>
 
+      <!-- Summary of selection -->
       <div class="mb-3">
         <small class="text-muted">
           Selected:
@@ -59,8 +60,9 @@
         </small>
       </div>
 
+      <!-- Save Collections button -->
       <button
-        class="btn-save"
+        class="btn-outline-save"
         :disabled="saving"
         @click="save"
       >
@@ -72,6 +74,7 @@
 
 <script>
 import axios from 'axios';
+import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from '@/stored/loggedInUser';
 
 export default {
@@ -79,8 +82,8 @@ export default {
   emits: ['collections-changed'],
   data() {
     return {
-      collections: [],
-      selected: [],
+      collections: [],      // all collection names from the database
+      selected: [],         // user’s current selection
       loading: false,
       saving: false
     };
@@ -95,6 +98,8 @@ export default {
         { headers: { token } }
       );
       this.collections = data.allCollections;
+
+      // If no explicit selection saved, default to all
       this.selected    = data.selectedCollections.length
         ? data.selectedCollections
         : [...this.collections];
@@ -112,6 +117,7 @@ export default {
       this.selected = [];
     },
     async save() {
+      // Persists the current selection to the server and notifies parent.
       this.saving = true;
       try {
         const API   = import.meta.env.VITE_ROOT_API;
@@ -123,10 +129,10 @@ export default {
           { headers: { token } }
         );
         this.$emit('collections-changed', payload.collections);
-        alert('Collections saved!');
+        toast.success('Collections saved!');
       } catch (err) {
         console.error('Failed to save collections:', err);
-        alert('Could not save collections.');
+        toast.error('Could not save collections.');
       } finally {
         this.saving = false;
       }
@@ -136,31 +142,36 @@ export default {
 </script>
 
 <style scoped>
-.border {
+.scroll-area {
   background: #f8f9fa;
+  border: 1px solid #dee2e6;
 }
-.btn-save {
-  background-color: rgb(200,16,46); 
-  border: none;
-  color: #fff;
+
+.btn-outline-save {
+  background: transparent;
+  color: rgb(200,16,46);
+  border: 2px solid rgb(200,16,46);
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
   font-weight: 500;
-  transition: opacity 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
 }
-.btn-save:disabled {
+.btn-outline-save:hover,
+.btn-outline-save:focus {
+  background-color: #f5f9f9;
+  border-color: rgba(200,16,46,0.8);
+}
+.btn-outline-save:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-.btn-save:not(:disabled):hover {
-  opacity: 0.9;
-}
+
 .link-button {
   background: none;
   border: none;
   padding: 0;
   margin: 0 0.5rem 0 0;
-  color: #000; 
+  color: #000;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;

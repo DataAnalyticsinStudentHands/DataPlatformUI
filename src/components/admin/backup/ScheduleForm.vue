@@ -4,6 +4,7 @@
       Loading schedule…
     </div>
 
+    <!-- Schedule form -->
     <form v-else @submit.prevent="save">
       <div class="mb-3">
         <label for="recurrence" class="form-label">Recurrence</label>
@@ -22,7 +23,7 @@
 
       <button
         type="submit"
-        class="btn-save"
+        class="btn-outline-save"
         :disabled="saving"
       >
         {{ saving ? 'Saving…' : 'Save Schedule' }}
@@ -33,8 +34,8 @@
 
 <script>
 import axios from 'axios';
+import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
-
 
 export default {
   name: 'ScheduleForm',
@@ -67,21 +68,21 @@ export default {
   },
   methods: {
     async save() {
+      // Persists the updated recurrence to the server.
       this.saving = true;
-      try {
-        const API        = import.meta.env.VITE_ROOT_API;
-        const userStore  = useLoggedInUserStore();
-        const headers    = { token: userStore.token };
-        const url        = `${API}/backup/config`;
-        const payload    = { recurrence: this.recurrence };
+      const API        = import.meta.env.VITE_ROOT_API;
+      const userStore  = useLoggedInUserStore();
+      const headers    = { token: userStore.token };
+      const url        = `${API}/backup/config`;
+      const payload    = { recurrence: this.recurrence };
         
-        const { data } = await axios.put(url, payload, { headers });
-        alert('Schedule updated!');
-
+      try {
+        await axios.put(url, payload, { headers });
+        toast.success('Schedule updated!');
         this.$emit('schedule-updated');
       } catch (err) {
         console.error(err);
-        alert('Could not update schedule.');
+        toast.error('Could not update schedule');
       } finally {
         this.saving = false;
       }
@@ -89,21 +90,24 @@ export default {
   }
 };
 </script>
+
 <style scoped>
-.btn-save {
-  background-color: rgb(200,16,46); 
-  border: none;
-  color: #fff;
+.btn-outline-save {
+  background: transparent;
+  color: rgb(200,16,46);
+  border: 2px solid rgb(200,16,46);
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
   font-weight: 500;
-  transition: opacity 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
 }
-.btn-save:disabled {
+.btn-outline-save:hover,
+.btn-outline-save:focus {
+  background-color: #f5f9f9;
+  border-color: rgba(200,16,46,0.8);
+}
+.btn-outline-save:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-.btn-save:not(:disabled):hover {
-  opacity: 0.9;
 }
 </style>

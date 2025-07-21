@@ -201,21 +201,21 @@
             >{{$t('Profile')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'User Data Update Form'"
-              to="updateUserInformation"
+              to="/updateUserInformation"
               prepend-icon="mdi-cog"
               value="User Data Update Form"
               class=" tracking-wider "
             >{{$t('Update User Information')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Password Reset'"
-              to="updatePassword"
+              to="/updatePassword"
               prepend-icon="mdi-cog"
               value="Password Reset"
               class=" tracking-wider "
             >{{$t('Update Password')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Login'"
-              to="login"
+              to="/login"
               prepend-icon="mdi-logout"
               value="Login"
               class=" tracking-wider "

@@ -4,6 +4,7 @@ import { required, email, alpha, numeric } from "@vuelidate/validators";
 import VueMultiselect from "vue-multiselect";
 import axios from "axios";
 import { DateTime } from "luxon";
+import { toast } from 'vue3-toastify';
 
 export default {
   created() {
@@ -117,7 +118,7 @@ export default {
           headers: { token: localStorage.getItem("token") },
         })
         .then(() => {
-          alert("Update has been saved.");
+          toast.success("Update has been saved.");
           this.$router.back().catch((error) => {
             this.handleError(error);
           });

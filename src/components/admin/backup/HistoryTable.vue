@@ -4,6 +4,7 @@
       Loading history…
     </div>
 
+    <!-- History table -->
     <table v-else class="table table-striped">
       <thead>
         <tr>
@@ -29,12 +30,13 @@ export default {
   name: 'HistoryTable',
   data() {
     return {
-      records: [],
+      records: [],        // Array of { timestamp: ISO, size: bytes }
       loading: false
     };
   },
   methods: {
     async loadHistory() {
+      // Fetches the backup history from the server and updates `records`.
       this.loading = true;
       try {
         const API = import.meta.env.VITE_ROOT_API;
@@ -55,10 +57,10 @@ export default {
     formatSize(bytes) {
       const kb = bytes / 1024;
       if (kb < 1024) {
-        const kb = bytes / 1024;
         return Math.round(kb) + ' KB';
       }
-      return Math.round((kb / 1024).toFixed(4)) + ' MB';
+      const mb = kb / 1024;
+      return Math.round(mb.toFixed(2)) + ' MB';
     }
   },
   mounted() {
