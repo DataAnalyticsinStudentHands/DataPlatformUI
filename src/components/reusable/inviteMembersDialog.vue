@@ -168,7 +168,7 @@ with search and selection capabilities.
                         variant="tonal"
                       >
                         <v-icon start size="x-small">mdi-check</v-icon>
-                        {{ $t('Already member') }}
+                        {{ $t('Member') }}
                       </v-chip>
                       
                       <!-- Already invited chip with retract option -->
@@ -664,7 +664,9 @@ export default {
     
     // Check if user is already a project member
     isAlreadyMember(userID) {
-      return this.projectMembers.some(member => member.userID === userID);
+      return this.projectMembers.some(member => 
+        String(member.id) === String(userID)
+      );
     },
     
     // Check if user already has a pending invitation
@@ -729,7 +731,7 @@ export default {
         // Handle detailed response from backend
         const { invitedCount, alreadyInvitedCount, alreadyMembersCount, invitedUsers } = response.data;
         
-        console.log(`Invitations sent: ${invitedCount} new, ${alreadyInvitedCount} already invited, ${alreadyMembersCount} already members`);
+        console.log(`Invitations sent: ${invitedCount} new, ${alreadyInvitedCount} already invited, ${alreadyMembersCount} Members`);
         
         // Store invited users count for success dialog
         this.invitedUsersCount = invitedCount || 0;

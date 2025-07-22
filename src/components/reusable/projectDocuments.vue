@@ -78,6 +78,12 @@
                   @click.stop="downloadDocument(document)"
                 ></v-list-item>
                 <v-list-item
+                  v-if="canEdit(document)"
+                  prepend-icon="mdi-pencil"
+                  title="Edit"
+                  @click.stop="openEditDialog(document)"
+                ></v-list-item>
+                <v-list-item
                   v-if="canDelete(document)"
                   prepend-icon="mdi-delete"
                   title="Delete"
@@ -153,7 +159,7 @@
               type="file"
               class="d-none"
               @change="onFileSelected"
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.jpg,.jpeg,.png,.gif,.zip"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.tsv,.jpg,.jpeg,.png"
             >
           </div>
           
@@ -182,19 +188,23 @@
         </v-card-text>
         
         <v-card-actions class="pa-4">
-          <!-- progress (stretches to fill the row) -->
-          <v-progress-linear
-            v-if="uploading && uploadProgress > 0"
-            :model-value="uploadProgress"
-            color="#c8102e"
-            height="6"
-            class="flex-grow-1 mr-4"
-            rounded
-          ></v-progress-linear>
-          <v-spacer></v-spacer>
+          <!-- progress with status text -->
+          <div v-if="uploading" class="flex-grow-1 mr-4">
+            <v-progress-linear
+              :model-value="uploadProgress"
+              color="#c8102e"
+              height="6"
+              rounded
+              class="mb-1"
+            ></v-progress-linear>
+            <p class="text-caption text-grey-darken-1 mb-0">
+              {{ uploadStatusText }}
+            </p>
+          </div>
+          <v-spacer v-else></v-spacer>
           <v-btn
             variant="text"
-            @click="uploadDialog = false"
+            @click="cancelUpload"
           >
             {{ $t('Cancel') }}
           </v-btn>
@@ -210,7 +220,73 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
+
+    <!-- Edit Document Dialog -->
+    <v-dialog v-model="editDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="bg-grey-lighten-4 py-4">
+          <v-icon start icon="mdi-pencil" class="mr-2"></v-icon>
+          {{ $t('Edit Document') }}
+        </v-card-title>
+        
+        <v-card-text class="pa-4">
+          <!-- Document info display -->
+          <div class="mb-4 pa-3 bg-grey-lighten-5 rounded">
+            <div class="d-flex align-center">
+              <v-icon :icon="getFileIcon(documentToEdit?.extension)" size="40" color="grey-darken-1" class="mr-3"></v-icon>
+              <div>
+                <p class="text-subtitle-2 mb-0">{{ $t('Current file') }}</p>
+                <p class="text-caption text-grey-darken-1">
+                  {{ documentToEdit?.name }}
+                  <v-chip size="x-small" color="grey-lighten-1" class="text-uppercase ml-2">
+                    {{ documentToEdit?.extension }}
+                  </v-chip>
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <v-text-field
+            v-model="editDocumentName"
+            :label="$t('Document Name')"
+            :hint="$t('File extension will be added automatically')"
+            persistent-hint
+            variant="outlined"
+            density="comfortable"
+            :rules="[v => !!v || $t('Document name is required')]"
+          ></v-text-field>
+          
+          <v-textarea
+            v-model="editDocumentDescription"
+            :label="$t('Description (Optional)')"
+            class="mt-4"
+            variant="outlined"
+            density="comfortable"
+            rows="3"
+          ></v-textarea>
+        </v-card-text>
+        
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="text"
+            @click="editDialog = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+          <v-btn
+            color="#c8102e"
+            variant="flat"
+            @click="updateDocument"
+            :loading="updating"
+            :disabled="!editDocumentName"
+          >
+            {{ $t('Save Changes') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+        
     <!-- Delete Confirmation Dialog -->
     <v-dialog v-model="deleteDialog" max-width="500px">
       <v-card>
@@ -272,6 +348,7 @@ export default {
       fileError: '',
       uploading: false,
       uploadProgress: 0,
+      uploadStatusText: '',
       deleting: false,
       loading: true,
       documentToDelete: null,
@@ -283,7 +360,16 @@ export default {
       selectedFileSize: '',
       isDragOver: false,
       canUpload: false,
-      currentUser: null
+      currentUser: null,
+      editDialog: false,
+      documentToEdit: null,
+      editDocumentName: '',
+      editDocumentDescription: '',
+      updating: false,
+      // SSE properties
+      sseConnection: null,
+      activeUploadId: null,
+      sseConnected: false,
     };
   },
   created() {
@@ -309,8 +395,106 @@ export default {
   },
   mounted() {
     this.fetchDocuments();
+    // Connect to SSE when component mounts
+    this.connectSSE();
+  },
+  beforeUnmount() {
+    // Clean up SSE connection when component is destroyed
+    this.disconnectSSE();
   },
   methods: {
+    // SSE Methods
+    connectSSE() {
+      try {
+        // Get auth token
+        const userStore = useLoggedInUserStore();
+        const token = userStore.token;
+        
+        if (!token) {
+          console.error('No auth token available for SSE');
+          return;
+        }
+        
+        // EventSource doesn't support headers, so pass token as query param
+        this.sseConnection = new EventSource(
+          `${API}/sse/connect?token=${encodeURIComponent(token)}`
+        );
+        
+        this.sseConnection.onopen = () => {
+          console.log('SSE connection established');
+          this.sseConnected = true;
+        };
+        
+        this.sseConnection.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            this.handleSSEMessage(data);
+          } catch (err) {
+            console.error('Failed to parse SSE message:', err);
+          }
+        };
+        
+        this.sseConnection.onerror = (err) => {
+          console.error('SSE connection error:', err);
+          this.sseConnected = false;
+          // Attempt to reconnect after 5 seconds
+          setTimeout(() => {
+            if (!this.sseConnection) {
+              this.connectSSE();
+            }
+          }, 5000);
+        };
+        
+      } catch (error) {
+        console.error('Failed to establish SSE connection:', error);
+      }
+    },
+    
+    disconnectSSE() {
+      if (this.sseConnection) {
+        this.sseConnection.close();
+        this.sseConnection = null;
+        this.sseConnected = false;
+      }
+    },
+    
+    handleSSEMessage(data) {
+      switch (data.type) {
+        case 'connected':
+          console.log('SSE connected at', data.timestamp);
+          break;
+          
+        case 'uploadProgress':
+          if (data.uploadId === this.activeUploadId) {
+            this.uploadProgress = data.percentage;
+            const mbUploaded = (data.bytesUploaded / (1024 * 1024)).toFixed(1);
+            const mbTotal = (data.totalBytes / (1024 * 1024)).toFixed(1);
+            
+            if (data.status === 'uploading') {
+              this.uploadStatusText = `${this.$t('Uploading')}: ${mbUploaded}MB / ${mbTotal}MB (${data.percentage}%)`;
+            } else if (data.status === 'processing') {
+              this.uploadStatusText = this.$t('Processing file in Clowder...');
+              this.uploadProgress = 100;
+            }
+          }
+          break;
+          
+        case 'uploadComplete':
+          if (data.uploadId === this.activeUploadId) {
+            if (!data.success) {
+              // Error occurred during upload
+              this.fileError = data.message || this.$t('Upload failed');
+              this.uploading = false;
+              this.uploadProgress = 0;
+              this.uploadStatusText = '';
+            }
+            // Success is handled by the axios response
+            this.activeUploadId = null;
+          }
+          break;
+      }
+    },
+    
     getFileIcon(extension) {
       switch(extension?.toLowerCase()) {
         case 'pdf':
@@ -324,13 +508,13 @@ export default {
         case 'ppt':
         case 'pptx':
           return 'mdi-file-powerpoint-box';
-        case 'zip':
-        case 'rar':
-          return 'mdi-zip-box';
+        case 'txt':
+        case 'csv':
+        case 'tsv':
+          return 'mdi-file-document-outline';
         case 'jpg':
         case 'jpeg':
         case 'png':
-        case 'gif':
           return 'mdi-file-image-box';
         default:
           return 'mdi-file-document-outline';
@@ -350,6 +534,15 @@ export default {
       this.documentName = '';
       this.documentDescription = '';
       this.fileError = '';
+      this.uploadStatusText = '';
+    },
+    
+    cancelUpload() {
+      this.uploadDialog = false;
+      // Clear any active upload tracking
+      this.activeUploadId = null;
+      this.uploadProgress = 0;
+      this.uploadStatusText = '';
     },
     
     async fetchDocuments() {
@@ -402,14 +595,23 @@ export default {
     
     processSelectedFile(file) {
       // Check allowed file types
-      const allowedExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', 
-        '.ppt', '.pptx', '.txt', '.csv', '.jpg', 
-        '.jpeg', '.png', '.gif', '.zip'];
+      const allowedExtensions = [
+        // Office files
+        '.doc', '.docx',        // Word documents
+        '.xls', '.xlsx',        // Excel spreadsheets
+        '.ppt', '.pptx',        // PowerPoint presentations
+        // PDF
+        '.pdf',
+        // Images
+        '.jpg', '.jpeg', '.png',
+        // Text files
+        '.txt', '.csv', '.tsv'
+      ];
         
       const fileExt = '.' + file.name.split('.').pop().toLowerCase();
       
       if (!allowedExtensions.includes(fileExt)) {
-        this.fileError = this.$t('File type not allowed');
+        this.fileError = this.$t('File type not allowed. Allowed types: Word, Excel, PowerPoint, PDF, Images (JPG, PNG), and Text files (TXT, CSV, TSV)');
         return;
       }
       
@@ -540,6 +742,10 @@ export default {
       
       this.uploading = true;
       this.uploadProgress = 0;
+      this.uploadStatusText = '';
+      
+      // Check if this is a large file (> 20MB)
+      const isLargeFile = this.selectedFile.size > 20 * 1024 * 1024;
       
       try {
         // Create form data
@@ -554,24 +760,42 @@ export default {
           formData.append('description', this.documentDescription);
         }
         
-        // Upload the file with progress tracking
+        // Upload configuration
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        };
+        
+        // Only use axios progress for small files
+        if (!isLargeFile) {
+          config.onUploadProgress = (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            this.uploadProgress = percentCompleted;
+            const mbLoaded = (progressEvent.loaded / (1024 * 1024)).toFixed(1);
+            const mbTotal = (progressEvent.total / (1024 * 1024)).toFixed(1);
+            this.uploadStatusText = `${this.$t('Uploading')}: ${mbLoaded}MB / ${mbTotal}MB (${percentCompleted}%)`;
+          };
+        } else {
+          // For large files, we'll get progress from SSE
+          this.uploadStatusText = this.$t('Preparing large file upload...');
+        }
+        
+        // Upload the file
         const response = await axios.post(
           `${API}/clowder/projects/${this.projectId}/upload`,
           formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              this.uploadProgress = percentCompleted;
-            }
-          }
+          config
         );
         
         if (response.data.success) {
+          // If we got an uploadId, track it for SSE progress
+          if (response.data.uploadId && isLargeFile) {
+            this.activeUploadId = response.data.uploadId;
+          }
+          
           // Add the new document to the list
           this.projectDocuments.unshift(response.data.document);
           
@@ -591,6 +815,8 @@ export default {
       } finally {
         this.uploading = false;
         this.uploadProgress = 0;
+        this.uploadStatusText = '';
+        this.activeUploadId = null;
       }
     },
     
@@ -616,6 +842,7 @@ export default {
             // If we've exhausted all retries, show error
             this.fileError = this.$t('Failed to upload after multiple attempts');
             this.uploading = false;
+            this.uploadStatusText = '';
             return;
           }
           
@@ -630,7 +857,87 @@ export default {
           });
         }
       }
-    }
+    },
+
+    canEdit(document) {
+      // Same logic as canDelete - owner or uploader can edit
+      if (this.isProjectOwner) return true;
+      
+      const isDocumentOwner = document.uploaderId === this.currentUser?.userId;
+      
+      if (this.currentUser?.permissions?.projects?.update === 'own') {
+        return isDocumentOwner;
+      }
+      
+      const hasGroupOrAll = ['group', 'all'].includes(
+        this.currentUser?.permissions?.projects?.update || ''
+      );
+      
+      return hasGroupOrAll || isDocumentOwner;
+    },
+
+    openEditDialog(document) {
+      this.documentToEdit = document;
+      // Pre-populate with current values, removing the extension from the name
+      const nameWithoutExt = document.name.substring(0, document.name.lastIndexOf('.')) || document.name;
+      this.editDocumentName = nameWithoutExt;
+      this.editDocumentDescription = document.description || '';
+      this.editDialog = true;
+    },
+    
+    async updateDocument() {
+      if (!this.editDocumentName) {
+        toast.error(this.$t('Document name is required'), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: true
+        });
+        return;
+      }
+      
+      this.updating = true;
+      
+      try {
+        const response = await axios.put(
+          `${API}/clowder/projects/${this.projectId}/documents/${this.documentToEdit.id}`,
+          {
+            name: this.editDocumentName,
+            description: this.editDocumentDescription
+          }
+        );
+        
+        if (response.data.success) {
+          // Update the document in the list
+          const index = this.projectDocuments.findIndex(doc => doc.id === this.documentToEdit.id);
+          if (index !== -1) {
+            this.projectDocuments[index] = response.data.document;
+          }
+          
+          toast.success(this.$t('Document updated successfully'), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--create',
+            multiple: true
+          });
+          
+          this.editDialog = false;
+        } else {
+          toast.error(response.data.message || this.$t('Failed to update document'), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: true
+          });
+        }
+      } catch (error) {
+        console.error('Error updating document:', error);
+        toast.error(error.response?.data?.message || this.$t('Failed to update document'), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: true
+        });
+      } finally {
+        this.updating = false;
+      }
+    },
   }
 };
 </script>

@@ -319,7 +319,7 @@ export default {
         const user = useLoggedInUserStore();
         let token = user.token;
         
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/clowder/projects/update-status`;
         await axios.post(apiURL, {
           projectId: this.projectData._id,
           status: 'Active'
