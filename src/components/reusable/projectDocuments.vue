@@ -765,7 +765,7 @@ export default {
         this.deleteDialog = false;
       }
     },
-        
+            
     async uploadDocument() {
       console.log('[Upload] SSE connected?', this.sseConnected);
       console.log('[Upload] SSE connection object:', this.sseConnection);
@@ -779,13 +779,8 @@ export default {
       this.uploadProgress = 0;
       this.uploadStatusText = '';
       
-      // Check if this is a large file (> 20MB)
-      const isLargeFile = this.selectedFile.size > 20 * 1024 * 1024;
-      
       console.log('[Upload] Starting upload');
       console.log('[Upload] File size:', this.selectedFile.size);
-      console.log('[Upload] Is large file?', isLargeFile);
-      console.log('[Upload] Current activeUploadId:', this.activeUploadId);
       
       try {
         // Create form data
@@ -799,42 +794,32 @@ export default {
         if (this.documentDescription) {
           formData.append('description', this.documentDescription);
         }
-                
-        // For large files, generate and set uploadId before upload
-        if (isLargeFile) {
-          // Generate a unique ID (same algorithm as backend)
-          const timestamp = Date.now().toString();
-          const randomDigits = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-          this.activeUploadId = randomDigits + timestamp;
-          
-          // Pass this ID to the backend
-          formData.append('uploadId', this.activeUploadId);
-          
-          console.log('[Upload] Generated uploadId for large file:', this.activeUploadId);
-        }
-                
-        // Upload configuration
+        
+        // Upload configuration with progress tracking for ALL files
         const config = {
           headers: {
             'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            this.uploadProgress = percentCompleted;
+            
+            // Convert to MB for display
+            const mbLoaded = (progressEvent.loaded / (1024 * 1024)).toFixed(1);
+            const mbTotal = (progressEvent.total / (1024 * 1024)).toFixed(1);
+            
+            // Update status text based on progress
+            if (percentCompleted < 100) {
+              // Still uploading to server
+              this.uploadStatusText = `${this.$t('Uploading')} ${mbLoaded}MB / ${mbTotal}MB`;
+            } else {
+              // Upload complete, now processing on server
+              this.uploadStatusText = this.$t('Processing...');
+            }
           }
         };
-        
-          // Only use axios progress for small files
-          if (!isLargeFile) {
-            config.onUploadProgress = (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              this.uploadProgress = percentCompleted;
-              const mbLoaded = (progressEvent.loaded / (1024 / 1024)).toFixed(1);
-              const mbTotal = (progressEvent.total / (1024 * 1024)).toFixed(1);
-              this.uploadStatusText = `${this.$t('Processing')} ${mbLoaded}MB / ${mbTotal}MB`;
-            };
-          } else {
-            // For large files, we'll get progress from SSE
-            this.uploadStatusText = this.$t('Preparing upload...');
-          }
         
         // Upload the file
         const response = await axios.post(
@@ -842,15 +827,10 @@ export default {
           formData,
           config
         );
-                
+        
         if (response.data.success) {
           console.log('[Upload] Response received:', response.data);
           
-          // If we got an uploadId, track it for SSE progress
-          if (response.data.uploadId && isLargeFile) {
-            this.activeUploadId = response.data.uploadId;
-            console.log('[Upload] Set activeUploadId to:', this.activeUploadId);
-          }
           // Add the new document to the list
           this.projectDocuments.unshift(response.data.document);
           
@@ -871,7 +851,6 @@ export default {
         this.uploading = false;
         this.uploadProgress = 0;
         this.uploadStatusText = '';
-        this.activeUploadId = null;
       }
     },
     
