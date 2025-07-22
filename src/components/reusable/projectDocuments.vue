@@ -192,6 +192,7 @@
           <div v-if="uploading" class="flex-grow-1 mr-4">
             <v-progress-linear
               :model-value="uploadProgress"
+              :indeterminate="uploadStatusText === $t('Uploading...')"
               color="#c8102e"
               height="6"
               rounded
@@ -211,7 +212,7 @@
           <v-btn
             color="#c8102e"
             variant="flat"
-            @click="uploadDocumentWithRetry()"  
+            @click="uploadDocument()"
             :loading="uploading"
             :disabled="!selectedFileName"
           >
@@ -459,27 +460,55 @@ export default {
     },
     
     handleSSEMessage(data) {
+      console.log('[SSE] Received message:', data);
+      console.log('[SSE] Current activeUploadId:', this.activeUploadId);
+      
       switch (data.type) {
         case 'connected':
-          console.log('SSE connected at', data.timestamp);
+          console.log('[SSE] Connected at', data.timestamp);
           break;
           
         case 'uploadProgress':
+          console.log('[SSE] Upload progress message received');
+          console.log('[SSE] Message uploadId:', data.uploadId);
+          console.log('[SSE] Active uploadId:', this.activeUploadId);
+          console.log('[SSE] Do they match?', data.uploadId === this.activeUploadId);
+          console.log('[SSE] Message status:', data.status);
+          console.log('[SSE] Message data:', {
+            bytesUploaded: data.bytesUploaded,
+            totalBytes: data.totalBytes,
+            percentage: data.percentage
+          });
+          
           if (data.uploadId === this.activeUploadId) {
-            this.uploadProgress = data.percentage;
-            const mbUploaded = (data.bytesUploaded / (1024 * 1024)).toFixed(1);
-            const mbTotal = (data.totalBytes / (1024 * 1024)).toFixed(1);
+            console.log('[SSE] Processing message - IDs match!');
             
-            if (data.status === 'uploading') {
-              this.uploadStatusText = `${this.$t('Uploading')}: ${mbUploaded}MB / ${mbTotal}MB (${data.percentage}%)`;
-            } else if (data.status === 'processing') {
-              this.uploadStatusText = this.$t('Processing file in Clowder...');
-              this.uploadProgress = 100;
+            if (data.status === 'uploading' && data.bytesUploaded && data.totalBytes) {
+              // Client to server upload - show actual progress
+              this.uploadProgress = data.percentage;
+              const mbUploaded = (data.bytesUploaded / (1024 * 1024)).toFixed(1);
+              const mbTotal = (data.totalBytes / (1024 * 1024)).toFixed(1);
+              this.uploadStatusText = `${this.$t('Processing')} ${mbUploaded}MB / ${mbTotal}MB`;
+              
+              console.log('[SSE] Updated progress:', this.uploadProgress);
+              console.log('[SSE] Updated status text:', this.uploadStatusText);
+            } else if (data.status === 'uploading_to_clowder') {
+              // Server to Clowder upload - no progress available
+              this.uploadProgress = 100; // Show full bar
+              this.uploadStatusText = this.$t('Uploading...');
+              
+              console.log('[SSE] Switched to Clowder upload status');
             }
+          } else {
+            console.log('[SSE] IGNORING message - uploadId mismatch!');
           }
           break;
           
         case 'uploadComplete':
+          console.log('[SSE] Upload complete message received');
+          console.log('[SSE] Message uploadId:', data.uploadId);
+          console.log('[SSE] Active uploadId:', this.activeUploadId);
+          
           if (data.uploadId === this.activeUploadId) {
             if (!data.success) {
               // Error occurred during upload
@@ -492,9 +521,12 @@ export default {
             this.activeUploadId = null;
           }
           break;
+          
+        default:
+          console.log('[SSE] Unknown message type:', data.type);
       }
     },
-    
+        
     getFileIcon(extension) {
       switch(extension?.toLowerCase()) {
         case 'pdf':
@@ -733,8 +765,11 @@ export default {
         this.deleteDialog = false;
       }
     },
-    
+        
     async uploadDocument() {
+      console.log('[Upload] SSE connected?', this.sseConnected);
+      console.log('[Upload] SSE connection object:', this.sseConnection);
+      
       if (!this.selectedFile) {
         this.fileError = this.$t('Please select a file');
         return;
@@ -746,6 +781,11 @@ export default {
       
       // Check if this is a large file (> 20MB)
       const isLargeFile = this.selectedFile.size > 20 * 1024 * 1024;
+      
+      console.log('[Upload] Starting upload');
+      console.log('[Upload] File size:', this.selectedFile.size);
+      console.log('[Upload] Is large file?', isLargeFile);
+      console.log('[Upload] Current activeUploadId:', this.activeUploadId);
       
       try {
         // Create form data
@@ -759,7 +799,20 @@ export default {
         if (this.documentDescription) {
           formData.append('description', this.documentDescription);
         }
-        
+                
+        // For large files, generate and set uploadId before upload
+        if (isLargeFile) {
+          // Generate a unique ID (same algorithm as backend)
+          const timestamp = Date.now().toString();
+          const randomDigits = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+          this.activeUploadId = randomDigits + timestamp;
+          
+          // Pass this ID to the backend
+          formData.append('uploadId', this.activeUploadId);
+          
+          console.log('[Upload] Generated uploadId for large file:', this.activeUploadId);
+        }
+                
         // Upload configuration
         const config = {
           headers: {
@@ -767,21 +820,21 @@ export default {
           }
         };
         
-        // Only use axios progress for small files
-        if (!isLargeFile) {
-          config.onUploadProgress = (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            this.uploadProgress = percentCompleted;
-            const mbLoaded = (progressEvent.loaded / (1024 * 1024)).toFixed(1);
-            const mbTotal = (progressEvent.total / (1024 * 1024)).toFixed(1);
-            this.uploadStatusText = `${this.$t('Uploading')}: ${mbLoaded}MB / ${mbTotal}MB (${percentCompleted}%)`;
-          };
-        } else {
-          // For large files, we'll get progress from SSE
-          this.uploadStatusText = this.$t('Preparing large file upload...');
-        }
+          // Only use axios progress for small files
+          if (!isLargeFile) {
+            config.onUploadProgress = (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              this.uploadProgress = percentCompleted;
+              const mbLoaded = (progressEvent.loaded / (1024 / 1024)).toFixed(1);
+              const mbTotal = (progressEvent.total / (1024 * 1024)).toFixed(1);
+              this.uploadStatusText = `${this.$t('Processing')} ${mbLoaded}MB / ${mbTotal}MB`;
+            };
+          } else {
+            // For large files, we'll get progress from SSE
+            this.uploadStatusText = this.$t('Preparing upload...');
+          }
         
         // Upload the file
         const response = await axios.post(
@@ -789,13 +842,15 @@ export default {
           formData,
           config
         );
-        
+                
         if (response.data.success) {
+          console.log('[Upload] Response received:', response.data);
+          
           // If we got an uploadId, track it for SSE progress
           if (response.data.uploadId && isLargeFile) {
             this.activeUploadId = response.data.uploadId;
+            console.log('[Upload] Set activeUploadId to:', this.activeUploadId);
           }
-          
           // Add the new document to the list
           this.projectDocuments.unshift(response.data.document);
           
@@ -826,37 +881,6 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
       const i = Math.floor(Math.log(bytes) / Math.log(1024));
       return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
-    },
-
-    async uploadDocumentWithRetry(maxRetries = 3) {
-      let retries = 0;
-      
-      while (retries < maxRetries) {
-        try {
-          await this.uploadDocument();
-          return; // Success, exit the function
-        } catch (error) {
-          retries++;
-          
-          if (retries >= maxRetries) {
-            // If we've exhausted all retries, show error
-            this.fileError = this.$t('Failed to upload after multiple attempts');
-            this.uploading = false;
-            this.uploadStatusText = '';
-            return;
-          }
-          
-          // Wait before retrying (exponential backoff)
-          const waitTime = Math.pow(2, retries) * 1000;
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-          
-          // Inform the user we're retrying
-          toast.info(this.$t('Retrying upload...'), {
-            position: 'top-right',
-            multiple: true
-          });
-        }
-      }
     },
 
     canEdit(document) {
