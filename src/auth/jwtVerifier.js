@@ -26,14 +26,33 @@ async function getPublicKey() {
 }
 
 // Verify JWT token signature and return payload or null if invalid
+// export async function verifyJWT(token) {
+//   try {
+//     const publicKey = await getPublicKey();
+//     const { payload } = await jwtVerify(token, publicKey);
+   
+//     return payload;
+//   } catch (error) {
+//     console.error('JWT verification failed:', error);
+//     return null;
+//   }
+// }
+
+
 export async function verifyJWT(token) {
   try {
-    const publicKey = await getPublicKey();
-    const { payload } = await jwtVerify(token, publicKey);
-   
+    // TEMPORARY: Just decode without verifying
+    const parts = token.split('.');
+    const payload = JSON.parse(window.atob(parts[1]));
+    console.log('Decoded payload (NOT VERIFIED):', payload);
     return payload;
+    
+    // Comment out the verification for now
+    // const publicKey = await getPublicKey();
+    // const { payload } = await jwtVerify(token, publicKey);
+    // return payload;
   } catch (error) {
-    console.error('JWT verification failed:', error);
+    console.error('JWT decode failed:', error);
     return null;
   }
 }

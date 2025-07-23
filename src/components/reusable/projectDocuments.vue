@@ -192,7 +192,6 @@
           <div v-if="uploading" class="flex-grow-1 mr-4">
             <v-progress-linear
               :model-value="uploadProgress"
-              :indeterminate="uploadStatusText === $t('Uploading...')"
               color="#c8102e"
               height="6"
               rounded
@@ -367,10 +366,6 @@ export default {
       editDocumentName: '',
       editDocumentDescription: '',
       updating: false,
-      // SSE properties
-      sseConnection: null,
-      activeUploadId: null,
-      sseConnected: false,
     };
   },
   created() {
@@ -396,137 +391,8 @@ export default {
   },
   mounted() {
     this.fetchDocuments();
-    // Connect to SSE when component mounts
-    this.connectSSE();
-  },
-  beforeUnmount() {
-    // Clean up SSE connection when component is destroyed
-    this.disconnectSSE();
   },
   methods: {
-    // SSE Methods
-    connectSSE() {
-      try {
-        // Get auth token
-        const userStore = useLoggedInUserStore();
-        const token = userStore.token;
-        
-        if (!token) {
-          console.error('No auth token available for SSE');
-          return;
-        }
-        
-        // EventSource doesn't support headers, so pass token as query param
-        this.sseConnection = new EventSource(
-          `${API}/sse/connect?token=${encodeURIComponent(token)}`
-        );
-        
-        this.sseConnection.onopen = () => {
-          console.log('SSE connection established');
-          this.sseConnected = true;
-        };
-        
-        this.sseConnection.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            this.handleSSEMessage(data);
-          } catch (err) {
-            console.error('Failed to parse SSE message:', err);
-          }
-        };
-        
-        this.sseConnection.onerror = (err) => {
-          console.error('SSE connection error:', err);
-          this.sseConnected = false;
-          // Attempt to reconnect after 5 seconds
-          setTimeout(() => {
-            if (!this.sseConnection) {
-              this.connectSSE();
-            }
-          }, 5000);
-        };
-        
-      } catch (error) {
-        console.error('Failed to establish SSE connection:', error);
-      }
-    },
-    
-    disconnectSSE() {
-      if (this.sseConnection) {
-        this.sseConnection.close();
-        this.sseConnection = null;
-        this.sseConnected = false;
-      }
-    },
-    
-    handleSSEMessage(data) {
-      console.log('[SSE] Received message:', data);
-      console.log('[SSE] Current activeUploadId:', this.activeUploadId);
-      
-      switch (data.type) {
-        case 'connected':
-          console.log('[SSE] Connected at', data.timestamp);
-          break;
-          
-        case 'uploadProgress':
-          console.log('[SSE] Upload progress message received');
-          console.log('[SSE] Message uploadId:', data.uploadId);
-          console.log('[SSE] Active uploadId:', this.activeUploadId);
-          console.log('[SSE] Do they match?', data.uploadId === this.activeUploadId);
-          console.log('[SSE] Message status:', data.status);
-          console.log('[SSE] Message data:', {
-            bytesUploaded: data.bytesUploaded,
-            totalBytes: data.totalBytes,
-            percentage: data.percentage
-          });
-          
-          if (data.uploadId === this.activeUploadId) {
-            console.log('[SSE] Processing message - IDs match!');
-            
-            if (data.status === 'uploading' && data.bytesUploaded && data.totalBytes) {
-              // Client to server upload - show actual progress
-              this.uploadProgress = data.percentage;
-              const mbUploaded = (data.bytesUploaded / (1024 * 1024)).toFixed(1);
-              const mbTotal = (data.totalBytes / (1024 * 1024)).toFixed(1);
-              this.uploadStatusText = `${this.$t('Processing')} ${mbUploaded}MB / ${mbTotal}MB`;
-              
-              console.log('[SSE] Updated progress:', this.uploadProgress);
-              console.log('[SSE] Updated status text:', this.uploadStatusText);
-            } else if (data.status === 'uploading_to_clowder') {
-              // Server to Clowder upload - no progress available
-              this.uploadProgress = 100; // Show full bar
-              this.uploadStatusText = this.$t('Uploading...');
-              
-              console.log('[SSE] Switched to Clowder upload status');
-            }
-          } else {
-            console.log('[SSE] IGNORING message - uploadId mismatch!');
-          }
-          break;
-          
-        case 'uploadComplete':
-          console.log('[SSE] Upload complete message received');
-          console.log('[SSE] Message uploadId:', data.uploadId);
-          console.log('[SSE] Active uploadId:', this.activeUploadId);
-          
-          if (data.uploadId === this.activeUploadId) {
-            if (!data.success) {
-              // Error occurred during upload
-              this.fileError = data.message || this.$t('Upload failed');
-              this.uploading = false;
-              this.uploadProgress = 0;
-              this.uploadStatusText = '';
-            }
-            // Success is handled by the axios response
-            this.activeUploadId = null;
-          }
-          break;
-          
-        default:
-          console.log('[SSE] Unknown message type:', data.type);
-      }
-    },
-        
     getFileIcon(extension) {
       switch(extension?.toLowerCase()) {
         case 'pdf':
@@ -571,8 +437,6 @@ export default {
     
     cancelUpload() {
       this.uploadDialog = false;
-      // Clear any active upload tracking
-      this.activeUploadId = null;
       this.uploadProgress = 0;
       this.uploadStatusText = '';
     },
@@ -767,9 +631,6 @@ export default {
     },
             
     async uploadDocument() {
-      console.log('[Upload] SSE connected?', this.sseConnected);
-      console.log('[Upload] SSE connection object:', this.sseConnection);
-      
       if (!this.selectedFile) {
         this.fileError = this.$t('Please select a file');
         return;
@@ -778,9 +639,6 @@ export default {
       this.uploading = true;
       this.uploadProgress = 0;
       this.uploadStatusText = '';
-      
-      console.log('[Upload] Starting upload');
-      console.log('[Upload] File size:', this.selectedFile.size);
       
       try {
         // Create form data
@@ -829,8 +687,6 @@ export default {
         );
         
         if (response.data.success) {
-          console.log('[Upload] Response received:', response.data);
-          
           // Add the new document to the list
           this.projectDocuments.unshift(response.data.document);
           
