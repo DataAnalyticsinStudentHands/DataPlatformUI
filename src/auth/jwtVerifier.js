@@ -44,7 +44,7 @@ export async function verifyJWT(token) {
     // TEMPORARY: Just decode without verifying
     const parts = token.split('.');
     const payload = JSON.parse(window.atob(parts[1]));
-    console.log('Decoded payload (NOT VERIFIED):', payload);
+    // console.log('Decoded payload (NOT VERIFIED):', payload);
     return payload;
     
     // Comment out the verification for now

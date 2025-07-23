@@ -421,7 +421,7 @@ export default {
         console.error('Error fetching invite code:', err);
         toast.error(this.$t('Error fetching invite code.'), {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--error',
+          toastClassName: 'Toastify__toast--delete',
           multiple: true
         });
         this.inviteCode = '';
@@ -435,7 +435,7 @@ export default {
           console.error("Missing experienceInstanceId:", this.experienceInstanceId);
           toast.error(this.$t("Missing experience information"), {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--error',
+            toastClassName: 'Toastify__toast--delete',
             multiple: true
           });
           this.registeredUsers = [];
@@ -456,7 +456,7 @@ export default {
         console.error("Error fetching registered users:", error.response || error);
         toast.error(this.$t("Error loading registered students"), {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--error',
+          toastClassName: 'Toastify__toast--delete',
           multiple: true
         });
         this.registeredUsers = [];
@@ -559,7 +559,7 @@ export default {
           console.error('Failed to copy code: ', err);
           toast.error(this.$t("Failed to copy code"), {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--error',
+            toastClassName: 'Toastify__toast--delete',
             multiple: true
           });
         });
@@ -592,7 +592,7 @@ export default {
         console.error('Error regenerating invite code:', err);
         toast.error(this.$t('Failed to regenerate invite code'), {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--error',
+          toastClassName: 'Toastify__toast--delete',
           multiple: true
         });
       }
