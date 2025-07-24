@@ -44,7 +44,7 @@
         rounded
         class="mb-1 document-list-item"
         link
-        @click="downloadDocument(document)"
+        @click="canEdit(document) ? openEditDialog(document) : downloadDocument(document)"
       >
         <template v-slot:prepend>
           <v-avatar color="grey-lighten-2" class="mr-3">
@@ -267,6 +267,15 @@
         </v-card-text>
         
         <v-card-actions class="pa-4">
+          <!-- Add Download button on the left -->
+          <v-btn
+            color="grey-darken-1"
+            variant="text"
+            prepend-icon="mdi-download"
+            @click="downloadDocument(documentToEdit)"
+          >
+            {{ $t('Download') }}
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn
             variant="text"
