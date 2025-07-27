@@ -549,7 +549,6 @@ export default {
   
   // Component initialization
   async mounted() {
-    console.log('EditProject mounted');
     const user = useLoggedInUserStore();
     if (!user.navigationData || !user.navigationData.projectID) {
       console.error('Project ID not found in navigation data');
@@ -559,7 +558,6 @@ export default {
       this.$router.push({ name: 'studentProjects' });
       return;
     }
-    console.log('Found project ID in navigation data:', user.navigationData.projectID);
     await this.fetchProjectData(user.navigationData.projectID);
   },
   

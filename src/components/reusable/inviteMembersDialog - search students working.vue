@@ -370,7 +370,6 @@ export default {
   watch: {
     modelValue(newVal) {
       if (newVal === true) {
-        console.log('Dialog opened, calling initializeDialog');
         this.initializeDialog();
       }
     },
@@ -383,14 +382,11 @@ export default {
   },
   mounted() {
     if (this.modelValue) {
-      console.log('Dialog mounted with open state, initializing');
       this.initializeDialog();
     }
   },
   methods: {
     async initializeDialog() {
-      console.log('Initializing dialog for project ID:', this.projectId);
-      console.log('Experience Instance ID:', this.experienceInstanceId);
       
       // Reset search and selection
       this.searchQuery = '';
@@ -404,7 +400,6 @@ export default {
     },
 
     async fetchInviteCode() {
-      console.log('Fetching invite code for project ID:', this.projectId);
       try {
         const token = this.loggedInUserStore.token;
         if (!token) throw new Error('missing auth token');
@@ -415,10 +410,8 @@ export default {
           headers: { token }
         });
 
-        console.log('Invite code response:', data);
         this.inviteCode = data.inviteCode ?? '';
       } catch (err) {
-        console.error('Error fetching invite code:', err);
         toast.error(this.$t('Error fetching invite code.'), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -443,7 +436,6 @@ export default {
         }
 
         const token = this.loggedInUserStore.token;
-        console.log(`Fetching registered users from: /studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`);
         
         const response = await axios.get(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`,
@@ -451,7 +443,6 @@ export default {
         );
         
         this.registeredUsers = response.data.users || [];
-        console.log('Registered users loaded:', this.registeredUsers.length);
       } catch (error) {
         console.error("Error fetching registered users:", error.response || error);
         toast.error(this.$t("Error loading registered students"), {
@@ -511,7 +502,6 @@ export default {
           notificationType: 'in-app' // Specify in-app notification
         };
         
-        console.log('Sending invitation payload:', payload);
         
         await axios.post(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`, 
@@ -580,7 +570,6 @@ export default {
           { headers: { token } }
         );
 
-        console.log('New invite code received:', data);
         this.inviteCode = data.inviteCode ?? '';
 
         toast.info(this.$t('New invite code generated'), {

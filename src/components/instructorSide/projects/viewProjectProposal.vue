@@ -192,7 +192,6 @@ export default {
   
   // Component initialization
   async mounted() {
-    console.log('ViewProjectProposal mounted');
     const user = useLoggedInUserStore();
     
     if (!user.navigationData || !user.navigationData.projectID) {
@@ -206,7 +205,6 @@ export default {
       return;
     }
     
-    console.log('Found project ID in navigation data:', user.navigationData.projectID);
     await this.fetchProjectData(user.navigationData.projectID);
   },
   
@@ -228,13 +226,11 @@ export default {
           return;
         }
         
-        console.log('Fetching project data for ID:', projectId);
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
         const response = await axios.get(apiURL, { headers: { token } });
         
         if (response.data) {
           const project = response.data;
-          console.log('Received project data:', project);
           
           // Map project data for display
           this.projectData = {

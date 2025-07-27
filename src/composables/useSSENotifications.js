@@ -23,7 +23,6 @@ export function useSSENotifications() {
   function connect() {
     // Only connect for logged-in students
     if (!loggedInUserStore.isLoggedIn || loggedInUserStore.getRole !== 'Student') {
-      console.log('SSE: Skipping connection - user not eligible');
       return;
     }
     
@@ -34,7 +33,6 @@ export function useSSENotifications() {
     const apiURL = import.meta.env.VITE_ROOT_API;
     
     try {
-      console.log('SSE: Establishing connection...');
       
       // Create EventSource with token in query parameter
       eventSource.value = new EventSource(
@@ -43,7 +41,6 @@ export function useSSENotifications() {
       
       // Connection opened successfully
       eventSource.value.onopen = () => {
-        console.log('SSE: Connection established');
         isConnected.value = true;
         reconnectAttempts.value = 0;
       };
@@ -67,7 +64,6 @@ export function useSSENotifications() {
         reconnectAttempts.value++;
         
         if (reconnectAttempts.value >= maxReconnectAttempts) {
-          console.log('SSE: Max reconnection attempts reached, giving up');
           disconnect();
         }
       };
@@ -82,7 +78,6 @@ export function useSSENotifications() {
  * @param {Object} data - Notification data from server
  */
 function handleNotification(data) {
-  console.log('SSE: Received notification', data);
  
   switch (data.type) {
     case 'connected':
@@ -104,7 +99,6 @@ function handleNotification(data) {
         }
       });
      
-      console.log(`SSE: Updated invitation count to ${loggedInUserStore.projectInvitationCount}`);
       break;
      
     case 'invitationRetracted':
@@ -122,7 +116,6 @@ function handleNotification(data) {
         }
       );
      
-      console.log(`SSE: Invitation retracted for project ${data.projectId}, updated count to ${loggedInUserStore.projectInvitationCount}`);
       break;
      
     default:
@@ -135,7 +128,6 @@ function handleNotification(data) {
    */
   function disconnect() {
     if (eventSource.value) {
-      console.log('SSE: Closing connection');
       eventSource.value.close();
       eventSource.value = null;
       isConnected.value = false;

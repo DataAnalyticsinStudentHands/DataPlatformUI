@@ -807,7 +807,6 @@ export default {
         
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-info`;
         const inviteCodeParam = this.invitationCode.trim();
-        console.log('Fetching project with invite code:', inviteCodeParam);
         
         const response = await axios.get(apiURL, { 
           params: { inviteCode: inviteCodeParam },
@@ -818,9 +817,6 @@ export default {
         if (response.data && response.data.project) {
           const project = response.data.project;
           const registrationStatus = response.data.registrationStatus || { isRegistered: false };
-          
-          console.log('Project data received:', project);
-          console.log('Registration status:', registrationStatus);
           
           // Extract experience and session information
           const experienceName = project.instanceId?.experience?.name || 

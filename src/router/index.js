@@ -506,20 +506,17 @@ router.beforeEach(async (to, from, next) => {
       } else {
         // Handle expired token
         userStore.logout();
-        console.log('1')
         next('/login');
       }
     } catch (error) {
       // Handle token verification errors
       console.error('Token verification failed in router:', error);
       userStore.logout();
-      console.log('2')
       next('/login');
     }
   } else {
     // Handle unauthenticated access
     if (isPublicRoute) {
-      console.log('console log test')
       next();
     } else {
       next('/login');

@@ -523,7 +523,6 @@ export default {
     // Initialize dialog when opened
     modelValue(newVal) {
       if (newVal === true) {
-        console.log('Dialog opened, calling initializeDialog');
         this.initializeDialog();
       }
     },
@@ -540,7 +539,6 @@ export default {
   // Component initialization
   mounted() {
     if (this.modelValue) {
-      console.log('Dialog mounted with open state, initializing');
       this.initializeDialog();
     }
   },
@@ -548,8 +546,6 @@ export default {
   methods: {
     // Initialize dialog data when opened
     async initializeDialog() {
-      console.log('Initializing dialog for project ID:', this.projectId);
-      console.log('Experience Instance ID:', this.experienceInstanceId);
       
       // Reset search and selection state
       this.searchQuery = '';
@@ -575,7 +571,6 @@ export default {
         );
         
         this.pendingInvitations = response.data.pendingInvitations || [];
-        console.log('Pending invitations loaded:', this.pendingInvitations.length);
       } catch (error) {
         console.error("Error fetching pending invitations:", error);
         this.pendingInvitations = [];
@@ -584,7 +579,6 @@ export default {
 
     // Fetch current invite code for the project
     async fetchInviteCode() {
-      console.log('Fetching invite code for project ID:', this.projectId);
       try {
         const token = this.loggedInUserStore.token;
         if (!token) throw new Error('missing auth token');
@@ -595,10 +589,8 @@ export default {
           headers: { token }
         });
 
-        console.log('Invite code response:', data);
         this.inviteCode = data.inviteCode ?? '';
       } catch (err) {
-        console.error('Error fetching invite code:', err);
         toast.error(this.$t('Error fetching invite code.'), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -624,7 +616,6 @@ export default {
         }
 
         const token = this.loggedInUserStore.token;
-        console.log(`Fetching registered users from: /studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`);
         
         const response = await axios.get(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`,
@@ -632,8 +623,6 @@ export default {
         );
         
         this.registeredUsers = response.data.users || [];
-        console.log('Registered users loaded:', this.registeredUsers.length);
-        console.log('Sample user:', this.registeredUsers[0]); // Debug: check data structure
       } catch (error) {
         console.error("Error fetching registered users:", error.response || error);
         toast.error(this.$t("Error loading registered students"), {
@@ -720,8 +709,6 @@ export default {
           notificationType: 'in-app'
         };
         
-        console.log('Sending invitation payload:', payload);
-        
         const response = await axios.post(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`, 
           payload,
@@ -731,7 +718,6 @@ export default {
         // Handle detailed response from backend
         const { invitedCount, alreadyInvitedCount, alreadyMembersCount, invitedUsers } = response.data;
         
-        console.log(`Invitations sent: ${invitedCount} new, ${alreadyInvitedCount} already invited, ${alreadyMembersCount} Members`);
         
         // Store invited users count for success dialog
         this.invitedUsersCount = invitedCount || 0;
@@ -810,7 +796,6 @@ export default {
           userIdToRetract: userID
         };
         
-        console.log('Retracting invitation payload:', payload);
         
         const response = await axios.delete(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/retract-invitation`,
@@ -819,8 +804,6 @@ export default {
             data: payload
           }
         );
-        
-        console.log('Invitation retracted successfully:', response.data);
         
         // Refresh pending invitations to update UI
         await this.fetchPendingInvitations();
@@ -894,7 +877,6 @@ export default {
           { headers: { token } }
         );
 
-        console.log('New invite code received:', data);
         this.inviteCode = data.inviteCode ?? '';
 
         toast.info(this.$t('New invite code generated'), {

@@ -305,7 +305,6 @@ export default {
   watch: {
     modelValue(newVal) {
       if (newVal === true) {
-        console.log('Dialog opened, calling initializeDialog');
         this.initializeDialog();
       }
     }
@@ -313,13 +312,11 @@ export default {
   // Add mounted hook to initialize if dialog is already open when component mounts
   mounted() {
     if (this.modelValue) {
-      console.log('Dialog mounted with open state, initializing');
       this.initializeDialog();
     }
   },
   methods: {
     async initializeDialog() {
-      console.log('Initializing dialog for project ID:', this.projectId);
       
       // Reset search and selection
       this.searchQuery = '';
@@ -334,7 +331,6 @@ export default {
     },
 
     async fetchInviteCode() {
-      console.log('Fetching invite code for project ID:', this.projectId);
       try {
         // 1) Grab the JWT token
         const token = this.loggedInUserStore.token;
@@ -349,7 +345,6 @@ export default {
           headers: { token }
         });
 
-        console.log('Invite code response:', data);
         this.inviteCode = data.inviteCode ?? '';
       } catch (err) {
         console.error('Error fetching invite code:', err);
@@ -397,7 +392,6 @@ export default {
           }
         ];
         
-        console.log('Project members loaded:', this.projectMembers);
       } catch (error) {
         console.error("Error fetching project members:", error);
         toast.error(this.$t("Error loading project members"), {
@@ -423,7 +417,6 @@ export default {
     
     async loadAvailableUsers() {
       this.loadingUsers = true;
-      console.log('Loading available users');
       
       try {
         // In real implementation, make API call
@@ -478,7 +471,6 @@ export default {
           }
         ];
         
-        console.log('Available users loaded:', this.availableUsers);
         this.filterUsers();
       } catch (error) {
         console.error("Error loading available users:", error);
@@ -538,7 +530,6 @@ export default {
           userIds: this.selectedUsers
         };
         
-        console.log('Sending invitation payload:', payload);
         
         // Uncomment to enable real API call
         // await axios.post(
@@ -613,7 +604,6 @@ export default {
 
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
 
-        console.log('Regenerating invite code for project:', this.projectId);
         
         // PATCH { projectId }  →  { inviteCode: 'PRJ-XXXXXX' }
         const { data } = await axios.patch(
@@ -622,7 +612,6 @@ export default {
           { headers: { token } }
         );
 
-        console.log('New invite code received:', data);
         
         // Update the UI with the freshly generated code returned by the backend
         this.inviteCode = data.inviteCode ?? '';

@@ -732,7 +732,6 @@ export default {
 
     // Save project template (placeholder implementation)
     saveTemplate() {
-      console.log("Save template:", this.templateName, this.templateDescription, this.templateExperience);
       toast.info(this.$t("Template saving not yet implemented."), { position: 'top-right' });
       this.templateDialog = false;
     },

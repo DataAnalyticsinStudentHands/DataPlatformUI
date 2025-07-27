@@ -729,9 +729,7 @@ export default {
         const user = this.loggedInUserStore;
         let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`; 
-        console.log('Fetching projects for user:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
-        console.log('API Response:', response.data);
         if (response.data && response.data.projects) {
           const projects = response.data.projects.map(project => {
             // Extract experience information from project data
@@ -919,7 +917,6 @@ export default {
         experienceInstanceName: project.experienceInfo || this.$t('Not assigned')
       };
       
-      console.log('Opening invite dialog for project:', this.projectData);
       this.inviteDialog = true;
     },
 
@@ -992,8 +989,6 @@ export default {
     
     // Handle successful member invitations
     handleMembersInvited(invitedUsers) {
-      console.log('Users invited to project:', this.projectData.name);
-      console.log('Invited users:', invitedUsers);
       
       toast.success(this.$t("Members successfully invited to the project!"), {
         position: 'top-right',
@@ -1004,7 +999,6 @@ export default {
     
     // Open join project dialog
     async joinProject() {
-      console.log('Join a Project button clicked');
       
       // Fetch latest invitations before opening dialog
       if (this.loggedInUserStore.getRole === 'Student') {
@@ -1017,8 +1011,6 @@ export default {
 
     // Handle successful project join
     async handleJoinWithCode(joinData) {
-      console.log('Project join successful:', joinData);
-      
       // Refresh projects list to include newly joined project
       await this.fetchProjects();
       
@@ -1048,7 +1040,6 @@ export default {
         
         if (response.data && response.data.invitations) {
           this.pendingInvitations = response.data.invitations;
-          console.log(`Found ${this.pendingInvitations.length} pending invitations`);
         }
       } catch (error) {
         console.error("Error fetching invitations:", error);
@@ -1064,20 +1055,13 @@ export default {
 
     // Check and show invitations dialog if needed
     async checkAndShowInvitations() {
-      console.log('=== Checking for pending invitations ===');
-      console.log('User store hasPendingInvitations:', this.loggedInUserStore.hasPendingInvitations);
       
       await this.fetchPendingInvitations();
       
-      console.log('Fetched invitations:', this.pendingInvitations);
-      console.log('Number of invitations:', this.pendingInvitations.length);
-      
       if (this.pendingInvitations.length > 0) {
-        console.log('Opening join dialog in invitations-only mode');
         this.dialogInvitationsOnlyMode = true; // Set to invitations-only mode
         this.joinDialog = true;
       } else {
-        console.log('No pending invitations found');
         this.loggedInUserStore.projectInvitationCount = 0;
       }
     },
@@ -1153,7 +1137,6 @@ export default {
     },
 
     async handleInvitationsProcessed() {
-      console.log('All invitations processed, refreshing data...');
       
       // Refresh the invitation count from the server
       await this.loggedInUserStore.fetchProjectInvitationCount();

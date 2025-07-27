@@ -511,7 +511,6 @@ export const useLoggedInUserStore = defineStore({
 
     // Display generic error message to user
     async handleError(error) {
-      console.log(error);
       toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
