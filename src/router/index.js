@@ -429,6 +429,11 @@ const routes = [
       name: 'errorView',
       component: () => import('../components/error/errorView.vue')
     },
+    {
+      path: '/map',
+      name: "mapView",
+      component: () => import('../components/dev/map.vue')
+    }
 ]
 
 // Create router instance with base path
@@ -458,6 +463,7 @@ const publicPaths = [
   '/proposaldemo2',
   '/proposaldemo3',
   '/proposaldemo4',
+  '/map'
 ];
 
 // Global navigation guard for authentication and role-based routing
