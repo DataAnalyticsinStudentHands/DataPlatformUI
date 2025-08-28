@@ -1,7 +1,21 @@
 <!-- instructorSpecificExperienceInstance - this view presents a single Experience Instance's data -->
 <template>
   <v-container>
-      <v-form>
+      <!-- Loading Overlay -->
+      <v-overlay
+        v-model="isLoading"
+        class="align-center justify-center"
+        persistent
+        contained
+      >
+        <v-progress-circular
+          indeterminate
+          size="64"
+          color="primary"
+        ></v-progress-circular>
+      </v-overlay>
+      
+      <v-form v-show="!isLoading">
           <v-row>
               <!-- Display the experience instance name -->
               <v-col>
@@ -51,6 +65,7 @@
                   <v-text-field
                       label="Registration Code"
                       v-model="registrationCode"
+                      :readonly="!canUpdateExpInstance"
                   ></v-text-field>
               </v-col>
           </v-row>
@@ -58,13 +73,18 @@
   
           <!-- Section title for the activities -->
           <v-row>
-              <p class="font-weight-black text-h7">Activities</p>
+              <p class="font-weight-black text-h7">
+                Activities
+                <v-chip v-if="!canUpdateActivities && canUpdateExpInstance" size="small" color="warning" class="ml-2">
+                  Locked - {{ activitiesLockMessage }}
+                </v-chip>
+              </p>
           </v-row>
   
           <v-row>
             <v-col cols="6">
               <!-- Card to display the list of selected activities -->
-              <v-card flat>
+              <v-card flat :disabled="!canUpdateActivities">
                 <v-card-title>
                   <v-row>
                     <v-col>
@@ -74,7 +94,7 @@
                 </v-card-title>
   
                 <!-- Scrollable list of selected activities -->
-                <v-list class="scrollable-list">
+                <v-list class="scrollable-list" :disabled="!canUpdateActivities">
                   <v-list-item
                     v-for="activity in selectedActivities"
                     :key="activity._id"
@@ -86,7 +106,7 @@
                     </v-col>
   
                     <!-- Remove activity button -->
-                    <v-col v-if="canUpdateExpInstance">
+                    <v-col v-if="canUpdateExpInstance && canUpdateActivities">
                       <v-icon
                         @click.stop="removeActivity(activity)"
                         class="mdi-close"
@@ -106,6 +126,7 @@
                 v-if="showAddActivities"
                 flat
                 title="Add Activities"
+                :disabled="!canUpdateActivities"
               >
                 <!-- Search bar for filtering activities -->
                 <template v-slot:text>
@@ -116,6 +137,7 @@
                     single-line
                     variant="outlined"
                     hide-details
+                    :disabled="!canUpdateActivities"
                   ></v-text-field>
                 </template>
   
@@ -128,22 +150,23 @@
                   class="scrollable-table"
                   hover
                   :search="activitySearch"
+                  :disabled="!canUpdateActivities"
                 >
   
                   <!-- Custom table body for displaying activities -->
                   <template v-slot:body="{ items }">
                     <template v-for="item in items" :key="item._id">
                       <tr
-                        @click="selectActivity(item)"
-                        @mouseover="hoveredItem = item._id"
+                        @click="canUpdateActivities ? selectActivity(item) : null"
+                        @mouseover="canUpdateActivities ? hoveredItem = item._id : null"
                         @mouseleave="hoveredItem = null"
-                        class="pointer-cursor activity-row"
+                        :class="canUpdateActivities ? 'pointer-cursor activity-row' : 'disabled-row'"
                       >
                         <td>
                           <div class="activity-content">
                             {{ item.activityName }}
                             <!-- Show the add icon when hovering over the item -->
-                            <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
+                            <v-icon v-if="hoveredItem === item._id && canUpdateActivities" class="mdi-plus">mdi-plus</v-icon>
                           </div>
                         </td>
                       </tr>
@@ -212,6 +235,7 @@
   import { computed } from 'vue';
   import { useLoggedInUserStore } from "@/stored/loggedInUser";
   import axios from "axios";
+  import { toast } from 'vue3-toastify';
   
   export default {
       name: 'instructorSpecificExperienceInstance',
@@ -262,19 +286,38 @@
                   }
               ],
               hoveredItem: null,
-              registrationCode: "" // New data property to hold the registration code
+              registrationCode: "", // New data property to hold the registration code
+              canUpdateActivities: true, // New property to track if activities can be updated
+              activitiesLockMessage: "", // Message explaining why activities are locked
+              isLoading: true // Loading state for the entire page
           }
       },
   
       async created() {
-        // Fetch activity data when the component is created
-        await this.fetchActivityData();
-  
-        // Fetch the experience instance data
-        this.fetchExperienceInstance();
-  
-        // Check if the experience instance can be deleted
-        this.checkIfExpInstanceCanBeDeleted();
+        try {
+            // Start loading
+            this.isLoading = true;
+            
+            // Fetch activity data when the component is created
+            await this.fetchActivityData();
+    
+            // Fetch the experience instance data
+            await this.fetchExperienceInstance();
+    
+            // Check if activities can be updated (only if user can update instance)
+            if (this.canUpdateExpInstance) {
+                await this.checkIfActivitiesCanBeUpdated();
+            }
+    
+            // Check if the experience instance can be deleted
+            await this.checkIfExpInstanceCanBeDeleted();
+        } catch (error) {
+            console.error('Error loading page data:', error);
+            this.handleError(error);
+        } finally {
+            // Always stop loading when done
+            this.isLoading = false;
+        }
       },
   
       computed: {
@@ -370,6 +413,26 @@
               }
           },
   
+          // Checks if activities can be updated for this experience instance
+          async checkIfActivitiesCanBeUpdated() {
+              const user = useLoggedInUserStore();
+              const token = user.token;
+              const instanceID = user.navigationData.id;
+              const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/can-update-activities/${instanceID}`;
+  
+              try {
+                  const response = await axios.get(url, { headers: { token } });
+                  this.canUpdateActivities = response.data.canUpdateActivities;
+                  if (!this.canUpdateActivities) {
+                      this.activitiesLockMessage = `${response.data.completedExitFormCount} exit form(s) submitted`;
+                  }
+              } catch (error) {
+                  // If the check fails, default to allowing updates
+                  this.canUpdateActivities = true;
+                  console.error('Failed to check if activities can be updated:', error);
+              }
+          },
+  
           // Checks if the current experience instance can be deleted.
           async checkIfExpInstanceCanBeDeleted() {
               const user = useLoggedInUserStore();
@@ -432,38 +495,53 @@
               let token = user.token;
               const instanceID = user.navigationData.id;
               let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-single-instance/${instanceID}`;
-  
+              
               try {
                   await axios.put(apiURL, {
                       exitFormReleaseDate: this.exitFormReleaseDate,
                       activities: this.selectedActivities,
                       registrationCode: this.registrationCode
-                  }, { headers: { token } })
-                  .then(() => {
-                    useLoggedInUserStore().navigationData = {
+                  }, { headers: { token } });
+                  
+                  useLoggedInUserStore().navigationData = {
                       activeTab: 0,
                       toastType: 'info',
                       toastMessage: 'Experience Instance updated!',
                       toastPosition: 'top-right',
                       toastCSS: 'Toastify__toast--update'
-                    };
-                      this.$router.push({ 
-                          name: 'instructorDataManagement'
-                      });
+                  };
+                  this.$router.push({
+                      name: 'instructorDataManagement'
                   });
               } catch (error) {
-                  this.handleError(error);
+                  // Show error toast
+                  let errorMsg = 'An error occurred while updating the experience instance.';
+                  if (error.response && error.response.data) {
+                      errorMsg = error.response.data.message || error.response.data.error || errorMsg;
+                  }
+                  
+                  toast.error(errorMsg, {
+                      position: 'top-right',
+                      toastClassName: 'Toastify__toast--delete',
+                      multiple: false
+                  });
+                  
+                  console.error(error);
               }
           },
   
           // Adds the provided activity to the list of selected activities.
           selectActivity(activity) {
-              this.selectedActivities.push(activity)
+              if (this.canUpdateActivities) {
+                  this.selectedActivities.push(activity)
+              }
           },
   
           // Removes the specified activity from the list of selected activities.
           removeActivity(activity) {
-              this.selectedActivities = this.selectedActivities.filter(selectedActivity => selectedActivity._id !== activity._id);
+              if (this.canUpdateActivities) {
+                  this.selectedActivities = this.selectedActivities.filter(selectedActivity => selectedActivity._id !== activity._id);
+              }
           },
   
           // Error handling method
@@ -477,6 +555,11 @@
   <style>
   .pointer-cursor {
       cursor: pointer;
+  }
+  
+  .disabled-row {
+      cursor: not-allowed;
+      opacity: 0.6;
   }
   
   .activity-content {
@@ -535,4 +618,3 @@
     }
   
   </style>
-  
