@@ -210,6 +210,8 @@ notification message in their preferred language.
             // Update store with new user information
             user.firstName = this.firstName;
             user.lastName = this.lastName;
+            user.languagePreference = this.languagePreference;
+            user.setLanguagePreference(this.languagePreference);
 
             // Prepare success notification in user's preferred language
             let toastMessage = user.languagePreference === 'English' 

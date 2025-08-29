@@ -371,76 +371,85 @@
     },
     
   // Converts JSON data representing exit forms to CSV format. Maps JSON variable names to CSV variable names and creates CSV data rows accordingly.
-  convertExitFormToCSV(jsonData) {
-        // Update the mapping from JSON variable names to CSV variable names
-        const renameMap = {
-            "_id": "exit_form_id",
-            "organizationID": "org_id",
-            "userID": "user_id",
-            "sessionName": "session",
-            "experienceName": "experience",
-            "goalSettingFormID": "goal_id",
-            "exitForm.progressMade.aspirationOneProgressResults": "aspiration1_progress_result",
-            "exitForm.progressMade.aspirationTwoProgressResults": "aspiration2_progress_result",
-            "exitForm.progressMade.aspirationThreeProgressResults": "aspiration3_progress_result",
-            "exitForm.progressMade.aspirationOneExperienceConnection": "aspiration1_experience_connection",
-            "exitForm.progressMade.aspirationTwoExperienceConnection": "aspiration2_experience_connection",
-            "exitForm.progressMade.aspirationThreeExperienceConnection": "aspiration3_experience_connection",
-            "exitForm.progressMade.goalOneProgressResults": "goal1_progress_result",
-            "exitForm.progressMade.goalTwoProgressResults": "goal2_progress_result",
-            "exitForm.progressMade.goalThreeProgressResults": "goal3_progress_result",
-            "exitForm.progressMade.goalFourProgressResults": "goal4_progress_result",
-            "exitForm.progressMade.goalFiveProgressResults": "goal5_progress_result",
-            "exitForm.progressMade.goalOneExperienceConnection": "goal1_experience_connection",
-            "exitForm.progressMade.goalTwoExperienceConnection": "goal2_experience_connection",
-            "exitForm.progressMade.goalThreeExperienceConnection": "goal3_experience_connection",
-            "exitForm.progressMade.goalFourExperienceConnection": "goal4_experience_connection",
-            "exitForm.progressMade.goalFiveExperienceConnection": "goal5_experience_connection",
-            "exitForm.goalIssues.goals": "goals_with_issues",
-            "exitForm.goalIssues.issuesDescription": "issues_description",
-            "exitForm.activitiesContribution.goalOneContributions": "goal1_activity_contributions",
-            "exitForm.activitiesContribution.goalTwoContributions": "goal2_activity_contributions",
-            "exitForm.activitiesContribution.goalThreeContributions": "goal3_activity_contributions",
-            "exitForm.activitiesContribution.goalFourContributions": "goal4_activity_contributions",
-            "exitForm.activitiesContribution.goalFiveContributions": "goal5_activity_contributions",
-            "exitForm.activitiesContribution.noContributions": "no_activity_contributions",
-            "exitForm.likelihoodOf.enrollAnotherCourse": "likelihood_enroll_another_course",
-            "exitForm.likelihoodOf.completeMinor": "likelihood_complete_minor",
-            "exitForm.likelihoodOf.recommendCourse": "likelihood_recommend_course",
-            "exitForm.likelihoodOf.pursueCareer": "likelihood_pursue_career",
-            "exitForm.generalGrowth.problemSolving": "growth_problem_solving",
-            "exitForm.generalGrowth.effectiveCommunication": "growth_effective_communication",
-            "exitForm.generalGrowth.teamwork": "growth_teamwork",
-            "exitForm.generalGrowth.culturalHumility": "growth_cultural_humility",
-            "exitForm.generalGrowth.ethicalDecisionMaking": "growth_ethical_decision_making",
-            "exitForm.generalGrowth.professionalResponsibility": "growth_professional_responsibility",
-            "exitForm.openEnded.biggestLessons": "biggest_lessons_learned",
-            "exitForm.openEnded.supportOthers": "supporting_others",
-            "exitForm.openEnded.comments": "additional_comments",
-            "exitForm.experienceContributions": "experience_contributions",
-            "created_at": "created_at",
-            "updated_at": "updated_at",
-            "__v": "__v"
-        };
+convertExitFormToCSV(jsonData) {
+    // Update the mapping from JSON variable names to CSV variable names
+    const renameMap = {
+        "_id": "exit_form_id",
+        "organizationID": "org_id",
+        "userID": "user_id",
+        "sessionName": "session",
+        "experienceName": "experience",
+        "goalSettingFormID": "goal_id",
+        "exitForm.progressMade.aspirationOneProgressResults": "aspiration1_progress_result",
+        "exitForm.progressMade.aspirationTwoProgressResults": "aspiration2_progress_result",
+        "exitForm.progressMade.aspirationThreeProgressResults": "aspiration3_progress_result",
+        "exitForm.progressMade.aspirationOneExperienceConnection": "aspiration1_experience_connection",
+        "exitForm.progressMade.aspirationTwoExperienceConnection": "aspiration2_experience_connection",
+        "exitForm.progressMade.aspirationThreeExperienceConnection": "aspiration3_experience_connection",
+        "exitForm.progressMade.goalOneProgressResults": "goal1_progress_result",
+        "exitForm.progressMade.goalTwoProgressResults": "goal2_progress_result",
+        "exitForm.progressMade.goalThreeProgressResults": "goal3_progress_result",
+        "exitForm.progressMade.goalFourProgressResults": "goal4_progress_result",
+        "exitForm.progressMade.goalFiveProgressResults": "goal5_progress_result",
+        "exitForm.progressMade.goalOneExperienceConnection": "goal1_experience_connection",
+        "exitForm.progressMade.goalTwoExperienceConnection": "goal2_experience_connection",
+        "exitForm.progressMade.goalThreeExperienceConnection": "goal3_experience_connection",
+        "exitForm.progressMade.goalFourExperienceConnection": "goal4_experience_connection",
+        "exitForm.progressMade.goalFiveExperienceConnection": "goal5_experience_connection",
+        "exitForm.goalIssues.goals": "goals_with_issues",
+        "exitForm.goalIssues.issuesDescription": "issues_description",
+        "exitForm.activitiesContribution.goalOneContributions": "goal1_activity_contributions",
+        "exitForm.activitiesContribution.goalTwoContributions": "goal2_activity_contributions",
+        "exitForm.activitiesContribution.goalThreeContributions": "goal3_activity_contributions",
+        "exitForm.activitiesContribution.goalFourContributions": "goal4_activity_contributions",
+        "exitForm.activitiesContribution.goalFiveContributions": "goal5_activity_contributions",
+        "exitForm.activitiesContribution.noContributions": "no_activity_contributions",
+        "exitForm.likelihoodOf.enrollAnotherCourse": "likelihood_enroll_another_course",
+        "exitForm.likelihoodOf.completeMinor": "likelihood_complete_minor",
+        "exitForm.likelihoodOf.recommendCourse": "likelihood_recommend_course",
+        "exitForm.likelihoodOf.pursueCareer": "likelihood_pursue_career",
+        "exitForm.generalGrowth.problemSolving": "growth_problem_solving",
+        "exitForm.generalGrowth.effectiveCommunication": "growth_effective_communication",
+        "exitForm.generalGrowth.teamwork": "growth_teamwork",
+        "exitForm.generalGrowth.culturalHumility": "growth_cultural_humility",
+        "exitForm.generalGrowth.ethicalDecisionMaking": "growth_ethical_decision_making",
+        "exitForm.generalGrowth.professionalResponsibility": "growth_professional_responsibility",
+        "exitForm.chwGrowth.interpersonalRelationshipBuilding": "chw_growth_interpersonal",
+        "exitForm.chwGrowth.serviceCoordinationNavigation": "chw_growth_service_coordination",
+        "exitForm.chwGrowth.evaluationResearch": "chw_growth_evaluation_research",
+        "exitForm.chwGrowth.knowledgeBaseHealthIssues": "chw_growth_knowledge_base",
+        "exitForm.chwGrowth.teachingEducation": "chw_growth_teaching",
+        "exitForm.chwGrowth.advocacy": "chw_growth_advocacy",
+        "exitForm.hichNetPromoter.recommendHICH": "hich_nps_recommend_hich",
+        "exitForm.hichNetPromoter.recommendSocialsWorkshops": "hich_nps_socials_workshops",
+        "exitForm.hichNetPromoter.recommendVolunteerProjects": "hich_nps_volunteer_projects",
+        "exitForm.hichNetPromoter.recommendMentorshipProgram": "hich_nps_mentorship",
+        "exitForm.openEnded.biggestLessons": "biggest_lessons_learned",
+        "exitForm.openEnded.supportOthers": "supporting_others",
+        "exitForm.openEnded.comments": "additional_comments",
+        "exitForm.experienceContributions": "experience_contributions",
+        "createdAt": "created_at",
+        "updatedAt": "updated_at",
+        "__v": "__v"
+    };
 
-        // Extract headers
-        const originalHeader = this.getExitFormCSVHeader();
-        const renamedHeader = originalHeader.map(h => renameMap[h] || h); // Use renameMap, default to original name if not found
-        const headerRow = renamedHeader.join(',');
+    // Extract headers
+    const originalHeader = this.getExitFormCSVHeader();
+    const renamedHeader = originalHeader.map(h => renameMap[h] || h);
+    const headerRow = renamedHeader.join(',');
 
-        // Create the CSV data rows
-        const dataRows = jsonData.map(item => {
-            const values = this.getExitFormCSVRowValues(item, originalHeader);
-            // Directly join the values without mapping to new field names
-            return values.join(',');
-        });
+    // Create the CSV data rows
+    const dataRows = jsonData.map(item => {
+        const values = this.getExitFormCSVRowValues(item, originalHeader);
+        return values.join(',');
+    });
 
+    // Combine header row and data rows to form the final CSV content
+    const csvContent = [headerRow, ...dataRows].join('\n');
 
-        // Combine header row and data rows to form the final CSV content
-        const csvContent = [headerRow, ...dataRows].join('\n');
+    return csvContent;
+},
 
-        return csvContent;
-    },
   
   // Retrieves the CSV header for entry form data. Returns an array of headers ordered based on the document structure.
   getEntryFormCSVHeader() {
@@ -798,139 +807,167 @@
   },
 
   // Manually orders headers for the exit form CSV based on document structure.
-  getExitFormCSVHeader() {
-        // Manually ordered headers based on the exit form document structure
-        const ordered_headers = [
-            "_id",
-            "organizationID",
-            "userID",
-            "sessionName",
-            "experienceName",
-            "goalSettingFormID",
-            "exitForm.progressMade.aspirationOneProgressResults",
-            "exitForm.progressMade.aspirationTwoProgressResults",
-            "exitForm.progressMade.aspirationThreeProgressResults",
-            "exitForm.progressMade.aspirationOneExperienceConnection",
-            "exitForm.progressMade.aspirationTwoExperienceConnection",
-            "exitForm.progressMade.aspirationThreeExperienceConnection",
-            "exitForm.progressMade.goalOneProgressResults",
-            "exitForm.progressMade.goalTwoProgressResults",
-            "exitForm.progressMade.goalThreeProgressResults",
-            "exitForm.progressMade.goalFourProgressResults",
-            "exitForm.progressMade.goalFiveProgressResults",
-            "exitForm.progressMade.goalOneExperienceConnection",
-            "exitForm.progressMade.goalTwoExperienceConnection",
-            "exitForm.progressMade.goalThreeExperienceConnection",
-            "exitForm.progressMade.goalFourExperienceConnection",
-            "exitForm.progressMade.goalFiveExperienceConnection",
-            "exitForm.goalIssues.goals",
-            "exitForm.goalIssues.issuesDescription",
-            "exitForm.activitiesContribution.goalOneContributions",
-            "exitForm.activitiesContribution.goalTwoContributions",
-            "exitForm.activitiesContribution.goalThreeContributions",
-            "exitForm.activitiesContribution.goalFourContributions",
-            "exitForm.activitiesContribution.goalFiveContributions",
-            "exitForm.activitiesContribution.noContributions",
-            "exitForm.likelihoodOf.enrollAnotherCourse",
-            "exitForm.likelihoodOf.completeMinor",
-            "exitForm.likelihoodOf.recommendCourse",
-            "exitForm.likelihoodOf.pursueCareer",
-            "exitForm.generalGrowth.problemSolving",
-            "exitForm.generalGrowth.effectiveCommunication",
-            "exitForm.generalGrowth.teamwork",
-            "exitForm.generalGrowth.culturalHumility",
-            "exitForm.generalGrowth.ethicalDecisionMaking",
-            "exitForm.generalGrowth.professionalResponsibility",
-            "exitForm.openEnded.biggestLessons",
-            "exitForm.openEnded.supportOthers",
-            "exitForm.openEnded.comments",
-            "exitForm.experienceContributions",
-            "createdAt",
-            "updatedAt",
-            "__v",
-            // Include any other fields that are relevant for the CSV export
-        ];
-        return ordered_headers;
-    },
+getExitFormCSVHeader() {
+    // Manually ordered headers based on the exit form document structure
+    const ordered_headers = [
+        "_id",
+        "organizationID",
+        "userID",
+        "sessionName",
+        "experienceName",
+        "goalSettingFormID",
+        "exitForm.progressMade.aspirationOneProgressResults",
+        "exitForm.progressMade.aspirationTwoProgressResults",
+        "exitForm.progressMade.aspirationThreeProgressResults",
+        "exitForm.progressMade.aspirationOneExperienceConnection",
+        "exitForm.progressMade.aspirationTwoExperienceConnection",
+        "exitForm.progressMade.aspirationThreeExperienceConnection",
+        "exitForm.progressMade.goalOneProgressResults",
+        "exitForm.progressMade.goalTwoProgressResults",
+        "exitForm.progressMade.goalThreeProgressResults",
+        "exitForm.progressMade.goalFourProgressResults",
+        "exitForm.progressMade.goalFiveProgressResults",
+        "exitForm.progressMade.goalOneExperienceConnection",
+        "exitForm.progressMade.goalTwoExperienceConnection",
+        "exitForm.progressMade.goalThreeExperienceConnection",
+        "exitForm.progressMade.goalFourExperienceConnection",
+        "exitForm.progressMade.goalFiveExperienceConnection",
+        "exitForm.goalIssues.goals",
+        "exitForm.goalIssues.issuesDescription",
+        "exitForm.activitiesContribution.goalOneContributions",
+        "exitForm.activitiesContribution.goalTwoContributions",
+        "exitForm.activitiesContribution.goalThreeContributions",
+        "exitForm.activitiesContribution.goalFourContributions",
+        "exitForm.activitiesContribution.goalFiveContributions",
+        "exitForm.activitiesContribution.noContributions",
+        "exitForm.likelihoodOf.enrollAnotherCourse",
+        "exitForm.likelihoodOf.completeMinor",
+        "exitForm.likelihoodOf.recommendCourse",
+        "exitForm.likelihoodOf.pursueCareer",
+        "exitForm.generalGrowth.problemSolving",
+        "exitForm.generalGrowth.effectiveCommunication",
+        "exitForm.generalGrowth.teamwork",
+        "exitForm.generalGrowth.culturalHumility",
+        "exitForm.generalGrowth.ethicalDecisionMaking",
+        "exitForm.generalGrowth.professionalResponsibility",
+        "exitForm.chwGrowth.interpersonalRelationshipBuilding",
+        "exitForm.chwGrowth.serviceCoordinationNavigation",
+        "exitForm.chwGrowth.evaluationResearch",
+        "exitForm.chwGrowth.knowledgeBaseHealthIssues",
+        "exitForm.chwGrowth.teachingEducation",
+        "exitForm.chwGrowth.advocacy",
+        "exitForm.hichNetPromoter.recommendHICH",
+        "exitForm.hichNetPromoter.recommendSocialsWorkshops",
+        "exitForm.hichNetPromoter.recommendVolunteerProjects",
+        "exitForm.hichNetPromoter.recommendMentorshipProgram",
+        "exitForm.openEnded.biggestLessons",
+        "exitForm.openEnded.supportOthers",
+        "exitForm.openEnded.comments",
+        "exitForm.experienceContributions",
+        "createdAt",
+        "updatedAt",
+        "__v",
+    ];
+    return ordered_headers;
+},
 
     // Extracts values from the given object based on the provided header keys, applying transformations as needed for specific fields. Handles array values, converts to string, and handles special characters for CSV formatting
-    getExitFormCSVRowValues(obj, header) {
-        const values = [];
+getExitFormCSVRowValues(obj, header) {
+    const values = [];
+    
+    header.forEach((field) => {
+        let value = obj;
+        const pathKeys = field.split('.');
         
-        header.forEach((field) => {
-            let value = obj;
-            const pathKeys = field.split('.');
-            pathKeys.forEach((key) => {
-                if (value && typeof value === 'object' && key in value) {
-                    value = value[key];
-                } else {
-                    value = value ? value : '';
-                }
-            });
-
-            // Apply transformation based on fields
-            switch(field) {
-                case "exitForm.progressMade.aspirationOneProgressResults":
-                case "exitForm.progressMade.aspirationTwoProgressResults":
-                case "exitForm.progressMade.aspirationThreeProgressResults":
-                    value = this.transformAspirationProgress(value);
-                    break;
-                case "exitForm.progressMade.aspirationOneExperienceConnection":
-                case "exitForm.progressMade.aspirationTwoExperienceConnection":
-                case "exitForm.progressMade.aspirationThreeExperienceConnection":
-                    value = this.transformAspirationConnection(value);
-                    break;
-                case "exitForm.progressMade.goalOneProgressResults":
-                case "exitForm.progressMade.goalTwoProgressResults":
-                case "exitForm.progressMade.goalThreeProgressResults":
-                case "exitForm.progressMade.goalFourProgressResults":
-                case "exitForm.progressMade.goalFiveProgressResults":
-                    value = this.transformGoalProgress(value);
-                    break;
-                case "exitForm.progressMade.goalOneExperienceConnection":
-                case "exitForm.progressMade.goalTwoExperienceConnection":
-                case "exitForm.progressMade.goalThreeExperienceConnection":
-                case "exitForm.progressMade.goalFourExperienceConnection":
-                case "exitForm.progressMade.goalFiveExperienceConnection":
-                    value = this.transformGoalConnection(value);
-                    break;
-                case "exitForm.goalIssues.goals":
-                    value = this.transformGoalIssues(value);
-                    break;
-                case "exitForm.generalGrowth.problemSolving":
-                case "exitForm.generalGrowth.effectiveCommunication":
-                case "exitForm.generalGrowth.teamwork":
-                case "exitForm.generalGrowth.culturalHumility":
-                case "exitForm.generalGrowth.ethicalDecisionMaking":
-                case "exitForm.generalGrowth.professionalResponsibility":
-                    value = this.transformGrowthValue(value);
-                    break;
-                case "exitForm.likelihoodOf.enrollAnotherCourse":
-                case "exitForm.likelihoodOf.completeMinor":
-                case "exitForm.likelihoodOf.recommendCourse":
-                case "exitForm.likelihoodOf.pursueCareer":
-                    value = this.transformLikelihoodValue(value);
-                    break;
+        // Navigate through the object path
+        pathKeys.forEach((key) => {
+            if (value && typeof value === 'object' && key in value) {
+                value = value[key];
+            } else {
+                value = undefined;
             }
-
-            // Handle arrays
-            if (Array.isArray(value)) {
-                value = value.join(', ');
-            }
-
-            // Convert to string and handle special characters
-            if (value) {
-                value = value.toString().replace(/\r?\n|\r/g, ' ').replace(/"/g, '""');
-                if (value.includes(',')) {
-                    value = `"${value}"`;
-                }
-            }
-
-            values.push(value);
         });
 
-        return values;
-    },
+        // Apply transformation based on fields
+        switch(field) {
+            case "exitForm.progressMade.aspirationOneProgressResults":
+            case "exitForm.progressMade.aspirationTwoProgressResults":
+            case "exitForm.progressMade.aspirationThreeProgressResults":
+                value = this.transformAspirationProgress(value);
+                break;
+            case "exitForm.progressMade.aspirationOneExperienceConnection":
+            case "exitForm.progressMade.aspirationTwoExperienceConnection":
+            case "exitForm.progressMade.aspirationThreeExperienceConnection":
+                value = this.transformAspirationConnection(value);
+                break;
+            case "exitForm.progressMade.goalOneProgressResults":
+            case "exitForm.progressMade.goalTwoProgressResults":
+            case "exitForm.progressMade.goalThreeProgressResults":
+            case "exitForm.progressMade.goalFourProgressResults":
+            case "exitForm.progressMade.goalFiveProgressResults":
+                value = this.transformGoalProgress(value);
+                break;
+            case "exitForm.progressMade.goalOneExperienceConnection":
+            case "exitForm.progressMade.goalTwoExperienceConnection":
+            case "exitForm.progressMade.goalThreeExperienceConnection":
+            case "exitForm.progressMade.goalFourExperienceConnection":
+            case "exitForm.progressMade.goalFiveExperienceConnection":
+                value = this.transformGoalConnection(value);
+                break;
+            case "exitForm.goalIssues.goals":
+                value = this.transformGoalIssues(value);
+                break;
+            case "exitForm.generalGrowth.problemSolving":
+            case "exitForm.generalGrowth.effectiveCommunication":
+            case "exitForm.generalGrowth.teamwork":
+            case "exitForm.generalGrowth.culturalHumility":
+            case "exitForm.generalGrowth.ethicalDecisionMaking":
+            case "exitForm.generalGrowth.professionalResponsibility":
+            case "exitForm.chwGrowth.interpersonalRelationshipBuilding":
+            case "exitForm.chwGrowth.serviceCoordinationNavigation":
+            case "exitForm.chwGrowth.evaluationResearch":
+            case "exitForm.chwGrowth.knowledgeBaseHealthIssues":
+            case "exitForm.chwGrowth.teachingEducation":
+            case "exitForm.chwGrowth.advocacy":
+                value = this.transformGrowthValue(value);
+                break;
+            case "exitForm.likelihoodOf.enrollAnotherCourse":
+            case "exitForm.likelihoodOf.completeMinor":
+            case "exitForm.likelihoodOf.recommendCourse":
+            case "exitForm.likelihoodOf.pursueCareer":
+                value = this.transformLikelihoodValue(value);
+                break;
+            case "exitForm.hichNetPromoter.recommendHICH":
+            case "exitForm.hichNetPromoter.recommendSocialsWorkshops":
+            case "exitForm.hichNetPromoter.recommendVolunteerProjects":
+            case "exitForm.hichNetPromoter.recommendMentorshipProgram":
+                // These are already numeric (0-10), no transformation needed
+                break;
+        }
+
+        // Handle undefined/null values for optional fields
+        if (value === undefined || value === null) {
+            value = '';
+        }
+
+        // Handle arrays
+        if (Array.isArray(value)) {
+            value = value.join(', ');
+        }
+
+        // Convert to string and handle special characters
+        if (value !== '') {
+            value = value.toString().replace(/\r?\n|\r/g, ' ').replace(/"/g, '""');
+            if (value.includes(',')) {
+                value = `"${value}"`;
+            }
+        }
+
+        values.push(value);
+    });
+
+    return values;
+},
 
   // Converts "Yes" to "1", "No" to "0", and leaves other values unchanged.
   transformYesNoToBinary(value) {

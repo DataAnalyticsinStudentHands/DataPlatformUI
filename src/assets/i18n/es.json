@@ -401,5 +401,16 @@
     "First name is required": "El nombre es obligatorio",
     "Last name is required": "El apellido es obligatorio",
     "Language preference is required": "La preferencia de idioma es obligatoria",
-    "Password should be at least 8 characters long": "La contraseña debe tener al menos 8 caracteres"
+    "Password should be at least 8 characters long": "La contraseña debe tener al menos 8 caracteres",
+    "How likely are you to recommend HICH to a friend?": "¿Qué tan probable es que recomiendes HICH a un amigo?",
+    "How likely are you to recommend HICH's socials and workshops to a friend?": "¿Qué tan probable es que recomiendes las redes sociales y los talleres de HICH a un amigo?",
+    "How likely are you to recommend HICH's volunteer projects to a friend?": "¿Qué tan probable es que recomiendes los proyectos de voluntariado de HICH a un amigo?",
+    "How likely are you to recommend HICH's mentorship program to a friend?": "¿Qué tan probable es que recomiendes el programa de mentoría de HICH a un amigo?",
+    "interpersonal and relationship building": "interpersonal y construcción de relaciones",
+    "service coordination and navigation": "coordinación y navegación de servicios",
+    "evaluation and research": "evaluación e investigación",
+    "knowledge base on health issues": "base de conocimientos sobre temas de salud",
+    "teaching and education": "enseñanza y educación",
+    "advocacy": "abogacía",
+    "Hi there! You have already filled out an Exit Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.": "¡Hola! Ya has completado un formulario de salida para esta experiencia. Ten en cuenta que enviar otro formulario para la misma experiencia reemplazará tus respuestas anteriores."
 }

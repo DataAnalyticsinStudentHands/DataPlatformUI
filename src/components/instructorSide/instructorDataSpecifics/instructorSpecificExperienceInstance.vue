@@ -84,7 +84,7 @@
           <v-row>
             <v-col cols="6">
               <!-- Card to display the list of selected activities -->
-              <v-card flat :disabled="!canUpdateActivities">
+              <v-card flat>
                 <v-card-title>
                   <v-row>
                     <v-col>
@@ -94,7 +94,7 @@
                 </v-card-title>
   
                 <!-- Scrollable list of selected activities -->
-                <v-list class="scrollable-list" :disabled="!canUpdateActivities">
+                <v-list class="scrollable-list">
                   <v-list-item
                     v-for="activity in selectedActivities"
                     :key="activity._id"
@@ -105,7 +105,7 @@
                       {{ activity.activityName }}
                     </v-col>
   
-                    <!-- Remove activity button -->
+                    <!-- Remove activity button - only shown when both canUpdateExpInstance AND canUpdateActivities are true -->
                     <v-col v-if="canUpdateExpInstance && canUpdateActivities">
                       <v-icon
                         @click.stop="removeActivity(activity)"
@@ -120,13 +120,12 @@
               </v-card>
             </v-col>
   
-            <!-- Card for adding activities, shown conditionally if showAddActivities is true -->
+            <!-- Card for adding activities, shown conditionally if showAddActivities is true AND canUpdateActivities is true -->
             <v-col>
               <v-card
-                v-if="showAddActivities"
+                v-if="showAddActivities && canUpdateActivities"
                 flat
                 title="Add Activities"
-                :disabled="!canUpdateActivities"
               >
                 <!-- Search bar for filtering activities -->
                 <template v-slot:text>
@@ -137,7 +136,6 @@
                     single-line
                     variant="outlined"
                     hide-details
-                    :disabled="!canUpdateActivities"
                   ></v-text-field>
                 </template>
   
@@ -150,23 +148,22 @@
                   class="scrollable-table"
                   hover
                   :search="activitySearch"
-                  :disabled="!canUpdateActivities"
                 >
   
                   <!-- Custom table body for displaying activities -->
                   <template v-slot:body="{ items }">
                     <template v-for="item in items" :key="item._id">
                       <tr
-                        @click="canUpdateActivities ? selectActivity(item) : null"
-                        @mouseover="canUpdateActivities ? hoveredItem = item._id : null"
+                        @click="selectActivity(item)"
+                        @mouseover="hoveredItem = item._id"
                         @mouseleave="hoveredItem = null"
-                        :class="canUpdateActivities ? 'pointer-cursor activity-row' : 'disabled-row'"
+                        class="pointer-cursor activity-row"
                       >
                         <td>
                           <div class="activity-content">
                             {{ item.activityName }}
                             <!-- Show the add icon when hovering over the item -->
-                            <v-icon v-if="hoveredItem === item._id && canUpdateActivities" class="mdi-plus">mdi-plus</v-icon>
+                            <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
                           </div>
                         </td>
                       </tr>
