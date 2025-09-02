@@ -412,28 +412,28 @@
         <v-col cols="12">
             <h3 class="review-section-title">{{$t('HICH Recommendation Score')}}</h3>
             <p class="form-label">{{$t('How likely are you to recommend HICH to a friend?')}}</p>
-            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendHICH || 0 }} / 10</p>
+            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendHICH || "" }}</p>
         </v-col>
     </v-row>
     <v-row>
         <v-col cols="12">
             <h3 class="review-section-title">{{$t('HICH Socials and Workshops Recommendation')}}</h3>
             <p class="form-label">{{$t("How likely are you to recommend HICH's socials and workshops to a friend?")}}</p>
-            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendSocialsWorkshops || 0 }} / 10</p>
+            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendSocialsWorkshops || "" }}</p>
         </v-col>
     </v-row>
     <v-row>
         <v-col cols="12">
             <h3 class="review-section-title">{{$t('HICH Volunteer Projects Recommendation')}}</h3>
             <p class="form-label">{{$t("How likely are you to recommend HICH's volunteer projects to a friend?")}}</p>
-            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendVolunteerProjects || 0 }} / 10</p>
+            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendVolunteerProjects || "" }}</p>
         </v-col>
     </v-row>
     <v-row>
         <v-col cols="12">
             <h3 class="review-section-title">{{$t('HICH Mentorship Program Recommendation')}}</h3>
             <p class="form-label">{{$t("How likely are you to recommend HICH's mentorship program to a friend?")}}</p>
-            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendMentorshipProgram || 0 }} / 10</p>
+            <p class="review-section-content pl-3">{{ exitForm.hichNetPromoter.recommendMentorshipProgram || "" }}</p>
         </v-col>
     </v-row>
 </div>

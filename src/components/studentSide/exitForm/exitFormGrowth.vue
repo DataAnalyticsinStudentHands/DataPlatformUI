@@ -5,8 +5,8 @@
   how the course experience contributed to the student's professional goals and personal growth
   across various competencies. For Data & Society courses, it includes additional questions about
   future academic and career intentions. For CHW certification courses, it includes specialized
-  growth metrics. The component also collects reflections on key lessons learned and plans for
-  applying that knowledge. Both mobile and desktop layouts are provided.
+  growth metrics. For HICH experiences, it includes Net Promoter Score questions. The component 
+  also collects reflections on key lessons learned and plans for applying that knowledge.
 -->
 
 <template>
@@ -152,6 +152,125 @@
         </v-card>
     </v-col>
     </v-row>
+    </div>
+
+    <!-- HICH Net Promoter Questions - Table Format like Data & Society -->
+    <div v-if="isHICHExperience">
+        <!-- Mobile HICH View -->
+        <div class="d-sm-none">
+            <v-row>
+                <v-col cols="12">
+                    <p ref="hichRecommendField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
+                        {{$t('How likely are you to recommend the following to a friend?')}}
+                    </p>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12">
+                    <div>
+                        <div class="font-weight-black">{{$t('HICH')}}</div>
+                        <v-radio-group v-model="exitForm.hichNetPromoter.recommendHICH" :rules="[hichRequiredRule]">
+                            <v-radio
+                                v-for="option in hichLikelihoodOptions"
+                                :label="$t(option.label)"
+                                :key="option.id"
+                                :value="option.label"
+                            ></v-radio>
+                        </v-radio-group>
+                    </div>
+                    <div>
+                        <div class="font-weight-black">{{$t("HICH's socials and workshops")}}</div>
+                        <v-radio-group v-model="exitForm.hichNetPromoter.recommendSocialsWorkshops" :rules="[hichRequiredRule]">
+                            <v-radio
+                                v-for="option in hichLikelihoodOptions"
+                                :label="$t(option.label)"
+                                :key="option.id"
+                                :value="option.label"
+                            ></v-radio>
+                        </v-radio-group>
+                    </div>
+                    <div>
+                        <div class="font-weight-black">{{$t("HICH's volunteer projects")}}</div>
+                        <v-radio-group v-model="exitForm.hichNetPromoter.recommendVolunteerProjects" :rules="[hichRequiredRule]">
+                            <v-radio
+                                v-for="option in hichLikelihoodOptions"
+                                :label="$t(option.label)"
+                                :key="option.id"
+                                :value="option.label"
+                            ></v-radio>
+                        </v-radio-group>
+                    </div>
+                    <div>
+                        <div class="font-weight-black">{{$t("HICH's mentorship program")}}</div>
+                        <v-radio-group v-model="exitForm.hichNetPromoter.recommendMentorshipProgram" :rules="[hichRequiredRule]">
+                            <v-radio
+                                v-for="option in hichLikelihoodOptions"
+                                :label="$t(option.label)"
+                                :key="option.id"
+                                :value="option.label"
+                            ></v-radio>
+                        </v-radio-group>
+                    </div>
+                </v-col>
+            </v-row>
+        </div>
+
+        <!-- Desktop HICH View -->
+        <v-row class="d-none d-sm-inline">
+            <v-row>
+                <v-col cols="12">
+                    <p ref="hichRecommendField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
+                        {{$t('How likely are you to recommend the following to a friend?')}}
+                    </p>
+                </v-col>
+            </v-row>
+            <v-col cols="12">
+                <v-card>
+                    <v-table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th v-for="option in hichLikelihoodOptions" :key="option.id">{{ $t(option.label) }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{$t('HICH')}}</td>
+                                <td v-for="option in hichLikelihoodOptions" :key="option.id">
+                                    <v-radio-group v-model="exitForm.hichNetPromoter.recommendHICH" :rules="[hichRequiredRule]" :error-messages="(!exitForm.hichNetPromoter.recommendHICH && formSubmitted) ? $t('Please select one.') : ''">
+                                        <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                                    </v-radio-group>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{$t("HICH's socials and workshops")}}</td>
+                                <td v-for="option in hichLikelihoodOptions" :key="option.id">
+                                    <v-radio-group v-model="exitForm.hichNetPromoter.recommendSocialsWorkshops" :rules="[hichRequiredRule]" :error-messages="(!exitForm.hichNetPromoter.recommendSocialsWorkshops && formSubmitted) ? $t('Please select one.') : ''">
+                                        <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                                    </v-radio-group>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{$t("HICH's volunteer projects")}}</td>
+                                <td v-for="option in hichLikelihoodOptions" :key="option.id">
+                                    <v-radio-group v-model="exitForm.hichNetPromoter.recommendVolunteerProjects" :rules="[hichRequiredRule]" :error-messages="(!exitForm.hichNetPromoter.recommendVolunteerProjects && formSubmitted) ? $t('Please select one.') : ''">
+                                        <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                                    </v-radio-group>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{$t("HICH's mentorship program")}}</td>
+                                <td v-for="option in hichLikelihoodOptions" :key="option.id">
+                                    <v-radio-group v-model="exitForm.hichNetPromoter.recommendMentorshipProgram" :rules="[hichRequiredRule]" :error-messages="(!exitForm.hichNetPromoter.recommendMentorshipProgram && formSubmitted) ? $t('Please select one.') : ''">
+                                        <v-radio :value="option.label" class="d-flex justify-center align-center"></v-radio>
+                                    </v-radio-group>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </v-table>
+                </v-card>
+            </v-col>
+        </v-row>
     </div>
 
     <!-- Growth Assessment Section -->
@@ -310,101 +429,6 @@
         </v-row>
     </div>
 
-    <!-- HICH Net Promoter Questions (No section header) -->
-    <div v-if="isHICHExperience">
-        <v-row class="mt-4">
-            <v-col cols="12">
-                <p ref="hichRecommendField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHRecommendInvalid && formSubmitted }">
-                    {{$t('How likely are you to recommend HICH to a friend?')}}
-                </p>
-                <v-slider
-                    v-model="exitForm.hichNetPromoter.recommendHICH"
-                    :min="0"
-                    :max="10"
-                    :step="1"
-                    show-ticks="always"
-                    tick-size="4"
-                    thumb-label="always"
-                    :rules="[hichRequiredRule]"
-                    class="mt-8"
-                >
-                    <template v-slot:append>
-                        <v-chip>{{ exitForm.hichNetPromoter.recommendHICH }}</v-chip>
-                    </template>
-                </v-slider>
-            </v-col>
-        </v-row>
-
-        <v-row>
-            <v-col cols="12">
-                <p ref="hichSocialsField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHSocialsInvalid && formSubmitted }">
-                    {{$t("How likely are you to recommend HICH's socials and workshops to a friend?")}}
-                </p>
-                <v-slider
-                    v-model="exitForm.hichNetPromoter.recommendSocialsWorkshops"
-                    :min="0"
-                    :max="10"
-                    :step="1"
-                    show-ticks="always"
-                    tick-size="4"
-                    thumb-label="always"
-                    :rules="[hichRequiredRule]"
-                    class="mt-8"
-                >
-                    <template v-slot:append>
-                        <v-chip>{{ exitForm.hichNetPromoter.recommendSocialsWorkshops }}</v-chip>
-                    </template>
-                </v-slider>
-            </v-col>
-        </v-row>
-
-        <v-row>
-            <v-col cols="12">
-                <p ref="hichVolunteerField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHVolunteerInvalid && formSubmitted }">
-                    {{$t("How likely are you to recommend HICH's volunteer projects to a friend?")}}
-                </p>
-                <v-slider
-                    v-model="exitForm.hichNetPromoter.recommendVolunteerProjects"
-                    :min="0"
-                    :max="10"
-                    :step="1"
-                    show-ticks="always"
-                    tick-size="4"
-                    thumb-label="always"
-                    :rules="[hichRequiredRule]"
-                    class="mt-8"
-                >
-                    <template v-slot:append>
-                        <v-chip>{{ exitForm.hichNetPromoter.recommendVolunteerProjects }}</v-chip>
-                    </template>
-                </v-slider>
-            </v-col>
-        </v-row>
-
-        <v-row>
-            <v-col cols="12">
-                <p ref="hichMentorshipField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHMentorshipInvalid && formSubmitted }">
-                    {{$t("How likely are you to recommend HICH's mentorship program to a friend?")}}
-                </p>
-                <v-slider
-                    v-model="exitForm.hichNetPromoter.recommendMentorshipProgram"
-                    :min="0"
-                    :max="10"
-                    :step="1"
-                    show-ticks="always"
-                    tick-size="4"
-                    thumb-label="always"
-                    :rules="[hichRequiredRule]"
-                    class="mt-8"
-                >
-                    <template v-slot:append>
-                        <v-chip>{{ exitForm.hichNetPromoter.recommendMentorshipProgram }}</v-chip>
-                    </template>
-                </v-slider>
-            </v-col>
-        </v-row>
-    </div>
-
     <!-- Key Lessons Reflection -->
     <v-row>
         <v-col cols="12">
@@ -504,6 +528,14 @@ export default {
         return {
             formSubmitted: false,
             jumpToErrorTooltip: false,
+            // HICH likelihood options matching Data & Society format
+            hichLikelihoodOptions: [
+                { id: 1, label: "Extremely likely" },
+                { id: 2, label: "Somewhat likely" },
+                { id: 3, label: "Neutral likely/unlikely" },
+                { id: 4, label: "Somewhat unlikely" },
+                { id: 5, label: "Extremely unlikely" }
+            ],
             // Validation rule that only applies after form submission
             requiredRule: value => {
                 if (!this.formSubmitted) {
@@ -515,7 +547,7 @@ export default {
                 if (!this.formSubmitted || !this.isHICHExperience) {
                     return true;
                 }
-                return (value !== "" && value !== null && value !== undefined) || this.$t('Please select a rating from 0-10.');
+                return !!value || this.$t('Please select one.');
             },
             chwRequiredRule: value => {
                 if (!this.formSubmitted || !this.isCHWExperience) {
@@ -531,9 +563,6 @@ export default {
         this.$nextTick(() => {
             window.scrollTo(0, 0);
         });
-
-        // Set HICH defaults if it's a HICH experience
-        this.setHICHDefaults();
     },
 
     watch: {
@@ -548,13 +577,6 @@ export default {
               this.jumpToErrorTooltip = false;
           }
       },
-        // Watch for changes in selected experience
-        selectedExperience: {
-            handler() {
-                this.setHICHDefaults();
-            },
-            deep: true
-        },
     },
 
     computed: {
@@ -637,27 +659,26 @@ export default {
         // Validate HICH Net Promoter fields
         isHICHRecommendInvalid() {
             if (!this.isHICHExperience) return false;
-            return this.exitForm.hichNetPromoter.recommendHICH === "" || 
-                this.exitForm.hichNetPromoter.recommendHICH === null || 
-                this.exitForm.hichNetPromoter.recommendHICH === undefined;
+            return !this.exitForm.hichNetPromoter.recommendHICH;
         },
         isHICHSocialsInvalid() {
             if (!this.isHICHExperience) return false;
-            return this.exitForm.hichNetPromoter.recommendSocialsWorkshops === "" || 
-                this.exitForm.hichNetPromoter.recommendSocialsWorkshops === null || 
-                this.exitForm.hichNetPromoter.recommendSocialsWorkshops === undefined;
+            return !this.exitForm.hichNetPromoter.recommendSocialsWorkshops;
         },
         isHICHVolunteerInvalid() {
             if (!this.isHICHExperience) return false;
-            return this.exitForm.hichNetPromoter.recommendVolunteerProjects === "" || 
-                this.exitForm.hichNetPromoter.recommendVolunteerProjects === null || 
-                this.exitForm.hichNetPromoter.recommendVolunteerProjects === undefined;
+            return !this.exitForm.hichNetPromoter.recommendVolunteerProjects;
         },
         isHICHMentorshipInvalid() {
             if (!this.isHICHExperience) return false;
-            return this.exitForm.hichNetPromoter.recommendMentorshipProgram === "" || 
-                this.exitForm.hichNetPromoter.recommendMentorshipProgram === null || 
-                this.exitForm.hichNetPromoter.recommendMentorshipProgram === undefined;
+            return !this.exitForm.hichNetPromoter.recommendMentorshipProgram;
+        },
+        
+        // Combined HICH validation
+        isHICHInvalid() {
+            if (!this.isHICHExperience) return false;
+            return this.isHICHRecommendInvalid || this.isHICHSocialsInvalid || 
+                   this.isHICHVolunteerInvalid || this.isHICHMentorshipInvalid;
         },
         
         // Overall validation state with conditional checks
@@ -686,10 +707,7 @@ export default {
 
             let hichValidations = false;
             if (this.isHICHExperience) {
-                hichValidations = this.isHICHRecommendInvalid || 
-                                this.isHICHSocialsInvalid || 
-                                this.isHICHVolunteerInvalid || 
-                                this.isHICHMentorshipInvalid;
+                hichValidations = this.isHICHInvalid;
             }
 
             // Include likelihood validation only for Data & Society courses
@@ -723,6 +741,8 @@ export default {
         scrollToErrorField() {
               const errorFields = [
                   'experienceContributionGradProfField',
+                  'likelihoodField',
+                  'hichRecommendField',
                   'growthProblemSolvingField',
                   'growthEffCommField',
                   'growthTeamworkField',
@@ -735,13 +755,8 @@ export default {
                   'chwKnowledgeField',
                   'chwTeachingField',
                   'chwAdvocacyField',
-                  'hichRecommendField',        
-                  'hichSocialsField',           
-                  'hichVolunteerField',         
-                  'hichMentorshipField',        
                   'biggestLessonsField',
-                  'supportOthersField',
-                  'likelihoodField'
+                  'supportOthersField'
               ];
   
               for (let i = 0; i < errorFields.length; i++) {
@@ -790,45 +805,11 @@ export default {
                     case 'chwAdvocacyField':
                         return this.isCHWAdvocacyInvalid;
                     case 'hichRecommendField':
-                        return this.isHICHRecommendInvalid;
-                    case 'hichSocialsField':
-                        return this.isHICHSocialsInvalid;
-                    case 'hichVolunteerField':
-                        return this.isHICHVolunteerInvalid;
-                    case 'hichMentorshipField':
-                        return this.isHICHMentorshipInvalid;
+                        return this.isHICHInvalid;
                     default:
                         return false;
                 }
             },
-
-        setHICHDefaults() {
-            console.log('setHICHDefaults')
-            if (this.isHICHExperience) {
-                // Only set to 5 if the field is empty (hasn't been touched by user)
-                if (this.exitForm.hichNetPromoter.recommendHICH === "" || 
-                    this.exitForm.hichNetPromoter.recommendHICH === null || 
-                    this.exitForm.hichNetPromoter.recommendHICH === undefined) {
-                    this.exitForm.hichNetPromoter.recommendHICH = 5;
-                }
-                if (this.exitForm.hichNetPromoter.recommendSocialsWorkshops === "" || 
-                    this.exitForm.hichNetPromoter.recommendSocialsWorkshops === null || 
-                    this.exitForm.hichNetPromoter.recommendSocialsWorkshops === undefined) {
-                    this.exitForm.hichNetPromoter.recommendSocialsWorkshops = 5;
-                }
-                if (this.exitForm.hichNetPromoter.recommendVolunteerProjects === "" || 
-                    this.exitForm.hichNetPromoter.recommendVolunteerProjects === null || 
-                    this.exitForm.hichNetPromoter.recommendVolunteerProjects === undefined) {
-                    this.exitForm.hichNetPromoter.recommendVolunteerProjects = 5;
-                }
-                if (this.exitForm.hichNetPromoter.recommendMentorshipProgram === "" || 
-                    this.exitForm.hichNetPromoter.recommendMentorshipProgram === null || 
-                    this.exitForm.hichNetPromoter.recommendMentorshipProgram === undefined) {
-                    this.exitForm.hichNetPromoter.recommendMentorshipProgram = 5;
-                }
-            }
-        },
-
     },
 
 }

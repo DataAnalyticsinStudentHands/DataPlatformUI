@@ -882,10 +882,10 @@ data() {
                 advocacy: ""
             },
             hichNetPromoter: {
-                recommendHICH: 5,
-                recommendSocialsWorkshops: 5,
-                recommendVolunteerProjects: 5,
-                recommendMentorshipProgram: 5
+                recommendHICH: "",
+                recommendSocialsWorkshops: "",
+                recommendVolunteerProjects: "",
+                recommendMentorshipProgram: ""
             },
             openEnded: {
                 biggestLessons: "",
@@ -1242,9 +1242,7 @@ methods: {
 
     // Event handlers from child components
     handleSelectedExperience(value) {
-        console.log('handleSelectedExperience called with:', value);
         this.selectedExperience = value;
-        console.log('selectedExperience is now:', this.selectedExperience);
     },
     stepVisited(step) {
         if (!this.visitedSteps.includes(step)) {
