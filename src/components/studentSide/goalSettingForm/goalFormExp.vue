@@ -117,7 +117,7 @@ props: {
     expRegistrationID: String,
     incompleteFormID: String
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form", "update-experiences", "update-experienceID"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form", "update-experiences", "update-experienceID", "populate-existing-form"],
 data() {
     return {
         // Form state and validation
@@ -306,55 +306,96 @@ methods: {
     },
 
     // Check if form already exists for selected experience
-    async checkExistingForm() {
-        this.isLoadingExpCheck = true;
-        const experienceID = this.selectedExperience;
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
+async checkExistingForm() {
+    this.isLoadingExpCheck = true;
+    const experienceID = this.selectedExperience;
+    const user = useLoggedInUserStore();
+    let token = user.token;
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
 
-        try {
-            const response = await axios.get(apiURL + `${experienceID}`, {
-            headers: {
-                token: token
-            }
-            });
+    try {
+        const response = await axios.get(apiURL + `${experienceID}`, {
+            headers: { token: token }
+        });
 
-            if (response.data.documentFound === false) {
-                this.$emit('update-found-document-id', null);
-                this.experienceFoundWarning = false;
+        if (response.data.documentFound === false) {
+            this.$emit('update-found-document-id', null);
+            this.experienceFoundWarning = false;
             return;
-            }
-
-            if (response.data && response.data.id) {
-                this.$emit('update-found-document-id', response.data.id);
-                this.experienceFoundWarning = true;
-            } else {
-                this.$emit('update-found-document-id', null);
-                this.experienceFoundWarning = false;
-            }
-        } catch (error) {
-            this.handleError("An unexpected error occurred while checking for existing form:", error);
-        } finally {
-            this.isLoadingExpCheck = false; 
         }
-    },
+
+        if (response.data && response.data.id) {
+            this.$emit('update-found-document-id', response.data.id);
+            this.experienceFoundWarning = true;
+            
+            // NEW: Fetch the complete form data for pre-population
+            await this.fetchAndEmitExistingForm(experienceID);
+        } else {
+            this.$emit('update-found-document-id', null);
+            this.experienceFoundWarning = false;
+        }
+    } catch (error) {
+        this.handleError("An unexpected error occurred while checking for existing form:", error);
+    } finally {
+        this.isLoadingExpCheck = false; 
+    }
+},
+
+async fetchAndEmitExistingForm(experienceID) {
+    const user = useLoggedInUserStore();
+    const token = user.token;
+    
+    // Find the registration ID for this experience
+    const selectedExperienceObject = this.localExperiences.find(
+        exp => exp.experienceID === experienceID
+    );
+    
+    if (!selectedExperienceObject || !selectedExperienceObject.expRegistrationID) {
+        console.error('Could not find registration ID for selected experience');
+        return;
+    }
+    
+    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/by-registration/${selectedExperienceObject.expRegistrationID}`;
+    
+    try {
+        const response = await axios.get(apiURL, { headers: { token } });
+        
+        if (response.data.formFound) {
+            // Emit the complete form data to parent for pre-population
+            this.$emit('populate-existing-form', response.data.goalForm);
+            
+            // If it's a HICH project, set the local HICH project data
+            if (response.data.goalForm.hichProject) {
+                this.hichProject = response.data.goalForm.hichProject;
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching existing goal form:', error);
+        // Don't show error to user - form will just not be pre-populated
+    }
+},
 
     // Handle experience selection and emit updates
-    updateExperienceID(selected) {
-        if (!selected) {
-            this.localExperienceID = null;
-            this.$emit("update-selected-experience", null);
-            this.$emit("update-experienceID", this.localExperienceID);
-            return;
-        }
-
-        this.localExperienceID = selected;
-        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
-
-        this.$emit("update-selected-experience", { text: selectedExperienceText, value: selected });
+updateExperienceID(selected) {
+    if (!selected) {
+        this.localExperienceID = null;
+        this.$emit("update-selected-experience", null);
         this.$emit("update-experienceID", this.localExperienceID);
-    },
+        return;
+    }
+
+    this.localExperienceID = selected;
+    const selectedExperienceObject = this.localExperiences.find(exp => exp.experienceID === selected);
+    const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
+
+    // Include expRegistrationID in the emitted data
+    this.$emit("update-selected-experience", { 
+        text: selectedExperienceText, 
+        value: selected,
+        expRegistrationID: selectedExperienceObject?.expRegistrationID  // NEW
+    });
+    this.$emit("update-experienceID", this.localExperienceID);
+},
 
     // Select experience based on route parameter
     selectExperienceFromRouteParam() {

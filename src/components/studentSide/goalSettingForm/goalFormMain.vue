@@ -152,6 +152,7 @@ including experience selection, background, growth goals, aspirations, and final
                         @update-original-goal-form="updateOriginalGoalForm"
                         @update-experiences="experiences = $event"
                         @update-experienceID="experienceID = $event"
+                        @populate-existing-form="handlePopulateExistingForm"
                     ></goal-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -232,6 +233,7 @@ including experience selection, background, growth goals, aspirations, and final
                             @update-original-goal-form="updateOriginalGoalForm"
                             @update-experiences="experiences = $event"
                             @update-experienceID="experienceID = $event"
+                            @populate-existing-form="handlePopulateExistingForm"
                         ></goal-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
@@ -591,8 +593,21 @@ async created() {
     await this.fetchLatestGoalSettingForm();
 },
 async mounted() {
-    // Check for incomplete forms when component mounts
-    await this.checkIncompleteForm();
+  // First check for incomplete forms
+  await this.checkIncompleteForm();
+  
+  // If continuing an incomplete form that already has experience selected
+  if (this.expRegistrationIDFromIncomplete) {
+    // The form data is already loaded from incomplete form
+    // Just ensure the experience selection component knows about it
+    this.$nextTick(() => {
+      if (this.$refs.GoalFormExpRef) {
+        this.$refs.GoalFormExpRef.setSelectedExperience(
+          this.expRegistrationIDFromIncomplete
+        );
+      }
+    });
+  }
 },
 watch: {
     // Track current step changes and update allowed navigation
@@ -646,15 +661,20 @@ computed: {
 
     // Determine if current experience is CHW type
     isCHWExperience() {
-        // Use the value (experienceID) to find the actual experience and check its name
+        // Check multiple sources for CHW designation
         if (this.selectedExperience?.value && this.experiences) {
-            const experience = this.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
-            return experience?.experienceName === "CHW Certification";
+        const experience = this.experiences.find(exp => 
+            exp.experienceID === this.selectedExperience.value
+        );
+        if (experience?.experienceName === "CHW Certification") {
+            return true;
+        }
         }
         
-        // Fallback: check if text contains "CHW Certification"
-        if (this.selectedExperience?.text) {
-            return this.selectedExperience.text.includes("CHW Certification");
+        // Also check if CHW fields are already populated
+        if (this.goalForm.chwGrowthGoals && 
+            Object.values(this.goalForm.chwGrowthGoals).some(val => val)) {
+        return true;
         }
         
         return false;
@@ -819,8 +839,14 @@ methods: {
     },
 
     // Update selected experience from child component
-    handleSelectedExperience(value) {
+    async handleSelectedExperience(value) {
         this.selectedExperience = value;
+        
+        // Check if this experience has a completed form
+        if (value && value.hasCompletedForm && value.expRegistrationID) {
+        // Fetch and populate the existing form
+        await this.fetchExistingGoalForm(value.expRegistrationID);
+        }
     },
 
     // Determine if user can jump to a specific step
@@ -1277,6 +1303,105 @@ updateGoalForm() {
             this.triggerGoalsValidation();
         });
     },
+
+  async fetchExistingGoalForm(expRegistrationID) {
+    const user = useLoggedInUserStore();
+    const token = user.token;
+    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/by-registration/${expRegistrationID}`;
+    
+    try {
+      const response = await axios.get(apiURL, { headers: { token } });
+      
+      if (response.data.formFound) {
+        const existingForm = response.data.goalForm;
+        
+        // Store the document ID for updating
+        this.foundDocumentId = existingForm._id;
+        
+        // Pre-populate all form fields
+        this.handlePopulateExistingForm(existingForm.goalForm);
+        
+        // Handle HICH project if present
+        if (existingForm.hichProject) {
+          this.goalForm.hichProject = existingForm.hichProject;
+        }
+        
+        return true; // Form was found and populated
+      }
+      return false; // No form found
+    } catch (error) {
+      console.error('Error fetching existing goal form:', error);
+      return false;
+    }
+  },
+  
+handlePopulateExistingForm(existingGoalForm) {
+    // Handle both direct object and wrapped response
+    const formData = existingGoalForm.goalForm || existingGoalForm;
+    
+    if (!formData) return;
+    
+    // Community Engagement
+    if (formData.communityEngagement) {
+        this.goalForm.communityEngagement = {
+            ...this.goalForm.communityEngagement,
+            ...formData.communityEngagement
+        };
+    }
+    
+    // Research Experience
+    if (formData.researchExperience) {
+        this.goalForm.researchExperience = {
+            ...this.goalForm.researchExperience,
+            ...formData.researchExperience
+        };
+    }
+    
+    // Growth Goals
+    if (formData.growthGoal) {
+        this.goalForm.growthGoal = {
+            ...this.goalForm.growthGoal,
+            ...formData.growthGoal
+        };
+    }
+    
+    // CHW Growth Goals (if present)
+    if (formData.chwGrowthGoals) {
+        this.goalForm.chwGrowthGoals = {
+            ...this.goalForm.chwGrowthGoals,
+            ...formData.chwGrowthGoals
+        };
+    }
+    
+    // Aspirations
+    if (formData.aspirations) {
+        this.goalForm.aspirations = {
+            ...this.goalForm.aspirations,
+            ...formData.aspirations
+        };
+    }
+    
+    // Goals
+    if (formData.goals) {
+        this.goalForm.goals = {
+            ...this.goalForm.goals,
+            ...formData.goals
+        };
+    }
+    
+    // HICH Project
+    if (existingGoalForm.hichProject || formData.hichProject) {
+        this.goalForm.hichProject = existingGoalForm.hichProject || formData.hichProject;
+    }
+    
+    // Store the populated form as original for comparison
+    this.originalGoalForm = this.deepClone(this.goalForm);
+    
+    // Allow navigation to all steps since form is complete
+    this.$nextTick(() => {
+        this.allowedStepsForJump = [0, 1, 2, 3, 4, 5];
+    });
+},
 },
 
 // Navigation guard to prevent data loss
