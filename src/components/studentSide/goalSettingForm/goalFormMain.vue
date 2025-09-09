@@ -170,6 +170,7 @@ including experience selection, background, growth goals, aspirations, and final
                     <goal-form-growth
                         ref="GoalFormGrowthRef"
                         :goalForm="goalForm"
+                        :isCHWExperience="isCHWExperience"
                         @form-valid="handleFormValid"
                         @form-invalid="handleFormInvalid('growth')"
                         @scroll-to-error="handleScrollToError"
@@ -249,6 +250,7 @@ including experience selection, background, growth goals, aspirations, and final
                         <goal-form-growth
                             ref="GoalFormGrowthRef"
                             :goalForm="goalForm"
+                            :isCHWExperience="isCHWExperience"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('growth')"
                             @scroll-to-error="handleScrollToError"
@@ -545,6 +547,15 @@ data() {
             socialResponsibilityGoal: '',
             digitalLiteracyGoal: '',
         },
+        // Add CHW growth goals (will be populated only for CHW experiences)
+        chwGrowthGoals: {
+            interpersonalRelationshipBuildingGoal: '',
+            serviceCoordinationNavigationGoal: '',
+            evaluationResearchGoal: '',
+            knowledgeBaseHealthIssuesGoal: '',
+            teachingEducationGoal: '',
+            advocacyGoal: '',
+        },
         aspirations: {
             aspirationOne: '',
             aspirationTwo: '',
@@ -631,6 +642,22 @@ computed: {
     isUserLoggedIn() {
         const store = useLoggedInUserStore();
         return store.isLoggedIn;
+    },
+
+    // Determine if current experience is CHW type
+    isCHWExperience() {
+        // Use the value (experienceID) to find the actual experience and check its name
+        if (this.selectedExperience?.value && this.experiences) {
+            const experience = this.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
+            return experience?.experienceName === "CHW Certification";
+        }
+        
+        // Fallback: check if text contains "CHW Certification"
+        if (this.selectedExperience?.text) {
+            return this.selectedExperience.text.includes("CHW Certification");
+        }
+        
+        return false;
     },
 },
 methods: {
@@ -1170,27 +1197,32 @@ methods: {
         }
     },
 
-    // Auto-save form data as user types
-    updateGoalForm() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        const userID = user.userId;
-        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-
-        const { hichProject, ...restOfGoalForm } = this.goalForm;
-        
-        const payload = {
-            goalForm: restOfGoalForm, 
-            hichProject
-        };
-
-        axios.patch(apiURL, payload, { headers: { token }})
-            .then(response => {
-            })
-            .catch(error => {
-                this.handleError(error);
-            });
-    },
+updateGoalForm() {
+    const user = useLoggedInUserStore();
+    const token = user.token;
+    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
+    
+    // Keep the destructuring but also extract chwGrowthGoals
+    const { hichProject, chwGrowthGoals, ...restOfGoalForm } = this.goalForm;
+    
+    const payload = {
+        goalForm: {
+            ...restOfGoalForm,
+            hichProject,  // Put hichProject back inside goalForm where it belongs
+            // Only include chwGrowthGoals if it's a CHW experience
+            ...(this.isCHWExperience && { chwGrowthGoals })
+        }
+    };
+    
+    axios.patch(apiURL, payload, { headers: { token }})
+        .then(response => {
+            console.log('Auto-save successful');
+        })
+        .catch(error => {
+            console.error('Auto-save error:', error);
+            this.handleError(error);
+        });
+},
 
     // Trigger debounced auto-save
     handleInput() {

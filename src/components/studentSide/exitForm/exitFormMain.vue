@@ -1597,7 +1597,7 @@ async handleUpdateForm() {
     }
 
     let updatedExitForm = {
-        exitForm: exitFormData,
+        exitForm: exitFormData.exitForm,
         tempIncompleteFormID: this.incompleteFormID
     };
 

@@ -4,6 +4,7 @@ Form component for collecting user growth expectations across eight key skill ar
 Users select their anticipated level of growth (none, little, moderate, or a lot) for each area
 including problem solving, communication, teamwork, cultural humility, ethical decision making,
 professional responsibility, social responsibility, and digital literacy.
+For CHW experiences, additional CHW-specific growth goals are included.
 -->
 
 <template>
@@ -181,6 +182,135 @@ professional responsibility, social responsibility, and digital literacy.
             <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
         </v-radio-group>
     </v-col>
+
+    <!-- CHW Growth Goals Section (conditional) -->
+    <div v-if="isCHWExperience">
+        <!-- Interpersonal Relationship Building -->
+        <v-col cols="12" md="10">
+            <span 
+                :class="{'error-text': isCHWInterpersonalGoalInvalid}"
+                class="font-weight-black text-h8"
+                ref="chwInterpersonalGoalRef"
+            >
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('interpersonal and relationship building') }}</u>.
+            </span>
+            <v-radio-group 
+                v-model="goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal"
+                :class="{'error-text': isCHWInterpersonalGoalInvalid}"
+                :rules="chwGoalRules"
+            >
+                <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+                <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+                <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+                <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+            </v-radio-group>
+        </v-col>
+        
+        <!-- Service Coordination and Navigation -->
+        <v-col cols="12" md="10">
+            <span 
+                :class="{'error-text': isCHWServiceCoordGoalInvalid}"
+                class="font-weight-black text-h8"
+                ref="chwServiceCoordGoalRef"
+            >
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('service coordination and navigation') }}</u>.
+            </span>
+            <v-radio-group 
+                v-model="goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal"
+                :class="{'error-text': isCHWServiceCoordGoalInvalid}"
+                :rules="chwGoalRules"
+            >
+                <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+                <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+                <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+                <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+            </v-radio-group>
+        </v-col>
+        
+        <!-- Evaluation and Research -->
+        <v-col cols="12" md="10">
+            <span 
+                :class="{'error-text': isCHWEvaluationGoalInvalid}"
+                class="font-weight-black text-h8"
+                ref="chwEvaluationGoalRef"
+            >
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('evaluation and research') }}</u>.
+            </span>
+            <v-radio-group 
+                v-model="goalForm.chwGrowthGoals.evaluationResearchGoal"
+                :class="{'error-text': isCHWEvaluationGoalInvalid}"
+                :rules="chwGoalRules"
+            >
+                <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+                <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+                <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+                <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+            </v-radio-group>
+        </v-col>
+        
+        <!-- Knowledge Base on Health Issues -->
+        <v-col cols="12" md="10">
+            <span 
+                :class="{'error-text': isCHWKnowledgeGoalInvalid}"
+                class="font-weight-black text-h8"
+                ref="chwKnowledgeGoalRef"
+            >
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('knowledge base on specific health issues') }}</u>.
+            </span>
+            <v-radio-group 
+                v-model="goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal"
+                :class="{'error-text': isCHWKnowledgeGoalInvalid}"
+                :rules="chwGoalRules"
+            >
+                <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+                <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+                <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+                <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+            </v-radio-group>
+        </v-col>
+        
+        <!-- Teaching and Education -->
+        <v-col cols="12" md="10">
+            <span 
+                :class="{'error-text': isCHWTeachingGoalInvalid}"
+                class="font-weight-black text-h8"
+                ref="chwTeachingGoalRef"
+            >
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('teaching and education') }}</u>.
+            </span>
+            <v-radio-group 
+                v-model="goalForm.chwGrowthGoals.teachingEducationGoal"
+                :class="{'error-text': isCHWTeachingGoalInvalid}"
+                :rules="chwGoalRules"
+            >
+                <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+                <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+                <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+                <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+            </v-radio-group>
+        </v-col>
+        
+        <!-- Advocacy -->
+        <v-col cols="12" md="10">
+            <span 
+                :class="{'error-text': isCHWAdvocacyGoalInvalid}"
+                class="font-weight-black text-h8"
+                ref="chwAdvocacyGoalRef"
+            >
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('advocacy') }}</u>.
+            </span>
+            <v-radio-group 
+                v-model="goalForm.chwGrowthGoals.advocacyGoal"
+                :class="{'error-text': isCHWAdvocacyGoalInvalid}"
+                :rules="chwGoalRules"
+            >
+                <v-radio :label="$t('No growth')" value="No growth"></v-radio>
+                <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
+                <v-radio :label="$t('A moderate amount of growth')" value="A moderate amount of growth"></v-radio>
+                <v-radio :label="$t('A lot of growth')" value="A lot of growth"></v-radio>
+            </v-radio-group>
+        </v-col>
+    </div>
 </v-container>
 </v-form>
 
@@ -205,7 +335,11 @@ import { toast } from 'vue3-toastify';
 export default {
 name: "GoalFormGrowth",
 props: {
-    goalForm: Object
+    goalForm: Object,
+    isCHWExperience: {
+        type: Boolean,
+        default: false
+    }
 },
 emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change"],
 data() {
@@ -262,6 +396,13 @@ data() {
                     if (!this.formSubmitted) return true;
                     return !!v || this.$t('Information is required.');
                 },
+        ],
+        // CHW-specific validation rules
+        chwGoalRules: [
+            v => {
+                if (!this.formSubmitted || !this.isCHWExperience) return true;
+                return !!v || this.$t('Information is required.');
+            },
         ],
     }
 },
@@ -321,11 +462,77 @@ computed: {
         return rule(this.goalForm.growthGoal.digitalLiteracyGoal) !== true;
     },
     
+    // CHW-specific validation computed properties
+    isCHWInterpersonalGoalInvalid() {
+        if (!this.formSubmitted || !this.isCHWExperience) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.chwGrowthGoals?.interpersonalRelationshipBuildingGoal) !== true;
+    },
+    isCHWServiceCoordGoalInvalid() {
+        if (!this.formSubmitted || !this.isCHWExperience) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.chwGrowthGoals?.serviceCoordinationNavigationGoal) !== true;
+    },
+    isCHWEvaluationGoalInvalid() {
+        if (!this.formSubmitted || !this.isCHWExperience) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.chwGrowthGoals?.evaluationResearchGoal) !== true;
+    },
+    isCHWKnowledgeGoalInvalid() {
+        if (!this.formSubmitted || !this.isCHWExperience) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.chwGrowthGoals?.knowledgeBaseHealthIssuesGoal) !== true;
+    },
+    isCHWTeachingGoalInvalid() {
+        if (!this.formSubmitted || !this.isCHWExperience) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.chwGrowthGoals?.teachingEducationGoal) !== true;
+    },
+    isCHWAdvocacyGoalInvalid() {
+        if (!this.formSubmitted || !this.isCHWExperience) return false;
+        const rule = v => !!v || this.$t('Information is required');
+        return rule(this.goalForm.chwGrowthGoals?.advocacyGoal) !== true;
+    },
+    
     // Overall form validation state
     hasValidationErrors() {
         if (!this.formSubmitted) return false;
-            return this.isProblemSolvingGoalInvalid || this.isEffectiveCommunicationGoalInvalid || this.isTeamworkGoalInvalid || this.isCulturalHumilityGoalInvalid || this.isEthicalDecisionMakingGoalInvalid || this.isProfessionalResponsibilityGoalInvalid || this.isSocialResponsibilityGoalInvalid || this.isDigitalLiteracyGoalInvalid;
+        
+        const baseErrors = this.isProblemSolvingGoalInvalid || 
+            this.isEffectiveCommunicationGoalInvalid || 
+            this.isTeamworkGoalInvalid || 
+            this.isCulturalHumilityGoalInvalid || 
+            this.isEthicalDecisionMakingGoalInvalid || 
+            this.isProfessionalResponsibilityGoalInvalid || 
+            this.isSocialResponsibilityGoalInvalid || 
+            this.isDigitalLiteracyGoalInvalid;
+        
+        // Include CHW validation errors if it's a CHW experience
+        if (this.isCHWExperience) {
+            return baseErrors || 
+                this.isCHWInterpersonalGoalInvalid ||
+                this.isCHWServiceCoordGoalInvalid ||
+                this.isCHWEvaluationGoalInvalid ||
+                this.isCHWKnowledgeGoalInvalid ||
+                this.isCHWTeachingGoalInvalid ||
+                this.isCHWAdvocacyGoalInvalid;
+        }
+        
+        return baseErrors;
     },
+},
+mounted() {
+    // Initialize CHW growth goals object if this is a CHW experience and it doesn't exist
+    if (this.isCHWExperience && !this.goalForm.chwGrowthGoals) {
+        this.goalForm.chwGrowthGoals = {
+            interpersonalRelationshipBuildingGoal: '',
+            serviceCoordinationNavigationGoal: '',
+            evaluationResearchGoal: '',
+            knowledgeBaseHealthIssuesGoal: '',
+            teachingEducationGoal: '',
+            advocacyGoal: ''
+        };
+    }
 },
 methods: {
     // Handle form validation and emit appropriate events
@@ -356,6 +563,18 @@ methods: {
             'socialResponsibilityGoalRef',
             'digitalLiteracyGoalRef',
         ];
+        
+        // Add CHW fields if it's a CHW experience
+        if (this.isCHWExperience) {
+            errorFields.push(
+                'chwInterpersonalGoalRef',
+                'chwServiceCoordGoalRef',
+                'chwEvaluationGoalRef',
+                'chwKnowledgeGoalRef',
+                'chwTeachingGoalRef',
+                'chwAdvocacyGoalRef'
+            );
+        }
 
         for (let i = 0; i < errorFields.length; i++) {
             if (this.isFieldInvalid(errorFields[i])) {
@@ -386,6 +605,19 @@ methods: {
                 return this.isSocialResponsibilityGoalInvalid;
             case 'digitalLiteracyGoalRef':
                 return this.isDigitalLiteracyGoalInvalid;
+            // CHW fields
+            case 'chwInterpersonalGoalRef':
+                return this.isCHWInterpersonalGoalInvalid;
+            case 'chwServiceCoordGoalRef':
+                return this.isCHWServiceCoordGoalInvalid;
+            case 'chwEvaluationGoalRef':
+                return this.isCHWEvaluationGoalInvalid;
+            case 'chwKnowledgeGoalRef':
+                return this.isCHWKnowledgeGoalInvalid;
+            case 'chwTeachingGoalRef':
+                return this.isCHWTeachingGoalInvalid;
+            case 'chwAdvocacyGoalRef':
+                return this.isCHWAdvocacyGoalInvalid;
             default:
                 return false;
         }

@@ -44,7 +44,7 @@
     <div class="d-sm-none">
     <v-row>
         <v-col cols="12">
-        <p ref="likelihoodField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
+        <p ref="likelihoodFieldMobile" class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
         </v-col>
     </v-row>
     <v-row>
@@ -99,12 +99,13 @@
     </div>
 
     <!-- Desktop Likelihood View -->
-    <v-row class="d-none d-sm-inline">
+    <div class="d-none d-sm-block">
         <v-row>
         <v-col cols="12">
-            <p ref="likelihoodField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
+            <p ref="likelihoodFieldDesktop" class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
         </v-col>
         </v-row>
+        <v-row>
         <v-col cols="12">
         <v-card>
         <v-table>
@@ -150,8 +151,9 @@
             </tbody>
         </v-table>
         </v-card>
-    </v-col>
-    </v-row>
+        </v-col>
+        </v-row>
+    </div>
     </div>
 
     <!-- HICH Net Promoter Questions - Table Format like Data & Society -->
@@ -160,7 +162,7 @@
         <div class="d-sm-none">
             <v-row>
                 <v-col cols="12">
-                    <p ref="hichRecommendField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
+                    <p ref="hichRecommendFieldMobile" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
                         {{$t('How likely are you to recommend the following to a friend?')}}
                     </p>
                 </v-col>
@@ -216,14 +218,15 @@
         </div>
 
         <!-- Desktop HICH View -->
-        <v-row class="d-none d-sm-inline">
+        <div class="d-none d-sm-block">
             <v-row>
                 <v-col cols="12">
-                    <p ref="hichRecommendField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
+                    <p ref="hichRecommendFieldDesktop" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
                         {{$t('How likely are you to recommend the following to a friend?')}}
                     </p>
                 </v-col>
             </v-row>
+            <v-row>
             <v-col cols="12">
                 <v-card>
                     <v-table>
@@ -270,7 +273,8 @@
                     </v-table>
                 </v-card>
             </v-col>
-        </v-row>
+            </v-row>
+        </div>
     </div>
 
     <!-- Growth Assessment Section -->
@@ -563,6 +567,7 @@ export default {
         this.$nextTick(() => {
             window.scrollTo(0, 0);
         });
+        
     },
 
     watch: {
@@ -737,79 +742,53 @@ export default {
             }
         },
 
-        // Navigate to first error field
+        // Navigate to first error field - FIXED VERSION
         scrollToErrorField() {
-              const errorFields = [
-                  'experienceContributionGradProfField',
-                  'likelihoodField',
-                  'hichRecommendField',
-                  'growthProblemSolvingField',
-                  'growthEffCommField',
-                  'growthTeamworkField',
-                  'growthCulHumField',
-                  'growthEthicsField',
-                  'growthProfResField',
-                  'chwInterpersonalField',
-                  'chwServiceCoordField',
-                  'chwEvaluationField',
-                  'chwKnowledgeField',
-                  'chwTeachingField',
-                  'chwAdvocacyField',
-                  'biggestLessonsField',
-                  'supportOthersField'
-              ];
-  
-              for (let i = 0; i < errorFields.length; i++) {
-                  if (this.isFieldInvalid(errorFields[i])) {
-                      const ref = this.$refs[errorFields[i]];
-                      const element = ref.$el ? ref.$el : ref;
-                      this.$emit('scroll-to-error', element);
-                      break;
-                  }
-              }
-          },
-      
-          // Check if specific field is invalid
-          isFieldInvalid(fieldRef) {
-                switch (fieldRef) {
-                    case 'experienceContributionGradProfField':
-                        return this.isExperienceContributionGradProfInvalid;
-                    case 'growthProblemSolvingField':
-                        return this.isGrowthProblemSolvingInvalid;
-                    case 'growthEffCommField':
-                        return this.isGrowthEffCommInvalid;
-                    case 'growthTeamworkField':
-                        return this.isGrowthTeamworkInvalid;
-                    case 'growthCulHumField':
-                        return this.isGrowthCulHumInvalid;
-                    case 'growthEthicsField':
-                        return this.isGrowthEthicsInvalid;
-                    case 'growthProfResField':
-                        return this.isGrowthProfResInvalid;
-                    case 'biggestLessonsField':
-                        return this.isBiggestLessonsInvalid;
-                    case 'supportOthersField':
-                        return this.isSupportOthersInvalid;
-                    case 'likelihoodField':
-                        return this.isLikelihoodInvalid;
-                    case 'chwInterpersonalField':
-                        return this.isCHWInterpersonalInvalid;
-                    case 'chwServiceCoordField':
-                        return this.isCHWServiceCoordInvalid;
-                    case 'chwEvaluationField':
-                        return this.isCHWEvaluationInvalid;
-                    case 'chwKnowledgeField':
-                        return this.isCHWKnowledgeInvalid;
-                    case 'chwTeachingField':
-                        return this.isCHWTeachingInvalid;
-                    case 'chwAdvocacyField':
-                        return this.isCHWAdvocacyInvalid;
-                    case 'hichRecommendField':
-                        return this.isHICHInvalid;
-                    default:
-                        return false;
+            const errorFields = [
+                { ref: 'experienceContributionGradProfField', validator: 'isExperienceContributionGradProfInvalid' },
+                { ref: 'likelihoodFieldMobile', validator: 'isLikelihoodInvalid', condition: () => this.dataAndSociety && this.isMobile() },
+                { ref: 'likelihoodFieldDesktop', validator: 'isLikelihoodInvalid', condition: () => this.dataAndSociety && !this.isMobile() },
+                { ref: 'hichRecommendFieldMobile', validator: 'isHICHInvalid', condition: () => this.isHICHExperience && this.isMobile() },
+                { ref: 'hichRecommendFieldDesktop', validator: 'isHICHInvalid', condition: () => this.isHICHExperience && !this.isMobile() },
+                { ref: 'growthProblemSolvingField', validator: 'isGrowthProblemSolvingInvalid' },
+                { ref: 'growthEffCommField', validator: 'isGrowthEffCommInvalid' },
+                { ref: 'growthTeamworkField', validator: 'isGrowthTeamworkInvalid' },
+                { ref: 'growthCulHumField', validator: 'isGrowthCulHumInvalid' },
+                { ref: 'growthEthicsField', validator: 'isGrowthEthicsInvalid' },
+                { ref: 'growthProfResField', validator: 'isGrowthProfResInvalid' },
+                { ref: 'chwInterpersonalField', validator: 'isCHWInterpersonalInvalid', condition: () => this.isCHWExperience },
+                { ref: 'chwServiceCoordField', validator: 'isCHWServiceCoordInvalid', condition: () => this.isCHWExperience },
+                { ref: 'chwEvaluationField', validator: 'isCHWEvaluationInvalid', condition: () => this.isCHWExperience },
+                { ref: 'chwKnowledgeField', validator: 'isCHWKnowledgeInvalid', condition: () => this.isCHWExperience },
+                { ref: 'chwTeachingField', validator: 'isCHWTeachingInvalid', condition: () => this.isCHWExperience },
+                { ref: 'chwAdvocacyField', validator: 'isCHWAdvocacyInvalid', condition: () => this.isCHWExperience },
+                { ref: 'biggestLessonsField', validator: 'isBiggestLessonsInvalid' },
+                { ref: 'supportOthersField', validator: 'isSupportOthersInvalid' }
+            ];
+
+            for (const field of errorFields) {
+                // Skip if condition exists and is false
+                if (field.condition && !field.condition()) {
+                    continue;
                 }
-            },
+                
+                // Check if field is invalid
+                if (this[field.validator]) {
+                    const element = this.$refs[field.ref];
+                    if (element) {
+                        // Element is a native DOM element, not a Vue component
+                        this.$emit('scroll-to-error', element);
+                        break;
+                    }
+                }
+            }
+        },
+
+        // Helper method to detect mobile viewport
+        isMobile() {
+            // Using Vuetify's breakpoint system
+            return this.$vuetify.display.smAndDown;
+        },
     },
 
 }
