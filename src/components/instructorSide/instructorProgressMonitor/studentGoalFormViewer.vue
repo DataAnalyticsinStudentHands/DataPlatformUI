@@ -249,7 +249,6 @@
     </v-col>
 </v-row>
 
-
 <!-- Ethical Decision Making Goal -->
 <v-row>
     <v-col cols="12">
@@ -272,6 +271,107 @@
     </v-col>
 </v-row>
 
+<!-- Social Responsibility Goal (OPTIONAL) -->
+<v-row v-if="goalForm.growthGoal.socialResponsibilityGoal">
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Social Responsibility Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('social responsibility.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.socialResponsibilityGoal) }}</p>
+    </v-col>
+</v-row>
+
+<!-- Digital Literacy Goal (OPTIONAL) -->
+<v-row v-if="goalForm.growthGoal.digitalLiteracyGoal">
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Digital Literacy Goal') }}</h3>
+        <p class="form-label">
+            {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('digital literacy.') }}</u>
+        </p>
+        <p class="review-section-content pl-3">{{ $t(goalForm.growthGoal.digitalLiteracyGoal) }}</p>
+    </v-col>
+</v-row>
+
+<!-- CHW Growth Goals Section (OPTIONAL - for CHW certification programs) -->
+<div v-if="goalForm.chwGrowthGoals && hasChwGrowthGoals">
+    <!-- CHW Growth Goals Title -->
+    <v-row class="d-flex justify-center align-center">
+        <v-col sm="1" class="d-none d-sm-flex"></v-col>
+        <v-col cols="1" class="d-sm-none"></v-col>
+        <v-col cols="12" class="pb-0">
+            <h2 class="section-title text-center">
+                {{ $t('CHW Certification Growth Goals') }}
+            </h2>
+        </v-col>
+    </v-row>
+
+    <!-- Interpersonal & Relationship Building Goal -->
+    <v-row v-if="goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal">
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Interpersonal & Relationship Building Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('interpersonal communication and relationship building.') }}</u>
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal) }}</p>
+        </v-col>
+    </v-row>
+
+    <!-- Service Coordination & Navigation Goal -->
+    <v-row v-if="goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal">
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Service Coordination & Navigation Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('service coordination and navigation.') }}</u>
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal) }}</p>
+        </v-col>
+    </v-row>
+
+    <!-- Evaluation & Research Goal -->
+    <v-row v-if="goalForm.chwGrowthGoals.evaluationResearchGoal">
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Evaluation & Research Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('evaluation and research.') }}</u>
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals.evaluationResearchGoal) }}</p>
+        </v-col>
+    </v-row>
+
+    <!-- Knowledge Base & Health Issues Goal -->
+    <v-row v-if="goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal">
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Knowledge Base & Health Issues Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('knowledge base on health issues.') }}</u>
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal) }}</p>
+        </v-col>
+    </v-row>
+
+    <!-- Teaching & Education Goal -->
+    <v-row v-if="goalForm.chwGrowthGoals.teachingEducationGoal">
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Teaching & Education Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('teaching and education.') }}</u>
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals.teachingEducationGoal) }}</p>
+        </v-col>
+    </v-row>
+
+    <!-- Advocacy Goal -->
+    <v-row v-if="goalForm.chwGrowthGoals.advocacyGoal">
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Advocacy Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('advocacy.') }}</u>
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals.advocacyGoal) }}</p>
+        </v-col>
+    </v-row>
+</div>
 
 <!-- Aspirations Title -->
 <v-row class="d-flex justify-center align-center">
@@ -285,7 +385,6 @@
         </h2>
     </v-col>
 </v-row>
-
 
 <!-- Aspirations Section -->
 <v-row>
@@ -371,6 +470,7 @@ export default {
             experienceName: "",
             experienceCategory: "",
             goalForm: {},
+            hichProject: []
         }
     },
     async created() {
@@ -382,9 +482,19 @@ export default {
     },
 
     computed: {
+        // Check if any CHW growth goals exist
+        hasChwGrowthGoals() {
+            if (!this.goalForm.chwGrowthGoals) return false;
+            
+            return Object.keys(this.goalForm.chwGrowthGoals).some(key => 
+                this.goalForm.chwGrowthGoals[key] && this.goalForm.chwGrowthGoals[key].trim() !== ''
+            );
+        },
 
         // Processes community engagement experiences, excluding "None of the above" and marking others as checked based on conditions
         processedCommunityEngagementExperiences() {
+            if (!this.goalForm.communityEngagement?.communityEngagementExperiences) return [];
+            
             const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.communityEngagementExperiences
                 .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
@@ -397,11 +507,14 @@ export default {
 
         // Returns whether the "Other" experience in community engagement is checked
         displayOtherExperience() {
+            if (!this.goalForm.communityEngagement?.communityEngagementExperiences) return false;
             return this.goalForm.communityEngagement.communityEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
         },
 
         // Processes previous engagement experiences, excluding "None of the above" and marking others as checked based on conditions
         processedPreviousEngagementExperiences() {
+            if (!this.goalForm.communityEngagement?.previousEngagementExperiences) return [];
+            
             const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.communityEngagement.previousEngagementExperiences
                 .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
@@ -414,11 +527,14 @@ export default {
 
         // Returns whether the "Other" experience in previous engagement is checked
         displayPreviousOtherExperience() {
+            if (!this.goalForm.communityEngagement?.previousEngagementExperiences) return false;
             return this.goalForm.communityEngagement.previousEngagementExperiences.find(experience => experience.label === 'Other')?.checked;
         },
 
         // Processes engagement activities/tools, excluding "None of the above" and marking others as checked based on conditions
         processedEngagementActivitiesTools() {
+            if (!this.goalForm.communityEngagement?.engagementActivitiesTools) return [];
+            
             const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.communityEngagement.engagementActivitiesTools
                 .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
@@ -431,11 +547,14 @@ export default {
 
         // Returns whether the "Other" engagement activities tool is checked
         displayEngagementActivitiesToolOther() {
+            if (!this.goalForm.communityEngagement?.engagementActivitiesTools) return false;
             return this.goalForm.communityEngagement.engagementActivitiesTools.find(tool => tool.label === 'Other')?.checked;
         },
         
         // Processes current research experiences, excluding "None of the above" and marking others as checked based on conditions
         processedCurrentResearchExperience() {
+            if (!this.goalForm.researchExperience?.currentResearchExperience) return [];
+            
             const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(experience => experience.label === 'None of the above' && experience.checked);
             return this.goalForm.researchExperience.currentResearchExperience
                 .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
@@ -448,11 +567,14 @@ export default {
 
         // Returns whether the "Other" research experience is checked
         displayCurrentResearchExperienceOther() {
+            if (!this.goalForm.researchExperience?.currentResearchExperience) return false;
             return this.goalForm.researchExperience.currentResearchExperience.find(experience => experience.label === 'Other')?.checked;
         },
         
         // Processes previous research experiences, excluding "None of the above" and marking others as checked based on conditions
         processedPreviousResearchExperience() {
+            if (!this.goalForm.researchExperience?.previousResearchExperience) return [];
+            
             const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(experience => experience.id === 9 && experience.checked);
             return this.goalForm.researchExperience.previousResearchExperience
                 .filter(experience => experience.label !== 'None of the above') // Exclude "None of the above"
@@ -465,11 +587,14 @@ export default {
 
         // Returns whether the "Other" previous research experience is checked
         displayPreviousResearchExperienceOther() {
+            if (!this.goalForm.researchExperience?.previousResearchExperience) return false;
             return this.goalForm.researchExperience.previousResearchExperience.find(experience => experience.id === 8)?.checked;
         },
 
         // Processes familiar tools, excluding "None of the above" and marking others as checked based on conditions
         processedFamiliarTools() {
+            if (!this.goalForm.researchExperience?.familiarTools) return [];
+            
             const noneSelected = this.goalForm.researchExperience.familiarTools.some(tool => tool.label === 'None of the above' && tool.checked);
             return this.goalForm.researchExperience.familiarTools
                 .filter(tool => tool.label !== 'None of the above') // Exclude "None of the above"
@@ -482,11 +607,14 @@ export default {
 
         // Returns whether the "Other" familiar tool is checked
         displayFamiliarToolOther() {
+            if (!this.goalForm.researchExperience?.familiarTools) return false;
             return this.goalForm.researchExperience.familiarTools.find(tool => tool.label === 'Other')?.checked;
         },
 
         // Processes interest in research/service, excluding "None of the above" and marking others as checked based on conditions
         processedInterestResearchService() {
+            if (!this.goalForm.researchExperience?.interestResearchService) return [];
+            
             const noneSelected = this.goalForm.researchExperience.interestResearchService.some(interest => interest.label === 'None of the above' && interest.checked);
             return this.goalForm.researchExperience.interestResearchService
                 .filter(interest => interest.label !== 'None of the above') // Exclude "None of the above"
@@ -499,6 +627,7 @@ export default {
 
         // Returns whether the "Other" research/service interest is checked
         displayInterestResearchServiceOther() {
+            if (!this.goalForm.researchExperience?.interestResearchService) return false;
             return this.goalForm.researchExperience.interestResearchService.find(interest => interest.label === 'Other')?.checked;
         },
 
@@ -521,10 +650,16 @@ export default {
                 this.experienceName = response.data.experienceName;
                 this.experienceCategory = response.data.experienceCategory;
                 this.goalForm = response.data.goalForm;
+                this.hichProject = response.data.hichProject || [];
 
             } catch (error) {
                 this.handleError(error);
             }
+        },
+
+        handleError(error) {
+            console.error('Error fetching goal form:', error);
+            // Add appropriate error handling/notification here
         }
     }
 }
@@ -598,6 +733,4 @@ export default {
     margin-top: 15px;
     margin-bottom: 5px;
 }
-
-
 </style>
