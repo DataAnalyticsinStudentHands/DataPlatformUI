@@ -3,7 +3,7 @@ projectsMain.vue (Instructor Side)
 Main instructor dashboard for managing projects and proposals. Features tabbed interface 
 for active/archived projects and proposals, advanced search and filtering capabilities, 
 and archive view toggle. Includes project review workflow and template creation.
-With state persistence via Pinia store.
+With state persistence via Pinia store. Updated to display document count.
 -->
 
 <template>
@@ -162,6 +162,7 @@ With state persistence via Pinia store.
                         <td>{{ item.teamLeadName }}</td>
                         <td>{{ item.experienceInfo }}</td>
                         <td>{{ item.teamSize }}</td>
+                        <td>{{ item.documentCount }}</td>
                         <td>
                           <v-chip
                             size="small"
@@ -334,6 +335,7 @@ export default {
         { title: this.$t('Team Lead'), key: 'teamLeadName', sortable: true },
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
         { title: this.$t('Team Size'), key: 'teamSize', sortable: true },
+        { title: this.$t('Documents'), key: 'documentCount', sortable: true },
         { title: this.$t('Status'), key: 'projectStatus', sortable: true },
         { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true }
       ]
@@ -514,7 +516,8 @@ export default {
                                project.createdBy?.name || 
                                this.$t('Unknown');
             const studentName = project.createdBy?.name || this.$t('Unknown'); 
-            const submittedDate = project.createdAt; 
+            const submittedDate = project.createdAt;
+            const documentCount = project.documentCount || 0; // Get document count from API response
             
             return { 
               ...project, 
@@ -522,7 +525,8 @@ export default {
               teamSize, 
               teamLeadName, 
               studentName, 
-              submittedDate 
+              submittedDate,
+              documentCount 
             };
           });
           

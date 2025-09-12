@@ -433,6 +433,11 @@ const routes = [
       path: '/map',
       name: "mapView",
       component: () => import('../components/dev/map.vue')
+    },
+    {
+      path: '/map2',
+      name: "mapView2",
+      component: () => import('../components/dev/map2.vue')
     }
 ]
 
@@ -463,7 +468,8 @@ const publicPaths = [
   '/proposaldemo2',
   '/proposaldemo3',
   '/proposaldemo4',
-  '/map'
+  '/map',
+  '/map2',
 ];
 
 // Global navigation guard for authentication and role-based routing
