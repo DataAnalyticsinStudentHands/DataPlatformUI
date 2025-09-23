@@ -247,6 +247,7 @@
   </v-app>
 </template>
 
+
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
