@@ -1,3 +1,13 @@
+<!--
+/**
+ * src/components/admin/backup/ScheduleForm.vue
+ * 
+ * A form component for configuring the recurrence schedule for automatic database backups.
+ * It fetches the current schedule, allows the user to select a new recurrence pattern 
+ * (e.g., daily, weekly), and saves the updated configuration. On a successful update, it 
+ * emits an event to notify the parent component.
+ */
+-->
 <template>
   <div>
     <div v-if="loading" class="text-center py-3">

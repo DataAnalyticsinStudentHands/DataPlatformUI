@@ -1,3 +1,12 @@
+<!--
+/**
+ * src/components/admin/BackupDashboard.vue
+ * 
+ * Main dashboard component for managing database backups. It integrates ScheduleForm, 
+ * CollectionsForm, and HistoryTable to provide a comprehensive UI for scheduling, 
+ * configuring, and viewing backup history.
+ */
+-->
 <template>
   <div class="container py-4">
     <h1 class="text-h4 font-weight-bold">{{ $t('Database Backup') }}</h1>
@@ -48,6 +57,7 @@
 </template>
 
 <script>
+
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -55,6 +65,41 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import ScheduleForm    from './backup/ScheduleForm.vue';
 import CollectionsForm from './backup/CollectionsForm.vue';
 import HistoryTable    from './backup/HistoryTable.vue';
+
+function toggleBootstrap(enable) {
+  const bootstrapCssId = 'bootstrap-css';
+  const bootstrapIconsId = 'bootstrap-icons-css';
+
+  if (enable) {
+    // Add Bootstrap CSS if not already present
+    if (!document.getElementById(bootstrapCssId)) {
+      const link = document.createElement('link');
+      link.id = bootstrapCssId;
+      link.rel = 'stylesheet';
+      link.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css';
+      document.head.appendChild(link);
+    }
+    // Add Bootstrap Icons if not already present
+    if (!document.getElementById(bootstrapIconsId)) {
+      const link = document.createElement('link');
+      link.id = bootstrapIconsId;
+      link.rel = 'stylesheet';
+      link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css';
+      document.head.appendChild(link);
+    }
+  } else {
+    // Remove Bootstrap CSS
+    const bootstrapCss = document.getElementById(bootstrapCssId);
+    if (bootstrapCss) {
+      bootstrapCss.remove();
+    }
+    // Remove Bootstrap Icons
+    const bootstrapIcons = document.getElementById(bootstrapIconsId);
+    if (bootstrapIcons) {
+      bootstrapIcons.remove();
+    }
+  }
+}
 
 export default {
   name: 'BackupDashboard',
@@ -75,7 +120,11 @@ export default {
     }
   },
   async mounted() {
+    toggleBootstrap(true);
     await this.fetchNextRun();
+  },
+  beforeUnmount() {
+    toggleBootstrap(false);
   },
   methods: {
     onCollectionsChanged(list) {

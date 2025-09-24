@@ -35,10 +35,6 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
 // Initialize Vuetify with Material Design Icons
 const vuetify = createVuetify({
     components,

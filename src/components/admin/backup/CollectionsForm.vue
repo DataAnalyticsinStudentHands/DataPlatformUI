@@ -1,3 +1,13 @@
+<!--
+/**
+ * src/components/admin/backup/HistoryTable.vue
+ *
+ * Displays a history of database backup operations in a table. This component fetches 
+ * backup records from the server, showing the timestamp and file size for each. It includes 
+ * methods for formatting data for display and can be programmatically refreshed by its 
+ * parent component to show the latest history.
+ */
+-->
 <template>
   <div>
     <div v-if="loading" class="text-center py-3">
