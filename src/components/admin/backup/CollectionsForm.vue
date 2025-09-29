@@ -11,41 +11,36 @@
 <template>
   <div>
     <div v-if="loading" class="text-center py-3">
-      Loading…
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      <p>Loading…</p>
     </div>
 
     <div v-else>
       <div class="mb-2">
-        <button class="link-button me-3" @click="selectAll">
+        <v-btn variant="text" size="small" @click="selectAll" class="me-2">
           Select All
-        </button>
-        <button class="link-button" @click="clearAll">
+        </v-btn>
+        <v-btn variant="text" size="small" @click="clearAll">
           Clear All
-        </button>
+        </v-btn>
       </div>
 
       <!-- Scrollable checkbox list -->
-      <div
-        class="scroll-area rounded p-2 mb-3"
+      <v-card
+        class="scroll-area pa-2 mb-3"
+        variant="outlined"
         style="max-height: 200px; overflow-y: auto;"
       >
-        <div
+        <v-checkbox
           v-for="col in collections"
           :key="col"
-          class="form-check"
-        >
-          <input
-            :id="col"
-            class="form-check-input"
-            type="checkbox"
-            :value="col"
-            v-model="selected"
-          />
-          <label class="form-check-label" :for="col">
-            {{ col }}
-          </label>
-        </div>
-      </div>
+          :label="col"
+          :value="col"
+          v-model="selected"
+          density="compact"
+          hide-details
+        ></v-checkbox>
+      </v-card>
 
       <!-- Summary of selection -->
       <div class="mb-3">
@@ -59,25 +54,24 @@
           </template>
           <template v-else>
             {{ selected.slice(0,3).join(', ') }}
-            <span
-              class="badge bg-light text-dark ms-1"
-              :title="selected.join(', ')"
-              style="cursor: pointer;"
-            >
+            <v-chip size="small" class="ms-1">
               +{{ selected.length - 3 }} more
-            </span>
+              <v-tooltip activator="parent" location="top">{{ selected.join(', ') }}</v-tooltip>
+            </v-chip>
           </template>
         </small>
       </div>
 
       <!-- Save Collections button -->
-      <button
-        class="btn-outline-save"
+      <v-btn
+        variant="outlined"
+        color="primary"
+        :loading="saving"
         :disabled="saving"
         @click="save"
       >
         {{ saving ? 'Saving…' : 'Save Collections' }}
-      </button>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -154,41 +148,5 @@ export default {
 <style scoped>
 .scroll-area {
   background: #f8f9fa;
-  border: 1px solid #dee2e6;
-}
-
-.btn-outline-save {
-  background: transparent;
-  color: rgb(200,16,46);
-  border: 2px solid rgb(200,16,46);
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-.btn-outline-save:hover,
-.btn-outline-save:focus {
-  background-color: #f5f9f9;
-  border-color: rgba(200,16,46,0.8);
-}
-.btn-outline-save:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.link-button {
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0 0.5rem 0 0;
-  color: #000;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  border-radius: 0.25rem;
-}
-.link-button:hover {
-  background-color: #f5f5f5;
 }
 </style>

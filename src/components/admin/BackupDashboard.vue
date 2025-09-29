@@ -8,7 +8,7 @@
  */
 -->
 <template>
-  <div class="container py-4">
+  <v-container class="py-4">
     <h1 class="text-h4 font-weight-bold">{{ $t('Database Backup') }}</h1>
 
     <!-- Display next scheduled run time -->
@@ -17,47 +17,54 @@
       {{ nextRunDisplay }}
     </p>
     
-    <div class="row gy-4">
-      <div class="col-md-6">
+    <v-row>
+      <v-col cols="12" md="6">
         <!-- Recurrence configuration -->
-        <div class="card p-3">
-          <h5>Backup Schedule</h5>
-          <ScheduleForm @schedule-updated="fetchNextRun" />
-        </div>
+        <v-card class="pa-3">
+          <v-card-title>Backup Schedule</v-card-title>
+          <v-card-text>
+            <ScheduleForm @schedule-updated="fetchNextRun" />
+          </v-card-text>
+        </v-card>
 
         <!-- Collections selection -->
-        <div class="card p-3 mt-3">
-          <h5>Collections</h5>
-          <CollectionsForm
-            @collections-changed="onCollectionsChanged"
-          />
-        </div>
+        <v-card class="pa-3 mt-4">
+          <v-card-title>Collections</v-card-title>
+<v-card-text>
+            <CollectionsForm
+              @collections-changed="onCollectionsChanged"
+            />
+          </v-card-text>
+        </v-card>
 
         <!-- Manual trigger button -->
-        <div class="card p-3 mt-3 text-center">
-          <button
-            class="btn-save w-100"
+        <v-card class="pa-3 mt-4 text-center">
+          <v-btn
+            color="primary"
+            block
+            :loading="running"
             :disabled="running"
             @click="runNow"
           >
             {{ running ? 'Running…' : 'Run Backup Now' }}
-          </button>
-        </div>
-      </div>
+          </v-btn>
+        </v-card>
+      </v-col>
 
-      <div class="col-md-6">
+      <v-col cols="12" md="6">
         <!-- Backup history table -->
-        <div class="card p-3">
-          <h5>Backup History</h5>
-          <HistoryTable ref="historyTable"/>
-        </div>
-      </div>
-    </div>
-  </div>
+        <v-card class="pa-3">
+          <v-card-title>Backup History</v-card-title>
+          <v-card-text>
+            <HistoryTable ref="historyTable"/>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
@@ -65,41 +72,6 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import ScheduleForm    from './backup/ScheduleForm.vue';
 import CollectionsForm from './backup/CollectionsForm.vue';
 import HistoryTable    from './backup/HistoryTable.vue';
-
-function toggleBootstrap(enable) {
-  const bootstrapCssId = 'bootstrap-css';
-  const bootstrapIconsId = 'bootstrap-icons-css';
-
-  if (enable) {
-    // Add Bootstrap CSS if not already present
-    if (!document.getElementById(bootstrapCssId)) {
-      const link = document.createElement('link');
-      link.id = bootstrapCssId;
-      link.rel = 'stylesheet';
-      link.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css';
-      document.head.appendChild(link);
-    }
-    // Add Bootstrap Icons if not already present
-    if (!document.getElementById(bootstrapIconsId)) {
-      const link = document.createElement('link');
-      link.id = bootstrapIconsId;
-      link.rel = 'stylesheet';
-      link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css';
-      document.head.appendChild(link);
-    }
-  } else {
-    // Remove Bootstrap CSS
-    const bootstrapCss = document.getElementById(bootstrapCssId);
-    if (bootstrapCss) {
-      bootstrapCss.remove();
-    }
-    // Remove Bootstrap Icons
-    const bootstrapIcons = document.getElementById(bootstrapIconsId);
-    if (bootstrapIcons) {
-      bootstrapIcons.remove();
-    }
-  }
-}
 
 export default {
   name: 'BackupDashboard',
@@ -120,11 +92,7 @@ export default {
     }
   },
   async mounted() {
-    toggleBootstrap(true);
     await this.fetchNextRun();
-  },
-  beforeUnmount() {
-    toggleBootstrap(false);
   },
   methods: {
     onCollectionsChanged(list) {
@@ -175,24 +143,8 @@ export default {
 };
 </script>
 <style scoped>
-.card {
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.btn-save {
-  background-color: rgb(200,16,46); 
-  border: none;
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: opacity 0.2s;
-}
-.btn-save:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.btn-save:not(:disabled):hover {
-  opacity: 0.9;
+.v-card-title {
+  padding-left: 0;
+  padding-top: 0;
 }
 </style>

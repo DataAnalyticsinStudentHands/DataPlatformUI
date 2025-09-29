@@ -10,25 +10,21 @@
 -->
 <template>
   <div>
-    <div v-if="loading" class="text-center py-3">
-      Loading history…
-    </div>
-
-    <!-- History table -->
-    <table v-else class="table table-striped">
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>Size</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(rec, i) in records" :key="i">
-          <td>{{ formatDate(rec.timestamp) }}</td>
-          <td>{{ formatSize(rec.size) }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <v-data-table
+      :headers="headers"
+      :items="records"
+      :loading="loading"
+      loading-text="Loading history…"
+      class="elevation-1"
+      density="compact"
+    >
+      <template v-slot:item.timestamp="{ item }">
+        {{ formatDate(item.timestamp) }}
+      </template>
+      <template v-slot:item.size="{ item }">
+        {{ formatSize(item.size) }}
+      </template>
+    </v-data-table>
   </div>
 </template>
 
@@ -41,7 +37,11 @@ export default {
   data() {
     return {
       records: [],        // Array of { timestamp: ISO, size: bytes }
-      loading: false
+      loading: false,
+      headers: [
+        { title: 'Timestamp', key: 'timestamp', sortable: true },
+        { title: 'Size', key: 'size', sortable: false }
+      ]
     };
   },
   methods: {
@@ -70,7 +70,7 @@ export default {
         return Math.round(kb) + ' KB';
       }
       const mb = kb / 1024;
-      return Math.round(mb.toFixed(2)) + ' MB';
+      return mb.toFixed(2) + ' MB';
     }
   },
   mounted() {

@@ -11,36 +11,35 @@
 <template>
   <div>
     <div v-if="loading" class="text-center py-3">
-      Loading schedule…
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      <p>Loading schedule…</p>
     </div>
 
     <!-- Schedule form -->
     <form v-else @submit.prevent="save">
-      <div class="mb-3">
-        <label for="recurrence" class="form-label">Recurrence</label>
-        <select
-          id="recurrence"
-          class="form-select"
-          v-model="recurrence"
-        >
-          <option value="daily">Every day</option>
-          <option value="weekly">Every week</option>
-          <option value="biweekly">Every 2 weeks</option>
-          <option value="monthly">Every month</option>
-          <option value="none">No automatic schedule</option>
-        </select>
-      </div>
+      <v-select
+        label="Recurrence"
+        v-model="recurrence"
+        :items="recurrenceOptions"
+        item-title="text"
+        item-value="value"
+        variant="outlined"
+        density="compact"
+      ></v-select>
 
-      <button
+      <v-btn
         type="submit"
-        class="btn-outline-save"
+        variant="outlined"
+        color="primary"
+        :loading="saving"
         :disabled="saving"
       >
         {{ saving ? 'Saving…' : 'Save Schedule' }}
-      </button>
+      </v-btn>
     </form>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -53,6 +52,13 @@ export default {
   data() {
     return {
       recurrence: 'biweekly',  
+      recurrenceOptions: [
+        { text: 'Every day', value: 'daily' },
+        { text: 'Every week', value: 'weekly' },
+        { text: 'Every 2 weeks', value: 'biweekly' },
+        { text: 'Every month', value: 'monthly' },
+        { text: 'No automatic schedule', value: 'none' }
+      ],
       loading: false,
       saving: false
     };
@@ -100,24 +106,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.btn-outline-save {
-  background: transparent;
-  color: rgb(200,16,46);
-  border: 2px solid rgb(200,16,46);
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-.btn-outline-save:hover,
-.btn-outline-save:focus {
-  background-color: #f5f9f9;
-  border-color: rgba(200,16,46,0.8);
-}
-.btn-outline-save:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-</style>
