@@ -102,91 +102,158 @@ Handles experience selection, registration codes, and session-based grouping of 
                 v-model="dialog"
                 persistent
                 max-width="100%"
+                class="experiences-dialog"
                 scrim="rgba(0, 0, 0, 0.7)"
               >
-                <v-card>
-                  <v-card-title>
-                    <span class="font-weight-black text-xl">{{$t('Add / Remove Experiences')}} - {{ semesterName }}</span>
+                <v-card class="d-flex flex-column">
+                  <v-card-title
+                    class="d-flex align-center px-4"
+                    style="position: relative; padding: 20px 16px 12px;"
+                  >
+                    <span
+                      class="dialog-title text-black"
+                    >
+                      {{ $t('Add / Remove Experiences') }}  {{ semesterName }}
+                    </span>
+
+                  <v-btn
+                    icon
+                    class="close-btn" 
+                    small 
+                    aria-label="Close dialog"
+                    @click="clearSelectedExperiences"
+                  >
+                    <v-icon size="20">mdi-close</v-icon>
+                  </v-btn>
                   </v-card-title>
-                  <v-card-text>
-                    <v-row>
+
+                 <v-divider class="mx-4" style="border-top: 2px solid black;" />
+
+                  <v-card-text class="d-flex flex-column flex-grow-1 px-4">
+                  <div
+                    v-if="showTip"
+                    class="inline-tip"
+                  >
+                    {{ $t("Tip: Click an experience, then press Add or Remove.") }}
+                  </div>
+                    <v-row class="align-stretch flex-grow-1">
 
                       <!-- Available experiences column -->
-                      <v-col cols="12" md="5">
-                        <v-list density="compact">
-                          <template v-for="session in availableExperiencesForRegistration" :key="session.session.id">
-                            <v-list-item-subtitle>{{ session.session.name }}</v-list-item-subtitle>
+                      <v-col cols="12" md="6" class="pr-4 d-flex flex-column">                       
+                        <v-list density="compact" class="flex-grow-1 overflow-auto body-text">
+                          <v-list-subheader class="pane-title text-black">
+                            {{ $t('Available Experiences') }}
+                          </v-list-subheader>
+
+                          <template v-for="session in filteredAvailableSessions" :key="session.session.id">
+
+                            <v-card variant="outlined" rounded class="mb-4 pa-3 session-card">
+                            <div class="subgroup-header body-text">
+                              {{ session.session.name }}
+                            </div>
+
                             <v-list-item
+                                dense
+                                class="align-center"
                                 v-for="experience in session.availableExperiences"
                                 :key="experience._id"
-                                @click="isSelected(experience) ? null : toggleExperienceSelection(experience)"
-                                :class="isSelected(experience) ? 'selected-experience light-green-bg' : isSelectedForAddition(experience) ? 'light-red-bg' : ''"
+                                @click="toggleExperienceSelection(experience)"
+                                :class="{
+                                  'selection-add': isSelectedForAddition(experience),
+                                  'selection-highlight': isSelected(experience)
+                                }"
                             >
-                                <v-row class="justify-center" no-gutters>
-                                    <v-col class="text-truncate">
-                                        <v-list-item-title>{{ experience.experienceName }}</v-list-item-title>
-                                    </v-col>
-                                    <v-col cols="auto">
-                                        <v-icon v-if="isSelected(experience)">mdi-check</v-icon>
-                                    </v-col>
-                                </v-row>
-                            </v-list-item>
+                            <v-list-item-title class="body-text">
+                              {{ experience.experienceName }}
+                            </v-list-item-title>
+
+                            <template #append>
+                              <v-icon
+                                v-if="isSelected(experience)"
+                                size="16"
+                              >
+                                mdi-check
+                              </v-icon>
+                            </template>
+                          </v-list-item>
+                        </v-card>
                         </template>
                         </v-list>
-                      </v-col>
+                        
+                        <v-btn
+                            color="primary lighten-2"
+                            dark
+                            class="mt-4 mx-auto"
+                            style="opacity: .85;"
+                            :disabled="!selectedExperienceIDs.length"
+                            @click="addSelectedToMyExperiences"
+                          >
+                            {{ $t('Add to My Experiences') }}
+                        </v-btn>
+                    </v-col>
 
-                      <!-- Action buttons column -->
-                      <v-col cols="12" md="2" class="text-center d-flex align-center justify-center">
-                        <div>
-                          <v-row class="mb-2">
-                            <v-btn @click="addSelectedToMyExperiences">
-                                <v-icon>mdi-chevron-right</v-icon>
-                            </v-btn>
-                          </v-row>
-                          <v-row>
-                            <v-btn @click="removeMarkedFromSelected">
-                                <v-icon>mdi-chevron-left</v-icon>
-                            </v-btn>
-                          </v-row>
-                        </div>
-                      </v-col>
+                      <!-- My experiences column -->
+                      <v-col cols="12" md="6" class="pl-4 d-flex flex-column">
+                        <v-list density="compact" class="flex-grow-1 overflow-auto body-text">
+                          <v-list-subheader class="pane-title text-black">
+                            {{ $t('My Experiences') }}
+                          </v-list-subheader>
 
-                      <!-- Selected experiences column -->
-                      <v-col cols="12" md="5">
-                        <v-list density="compact">
-                          <v-list-subheader>{{$t('My Experiences')}}</v-list-subheader>
-                          <v-list-item
-                                v-for="experience in selectedExperiences"
-                                :key="experience._id"
-                                @click="toggleRemovalSelection(experience)"
-                                :class="isMarkedForRemoval(experience) ? 'light-red-bg' : ''"
+                          <template
+                            v-for="(grp, sessionId) in groupedSelectedExperiences"
+                            :key="sessionId"
+                          >
+                          <v-card variant="outlined" rounded class="mb-4 pa-3 session-card">
+                            <div class="subgroup-header body-text">
+                              {{ grp.sessionName }}
+                            </div>
+                            <v-list-item
+                              v-for="exp in grp.experiences"
+                              :key="exp._id"
+                              @click="toggleRemovalSelection(exp)"
+                              :class="{ 'selection-remove': isMarkedForRemoval(exp) }"
                             >
-                                <v-list-item-title>
-                                    {{ experience.experienceName }}
-                                </v-list-item-title>
+                                  <v-list-item-title class="body-text">
+                                    {{ exp.experienceName }}
+                                  </v-list-item-title>
                             </v-list-item>
+                          </v-card>
+                          </template>
                         </v-list>
+                        
+                        <v-btn
+                          color="secondary"
+                          outlined
+                          class="mt-4 mx-auto"
+                          :disabled="!markedForRemovalIDs.length"
+                          @click="removeMarkedFromSelected"
+                        >
+                          {{ $t('Remove from My Experiences') }}
+                        </v-btn>
                       </v-col>
-
                     </v-row>
                   </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
+
+                  <v-card-actions  class="justify-end px-4 pb-4">
                     <v-btn
-                      color="blue-darken-1"
-                      variant="text"
+                      text
+                      class="grey darken-1"
                       @click="clearSelectedExperiences"
                     >
-                      {{$t('Close')}}
+                      {{ $t('Cancel') }}
                     </v-btn>
+
                     <v-btn
-                      color="blue-darken-1"
-                      variant="text"
+                      variant="elevated"
+                      color="error"
+                      dark
+                      class="ml-4  btn-save"
                       @click="saveExperiences"
                     >
-                      {{$t('Save')}}
+                      {{ $t('Save') }}
                     </v-btn>
                   </v-card-actions>
+
                 </v-card>
               </v-dialog>
 
@@ -194,8 +261,8 @@ Handles experience selection, registration codes, and session-based grouping of 
       </v-row>
     </v-list-item>
 
-        </v-list>
-        </v-card>
+    </v-list>
+    </v-card>
 
 <!-- Registration code input dialog -->
 <v-dialog v-model="registrationDialog" max-width="400px">
@@ -242,9 +309,26 @@ export default {
             currentExperience: null,
             currentExperienceName: '',
             experiencesToProcess: [],
+            showTip: false,
         }
     },
     computed: {
+        // Group the experiences selected by user
+        groupedSelectedExperiences() {
+          const grouped = {};
+          this.selectedExperiences.forEach(exp => {
+            const sid = exp.session.id;
+            if (!grouped[sid]) {
+              grouped[sid] = {
+                sessionName: exp.session.name,
+                experiences: []
+              };
+            }
+            grouped[sid].experiences.push(exp);
+          });
+          return grouped;
+        },
+
         // Store data access
         registeredExperiences() {
           const store = useLoggedInUserStore();
@@ -276,6 +360,18 @@ export default {
 
           return grouped;
         },
+        
+        // Filters out any available experience whose _id appears in selectedExperiences
+        filteredAvailableSessions() {
+          return this.availableExperiencesForRegistration
+            .map(session => {
+              const kept = session.availableExperiences.filter(
+                available_exp => !this.selectedExperiences.some(selected_exp => selected_exp._id === available_exp._id)
+              )
+              return { session: session.session, availableExperiences: kept }
+            })
+            .filter(s => s.availableExperiences.length > 0)
+        }
     },
     methods: {
       // Experience selection management
@@ -302,9 +398,12 @@ export default {
             const experience = session.availableExperiences.find(exp => exp._id === selectedID);
             if (experience && !this.isSelected(experience)) {
               if (experience.registrationCode) {
-                this.experiencesToProcess.push(experience);
+                this.experiencesToProcess.push({
+                  ...experience,
+                  session: session.session
+                });
               } else {
-                this.addExperienceToSelected(experience);
+                this.addExperienceToSelected(experience, session.session);
               }
             }
           });
@@ -319,10 +418,11 @@ export default {
           this.registrationDialog = true;
         }
       },
-      addExperienceToSelected(experience) {
+      addExperienceToSelected(experience, session) {
         this.selectedExperiences.push({
           _id: experience._id,
           experienceName: experience.experienceName,
+          session: { ...session }
         });
       },
 
@@ -336,7 +436,7 @@ export default {
       },
       confirmRegistrationCode() {
         if (this.currentExperience && this.currentExperience.registrationCode === this.enteredRegistrationCode) {
-          this.addExperienceToSelected(this.currentExperience);
+          this.addExperienceToSelected(this.currentExperience, this.currentExperience.session);
           this.enteredRegistrationCode = '';
           this.currentExperience = null;
           this.registrationDialog = false;
@@ -417,6 +517,7 @@ export default {
                   newSelectedExperiences.push({
                     _id: availableExp._id,
                     experienceName: availableExp.experienceName,
+                    session: session.session,
                   });
                 }
               });
@@ -427,12 +528,54 @@ export default {
         });
 
         this.dialog = true;
+        // this.$nextTick(() => { this.showTip = true });
+    this.$nextTick(() => {
+      this.showTip = true;
+      setTimeout(() => { this.showTip = false }, 3000);
+      });
       },
     }
 }
 </script>
 
 <style scoped>
+.inline-tip {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.7);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 16px;
+  transition: opacity 0.3s ease;
+}
+
+.dialog-title {
+  font-variant: small-caps;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 19px;      
+  letter-spacing: 0.5px;
+}
+
+.pane-title {
+  font-variant: small-caps;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;     
+  right: 12px;
+}
+
+.close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
 .custom-tooltip {
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -442,5 +585,72 @@ export default {
 
 .selected-experience {
     cursor: default;
+}
+
+.subgroup-header {
+  background-color: #F5F5F5;       
+  border-bottom: 1px solid #E0E0E0;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+
+.body-text {
+  font-family: 'Roboto','Inter', system-ui, sans-serif;
+  font-size: 14px;         
+  font-weight: 400;        
+  line-height: 1.5;        
+}
+
+.selection-add {
+  background-color: rgba(33, 150, 243, 0.2);
+  border: 1px solid #2196F3;
+  border-radius: 4px;
+}
+
+.selection-highlight {
+  background-color: rgba(33, 150, 243, 0.1);
+  border: 1px solid #2196F3;
+  border-radius: 4px;
+}
+
+.selection-remove {
+  background-color: rgba(158, 158, 158, 0.2);
+  border: 1px solid #9E9E9E;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  min-height: 40px;         
+  padding: 0 16px;          
+  border-radius: 6px;       
+  color: #FFF;              
+}
+
+.btn-secondary {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 6px;
+  color: #424242;           
+}
+
+.btn-save {
+  background-color: #C8102E !important;
+  color: #FFFFFF !important;
+}
+
+.btn-save:hover {
+  background-color: #A00B26 !important;
+}
+
+.callout-text {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.session-card {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
 }
 </style>

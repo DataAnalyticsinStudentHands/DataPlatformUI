@@ -107,39 +107,49 @@
           <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
             <v-list-item 
               :active="activeLink === 'instructorDash'"
-              to="instructorDash"
+              :to="{ name: 'instructorDash' }"
               prepend-icon="mdi-view-dashboard"
               value="instructorDash"
               class=" tracking-wider "
             >Dashboard</v-list-item>
             <v-list-item 
               :active="activeLink === 'instructorDataProducts'"
-              to="instructorDataProducts"
+              :to="{ name: 'instructorDataProducts' }"
               prepend-icon="mdi-view-dashboard"
               value="instructorDataProducts"
               class=" tracking-wider"
             >Data Products</v-list-item>
             <v-list-item 
               :active="activeLink === 'instructorStudentsList'"
-              to="instructorStudentsList"
+              :to="{ name: 'instructorStudentsList' }"
               prepend-icon="mdi-account"
               value="instructorStudentsList"
               class=" tracking-wider"
             >Students</v-list-item>
             <v-list-item 
               :active="activeLink === 'instructorDataManagement'"
-              to="instructorDataManagement"
+              :to="{ name: 'instructorDataManagement' }"
               prepend-icon="mdi-school"
               value="instructorDataManagement"
               class=" tracking-wider"
             >Data Management Console</v-list-item>
             <v-list-item 
               :active="activeLink === 'projects' || activeLink === 'instructorProjects'"
-              to="projects"
+              :to="{ name: 'projects' }"
               prepend-icon="mdi-account-group"
               class="tracking-wider"
             >
               {{$t('Projects')}}
+            </v-list-item>
+            <v-list-item
+              v-if="user.getRole === 'Org Admin'"
+              :active="activeLink === 'AdminBackupManager'"
+              to='/admin/backup'
+              prepend-icon="mdi-database"
+              value="AdminBackupManager"
+              class="tracking-wider"
+            >
+              Database Backup
             </v-list-item>
           </div>
           <!-- Basic role navigation items -->
@@ -195,21 +205,21 @@
             >{{$t('Profile')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'User Data Update Form'"
-              to="updateUserInformation"
+              to="/updateUserInformation"
               prepend-icon="mdi-cog"
               value="User Data Update Form"
               class=" tracking-wider "
             >{{$t('Update User Information')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Password Reset'"
-              to="updatePassword"
+              to="/updatePassword"
               prepend-icon="mdi-cog"
               value="Password Reset"
               class=" tracking-wider "
             >{{$t('Update Password')}}</v-list-item>
             <v-list-item
               :active="activeLink === 'Login'"
-              to="login"
+              to="/login"
               prepend-icon="mdi-logout"
               value="Login"
               class=" tracking-wider "

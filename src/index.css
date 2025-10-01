@@ -160,3 +160,22 @@ select.v-field__input {
         font-size: 16px;      /* Adjust the font size */
     }
 }
+
+.v-btn.icon {
+  border-radius: 0 !important;   /* make it square */
+}
+
+.v-btn.icon:hover {
+  background-color: rgba(0,0,0,0.05) !important ; 
+}
+
+.experiences-dialog .v-card-title {
+  position: relative;
+}
+
+.experiences-dialog .v-card-title .close-btn {
+  position: absolute;
+  top: 5%;
+  right: 0.2%;
+  border-radius: 0 !important;  
+}

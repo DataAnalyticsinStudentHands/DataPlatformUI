@@ -216,6 +216,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
 export default {
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
@@ -274,7 +275,7 @@ export default {
             headers: { token },
           })
           .then(() => {
-            alert("Event has been added.");
+            toast.success("Event has been added.");
             this.$router.push("/findEvents");
             this.client = {
               eventName: "",

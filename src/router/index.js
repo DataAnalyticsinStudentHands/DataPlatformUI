@@ -443,7 +443,13 @@ const routes = [
       path: '/publicGallery2',
       name: "publicGallery2",
       component: () => import('../components/dev/publicGallery2.vue')
-    }
+    },
+    {
+    path: '/admin/backup',
+    name: 'AdminBackupManager',
+    component: () => import('@/components/admin/BackupDashboard.vue'),
+    beforeEnter: requireAuth(['Org Admin']),
+  }
 ]
 
 // Create router instance with base path

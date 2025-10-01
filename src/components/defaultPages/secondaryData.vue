@@ -143,6 +143,7 @@
 import useVuelidate from "@vuelidate/core";
 // import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
 export default {
   setup() {
     // return { v$: useVuelidate({ $autoDirty: true }) };
@@ -216,7 +217,7 @@ export default {
             headers: { token: localStorage.getItem("token") },
           })
           .then(() => {
-            alert("Client has been succesfully added.");
+            toast.success("Client has been succesfully added.");
             this.$router.push("/findclient");
             this.client = {
               address: {

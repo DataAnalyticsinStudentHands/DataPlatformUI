@@ -247,6 +247,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
 import { DateTime } from "luxon";
 
 export default {
@@ -317,7 +318,7 @@ export default {
       axios.put(url + `/eventdata/${this.id}`, this.event, {
           headers: { token },
         }).then(() => {
-        alert("Update has been saved.");
+        toast.success("Update has been saved.");
         this.$router.back().catch((error) => {
           this.handleError(error);
         });
