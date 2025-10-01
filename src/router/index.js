@@ -468,14 +468,7 @@ const publicPaths = [
   '/updateproject',
   '/proposedprojects',
   '/viewproject',
-  '/myprojects',
-  '/proposaldemo1',
-  '/proposaldemo2',
-  '/proposaldemo3',
-  '/proposaldemo4',
-  '/publicProjects',
-  '/publicGallery',
-  '/publicGallery2'
+  '/myprojects'
 ];
 
 // Global navigation guard for authentication and role-based routing
