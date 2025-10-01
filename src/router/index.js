@@ -430,14 +430,19 @@ const routes = [
       component: () => import('../components/error/errorView.vue')
     },
     {
-      path: '/map',
-      name: "mapView",
-      component: () => import('../components/dev/map.vue')
+      path: '/publicProjects',
+      name: "publicProjects",
+      component: () => import('../components/dev/publicProjects.vue')
     },
     {
-      path: '/map2',
-      name: "mapView2",
-      component: () => import('../components/dev/map2.vue')
+      path: '/publicGallery',
+      name: "publicGallery",
+      component: () => import('../components/dev/publicGallery.vue')
+    },
+    {
+      path: '/publicGallery2',
+      name: "publicGallery2",
+      component: () => import('../components/dev/publicGallery2.vue')
     }
 ]
 
@@ -467,7 +472,10 @@ const publicPaths = [
   '/proposaldemo1',
   '/proposaldemo2',
   '/proposaldemo3',
-  '/proposaldemo4'
+  '/proposaldemo4',
+  '/publicProjects',
+  '/publicGallery',
+  '/publicGallery2'
 ];
 
 // Global navigation guard for authentication and role-based routing
