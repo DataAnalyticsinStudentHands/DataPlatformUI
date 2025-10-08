@@ -445,6 +445,16 @@ const routes = [
       component: () => import('../components/dev/publicGallery2.vue')
     },
     {
+      path: '/public1',
+      name: "public1",
+      component: () => import('../components/dev/public1.vue')
+    },
+    {
+      path: '/kpis',
+      name: "kpis",
+      component: () => import('../components/dev/kpis.vue')
+    },
+    {
     path: '/admin/backup',
     name: 'AdminBackupManager',
     component: () => import('@/components/admin/BackupDashboard.vue'),
@@ -474,7 +484,11 @@ const publicPaths = [
   '/updateproject',
   '/proposedprojects',
   '/viewproject',
-  '/myprojects'
+  '/myprojects',
+  '/publicGallery',
+  '/publicGallery2',
+  '/public1',
+  '/kpis'
 ];
 
 // Global navigation guard for authentication and role-based routing
