@@ -40,7 +40,7 @@
               <div class="bg-overlay"></div>
             </div>
 
-            <v-container class="fill-height position-relative">
+            <v-container class="fill-height position-relative hero-content">
               <v-row class="fill-height" align="center" justify="center">
                 <v-col cols="12" md="10" lg="8" class="text-center text-white">
                   <v-chip v-if="activeSlide === i" color="white" class="mb-3" size="large">
@@ -70,12 +70,9 @@
                   </div>
 
                   <div v-if="activeSlide === i">
-                    <v-btn size="x-large" color="white" class="mr-3 mb-2" @click="viewProject(p)">
+                    <v-btn size="x-large" color="white" class="mb-2" @click="viewProject(p)">
                       Explore Project
                       <v-icon end>mdi-arrow-right</v-icon>
-                    </v-btn>
-                    <v-btn size="x-large" variant="outlined" color="white" class="mb-2" @click="scrollTo('featured')">
-                      View More
                     </v-btn>
                   </div>
                 </v-col>
@@ -612,6 +609,10 @@ function goToContact() {
 .hero-section { position: relative; }
 .hero-carousel { position: relative; }
 
+.hero-content {
+  padding-bottom: 140px !important;
+}
+
 .slide { position: relative; height: 92vh; overflow: hidden; }
 .slide-bg {
   position: absolute; inset: 0;
@@ -646,7 +647,8 @@ function goToContact() {
 .stats-bar {
   position: absolute; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
-  padding: 14px 0;
+  padding: 16px 0;
+  z-index: 2;
 }
 .stat-icon { opacity: 0.9; }
 .stat-num { font-weight: 700; font-size: 1.2rem; margin-top: 4px; color: white; }
