@@ -434,7 +434,12 @@ const routes = [
     name: 'AdminBackupManager',
     component: () => import('@/components/admin/BackupDashboard.vue'),
     beforeEnter: requireAuth(['Org Admin']),
-  }
+  },
+    {
+      path: '/public',
+      name: 'public1',
+      component: () => import('@/components/dev/public1.vue'),
+    },
 ]
 
 // Create router instance with base path
@@ -464,6 +469,7 @@ const publicPaths = [
   '/proposaldemo2',
   '/proposaldemo3',
   '/proposaldemo4',
+  '/public'
 ];
 
 // Global navigation guard for authentication and role-based routing
