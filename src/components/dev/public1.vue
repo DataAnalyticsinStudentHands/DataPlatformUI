@@ -854,7 +854,7 @@ const posterDialog = ref(false);
 const posterLoading = ref(false);
 const posterLoadProgress = ref(0);
 const posterPreloaded = ref(false);
-const posterPreloadXhr = ref(null);
+const activeXhr = ref(null);
 
 // Scroll navigation refs
 const scrollContainer = ref(null);
@@ -1147,9 +1147,9 @@ function closeProjectDialog() {
   projectDialog.value = false;
   // Reset poster preload state when closing project
   posterPreloaded.value = false;
-  if (posterPreloadXhr.value) {
-    posterPreloadXhr.value.abort();
-    posterPreloadXhr.value = null;
+  if (activeXhr.value) {
+    activeXhr.value.abort();
+    activeXhr.value = null;
   }
   setTimeout(() => {
     highlightedProjectId.value = null;
@@ -1158,7 +1158,7 @@ function closeProjectDialog() {
 
 function startPosterPreload() {
   // Only preload if we have a poster and haven't started yet
-  if (posterPreloaded.value || posterPreloadXhr.value || !selectedProject.value?.posterFull) {
+  if (posterPreloaded.value || activeXhr.value || !selectedProject.value?.posterFull) {
     return;
   }
   
@@ -1168,18 +1168,41 @@ function startPosterPreload() {
   xhr.open('GET', posterUrl, true);
   xhr.responseType = 'blob';
   
+  xhr.onprogress = (event) => {
+    if (event.lengthComputable) {
+      posterLoadProgress.value = Math.round((event.loaded / event.total) * 100);
+    }
+  };
+  
   xhr.onload = () => {
     if (xhr.status === 200) {
+      posterLoadProgress.value = 100;
       posterPreloaded.value = true;
-      posterPreloadXhr.value = null;
+      activeXhr.value = null;
+      
+      // If modal is open and was loading, hide the loading indicator
+      if (posterDialog.value && posterLoading.value) {
+        setTimeout(() => {
+          posterLoading.value = false;
+        }, 300);
+      }
+    } else {
+      activeXhr.value = null;
+      if (posterDialog.value) {
+        posterLoading.value = false;
+      }
     }
   };
   
   xhr.onerror = () => {
-    posterPreloadXhr.value = null;
+    activeXhr.value = null;
+    if (posterDialog.value) {
+      posterLoading.value = false;
+      console.error('Network error loading poster');
+    }
   };
   
-  posterPreloadXhr.value = xhr;
+  activeXhr.value = xhr;
   xhr.send();
 }
 
@@ -1187,58 +1210,22 @@ function openPosterModal() {
   resetZoom();
   posterDialog.value = true;
   
-  // If already preloaded, show immediately
+  // If already fully loaded, show immediately
   if (posterPreloaded.value) {
     posterLoading.value = false;
     return;
   }
   
-  // Otherwise show loading and track progress
+  // If already downloading, just show loading state
+  if (activeXhr.value) {
+    posterLoading.value = true;
+    return;
+  }
+  
+  // Otherwise start the download
   posterLoading.value = true;
   posterLoadProgress.value = 0;
-  
-  const posterUrl = selectedProject.value?.posterFull || selectedProject.value?.posterImage;
-  
-  if (posterUrl) {
-    // Cancel any existing preload and start fresh with progress tracking
-    if (posterPreloadXhr.value) {
-      posterPreloadXhr.value.abort();
-      posterPreloadXhr.value = null;
-    }
-    
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', posterUrl, true);
-    xhr.responseType = 'blob';
-    
-    xhr.onprogress = (event) => {
-      if (event.lengthComputable) {
-        posterLoadProgress.value = Math.round((event.loaded / event.total) * 100);
-      }
-    };
-    
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        posterLoadProgress.value = 100;
-        posterPreloaded.value = true;
-        // Small delay to show 100% before hiding
-        setTimeout(() => {
-          posterLoading.value = false;
-        }, 300);
-      } else {
-        posterLoading.value = false;
-        console.error('Failed to load poster:', xhr.status);
-      }
-    };
-    
-    xhr.onerror = () => {
-      posterLoading.value = false;
-      console.error('Network error loading poster');
-    };
-    
-    xhr.send();
-  } else {
-    posterLoading.value = false;
-  }
+  startPosterPreload();
 }
 
 function closePosterDialog() {
