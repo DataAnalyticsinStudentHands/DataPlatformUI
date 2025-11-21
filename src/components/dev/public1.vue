@@ -666,7 +666,7 @@ import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 // Import images for Carlos's project - THREE SEPARATE VERSIONS
-import carlosHeadshot from '@/assets/Headshot.jpg';
+import carlosHeadshot from '@/assets/Headshot.png';
 import carlosPosterCard from '@/assets/URD_Poster_card.png';   // Small thumbnail for card
 import carlosPosterLarge from '@/assets/URD_Poster_large.png'; // Medium for dialog
 import carlosPosterFull from '@/assets/URD_Poster.png';        // Full 19MB for zoom
