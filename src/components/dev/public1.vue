@@ -402,13 +402,11 @@
         class="align-end"
         :class="{ 'clickable-poster': selectedProject.posterImage }"
         @click="selectedProject.posterImage && openPosterModal()"
-        @mouseenter="selectedProject.posterFull && startPosterPreload()"
       >
         <!-- Click to enlarge hint for posters -->
         <div 
           v-if="selectedProject.posterImage" 
           class="poster-click-hint"
-          @mouseenter="selectedProject.posterFull && startPosterPreload()"
         >
           <v-icon size="24">mdi-magnify-plus</v-icon>
           <span>Click to enlarge</span>
@@ -650,10 +648,14 @@
           <div class="text-white text-caption">Loading full resolution poster...</div>
         </div>
 
-        <div class="poster-wrapper" :style="posterTransform" v-show="!posterLoading">
+        <!-- FIXED: Only render image after preload is complete, use object URL -->
+        <div 
+          class="poster-wrapper" 
+          :style="posterTransform" 
+          v-if="!posterLoading && posterPreloaded"
+        >
           <img
-            v-if="selectedProject?.posterFull || selectedProject?.posterImage"
-            :src="selectedProject.posterFull || selectedProject.posterImage"
+            :src="posterObjectUrl || (selectedProject?.posterFull || selectedProject?.posterImage)"
             class="enlarged-poster-img"
             alt="Research Poster"
             @load="onPosterImageLoad"
@@ -853,12 +855,13 @@ const highlightedProjectId = ref(null);
 const projectDialog = ref(false);
 const selectedProject = ref(null);
 
-// Enlarged poster modal
+// Enlarged poster modal - FIXED: Added posterObjectUrl
 const posterDialog = ref(false);
 const posterLoading = ref(false);
 const posterLoadProgress = ref(0);
 const posterPreloaded = ref(false);
 const activeXhr = ref(null);
+const posterObjectUrl = ref(null); // NEW: Store the blob URL
 
 // Scroll navigation refs
 const scrollContainer = ref(null);
@@ -1135,6 +1138,12 @@ function viewProject(p, event) {
           setTimeout(() => {
             selectedProject.value = p;
             projectDialog.value = true;
+            
+            // Start preloading the poster when dialog opens
+            if (p.posterFull) {
+              startPosterPreload();
+            }
+            
             card.classList.remove('highlight-pulse');
           }, 200);
         }
@@ -1144,22 +1153,38 @@ function viewProject(p, event) {
     highlightedProjectId.value = p._id;
     selectedProject.value = p;
     projectDialog.value = true;
+    
+    // Start preloading the poster when dialog opens
+    if (p.posterFull) {
+      startPosterPreload();
+    }
   }
 }
 
 function closeProjectDialog() {
   projectDialog.value = false;
-  // Reset poster preload state when closing project
+  
+  // FIXED: Clean up poster state and revoke object URL
   posterPreloaded.value = false;
+  posterLoading.value = false;
+  posterLoadProgress.value = 0;
+  
   if (activeXhr.value) {
     activeXhr.value.abort();
     activeXhr.value = null;
   }
+  
+  if (posterObjectUrl.value) {
+    URL.revokeObjectURL(posterObjectUrl.value);
+    posterObjectUrl.value = null;
+  }
+  
   setTimeout(() => {
     highlightedProjectId.value = null;
   }, 300);
 }
 
+// FIXED: Updated to create and use blob URL
 function startPosterPreload() {
   // Only preload if we have a poster and haven't started yet
   if (posterPreloaded.value || activeXhr.value || !selectedProject.value?.posterFull) {
@@ -1179,10 +1204,19 @@ function startPosterPreload() {
   };
   
   xhr.onload = () => {
+    activeXhr.value = null;
+    
     if (xhr.status === 200) {
       posterLoadProgress.value = 100;
       posterPreloaded.value = true;
-      activeXhr.value = null;
+      
+      // FIXED: Clean up old URL if there was one
+      if (posterObjectUrl.value) {
+        URL.revokeObjectURL(posterObjectUrl.value);
+      }
+      
+      // FIXED: Create object URL from blob - this is what the <img> will use
+      posterObjectUrl.value = URL.createObjectURL(xhr.response);
       
       // If modal is open and was loading, hide the loading indicator
       if (posterDialog.value && posterLoading.value) {
@@ -1191,7 +1225,6 @@ function startPosterPreload() {
         }, 300);
       }
     } else {
-      activeXhr.value = null;
       if (posterDialog.value) {
         posterLoading.value = false;
       }
@@ -1235,7 +1268,7 @@ function openPosterModal() {
 function closePosterDialog() {
   posterLoading.value = false;
   posterLoadProgress.value = 0;
-  // Keep posterPreloaded true so it stays in cache for re-opening
+  // Keep posterPreloaded and posterObjectUrl so it stays in cache for re-opening
   resetZoom();
 }
 
