@@ -320,36 +320,40 @@
                 </div>
               </div>
               <div class="h-card-body">
-                <div class="text-overline mb-1">{{ card.experienceCategory }}</div>
-                <div class="text-subtitle-1 font-weight-medium">{{ card.projectName }}</div>
-                
-                <!-- Student Attribution in Card -->
-                <div v-if="card.studentName" class="student-mini mt-2 mb-2">
-                  <v-avatar v-if="card.studentPhoto" size="24" class="mr-2">
-                    <v-img :src="card.studentPhoto" />
-                  </v-avatar>
-                  <span class="text-caption text-medium-emphasis">{{ card.studentName }}</span>
+                <!-- Card content wrapper that can grow -->
+                <div class="card-content-wrapper">
+                  <div class="text-overline mb-1">{{ card.experienceCategory }}</div>
+                  <div class="text-subtitle-1 font-weight-medium">{{ card.projectName }}</div>
+                  
+                  <!-- Student Attribution in Card -->
+                  <div v-if="card.studentName" class="student-mini mt-2 mb-2">
+                    <v-avatar v-if="card.studentPhoto" size="24" class="mr-2">
+                      <v-img :src="card.studentPhoto" />
+                    </v-avatar>
+                    <span class="text-caption text-medium-emphasis">{{ card.studentName }}</span>
+                  </div>
+                  
+                  <p class="text-caption text-medium-emphasis mt-1">{{ truncate(card.description, 110) }}</p>
+
+                  <div class="h-card-stats mt-3">
+                    <div v-if="card.presentedAt" class="d-flex align-center mr-3 text-caption text-success">
+                      <v-icon size="16" class="mr-1">mdi-presentation</v-icon>{{ card.presentedAt }}
+                    </div>
+                    <div v-else class="d-flex align-center mr-3 text-caption">
+                      <v-icon size="16" class="mr-1">mdi-account-group</v-icon>{{ card.memberCount }}
+                    </div>
+                    <div class="d-flex align-center text-caption">
+                      <v-icon size="16" class="mr-1">mdi-file-document</v-icon>{{ card.fileCount }}
+                    </div>
+                  </div>
+
+                  <v-chip-group class="mt-3">
+                    <v-chip v-for="t in card.tags.slice(0,3)" :key="t" size="x-small" variant="tonal" class="mr-1">{{ t }}</v-chip>
+                  </v-chip-group>
                 </div>
-                
-                <p class="text-caption text-medium-emphasis mt-1">{{ truncate(card.description, 110) }}</p>
 
-                <div class="h-card-stats mt-3">
-                  <div v-if="card.presentedAt" class="d-flex align-center mr-3 text-caption text-success">
-                    <v-icon size="16" class="mr-1">mdi-presentation</v-icon>{{ card.presentedAt }}
-                  </div>
-                  <div v-else class="d-flex align-center mr-3 text-caption">
-                    <v-icon size="16" class="mr-1">mdi-account-group</v-icon>{{ card.memberCount }}
-                  </div>
-                  <div class="d-flex align-center text-caption">
-                    <v-icon size="16" class="mr-1">mdi-file-document</v-icon>{{ card.fileCount }}
-                  </div>
-                </div>
-
-                <v-chip-group class="mt-3">
-                  <v-chip v-for="t in card.tags.slice(0,3)" :key="t" size="x-small" variant="tonal" class="mr-1">{{ t }}</v-chip>
-                </v-chip-group>
-
-                <v-btn variant="tonal" color="primary" size="small" block class="mt-3">
+                <!-- Button pushed to bottom -->
+                <v-btn variant="tonal" color="primary" size="small" class="mt-3 card-action-button">
                   View details
                 </v-btn>
               </div>
@@ -1511,12 +1515,20 @@ function goToContact() {
 .scroll-nav-right {
   right: 16px;
 }
+
+/* --- Card Structure with Fixed Button Position --- */
 .h-card {
-  min-width: 320px; width: 360px; background: white; border-radius: 16px;
+  min-width: 320px; 
+  width: 360px; 
+  background: white; 
+  border-radius: 16px;
   border: 1px solid rgba(0,0,0,0.06);
-  overflow: hidden; cursor: pointer;
+  overflow: hidden; 
+  cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 .h-card:hover { 
   transform: translateY(-6px); 
@@ -1548,7 +1560,11 @@ function goToContact() {
 }
 
 .h-card-image {
-  height: 180px; background-size: cover; background-position: center; position: relative;
+  height: 180px; 
+  background-size: cover; 
+  background-position: center; 
+  position: relative;
+  flex-shrink: 0;
 }
 
 /* Real Project Badge */
@@ -1576,15 +1592,38 @@ function goToContact() {
   justify-content: center;
 }
 
+/* Card body with flexbox to push button down */
+.h-card-body { 
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Content wrapper that can grow */
+.card-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Student Mini Attribution in Card */
 .student-mini {
   display: flex;
   align-items: center;
 }
 
-.h-card-overlay { position: absolute; top: 12px; right: 12px; }
-.h-card-body { padding: 14px; }
-.h-card-stats { display: flex; align-items: center; color: rgba(0,0,0,0.65); }
+.h-card-stats { 
+  display: flex; 
+  align-items: center; 
+  color: rgba(0,0,0,0.65); 
+}
+
+/* Button stays at bottom with margin-top: auto */
+.card-action-button {
+  margin-top: auto !important;
+}
 
 /* --- CTA --- */
 .cta-section { 
