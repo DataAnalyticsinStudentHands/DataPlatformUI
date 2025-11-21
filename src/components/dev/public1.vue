@@ -398,9 +398,14 @@
         class="align-end"
         :class="{ 'clickable-poster': selectedProject.posterImage }"
         @click="selectedProject.posterImage && openPosterModal()"
+        @mouseenter="selectedProject.posterFull && startPosterPreload()"
       >
         <!-- Click to enlarge hint for posters -->
-        <div v-if="selectedProject.posterImage" class="poster-click-hint">
+        <div 
+          v-if="selectedProject.posterImage" 
+          class="poster-click-hint"
+          @mouseenter="selectedProject.posterFull && startPosterPreload()"
+        >
           <v-icon size="24">mdi-magnify-plus</v-icon>
           <span>Click to enlarge</span>
         </div>
@@ -848,6 +853,8 @@ const selectedProject = ref(null);
 const posterDialog = ref(false);
 const posterLoading = ref(false);
 const posterLoadProgress = ref(0);
+const posterPreloaded = ref(false);
+const posterPreloadXhr = ref(null);
 
 // Scroll navigation refs
 const scrollContainer = ref(null);
@@ -1138,21 +1145,67 @@ function viewProject(p, event) {
 
 function closeProjectDialog() {
   projectDialog.value = false;
+  // Reset poster preload state when closing project
+  posterPreloaded.value = false;
+  if (posterPreloadXhr.value) {
+    posterPreloadXhr.value.abort();
+    posterPreloadXhr.value = null;
+  }
   setTimeout(() => {
     highlightedProjectId.value = null;
   }, 300);
 }
 
+function startPosterPreload() {
+  // Only preload if we have a poster and haven't started yet
+  if (posterPreloaded.value || posterPreloadXhr.value || !selectedProject.value?.posterFull) {
+    return;
+  }
+  
+  const posterUrl = selectedProject.value.posterFull || selectedProject.value.posterImage;
+  
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', posterUrl, true);
+  xhr.responseType = 'blob';
+  
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      posterPreloaded.value = true;
+      posterPreloadXhr.value = null;
+    }
+  };
+  
+  xhr.onerror = () => {
+    posterPreloadXhr.value = null;
+  };
+  
+  posterPreloadXhr.value = xhr;
+  xhr.send();
+}
+
 function openPosterModal() {
   resetZoom();
+  posterDialog.value = true;
+  
+  // If already preloaded, show immediately
+  if (posterPreloaded.value) {
+    posterLoading.value = false;
+    return;
+  }
+  
+  // Otherwise show loading and track progress
   posterLoading.value = true;
   posterLoadProgress.value = 0;
-  posterDialog.value = true;
   
   const posterUrl = selectedProject.value?.posterFull || selectedProject.value?.posterImage;
   
   if (posterUrl) {
-    // Use XMLHttpRequest to track download progress
+    // Cancel any existing preload and start fresh with progress tracking
+    if (posterPreloadXhr.value) {
+      posterPreloadXhr.value.abort();
+      posterPreloadXhr.value = null;
+    }
+    
     const xhr = new XMLHttpRequest();
     xhr.open('GET', posterUrl, true);
     xhr.responseType = 'blob';
@@ -1166,6 +1219,7 @@ function openPosterModal() {
     xhr.onload = () => {
       if (xhr.status === 200) {
         posterLoadProgress.value = 100;
+        posterPreloaded.value = true;
         // Small delay to show 100% before hiding
         setTimeout(() => {
           posterLoading.value = false;
@@ -1190,6 +1244,7 @@ function openPosterModal() {
 function closePosterDialog() {
   posterLoading.value = false;
   posterLoadProgress.value = 0;
+  // Keep posterPreloaded true so it stays in cache for re-opening
   resetZoom();
 }
 
