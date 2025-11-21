@@ -446,24 +446,93 @@
           <h3 class="text-h6 font-weight-bold mb-3">Key Findings</h3>
           <v-row>
             <v-col cols="12" sm="4">
-              <v-card variant="tonal" color="error" class="pa-4 text-center">
+              <v-card variant="tonal" color="error" class="pa-4 text-center key-finding-card">
                 <v-icon size="32" color="error" class="mb-2">mdi-alert-circle</v-icon>
                 <div class="text-h5 font-weight-bold">350%</div>
                 <div class="text-caption">Higher childhood leukemia cases in Fifth Ward</div>
               </v-card>
             </v-col>
             <v-col cols="12" sm="4">
-              <v-card variant="tonal" color="primary" class="pa-4 text-center">
+              <v-card variant="tonal" color="primary" class="pa-4 text-center key-finding-card">
                 <v-icon size="32" color="primary" class="mb-2">mdi-home-analytics</v-icon>
                 <div class="text-h5 font-weight-bold">2005-2022</div>
                 <div class="text-caption">Years of housing data analyzed</div>
               </v-card>
             </v-col>
             <v-col cols="12" sm="4">
-              <v-card variant="tonal" color="warning" class="pa-4 text-center">
+              <v-card variant="tonal" color="warning" class="pa-4 text-center key-finding-card">
                 <v-icon size="32" color="warning" class="mb-2">mdi-factory</v-icon>
                 <div class="text-h5 font-weight-bold">Multiple</div>
                 <div class="text-caption">Industrial sites near residential areas</div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+
+        <!-- Partnerships Section for Carlos's project -->
+        <div v-if="selectedProject._id === 'carlos_mendieta_2023'" class="mb-6">
+          <h3 class="text-h6 font-weight-bold mb-3">
+            <v-icon color="primary" class="mr-2">mdi-handshake</v-icon>
+            Partners
+          </h3>
+          <p class="text-body-2 text-medium-emphasis mb-4">
+            This research was conducted in collaboration with multiple organizations committed to environmental justice and community health.
+          </p>
+          
+          <!-- Partner Organizations Grid -->
+          <v-row>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="success" class="mr-2">mdi-leaf</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">EPA</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">Environmental Protection Agency</div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="primary" class="mr-2">mdi-school</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">UH Honors</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">The Honors College, University of Houston</div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="error" class="mr-2">mdi-heart-pulse</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">Humana</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">Humana Institute</div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="indigo" class="mr-2">mdi-account-heart</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">CHWI</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">Community Health Workers Initiative</div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="purple" class="mr-2">mdi-server</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">HPE DSI</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">Hewlett Packard Enterprise Data Science Institute</div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="amber" class="mr-2">mdi-book-education</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">ERC</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">Education Research Center, UH College of Education</div>
               </v-card>
             </v-col>
           </v-row>
@@ -1569,5 +1638,41 @@ function goToContact() {
     text-align: center;
     padding: 12px;
   }
+}
+
+/* --- Partner Card Animations --- */
+.partner-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+}
+
+.partner-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(79, 172, 254, 0.2) !important;
+  border-color: rgba(79, 172, 254, 0.5) !important;
+}
+
+.partner-card:hover .v-icon {
+  transform: scale(1.15) rotate(5deg);
+  transition: transform 0.3s ease;
+}
+
+/* --- Key Finding Card Animations --- */
+.key-finding-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+}
+
+.key-finding-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15) !important;
+  filter: brightness(1.05);
+}
+
+.key-finding-card:hover .v-icon {
+  transform: scale(1.2) rotate(-5deg);
+  transition: transform 0.3s ease;
 }
 </style>
