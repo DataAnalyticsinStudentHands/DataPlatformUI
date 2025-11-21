@@ -387,14 +387,21 @@
   <!-- Project Detail Modal -->
   <v-dialog v-model="projectDialog" max-width="900" scrollable @update:model-value="!$event && closeProjectDialog()">
     <v-card v-if="selectedProject">
-      <!-- Hero Image or Poster -->
+      <!-- Hero Image or Poster (Clickable for posters) -->
       <v-img
         v-if="selectedProject.posterImage || selectedProject.image"
         :src="selectedProject.posterImage || selectedProject.image"
         height="400"
         cover
         class="align-end"
+        :class="{ 'clickable-poster': selectedProject.posterImage }"
+        @click="selectedProject.posterImage && openPosterModal()"
       >
+        <!-- Click to enlarge hint for posters -->
+        <div v-if="selectedProject.posterImage" class="poster-click-hint">
+          <v-icon size="24">mdi-magnify-plus</v-icon>
+          <span>Click to enlarge</span>
+        </div>
         <v-card-title class="text-white text-h4 font-weight-bold dialog-hero-title">
           {{ selectedProject.projectName }}
         </v-card-title>
@@ -516,6 +523,64 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- Enlarged Poster Modal with Zoom -->
+  <v-dialog v-model="posterDialog" @update:model-value="!$event && (posterLoading = false)">
+    <v-card class="poster-modal-card">
+      <v-toolbar dark color="black" flat>
+        <v-toolbar-title>{{ selectedProject?.projectName }} - Research Poster</v-toolbar-title>
+        <v-spacer></v-spacer>
+        
+        <!-- Zoom Controls -->
+        <v-btn icon @click="zoomOut" :disabled="posterLoading || zoomLevel <= minZoom">
+          <v-icon>mdi-magnify-minus</v-icon>
+        </v-btn>
+        <span class="zoom-level-display mx-2">
+          {{ Math.round(zoomLevel * 100) }}%
+        </span>
+        <v-btn icon @click="zoomIn" :disabled="posterLoading || zoomLevel >= maxZoom">
+          <v-icon>mdi-magnify-plus</v-icon>
+        </v-btn>
+        <v-btn icon @click="resetZoom" :disabled="posterLoading">
+          <v-icon>mdi-backup-restore</v-icon>
+        </v-btn>
+        
+        <v-btn icon @click="posterDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      
+      <div 
+        class="poster-container"
+        @wheel="handleWheel"
+        @mousedown="startPan"
+        @mousemove="handlePan"
+        @mouseup="endPan"
+        @mouseleave="endPan"
+      >
+        <!-- Loading Indicator -->
+        <div v-if="posterLoading" class="poster-loading-overlay">
+          <v-progress-circular
+            indeterminate
+            color="primary"
+            size="64"
+          ></v-progress-circular>
+          <div class="mt-4 text-white">Loading poster...</div>
+        </div>
+
+        <div class="poster-wrapper" :style="posterTransform" v-show="!posterLoading">
+          <img
+            v-if="selectedProject?.posterImage"
+            :src="selectedProject.posterImage"
+            class="enlarged-poster-img"
+            alt="Research Poster"
+            @load="onPosterImageLoad"
+            @error="onPosterImageError"
+          />
+        </div>
+      </div>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
@@ -525,7 +590,7 @@ import { useRouter } from 'vue-router';
 // Import images for Carlos's project
 import carlosHeadshot from '@/assets/Headshot.jpg';
 import carlosPosterImage from '@/assets/URD_Poster.png';
-import carlosPresentationPhoto from '@/assets/URD_Picture.jpg'; // Changed from .JPEG to .jpg
+import carlosPresentationPhoto from '@/assets/URD_Picture.webp';
 
 const router = useRouter();
 
@@ -536,15 +601,13 @@ const router = useRouter();
 const USE_DEMO_DATA = true;
 
 // HERO / celebration slides (minimal, curated)
-// NOW WITH 4 PROJECTS - ADDED THE NON-MEDICAL BARRIERS PROJECT
 const heroSlides = ref([
   {
     _id: 'carlos_mendieta_2023',
     projectName: 'Tracing the Roots of Environmental Racism in Houston\'s Fifth Ward',
     description: 'Investigating how industrial sites have been disproportionately placed in less affluent areas, pushing low-income minorities closer to environmentally toxic areas and increasing cancer risk exposure.',
-    // Using the actual presentation photo as the hero background
-    image: carlosPresentationPhoto, // Carlos presenting at URD
-    studentPhoto: carlosHeadshot, // His headshot
+    image: carlosPresentationPhoto,
+    studentPhoto: carlosHeadshot,
     studentName: 'Carlos Mendieta',
     fellowship: '2023 Pharis Fellow',
     achievementTag: 'Published Research',
@@ -552,7 +615,6 @@ const heroSlides = ref([
     memberCount: 1,
     experienceCategory: 'Pharis Fellowship',
     sessionName: '2023',
-    // Custom stats for this project
     stat1Icon: 'mdi-map-marker-alert',
     stat1Value: '350%',
     stat1Label: 'Higher Cancer Risk',
@@ -597,13 +659,12 @@ const heroSlides = ref([
   }
 ]);
 
-// Featured cards (horizontal) - Carlos's project appears here too for prominence
+// Featured cards (horizontal) - Carlos's project appears here too
 const featuredCards = ref([
   {
     _id: 'carlos_mendieta_2023',
     projectName: 'Tracing Environmental Racism in Houston\'s Fifth Ward',
     description: 'Modeling the relationship between industrial site proximity and housing values to reveal how environmental hazards disproportionately affect minority communities, contributing to a declared cancer cluster.',
-    // Using the poster as the card image
     image: carlosPosterImage,
     studentPhoto: carlosHeadshot,
     studentName: 'Carlos Mendieta',
@@ -679,7 +740,7 @@ const metrics = reactive({
   experiences: 0,
   sessions: 0,
   projects: 0,
-  categories: [] // { name, count }
+  categories: []
 });
 
 // Animated numbers
@@ -706,10 +767,83 @@ const highlightedProjectId = ref(null);
 const projectDialog = ref(false);
 const selectedProject = ref(null);
 
+// Enlarged poster modal
+const posterDialog = ref(false);
+const posterLoading = ref(false);
+
 // Scroll navigation refs
 const scrollContainer = ref(null);
 const showLeftButton = ref(false);
 const showRightButton = ref(false);
+
+// ==========================================
+// ZOOM AND PAN STATE
+// ==========================================
+const zoomLevel = ref(1);
+const minZoom = 0.5;
+const maxZoom = 3;
+
+const offsetX = ref(0);
+const offsetY = ref(0);
+
+const isPanning = ref(false);
+const startX = ref(0);
+const startY = ref(0);
+
+// Computed transform style
+const posterTransform = computed(() => ({
+  transform: `translate(calc(-50% + ${offsetX.value}px), calc(-50% + ${offsetY.value}px)) scale(${zoomLevel.value})`,
+  cursor: posterLoading.value ? 'default' : (isPanning.value ? 'grabbing' : 'grab'),
+  transition: isPanning.value ? 'none' : 'transform 0.2s ease-out'
+}));
+
+// Zoom controls
+function zoomIn() {
+  zoomLevel.value = Math.min(maxZoom, zoomLevel.value + 0.25);
+}
+
+function zoomOut() {
+  zoomLevel.value = Math.max(minZoom, zoomLevel.value - 0.25);
+}
+
+function resetZoom() {
+  zoomLevel.value = 1;
+  offsetX.value = 0;
+  offsetY.value = 0;
+}
+
+// Mouse wheel zoom
+function handleWheel(e) {
+  if (posterLoading.value) return;
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.1 : 0.1;
+  const nextZoom = zoomLevel.value + delta;
+  zoomLevel.value = Math.min(maxZoom, Math.max(minZoom, nextZoom));
+}
+
+// Pan (drag) controls
+function startPan(e) {
+  if (posterLoading.value) return;
+  if (e.button !== 0) return; // Left button only
+  isPanning.value = true;
+  startX.value = e.clientX - offsetX.value;
+  startY.value = e.clientY - offsetY.value;
+  e.preventDefault();
+}
+
+function handlePan(e) {
+  if (!isPanning.value || posterLoading.value) return;
+  offsetX.value = e.clientX - startX.value;
+  offsetY.value = e.clientY - startY.value;
+}
+
+function endPan() {
+  isPanning.value = false;
+}
+
+// ==========================================
+// END ZOOM AND PAN
+// ==========================================
 
 // Animation on scroll
 let observer = null;
@@ -730,37 +864,22 @@ onUnmounted(() => {
 
 // ----- Data loading -----
 function loadDemo() {
-  // Real data from database - updated to include Pharis Fellowship
-  metrics.participants = 796; // Added Carlos
-  metrics.experiences = 45; // Added Pharis Fellowship
-  metrics.sessions = 14; // Added 2023 session
-  metrics.projects = 19; // Added Carlos's project
+  metrics.participants = 796;
+  metrics.experiences = 45;
+  metrics.sessions = 14;
+  metrics.projects = 19;
 
   metrics.categories = [
     { name: 'Minor Data & Society', count: 19 },
     { name: 'Honors OCE', count: 15 },
     { name: 'HICH', count: 4 },
-    { name: 'Pharis Fellowship', count: 3 }, // Added this program
+    { name: 'Pharis Fellowship', count: 3 },
     { name: 'CHWI', count: 2 },
     { name: 'EDS', count: 2 }
   ];
 }
 
 async function loadLive() {
-  /**
-   * Example shape you can return from your backend:
-   * GET /api/public/metrics
-   * {
-   *   participants: number,                 // distinct expRegistrationData.userID (registrationStatus = true)
-   *   experiences: number,                  // experiencedata.countDocuments()
-   *   sessions: number,                     // sessiondata.countDocuments()
-   *   projects: number,                     // projectdata.countDocuments({ projectStatus: 'Active' })
-   *   categories: [{ name, count }]         // group by experienceData.experienceCategory
-   * }
-   *
-   * GET /api/public/featured
-   * { hero: [...], featured: [...] }        // arrays with fields used above
-   */
   try {
     const [m, f] = await Promise.all([
       fetch('/api/public/metrics').then(r => r.json()),
@@ -776,15 +895,12 @@ async function loadLive() {
     if (Array.isArray(f.hero) && f.hero.length) heroSlides.value = f.hero;
     if (Array.isArray(f.featured) && f.featured.length) featuredCards.value = f.featured;
   } catch (e) {
-    // Fallback to demo if live fails, without breaking the page
     loadDemo();
-    // console.warn('Failed to load live public data. Falling back to demo.', e);
   }
 }
 
 // ----- Animations -----
 function setupObserver() {
-  // respect reduced motion
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   observer = new IntersectionObserver(
@@ -792,7 +908,6 @@ function setupObserver() {
       entries.forEach(ent => {
         if (ent.isIntersecting && !animatedOnce) {
           animatedOnce = true;
-          // count-up animation
           animateNumber('participants', metrics.participants, prefersReduced ? 0 : 1800);
           animateNumber('experiences', metrics.experiences, prefersReduced ? 0 : 1500);
           animateNumber('sessions', metrics.sessions, prefersReduced ? 0 : 1500);
@@ -877,7 +992,7 @@ function scrollCards(direction) {
   if (!scrollContainer.value) return;
   
   const container = scrollContainer.value;
-  const scrollAmount = 380; // Width of one card plus gap
+  const scrollAmount = 380;
   
   if (direction === 'left') {
     container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
@@ -885,64 +1000,74 @@ function scrollCards(direction) {
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }
   
-  // Hide buttons after scrolling
   setTimeout(() => {
     hideScrollButtons();
   }, 300);
 }
 
 function updateScrollButtons() {
-  // This is called when scrolling to update button states
-  // But we only show buttons on hover, so we don't need to do anything here
-  // The hover handlers will check the scroll position
+  // Called when scrolling - buttons only show on hover
 }
 
 function viewProject(p, event) {
-  // If clicking from hero, scroll to featured section, highlight, and open modal
   if (event && document.querySelector('.hero-section').contains(event.currentTarget)) {
     const featuredSection = document.getElementById('featured');
     if (featuredSection) {
       featuredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       
-      // Set the highlighted project
       highlightedProjectId.value = p._id;
       
-      // After scrolling, find and scroll the card into view, then open modal
       setTimeout(() => {
         const card = document.querySelector(`[data-project-id="${p._id}"]`);
         if (card) {
-          // Scroll the card into view in the horizontal container
           card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-          
-          // Add a pulsing effect briefly
           card.classList.add('highlight-pulse');
           
-          // Open the modal almost immediately
           setTimeout(() => {
             selectedProject.value = p;
             projectDialog.value = true;
-            // Remove the pulsing but keep the highlight
             card.classList.remove('highlight-pulse');
-          }, 200); // Just 200ms - enough to see the card but not awkward
+          }, 200);
         }
-      }, 400); // Using your preferred 400ms for faster response
+      }, 400);
     }
   } else {
-    // If clicking from featured cards, just open the detail modal
-    // Set highlight when opening from card too
     highlightedProjectId.value = p._id;
     selectedProject.value = p;
     projectDialog.value = true;
   }
 }
 
-// Watch for dialog close to remove highlight
 function closeProjectDialog() {
   projectDialog.value = false;
-  // Remove highlight after modal closes
   setTimeout(() => {
     highlightedProjectId.value = null;
   }, 300);
+}
+
+function openPosterModal() {
+  resetZoom();
+  posterLoading.value = true;  // Set loading first
+  
+  setTimeout(() => {
+    posterDialog.value = true;  // Then open modal
+  }, 10);
+  
+  // Fallback for cached images
+  setTimeout(() => {
+    if (posterLoading.value) {
+      posterLoading.value = false;
+    }
+  }, 3000);
+}
+
+function onPosterImageLoad() {
+  posterLoading.value = false;
+}
+
+function onPosterImageError() {
+  posterLoading.value = false;
+  console.error('Failed to load poster image');
 }
 
 function goToSignIn() {
@@ -1143,14 +1268,12 @@ function goToContact() {
 .h-scroll-container { 
   overflow-x: auto; 
   padding-bottom: 8px;
-  /* Add padding top to prevent cutoff */
   padding-top: 12px;
   scroll-behavior: smooth;
 }
 .h-scroll {
   display: flex; 
   gap: 20px; 
-  /* Add padding to prevent cutoff on top and bottom */
   padding: 12px 4px 12px 4px;
 }
 .h-scroll::-webkit-scrollbar { height: 8px; }
@@ -1162,7 +1285,7 @@ function goToContact() {
 .scroll-hover-zone {
   position: absolute;
   top: 0;
-  bottom: 16px; /* Account for scrollbar */
+  bottom: 16px;
   width: 100px;
   z-index: 5;
   pointer-events: all;
@@ -1309,6 +1432,89 @@ function goToContact() {
   text-shadow: 0 2px 12px rgba(0,0,0,0.6);
 }
 
+/* Clickable Poster Styles */
+.clickable-poster {
+  cursor: pointer;
+  position: relative;
+  transition: filter 0.3s ease;
+}
+
+.clickable-poster:hover {
+  filter: brightness(1.1);
+}
+
+.poster-click-hint {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.clickable-poster:hover .poster-click-hint {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Enlarged Poster Modal with Zoom */
+.poster-modal-card {
+  background: #000;
+}
+
+.poster-container {
+  position: relative;
+  overflow: hidden;
+  height: 80vh;
+  background: #000;
+  user-select: none;
+  cursor: default;
+}
+
+.poster-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  z-index: 10;
+}
+
+.poster-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.enlarged-poster-img {
+  display: block;
+  max-width: none;
+  height: 80vh;
+  pointer-events: none;
+  user-select: none;
+}
+
+.zoom-level-display {
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 50px;
+  text-align: center;
+  color: white;
+}
+
 /* --- Responsive --- */
 @media (max-width: 1280px) {
   .kpi-number { font-size: 2rem; }
@@ -1318,7 +1524,6 @@ function goToContact() {
   .stat-num { font-size: 1.1rem; color: white; }
   .h-card { min-width: 280px; width: 300px; }
   
-  /* Stack the sections vertically on mobile */
   .combined-section .section-content {
     margin-bottom: 40px;
   }
