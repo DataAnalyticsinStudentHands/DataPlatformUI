@@ -266,6 +266,7 @@
           <div 
             class="scroll-hover-zone scroll-hover-left" 
             @mouseenter="checkAndShowLeftButton"
+            @mouseleave="onLeaveLeftZone"
           >
             <button
               class="scroll-nav-button scroll-nav-left"
@@ -280,6 +281,7 @@
           <div 
             class="scroll-hover-zone scroll-hover-right" 
             @mouseenter="checkAndShowRightButton"
+            @mouseleave="onLeaveRightZone"
           >
             <button
               class="scroll-nav-button scroll-nav-right"
@@ -775,6 +777,8 @@ const posterLoading = ref(false);
 const scrollContainer = ref(null);
 const showLeftButton = ref(false);
 const showRightButton = ref(false);
+const isHoveringLeft = ref(false);
+const isHoveringRight = ref(false);
 
 // ==========================================
 // ZOOM AND PAN STATE
@@ -963,27 +967,48 @@ function scrollTo(id) {
 }
 
 // ----- Scroll Navigation Methods -----
-function checkAndShowLeftButton() {
+function checkScrollPosition() {
   if (!scrollContainer.value) return;
-  const scrollLeft = scrollContainer.value.scrollLeft;
-  if (scrollLeft > 10) {
-    showLeftButton.value = true;
-  }
-}
-
-function checkAndShowRightButton() {
-  if (!scrollContainer.value) return;
+  
   const container = scrollContainer.value;
   const scrollLeft = container.scrollLeft;
   const scrollWidth = container.scrollWidth;
   const clientWidth = container.clientWidth;
   
-  if (scrollLeft < scrollWidth - clientWidth - 10) {
-    showRightButton.value = true;
+  // Update left button visibility
+  if (isHoveringLeft.value) {
+    showLeftButton.value = scrollLeft > 10;
+  }
+  
+  // Update right button visibility
+  if (isHoveringRight.value) {
+    showRightButton.value = scrollLeft < scrollWidth - clientWidth - 10;
   }
 }
 
+function checkAndShowLeftButton() {
+  isHoveringLeft.value = true;
+  checkScrollPosition();
+}
+
+function checkAndShowRightButton() {
+  isHoveringRight.value = true;
+  checkScrollPosition();
+}
+
+function onLeaveLeftZone() {
+  isHoveringLeft.value = false;
+  showLeftButton.value = false;
+}
+
+function onLeaveRightZone() {
+  isHoveringRight.value = false;
+  showRightButton.value = false;
+}
+
 function hideScrollButtons() {
+  isHoveringLeft.value = false;
+  isHoveringRight.value = false;
   showLeftButton.value = false;
   showRightButton.value = false;
 }
@@ -999,14 +1024,11 @@ function scrollCards(direction) {
   } else {
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }
-  
-  setTimeout(() => {
-    hideScrollButtons();
-  }, 300);
 }
 
 function updateScrollButtons() {
-  // Called when scrolling - buttons only show on hover
+  // Re-check scroll position to update button visibility
+  checkScrollPosition();
 }
 
 function viewProject(p, event) {
