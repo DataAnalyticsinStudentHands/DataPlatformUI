@@ -596,7 +596,7 @@
   </v-dialog>
 
   <!-- Enlarged Poster Modal with Zoom -->
-  <v-dialog v-model="posterDialog" @update:model-value="!$event && (posterLoading = false)">
+  <v-dialog v-model="posterDialog" @update:model-value="!$event && closePosterDialog()">
     <v-card class="poster-modal-card">
       <v-toolbar dark color="black" flat>
         <v-toolbar-title>{{ selectedProject?.projectName }} - Research Poster</v-toolbar-title>
@@ -616,7 +616,7 @@
           <v-icon>mdi-backup-restore</v-icon>
         </v-btn>
         
-        <v-btn icon @click="posterDialog = false">
+        <v-btn icon @click="posterDialog = false; closePosterDialog();">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
@@ -632,11 +632,13 @@
         <!-- Loading Indicator -->
         <div v-if="posterLoading" class="poster-loading-overlay">
           <v-progress-circular
-            indeterminate
+            :model-value="posterLoadProgress"
+            :size="80"
+            :width="6"
             color="primary"
-            size="64"
           ></v-progress-circular>
-          <div class="mt-4 text-white">Loading poster...</div>
+          <div class="mt-4 text-white text-h6">{{ posterLoadProgress }}%</div>
+          <div class="text-white text-caption">Loading full resolution poster...</div>
         </div>
 
         <div class="poster-wrapper" :style="posterTransform" v-show="!posterLoading">
@@ -845,6 +847,7 @@ const selectedProject = ref(null);
 // Enlarged poster modal
 const posterDialog = ref(false);
 const posterLoading = ref(false);
+const posterLoadProgress = ref(0);
 
 // Scroll navigation refs
 const scrollContainer = ref(null);
@@ -1142,27 +1145,61 @@ function closeProjectDialog() {
 
 function openPosterModal() {
   resetZoom();
-  posterLoading.value = true;  // Set loading first
+  posterLoading.value = true;
+  posterLoadProgress.value = 0;
+  posterDialog.value = true;
   
-  setTimeout(() => {
-    posterDialog.value = true;  // Then open modal
-  }, 10);
+  const posterUrl = selectedProject.value?.posterFull || selectedProject.value?.posterImage;
   
-  // Fallback for cached images
-  setTimeout(() => {
-    if (posterLoading.value) {
+  if (posterUrl) {
+    // Use XMLHttpRequest to track download progress
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', posterUrl, true);
+    xhr.responseType = 'blob';
+    
+    xhr.onprogress = (event) => {
+      if (event.lengthComputable) {
+        posterLoadProgress.value = Math.round((event.loaded / event.total) * 100);
+      }
+    };
+    
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        posterLoadProgress.value = 100;
+        // Small delay to show 100% before hiding
+        setTimeout(() => {
+          posterLoading.value = false;
+        }, 300);
+      } else {
+        posterLoading.value = false;
+        console.error('Failed to load poster:', xhr.status);
+      }
+    };
+    
+    xhr.onerror = () => {
       posterLoading.value = false;
-    }
-  }, 3000);
+      console.error('Network error loading poster');
+    };
+    
+    xhr.send();
+  } else {
+    posterLoading.value = false;
+  }
+}
+
+function closePosterDialog() {
+  posterLoading.value = false;
+  posterLoadProgress.value = 0;
+  resetZoom();
 }
 
 function onPosterImageLoad() {
-  posterLoading.value = false;
+  // This is now just a backup - the actual loading is handled in openPosterModal
 }
 
 function onPosterImageError() {
   posterLoading.value = false;
-  console.error('Failed to load poster image');
+  console.error('Failed to load poster image in img tag');
 }
 
 function goToSignIn() {
