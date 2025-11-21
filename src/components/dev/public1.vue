@@ -641,8 +641,8 @@
 
         <div class="poster-wrapper" :style="posterTransform" v-show="!posterLoading">
           <img
-            v-if="selectedProject?.posterImage"
-            :src="selectedProject.posterImage"
+            v-if="selectedProject?.posterFull || selectedProject?.posterImage"
+            :src="selectedProject.posterFull || selectedProject.posterImage"
             class="enlarged-poster-img"
             alt="Research Poster"
             @load="onPosterImageLoad"
@@ -658,9 +658,11 @@
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
-// Import images for Carlos's project
+// Import images for Carlos's project - THREE SEPARATE VERSIONS
 import carlosHeadshot from '@/assets/Headshot.jpg';
-import carlosPosterImage from '@/assets/URD_Poster.png';
+import carlosPosterCard from '@/assets/URD_Poster_card.png';   // Small thumbnail for card
+import carlosPosterLarge from '@/assets/URD_Poster_large.png'; // Medium for dialog
+import carlosPosterFull from '@/assets/URD_Poster.png';        // Full 19MB for zoom
 import carlosPresentationPhoto from '@/assets/URD_Picture.webp';
 
 const router = useRouter();
@@ -696,7 +698,8 @@ const heroSlides = ref([
     stat3Value: 'URD 2024',
     stat3Label: 'Presented At',
     isRealProject: true,
-    posterImage: carlosPosterImage
+    posterImage: carlosPosterLarge,  // Use MEDIUM for dialog hero
+    posterFull: carlosPosterFull     // Keep reference to full
   },
   {
     _id: '171750177726109',
@@ -736,7 +739,7 @@ const featuredCards = ref([
     _id: 'carlos_mendieta_2023',
     projectName: 'Tracing Environmental Racism in Houston\'s Fifth Ward',
     description: 'Modeling the relationship between industrial site proximity and housing values to reveal how environmental hazards disproportionately affect minority communities, contributing to a declared cancer cluster.',
-    image: carlosPosterImage,
+    image: carlosPosterCard,           // CARD: use small thumbnail
     studentPhoto: carlosHeadshot,
     studentName: 'Carlos Mendieta',
     projectStatus: 'Published',
@@ -746,7 +749,8 @@ const featuredCards = ref([
     tags: ['environmental-justice', 'cancer-cluster', 'housing-equity'],
     experienceCategory: 'Pharis Fellowship',
     isRealProject: true,
-    posterImage: carlosPosterImage
+    posterImage: carlosPosterLarge,    // DIALOG: use medium preview
+    posterFull: carlosPosterFull       // ZOOM: use full resolution
   },
   {
     _id: '531750090654550',
