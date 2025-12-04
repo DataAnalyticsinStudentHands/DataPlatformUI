@@ -57,6 +57,37 @@ function requireAuth(allowedRoles) {
   };
 }
 
+// Guard for student routes that require registered experiences
+async function requireStudentWithExperiences(to, from, next) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    next('/error');
+    return;
+  }
+
+  const payload = await verifyJWT(token);
+  if (!payload) {
+    next('/error');
+    return;
+  }
+
+  if (payload.userRole !== 'Student') {
+    next('/error');
+    return;
+  }
+
+  const userStore = useLoggedInUserStore();
+  
+  // Check if user has registered experiences
+  if (!userStore.hasRegisteredExperiences) {
+    // Redirect to student dashboard with a message
+    next('/studentDashboard');
+    return;
+  }
+
+  next();
+}
+
 // Route definitions
 const routes = [
     {
@@ -85,7 +116,12 @@ const routes = [
         const userStore = useLoggedInUserStore();
         if (userStore.isLoggedIn) {
           if (userStore.getRole === 'Student') {
-            next('/studentProjects');
+            // Check for registered experiences before redirecting
+            if (!userStore.hasRegisteredExperiences) {
+              next('/studentDashboard');
+            } else {
+              next('/studentProjects');
+            }
           } else if (['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.getRole)) {
             next('/instructorProjects');
           } else {
@@ -100,19 +136,19 @@ const routes = [
       path: '/studentProjects',
       name: 'studentProjects',
       component: () => import('../components/studentSide/projects/projectsMain.vue'),
-      beforeEnter: requireAuth(['Student']),
+      beforeEnter: requireStudentWithExperiences,
     },
     {
       path: '/proposeProject',
       name: 'proposeProject',
       component: () => import('../components/studentSide/projects/projectProposal.vue'),
-      beforeEnter: requireAuth(['Student']),
+      beforeEnter: requireStudentWithExperiences,
     },
     {
       path: '/editProjectProposal',
       name: 'editProjectProposal',
       component: () => import('../components/studentSide/projects/editProjectProposal.vue'),
-      beforeEnter: requireAuth(['Student']),
+      beforeEnter: requireStudentWithExperiences,
     },
     {
       path: '/viewProjectProposal',
@@ -124,7 +160,7 @@ const routes = [
       path: '/editProjectStudent',
       name: 'editProjectStudent',
       component: () => import('../components/studentSide/projects/editProject.vue'),
-      beforeEnter: requireAuth(['Student']),
+      beforeEnter: requireStudentWithExperiences,
     },
     {
       path: '/editProjectInstructor',

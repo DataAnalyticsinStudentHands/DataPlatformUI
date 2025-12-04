@@ -90,14 +90,26 @@
               value="exitForm"
               class=" tracking-wider "
             >{{$t('Exit Form')}}</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'projects' || activeLink === 'studentProjects'"
-              to="projects"
-              prepend-icon="mdi-account-group"
-              class="tracking-wider"
+            <!-- Projects with tooltip for disabled state -->
+            <v-tooltip 
+              location="right"
+              :disabled="user.hasRegisteredExperiences"
             >
-              {{$t('Projects')}}
-            </v-list-item>
+              <template v-slot:activator="{ props }">
+                <div v-bind="props">
+                  <v-list-item 
+                    :active="activeLink === 'projects' || activeLink === 'studentProjects'"
+                    :to="user.hasRegisteredExperiences ? 'projects' : undefined"
+                    :disabled="!user.hasRegisteredExperiences"
+                    prepend-icon="mdi-account-group"
+                    class="tracking-wider"
+                  >
+                    {{$t('Projects')}}
+                  </v-list-item>
+                </div>
+              </template>
+              <span>You must be registered for at least one Experience to access Projects.</span>
+            </v-tooltip>
           </div>
           <!-- Instructor and admin role navigation items -->
           <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
