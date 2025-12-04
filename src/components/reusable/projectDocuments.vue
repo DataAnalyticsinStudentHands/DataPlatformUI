@@ -44,7 +44,7 @@
         rounded
         class="mb-1 document-list-item"
         link
-        @click="viewDocument(document)"
+        @click="canEdit(document) ? openEditDialog(document) : downloadDocument(document)"
       >
         <template v-slot:prepend>
           <v-avatar color="grey-lighten-2" class="mr-3">
@@ -78,18 +78,18 @@
                   @click.stop="downloadDocument(document)"
                 ></v-list-item>
                 <v-list-item
+                  v-if="canEdit(document)"
+                  prepend-icon="mdi-pencil"
+                  title="Edit"
+                  @click.stop="openEditDialog(document)"
+                ></v-list-item>
+                <v-list-item
                   v-if="canDelete(document)"
                   prepend-icon="mdi-delete"
                   title="Delete"
                   @click.stop="confirmDeleteDocument(document)"
                   class="text-error"
                 ></v-list-item>
-                <v-list-item
-                  prepend-icon="mdi-history"
-                  title="Version history"
-                  @click.stop="viewVersionHistory(document.id)"
-                ></v-list-item>
-
               </v-list>
             </v-menu>
           </div>
@@ -159,7 +159,7 @@
               type="file"
               class="d-none"
               @change="onFileSelected"
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.jpg,.jpeg,.png,.gif,.zip"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.tsv,.jpg,.jpeg,.png"
             >
           </div>
           
@@ -188,26 +188,30 @@
         </v-card-text>
         
         <v-card-actions class="pa-4">
-          <!-- progress (stretches to fill the row) -->
-          <v-progress-linear
-            v-if="uploading && uploadProgress > 0"
-            :model-value="uploadProgress"
-            color="#c8102e"
-            height="6"
-            class="flex-grow-1 mr-4"
-            rounded
-          ></v-progress-linear>
-          <v-spacer></v-spacer>
+          <!-- progress with status text -->
+          <div v-if="uploading" class="flex-grow-1 mr-4">
+            <v-progress-linear
+              :model-value="uploadProgress"
+              color="#c8102e"
+              height="6"
+              rounded
+              class="mb-1"
+            ></v-progress-linear>
+            <p class="text-caption text-grey-darken-1 mb-0">
+              {{ uploadStatusText }}
+            </p>
+          </div>
+          <v-spacer v-else></v-spacer>
           <v-btn
             variant="text"
-            @click="uploadDialog = false"
+            @click="cancelUpload"
           >
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn
             color="#c8102e"
             variant="flat"
-            @click="uploadDocumentWithRetry()"  
+            @click="uploadDocument()"
             :loading="uploading"
             :disabled="!selectedFileName"
           >
@@ -216,7 +220,82 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
+
+    <!-- Edit Document Dialog -->
+    <v-dialog v-model="editDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="bg-grey-lighten-4 py-4">
+          <v-icon start icon="mdi-pencil" class="mr-2"></v-icon>
+          {{ $t('Edit Document') }}
+        </v-card-title>
+        
+        <v-card-text class="pa-4">
+          <!-- Document info display -->
+          <div class="mb-4 pa-3 bg-grey-lighten-5 rounded">
+            <div class="d-flex align-center">
+              <v-icon :icon="getFileIcon(documentToEdit?.extension)" size="40" color="grey-darken-1" class="mr-3"></v-icon>
+              <div>
+                <p class="text-subtitle-2 mb-0">{{ $t('Current file') }}</p>
+                <p class="text-caption text-grey-darken-1">
+                  {{ documentToEdit?.name }}
+                  <v-chip size="x-small" color="grey-lighten-1" class="text-uppercase ml-2">
+                    {{ documentToEdit?.extension }}
+                  </v-chip>
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <v-text-field
+            v-model="editDocumentName"
+            :label="$t('Document Name')"
+            :hint="$t('File extension will be added automatically')"
+            persistent-hint
+            variant="outlined"
+            density="comfortable"
+            :rules="[v => !!v || $t('Document name is required')]"
+          ></v-text-field>
+          
+          <v-textarea
+            v-model="editDocumentDescription"
+            :label="$t('Description (Optional)')"
+            class="mt-4"
+            variant="outlined"
+            density="comfortable"
+            rows="3"
+          ></v-textarea>
+        </v-card-text>
+        
+        <v-card-actions class="pa-4">
+          <!-- Add Download button on the left -->
+          <v-btn
+            color="grey-darken-1"
+            variant="text"
+            prepend-icon="mdi-download"
+            @click="downloadDocument(documentToEdit)"
+          >
+            {{ $t('Download') }}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="text"
+            @click="editDialog = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+          <v-btn
+            color="#c8102e"
+            variant="flat"
+            @click="updateDocument"
+            :loading="updating"
+            :disabled="!editDocumentName"
+          >
+            {{ $t('Save Changes') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+        
     <!-- Delete Confirmation Dialog -->
     <v-dialog v-model="deleteDialog" max-width="500px">
       <v-card>
@@ -244,42 +323,6 @@
             :loading="deleting"
           >
             {{ $t('Delete') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="versionHistoryDialog" max-width="600px">
-      <v-card>
-        <v-card-title class="bg-grey-lighten-4 py-4">
-          <v-icon start icon="mdi-history" class="mr-2" />{{ $t('Version History') }}
-        </v-card-title>
-
-        <v-card-text>
-          <v-list lines="two" density="compact">
-            <v-list-item
-              v-for="v in versionHistory"
-              :key="v.id"
-              :title="`v${v.versionLabel}`"
-              :subtitle="formatDate(v.createdDateTime)"
-              rounded
-            >
-              <template #append>
-                <v-btn
-                  icon="mdi-download"
-                  variant="text"
-                  size="small"
-                  @click.stop="downloadVersion(v)"
-                />
-              </template>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="versionHistoryDialog = false">
-            {{ $t('Close') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -314,6 +357,7 @@ export default {
       fileError: '',
       uploading: false,
       uploadProgress: 0,
+      uploadStatusText: '',
       deleting: false,
       loading: true,
       documentToDelete: null,
@@ -326,8 +370,11 @@ export default {
       isDragOver: false,
       canUpload: false,
       currentUser: null,
-      versionHistoryDialog: false,
-      versionHistory: [],
+      editDialog: false,
+      documentToEdit: null,
+      editDocumentName: '',
+      editDocumentDescription: '',
+      updating: false,
     };
   },
   created() {
@@ -335,11 +382,21 @@ export default {
     const userStore = useLoggedInUserStore();
     this.currentUser = userStore;    
     
+    // Decode JWT to get permissions (one time only)
+    if (userStore.token) {
+      try {
+        const payload = JSON.parse(atob(userStore.token.split('.')[1]));
+        this.currentUser = { ...userStore, permissions: payload.permissions };
+      } catch (e) {
+        console.error('Error decoding token:', e);
+      }
+    }
+    
     // Determine if user can upload based on permissions
     this.canUpload = this.isProjectOwner || 
-                    (userStore?.permissions?.projects &&
+                    (this.currentUser?.permissions?.projects &&
                     ['own', 'member', 'all']
-                    .includes(userStore.permissions.projects.uploadDocs));
+                    .includes(this.currentUser.permissions.projects.uploadDocs));
   },
   mounted() {
     this.fetchDocuments();
@@ -358,13 +415,13 @@ export default {
         case 'ppt':
         case 'pptx':
           return 'mdi-file-powerpoint-box';
-        case 'zip':
-        case 'rar':
-          return 'mdi-zip-box';
+        case 'txt':
+        case 'csv':
+        case 'tsv':
+          return 'mdi-file-document-outline';
         case 'jpg':
         case 'jpeg':
         case 'png':
-        case 'gif':
           return 'mdi-file-image-box';
         default:
           return 'mdi-file-document-outline';
@@ -384,6 +441,13 @@ export default {
       this.documentName = '';
       this.documentDescription = '';
       this.fileError = '';
+      this.uploadStatusText = '';
+    },
+    
+    cancelUpload() {
+      this.uploadDialog = false;
+      this.uploadProgress = 0;
+      this.uploadStatusText = '';
     },
     
     async fetchDocuments() {
@@ -393,13 +457,6 @@ export default {
         
         if (response.data.success) {
           this.projectDocuments = response.data.documents;
-        } else {
-          console.error('Error fetching documents:', response.data);
-          toast.error(this.$t('Failed to load documents'), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: true
-          });
         }
       } catch (error) {
         console.error('Error fetching documents:', error);
@@ -443,14 +500,23 @@ export default {
     
     processSelectedFile(file) {
       // Check allowed file types
-      const allowedExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', 
-        '.ppt', '.pptx', '.txt', '.csv', '.jpg', 
-        '.jpeg', '.png', '.gif', '.zip'];
+      const allowedExtensions = [
+        // Office files
+        '.doc', '.docx',        // Word documents
+        '.xls', '.xlsx',        // Excel spreadsheets
+        '.ppt', '.pptx',        // PowerPoint presentations
+        // PDF
+        '.pdf',
+        // Images
+        '.jpg', '.jpeg', '.png',
+        // Text files
+        '.txt', '.csv', '.tsv'
+      ];
         
       const fileExt = '.' + file.name.split('.').pop().toLowerCase();
       
       if (!allowedExtensions.includes(fileExt)) {
-        this.fileError = this.$t('File type not allowed');
+        this.fileError = this.$t('File type not allowed. Allowed types: Word, Excel, PowerPoint, PDF, Images (JPG, PNG), and Text files (TXT, CSV, TSV)');
         return;
       }
       
@@ -482,32 +548,23 @@ export default {
       // Reset the file input value
       this.$refs.fileInput.value = '';
     },
-    
-    viewDocument(document) {
-      // Use anonymous link if available, otherwise fallback to original behavior
-      if (document.anonymousLink) {
-        window.open(document.anonymousLink, '_blank');
-      } else if (document.sharePointUrl) {
-        window.open(document.sharePointUrl, '_blank');
-      } else {
-        this.downloadDocument(document);
-      }
-    },
-    
-    async downloadDocument(document) {
+
+    async downloadDocument(doc) {
       try {
-        const response = await axios.get(`${API}/clowder/projects/${this.projectId}/documents/${document.id}/download`);
+        const response = await axios.get(
+          `${API}/clowder/projects/${this.projectId}/documents/${doc.id}/download`,
+          {
+            responseType: 'blob'
+          }
+        );
         
-        if (response.data.success && response.data.downloadUrl) {
-          // Open the download URL in a new tab
-          window.open(response.data.downloadUrl, '_blank');
-        } else {
-          toast.error(this.$t('Failed to download document'), {
-            position: 'top-right',
-            toastClassName: 'Toastify__toast--delete',
-            multiple: true
-          });
-        }
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.name;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
       } catch (error) {
         console.error('Error downloading document:', error);
         toast.error(this.$t('Failed to download document'), {
@@ -521,18 +578,21 @@ export default {
     canDelete(document) {
       if (this.isProjectOwner) return true;
       
+      
       // Check if user has permission to delete based on ownership
-      const isDocumentOwner = document.uploaderId === this.currentUser?.id;
+      const isDocumentOwner = document.uploaderId === this.currentUser?.userId;
       
       if (this.currentUser?.permissions?.projects?.deleteDocs === 'own') {
         return isDocumentOwner;
       }
       
-      return ['group', 'all'].includes(
+      const hasGroupOrAll = ['group', 'all'].includes(
         this.currentUser?.permissions?.projects?.deleteDocs || ''
       );
+      
+      return hasGroupOrAll;
     },
-    
+        
     confirmDeleteDocument(document) {
       this.documentToDelete = document;
       this.deleteDialog = true;
@@ -578,7 +638,7 @@ export default {
         this.deleteDialog = false;
       }
     },
-    
+            
     async uploadDocument() {
       if (!this.selectedFile) {
         this.fileError = this.$t('Please select a file');
@@ -587,6 +647,7 @@ export default {
       
       this.uploading = true;
       this.uploadProgress = 0;
+      this.uploadStatusText = '';
       
       try {
         // Create form data
@@ -601,21 +662,37 @@ export default {
           formData.append('description', this.documentDescription);
         }
         
-        // Upload the file with progress tracking
+        // Upload configuration with progress tracking for ALL files
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            this.uploadProgress = percentCompleted;
+            
+            // Convert to MB for display
+            const mbLoaded = (progressEvent.loaded / (1024 * 1024)).toFixed(1);
+            const mbTotal = (progressEvent.total / (1024 * 1024)).toFixed(1);
+            
+            // Update status text based on progress
+            if (percentCompleted < 100) {
+              // Still uploading to server
+              this.uploadStatusText = `${this.$t('Uploading')} ${mbLoaded}MB / ${mbTotal}MB`;
+            } else {
+              // Upload complete, now processing on server
+              this.uploadStatusText = this.$t('Processing...');
+            }
+          }
+        };
+        
+        // Upload the file
         const response = await axios.post(
           `${API}/clowder/projects/${this.projectId}/upload`,
           formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              this.uploadProgress = percentCompleted;
-            }
-          }
+          config
         );
         
         if (response.data.success) {
@@ -638,6 +715,7 @@ export default {
       } finally {
         this.uploading = false;
         this.uploadProgress = 0;
+        this.uploadStatusText = '';
       }
     },
     
@@ -649,72 +727,83 @@ export default {
       return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
     },
 
-    async viewVersionHistory(documentId) {
+    canEdit(document) {
+      // Same logic as canDelete - owner or uploader can edit
+      if (this.isProjectOwner) return true;
+      
+      const isDocumentOwner = document.uploaderId === this.currentUser?.userId;
+      
+      if (this.currentUser?.permissions?.projects?.update === 'own') {
+        return isDocumentOwner;
+      }
+      
+      const hasGroupOrAll = ['group', 'all'].includes(
+        this.currentUser?.permissions?.projects?.update || ''
+      );
+      
+      return hasGroupOrAll || isDocumentOwner;
+    },
+
+    openEditDialog(document) {
+      this.documentToEdit = document;
+      // Pre-populate with current values, removing the extension from the name
+      const nameWithoutExt = document.name.substring(0, document.name.lastIndexOf('.')) || document.name;
+      this.editDocumentName = nameWithoutExt;
+      this.editDocumentDescription = document.description || '';
+      this.editDialog = true;
+    },
+    
+    async updateDocument() {
+      if (!this.editDocumentName) {
+        toast.error(this.$t('Document name is required'), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: true
+        });
+        return;
+      }
+      
+      this.updating = true;
+      
       try {
-        const response = await axios.get(`${API}/clowder/projects/${this.projectId}/documents/${documentId}/versions`);
+        const response = await axios.put(
+          `${API}/clowder/projects/${this.projectId}/documents/${this.documentToEdit.id}`,
+          {
+            name: this.editDocumentName,
+            description: this.editDocumentDescription
+          }
+        );
         
         if (response.data.success) {
-          this.versionHistory = response.data.versions;
-          this.versionHistoryDialog = true;
+          // Update the document in the list
+          const index = this.projectDocuments.findIndex(doc => doc.id === this.documentToEdit.id);
+          if (index !== -1) {
+            this.projectDocuments[index] = response.data.document;
+          }
+          
+          toast.success(this.$t('Document updated successfully'), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--create',
+            multiple: true
+          });
+          
+          this.editDialog = false;
         } else {
-          toast.error(this.$t('Failed to fetch version history'), {
+          toast.error(response.data.message || this.$t('Failed to update document'), {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete',
             multiple: true
           });
         }
       } catch (error) {
-        console.error('Error fetching version history:', error);
-        toast.error(this.$t('Failed to fetch version history'), {
+        console.error('Error updating document:', error);
+        toast.error(error.response?.data?.message || this.$t('Failed to update document'), {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
           multiple: true
         });
-      }
-    },
-
-    async uploadDocumentWithRetry(maxRetries = 3) {
-      let retries = 0;
-      
-      while (retries < maxRetries) {
-        try {
-          await this.uploadDocument();
-          return; // Success, exit the function
-        } catch (error) {
-          retries++;
-          
-          if (retries >= maxRetries) {
-            // If we've exhausted all retries, show error
-            this.fileError = this.$t('Failed to upload after multiple attempts');
-            this.uploading = false;
-            return;
-          }
-          
-          // Wait before retrying (exponential backoff)
-          const waitTime = Math.pow(2, retries) * 1000;
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-          
-          // Inform the user we're retrying
-          toast.info(this.$t('Retrying upload...'), {
-            position: 'top-right',
-            multiple: true
-          });
-        }
-      }
-    },
-
-    async downloadVersion(version) {
-      try {
-        const { data } = await axios.get(
-          `${API}/clowder/projects/${this.projectId}/documents/${version.documentId}/versions/${version.id}/download`
-        );
-        if (data?.downloadUrl) window.open(data.downloadUrl, '_blank');
-      } catch (err) {
-        toast.error(this.$t('Failed to download version'), { 
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: true
-        });
+      } finally {
+        this.updating = false;
       }
     },
   }
