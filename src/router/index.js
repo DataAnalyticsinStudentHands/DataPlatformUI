@@ -1,6 +1,6 @@
 /**
  * src/router/index.js
- * 
+ *
  * Vue Router configuration defining all application routes with role-based access control.
  * Implements JWT token verification for protected routes and manages navigation guards for
  * authentication. Routes are organized by user roles (Student, Instructor, Admin) with
@@ -8,48 +8,48 @@
  * and user roles.
  */
 
-import { createRouter, createWebHistory } from 'vue-router'
-import { useLoggedInUserStore } from '../stored/loggedInUser'; 
-import { verifyJWT } from '../auth/jwtVerifier';
+import { createRouter, createWebHistory } from "vue-router";
+import { useLoggedInUserStore } from "../stored/loggedInUser";
+import { verifyJWT } from "../auth/jwtVerifier";
 
 // Verify user authentication status
 async function isLoggedIn(to, from, next) {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    next('/error');
+    next("/error");
     return;
   }
 
   try {
     const payload = await verifyJWT(token);
     if (!payload) {
-      next('/error');
+      next("/error");
       return;
     }
 
     next();
   } catch (error) {
-    next('/error');
+    next("/error");
   }
 }
 
 // Create role-based authentication guard
 function requireAuth(allowedRoles) {
   return async (to, from, next) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      next('/error');
+      next("/error");
       return;
     }
 
     const payload = await verifyJWT(token);
     if (!payload) {
-      next('/error');
+      next("/error");
       return;
     }
 
     if (!allowedRoles.includes(payload.userRole)) {
-      next('/error');
+      next("/error");
       return;
     }
 
@@ -128,7 +128,7 @@ const routes = [
             next('/error');
           }
         } else {
-          next('/login');
+          next("/error");
         }
       }
     },
@@ -471,47 +471,47 @@ const routes = [
     component: () => import('@/components/admin/BackupDashboard.vue'),
     beforeEnter: requireAuth(['Org Admin']),
   },
-    {
-      path: '/public',
-      name: 'public1',
-      component: () => import('@/components/dev/public1.vue'),
-    },
-]
+  {
+    path: "/public",
+    name: "public1",
+    component: () => import("@/components/dev/indProjectPage2.vue"),
+  },
+];
 
 // Create router instance with base path
 const router = createRouter({
-  history: createWebHistory('/platform'),
+  history: createWebHistory("/platform"),
   routes,
 });
 
 // Define public routes accessible without authentication
 const publicPaths = [
-  '/login',
-  '/register',
-  '/passResetRequest',
-  '/passResetCode',
-  '/passResetNewEntry',
-  '/verifyAccWithCode',
-  '/verifyAccWithEmailCode',
-  '/sendNewCode',
-  '/projectportal',
-  '/createproject',
-  '/createprojectstepper',
-  '/updateproject',
-  '/proposedprojects',
-  '/viewproject',
-  '/myprojects',
-  '/proposaldemo1',
-  '/proposaldemo2',
-  '/proposaldemo3',
-  '/proposaldemo4',
-  '/public'
+  "/login",
+  "/register",
+  "/passResetRequest",
+  "/passResetCode",
+  "/passResetNewEntry",
+  "/verifyAccWithCode",
+  "/verifyAccWithEmailCode",
+  "/sendNewCode",
+  "/projectportal",
+  "/createproject",
+  "/createprojectstepper",
+  "/updateproject",
+  "/proposedprojects",
+  "/viewproject",
+  "/myprojects",
+  "/proposaldemo1",
+  "/proposaldemo2",
+  "/proposaldemo3",
+  "/proposaldemo4",
+  "/public",
 ];
 
 // Global navigation guard for authentication and role-based routing
 router.beforeEach(async (to, from, next) => {
   const userStore = useLoggedInUserStore();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const currentTime = Math.floor(Date.now() / 1000);
 
   const isPublicRoute = publicPaths.includes(to.path);
@@ -531,21 +531,28 @@ router.beforeEach(async (to, from, next) => {
         });
 
         // Handle temporary role users
-        if (payload.userRole === 'Temporary') {
+        if (payload.userRole === "Temporary") {
           if (isPublicRoute) {
             next();
           } else {
-            next('/verifyAccWithCode');
+            next("/verifyAccWithCode");
           }
         } else {
           // Redirect authenticated users away from public routes
           if (isPublicRoute) {
-            if (['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin'].includes(userStore.role)) {
-              next('/instructorDash');
-            } else if (userStore.role === 'Student') {
-              next('/studentDashboard');
+            if (
+              [
+                "Instructor",
+                "Group Instructor",
+                "Group Admin",
+                "Org Admin",
+              ].includes(userStore.role)
+            ) {
+              next("/instructorDash");
+            } else if (userStore.role === "Student") {
+              next("/studentDashboard");
             } else {
-              next('/');
+              next("/");
             }
           } else {
             next();
@@ -554,23 +561,23 @@ router.beforeEach(async (to, from, next) => {
       } else {
         // Handle expired token
         userStore.logout();
-        console.log('1')
-        next('/login');
+        console.log("1");
+        next("/login");
       }
     } catch (error) {
       // Handle token verification errors
-      console.error('Token verification failed in router:', error);
+      console.error("Token verification failed in router:", error);
       userStore.logout();
-      console.log('2')
-      next('/login');
+      console.log("2");
+      next("/login");
     }
   } else {
     // Handle unauthenticated access
     if (isPublicRoute) {
-      console.log('console log test')
+      console.log("console log test");
       next();
     } else {
-      next('/login');
+      next("/login");
     }
   }
 });

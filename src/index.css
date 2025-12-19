@@ -3,129 +3,126 @@
 @tailwind utilities;
 
 button {
-    padding: 10px;
+  padding: 10px;
 }
 .errorMessage:empty {
-    display: none;
+  display: none;
 }
 .hide {
-    display: none;
+  display: none;
 }
-html { overflow-y: auto !important  }
 
 /* Creating - Green Color Scheme */
 .Toastify__toast--create {
-    background-color: #d4edda !important; /* Light green */
-    color: #155724 !important; /* Dark green */
+  background-color: #d4edda !important; /* Light green */
+  color: #155724 !important; /* Dark green */
 }
-  
+
 .Toastify__toast--create .Toastify__progress-bar {
-    background-color: #155724 !important; /* Dark green */
+  background-color: #155724 !important; /* Dark green */
 }
-  
+
 /* Updating - Blue Color Scheme */
 .Toastify__toast--update {
-    background-color: #d1e7fd !important; /* Light blue */
-    color: #0b4f8a !important; /* Dark blue */
+  background-color: #d1e7fd !important; /* Light blue */
+  color: #0b4f8a !important; /* Dark blue */
 }
-  
+
 .Toastify__toast--update .Toastify__progress-bar {
-    background-color: #0b4f8a !important; /* Dark blue */
+  background-color: #0b4f8a !important; /* Dark blue */
 }
-  
+
 /* Deleting - Red Color Scheme */
 .Toastify__toast--delete {
-    background-color: #f8d7da !important; /* Light red */
-    color: #721c24 !important; /* Dark red */
+  background-color: #f8d7da !important; /* Light red */
+  color: #721c24 !important; /* Dark red */
 }
-  
+
 .Toastify__toast--delete .Toastify__progress-bar {
-    background-color: #721c24 !important; /* Dark red */
+  background-color: #721c24 !important; /* Dark red */
 }
 
 /* Tailwind and Vuetify misconfiguration - text fields show a blue outline without this code */
-[type='text']:focus, 
-[type='email']:focus, 
-[type='url']:focus, 
-[type='password']:focus, 
-[type='number']:focus, 
-[type='date']:focus, 
-[type='datetime-local']:focus, 
-[type='month']:focus, 
-[type='search']:focus, 
-[type='tel']:focus, 
-[type='time']:focus, 
-[type='week']:focus, 
-[multiple]:focus, 
-textarea:focus, 
+[type="text"]:focus,
+[type="email"]:focus,
+[type="url"]:focus,
+[type="password"]:focus,
+[type="number"]:focus,
+[type="date"]:focus,
+[type="datetime-local"]:focus,
+[type="month"]:focus,
+[type="search"]:focus,
+[type="tel"]:focus,
+[type="time"]:focus,
+[type="week"]:focus,
+[multiple]:focus,
+textarea:focus,
 select:focus {
-    outline: none !important;
-    --tw-ring-offset-color: transparent !important;
-    --tw-ring-color: transparent !important;
-    --tw-ring-offset-shadow: 0 0 #0000 !important;
-    --tw-ring-shadow: 0 0 #0000 !important;
-    box-shadow: none !important;
-    border-color: currentColor !important;
+  outline: none !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  box-shadow: none !important;
+  border-color: currentColor !important;
 }
 
 /* Tailwind and Vuetify misconfiguration - text fields show a white background without this code */
-[type='text']:focus, 
-[type='email']:focus, 
-[type='url']:focus, 
-[type='password']:focus, 
-[type='number']:focus, 
-[type='date']:focus, 
-[type='datetime-local']:focus, 
-[type='month']:focus, 
-[type='search']:focus, 
-[type='tel']:focus, 
-[type='time']:focus, 
-[type='week']:focus, 
-[multiple]:focus, 
-textarea:focus, 
+[type="text"]:focus,
+[type="email"]:focus,
+[type="url"]:focus,
+[type="password"]:focus,
+[type="number"]:focus,
+[type="date"]:focus,
+[type="datetime-local"]:focus,
+[type="month"]:focus,
+[type="search"]:focus,
+[type="tel"]:focus,
+[type="time"]:focus,
+[type="week"]:focus,
+[multiple]:focus,
+textarea:focus,
 select:focus {
-    background-color: transparent !important; 
+  background-color: transparent !important;
 }
 
 /* Overrides the background color for input fields when they are not focused */
-[type='text'], 
-[type='email'], 
-[type='url'], 
-[type='password'], 
-[type='number'], 
-[type='date'], 
-[type='datetime-local'], 
-[type='month'], 
-[type='search'], 
-[type='tel'], 
-[type='time'], 
-[type='week'], 
-[multiple], 
-textarea, 
+[type="text"],
+[type="email"],
+[type="url"],
+[type="password"],
+[type="number"],
+[type="date"],
+[type="datetime-local"],
+[type="month"],
+[type="search"],
+[type="tel"],
+[type="time"],
+[type="week"],
+[multiple],
+textarea,
 select {
-    background-color: transparent !important; /* Set to transparent or any color you prefer */
+  background-color: transparent !important; /* Set to transparent or any color you prefer */
 }
 
 /* Ensures that the background color remains the same even after the user interacts with the input */
-[type='text'].v-field__input, 
-[type='email'].v-field__input, 
-[type='url'].v-field__input, 
-[type='password'].v-field__input, 
-[type='number'].v-field__input, 
-[type='date'].v-field__input, 
-[type='datetime-local'].v-field__input, 
-[type='month'].v-field__input, 
-[type='search'].v-field__input, 
-[type='tel'].v-field__input, 
-[type='time'].v-field__input, 
-[type='week'].v-field__input, 
-[multiple].v-field__input, 
-textarea.v-field__input, 
+[type="text"].v-field__input,
+[type="email"].v-field__input,
+[type="url"].v-field__input,
+[type="password"].v-field__input,
+[type="number"].v-field__input,
+[type="date"].v-field__input,
+[type="datetime-local"].v-field__input,
+[type="month"].v-field__input,
+[type="search"].v-field__input,
+[type="tel"].v-field__input,
+[type="time"].v-field__input,
+[type="week"].v-field__input,
+[multiple].v-field__input,
+textarea.v-field__input,
 select.v-field__input {
-    background-color: transparent !important; 
+  background-color: transparent !important;
 }
-
-
 
 /* Sample Code for Toast Alerts
       toast.success('Created Successfully!', {
@@ -145,28 +142,28 @@ select.v-field__input {
 */
 
 .loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Ensures it takes up the full viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensures it takes up the full viewport height */
+}
+
+@media (max-width: 600px) {
+  /* This is just an example breakpoint; adjust as needed */
+  .Toastify__toast--delete {
+    width: 80%; /* Set the toast width */
+    margin: 0 auto; /* Center the toast */
+    padding: 10px; /* Adjust the padding */
+    font-size: 16px; /* Adjust the font size */
   }
-
-
-  @media (max-width: 600px) {  /* This is just an example breakpoint; adjust as needed */
-    .Toastify__toast--delete {
-        width: 80%;           /* Set the toast width */
-        margin: 0 auto;       /* Center the toast */
-        padding: 10px;        /* Adjust the padding */
-        font-size: 16px;      /* Adjust the font size */
-    }
 }
 
 .v-btn.icon {
-  border-radius: 0 !important;   /* make it square */
+  border-radius: 0 !important; /* make it square */
 }
 
 .v-btn.icon:hover {
-  background-color: rgba(0,0,0,0.05) !important ; 
+  background-color: rgba(0, 0, 0, 0.05) !important ;
 }
 
 .experiences-dialog .v-card-title {
@@ -177,5 +174,5 @@ select.v-field__input {
   position: absolute;
   top: 5%;
   right: 0.2%;
-  border-radius: 0 !important;  
+  border-radius: 0 !important;
 }
