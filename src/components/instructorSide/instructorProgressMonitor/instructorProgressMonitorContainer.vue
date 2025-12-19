@@ -1,114 +1,187 @@
-<!-- instructorProgressMonitorContainer - this parent container is responsible for holding and rendering its child components:
-  studentsWithoutEntryForms - presents a list of students who have registered for and activated their account, but have not yet completed a Student Entry Form.
-  studentsWithoutGoalForms - presents a list of students who have registered for an Experience Instance, but have not yet completed the Goal Setting Form for that Experience Instance.
-  pendingStudents - presents a list of students who have registered for an account, but have not yet activated their account.
-  studentsWithoutExitForms - presents a list of students who have registered for an Experience Instance, but have not yet completed the Exit Form for that Experience Instance.
+<!-- 
+instructorProgressMonitorContainer.vue
+Instructor-side progress monitoring dashboard. Provides tabbed interface for tracking 
+student form completion across Entry Forms, Goal Forms, Exit Forms, and Pending registrations.
+Redesigned UI matching the project pages aesthetic.
 -->
+
 <template>
-    <v-container>
-        <!-- Header with title and "Go Back" button -->
-        <v-row>
-            <v-col cols="12">  
-            <p class="font-weight-black text-h5 text--primary text-center">
-            Student Progress Monitor
-            </p>
-            <!-- Go back to the previous page -->
-            <v-btn @click=$router.back() class="mt-4">
-              <v-icon left>mdi-arrow-left</v-icon>
-              Go Back
-            </v-btn>
-        </v-col>
-        </v-row>
+  <main class="progress-monitor-page">
+    <v-container class="py-8">
+      <!-- Page Header -->
+      <div class="page-header mb-6">
+        <div class="d-flex align-center mb-2">
+          <v-btn 
+            icon 
+            variant="text" 
+            size="small" 
+            @click="$router.back()"
+            class="mr-2"
+          >
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
+          <v-icon color="#c8102e" size="36" class="mr-3">mdi-chart-timeline-variant</v-icon>
+          <div class="flex-grow-1">
+            <div class="d-flex align-center flex-wrap">
+              <h1 class="text-h4 font-weight-bold mr-3">{{ $t('Student Progress Monitor') }}</h1>
+            </div>
+            <p class="text-body-1 text-medium-emphasis mb-0">{{ $t('Track form completion and student registration status') }}</p>
+          </div>
+        </div>
+      </div>
 
-
-
-      <!-- Tabs for navigating between monitors (Entry Form, Goal Form, Exit Form, Pending) -->
-      <v-row>
-        <v-col cols="12">
-          <v-tabs v-model="activeTab" grow>
-            <v-tab value="entryForms" v-if="showStudentsWithoutEntryForms">
-              Entry Form Monitor
+      <!-- Main Content Card -->
+      <v-card class="main-card" elevation="2">
+        <!-- Tabs Section -->
+        <div class="tabs-section">
+          <v-tabs
+            v-model="activeTab"
+            color="#c8102e"
+            class="custom-tabs"
+          >
+            <v-tab v-if="showStudentsWithoutEntryForms" value="entryForms" class="custom-tab">
+              <v-icon start size="22">mdi-file-document-outline</v-icon>
+              <span class="d-none d-sm-inline">{{ $t('Entry Forms') }}</span>
+              <span class="d-inline d-sm-none">{{ $t('Entry') }}</span>
             </v-tab>
-            <v-tab value="goalForms">
-              Goal Form Monitor
+            <v-tab value="goalForms" class="custom-tab">
+              <v-icon start size="22">mdi-target</v-icon>
+              <span class="d-none d-sm-inline">{{ $t('Goal Forms') }}</span>
+              <span class="d-inline d-sm-none">{{ $t('Goals') }}</span>
             </v-tab>
-            <v-tab value="exitForms">
-              Exit Form Monitor
+            <v-tab value="exitForms" class="custom-tab">
+              <v-icon start size="22">mdi-exit-to-app</v-icon>
+              <span class="d-none d-sm-inline">{{ $t('Exit Forms') }}</span>
+              <span class="d-inline d-sm-none">{{ $t('Exit') }}</span>
             </v-tab>
-            <!-- <v-tab value="pending">
-              Pending Monitor
-            </v-tab> -->
+            <v-tab value="pending" class="custom-tab">
+              <v-icon start size="22">mdi-account-clock-outline</v-icon>
+              <span class="d-none d-sm-inline">{{ $t('Pending Students') }}</span>
+              <span class="d-inline d-sm-none">{{ $t('Pending') }}</span>
+            </v-tab>
           </v-tabs>
+        </div>
 
-          <!-- Content for Entry Form Monitor -->
-          <div v-if="activeTab === 'entryForms'">
+        <v-divider></v-divider>
+
+        <!-- Tab Content -->
+        <v-window v-model="activeTab">
+          <!-- Entry Form Monitor Tab -->
+          <v-window-item v-if="showStudentsWithoutEntryForms" value="entryForms">
             <StudentsWithoutEntryForms />
-          </div>
-  
-          <!-- Content for Goal Form Monitor -->
-          <div v-if="activeTab === 'goalForms'">
+          </v-window-item>
+
+          <!-- Goal Form Monitor Tab -->
+          <v-window-item value="goalForms">
             <StudentsWithoutGoalForms />
-          </div>
+          </v-window-item>
 
-          <!-- Content for Exit Form Monitor -->
-          <div v-if="activeTab === 'exitForms'">
+          <!-- Exit Form Monitor Tab -->
+          <v-window-item value="exitForms">
             <StudentsWithoutExitForms />
-          </div>
+          </v-window-item>
 
-          <!-- Content for Pending Status -->
-          <div v-if="activeTab === 'pending'">
+          <!-- Pending Students Tab -->
+          <v-window-item value="pending">
             <PendingStudents />
-          </div>
-
-        </v-col>
-      </v-row>
+          </v-window-item>
+        </v-window>
+      </v-card>
     </v-container>
-  </template>
+  </main>
+</template>
 
-  <script>
-  import { computed } from 'vue';
-  import { useLoggedInUserStore } from "@/stored/loggedInUser";
-  import { useInstructorViewsStore } from "@/stored/instructorViews";
-  import StudentsWithoutGoalForms from './studentsWithoutGoalForms.vue';
-  import StudentsWithoutEntryForms from './studentsWithoutEntryForms.vue';
-  import PendingStudents from './pendingStudents.vue';
-  import StudentsWithoutExitForms from './studentsWithoutExitForms.vue';
-  
-  export default {
-    setup() {
-      // Access the logged-in user store
-      const userStore = useLoggedInUserStore();
-      // Access the instructor views store
-      const viewsStore = useInstructorViewsStore();
+<script>
+import { computed } from 'vue';
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import { useInstructorViewsStore } from "@/stored/instructorViews";
+import StudentsWithoutGoalForms from './studentsWithoutGoalForms.vue';
+import StudentsWithoutEntryForms from './studentsWithoutEntryForms.vue';
+import PendingStudents from './pendingStudents.vue';
+import StudentsWithoutExitForms from './studentsWithoutExitForms.vue';
 
-      // Computed property to determine if the "Students Without Entry Forms" tab should be shown based on user roles
-      const showStudentsWithoutEntryForms = computed(() => {
-        const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-        return allowedRoles.includes(userStore.role);
-      });
+export default {
+  name: "InstructorProgressMonitorContainer",
+  setup() {
+    const userStore = useLoggedInUserStore();
+    const viewsStore = useInstructorViewsStore();
 
-      return {
-        userStore,
-        viewsStore,
-        showStudentsWithoutEntryForms: showStudentsWithoutEntryForms.value // Determines if the Entry Form tab is shown
-      };
-    },
-    components: {
-      StudentsWithoutGoalForms,
-      StudentsWithoutEntryForms,
-      PendingStudents,
-      StudentsWithoutExitForms
-    },
-    computed: {
-      // Use v-model with a computed property to sync with the store
-      activeTab: {
-        get() {
-          return this.viewsStore.getProgressMonitorTab;
-        },
-        set(value) {
-          this.viewsStore.setProgressMonitorTab(value);
-        }
+    const showStudentsWithoutEntryForms = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
+
+    return {
+      userStore,
+      viewsStore,
+      showStudentsWithoutEntryForms: showStudentsWithoutEntryForms.value
+    };
+  },
+  components: {
+    StudentsWithoutGoalForms,
+    StudentsWithoutEntryForms,
+    PendingStudents,
+    StudentsWithoutExitForms
+  },
+  computed: {
+    activeTab: {
+      get() {
+        return this.viewsStore.getProgressMonitorTab;
+      },
+      set(value) {
+        this.viewsStore.setProgressMonitorTab(value);
       }
     }
-  };
-  </script>
+  }
+};
+</script>
+
+<style scoped>
+/* Page Background */
+.progress-monitor-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Page Header */
+.page-header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Main Card */
+.main-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Tabs Section */
+.tabs-section {
+  background-color: #fafafa;
+}
+
+.custom-tabs {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.custom-tab {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.25px;
+  min-width: 120px;
+  height: 52px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .page-header {
+    padding-bottom: 12px;
+  }
+  
+  .custom-tab {
+    min-width: 80px;
+    padding: 0 12px;
+  }
+}
+</style>

@@ -472,9 +472,34 @@ const routes = [
     beforeEnter: requireAuth(['Org Admin']),
   },
   {
-    path: "/public",
+    path: "/public1",
     name: "public1",
+    component: () => import("@/components/dev/public1.vue"),
+  },
+    {
+    path: "/public2",
+    name: "public2",
+    component: () => import("@/components/dev/indProjectPage1.vue"),
+  },
+    {
+    path: "/public3",
+    name: "public3",
     component: () => import("@/components/dev/indProjectPage2.vue"),
+  },
+      {
+    path: "/public4",
+    name: "public4",
+    component: () => import("@/components/dev/indProjectPage1-2.vue"),
+  },
+  {
+    path: "/public5",
+    name: "public5",
+    component: () => import("@/components/dev/indProjectPage2-2.vue"),
+  },
+    {
+    path: "/public6",
+    name: "public6",
+    component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
   },
 ];
 
@@ -505,7 +530,12 @@ const publicPaths = [
   "/proposaldemo2",
   "/proposaldemo3",
   "/proposaldemo4",
-  "/public",
+  "/public1",
+  "/public2",
+  "/public3",
+  "/public4",
+  "/public5",
+  "/public6",
 ];
 
 // Global navigation guard for authentication and role-based routing
