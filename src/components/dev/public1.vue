@@ -38,7 +38,7 @@
         hide-delimiter-background
         show-arrows="hover"
         cycle
-        :interval="6500"
+        :interval="8000"
         class="hero-carousel"
       >
         <v-carousel-item v-for="(p, i) in heroSlides" :key="p._id">
@@ -60,7 +60,7 @@
                     size="large"
                   >
                     <v-icon start>mdi-star</v-icon>
-                    Featured Project
+                    {{ p.achievementTag || "Featured Project" }}
                   </v-chip>
 
                   <h1 v-if="activeSlide === i" class="hero-title mb-2">
@@ -70,6 +70,22 @@
                   <p v-if="activeSlide === i" class="hero-subtitle mb-4">
                     {{ p.description }}
                   </p>
+
+                  <!-- Student Attribution for Real Projects -->
+                  <div
+                    v-if="activeSlide === i && p.studentName"
+                    class="student-attribution mb-4"
+                  >
+                    <v-avatar v-if="p.studentPhoto" size="48" class="mr-3">
+                      <v-img :src="p.studentPhoto" />
+                    </v-avatar>
+                    <div class="text-white">
+                      <div class="font-weight-medium">{{ p.studentName }}</div>
+                      <div class="text-caption opacity-90">
+                        {{ p.fellowship || p.experienceCategory }}
+                      </div>
+                    </div>
+                  </div>
 
                   <div v-if="activeSlide === i" class="mb-4">
                     <v-chip
@@ -89,7 +105,7 @@
                       size="x-large"
                       color="white"
                       class="mb-2"
-                      @click="viewProject(p)"
+                      @click="viewProject(p, $event)"
                     >
                       Explore Project
                       <v-icon end>mdi-arrow-right</v-icon>
@@ -105,26 +121,42 @@
                 <v-row>
                   <v-col cols="4" class="text-center">
                     <div class="stat-icon">
-                      <v-icon color="white">mdi-account-group</v-icon>
-                    </div>
-                    <div class="stat-num text-white">{{ p.memberCount }}</div>
-                    <div class="stat-label text-white">Members</div>
-                  </v-col>
-                  <v-col cols="4" class="text-center">
-                    <div class="stat-icon">
-                      <v-icon color="white">mdi-school</v-icon>
+                      <v-icon color="white">{{
+                        p.stat1Icon || "mdi-account-group"
+                      }}</v-icon>
                     </div>
                     <div class="stat-num text-white">
-                      {{ p.experienceCategory }}
+                      {{ p.stat1Value || p.memberCount }}
                     </div>
-                    <div class="stat-label text-white">Experience</div>
+                    <div class="stat-label text-white">
+                      {{ p.stat1Label || "Members" }}
+                    </div>
                   </v-col>
                   <v-col cols="4" class="text-center">
                     <div class="stat-icon">
-                      <v-icon color="white">mdi-calendar</v-icon>
+                      <v-icon color="white">{{
+                        p.stat2Icon || "mdi-school"
+                      }}</v-icon>
                     </div>
-                    <div class="stat-num text-white">{{ p.sessionName }}</div>
-                    <div class="stat-label text-white">Session</div>
+                    <div class="stat-num text-white">
+                      {{ p.stat2Value || p.experienceCategory }}
+                    </div>
+                    <div class="stat-label text-white">
+                      {{ p.stat2Label || "Experience" }}
+                    </div>
+                  </v-col>
+                  <v-col cols="4" class="text-center">
+                    <div class="stat-icon">
+                      <v-icon color="white">{{
+                        p.stat3Icon || "mdi-calendar"
+                      }}</v-icon>
+                    </div>
+                    <div class="stat-num text-white">
+                      {{ p.stat3Value || p.sessionName }}
+                    </div>
+                    <div class="stat-label text-white">
+                      {{ p.stat3Label || "Session" }}
+                    </div>
                   </v-col>
                 </v-row>
               </v-container>
@@ -310,69 +342,146 @@
       <v-container>
         <v-row class="mb-10" justify="center">
           <v-col cols="12" md="10" class="text-center">
-            <h2 class="section-title">Celebrating Work in the Open</h2>
-            <p class="section-subtitle">
+            <h2 class="section-title mb-3">Celebrating Work in the Open</h2>
+            <p class="section-subtitle text-center mx-auto">
               A curated selection of projects and experiences from our
               community.
             </p>
           </v-col>
         </v-row>
 
-        <!-- horizontally scrollable cards (inspiration from publicGallery2 bottom) -->
-        <div class="h-scroll-container">
-          <div class="h-scroll">
-            <div
-              v-for="card in featuredCards"
-              :key="card._id"
-              class="h-card"
-              @click="viewProject(card)"
+        <!-- horizontally scrollable cards with navigation buttons -->
+        <div class="h-scroll-wrapper" @mouseleave="hideScrollButtons">
+          <!-- Left hover zone and button -->
+          <div
+            class="scroll-hover-zone scroll-hover-left"
+            @mouseenter="checkAndShowLeftButton"
+            @mouseleave="onLeaveLeftZone"
+          >
+            <button
+              class="scroll-nav-button scroll-nav-left"
+              :class="{ visible: showLeftButton }"
+              @click="scrollCards('left')"
             >
+              <v-icon size="24" color="white">mdi-chevron-left</v-icon>
+            </button>
+          </div>
+
+          <!-- Right hover zone and button -->
+          <div
+            class="scroll-hover-zone scroll-hover-right"
+            @mouseenter="checkAndShowRightButton"
+            @mouseleave="onLeaveRightZone"
+          >
+            <button
+              class="scroll-nav-button scroll-nav-right"
+              :class="{ visible: showRightButton }"
+              @click="scrollCards('right')"
+            >
+              <v-icon size="24" color="white">mdi-chevron-right</v-icon>
+            </button>
+          </div>
+
+          <div
+            class="h-scroll-container"
+            ref="scrollContainer"
+            @scroll="updateScrollButtons"
+          >
+            <div class="h-scroll">
               <div
-                class="h-card-image"
-                :style="{ backgroundImage: `url(${card.image})` }"
-              ></div>
-              <div class="h-card-body">
-                <div class="text-overline mb-1">
-                  {{ card.experienceCategory }}
-                </div>
-                <div class="text-subtitle-1 font-weight-medium">
-                  {{ card.projectName }}
-                </div>
-                <p class="text-caption text-medium-emphasis mt-1">
-                  {{ truncate(card.description, 110) }}
-                </p>
-
-                <div class="h-card-stats mt-3">
-                  <div class="d-flex align-center mr-3 text-caption">
-                    <v-icon size="16" class="mr-1">mdi-account-group</v-icon
-                    >{{ card.memberCount }}
-                  </div>
-                  <div class="d-flex align-center text-caption">
-                    <v-icon size="16" class="mr-1">mdi-file-document</v-icon
-                    >{{ card.fileCount }}
-                  </div>
-                </div>
-
-                <v-chip-group class="mt-3">
-                  <v-chip
-                    v-for="t in card.tags.slice(0, 3)"
-                    :key="t"
-                    size="x-small"
-                    variant="tonal"
-                    class="mr-1"
-                    >{{ t }}</v-chip
-                  >
-                </v-chip-group>
-
-                <v-btn
-                  variant="tonal"
-                  color="primary"
+                v-for="card in featuredCards"
+                :key="card._id"
+                class="h-card"
+                :class="{ highlighted: highlightedProjectId === card._id }"
+                :data-project-id="card._id"
+                @click="viewProject(card, $event)"
+              >
+                <!-- Real Project Indicator Badge -->
+                <v-chip
+                  v-if="card.isRealProject"
+                  class="real-project-badge"
+                  color="success"
                   size="small"
-                  block
-                  class="mt-3"
                 >
-                  View details
-                </v-btn>
+                  <v-icon start size="14">mdi-check-circle</v-icon>
+                  Real Research
+                </v-chip>
+
+                <div
+                  class="h-card-image"
+                  :style="{ backgroundImage: `url(${card.image})` }"
+                >
+                  <!-- Poster Preview Overlay for Real Projects -->
+                  <div v-if="card.posterImage" class="poster-preview">
+                    <v-icon color="white" size="24"
+                      >mdi-file-document-outline</v-icon
+                    >
+                  </div>
+                </div>
+                <div class="h-card-body">
+                  <!-- Card content wrapper that can grow -->
+                  <div class="card-content-wrapper">
+                    <div class="text-overline mb-1">
+                      {{ card.experienceCategory }}
+                    </div>
+                    <div class="text-subtitle-1 font-weight-medium">
+                      {{ card.projectName }}
+                    </div>
+
+                    <!-- Student Attribution in Card -->
+                    <div v-if="card.studentName" class="student-mini mt-2 mb-2">
+                      <v-avatar v-if="card.studentPhoto" size="24" class="mr-2">
+                        <v-img :src="card.studentPhoto" />
+                      </v-avatar>
+                      <span class="text-caption text-medium-emphasis">{{
+                        card.studentName
+                      }}</span>
+                    </div>
+
+                    <p class="text-caption text-medium-emphasis mt-1">
+                      {{ truncate(card.description, 110) }}
+                    </p>
+
+                    <div class="h-card-stats mt-3">
+                      <div
+                        v-if="card.presentedAt"
+                        class="d-flex align-center mr-3 text-caption text-success"
+                      >
+                        <v-icon size="16" class="mr-1">mdi-presentation</v-icon
+                        >{{ card.presentedAt }}
+                      </div>
+                      <div v-else class="d-flex align-center mr-3 text-caption">
+                        <v-icon size="16" class="mr-1">mdi-account-group</v-icon
+                        >{{ card.memberCount }}
+                      </div>
+                      <div class="d-flex align-center text-caption">
+                        <v-icon size="16" class="mr-1">mdi-file-document</v-icon
+                        >{{ card.fileCount }}
+                      </div>
+                    </div>
+
+                    <v-chip-group class="mt-3">
+                      <v-chip
+                        v-for="t in card.tags.slice(0, 3)"
+                        :key="t"
+                        size="x-small"
+                        variant="tonal"
+                        class="mr-1"
+                        >{{ t }}</v-chip
+                      >
+                    </v-chip-group>
+                  </div>
+
+                  <!-- Button pushed to bottom -->
+                  <v-btn
+                    variant="tonal"
+                    color="primary"
+                    size="small"
+                    class="mt-3 card-action-button"
+                  >
+                    View details
+                  </v-btn>
+                </div>
               </div>
             </div>
           </div>
@@ -411,11 +520,374 @@
       </v-container>
     </section>
   </v-container>
+
+  <!-- Project Detail Modal -->
+  <v-dialog
+    v-model="projectDialog"
+    max-width="900"
+    scrollable
+    @update:model-value="!$event && closeProjectDialog()"
+  >
+    <v-card v-if="selectedProject">
+      <!-- Hero Image or Poster (Clickable for posters) -->
+      <v-img
+        v-if="selectedProject.posterImage || selectedProject.image"
+        :src="selectedProject.posterImage || selectedProject.image"
+        height="400"
+        cover
+        class="align-end"
+        :class="{ 'clickable-poster': selectedProject.posterImage }"
+        @click="selectedProject.posterImage && openPosterModal()"
+      >
+        <!-- Click to enlarge hint for posters -->
+        <div v-if="selectedProject.posterImage" class="poster-click-hint">
+          <v-icon size="24">mdi-magnify-plus</v-icon>
+          <span>Click to enlarge</span>
+        </div>
+        <v-card-title
+          class="text-white text-h4 font-weight-bold dialog-hero-title"
+        >
+          {{ selectedProject.projectName }}
+        </v-card-title>
+      </v-img>
+
+      <!-- Content -->
+      <v-card-text class="pa-6">
+        <!-- Student/Author Section -->
+        <div
+          v-if="selectedProject.studentName"
+          class="d-flex align-center mb-4"
+        >
+          <v-avatar v-if="selectedProject.studentPhoto" size="64" class="mr-4">
+            <v-img :src="selectedProject.studentPhoto" />
+          </v-avatar>
+          <div>
+            <div class="text-h6 font-weight-medium">
+              {{ selectedProject.studentName }}
+            </div>
+            <div class="text-body-2 text-medium-emphasis">
+              {{
+                selectedProject.fellowship || selectedProject.experienceCategory
+              }}
+              <span v-if="selectedProject.sessionName">
+                • {{ selectedProject.sessionName }}</span
+              >
+            </div>
+            <v-chip
+              v-if="selectedProject.presentedAt"
+              color="success"
+              variant="tonal"
+              size="small"
+              class="mt-2"
+            >
+              <v-icon start size="16">mdi-presentation</v-icon>
+              {{ selectedProject.presentedAt }}
+            </v-chip>
+          </div>
+        </div>
+
+        <!-- Project Description -->
+        <div class="mb-6">
+          <h3 class="text-h6 font-weight-bold mb-3">Project Overview</h3>
+          <p class="text-body-1">{{ selectedProject.description }}</p>
+        </div>
+
+        <!-- Key Highlights for Carlos's project -->
+        <div v-if="selectedProject._id === 'carlos_mendieta_2023'" class="mb-6">
+          <h3 class="text-h6 font-weight-bold mb-3">Key Findings</h3>
+          <v-row>
+            <v-col cols="12" sm="4">
+              <v-card
+                variant="tonal"
+                color="error"
+                class="pa-4 text-center key-finding-card"
+              >
+                <v-icon size="32" color="error" class="mb-2"
+                  >mdi-alert-circle</v-icon
+                >
+                <div class="text-h5 font-weight-bold">350%</div>
+                <div class="text-caption">
+                  Higher childhood leukemia cases in Fifth Ward
+                </div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="4">
+              <v-card
+                variant="tonal"
+                color="primary"
+                class="pa-4 text-center key-finding-card"
+              >
+                <v-icon size="32" color="primary" class="mb-2"
+                  >mdi-home-analytics</v-icon
+                >
+                <div class="text-h5 font-weight-bold">2005-2022</div>
+                <div class="text-caption">Years of housing data analyzed</div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="4">
+              <v-card
+                variant="tonal"
+                color="warning"
+                class="pa-4 text-center key-finding-card"
+              >
+                <v-icon size="32" color="warning" class="mb-2"
+                  >mdi-factory</v-icon
+                >
+                <div class="text-h5 font-weight-bold">Multiple</div>
+                <div class="text-caption">
+                  Industrial sites near residential areas
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+
+        <!-- Partnerships Section for Carlos's project -->
+        <div v-if="selectedProject._id === 'carlos_mendieta_2023'" class="mb-6">
+          <h3 class="text-h6 font-weight-bold mb-3">
+            <v-icon color="primary" class="mr-2">mdi-handshake</v-icon>
+            Partners
+          </h3>
+          <p class="text-body-2 text-medium-emphasis mb-4">
+            This research was conducted in collaboration with multiple
+            organizations committed to environmental justice and community
+            health.
+          </p>
+
+          <!-- Partner Organizations Grid -->
+          <v-row>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="success" class="mr-2">mdi-leaf</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">EPA</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  Environmental Protection Agency
+                </div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="primary" class="mr-2">mdi-school</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">UH Honors</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  The Honors College, University of Houston
+                </div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="error" class="mr-2">mdi-heart-pulse</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">Humana</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  Humana Institute
+                </div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="indigo" class="mr-2">mdi-account-heart</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">CHWI</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  Community Health Workers Initiative
+                </div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="purple" class="mr-2">mdi-server</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">HPE DSI</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  Hewlett Packard Enterprise Data Science Institute
+                </div>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <v-card variant="outlined" class="pa-3 h-100 partner-card">
+                <div class="d-flex align-center mb-2">
+                  <v-icon color="amber" class="mr-2">mdi-book-education</v-icon>
+                  <div class="text-subtitle-2 font-weight-bold">ERC</div>
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  Education Research Center, UH College of Education
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+
+        <!-- Tags -->
+        <div class="mb-6">
+          <h3 class="text-h6 font-weight-bold mb-3">Research Areas</h3>
+          <v-chip-group>
+            <v-chip
+              v-for="tag in selectedProject.tags"
+              :key="tag"
+              color="primary"
+              variant="tonal"
+            >
+              {{ tag }}
+            </v-chip>
+          </v-chip-group>
+        </div>
+
+        <!-- Project Status & Info -->
+        <v-divider class="mb-4"></v-divider>
+        <v-row>
+          <v-col cols="6" sm="3">
+            <div class="text-caption text-medium-emphasis">Status</div>
+            <div class="font-weight-medium">
+              <v-chip
+                :color="statusColor(selectedProject.projectStatus)"
+                size="small"
+                variant="tonal"
+              >
+                {{ selectedProject.projectStatus || "Active" }}
+              </v-chip>
+            </div>
+          </v-col>
+          <v-col cols="6" sm="3">
+            <div class="text-caption text-medium-emphasis">Members</div>
+            <div class="font-weight-medium">
+              {{ selectedProject.memberCount }}
+            </div>
+          </v-col>
+          <v-col cols="6" sm="3">
+            <div class="text-caption text-medium-emphasis">Files</div>
+            <div class="font-weight-medium">
+              {{ selectedProject.fileCount }}
+            </div>
+          </v-col>
+          <v-col cols="6" sm="3">
+            <div class="text-caption text-medium-emphasis">Experience</div>
+            <div class="font-weight-medium">
+              {{ selectedProject.experienceCategory }}
+            </div>
+          </v-col>
+        </v-row>
+      </v-card-text>
+
+      <!-- Actions -->
+      <v-card-actions class="pa-6 pt-0">
+        <v-spacer></v-spacer>
+        <v-btn variant="text" @click="closeProjectDialog">Close</v-btn>
+        <v-btn color="primary" variant="flat" @click="goToSignIn">
+          View Full Project
+          <v-icon end>mdi-arrow-right</v-icon>
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Enlarged Poster Modal with Zoom -->
+  <v-dialog
+    v-model="posterDialog"
+    @update:model-value="!$event && closePosterDialog()"
+  >
+    <v-card class="poster-modal-card">
+      <v-toolbar dark color="black" flat>
+        <v-toolbar-title
+          >{{ selectedProject?.projectName }} - Research Poster</v-toolbar-title
+        >
+        <v-spacer></v-spacer>
+
+        <!-- Zoom Controls -->
+        <v-btn
+          icon
+          @click="zoomOut"
+          :disabled="posterLoading || zoomLevel <= minZoom"
+        >
+          <v-icon>mdi-magnify-minus</v-icon>
+        </v-btn>
+        <span class="zoom-level-display mx-2">
+          {{ Math.round(zoomLevel * 100) }}%
+        </span>
+        <v-btn
+          icon
+          @click="zoomIn"
+          :disabled="posterLoading || zoomLevel >= maxZoom"
+        >
+          <v-icon>mdi-magnify-plus</v-icon>
+        </v-btn>
+        <v-btn icon @click="resetZoom" :disabled="posterLoading">
+          <v-icon>mdi-backup-restore</v-icon>
+        </v-btn>
+
+        <v-btn
+          icon
+          @click="
+            posterDialog = false;
+            closePosterDialog();
+          "
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+
+      <div
+        class="poster-container"
+        @wheel="handleWheel"
+        @mousedown="startPan"
+        @mousemove="handlePan"
+        @mouseup="endPan"
+        @mouseleave="endPan"
+      >
+        <!-- Loading Indicator -->
+        <div v-if="posterLoading" class="poster-loading-overlay">
+          <v-progress-circular
+            :model-value="posterLoadProgress"
+            :size="80"
+            :width="6"
+            color="primary"
+          ></v-progress-circular>
+          <div class="mt-4 text-white text-h6">{{ posterLoadProgress }}%</div>
+          <div class="text-white text-caption">
+            Loading full resolution poster...
+          </div>
+        </div>
+
+        <!-- FIXED: Only render image after preload is complete, use object URL -->
+        <div
+          class="poster-wrapper"
+          :style="posterTransform"
+          v-if="!posterLoading && posterPreloaded"
+        >
+          <img
+            :src="
+              posterObjectUrl ||
+              selectedProject?.posterFull ||
+              selectedProject?.posterImage
+            "
+            class="enlarged-poster-img"
+            alt="Research Poster"
+            @load="onPosterImageLoad"
+            @error="onPosterImageError"
+          />
+        </div>
+      </div>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
+
+// Import images for Carlos's project - THREE SEPARATE VERSIONS
+import carlosHeadshot from "@/assets/Headshot.png";
+import carlosPosterCard from "@/assets/URD_Poster_card.png"; // Small thumbnail for card
+import carlosPosterLarge from "@/assets/URD_Poster_large.png"; // Medium for dialog
+import carlosPosterFull from "@/assets/URD_Poster.png"; // Full 19MB for zoom
+import carlosPresentationPhoto from "@/assets/URD_Picture.webp";
 
 const router = useRouter();
 
@@ -427,6 +899,51 @@ const USE_DEMO_DATA = true;
 
 // HERO / celebration slides (minimal, curated)
 const heroSlides = ref([
+  {
+    _id: "carlos_mendieta_2023",
+    projectName:
+      "Tracing the Roots of Environmental Racism in Houston's Fifth Ward",
+    description:
+      "Investigating how industrial sites have been disproportionately placed in less affluent areas, pushing low-income minorities closer to environmentally toxic areas and increasing cancer risk exposure.",
+    image: carlosPresentationPhoto,
+    studentPhoto: carlosHeadshot,
+    studentName: "Carlos Mendieta",
+    fellowship: "2023 Pharis Fellow",
+    achievementTag: "Published Research",
+    tags: [
+      "environmental-justice",
+      "health-equity",
+      "data-analysis",
+      "GIS-mapping",
+    ],
+    memberCount: 1,
+    experienceCategory: "Pharis Fellowship",
+    sessionName: "2023",
+    stat1Icon: "mdi-map-marker-alert",
+    stat1Value: "350%",
+    stat1Label: "Higher Cancer Risk",
+    stat2Icon: "mdi-home-analytics",
+    stat2Value: "2005-2022",
+    stat2Label: "Housing Data Analyzed",
+    stat3Icon: "mdi-presentation",
+    stat3Value: "URD 2024",
+    stat3Label: "Presented At",
+    isRealProject: true,
+    posterImage: carlosPosterLarge, // Use MEDIUM for dialog hero
+    posterFull: carlosPosterFull, // Keep reference to full
+  },
+  {
+    _id: "171750177726109",
+    projectName: "The Role of Non-Medical Barriers on Transplant Eligibility",
+    description:
+      "Revealing how structural inequities embedded in transplant evaluation exclude marginalized populations from life-saving care.",
+    image:
+      "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1600&h=900&fit=crop",
+    tags: ["healthcare-equity", "transplant", "structural-barriers", "access"],
+    memberCount: 1,
+    experienceCategory: "Minor Data & Society",
+    sessionName: "Summer 2025",
+  },
   {
     _id: "531750090654550",
     projectName: "Building a Healthcare Accessibility Index for Houston",
@@ -456,22 +973,28 @@ const heroSlides = ref([
     experienceCategory: "EDS",
     sessionName: "Fall 2024",
   },
-  {
-    _id: "171750177726109",
-    projectName: "The Role of Non-Medical Barriers on Transplant Eligibility",
-    description:
-      "Revealing how structural inequities embedded in transplant evaluation exclude marginalized populations from life-saving care.",
-    image:
-      "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1600&h=900&fit=crop",
-    tags: ["healthcare-equity", "transplant", "structural-barriers", "access"],
-    memberCount: 1,
-    experienceCategory: "Minor Data & Society",
-    sessionName: "Summer 2025",
-  },
 ]);
 
-// Featured cards (horizontal)
+// Featured cards (horizontal) - Carlos's project appears here too
 const featuredCards = ref([
+  {
+    _id: "carlos_mendieta_2023",
+    projectName: "Tracing Environmental Racism in Houston's Fifth Ward",
+    description:
+      "Modeling the relationship between industrial site proximity and housing values to reveal how environmental hazards disproportionately affect minority communities, contributing to a declared cancer cluster.",
+    image: carlosPosterCard, // CARD: use small thumbnail
+    studentPhoto: carlosHeadshot,
+    studentName: "Carlos Mendieta",
+    projectStatus: "Published",
+    memberCount: 1,
+    fileCount: 4,
+    presentedAt: "UH URD 2024",
+    tags: ["environmental-justice", "cancer-cluster", "housing-equity"],
+    experienceCategory: "Pharis Fellowship",
+    isRealProject: true,
+    posterImage: carlosPosterLarge, // DIALOG: use medium preview
+    posterFull: carlosPosterFull, // ZOOM: use full resolution
+  },
   {
     _id: "531750090654550",
     projectName: "Building a Healthcare Accessibility Index for Houston",
@@ -548,7 +1071,7 @@ const metrics = reactive({
   experiences: 0,
   sessions: 0,
   projects: 0,
-  categories: [], // { name, count }
+  categories: [],
 });
 
 // Animated numbers
@@ -565,6 +1088,101 @@ const categoryChips = computed(() =>
 
 // Slideshow state
 const activeSlide = ref(0);
+
+// Highlighted card state
+const highlightedProjectId = ref(null);
+
+// Project detail modal
+const projectDialog = ref(false);
+const selectedProject = ref(null);
+
+// Enlarged poster modal - FIXED: Added posterObjectUrl
+const posterDialog = ref(false);
+const posterLoading = ref(false);
+const posterLoadProgress = ref(0);
+const posterPreloaded = ref(false);
+const activeXhr = ref(null);
+const posterObjectUrl = ref(null); // NEW: Store the blob URL
+
+// Scroll navigation refs
+const scrollContainer = ref(null);
+const showLeftButton = ref(false);
+const showRightButton = ref(false);
+const isHoveringLeft = ref(false);
+const isHoveringRight = ref(false);
+
+// ==========================================
+// ZOOM AND PAN STATE
+// ==========================================
+const zoomLevel = ref(1);
+const minZoom = 0.5;
+const maxZoom = 3;
+
+const offsetX = ref(0);
+const offsetY = ref(0);
+
+const isPanning = ref(false);
+const startX = ref(0);
+const startY = ref(0);
+
+// Computed transform style
+const posterTransform = computed(() => ({
+  transform: `translate(calc(-50% + ${offsetX.value}px), calc(-50% + ${offsetY.value}px)) scale(${zoomLevel.value})`,
+  cursor: posterLoading.value
+    ? "default"
+    : isPanning.value
+    ? "grabbing"
+    : "grab",
+  transition: isPanning.value ? "none" : "transform 0.2s ease-out",
+}));
+
+// Zoom controls
+function zoomIn() {
+  zoomLevel.value = Math.min(maxZoom, zoomLevel.value + 0.25);
+}
+
+function zoomOut() {
+  zoomLevel.value = Math.max(minZoom, zoomLevel.value - 0.25);
+}
+
+function resetZoom() {
+  zoomLevel.value = 1;
+  offsetX.value = 0;
+  offsetY.value = 0;
+}
+
+// Mouse wheel zoom
+function handleWheel(e) {
+  if (posterLoading.value) return;
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.1 : 0.1;
+  const nextZoom = zoomLevel.value + delta;
+  zoomLevel.value = Math.min(maxZoom, Math.max(minZoom, nextZoom));
+}
+
+// Pan (drag) controls
+function startPan(e) {
+  if (posterLoading.value) return;
+  if (e.button !== 0) return; // Left button only
+  isPanning.value = true;
+  startX.value = e.clientX - offsetX.value;
+  startY.value = e.clientY - offsetY.value;
+  e.preventDefault();
+}
+
+function handlePan(e) {
+  if (!isPanning.value || posterLoading.value) return;
+  offsetX.value = e.clientX - startX.value;
+  offsetY.value = e.clientY - startY.value;
+}
+
+function endPan() {
+  isPanning.value = false;
+}
+
+// ==========================================
+// END ZOOM AND PAN
+// ==========================================
 
 // Animation on scroll
 let observer = null;
@@ -585,36 +1203,22 @@ onUnmounted(() => {
 
 // ----- Data loading -----
 function loadDemo() {
-  // Real data from database
-  metrics.participants = 795;
-  metrics.experiences = 44;
-  metrics.sessions = 13;
-  metrics.projects = 18;
+  metrics.participants = 796;
+  metrics.experiences = 45;
+  metrics.sessions = 14;
+  metrics.projects = 19;
 
   metrics.categories = [
     { name: "Minor Data & Society", count: 19 },
     { name: "Honors OCE", count: 15 },
     { name: "HICH", count: 4 },
+    { name: "Pharis Fellowship", count: 3 },
     { name: "CHWI", count: 2 },
     { name: "EDS", count: 2 },
   ];
 }
 
 async function loadLive() {
-  /**
-   * Example shape you can return from your backend:
-   * GET /api/public/metrics
-   * {
-   *   participants: number,                 // distinct expRegistrationData.userID (registrationStatus = true)
-   *   experiences: number,                  // experiencedata.countDocuments()
-   *   sessions: number,                     // sessiondata.countDocuments()
-   *   projects: number,                     // projectdata.countDocuments({ projectStatus: 'Active' })
-   *   categories: [{ name, count }]         // group by experienceData.experienceCategory
-   * }
-   *
-   * GET /api/public/featured
-   * { hero: [...], featured: [...] }        // arrays with fields used above
-   */
   try {
     const [m, f] = await Promise.all([
       fetch("/api/public/metrics").then((r) => r.json()),
@@ -631,15 +1235,12 @@ async function loadLive() {
     if (Array.isArray(f.featured) && f.featured.length)
       featuredCards.value = f.featured;
   } catch (e) {
-    // Fallback to demo if live fails, without breaking the page
     loadDemo();
-    // console.warn('Failed to load live public data. Falling back to demo.', e);
   }
 }
 
 // ----- Animations -----
 function setupObserver() {
-  // respect reduced motion
   const prefersReduced = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
@@ -649,7 +1250,6 @@ function setupObserver() {
       entries.forEach((ent) => {
         if (ent.isIntersecting && !animatedOnce) {
           animatedOnce = true;
-          // count-up animation
           animateNumber(
             "participants",
             metrics.participants,
@@ -708,6 +1308,8 @@ function statusColor(s) {
   switch (s) {
     case "Active":
       return "success";
+    case "Published":
+      return "success";
     case "Beta":
       return "warning";
     case "Proposed":
@@ -724,10 +1326,241 @@ function scrollTo(id) {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function viewProject(p) {
-  // Link to your public project detail route if you expose one
-  // router.push({ name: 'publicProject', params: { id: p._id } });
-  console.log("View project", p._id);
+// ----- Scroll Navigation Methods -----
+function checkScrollPosition() {
+  if (!scrollContainer.value) return;
+
+  const container = scrollContainer.value;
+  const scrollLeft = container.scrollLeft;
+  const scrollWidth = container.scrollWidth;
+  const clientWidth = container.clientWidth;
+
+  // Update left button visibility
+  if (isHoveringLeft.value) {
+    showLeftButton.value = scrollLeft > 10;
+  }
+
+  // Update right button visibility
+  if (isHoveringRight.value) {
+    showRightButton.value = scrollLeft < scrollWidth - clientWidth - 10;
+  }
+}
+
+function checkAndShowLeftButton() {
+  isHoveringLeft.value = true;
+  checkScrollPosition();
+}
+
+function checkAndShowRightButton() {
+  isHoveringRight.value = true;
+  checkScrollPosition();
+}
+
+function onLeaveLeftZone() {
+  isHoveringLeft.value = false;
+  showLeftButton.value = false;
+}
+
+function onLeaveRightZone() {
+  isHoveringRight.value = false;
+  showRightButton.value = false;
+}
+
+function hideScrollButtons() {
+  isHoveringLeft.value = false;
+  isHoveringRight.value = false;
+  showLeftButton.value = false;
+  showRightButton.value = false;
+}
+
+function scrollCards(direction) {
+  if (!scrollContainer.value) return;
+
+  const container = scrollContainer.value;
+  const scrollAmount = 380;
+
+  if (direction === "left") {
+    container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+  } else {
+    container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  }
+}
+
+function updateScrollButtons() {
+  // Re-check scroll position to update button visibility
+  checkScrollPosition();
+}
+
+function viewProject(p, event) {
+  if (
+    event &&
+    document.querySelector(".hero-section").contains(event.currentTarget)
+  ) {
+    const featuredSection = document.getElementById("featured");
+    if (featuredSection) {
+      featuredSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      highlightedProjectId.value = p._id;
+
+      setTimeout(() => {
+        const card = document.querySelector(`[data-project-id="${p._id}"]`);
+        if (card) {
+          card.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+          card.classList.add("highlight-pulse");
+
+          setTimeout(() => {
+            selectedProject.value = p;
+            projectDialog.value = true;
+
+            // Start preloading the poster when dialog opens
+            if (p.posterFull) {
+              startPosterPreload();
+            }
+
+            card.classList.remove("highlight-pulse");
+          }, 200);
+        }
+      }, 400);
+    }
+  } else {
+    highlightedProjectId.value = p._id;
+    selectedProject.value = p;
+    projectDialog.value = true;
+
+    // Start preloading the poster when dialog opens
+    if (p.posterFull) {
+      startPosterPreload();
+    }
+  }
+}
+
+function closeProjectDialog() {
+  projectDialog.value = false;
+
+  // FIXED: Clean up poster state and revoke object URL
+  posterPreloaded.value = false;
+  posterLoading.value = false;
+  posterLoadProgress.value = 0;
+
+  if (activeXhr.value) {
+    activeXhr.value.abort();
+    activeXhr.value = null;
+  }
+
+  if (posterObjectUrl.value) {
+    URL.revokeObjectURL(posterObjectUrl.value);
+    posterObjectUrl.value = null;
+  }
+
+  setTimeout(() => {
+    highlightedProjectId.value = null;
+  }, 300);
+}
+
+// FIXED: Updated to create and use blob URL
+function startPosterPreload() {
+  // Only preload if we have a poster and haven't started yet
+  if (
+    posterPreloaded.value ||
+    activeXhr.value ||
+    !selectedProject.value?.posterFull
+  ) {
+    return;
+  }
+
+  const posterUrl =
+    selectedProject.value.posterFull || selectedProject.value.posterImage;
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", posterUrl, true);
+  xhr.responseType = "blob";
+
+  xhr.onprogress = (event) => {
+    if (event.lengthComputable) {
+      posterLoadProgress.value = Math.round((event.loaded / event.total) * 100);
+    }
+  };
+
+  xhr.onload = () => {
+    activeXhr.value = null;
+
+    if (xhr.status === 200) {
+      posterLoadProgress.value = 100;
+      posterPreloaded.value = true;
+
+      // FIXED: Clean up old URL if there was one
+      if (posterObjectUrl.value) {
+        URL.revokeObjectURL(posterObjectUrl.value);
+      }
+
+      // FIXED: Create object URL from blob - this is what the <img> will use
+      posterObjectUrl.value = URL.createObjectURL(xhr.response);
+
+      // If modal is open and was loading, hide the loading indicator
+      if (posterDialog.value && posterLoading.value) {
+        setTimeout(() => {
+          posterLoading.value = false;
+        }, 300);
+      }
+    } else {
+      if (posterDialog.value) {
+        posterLoading.value = false;
+      }
+    }
+  };
+
+  xhr.onerror = () => {
+    activeXhr.value = null;
+    if (posterDialog.value) {
+      posterLoading.value = false;
+      console.error("Network error loading poster");
+    }
+  };
+
+  activeXhr.value = xhr;
+  xhr.send();
+}
+
+function openPosterModal() {
+  resetZoom();
+  posterDialog.value = true;
+
+  // If already fully loaded, show immediately
+  if (posterPreloaded.value) {
+    posterLoading.value = false;
+    return;
+  }
+
+  // If already downloading, just show loading state
+  if (activeXhr.value) {
+    posterLoading.value = true;
+    return;
+  }
+
+  // Otherwise start the download
+  posterLoading.value = true;
+  posterLoadProgress.value = 0;
+  startPosterPreload();
+}
+
+function closePosterDialog() {
+  posterLoading.value = false;
+  posterLoadProgress.value = 0;
+  // Keep posterPreloaded and posterObjectUrl so it stays in cache for re-opening
+  resetZoom();
+}
+
+function onPosterImageLoad() {
+  // This is now just a backup - the actual loading is handled in openPosterModal
+}
+
+function onPosterImageError() {
+  posterLoading.value = false;
+  console.error("Failed to load poster image in img tag");
 }
 
 function goToSignIn() {
@@ -808,6 +1641,17 @@ function goToContact() {
   max-width: 760px;
   margin: 0 auto;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Student Attribution in Hero */
+.student-attribution {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  padding: 8px 16px 8px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .stats-bar {
@@ -957,14 +1801,20 @@ function goToContact() {
   border-bottom: 1px solid #eee;
 }
 
+.h-scroll-wrapper {
+  position: relative;
+}
+
 .h-scroll-container {
   overflow-x: auto;
   padding-bottom: 8px;
+  padding-top: 12px;
+  scroll-behavior: smooth;
 }
 .h-scroll {
   display: flex;
   gap: 20px;
-  padding: 0 4px 2px 4px;
+  padding: 12px 4px 12px 4px;
 }
 .h-scroll::-webkit-scrollbar {
   height: 8px;
@@ -973,6 +1823,73 @@ function goToContact() {
   background: linear-gradient(135deg, #4facfe, #00f2fe);
   border-radius: 8px;
 }
+
+/* Scroll Navigation Hover Zones and Buttons */
+.scroll-hover-zone {
+  position: absolute;
+  top: 0;
+  bottom: 16px;
+  width: 100px;
+  z-index: 5;
+  pointer-events: all;
+}
+
+.scroll-hover-left {
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.01) 0%,
+    transparent 100%
+  );
+}
+
+.scroll-hover-right {
+  right: 0;
+  background: linear-gradient(
+    -90deg,
+    rgba(255, 255, 255, 0.01) 0%,
+    transparent 100%
+  );
+}
+
+.scroll-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.scroll-nav-button.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.scroll-nav-button:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.scroll-nav-left {
+  left: 16px;
+}
+
+.scroll-nav-right {
+  right: 16px;
+}
+
+/* --- Card Structure with Fixed Button Position --- */
 .h-card {
   min-width: 320px;
   width: 360px;
@@ -982,29 +1899,103 @@ function goToContact() {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 .h-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
+
+/* Highlighted card styles */
+.h-card.highlighted {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(79, 172, 254, 0.3);
+  border: 2px solid #4facfe;
+}
+
+.h-card.highlight-pulse {
+  animation: highlightPulse 1s ease-in-out 2;
+}
+
+@keyframes highlightPulse {
+  0% {
+    box-shadow: 0 20px 40px rgba(79, 172, 254, 0.3);
+  }
+  50% {
+    box-shadow: 0 20px 50px rgba(79, 172, 254, 0.5);
+    transform: translateY(-8px);
+  }
+  100% {
+    box-shadow: 0 20px 40px rgba(79, 172, 254, 0.3);
+  }
+}
+
 .h-card-image {
   height: 180px;
   background-size: cover;
   background-position: center;
   position: relative;
+  flex-shrink: 0;
 }
-.h-card-overlay {
+
+/* Real Project Badge */
+.real-project-badge {
   position: absolute;
   top: 12px;
-  right: 12px;
+  left: 12px;
+  z-index: 5;
+  background: linear-gradient(135deg, #4caf50, #66bb6a) !important;
+  color: white !important;
+  font-weight: 500;
 }
+
+/* Poster Preview Indicator */
+.poster-preview {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card body with flexbox to push button down */
 .h-card-body {
   padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
+
+/* Content wrapper that can grow */
+.card-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Student Mini Attribution in Card */
+.student-mini {
+  display: flex;
+  align-items: center;
+}
+
 .h-card-stats {
   display: flex;
   align-items: center;
   color: rgba(0, 0, 0, 0.65);
+}
+
+/* Button stays at bottom with margin-top: auto */
+.card-action-button {
+  margin-top: auto !important;
 }
 
 /* --- CTA --- */
@@ -1017,6 +2008,97 @@ function goToContact() {
   border-radius: 16px;
   padding: 32px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Project Dialog --- */
+.dialog-hero-title {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7));
+  padding: 32px !important;
+  padding-top: 200px !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Clickable Poster Styles */
+.clickable-poster {
+  cursor: pointer;
+  position: relative;
+  transition: filter 0.3s ease;
+}
+
+.clickable-poster:hover {
+  filter: brightness(1.1);
+}
+
+.poster-click-hint {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.clickable-poster:hover .poster-click-hint {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Enlarged Poster Modal with Zoom */
+.poster-modal-card {
+  background: #000;
+}
+
+.poster-container {
+  position: relative;
+  overflow: hidden;
+  height: 80vh;
+  background: #000;
+  user-select: none;
+  cursor: default;
+}
+
+.poster-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  z-index: 10;
+}
+
+.poster-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.enlarged-poster-img {
+  display: block;
+  max-width: none;
+  height: 80vh;
+  pointer-events: none;
+  user-select: none;
+}
+
+.zoom-level-display {
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 50px;
+  text-align: center;
+  color: white;
 }
 
 /* --- Responsive --- */
@@ -1036,7 +2118,6 @@ function goToContact() {
     width: 300px;
   }
 
-  /* Stack the sections vertically on mobile */
   .combined-section .section-content {
     margin-bottom: 40px;
   }
@@ -1054,5 +2135,47 @@ function goToContact() {
   .kpi-number {
     font-size: 1.6rem;
   }
+
+  .student-attribution {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px;
+  }
+}
+
+/* --- Partner Card Animations --- */
+.partner-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+}
+
+.partner-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(79, 172, 254, 0.2) !important;
+  border-color: rgba(79, 172, 254, 0.5) !important;
+}
+
+.partner-card:hover .v-icon {
+  transform: scale(1.15) rotate(5deg);
+  transition: transform 0.3s ease;
+}
+
+/* --- Key Finding Card Animations --- */
+.key-finding-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+}
+
+.key-finding-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15) !important;
+  filter: brightness(1.05);
+}
+
+.key-finding-card:hover .v-icon {
+  transform: scale(1.2) rotate(-5deg);
+  transition: transform 0.3s ease;
 }
 </style>
