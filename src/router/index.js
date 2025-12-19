@@ -645,7 +645,7 @@ const routes = [
   {
     path: "/public",
     name: "public1",
-    component: () => import("@/components/dev/indProjectPage1.vue"),
+    component: () => import("@/components/dev/indProjectPage2.vue"),
   },
 ];
 

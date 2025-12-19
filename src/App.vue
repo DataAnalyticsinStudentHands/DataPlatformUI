@@ -1,12 +1,8 @@
-/**
- * src/App.vue
- * 
- * Root component of the application that provides the main layout structure including
- * a responsive navigation drawer, app bar, and router view container. Handles user
- * authentication state, role-based navigation menu rendering, and logout functionality.
- * The navigation drawer adapts between rail and full modes on desktop, and temporary
- * drawer on mobile devices.
- */
+/** * src/App.vue * * Root component of the application that provides the main
+layout structure including * a responsive navigation drawer, app bar, and router
+view container. Handles user * authentication state, role-based navigation menu
+rendering, and logout functionality. * The navigation drawer adapts between rail
+and full modes on desktop, and temporary * drawer on mobile devices. */
 
 <template>
   <v-app>
@@ -24,16 +20,14 @@
       >
         <!-- Collapsed rail state shows only menu icon -->
         <div v-if="rail">
-          <v-list-item
-            lines="two"
-          >
+          <v-list-item lines="two">
             <v-btn
               size="large"
               variant="text"
               icon="mdi-menu"
               @click="rail = !rail"
               class="text-white"
-            ></v-btn> 
+            ></v-btn>
           </v-list-item>
         </div>
         <!-- Expanded state shows full navigation menu -->
@@ -56,186 +50,226 @@
             </template>
           </v-list-item>
 
-        <v-list density="compact" nav class="text-white">
-          <!-- Student role navigation items -->
-          <div v-if="user.isLoggedIn && user.getRole === 'Student'">
-            <v-list-item 
-              :active="activeLink === 'studentDashboard'"
-              to="studentDashboard"
-              prepend-icon="mdi-view-dashboard"
-              value="studentDashboard"
-              class=" tracking-wider "
-            >{{$t('Student Dashboard')}}</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'studentEntryForm'"
-              v-if="!user.hasCompletedEntryForm"
-              to="studentEntryForm"
-              prepend-icon="mdi-file-document"
-              value="studentEntryForm"
-              class=" tracking-wider "
-            >Student Entry Form</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'goalSettingForm'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasGoalFormsToComplete"
-              to="goalSettingForm"
-              prepend-icon="mdi-file-document"
-              value="goalSettingForm"
-              class=" tracking-wider "
-            >{{$t('Goal Setting Form')}}</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'exitForm'"
-              v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasExitFormsToComplete"
-              to="exitForm"
-              prepend-icon="mdi-file-document"
-              value="exitForm"
-              class=" tracking-wider "
-            >{{$t('Exit Form')}}</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'projects' || activeLink === 'studentProjects'"
-              to="projects"
-              prepend-icon="mdi-account-group"
-              class="tracking-wider"
+          <v-list density="compact" nav class="text-white">
+            <!-- Student role navigation items -->
+            <div v-if="user.isLoggedIn && user.getRole === 'Student'">
+              <v-list-item
+                :active="activeLink === 'studentDashboard'"
+                to="studentDashboard"
+                prepend-icon="mdi-view-dashboard"
+                value="studentDashboard"
+                class="tracking-wider"
+                >{{ $t("Student Dashboard") }}</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'studentEntryForm'"
+                v-if="!user.hasCompletedEntryForm"
+                to="studentEntryForm"
+                prepend-icon="mdi-file-document"
+                value="studentEntryForm"
+                class="tracking-wider"
+                >Student Entry Form</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'goalSettingForm'"
+                v-if="
+                  user.hasCompletedEntryForm &&
+                  user.hasRegisteredExperiences &&
+                  user.hasGoalFormsToComplete
+                "
+                to="goalSettingForm"
+                prepend-icon="mdi-file-document"
+                value="goalSettingForm"
+                class="tracking-wider"
+                >{{ $t("Goal Setting Form") }}</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'exitForm'"
+                v-if="
+                  user.hasCompletedEntryForm &&
+                  user.hasRegisteredExperiences &&
+                  user.hasExitFormsToComplete
+                "
+                to="exitForm"
+                prepend-icon="mdi-file-document"
+                value="exitForm"
+                class="tracking-wider"
+                >{{ $t("Exit Form") }}</v-list-item
+              >
+              <v-list-item
+                :active="
+                  activeLink === 'projects' || activeLink === 'studentProjects'
+                "
+                to="projects"
+                prepend-icon="mdi-account-group"
+                class="tracking-wider"
+              >
+                {{ $t("Projects") }}
+              </v-list-item>
+            </div>
+            <!-- Instructor and admin role navigation items -->
+            <div
+              v-if="
+                user.isLoggedIn &&
+                (user.getRole === 'Instructor' ||
+                  user.getRole === 'Group Instructor' ||
+                  user.getRole === 'Group Admin' ||
+                  user.getRole === 'Org Admin')
+              "
             >
-              {{$t('Projects')}}
-            </v-list-item>
-          </div>
-          <!-- Instructor and admin role navigation items -->
-          <div v-if="user.isLoggedIn && (user.getRole === 'Instructor' || user.getRole === 'Group Instructor' || user.getRole === 'Group Admin' || user.getRole === 'Org Admin')">
-            <v-list-item 
-              :active="activeLink === 'instructorDash'"
-              :to="{ name: 'instructorDash' }"
-              prepend-icon="mdi-view-dashboard"
-              value="instructorDash"
-              class=" tracking-wider "
-            >Dashboard</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'instructorDataProducts'"
-              :to="{ name: 'instructorDataProducts' }"
-              prepend-icon="mdi-view-dashboard"
-              value="instructorDataProducts"
-              class=" tracking-wider"
-            >Data Products</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'instructorStudentsList'"
-              :to="{ name: 'instructorStudentsList' }"
-              prepend-icon="mdi-account"
-              value="instructorStudentsList"
-              class=" tracking-wider"
-            >Students</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'instructorDataManagement'"
-              :to="{ name: 'instructorDataManagement' }"
-              prepend-icon="mdi-school"
-              value="instructorDataManagement"
-              class=" tracking-wider"
-            >Data Management Console</v-list-item>
-            <v-list-item 
-              :active="activeLink === 'projects' || activeLink === 'instructorProjects'"
-              :to="{ name: 'projects' }"
-              prepend-icon="mdi-account-group"
-              class="tracking-wider"
-            >
-              {{$t('Projects')}}
-            </v-list-item>
-            <v-list-item
-              v-if="user.getRole === 'Org Admin'"
-              :active="activeLink === 'AdminBackupManager'"
-              to='/admin/backup'
-              prepend-icon="mdi-database"
-              value="AdminBackupManager"
-              class="tracking-wider"
-            >
-              Database Backup
-            </v-list-item>
-          </div>
-          <!-- Basic role navigation items -->
-          <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
-            <v-list-item 
-              :active="activeLink === 'dashboard'"
-              to="/dashboard"
-              prepend-icon="mdi-view-dashboard"
-              class="tracking-wider"
-            >Dashboard</v-list-item>
+              <v-list-item
+                :active="activeLink === 'instructorDash'"
+                :to="{ name: 'instructorDash' }"
+                prepend-icon="mdi-view-dashboard"
+                value="instructorDash"
+                class="tracking-wider"
+                >Dashboard</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'instructorDataProducts'"
+                :to="{ name: 'instructorDataProducts' }"
+                prepend-icon="mdi-view-dashboard"
+                value="instructorDataProducts"
+                class="tracking-wider"
+                >Data Products</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'instructorStudentsList'"
+                :to="{ name: 'instructorStudentsList' }"
+                prepend-icon="mdi-account"
+                value="instructorStudentsList"
+                class="tracking-wider"
+                >Students</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'instructorDataManagement'"
+                :to="{ name: 'instructorDataManagement' }"
+                prepend-icon="mdi-school"
+                value="instructorDataManagement"
+                class="tracking-wider"
+                >Data Management Console</v-list-item
+              >
+              <v-list-item
+                :active="
+                  activeLink === 'projects' ||
+                  activeLink === 'instructorProjects'
+                "
+                :to="{ name: 'projects' }"
+                prepend-icon="mdi-account-group"
+                class="tracking-wider"
+              >
+                {{ $t("Projects") }}
+              </v-list-item>
+              <v-list-item
+                v-if="user.getRole === 'Org Admin'"
+                :active="activeLink === 'AdminBackupManager'"
+                to="/admin/backup"
+                prepend-icon="mdi-database"
+                value="AdminBackupManager"
+                class="tracking-wider"
+              >
+                Database Backup
+              </v-list-item>
+            </div>
+            <!-- Basic role navigation items -->
+            <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
+              <v-list-item
+                :active="activeLink === 'dashboard'"
+                to="/dashboard"
+                prepend-icon="mdi-view-dashboard"
+                class="tracking-wider"
+                >Dashboard</v-list-item
+              >
 
-            <v-list-item 
-              :active="activeLink === 'intakeform'"
-              to="/intakeform"
-              prepend-icon="mdi-account-plus-outline"
-              class="tracking-wider"
-            >Client Intake Form</v-list-item>
+              <v-list-item
+                :active="activeLink === 'intakeform'"
+                to="/intakeform"
+                prepend-icon="mdi-account-plus-outline"
+                class="tracking-wider"
+                >Client Intake Form</v-list-item
+              >
 
-            <v-list-item 
-              :active="activeLink === 'eventform'"
-              to="/eventform"
-              prepend-icon="mdi-calendar-plus"
-              class="tracking-wider"
-            >Create Event</v-list-item>
+              <v-list-item
+                :active="activeLink === 'eventform'"
+                to="/eventform"
+                prepend-icon="mdi-calendar-plus"
+                class="tracking-wider"
+                >Create Event</v-list-item
+              >
 
-            <v-list-item 
-              :active="activeLink === 'findclient'"
-              to="/findclient"
-              prepend-icon="mdi-account-search-outline"
-              class="tracking-wider"
-            >Find Client</v-list-item>
+              <v-list-item
+                :active="activeLink === 'findclient'"
+                to="/findclient"
+                prepend-icon="mdi-account-search-outline"
+                class="tracking-wider"
+                >Find Client</v-list-item
+              >
 
-            <v-list-item 
-              :active="activeLink === 'findEvents'"
-              to="/findEvents"
-              prepend-icon="mdi-calendar-search"
-              class="tracking-wider"
-            >Find Event</v-list-item>
-          </div>
+              <v-list-item
+                :active="activeLink === 'findEvents'"
+                to="/findEvents"
+                prepend-icon="mdi-calendar-search"
+                class="tracking-wider"
+                >Find Event</v-list-item
+              >
+            </div>
 
-          <!-- Common navigation items for all authenticated users -->
-          <div v-if="isFullyAuthenticated">
-            <v-list-item>
-              <hr>
-            </v-list-item>
-            <v-list-item 
-              :active="activeLink === 'profile'"
-              v-if="user.getRole === 'Student'"
-              to="profile"
-              prepend-icon="mdi-account"
-              value="profile"
-              class=" tracking-wider "
-            >{{$t('Profile')}}</v-list-item>
-            <v-list-item
-              :active="activeLink === 'User Data Update Form'"
-              to="/updateUserInformation"
-              prepend-icon="mdi-cog"
-              value="User Data Update Form"
-              class=" tracking-wider "
-            >{{$t('Update User Information')}}</v-list-item>
-            <v-list-item
-              :active="activeLink === 'Password Reset'"
-              to="/updatePassword"
-              prepend-icon="mdi-cog"
-              value="Password Reset"
-              class=" tracking-wider "
-            >{{$t('Update Password')}}</v-list-item>
-            <v-list-item
-              :active="activeLink === 'Login'"
-              to="/login"
-              prepend-icon="mdi-logout"
-              value="Login"
-              class=" tracking-wider "
-              @click="handleLogout"
-            >{{$t('Logout')}}</v-list-item>
-          </div>
-        </v-list>
-
-      </div>
+            <!-- Common navigation items for all authenticated users -->
+            <div v-if="isFullyAuthenticated">
+              <v-list-item>
+                <hr />
+              </v-list-item>
+              <v-list-item
+                :active="activeLink === 'profile'"
+                v-if="user.getRole === 'Student'"
+                to="profile"
+                prepend-icon="mdi-account"
+                value="profile"
+                class="tracking-wider"
+                >{{ $t("Profile") }}</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'User Data Update Form'"
+                to="/updateUserInformation"
+                prepend-icon="mdi-cog"
+                value="User Data Update Form"
+                class="tracking-wider"
+                >{{ $t("Update User Information") }}</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'Password Reset'"
+                to="/updatePassword"
+                prepend-icon="mdi-cog"
+                value="Password Reset"
+                class="tracking-wider"
+                >{{ $t("Update Password") }}</v-list-item
+              >
+              <v-list-item
+                :active="activeLink === 'Login'"
+                to="/login"
+                prepend-icon="mdi-logout"
+                value="Login"
+                class="tracking-wider"
+                @click="handleLogout"
+                >{{ $t("Logout") }}</v-list-item
+              >
+            </div>
+          </v-list>
+        </div>
       </v-navigation-drawer>
 
       <!-- App bar with gradient background and organization name -->
-      <v-app-bar 
+      <v-app-bar
         scroll-target="#main"
         style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
       >
-        <v-btn 
+        <v-btn
           v-if="isFullyAuthenticated && !drawer"
-          icon 
-          @click="drawer = true; rail = false"
+          icon
+          @click="
+            drawer = true;
+            rail = false;
+          "
         >
           <v-icon>mdi-menu</v-icon>
         </v-btn>
@@ -246,7 +280,12 @@
       </v-app-bar>
 
       <!-- Main content area containing router view -->
-      <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content">
+      <v-main
+        id="main"
+        ref="mainContent"
+        style="min-height: 300px"
+        class="main-content"
+      >
         <router-view></router-view>
       </v-main>
     </v-layout>
@@ -256,7 +295,7 @@
 <script>
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
-import 'vue3-toastify/dist/index.css';
+import "vue3-toastify/dist/index.css";
 
 export default {
   name: "App",
@@ -274,7 +313,7 @@ export default {
     // Update active navigation link when route changes
     $route(to, from) {
       this.activeLink = to.name;
-    }
+    },
   },
   computed: {
     // Check if viewport is medium size or larger
@@ -284,7 +323,7 @@ export default {
     // Concatenate user's first and last name
     fullName() {
       const store = useLoggedInUserStore();
-      return (store.firstName.trim() + ' ' + store.lastName.trim());
+      return store.firstName.trim() + " " + store.lastName.trim();
     },
     // Check if user is logged in
     loggedIn() {
@@ -294,41 +333,42 @@ export default {
     // Check if user is logged in and not in temporary role
     isFullyAuthenticated() {
       const store = useLoggedInUserStore();
-      return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
-    }
+      return store.isLoggedIn && store.getRole && store.getRole !== "Temporary";
+    },
   },
   methods: {
     // Handle user logout and display random success message
     async handleLogout() {
       const store = useLoggedInUserStore();
-      
+
       await store.logout();
       let logoutMessage = "";
       let logoutMessages = [
-        'See you soon!',
-        'Logged out successfully!',
-        'Goodbye for now!',
-        'See you next time!',
+        "See you soon!",
+        "Logged out successfully!",
+        "Goodbye for now!",
+        "See you next time!",
         "You're safely logged out!",
-        'Hope to see you soon!',
-        'Session ended. Take care!',
-        'Stay safe! See you again!',
-        'Successfully signed out!',
+        "Hope to see you soon!",
+        "Session ended. Take care!",
+        "Stay safe! See you again!",
+        "Successfully signed out!",
         "You've logged out. Goodbye!",
-        'Come back soon!'
+        "Come back soon!",
       ];
-      logoutMessage = logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
+      logoutMessage =
+        logoutMessages[Math.floor(Math.random() * logoutMessages.length)];
 
       // Store toast notification data in Pinia state
       store.navigationData = {
-        toastType: 'success',
+        toastType: "success",
         toastMessage: logoutMessage,
-        toastPosition: 'top-right',
-        toastCSS: 'Toastify__toast--create'
+        toastPosition: "top-right",
+        toastCSS: "Toastify__toast--create",
       };
 
       this.$router.push({
-        name: 'login'
+        name: "login",
       });
     },
     // Toggle navigation drawer between rail and full modes
@@ -340,17 +380,17 @@ export default {
       }
     },
   },
-  
+
   mounted() {
     // Attach scroll listener to main content area
     const mainContentEl = this.$refs.mainContent.$el;
-    mainContentEl.addEventListener('scroll', this.handleScroll);
+    mainContentEl.addEventListener("scroll", this.handleScroll);
   },
 
   beforeUnmount() {
     // Clean up scroll listener
     const mainContentEl = this.$refs.mainContent.$el;
-    mainContentEl.removeEventListener('scroll', this.handleScroll);
+    mainContentEl.removeEventListener("scroll", this.handleScroll);
   },
 
   setup() {
@@ -392,7 +432,5 @@ export default {
 /* Main content scrollable area */
 .main-content {
   overflow-y: auto;
-  height: 100vh;
-  padding-bottom: 5vh;
 }
 </style>
