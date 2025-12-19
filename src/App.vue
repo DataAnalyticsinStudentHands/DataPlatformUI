@@ -242,7 +242,7 @@
 
         <v-spacer></v-spacer>
 
-        <h1 class="text-2xl text-white mr-10">Engaged Data Science</h1>
+        <h1 class="text-lg sm:text-2xl text-white mr-10">Engaged Data Science</h1>
       </v-app-bar>
 
       <!-- Main content area containing router view -->
