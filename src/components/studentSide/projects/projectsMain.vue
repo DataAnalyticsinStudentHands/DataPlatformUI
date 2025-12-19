@@ -13,21 +13,21 @@ With state persistence via Pinia store.
       <!-- Loading state while fetching projects -->
       <v-row v-if="loading" class="fill-height" align="center" justify="center" style="min-height: 60vh;">
         <v-col cols="auto">
-          <v-progress-circular indeterminate color="#c8102e" size="64"></v-progress-circular>
+          <v-progress-circular indeterminate color="#c8102e" size="72"></v-progress-circular>
         </v-col>
       </v-row>
 
       <template v-else>
         <!-- Welcome screen for new users with no projects -->
         <div v-if="isWelcomeActive" class="welcome-wrapper">
-          <v-card class="welcome-card mx-auto" elevation="3" max-width="600">
+          <v-card class="welcome-card mx-auto" elevation="3" max-width="650">
             <div class="welcome-header">
-              <v-icon size="64" color="white" class="mb-4">mdi-trophy-outline</v-icon>
-              <h1 class="text-h4 font-weight-bold text-white mb-2">{{ $t('Welcome to Projects!') }}</h1>
+              <v-icon size="72" color="white" class="mb-4">mdi-trophy-outline</v-icon>
+              <h1 class="text-h3 font-weight-bold text-white mb-2">{{ $t('Welcome to Projects!') }}</h1>
               <p class="text-body-1 welcome-subtitle mb-0">{{ $t('Get started by proposing your own project or joining an existing one') }}</p>
             </div>
             
-            <v-card-text class="pa-6">
+            <v-card-text class="pa-8">
               <div class="welcome-actions">
                 <v-btn
                   @click="proposeNewProject" 
@@ -42,7 +42,7 @@ With state persistence via Pinia store.
                 </v-btn>
                 
                 <div class="text-center my-4">
-                  <span class="text-medium-emphasis text-body-2">{{ $t('or') }}</span>
+                  <span class="text-medium-emphasis text-body-1">{{ $t('or') }}</span>
                 </div>
                 
                 <v-btn
@@ -65,21 +65,12 @@ With state persistence via Pinia store.
           <!-- Page Header -->
           <div class="page-header mb-6">
             <div class="d-flex align-center mb-2">
-              <v-icon color="#c8102e" size="32" class="mr-3">mdi-folder-multiple-outline</v-icon>
+              <v-icon color="#c8102e" size="36" class="mr-3">mdi-folder-multiple-outline</v-icon>
               <div class="flex-grow-1">
                 <div class="d-flex align-center flex-wrap">
-                  <h1 class="text-h5 font-weight-bold mr-3">{{ $t('My Projects') }}</h1>
-                  <v-chip 
-                    v-if="projectCount > 0"
-                    size="small" 
-                    color="#c8102e" 
-                    variant="tonal"
-                    class="font-weight-medium"
-                  >
-                    {{ projectCount }} {{ projectCount === 1 ? $t('project') : $t('projects') }}
-                  </v-chip>
+                  <h1 class="text-h4 font-weight-bold mr-3">{{ $t('My Projects') }}</h1>
                 </div>
-                <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('Manage and track all your project work') }}</p>
+                <p class="text-body-1 text-medium-emphasis mb-0">{{ $t('Manage and track all your project work') }}</p>
               </div>
             </div>
           </div>
@@ -94,7 +85,7 @@ With state persistence via Pinia store.
                 class="custom-tabs"
               >
                 <v-tab value="my-projects" class="custom-tab">
-                  <v-icon start size="20">mdi-folder-open-outline</v-icon>
+                  <v-icon start size="22">mdi-folder-open-outline</v-icon>
                   <span class="d-none d-sm-inline">
                     {{ viewingArchivedProjects ? $t('Archived Projects') : $t('Active Projects') }}
                   </span>
@@ -103,7 +94,7 @@ With state persistence via Pinia store.
                   </span>
                   <v-chip 
                     v-if="myProjects.length > 0" 
-                    size="x-small" 
+                    size="small" 
                     class="ml-2"
                     :color="viewingArchivedProjects ? 'grey' : '#c8102e'"
                     variant="tonal"
@@ -112,12 +103,12 @@ With state persistence via Pinia store.
                   </v-chip>
                 </v-tab>
                 <v-tab value="proposed-projects" class="custom-tab">
-                  <v-icon start size="20">mdi-file-document-edit-outline</v-icon>
+                  <v-icon start size="22">mdi-file-document-edit-outline</v-icon>
                   <span class="d-none d-sm-inline">{{ $t('Proposed Projects') }}</span>
                   <span class="d-inline d-sm-none">{{ $t('Proposed') }}</span>
                   <v-chip 
                     v-if="proposedProjects.length > 0" 
-                    size="x-small" 
+                    size="small" 
                     class="ml-2"
                     color="deep-orange"
                     variant="tonal"
@@ -137,7 +128,7 @@ With state persistence via Pinia store.
                 <v-col lg="5" md="4" sm="4" class="d-none d-sm-flex pr-3">
                   <v-text-field
                     v-model="projectSearch"
-                    density="compact"
+                    density="comfortable"
                     :placeholder="searchPlaceholder"
                     flat
                     hide-details
@@ -150,11 +141,11 @@ With state persistence via Pinia store.
                       <v-menu location="bottom start">
                         <template v-slot:activator="{ props }">
                           <div v-bind="props" class="search-menu-trigger">
-                            <v-icon size="20" color="#666">mdi-magnify</v-icon>
-                            <v-icon size="14" color="#999">mdi-chevron-down</v-icon>
+                            <v-icon size="22" color="#666">mdi-magnify</v-icon>
+                            <v-icon size="16" color="#999">mdi-chevron-down</v-icon>
                           </div>
                         </template>
-                        <v-list density="compact" class="search-menu-list">
+                        <v-list density="comfortable" class="search-menu-list">
                           <v-list-subheader>{{ $t('Search by') }}</v-list-subheader>
                           <v-list-item
                             v-for="item in searchMenuItems"
@@ -163,7 +154,7 @@ With state persistence via Pinia store.
                             :active="searchLabel === 'Search by ' + item"
                           >
                             <template v-slot:prepend>
-                              <v-icon size="18">{{ getSearchIcon(item) }}</v-icon>
+                              <v-icon size="20">{{ getSearchIcon(item) }}</v-icon>
                             </template>
                             <v-list-item-title>{{ item }}</v-list-item-title>
                           </v-list-item>
@@ -173,12 +164,12 @@ With state persistence via Pinia store.
                     <template v-slot:append-inner>
                       <v-btn 
                         icon 
-                        size="x-small" 
+                        size="small" 
                         variant="text"
                         @click="addSearchChip"
                         :disabled="!projectSearch"
                       >
-                        <v-icon size="18">mdi-arrow-right</v-icon>
+                        <v-icon size="20">mdi-arrow-right</v-icon>
                       </v-btn>
                     </template>
                   </v-text-field>
@@ -194,10 +185,10 @@ With state persistence via Pinia store.
                     @click="toggleArchivedProjectsView"
                     variant="tonal"
                     :color="viewingArchivedProjects ? '#c8102e' : 'grey'"
-                    size="small"
+                    size="default"
                     class="action-btn mr-2"
                   >
-                    <v-icon start size="18">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
+                    <v-icon start size="20">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
                     <span class="d-none d-md-inline">{{ viewingArchivedProjects ? $t('View Active') : $t('View Archived') }}</span>
                     <span class="d-inline d-md-none">{{ viewingArchivedProjects ? $t('Active') : $t('Archive') }}</span>
                   </v-btn>
@@ -206,10 +197,10 @@ With state persistence via Pinia store.
                   <v-btn
                     @click="proposeNewProject"
                     color="#c8102e"
-                    size="small"
+                    size="default"
                     class="action-btn mr-2"
                   >
-                    <v-icon start size="18">mdi-plus</v-icon>
+                    <v-icon start size="20">mdi-plus</v-icon>
                     <span class="d-none d-lg-inline">{{ $t('Propose Project') }}</span>
                     <span class="d-inline d-lg-none">{{ $t('New') }}</span>
                   </v-btn>
@@ -219,10 +210,10 @@ With state persistence via Pinia store.
                     @click="joinProject"
                     variant="outlined"
                     color="#c8102e"
-                    size="small"
+                    size="default"
                     class="action-btn"
                   >
-                    <v-icon start size="18">mdi-account-plus-outline</v-icon>
+                    <v-icon start size="20">mdi-account-plus-outline</v-icon>
                     <span class="d-none d-lg-inline">{{ $t('Join Project') }}</span>
                     <span class="d-inline d-lg-none">{{ $t('Join') }}</span>
                   </v-btn>
@@ -233,46 +224,46 @@ With state persistence via Pinia store.
                   <v-btn 
                     icon 
                     variant="text"
-                    size="small"
+                    size="default"
                     @click="xsdialogSearch = true"
                     class="mobile-action-btn"
                   >
-                    <v-icon>mdi-magnify</v-icon>
+                    <v-icon size="24">mdi-magnify</v-icon>
                   </v-btn>
                   
                   <v-btn
                     v-if="activeTab === 'my-projects'"
                     icon
                     variant="text"
-                    size="small"
+                    size="default"
                     @click="toggleArchivedProjectsView"
                     class="mobile-action-btn"
                     :color="viewingArchivedProjects ? '#c8102e' : undefined"
                   >
-                    <v-icon>{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
+                    <v-icon size="24">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
                   </v-btn>
-                  <div v-else style="width: 40px;"></div>
+                  <div v-else style="width: 48px;"></div>
                   
                   <v-spacer></v-spacer>
                   
                   <v-btn 
                     icon
                     color="#c8102e" 
-                    size="small"
+                    size="default"
                     @click="proposeNewProject"
                     class="mobile-action-btn"
                   >
-                    <v-icon>mdi-plus</v-icon>
+                    <v-icon size="24">mdi-plus</v-icon>
                   </v-btn>
                   
                   <v-btn 
                     icon
                     variant="text"
-                    size="small"
+                    size="default"
                     @click="joinProject"
                     class="mobile-action-btn"
                   >
-                    <v-icon>mdi-account-plus-outline</v-icon>
+                    <v-icon size="24">mdi-account-plus-outline</v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
@@ -280,25 +271,25 @@ With state persistence via Pinia store.
               <!-- Active Search Chips -->
               <div v-if="searchChips.length > 0" class="search-chips-container mt-3">
                 <div class="d-flex align-center flex-wrap">
-                  <span class="text-caption text-medium-emphasis mr-2">{{ $t('Filters:') }}</span>
+                  <span class="text-body-2 text-medium-emphasis mr-2">{{ $t('Filters:') }}</span>
                   <v-chip
                     v-for="(criteria, index) in searchChips"
                     :key="index"
                     :color="selectedSearchChips.includes(index) ? '#c8102e' : 'grey'"
                     :variant="selectedSearchChips.includes(index) ? 'flat' : 'outlined'"
-                    size="small"
+                    size="default"
                     class="search-chip mr-2 mb-1"
                     @click="selectSearchChip(index)"
                     closable
                     @click:close="removeSearchChip(index)"
                   >
-                    <v-icon start size="14">{{ getSearchIcon(criteria.category) }}</v-icon>
+                    <v-icon start size="16">{{ getSearchIcon(criteria.category) }}</v-icon>
                     {{ criteria.category }}: {{ criteria.term }}
                   </v-chip>
                   <v-btn 
                     v-if="searchChips.length > 1"
                     variant="text" 
-                    size="x-small" 
+                    size="small" 
                     color="#c8102e"
                     @click="clearAllFilters"
                     class="mb-1"
@@ -336,24 +327,24 @@ With state persistence via Pinia store.
                           :id="`project-${item._id}`"
                         >
                           <td class="table-cell">
-                            <span class="font-weight-medium">{{ item.projectName }}</span>
+                            <span class="font-weight-medium project-name">{{ item.projectName }}</span>
                           </td>
                           <td class="table-cell d-none d-sm-table-cell">
-                            <span class="text-medium-emphasis">{{ item.experienceInfo }}</span>
+                            <span class="text-medium-emphasis experience-text">{{ item.experienceInfo }}</span>
                           </td>
                           <td class="table-cell">
                             <v-chip
-                              size="small"
+                              size="default"
                               :color="getStatusColor(item.projectStatus)"
                               variant="tonal"
                               class="status-chip"
                             >
-                              <v-icon start size="12">{{ getStatusIcon(item.projectStatus) }}</v-icon>
+                              <v-icon start size="14">{{ getStatusIcon(item.projectStatus) }}</v-icon>
                               {{ item.projectStatus }}
                             </v-chip>
                           </td>
                           <td class="table-cell d-none d-sm-table-cell">
-                            <span class="text-caption text-medium-emphasis">{{ formatDate(item.updatedAt) }}</span>
+                            <span class="text-body-2 text-medium-emphasis">{{ formatDate(item.updatedAt) }}</span>
                           </td>
                         </tr>
                       </template>
@@ -361,13 +352,13 @@ With state persistence via Pinia store.
                         <tr>
                           <td :colspan="projectHeaders.length" class="empty-state-cell">
                             <div class="empty-state">
-                              <v-icon size="48" color="#ccc" class="mb-3">
+                              <v-icon size="56" color="#ccc" class="mb-3">
                                 {{ viewingArchivedProjects ? 'mdi-archive-off-outline' : 'mdi-folder-open-outline' }}
                               </v-icon>
-                              <p class="text-body-1 text-medium-emphasis mb-1">
+                              <p class="text-h6 text-medium-emphasis mb-1">
                                 {{ viewingArchivedProjects ? $t('No archived projects') : $t('No active projects yet') }}
                               </p>
-                              <p class="text-caption text-disabled mb-0">
+                              <p class="text-body-2 text-disabled mb-0">
                                 {{ viewingArchivedProjects 
                                   ? $t('Projects you archive will appear here') 
                                   : $t('Propose a new project or join an existing one to get started') 
@@ -406,24 +397,24 @@ With state persistence via Pinia store.
                           class="table-row"
                         >
                           <td class="table-cell">
-                            <span class="font-weight-medium">{{ item.projectName }}</span>
+                            <span class="font-weight-medium project-name">{{ item.projectName }}</span>
                           </td>
                           <td class="table-cell d-none d-sm-table-cell">
-                            <span class="text-medium-emphasis">{{ item.experienceInfo }}</span>
+                            <span class="text-medium-emphasis experience-text">{{ item.experienceInfo }}</span>
                           </td>
                           <td class="table-cell">
                             <v-chip
-                              size="small"
+                              size="default"
                               :color="getStatusColor(item.projectStatus)"
                               variant="tonal"
                               class="status-chip"
                             >
-                              <v-icon start size="12">{{ getStatusIcon(item.projectStatus) }}</v-icon>
+                              <v-icon start size="14">{{ getStatusIcon(item.projectStatus) }}</v-icon>
                               {{ item.projectStatus }}
                             </v-chip>
                           </td>
                           <td class="table-cell d-none d-sm-table-cell">
-                            <span class="text-caption text-medium-emphasis">{{ formatDate(item.updatedAt) }}</span>
+                            <span class="text-body-2 text-medium-emphasis">{{ formatDate(item.updatedAt) }}</span>
                           </td>
                         </tr>
                       </template>
@@ -431,15 +422,15 @@ With state persistence via Pinia store.
                         <tr>
                           <td :colspan="projectHeaders.length" class="empty-state-cell">
                             <div class="empty-state">
-                              <v-icon size="48" color="#ccc" class="mb-3">mdi-file-document-plus-outline</v-icon>
-                              <p class="text-body-1 text-medium-emphasis mb-1">{{ $t('No proposed projects') }}</p>
-                              <p class="text-caption text-disabled mb-3">{{ $t('Submit a project proposal to get started') }}</p>
+                              <v-icon size="56" color="#ccc" class="mb-3">mdi-file-document-plus-outline</v-icon>
+                              <p class="text-h6 text-medium-emphasis mb-1">{{ $t('No proposed projects') }}</p>
+                              <p class="text-body-2 text-disabled mb-4">{{ $t('Submit a project proposal to get started') }}</p>
                               <v-btn 
                                 color="#c8102e" 
-                                size="small"
+                                size="default"
                                 @click.stop="proposeNewProject"
                               >
-                                <v-icon start size="16">mdi-plus</v-icon>
+                                <v-icon start size="18">mdi-plus</v-icon>
                                 {{ $t('Propose Project') }}
                               </v-btn>
                             </div>
@@ -473,20 +464,20 @@ With state persistence via Pinia store.
       />
 
       <!-- Mobile Search Dialog -->
-      <v-dialog v-model="xsdialogSearch" max-width="400px">
+      <v-dialog v-model="xsdialogSearch" max-width="420px">
         <v-card class="mobile-search-dialog">
-          <v-card-title class="d-flex align-center pa-4">
-            <v-icon color="#c8102e" class="mr-2">mdi-magnify</v-icon>
-            <span class="text-h6 font-weight-bold">{{ $t('Search Projects') }}</span>
+          <v-card-title class="d-flex align-center pa-5">
+            <v-icon color="#c8102e" size="26" class="mr-2">mdi-magnify</v-icon>
+            <span class="text-h5 font-weight-bold">{{ $t('Search Projects') }}</span>
             <v-spacer></v-spacer>
-            <v-btn icon variant="text" size="small" @click="xsCancelSearchDialog">
-              <v-icon>mdi-close</v-icon>
+            <v-btn icon variant="text" size="default" @click="xsCancelSearchDialog">
+              <v-icon size="24">mdi-close</v-icon>
             </v-btn>
           </v-card-title>
           
           <v-divider></v-divider>
           
-          <v-card-text class="pa-4">
+          <v-card-text class="pa-5">
             <v-select
               v-model="xsSearchFilterSelection"
               :items="['Project Name', 'Experience', 'Status']"
@@ -497,7 +488,7 @@ With state persistence via Pinia store.
               class="mb-4"
             >
               <template v-slot:prepend-inner>
-                <v-icon size="20">mdi-filter-variant</v-icon>
+                <v-icon size="22">mdi-filter-variant</v-icon>
               </template>
             </v-select>
             
@@ -532,11 +523,11 @@ With state persistence via Pinia store.
             ></v-select>
           </v-card-text>
           
-          <v-card-actions class="pa-4 pt-0">
-            <v-btn variant="text" @click="xsCancelSearchDialog">{{ $t('Cancel') }}</v-btn>
+          <v-card-actions class="pa-5 pt-0">
+            <v-btn variant="text" size="default" @click="xsCancelSearchDialog">{{ $t('Cancel') }}</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="#c8102e" @click="xsApplySearchFilters">
-              <v-icon start size="18">mdi-check</v-icon>
+            <v-btn color="#c8102e" size="default" @click="xsApplySearchFilters">
+              <v-icon start size="20">mdi-check</v-icon>
               {{ $t('Apply Filter') }}
             </v-btn>
           </v-card-actions>
@@ -1119,12 +1110,13 @@ export default {
 
 .welcome-header {
   background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
-  padding: 48px 32px;
+  padding: 56px 40px;
   text-align: center;
 }
 
 .welcome-subtitle {
   color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
 }
 
 .welcome-actions {
@@ -1134,7 +1126,9 @@ export default {
 .welcome-btn {
   text-transform: none;
   font-weight: 600;
+  font-size: 1.05rem;
   letter-spacing: 0.25px;
+  height: 52px;
 }
 
 .welcome-btn-outlined {
@@ -1142,7 +1136,9 @@ export default {
   color: #c8102e;
   text-transform: none;
   font-weight: 600;
+  font-size: 1.05rem;
   letter-spacing: 0.25px;
+  height: 52px;
 }
 
 /* Main Card */
@@ -1163,18 +1159,20 @@ export default {
 .custom-tab {
   text-transform: none;
   font-weight: 500;
+  font-size: 0.95rem;
   letter-spacing: 0.25px;
-  min-width: 120px;
+  min-width: 140px;
+  height: 52px;
 }
 
 /* Toolbar Section */
 .toolbar-section {
-  padding: 16px 20px;
+  padding: 18px 24px;
   background-color: white;
 }
 
 .search-field {
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .search-menu-trigger {
@@ -1191,37 +1189,47 @@ export default {
 }
 
 .search-menu-list {
-  min-width: 180px;
+  min-width: 200px;
 }
 
 .action-buttons-group {
-  gap: 8px;
+  gap: 10px;
 }
 
 .action-btn {
   text-transform: none;
   font-weight: 500;
+  font-size: 0.9rem;
   letter-spacing: 0.25px;
 }
 
 /* Mobile Action Bar */
 .mobile-action-bar {
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 10px 0;
 }
 
 .mobile-action-btn {
-  margin: 0 4px;
+  margin: 0 6px;
 }
 
 /* Search Chips */
 .search-chips-container {
-  padding-top: 8px;
+  padding-top: 10px;
   border-top: 1px solid #f0f0f0;
 }
 
 .search-chip {
   font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.search-chip :deep(.v-chip__content) {
+  gap: 4px;
+}
+
+.search-chip :deep(.v-chip__close) {
+  margin: 0;
 }
 
 /* Table Container */
@@ -1231,6 +1239,17 @@ export default {
 
 .projects-table {
   border-radius: 0;
+  font-size: 0.95rem;
+}
+
+.projects-table :deep(.v-data-table-header) {
+  font-size: 0.9rem;
+}
+
+.projects-table :deep(th) {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  padding: 14px 18px !important;
 }
 
 .table-row {
@@ -1243,17 +1262,26 @@ export default {
 }
 
 .table-cell {
-  padding: 16px !important;
+  padding: 18px 18px !important;
+  font-size: 0.95rem;
+}
+
+.project-name {
+  font-size: 0.95rem;
+}
+
+.experience-text {
+  font-size: 0.9rem;
 }
 
 .status-chip {
   font-weight: 500;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 /* Empty State */
 .empty-state-cell {
-  padding: 48px 24px !important;
+  padding: 56px 28px !important;
 }
 
 .empty-state {
@@ -1299,10 +1327,20 @@ export default {
   }
 }
 
+/* Data table pagination styling */
+.projects-table :deep(.v-data-table-footer) {
+  font-size: 0.9rem;
+  padding: 12px 16px;
+}
+
+.projects-table :deep(.v-data-table-footer .v-select) {
+  font-size: 0.9rem;
+}
+
 /* Responsive */
 @media (max-width: 960px) {
   .toolbar-section {
-    padding: 12px 16px;
+    padding: 14px 18px;
   }
 }
 
@@ -1312,23 +1350,23 @@ export default {
   }
   
   .welcome-header {
-    padding: 32px 24px;
+    padding: 40px 28px;
   }
   
   .welcome-header h1 {
-    font-size: 1.5rem !important;
+    font-size: 1.75rem !important;
   }
   
   .toolbar-section {
-    padding: 8px 12px;
+    padding: 10px 14px;
   }
   
   .table-cell {
-    padding: 12px !important;
+    padding: 14px 12px !important;
   }
   
   .empty-state-cell {
-    padding: 32px 16px !important;
+    padding: 40px 18px !important;
   }
 }
 </style>

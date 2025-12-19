@@ -191,6 +191,42 @@ project information and leave the project.
 
               <v-divider></v-divider>
 
+              <!-- Section 3: Project Documents -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">3</div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-center justify-space-between">
+                      <div>
+                        <h2 class="section-title">{{ $t('Project Documents') }}</h2>
+                        <p class="section-subtitle">{{ $t('Manage files and documents for your project') }}</p>
+                      </div>
+                      <v-btn
+                        v-if="projectData.projectStatus !== 'Archived'"
+                        size="small"
+                        class="upload-btn"
+                        @click="openDocumentUpload"
+                        prepend-icon="mdi-upload"
+                      >
+                        {{ $t('Upload') }}
+                      </v-btn>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <project-documents
+                    v-if="projectData._id"
+                    ref="projectDocuments"
+                    :project-id="projectData._id"
+                    :is-project-owner="isProjectOwner"
+                    :embedded="true"
+                  />
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
               <!-- Form Actions -->
               <div class="form-actions">
                 <v-btn 
@@ -325,7 +361,7 @@ project information and leave the project.
               </v-card>
 
               <!-- Your Role Card -->
-              <v-card class="sidebar-card" variant="outlined">
+              <v-card class="sidebar-card mb-4" variant="outlined">
                 <v-card-title class="sidebar-header">
                   <v-icon color="#c8102e" class="mr-2">mdi-account-star</v-icon>
                   {{ $t('Your Role') }}
@@ -585,11 +621,13 @@ import { toast } from 'vue3-toastify';
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import InviteMembersDialog from '@/components/reusable/inviteMembersDialog.vue';
+import ProjectDocuments from '@/components/reusable/projectDocuments.vue';
 
 export default {
   name: "EditProject",
   components: {
-    InviteMembersDialog
+    InviteMembersDialog,
+    ProjectDocuments
   },
   data() {
     return {
@@ -850,6 +888,17 @@ export default {
       }
     },
     
+    // Open document upload dialog
+    openDocumentUpload() {
+      if (this.projectData.projectStatus === 'Archived') {
+        toast.error(this.$t("Cannot upload documents to an archived project."), { position: 'top-right', toastClassName: 'Toastify__toast--delete', multiple: false });
+        return;
+      }
+      if (this.$refs.projectDocuments) {
+        this.$refs.projectDocuments.openUploadDialog();
+      }
+    },
+    
     // Open member invitation dialog
     openInviteDialog() {
       if (this.projectData.projectStatus === 'Archived') {
@@ -1078,6 +1127,16 @@ export default {
 }
 
 .invite-btn:hover {
+  background-color: #a00d24 !important;
+}
+
+/* Upload Button */
+.upload-btn {
+  background-color: #c8102e !important;
+  color: white !important;
+}
+
+.upload-btn:hover {
   background-color: #a00d24 !important;
 }
 

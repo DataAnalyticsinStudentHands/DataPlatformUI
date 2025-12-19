@@ -86,7 +86,166 @@ confirmation dialogs and success feedback for user actions.
         
         <v-divider class="mb-4"></v-divider>
         
+        <!-- Direct Invite Section -->
+        <div class="text-subtitle-1 font-weight-medium mb-3">{{ $t('Or invite classmates directly') }}</div>
+        
+        <!-- Loading State -->
+        <div v-if="loadingRegisteredUsers" class="text-center py-8">
+          <v-progress-circular indeterminate color="#c8102e" size="48"></v-progress-circular>
+          <p class="text-grey mt-3 mb-0">{{ $t('Loading registered students...') }}</p>
+        </div>
+
+        <!-- Empty State - No other students registered -->
+        <div v-else-if="registeredUsers.length === 0" class="text-center py-8">
+          <v-icon size="56" color="grey-lighten-1">mdi-account-group-outline</v-icon>
+          <p class="text-body-1 text-grey-darken-1 mt-3 mb-1">{{ $t('No other students registered') }}</p>
+          <p class="text-body-2 text-grey mb-0">
+            {{ $t('There are no other students enrolled in this experience yet. Share your invite code instead.') }}
+          </p>
+        </div>
+
+        <!-- Students List -->
+        <template v-else>
+          <!-- Search and Selection Counter -->
+          <v-row class="mb-3">
+            <v-col cols="12" md="8">
+              <v-text-field
+                v-model="searchQuery"
+                :label="$t('Search by name or email')"
+                prepend-inner-icon="mdi-magnify"
+                variant="outlined"
+                density="comfortable"
+                clearable
+                hide-details
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="4" class="d-flex align-center">
+              <v-chip
+                :color="selectedUsers.length > 0 ? '#c8102e' : 'grey'"
+                variant="tonal"
+                class="w-100 justify-center"
+                size="large"
+              >
+                <v-icon start>mdi-account-check</v-icon>
+                {{ selectedUsers.length }} {{ $t('selected') }}
+              </v-chip>
+            </v-col>
+          </v-row>
+          
+          <!-- Students List Card -->
+          <v-card variant="outlined">
+            <v-card-text class="pa-0">
+              <v-virtual-scroll
+                :items="filteredRegisteredUsers"
+                :height="Math.min(400, filteredRegisteredUsers.length * 72 + 16)"
+                item-height="60"
+              >
+                <template v-slot:default="{ item }">
+                  <v-hover v-slot:default="{ isHovering, props }">
+                    <v-list-item
+                      v-bind="props"
+                      :class="{ 'bg-grey-lighten-4': isHovering }"
+                      class="px-4"
+                      density="compact"
+                    >
+                      <template v-slot:prepend>
+                        <v-checkbox
+                          :model-value="isUserSelected(item.userID)"
+                          @update:model-value="toggleUserSelection(item)"
+                          color="#c8102e"
+                          hide-details
+                          class="mr-2"
+                        ></v-checkbox>
+                      </template>
+                      
+                      <v-list-item-title class="font-weight-medium">
+                        {{ item.firstName }} {{ item.lastName }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ item.email }}
+                      </v-list-item-subtitle>
+                      
+                      <template v-slot:append>
+                        <v-chip
+                          v-if="isAlreadyMember(item.userID)"
+                          size="small"
+                          color="success"
+                          variant="tonal"
+                        >
+                          <v-icon start size="x-small">mdi-check</v-icon>
+                          {{ $t('Already member') }}
+                        </v-chip>
+                        <v-chip
+                          v-else-if="item.invitationStatus === 'pending'"
+                          size="small"
+                          color="orange"
+                          variant="tonal"
+                        >
+                          <v-icon start size="x-small">mdi-clock-outline</v-icon>
+                          {{ $t('Invitation pending') }}
+                        </v-chip>
+                      </template>
+                    </v-list-item>
+                  </v-hover>
+                </template>
+              </v-virtual-scroll>
+              
+              <!-- Empty search results / All members already invited -->
+              <div v-if="filteredRegisteredUsers.length === 0 && !loadingRegisteredUsers" class="text-center py-8">
+                <v-icon size="48" color="grey-lighten-1">mdi-account-search-outline</v-icon>
+                <p class="text-grey mt-2 mb-0">
+                  {{ searchQuery 
+                    ? $t('No students found matching your search') 
+                    : $t('All registered students are already members of this project') 
+                  }}
+                </p>
+              </div>
+            </v-card-text>
+          </v-card>
+        </template>
       </v-card-text>
+      
+      <v-divider></v-divider>
+      
+      <!-- Card Actions -->
+      <v-card-actions class="pa-4">
+        <v-btn
+          variant="text"
+          color="grey-darken-1"
+          @click="closeDialog"
+        >
+          {{ $t('Cancel') }}
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn
+          v-if="selectedUsers.length > 0"
+          variant="text"
+          color="#c8102e"
+          @click="clearSelection"
+          class="mr-2"
+        >
+          <v-icon start>mdi-close</v-icon>
+          {{ $t('Clear selection') }}
+        </v-btn>
+        <v-btn
+          :disabled="selectedUsers.length === 0"
+          :loading="invitingUsers"
+          color="#c8102e"
+          variant="elevated"
+          @click="sendInvitations"
+          prepend-icon="mdi-send"
+        >
+          {{ $t('Send Invitations') }} 
+          <v-badge
+            v-if="selectedUsers.length > 0"
+            :content="selectedUsers.length"
+            color="white"
+            text-color="#c8102e"
+            inline
+            class="ml-2"
+          ></v-badge>
+        </v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 
@@ -239,18 +398,20 @@ export default {
     
     // Filter registered users based on search and membership status
     filteredRegisteredUsers() {
-      if (!this.searchQuery) {
-        return this.registeredUsers.filter(user => !this.isAlreadyMember(user.userID));
+      // First filter out existing members
+      let users = this.registeredUsers.filter(user => !this.isAlreadyMember(user.userID));
+      
+      // Then apply search filter if there's a query
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        users = users.filter(user => {
+          const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+          const email = user.email.toLowerCase();
+          return fullName.includes(query) || email.includes(query);
+        });
       }
       
-      const query = this.searchQuery.toLowerCase();
-      return this.registeredUsers.filter(user => {
-        if (this.isAlreadyMember(user.userID)) return false;
-        
-        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-        const email = user.email.toLowerCase();
-        return fullName.includes(query) || email.includes(query);
-      });
+      return users;
     }
   },
   watch: {
@@ -377,7 +538,7 @@ export default {
     
     // Check if user is already a project member
     isAlreadyMember(userID) {
-      return this.projectMembers.some(member => member.userID === userID);
+      return this.projectMembers.some(member => member.userID === userID || member.id === userID);
     },
     
     // Clear all selected users
@@ -505,10 +666,12 @@ export default {
 </script>
 
 <style scoped>
+/* Smooth transitions for list items */
 .v-list-item {
   transition: background-color 0.2s ease;
 }
 
+/* Custom scrollbar for virtual scroll */
 :deep(.v-virtual-scroll__container) {
   scrollbar-width: thin;
   scrollbar-color: #c8102e20 transparent;
@@ -531,10 +694,12 @@ export default {
   background-color: #c8102e40;
 }
 
+/* Chip animations */
 .v-chip {
   transition: all 0.2s ease;
 }
 
+/* Loading overlay animation */
 :deep(.v-card__loader) {
   opacity: 0.8;
 }

@@ -1,6 +1,7 @@
 <template>
-  <v-card class="mb-6">
-    <v-card-title class="bg-grey-lighten-4 py-3 px-4">
+  <v-card :class="{ 'mb-6': !embedded, 'embedded-card': embedded }">
+    <!-- Header - hidden when embedded -->
+    <v-card-title v-if="!embedded" class="bg-grey-lighten-4 py-3 px-4">
       <v-icon start icon="mdi-file-document-multiple" class="mr-2"></v-icon>
       {{ $t('Project Documents') }}
       <v-spacer></v-spacer>
@@ -345,6 +346,10 @@ export default {
       required: true
     },
     isProjectOwner: {
+      type: Boolean,
+      default: false
+    },
+    embedded: {
       type: Boolean,
       default: false
     }
@@ -873,5 +878,12 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 500;
+}
+
+/* Embedded mode styling */
+.embedded-card {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
 }
 </style>
