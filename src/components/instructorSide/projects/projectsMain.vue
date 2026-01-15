@@ -157,7 +157,7 @@ With state persistence via Pinia store.
                   v-if="activeTab === 'active-projects'"
                   @click="toggleArchivedProjectsView"
                   variant="tonal"
-                  :color="viewingArchivedProjects ? '#c8102e' : 'grey'"
+                  :color="viewingArchivedProjects ? '#c8102e' : 'grey-darken-4'"
                   size="default"
                   class="action-btn"
                 >

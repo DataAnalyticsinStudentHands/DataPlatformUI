@@ -530,12 +530,12 @@ const publicPaths = [
   "/proposaldemo2",
   "/proposaldemo3",
   "/proposaldemo4",
-  "/public1",
+  "/public1", // main
   "/public2",
   "/public3",
   "/public4",
-  "/public5",
-  "/public6",
+  "/public5", //Carlos project
+  "/public6", //ED project
 ];
 
 // Global navigation guard for authentication and role-based routing

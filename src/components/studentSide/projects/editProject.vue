@@ -508,7 +508,7 @@ project information and leave the project.
       <v-dialog v-model="archiveConfirmDialog" persistent max-width="500px">
         <v-card class="confirm-dialog">
           <v-card-title class="d-flex align-center pa-5 warning-dialog-header">
-            <v-icon color="grey-darken-1" size="28" class="mr-3">mdi-archive-alert-outline</v-icon>
+            <v-icon color="grey-darken-4" size="28" class="mr-3">mdi-archive-alert-outline</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('Archive Project?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
@@ -522,7 +522,7 @@ project information and leave the project.
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="archiveConfirmDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-            <v-btn color="grey-darken-1" variant="flat" @click="confirmArchiveProject" :loading="archivingProject">
+            <v-btn color="grey-darken-4" variant="flat" @click="confirmArchiveProject" :loading="archivingProject">
               <v-icon start size="18">mdi-archive</v-icon>
               {{ $t('Archive') }}
             </v-btn>

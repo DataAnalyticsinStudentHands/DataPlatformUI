@@ -1,538 +1,801 @@
-<!-- instructorSpecificExperienceInstance - this view presents a single Experience Instance's data -->
+<!--
+  instructorSpecificExperienceInstance.vue
+  
+  View and edit a single Experience Instance's data. Provides functionality to update
+  activities, exit form release date, registration code, and delete the instance.
+  Redesigned UI matching the project pages aesthetic.
+-->
 <template>
-  <v-container>
-      <v-form>
-          <v-row>
-              <!-- Display the experience instance name -->
-              <v-col>
-                  <p class="font-weight-black text-h6">Experience Instance: {{ experienceData.experienceName }}</p><br>
-              </v-col>
-          </v-row>
-  
-          <!-- Section title for the session -->
-          <v-row>
-              <p class="font-weight-black text-h7">Session</p>
-          </v-row>
-  
-          <v-row>
-              <v-col>
-                <!-- Input field to display the session name (read-only) -->
-                <v-text-field
-                    v-model="sessionData.sessionName"
-                    readonly
-                ></v-text-field>
-              </v-col>
-          </v-row>
-  
-          <!-- Section title for the experience -->
-          <v-row>
-              <p class="font-weight-black text-h7">Experience</p>
-          </v-row>
-  
-          <v-row>
-              <v-col>
-                  <!-- Input field for the experience name (read-only) -->
-                  <v-text-field
-                      label="Experience Name"
-                      v-model="experienceData.experienceName"
-                      readonly
-                  ></v-text-field>
-              </v-col>
-          </v-row>
-  
-          <!-- Registration Code Field -->
-          <v-row>
-              <p class="font-weight-black text-h7">Registration Code</p>
-          </v-row>
-  
-          <v-row>
-              <v-col>
-                  <!-- Display the registration code (read-only) -->
-                  <v-text-field
-                      label="Registration Code"
-                      v-model="registrationCode"
-                  ></v-text-field>
-              </v-col>
-          </v-row>
-          <!-- End of Registration Code Field -->
-  
-          <!-- Section title for the activities -->
-          <v-row>
-              <p class="font-weight-black text-h7">Activities</p>
-          </v-row>
-  
-          <v-row>
-            <v-col cols="6">
-              <!-- Card to display the list of selected activities -->
-              <v-card flat>
-                <v-card-title>
-                  <v-row>
-                    <v-col>
-                      Selected Activities
-                    </v-col>
-                  </v-row>
-                </v-card-title>
-  
-                <!-- Scrollable list of selected activities -->
-                <v-list class="scrollable-list">
-                  <v-list-item
-                    v-for="activity in selectedActivities"
-                    :key="activity._id"
-                  >
-                  <!-- Display the activity name -->
-                  <v-row>
-                    <v-col cols="10">
-                      {{ activity.activityName }}
-                    </v-col>
-  
-                    <!-- Remove activity button -->
-                    <v-col v-if="canUpdateExpInstance">
-                      <v-icon
-                        @click.stop="removeActivity(activity)"
-                        class="mdi-close"
-                      >
-                        mdi-close
-                      </v-icon>
-                    </v-col>
-                  </v-row>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-col>
-  
-            <!-- Card for adding activities, shown conditionally if showAddActivities is true -->
-            <v-col>
-              <v-card
-                v-if="showAddActivities"
-                flat
-                title="Add Activities"
-              >
-                <!-- Search bar for filtering activities -->
-                <template v-slot:text>
-                  <v-text-field
-                    v-model="activitySearch"
-                    label="Search"
-                    prepend-inner-icon="mdi-magnify"
-                    single-line
-                    variant="outlined"
-                    hide-details
-                  ></v-text-field>
-                </template>
-  
-                <!-- Data table for displaying filtered activity data -->
-                <v-data-table
-                  :headers="activityHeaders"
-                  :items="filteredActivityData"
-                  item-value="_id"
-                  items-per-page="-1"
-                  class="scrollable-table"
-                  hover
-                  :search="activitySearch"
-                >
-  
-                  <!-- Custom table body for displaying activities -->
-                  <template v-slot:body="{ items }">
-                    <template v-for="item in items" :key="item._id">
-                      <tr
-                        @click="selectActivity(item)"
-                        @mouseover="hoveredItem = item._id"
-                        @mouseleave="hoveredItem = null"
-                        class="pointer-cursor activity-row"
-                      >
-                        <td>
-                          <div class="activity-content">
-                            {{ item.activityName }}
-                            <!-- Show the add icon when hovering over the item -->
-                            <v-icon v-if="hoveredItem === item._id" class="mdi-plus">mdi-plus</v-icon>
-                          </div>
-                        </td>
-                      </tr>
-                    </template>
-                  </template>
-                  <template v-slot:bottom>
-                  <!-- Optional bottom content (empty for now) -->
-                  </template>
-                </v-data-table>
-              </v-card>
-            </v-col>
-          </v-row>
-  
-          <!-- Section title for the Exit Form Release Date -->
-          <v-row>
-              <p class="font-weight-black text-h7">Exit Form Release Date</p>
-          </v-row>
-  
-          <v-row>
-              <v-col cols="6">
-                  <!-- Input field for selecting the Exit Form Release Date, editable if user can update -->
-                  <v-text-field
-                      label="Exit Form Release Date"
-                      type="date"
-                      v-model="exitFormReleaseDate"
-                      :readonly="!canUpdateExpInstance"
-                  ></v-text-field>
-              </v-col>
-          </v-row>
-  
-          <v-row>
-              <v-col>
-                  <!-- Cancel button to go back to the previous page -->
-                  <v-btn @click="goBack" style="margin-right: 10px;">
-                  Cancel
-                  </v-btn>
-                  <!-- Submit button, shown if the user has permission to update the instance -->
-                  <v-btn v-if="canUpdateExpInstance" style="text-align: center;" @click="handleSubmitForm">Update</v-btn>
-              </v-col>
-  
-              <v-spacer></v-spacer>
-  
-              <v-col cols="auto" v-if="canExpInstanceBeDeleted">
-                  <!-- Delete button, shown if the instance can be deleted -->
-                  <v-btn @click="showDeleteDialog = true">Delete</v-btn>
-              </v-col>
-          </v-row>
-      </v-form>
-  </v-container>
-  
-  <!-- Delete Dialog -->
-  <v-dialog v-model="showDeleteDialog" persistent width="auto">
-      <v-card>
-          <v-card-title class="headline">Confirm Delete</v-card-title>
-          <v-card-text>Are you sure you want to delete this experience instance?</v-card-text>
-          <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="red darken-1" text @click="showDeleteDialog = false">No</v-btn>
-              <v-btn color="green darken-1" text @click="confirmDelete">Yes</v-btn>
-          </v-card-actions>
-      </v-card>
-  </v-dialog>
-  </template>
-  
-  <script>
-  import { computed } from 'vue';
-  import { useLoggedInUserStore } from "@/stored/loggedInUser";
-  import axios from "axios";
-  
-  export default {
-      name: 'instructorSpecificExperienceInstance',
-      setup() {
-        // Access the logged-in user store
-        const userStore = useLoggedInUserStore();
-  
-        // Computed property to determine if the "Add Activities" section should be shown based on user roles
-        const showAddActivities = computed(() => {
-          const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-          return allowedRoles.includes(userStore.role);
-        });
-  
-        // Computed property to determine if the user can update the experience instance based on user roles
-        const canUpdateExpInstance = computed(() => {
-          const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
-          return allowedRoles.includes(userStore.role);
-        });
-  
-        return {
-          userStore,
-          showAddActivities: showAddActivities.value, // Determine if the "Add Activities" section is shown
-          canUpdateExpInstance: canUpdateExpInstance.value // Determine if the experience instance can be updated
-        };
-      },
-  
-      data() {
-          return {
-              sessionData: {},
-              experienceData: {},
-              selectedSessionID: null,
-              selectedExperienceID: null,
-              exitFormReleaseDate: null,
-              canExpInstanceBeDeleted: false,
-              showDeleteDialog: false,
-              activityData: [],
-              originalExpInstanceName: "",
-              selectedActivities: [],
-              originalActivities: [],
-              activitySearch: "",
-              activityHeaders: [
-                  {
-                  title: "Activity Name",
-                  value: "activityName",
-                  key: "activityName",
-                  align: "start",
-                  sortable: true
-                  }
-              ],
-              hoveredItem: null,
-              registrationCode: "" // New data property to hold the registration code
-          }
-      },
-  
-      async created() {
-        // Fetch activity data when the component is created
-        await this.fetchActivityData();
-  
-        // Fetch the experience instance data
-        this.fetchExperienceInstance();
-  
-        // Check if the experience instance can be deleted
-        this.checkIfExpInstanceCanBeDeleted();
-      },
-  
-      computed: {
-          // Filters the activity data, excluding already selected activities
-          filteredActivityData() {
-              // Check if there are selected activities
-              if (this.selectedActivities && this.selectedActivities.length > 0) {
-                  // Return activities that are not present in the selectedActivities array
-                  return this.activityData.filter(activity => 
-                      !this.selectedActivities.some(selectedActivity => 
-                          selectedActivity._id === activity._id
-                      )
-                  );
-              } else {
-                  // If no activities are selected, return all activities
-                  return this.activityData;
-              }
-          }
-      },
-  
-      methods: {
-  
-        // Fetches data for a specific experience instance identified by the instance ID in the route parameters. Retrieves information such as the session ID, experience ID, exit form release date, and registration code from the backend API. Additionally, filters and retrieves the relevant activities associated with the instance. Finally, fetches details for the session and experience related to this instance. If there's an error during the process, handles the error.
-          async fetchExperienceInstance() {
-              const instanceID = useLoggedInUserStore().navigationData.id; // Get instance ID from route parameter
-              const user = useLoggedInUserStore();
-              let token = user.token;
-              let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/${instanceID}`;
-  
-              try {
-                  const response = await axios.get(apiURL, { headers: { token } });
-                  const instanceData = response.data;
-                  this.selectedSessionID = instanceData.sessionID;
-                  this.selectedExperienceID = instanceData.experience.id;
-                  this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10); // Format date as 'YYYY-MM-DD'
-                  
-                  // Set registration code
-                  this.registrationCode = instanceData.registrationCode || "";
-  
-                  this.selectedActivities = this.activityData.filter(activity =>
-                      instanceData.activities.some(instanceActivity => instanceActivity.id === activity._id)
-                  );
-  
-                  // Fetch session and experience details
-                  this.fetchSessionDetails();
-                  this.fetchExperienceDetails();
-              } catch (error) {
-                  this.handleError(error);
-              }
-          },
-  
-          // Retrieves details for the session associated with the current experience instance.
-          async fetchSessionDetails() {
-              const user = useLoggedInUserStore();
-              let token = user.token;
-              let sessionAPIURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${this.selectedSessionID}`;
+  <main class="edit-experience-instance-page">
+    <v-container class="py-8">
+      <!-- Page Header -->
+      <div class="page-header mb-6">
+        <div class="d-flex align-center mb-2">
+          <v-btn 
+            icon 
+            variant="text" 
+            size="small" 
+            @click="goBack"
+            class="mr-2"
+          >
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
+          <v-icon color="#c8102e" size="32" class="mr-3">mdi-book-edit-outline</v-icon>
+          <div>
+            <h1 class="text-h5 font-weight-bold">{{ $t('Edit Experience Instance') }}</h1>
+            <p class="text-body-2 text-medium-emphasis mb-0">{{ experienceData.experienceName }}</p>
+          </div>
+        </div>
+      </div>
+
+      <v-row>
+        <!-- Main Form Column -->
+        <v-col cols="12" lg="10">
+          <v-card class="form-card" elevation="2">
+            <v-form ref="form">
               
-              try {
-                  const sessionResponse = await axios.get(sessionAPIURL, { headers: { token } });
-                  this.sessionData = sessionResponse.data;
-              } catch (error) {
-                  this.handleError(error);
-              }
-          },
-  
-          // Retrieves details for the experience associated with the current experience instance.
-          async fetchExperienceDetails() {
-              const user = useLoggedInUserStore();
-              let token = user.token;
-              let experienceAPIURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.selectedExperienceID}`;
-  
-              try {
-                  const experienceResponse = await axios.get(experienceAPIURL, { headers: { token } });
-                  this.experienceData = experienceResponse.data;
-              } catch (error) {
-                  this.handleError(error);
-              }
-          },
-  
-          // Retrieves activity data from the backend API. Filters the retrieved activities to include only those with an active status. Stores the filtered activity data for further use.
-          async fetchActivityData() {
-              const user = useLoggedInUserStore();
-              let token = user.token;
-              let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
-  
-              try {
-                  const response = await axios.get(apiURL, { headers: { token } });
-                  const activities = response.data;
-                  this.activityData = activities.filter(activity => activity.activityStatus === true);
-                  this.originalActivityData = [...this.activityData];
-              } catch (error) {
-                  this.handleError(error);
-              }
-          },
-  
-          // Checks if the current experience instance can be deleted.
-          async checkIfExpInstanceCanBeDeleted() {
-              const user = useLoggedInUserStore();
-              const token = user.token;
-              const instanceID = user.navigationData.id; // Get instance ID from route parameter
-              const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/can-be-deleted/${instanceID}`;
-  
-              try {
-                  const response = await axios.get(url, { headers: { token } });
-                  this.canExpInstanceBeDeleted = response.data.canBeDeleted;
-              } catch (error) {
-                  this.handleError(error);
-              }
-          },
-  
-          // Executes the deletion of the experience instance and hides the delete dialog.
-          confirmDelete() {
-              this.deleteExpInstance();
-              this.showDeleteDialog = false;
-          },
-  
-          // Deletes the experience instance from the backend API and redirects.
-          async deleteExpInstance() {
-              const user = useLoggedInUserStore();
-              const instanceID = user.navigationData.id; // Get instance ID from route parameter
-              const token = user.token;
-              const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/delete/${instanceID}`;
-  
-              try {
-                  await axios.delete(url, { headers: { token } });
-  
-                  user.navigationData = {
-                    activeTab: 0,
-                    toastType: 'success',
-                    toastMessage: 'Experience Instance Deleted!',
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--create'
-                  };
-                  this.$router.push({
-                      name: 'instructorDataManagement'
-                  });
-              } catch (error) {
-                  this.handleError(error);
-              }
-          },
-  
-          // Redirects to the instructor data management page.
-          goBack() {
-            useLoggedInUserStore().navigationData = {
-              activeTab: 0
-            };
-              this.$router.push({
-                  name: 'instructorDataManagement'
-              });
-          },
-  
-          // Submits the form data for the experience instance, updating the exit form release date and activities.
-          async handleSubmitForm() {
-              const user = useLoggedInUserStore();
-              let token = user.token;
-              const instanceID = user.navigationData.id;
-              let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-single-instance/${instanceID}`;
-  
-              try {
-                  await axios.put(apiURL, {
-                      exitFormReleaseDate: this.exitFormReleaseDate,
-                      activities: this.selectedActivities,
-                      registrationCode: this.registrationCode
-                  }, { headers: { token } })
-                  .then(() => {
-                    useLoggedInUserStore().navigationData = {
-                      activeTab: 0,
-                      toastType: 'info',
-                      toastMessage: 'Experience Instance updated!',
-                      toastPosition: 'top-right',
-                      toastCSS: 'Toastify__toast--update'
-                    };
-                      this.$router.push({ 
-                          name: 'instructorDataManagement'
-                      });
-                  });
-              } catch (error) {
-                  this.handleError(error);
-              }
-          },
-  
-          // Adds the provided activity to the list of selected activities.
-          selectActivity(activity) {
-              this.selectedActivities.push(activity)
-          },
-  
-          // Removes the specified activity from the list of selected activities.
-          removeActivity(activity) {
-              this.selectedActivities = this.selectedActivities.filter(selectedActivity => selectedActivity._id !== activity._id);
-          },
-  
-          // Error handling method
-          handleError(error) {
-              console.error(error);
-          },
+              <!-- Section 1: Session & Experience Info -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">1</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Session & Experience') }}</h2>
+                    <p class="section-subtitle">{{ $t('View the session and experience details') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <div class="readonly-field">
+                        <div class="readonly-label">
+                          <v-icon size="16" color="#666" class="mr-1">mdi-calendar-range</v-icon>
+                          {{ $t('Session Name') }}
+                        </div>
+                        <div class="readonly-value">
+                          {{ sessionData.sessionName }}
+                          <v-icon size="16" color="#999" class="ml-2">mdi-lock-outline</v-icon>
+                        </div>
+                      </div>
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <div class="readonly-field">
+                        <div class="readonly-label">
+                          <v-icon size="16" color="#666" class="mr-1">mdi-school-outline</v-icon>
+                          {{ $t('Experience Name') }}
+                        </div>
+                        <div class="readonly-value">
+                          {{ experienceData.experienceName }}
+                          <v-icon size="16" color="#999" class="ml-2">mdi-lock-outline</v-icon>
+                        </div>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
+              <!-- Section 2: Registration Code -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">2</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Registration Code') }}</h2>
+                    <p class="section-subtitle">{{ $t('Optional code for participant registration') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-text-field
+                    v-model="registrationCode"
+                    :label="$t('Registration Code')"
+                    :readonly="!canUpdateExpInstance"
+                    variant="outlined"
+                    style="max-width: 400px;"
+                  >
+                    <template v-slot:prepend-inner>
+                      <v-icon size="20" color="#666">mdi-key-outline</v-icon>
+                    </template>
+                  </v-text-field>
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
+              <!-- Section 3: Activities -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">3</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Activities') }}</h2>
+                    <p class="section-subtitle">{{ $t('Manage activities for this experience instance') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-row>
+                    <!-- Selected Activities -->
+                    <v-col cols="12" md="6">
+                      <div class="activities-panel">
+                        <div class="panel-header">
+                          <v-icon color="#c8102e" size="20" class="mr-2">mdi-clipboard-check-outline</v-icon>
+                          <span class="font-weight-medium">{{ $t('Selected Activities') }}</span>
+                          <v-chip size="small" class="ml-2" color="grey">{{ selectedActivities.length }}</v-chip>
+                        </div>
+                        <div class="scrollable-list">
+                          <div v-if="selectedActivities.length === 0" class="empty-activities">
+                            <v-icon color="#ccc" size="32">mdi-clipboard-text-off-outline</v-icon>
+                            <p class="text-body-2 text-medium-emphasis mt-2 mb-0">{{ $t('No activities selected') }}</p>
+                          </div>
+                          <v-list v-else density="compact">
+                            <v-list-item 
+                              v-for="activity in selectedActivities" 
+                              :key="activity._id"
+                              class="activity-list-item"
+                            >
+                              <template v-slot:prepend>
+                                <v-icon size="18" color="#666">mdi-clipboard-text-outline</v-icon>
+                              </template>
+                              <v-list-item-title>{{ activity.activityName }}</v-list-item-title>
+                              <template v-slot:append>
+                                <v-btn 
+                                  v-if="canUpdateExpInstance"
+                                  icon 
+                                  variant="text" 
+                                  size="small"
+                                  @click.stop="removeActivity(activity)"
+                                >
+                                  <v-icon size="18" color="error">mdi-close</v-icon>
+                                </v-btn>
+                              </template>
+                            </v-list-item>
+                          </v-list>
+                        </div>
+                      </div>
+                    </v-col>
+
+                    <!-- Add Activities -->
+                    <v-col cols="12" md="6" v-if="showAddActivities">
+                      <div class="activities-panel">
+                        <div class="panel-header">
+                          <v-icon color="#c8102e" size="20" class="mr-2">mdi-plus-circle-outline</v-icon>
+                          <span class="font-weight-medium">{{ $t('Add Activities') }}</span>
+                        </div>
+                        <v-text-field
+                          v-model="activitySearch"
+                          :label="$t('Search')"
+                          prepend-inner-icon="mdi-magnify"
+                          single-line
+                          variant="outlined"
+                          density="compact"
+                          hide-details
+                          class="mb-3"
+                        ></v-text-field>
+                        <div class="scrollable-table">
+                          <v-data-table
+                            :headers="activityHeaders"
+                            :items="filteredActivityData"
+                            item-value="_id"
+                            items-per-page="-1"
+                            hover
+                            :search="activitySearch"
+                            density="compact"
+                          >
+                            <template v-slot:body="{ items }">
+                              <template v-for="item in items" :key="item._id">
+                                <tr
+                                  @click="selectActivity(item)"
+                                  @mouseover="hoveredItem = item._id"
+                                  @mouseleave="hoveredItem = null"
+                                  class="activity-row"
+                                >
+                                  <td>
+                                    <div class="activity-content">
+                                      <span>{{ item.activityName }}</span>
+                                      <v-icon v-if="hoveredItem === item._id" color="#c8102e" size="18">
+                                        mdi-plus-circle
+                                      </v-icon>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </template>
+                            </template>
+                            <template v-slot:bottom></template>
+                          </v-data-table>
+                        </div>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
+              <!-- Section 4: Exit Form Release Date -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">4</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Exit Form Release Date') }}</h2>
+                    <p class="section-subtitle">{{ $t('Set when the exit form becomes available') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-text-field
+                    type="date"
+                    v-model="exitFormReleaseDate"
+                    :label="$t('Release Date')"
+                    :readonly="!canUpdateExpInstance"
+                    variant="outlined"
+                    style="max-width: 300px;"
+                  >
+                    <template v-slot:prepend-inner>
+                      <v-icon size="20" color="#666">mdi-calendar-clock</v-icon>
+                    </template>
+                  </v-text-field>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <v-btn 
+                  variant="outlined"
+                  size="large"
+                  @click="goBack"
+                  class="action-btn"
+                >
+                  {{ $t('Cancel') }}
+                </v-btn>
+
+                <!-- Delete Button -->
+                <v-btn
+                  v-if="canExpInstanceBeDeleted"
+                  variant="outlined"
+                  size="large"
+                  color="error"
+                  @click="showDeleteDialog = true"
+                  class="action-btn ml-3"
+                >
+                  <v-icon start size="18">mdi-delete-outline</v-icon>
+                  {{ $t('Delete') }}
+                </v-btn>
+
+                <v-spacer></v-spacer>
+
+                <!-- Update Button -->
+                <v-btn
+                  v-if="canUpdateExpInstance"
+                  size="large"
+                  color="#c8102e"
+                  class="action-btn submit-btn"
+                  @click="handleSubmitForm"
+                >
+                  <v-icon start size="18">mdi-content-save</v-icon>
+                  {{ $t('Update Experience Instance') }}
+                </v-btn>
+              </div>
+            </v-form>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <!-- Delete Confirmation Dialog -->
+    <v-dialog v-model="showDeleteDialog" persistent max-width="450px">
+      <v-card class="confirm-dialog">
+        <v-card-title class="d-flex align-center pa-5 error-dialog-header">
+          <v-icon color="error" size="28" class="mr-3">mdi-delete-alert-outline</v-icon>
+          <span class="text-h6 font-weight-bold">{{ $t('Confirm Delete') }}</span>
+        </v-card-title>
+        <v-card-text class="px-5 pb-4">
+          <p class="text-body-1 mb-0">
+            {{ $t('Are you sure you want to delete this experience instance?') }}
+          </p>
+        </v-card-text>
+        <v-card-actions class="pa-5 pt-0">
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="showDeleteDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete">
+            <v-icon start size="18">mdi-delete</v-icon>
+            {{ $t('Delete') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </main>
+</template>
+
+<script>
+import { computed } from 'vue';
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
+import axios from "axios";
+
+export default {
+  name: 'instructorSpecificExperienceInstance',
+  setup() {
+    // Access the logged-in user store
+    const userStore = useLoggedInUserStore();
+
+    // Computed property to determine if the "Add Activities" section should be shown based on user roles
+    const showAddActivities = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
+
+    // Computed property to determine if the user can update the experience instance based on user roles
+    const canUpdateExpInstance = computed(() => {
+      const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
+      return allowedRoles.includes(userStore.role);
+    });
+
+    return {
+      userStore,
+      showAddActivities: showAddActivities.value,
+      canUpdateExpInstance: canUpdateExpInstance.value
+    };
+  },
+
+  data() {
+    return {
+      sessionData: {},
+      experienceData: {},
+      selectedSessionID: null,
+      selectedExperienceID: null,
+      exitFormReleaseDate: null,
+      canExpInstanceBeDeleted: false,
+      showDeleteDialog: false,
+      activityData: [],
+      originalExpInstanceName: "",
+      selectedActivities: [],
+      originalActivities: [],
+      activitySearch: "",
+      activityHeaders: [
+        {
+          title: "Activity Name",
+          value: "activityName",
+          key: "activityName",
+          align: "start",
+          sortable: true
+        }
+      ],
+      hoveredItem: null,
+      registrationCode: ""
+    }
+  },
+
+  async created() {
+    // Fetch activity data when the component is created
+    await this.fetchActivityData();
+
+    // Fetch the experience instance data
+    this.fetchExperienceInstance();
+
+    // Check if the experience instance can be deleted
+    this.checkIfExpInstanceCanBeDeleted();
+  },
+
+  computed: {
+    // Filters the activity data, excluding already selected activities
+    filteredActivityData() {
+      if (this.selectedActivities && this.selectedActivities.length > 0) {
+        return this.activityData.filter(activity => 
+          !this.selectedActivities.some(selectedActivity => 
+            selectedActivity._id === activity._id
+          )
+        );
+      } else {
+        return this.activityData;
       }
+    }
+  },
+
+  methods: {
+    async fetchExperienceInstance() {
+      const instanceID = useLoggedInUserStore().navigationData.id;
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/${instanceID}`;
+
+      try {
+        const response = await axios.get(apiURL, { headers: { token } });
+        const instanceData = response.data;
+        this.selectedSessionID = instanceData.sessionID;
+        this.selectedExperienceID = instanceData.experience.id;
+        this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10);
+        
+        this.registrationCode = instanceData.registrationCode || "";
+
+        this.selectedActivities = this.activityData.filter(activity =>
+          instanceData.activities.some(instanceActivity => instanceActivity.id === activity._id)
+        );
+
+        this.fetchSessionDetails();
+        this.fetchExperienceDetails();
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    async fetchSessionDetails() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let sessionAPIURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${this.selectedSessionID}`;
+      
+      try {
+        const sessionResponse = await axios.get(sessionAPIURL, { headers: { token } });
+        this.sessionData = sessionResponse.data;
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    async fetchExperienceDetails() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let experienceAPIURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.selectedExperienceID}`;
+
+      try {
+        const experienceResponse = await axios.get(experienceAPIURL, { headers: { token } });
+        this.experienceData = experienceResponse.data;
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    async fetchActivityData() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
+
+      try {
+        const response = await axios.get(apiURL, { headers: { token } });
+        const activities = response.data;
+        this.activityData = activities.filter(activity => activity.activityStatus === true);
+        this.originalActivityData = [...this.activityData];
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    async checkIfExpInstanceCanBeDeleted() {
+      const user = useLoggedInUserStore();
+      const token = user.token;
+      const instanceID = user.navigationData.id;
+      const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/can-be-deleted/${instanceID}`;
+
+      try {
+        const response = await axios.get(url, { headers: { token } });
+        this.canExpInstanceBeDeleted = response.data.canBeDeleted;
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    confirmDelete() {
+      this.deleteExpInstance();
+      this.showDeleteDialog = false;
+    },
+
+    async deleteExpInstance() {
+      const user = useLoggedInUserStore();
+      const instanceID = user.navigationData.id;
+      const token = user.token;
+      const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/delete/${instanceID}`;
+
+      try {
+        await axios.delete(url, { headers: { token } });
+
+        user.navigationData = {
+          activeTab: 0,
+          toastType: 'success',
+          toastMessage: 'Experience Instance Deleted!',
+          toastPosition: 'top-right',
+          toastCSS: 'Toastify__toast--create'
+        };
+        this.$router.push({
+          name: 'instructorDataManagement'
+        });
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    goBack() {
+      useLoggedInUserStore().navigationData = {
+        activeTab: 0
+      };
+      this.$router.push({
+        name: 'instructorDataManagement'
+      });
+    },
+
+    async handleSubmitForm() {
+      const user = useLoggedInUserStore();
+      let token = user.token;
+      const instanceID = user.navigationData.id;
+      let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-single-instance/${instanceID}`;
+
+      try {
+        await axios.put(apiURL, {
+          exitFormReleaseDate: this.exitFormReleaseDate,
+          activities: this.selectedActivities,
+          registrationCode: this.registrationCode
+        }, { headers: { token } })
+        .then(() => {
+          useLoggedInUserStore().navigationData = {
+            activeTab: 0,
+            toastType: 'info',
+            toastMessage: 'Experience Instance updated!',
+            toastPosition: 'top-right',
+            toastCSS: 'Toastify__toast--update'
+          };
+          this.$router.push({ 
+            name: 'instructorDataManagement'
+          });
+        });
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
+    selectActivity(activity) {
+      this.selectedActivities.push(activity)
+    },
+
+    removeActivity(activity) {
+      this.selectedActivities = this.selectedActivities.filter(selectedActivity => selectedActivity._id !== activity._id);
+    },
+
+    handleError(error) {
+      console.error(error);
+    },
   }
-  </script>
-  
-  <style>
-  .pointer-cursor {
-      cursor: pointer;
+}
+</script>
+
+<style scoped>
+/* Page Background */
+.edit-experience-instance-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Page Header */
+.page-header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Main Form Card */
+.form-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Form Sections */
+.form-section {
+  padding: 28px 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.section-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #c8102e;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1a1a1a;
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0;
+}
+
+.section-content {
+  padding-left: 48px;
+}
+
+/* Readonly Fields */
+.readonly-field {
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.readonly-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.readonly-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+/* Activities Panel */
+.activities-panel {
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.empty-activities {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.activity-list-item {
+  background-color: white;
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
+
+.activity-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.activity-row:hover {
+  background-color: rgba(200, 16, 46, 0.04) !important;
+}
+
+.activity-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 0;
+}
+
+/* Scrollable containers */
+.scrollable-table {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+}
+
+.scrollable-table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-table::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollable-table::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.scrollable-table::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.scrollable-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.scrollable-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  align-items: center;
+  padding: 20px 32px;
+  background-color: #fafafa;
+  border-top: 1px solid #e8e8e8;
+}
+
+.action-btn {
+  min-width: 120px;
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+.submit-btn {
+  color: white !important;
+}
+
+/* Dialogs */
+.confirm-dialog {
+  border-radius: 12px;
+}
+
+.error-dialog-header {
+  background-color: #ffebee;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .form-section {
+    padding: 24px 20px;
   }
   
-  .activity-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+  .section-content {
+    padding-left: 0;
+    margin-top: 16px;
   }
   
-  .mdi-close {
-    cursor: pointer;
+  .form-actions {
+    padding: 16px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   
-  .scrollable-table {
-      height: 300px; /* Adjust the height as needed */
-      overflow-y: auto;
-    }
+  .form-actions .v-spacer {
+    display: none;
+  }
   
-    /* Optional: Style to improve the appearance when scrolling */
-    .scrollable-table::-webkit-scrollbar {
-      width: 10px;
-    }
-  
-    .scrollable-table::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-  
-    .scrollable-table::-webkit-scrollbar-thumb {
-      background: #888;
-    }
-  
-    .scrollable-table::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-  
-    .scrollable-list {
-      height: 370px; /* Adjust the height as needed */
-      overflow-y: auto;
-    }
-  
-    /* Optional: Style to improve the appearance when scrolling */
-    .scrollable-list::-webkit-scrollbar {
-      width: 10px;
-    }
-  
-    .scrollable-list::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-  
-    .scrollable-list::-webkit-scrollbar-thumb {
-      background: #888;
-    }
-  
-    .scrollable-list::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-  
-  </style>
-  
+  .action-btn {
+    flex: 1 1 auto;
+  }
+
+  .activities-panel {
+    margin-bottom: 16px;
+  }
+}
+</style>

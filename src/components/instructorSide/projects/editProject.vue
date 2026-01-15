@@ -251,7 +251,7 @@ archive/restore projects. Includes comprehensive project review capabilities.
                   v-if="projectData.projectStatus === 'Active'"
                   variant="outlined"
                   size="large"
-                  color="grey"
+                  color="grey-darken-4"
                   @click="openArchiveConfirmDialog"
                   :loading="archivingProject"
                   class="action-btn mr-3"
@@ -378,22 +378,6 @@ archive/restore projects. Includes comprehensive project review capabilities.
                       {{ projectData.instructorEmail }}
                     </div>
                   </div>
-                </v-card-text>
-              </v-card>
-
-              <!-- Important Note Card -->
-              <v-card class="warning-card" variant="outlined">
-                <v-card-title class="warning-header">
-                  <v-icon color="warning" class="mr-2">mdi-alert-outline</v-icon>
-                  {{ $t('Important Note') }}
-                </v-card-title>
-                <v-card-text class="pt-0">
-                  <p class="text-body-2 mb-0">
-                    {{ projectData.projectStatus === 'Proposed' 
-                      ? $t('Approving will make this project active. Rejecting will archive the proposal. Both actions will notify the student.')
-                      : $t('Changes made to this project will be visible to all team members.')
-                    }}
-                  </p>
                 </v-card-text>
               </v-card>
             </div>

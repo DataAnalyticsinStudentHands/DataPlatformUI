@@ -184,12 +184,12 @@ With state persistence via Pinia store.
                     v-if="activeTab === 'my-projects'"
                     @click="toggleArchivedProjectsView"
                     variant="tonal"
-                    :color="viewingArchivedProjects ? '#c8102e' : 'grey'"
+                    :color="viewingArchivedProjects ? '#c8102e' : 'grey-darken-4'"
                     size="default"
                     class="action-btn mr-2"
                   >
                     <v-icon start size="20">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
-                    <span class="d-none d-md-inline">{{ viewingArchivedProjects ? $t('View Active') : $t('View Archived') }}</span>
+                    <span class="d-none d-md-inline grey-darken-4">{{ viewingArchivedProjects ? $t('View Active') : $t('View Archived') }}</span>
                     <span class="d-inline d-md-none">{{ viewingArchivedProjects ? $t('Active') : $t('Archive') }}</span>
                   </v-btn>
                   
