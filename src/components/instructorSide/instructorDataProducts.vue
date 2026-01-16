@@ -274,6 +274,15 @@
             "goalForm.goals.goalThree": "goal_3_text_entry",
             "goalForm.goals.goalFour": "goal_4_text_entry",
             "goalForm.goals.goalFive": "goal_5_text_entry",
+            // HICH Project fields
+            "hichProject": "hich_projects",
+            "hichProject_BREATHE": "hich_breathe",
+            "hichProject_Creative Care": "hich_creative_care",
+            "hichProject_Operation Fusion": "hich_operation_fusion",
+            "hichProject_PEERS": "hich_peers",
+            "hichProject_Responsive Resourcing": "hich_responsive_resourcing",
+            "hichProject_SAIID": "hich_saiid",
+            "hichProject_WEAR": "hich_wear",
             "createdAt": "goal_created_date",
             "updatedAt": "goal_updated_date",
             // "__v": "",
@@ -700,6 +709,15 @@
             "goalForm.goals.goalThree",
             "goalForm.goals.goalFour",
             "goalForm.goals.goalFive",
+            // HICH Project fields - combined list and individual binary columns
+            "hichProject",
+            "hichProject_BREATHE",
+            "hichProject_Creative Care",
+            "hichProject_Operation Fusion",
+            "hichProject_PEERS",
+            "hichProject_Responsive Resourcing",
+            "hichProject_SAIID",
+            "hichProject_WEAR",
             "createdAt",
             "updatedAt",
             "__v"
@@ -711,6 +729,17 @@
   // Extracts values from a given object based on the provided header, incorporating special handling for nested fields and 'checked' values. Includes transformations for specific fields like leadership options and growth goals.
   getGoalFormCSVRowValues(obj, header) {
       const values = [];
+      
+      // Define HICH project options for binary encoding
+      const hichProjectOptions = [
+          'BREATHE',
+          'Creative Care',
+          'Operation Fusion',
+          'PEERS',
+          'Responsive Resourcing',
+          'SAIID',
+          'WEAR'
+      ];
       
       header.forEach((field) => {
           let value = obj;
@@ -724,6 +753,21 @@
                   value = '';
               }
           } 
+          // Handle HICH project combined field (comma-separated list)
+          else if (field === "hichProject") {
+              const hichArray = obj.hichProject || [];
+              if (Array.isArray(hichArray) && hichArray.length > 0) {
+                  value = hichArray.join('; ');
+              } else {
+                  value = '';
+              }
+          }
+          // Handle individual HICH project binary fields
+          else if (field.startsWith("hichProject_")) {
+              const projectName = field.replace("hichProject_", "");
+              const hichArray = obj.hichProject || [];
+              value = Array.isArray(hichArray) && hichArray.includes(projectName) ? "1" : "0";
+          }
           // Special handling for the nested arrays with 'checked' values
           else if (field.includes(".checked")) {
               const pathKeys = field.split('.');
@@ -1058,4 +1102,3 @@
     },
   };
   </script>
-  
