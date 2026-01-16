@@ -402,7 +402,6 @@
     "Last name is required": "El apellido es obligatorio",
     "Language preference is required": "La preferencia de idioma es obligatoria",
     "Password should be at least 8 characters long": "La contraseña debe tener al menos 8 caracteres",
-<<<<<<< HEAD
   "A project for this experience already exists.": "Ya existe un proyecto para esta experiencia.",
   "About the Public Project Showcase": "Acerca de la Exhibición Pública de Proyectos",
   "Any uploaded poster or presentation materials": "Cualquier póster o material de presentación que hayas subido",
@@ -460,9 +459,7 @@
   "Your project will be removed from the public page upon withdrawal": "Tu proyecto será eliminado de la página pública cuando retires tu consentimiento.",
   "Your proposal is sent for review": "Tu propuesta se envía para revisión.",
   "Your proposal will be submitted for review. You will be notified once a decision has been made.": "Tu propuesta será enviada para revisión. Se te notificará una vez que se haya tomado una decisión.",
-  "Your rights:": "Tus derechos:"
-}
-=======
+  "Your rights:": "Tus derechos:",
     "How likely are you to recommend HICH to a friend?": "¿Qué tan probable es que recomiendes HICH a un amigo?",
     "How likely are you to recommend HICH's socials and workshops to a friend?": "¿Qué tan probable es que recomiendes las redes sociales y los talleres de HICH a un amigo?",
     "How likely are you to recommend HICH's volunteer projects to a friend?": "¿Qué tan probable es que recomiendes los proyectos de voluntariado de HICH a un amigo?",
@@ -475,4 +472,3 @@
     "advocacy": "abogacía",
     "Hi there! You have already filled out an Exit Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.": "¡Hola! Ya has completado un formulario de salida para esta experiencia. Ten en cuenta que enviar otro formulario para la misma experiencia reemplazará tus respuestas anteriores."
 }
->>>>>>> develop_Project_Documents

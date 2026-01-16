@@ -206,6 +206,7 @@ including experience selection, background, growth goals, aspirations, and final
                         :isBackgroundEditActive="isBackgroundEditActive"
                         :hichProject="goalForm.hichProject"
                         :goalForm="goalForm"
+                        :isCHWExperience="isCHWExperience"
                         @change-step="currentStep = $event"
                     ></goal-form-review>
                     </v-stepper-window-item>                    
@@ -287,6 +288,7 @@ including experience selection, background, growth goals, aspirations, and final
                             :isBackgroundEditActive="isBackgroundEditActive"
                             :hichProject="goalForm.hichProject"
                             :goalForm="goalForm"
+                            :isCHWExperience="isCHWExperience"
                             @change-step="currentStep = $event"
                         ></goal-form-review>
                     </div>
@@ -661,22 +663,50 @@ computed: {
 
     // Determine if current experience is CHW type
     isCHWExperience() {
-        // Check multiple sources for CHW designation
-        if (this.selectedExperience?.value && this.experiences) {
-        const experience = this.experiences.find(exp => 
-            exp.experienceID === this.selectedExperience.value
-        );
-        if (experience?.experienceName === "CHW Certification") {
-            return true;
+        // DEBUG: Uncomment these lines to see what's happening
+        console.log('=== isCHWExperience DEBUG ===');
+        console.log('selectedExperience:', this.selectedExperience);
+        console.log('selectedExperience.value:', this.selectedExperience?.value);
+        console.log('selectedExperience.experienceID:', this.selectedExperience?.experienceID);
+        console.log('experiences count:', this.experiences?.length);
+        
+        // Method 1: Use the experienceID property directly from selectedExperience
+        // This is the CORRECT approach since selectedExperience now carries experienceID
+        if (this.selectedExperience?.experienceID && this.experiences) {
+            const experience = this.experiences.find(exp => 
+                exp.experienceID === this.selectedExperience.experienceID
+            );
+            
+            console.log('Found experience via experienceID:', experience?.experienceName);
+            
+            if (experience?.experienceName === "CHW Certification") {
+                console.log('✅ CHW Certification detected!');
+                return true;
+            }
         }
+
+        // Method 2: Fallback - find by expRegistrationID (value) 
+        if (this.selectedExperience?.value && this.experiences) {
+            const experience = this.experiences.find(exp => 
+                exp.expRegistrationID === this.selectedExperience.value
+            );
+            
+            console.log('Found experience via expRegistrationID:', experience?.experienceName);
+            
+            if (experience?.experienceName === "CHW Certification") {
+                console.log('✅ CHW Certification detected via fallback!');
+                return true;
+            }
         }
         
-        // Also check if CHW fields are already populated
+        // Method 3: Check if CHW fields are already populated (for incomplete forms)
         if (this.goalForm.chwGrowthGoals && 
             Object.values(this.goalForm.chwGrowthGoals).some(val => val)) {
-        return true;
+            console.log('✅ CHW detected via existing chwGrowthGoals data');
+            return true;
         }
         
+        console.log('❌ Not a CHW experience');
         return false;
     },
 },

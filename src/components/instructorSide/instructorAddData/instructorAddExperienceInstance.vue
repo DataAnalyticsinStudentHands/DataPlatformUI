@@ -145,7 +145,6 @@
                               :label="$t('Instructor (Optional)')"
                               variant="outlined"
                               density="comfortable"
-                              :placeholder="$t('e.g., Dr. Smith, John Doe')"
                               :error-messages="instance.instructorError"
                               @update:modelValue="validateDuplicates"
                             >

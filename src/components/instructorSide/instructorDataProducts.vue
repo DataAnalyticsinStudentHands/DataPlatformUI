@@ -267,6 +267,13 @@
             "goalForm.growthGoal.professionalResponsibilityGoal": "growth_professional",
             "goalForm.growthGoal.socialResponsibilityGoal": "growth_social_responsibility",
             "goalForm.growthGoal.digitalLiteracyGoal": "growth_digital_literacy",
+            // CHW Certification growth goals
+            "goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal": "chw_growth_interpersonal_goal",
+            "goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal": "chw_growth_service_coordination_goal",
+            "goalForm.chwGrowthGoals.evaluationResearchGoal": "chw_growth_evaluation_research_goal",
+            "goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal": "chw_growth_knowledge_base_goal",
+            "goalForm.chwGrowthGoals.teachingEducationGoal": "chw_growth_teaching_goal",
+            "goalForm.chwGrowthGoals.advocacyGoal": "chw_growth_advocacy_goal",
             "goalForm.aspirations.aspirationOne": "aspiration_1_text_entry",
             "goalForm.aspirations.aspirationTwo": "aspiration_2_text_entry",
             "goalForm.aspirations.aspirationThree": "aspiration_3_text_entry",
@@ -705,6 +712,7 @@
         // Append the remaining static headers after the dynamic ones
         ordered_headers.push(
             "goalForm.researchExperience.leadershipOption",
+            // General growth goals
             "goalForm.growthGoal.problemSolvingGoal",
             "goalForm.growthGoal.effectiveCommunicationGoal",
             "goalForm.growthGoal.teamworkGoal",
@@ -712,7 +720,15 @@
             "goalForm.growthGoal.ethicalDecisionMakingGoal",
             "goalForm.growthGoal.professionalResponsibilityGoal",
             "goalForm.growthGoal.socialResponsibilityGoal", 
-            "goalForm.growthGoal.digitalLiteracyGoal",      
+            "goalForm.growthGoal.digitalLiteracyGoal",
+            // CHW Certification growth goals
+            "goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal",
+            "goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal",
+            "goalForm.chwGrowthGoals.evaluationResearchGoal",
+            "goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal",
+            "goalForm.chwGrowthGoals.teachingEducationGoal",
+            "goalForm.chwGrowthGoals.advocacyGoal",
+            // Aspirations and goals
             "goalForm.aspirations.aspirationOne",
             "goalForm.aspirations.aspirationTwo",
             "goalForm.aspirations.aspirationThree",
@@ -809,6 +825,7 @@
                 value = this.transformLeadershipOption(value);
             }
   
+            // General growth goal fields
             const growthFields = [
                 "goalForm.growthGoal.problemSolvingGoal",
                 "goalForm.growthGoal.effectiveCommunicationGoal",
@@ -820,7 +837,17 @@
                 "goalForm.growthGoal.digitalLiteracyGoal"
             ];
 
-            if (growthFields.includes(field)) {
+            // CHW Certification growth goal fields
+            const chwGrowthGoalFields = [
+                "goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal",
+                "goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal",
+                "goalForm.chwGrowthGoals.evaluationResearchGoal",
+                "goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal",
+                "goalForm.chwGrowthGoals.teachingEducationGoal",
+                "goalForm.chwGrowthGoals.advocacyGoal"
+            ];
+
+            if (growthFields.includes(field) || chwGrowthGoalFields.includes(field)) {
                 value = this.transformGrowthValue(value);
             }
 
@@ -983,7 +1010,7 @@ getExitFormCSVRowValues(obj, header) {
             case "exitForm.hichNetPromoter.recommendSocialsWorkshops":
             case "exitForm.hichNetPromoter.recommendVolunteerProjects":
             case "exitForm.hichNetPromoter.recommendMentorshipProgram":
-                // These are already numeric (0-10), no transformation needed
+                value = this.transformLikelihoodValue(value);
                 break;
         }
 

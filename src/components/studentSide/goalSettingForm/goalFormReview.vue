@@ -360,6 +360,69 @@ and goals with responsive layout for mobile and desktop views.
     </v-col>
 </v-row>
 
+<!-- CHW Growth Goals Section (conditional display) -->
+<div v-if="isCHWExperience">
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Interpersonal and Relationship-Building Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('interpersonal and relationship building') }}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals?.interpersonalRelationshipBuildingGoal) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Service Coordination and Navigation Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('service coordination and navigation') }}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals?.serviceCoordinationNavigationGoal) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Evaluation and Research Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('evaluation and research') }}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals?.evaluationResearchGoal) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Knowledge Base on Specific Health Issues Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('knowledge base on specific health issues') }}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals?.knowledgeBaseHealthIssuesGoal) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Teaching and Education Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('teaching and education') }}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals?.teachingEducationGoal) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Advocacy Goal') }}</h3>
+            <p class="form-label">
+                {{ $t('Please indicate your expectation of the growth you anticipate to see during your program in the area of') }} <u>{{ $t('advocacy') }}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(goalForm.chwGrowthGoals?.advocacyGoal) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+</div>
+
 <!-- Aspirations section with responsive edit buttons -->
 <v-row class="d-flex justify-center align-center">
     <v-col sm="1" class="d-none d-sm-flex"></v-col>
@@ -486,7 +549,11 @@ export default {
         goalForm: Object,
         hasCompletedGoalForm: Boolean,
         isBackgroundEditActive: Boolean,
-        hichProject: Array
+        hichProject: Array,
+        isCHWExperience: {
+            type: Boolean,
+            default: false
+        }
     },
     emits: ["change-step"],
     computed: {

@@ -621,7 +621,7 @@ export default {
 .students-table :deep(th) {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
-  padding: 14px 18px !important;
+  padding: 10px 16px !important;
   background-color: #fafafa;
 }
 
@@ -649,7 +649,7 @@ export default {
 }
 
 .table-cell {
-  padding: 16px 18px !important;
+  padding: 10px 16px !important;
   font-size: 0.95rem;
 }
 
@@ -719,7 +719,7 @@ export default {
   }
   
   .table-cell {
-    padding: 14px 12px !important;
+    padding: 8px 12px !important;
   }
   
   .footer-toolbar {
