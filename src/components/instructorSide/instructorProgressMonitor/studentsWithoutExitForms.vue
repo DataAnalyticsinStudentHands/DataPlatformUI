@@ -344,6 +344,14 @@ export default {
         .sort((a, b) => a.text.localeCompare(b.text));
     },
 
+    // Format experiences for legacy single-dropdown format (kept for compatibility)
+    formattedExperiences() {
+      return this.expInstances.map(instance => ({
+        text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
+        value: instance.expInstanceID
+      }));
+    },
+
     displayedStudents() {
       if (this.completed === true) {
         return this.studentsWithExitForm;
@@ -378,6 +386,7 @@ export default {
   },
 
   methods: {
+    // Fetches active experience instances for the instructor from the backend API.
     async fetchExperiences() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -405,6 +414,7 @@ export default {
       }
     },
 
+    // Initiates the process of fetching students based on completion status.
     async fetchStudents() {
       if (this.selectedExperience === null || this.completed === null) return;
       this.loading = true;
@@ -422,6 +432,7 @@ export default {
       }
     },
 
+    // Fetches students who have not completed an Exit form for a specific experience.
     async fetchStudentsWithoutExitForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -435,6 +446,7 @@ export default {
       }
     },
 
+    // Fetches students who have completed an Exit form for a specific experience.
     async fetchStudentsWithExitForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -448,31 +460,43 @@ export default {
       }
     },
 
+    // Toggles the navigation state
     toggleNavigation() {
       this.isNavigationDisabled = !this.isNavigationDisabled;
     },
 
+    // Navigates to the student's profile if navigation is enabled
     navigateIfEnabled(userID) {
       if (!this.isNavigationDisabled) {
         this.navigateToProfile(userID);
       }
     },
 
+    // Navigates to the profile page of a specific student
     navigateToProfile(userID) {
       useLoggedInUserStore().navigationData = { userID: userID };
       this.$router.push({ name: "instructorSpecificStudent" });
     },
 
+    // Gets initials from first and last name
     getInitials(firstName, lastName) {
       return (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
     },
 
+    // Concatenates first and last name
     formatFullName(firstName, lastName) {
       return `${firstName} ${lastName}`;
     },
 
+    // Formats a date to readable format
     formatDate(date) {
       return DateTime.fromISO(date).toFormat("MMM dd, yyyy");
+    },
+
+    // Error handler (to be implemented based on app's error handling strategy)
+    handleError(error) {
+      console.error('Error:', error);
+      // Add your error handling logic here
     },
   },
 };
@@ -602,6 +626,12 @@ export default {
   font-size: 0.9rem;
   padding: 12px 16px;
   border-top: 1px solid #e8e8e8;
+}
+
+/* Legacy hover row support */
+.hoverRow {
+  background-color: #f0f0f0;
+  cursor: pointer;
 }
 
 /* Responsive */

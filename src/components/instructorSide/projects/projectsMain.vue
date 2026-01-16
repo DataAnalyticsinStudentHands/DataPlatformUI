@@ -2,8 +2,8 @@
 projectsMain.vue (Instructor Side)
 Main instructor dashboard for managing projects and proposals. Features tabbed interface 
 for active/archived projects and proposals, advanced search and filtering capabilities, 
-and archive view toggle. Includes project review workflow.
-With state persistence via Pinia store.
+and archive view toggle. Includes project review workflow and template creation.
+With state persistence via Pinia store. Updated to display document count and consent status.
 -->
 
 <template>
@@ -283,6 +283,9 @@ With state persistence via Pinia store.
                         <td class="table-cell d-none d-lg-table-cell">
                           <span class="text-medium-emphasis">{{ item.teamSize }}</span>
                         </td>
+                        <td class="table-cell d-none d-lg-table-cell">
+                          <span class="text-medium-emphasis">{{ item.documentCount }}</span>
+                        </td>
                         <td class="table-cell">
                           <v-chip
                             size="default"
@@ -478,6 +481,53 @@ With state persistence via Pinia store.
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- Project template creation dialog -->
+      <v-dialog v-model="templateDialog" max-width="600px">
+        <v-card class="dialog-card">
+          <v-card-title class="dialog-header text-white pa-4">
+            {{ $t('Create Project Template') }}
+          </v-card-title>
+          <v-card-text class="pa-4">
+            <v-text-field
+              v-model="templateName"
+              :label="$t('Template Name')"
+              variant="outlined"
+              class="mt-4"
+            ></v-text-field>
+            <v-textarea
+              v-model="templateDescription"
+              :label="$t('Template Description')"
+              rows="4"
+              auto-grow
+              variant="outlined"
+            ></v-textarea>
+            <v-select
+              v-model="templateExperience"
+              :items="templateExperienceOptions" 
+              :label="$t('Associated Experience')"
+              variant="outlined"
+            ></v-select>
+          </v-card-text>
+          <v-card-actions class="pa-4">
+            <v-spacer></v-spacer>
+            <v-btn
+              color="grey-darken-1"
+              variant="text"
+              @click="templateDialog = false"
+            >
+              {{ $t('Cancel') }}
+            </v-btn>
+            <v-btn
+              color="#c8102e"
+              @click="saveTemplate" 
+              disabled 
+            >
+              {{ $t('Save Template') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </main>
 </template>
@@ -519,6 +569,13 @@ export default {
       mobileSearchDialog: false,
       mobileSearchCategory: 'All Fields',
       mobileSearchQuery: '',
+      
+      // Template dialog data
+      templateDialog: false,
+      templateName: '',
+      templateDescription: '',
+      templateExperience: '',
+      templateExperienceOptions: [],
 
       // Table configuration
       itemsPerPageOptions: [
@@ -540,6 +597,7 @@ export default {
         { title: this.$t('Team Lead'), key: 'teamLeadName', sortable: true },
         { title: this.$t('Experience'), key: 'experienceInfo', sortable: true },
         { title: this.$t('Team Size'), key: 'teamSize', sortable: true },
+        { title: this.$t('Documents'), key: 'documentCount', sortable: true },
         { title: this.$t('Status'), key: 'projectStatus', sortable: true },
         { title: this.$t('Last Updated'), key: 'updatedAt', sortable: true }
       ]
@@ -695,6 +753,7 @@ export default {
   async mounted() {
     this.loading = true;
     await this.fetchProjects();
+    await this.fetchExperiencesForTemplateDialog();
     
     // Handle navigation toast messages
     const loggedInUserStore = useLoggedInUserStore();
@@ -800,6 +859,7 @@ export default {
                                this.$t('Unknown');
             const studentName = project.createdBy?.name || this.$t('Unknown');
             const submittedDate = project.createdAt;
+            const documentCount = project.documentCount || 0;
             
             return {
               ...project,
@@ -808,6 +868,7 @@ export default {
               teamLeadName,
               studentName,
               submittedDate,
+              documentCount,
               consentToFeature: project.consentToFeature || false
             };
           });
@@ -829,6 +890,29 @@ export default {
         this.allNonProposalProjects = [];
       } finally {
         this.tableLoading = false;
+      }
+    },
+    
+    // Fetch available experiences for template dialog
+    async fetchExperiencesForTemplateDialog() {
+      try {
+        const user = this.loggedInUserStore;
+        let token = user.token;
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences`;
+        const response = await axios.get(apiURL, { headers: { token } });
+        if (response.data && response.data.experiences) {
+          this.templateExperienceOptions = [
+            ...response.data.experiences.map(exp => ({
+              title: exp.experienceName,
+              value: exp._id 
+            }))
+          ];
+        } else {
+          this.templateExperienceOptions = [];
+        }
+      } catch (error) {
+        console.error("Error fetching experiences for template dialog:", error);
+        this.templateExperienceOptions = [];
       }
     },
     
@@ -1015,6 +1099,12 @@ export default {
       }
       this.loggedInUserStore.navigationData = { projectID: project._id };
       this.$router.push({ name: 'editProjectInstructor' });
+    },
+
+    // Save project template (placeholder implementation)
+    saveTemplate() {
+      toast.info(this.$t("Template saving not yet implemented."), { position: 'top-right' });
+      this.templateDialog = false;
     },
     
     // Format date for table display
@@ -1219,6 +1309,16 @@ export default {
 /* Mobile Search Dialog */
 .mobile-search-dialog {
   border-radius: 12px;
+}
+
+/* Template Dialog */
+.dialog-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dialog-header {
+  background: linear-gradient(135deg, #c8102e, #ff5252);
 }
 
 /* Data table pagination styling */

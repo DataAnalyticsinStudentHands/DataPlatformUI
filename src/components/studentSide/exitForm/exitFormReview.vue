@@ -376,10 +376,110 @@
             {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('professional responsibility')}}</u>.
         </p>
         <div class="subtitle-enhanced">
-            {{ exitForm.generalGrowth.professionalResponsibility || 'No response provided' }}
+            {{ exitForm.generalGrowth.professionalResponsibility || $t('No response provided') }}
         </div>
     </v-col>
 </v-row>
+
+<!-- CHW Growth Assessment Section -->
+<div v-if="isCHWExperience">
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('interpersonal relationship building')}}</u>.
+            </p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.chwGrowth.interpersonalRelationshipBuilding || $t('No response provided') }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('service coordination and navigation')}}</u>.
+            </p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.chwGrowth.serviceCoordinationNavigation || $t('No response provided') }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('evaluation and research')}}</u>.
+            </p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.chwGrowth.evaluationResearch || $t('No response provided') }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('knowledge base on health issues')}}</u>.
+            </p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.chwGrowth.knowledgeBaseHealthIssues || $t('No response provided') }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('teaching and education')}}</u>.
+            </p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.chwGrowth.teachingEducation || $t('No response provided') }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('advocacy')}}</u>.
+            </p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.chwGrowth.advocacy || $t('No response provided') }}
+            </div>
+        </v-col>
+    </v-row>
+</div>
+
+<!-- HICH Net Promoter Section -->
+<div v-if="isHICHExperience">
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>{{$t('How likely are you to recommend HICH to a friend?')}}</p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.hichNetPromoter.recommendHICH || "" }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>{{$t("How likely are you to recommend HICH's socials and workshops to a friend?")}}</p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.hichNetPromoter.recommendSocialsWorkshops || "" }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>{{$t("How likely are you to recommend HICH's volunteer projects to a friend?")}}</p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.hichNetPromoter.recommendVolunteerProjects || "" }}
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="mt-5">
+        <v-col cols="12">
+            <p>{{$t("How likely are you to recommend HICH's mentorship program to a friend?")}}</p>
+            <div class="subtitle-enhanced">
+                {{ exitForm.hichNetPromoter.recommendMentorshipProgram || "" }}
+            </div>
+        </v-col>
+    </v-row>
+</div>
 
 <!-- Open-Ended Reflections -->
 <v-row class="mt-5">
@@ -569,6 +669,77 @@ export default {
             }
             
             return null;
+        },
+        
+        // Check if this is a CHW experience
+        isCHWExperience() {
+            // First check if there's actual CHW growth data filled out
+            const hasChwData = this.exitForm.chwGrowth && (
+                this.exitForm.chwGrowth.interpersonalRelationshipBuilding ||
+                this.exitForm.chwGrowth.serviceCoordinationNavigation ||
+                this.exitForm.chwGrowth.evaluationResearch ||
+                this.exitForm.chwGrowth.knowledgeBaseHealthIssues ||
+                this.exitForm.chwGrowth.teachingEducation ||
+                this.exitForm.chwGrowth.advocacy
+            );
+            
+            if (hasChwData) {
+                return true;
+            }
+            
+            // Then check experience name as fallback
+            if (this.selectedExperience?.text?.includes('CHW')) {
+                return true;
+            }
+            if (this.selectedExperience?.experienceName?.includes('CHW')) {
+                return true;
+            }
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
+                if (matchingExperience?.experienceName?.includes('CHW')) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        
+        // Check if this is a HICH experience
+        isHICHExperience() {
+            // Check if there's actual HICH net promoter data filled out (not empty strings)
+            const hasHichData = this.exitForm.hichNetPromoter && (
+                (this.exitForm.hichNetPromoter.recommendHICH !== "" && 
+                this.exitForm.hichNetPromoter.recommendHICH !== null && 
+                this.exitForm.hichNetPromoter.recommendHICH !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== "" && 
+                this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== null && 
+                this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendVolunteerProjects !== "" && 
+                this.exitForm.hichNetPromoter.recommendVolunteerProjects !== null && 
+                this.exitForm.hichNetPromoter.recommendVolunteerProjects !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendMentorshipProgram !== "" && 
+                this.exitForm.hichNetPromoter.recommendMentorshipProgram !== null && 
+                this.exitForm.hichNetPromoter.recommendMentorshipProgram !== undefined)
+            );
+            
+            if (hasHichData) {
+                return true;
+            }
+            
+            // Then check experience name as fallback
+            if (this.selectedExperience?.text?.includes('HICH')) {
+                return true;
+            }
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
+                if (matchingExperience?.experienceName?.includes('HICH')) {
+                    return true;
+                }
+            }
+            return false;
         }
     },
     methods: {
@@ -732,4 +903,4 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-</style> 
+</style>

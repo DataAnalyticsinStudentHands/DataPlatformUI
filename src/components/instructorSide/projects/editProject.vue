@@ -121,6 +121,41 @@ archive/restore projects. Includes comprehensive project review capabilities.
 
               <v-divider></v-divider>
 
+              <!-- Section 2: Project Tags -->
+              <!-- <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">2</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Project Tags') }}</h2>
+                    <p class="section-subtitle">{{ $t('Select all that apply') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-chip-group
+                    v-model="selectedTags"
+                    column
+                    multiple
+                    selected-class="red-chip"
+                    :disabled="projectData.projectStatus === 'Archived'"
+                  >
+                    <v-chip
+                      v-for="(tag, index) in availableTags"
+                      :key="index"
+                      :value="tag"
+                      filter
+                      variant="outlined"
+                      class="ma-1"
+                      color="red"
+                    >
+                      {{ tag }}
+                    </v-chip>
+                  </v-chip-group>
+                </div>
+              </div>
+
+              <v-divider></v-divider> -->
+
               <!-- Section 2: Project Members -->
               <div class="form-section">
                 <div class="section-header">
@@ -225,7 +260,7 @@ archive/restore projects. Includes comprehensive project review capabilities.
                     v-if="projectData._id"
                     ref="projectDocuments"
                     :project-id="projectData._id"
-                    :is-project-owner="true"
+                    :is-project-owner="isProjectOwner"
                     :embedded="true"
                   />
                 </div>
@@ -616,7 +651,7 @@ archive/restore projects. Includes comprehensive project review capabilities.
         :experience-instance-id="projectData.experienceInstanceId"
         :experience-instance-name="projectData.experienceInstanceName"
         :associated-instructor-id="projectData.instructorId"
-        :is-project-owner="true"
+        :is-project-owner="isProjectOwner"
         :project-members="projectMembers"
         @members-invited="handleMembersInvited"
       />
@@ -676,13 +711,19 @@ export default {
       // Feedback for approve/reject
       approvalFeedback: '',
       rejectionFeedback: '',
+      instructorFeedback: '',
       
       // Loading states for different operations
       updateLoading: false,
+      sendingFeedback: false,
       approvingProject: false,
+      requestingRevision: false,
       rejectingProject: false,
       archivingProject: false,
       restoringProject: false,
+      
+      // Project owner flag (instructor is always owner in this context)
+      isProjectOwner: true,
       
       // Main project data object
       projectData: {
@@ -713,7 +754,12 @@ export default {
         v => (v && v.length <= 5000) || this.$t('Project description cannot exceed 5000 characters')
       ],
       
-      // Tags
+      // Available project tags
+      availableTags: [
+        "community", "coding", "outreach", "education", "innovation", "campus", 
+        "technology", "empowerment", "collaboration", "digital", "learning", 
+        "network", "nonprofit", "humanity", "social impact"
+      ],
       selectedTags: []
     };
   },
@@ -773,7 +819,6 @@ export default {
   
   // Component initialization
   async mounted() {
-    console.log('InstructorEditProject mounted');
     const user = useLoggedInUserStore();
     
     if (!user.navigationData || !user.navigationData.projectID) {
@@ -787,7 +832,6 @@ export default {
       return;
     }
     
-    console.log('Found project ID in navigation data:', user.navigationData.projectID);
     await this.fetchProjectData(user.navigationData.projectID);
   },
   
@@ -810,13 +854,11 @@ export default {
           return;
         }
         
-        console.log('Fetching project data for ID:', projectId);
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
         const response = await axios.get(apiURL, { headers: { token } });
         
         if (response.data) {
           const project = response.data;
-          console.log('Received project data:', project);
           this.projectData = {
             _id: project._id,
             name: project.projectName,
@@ -916,7 +958,15 @@ export default {
       }
       
       this.formSubmitted = true;
-      if (!this.hasValidationErrors) {
+      const nameValid = this.projectData.name && 
+                       this.projectData.name.trim() !== '' && 
+                       this.projectData.name.length >= 3 && 
+                       this.projectData.name.length <= 100;
+      const descriptionValid = this.projectData.description && 
+                              this.projectData.description.trim() !== '' && 
+                              this.projectData.description.length >= 10 && 
+                              this.projectData.description.length <= 5000;
+      if (nameValid && descriptionValid) {
         this.submitDialog = true;
       } else {
         toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
@@ -958,7 +1008,18 @@ export default {
         this.$router.push({ name: 'instructorProjects' });
       } catch (error) {
         console.error("Error updating project:", error);
-        const errorMsg = error.response?.data?.errors?.[0] || error.response?.data?.error || this.$t("Error updating the project. Please try again later.");
+        if (error.response && error.response.data && error.response.data.errors) {
+          const serverErrors = error.response.data.errors;
+          if (serverErrors.length > 0) {
+            toast.error(this.$t(serverErrors[0]), {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--delete',
+              multiple: false
+            });
+            return;
+          }
+        }
+        const errorMsg = error.response?.data?.error || this.$t("Error updating the project. Please try again later.");
         toast.error(errorMsg, {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -982,11 +1043,22 @@ export default {
         const user = useLoggedInUserStore();
         let token = user.token;
         
-        const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
-        await axios.post(apiURL, {
-          projectId: this.projectData._id,
-          status: 'Active'
-        }, { headers: { token } });
+        // Try the update-status endpoint first, fall back to approve-project
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
+        try {
+          await axios.post(apiURL, {
+            projectId: this.projectData._id,
+            status: 'Active',
+            feedback: this.approvalFeedback || undefined
+          }, { headers: { token } });
+        } catch (statusError) {
+          // Fallback to legacy approve-project endpoint
+          apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/approve-project`;
+          await axios.post(apiURL, { 
+            projectId: this.projectData._id,
+            feedback: this.approvalFeedback || undefined
+          }, { headers: { token } });
+        }
         
         this.approveDialog = false;
         user.navigationData = {
@@ -998,7 +1070,7 @@ export default {
         this.$router.push({ name: 'instructorProjects' });
       } catch (error) {
         console.error("Error approving project:", error);
-        const errorMsg = error.response?.data?.message || this.$t("Error approving project. Please try again later.");
+        const errorMsg = error.response?.data?.message || error.response?.data?.error || this.$t("Error approving project. Please try again later.");
         toast.error(errorMsg, {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -1022,11 +1094,21 @@ export default {
         const user = useLoggedInUserStore();
         const token = user.token;
 
-        const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
-        await axios.post(apiURL, {
-          projectId: this.projectData._id,
-          status: 'Rejected'
-        }, { headers: { token } });
+        // Try the update-status endpoint first, fall back to archive
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
+        try {
+          await axios.post(apiURL, {
+            projectId: this.projectData._id,
+            status: 'Rejected',
+            feedback: this.rejectionFeedback || undefined
+          }, { headers: { token } });
+        } catch (statusError) {
+          // Fallback to archive endpoint
+          apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/archive/${this.projectData._id}`;
+          await axios.patch(apiURL, {
+            feedback: this.rejectionFeedback || undefined
+          }, { headers: { token } });
+        }
 
         this.rejectDialog = false;
         user.navigationData = {
@@ -1038,7 +1120,7 @@ export default {
         this.$router.push({ name: 'instructorProjects' });
       } catch (error) {
         console.error("Error rejecting project:", error);
-        const errorMsg = error.response?.data?.message || this.$t("Error rejecting project. Please try again later.");
+        const errorMsg = error.response?.data?.message || error.response?.data?.error || this.$t("Error rejecting project. Please try again later.");
         toast.error(errorMsg, {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -1299,6 +1381,13 @@ export default {
 
 .approve-btn:hover {
   background-color: #1b5e20 !important;
+}
+
+/* Red Chip for Tags */
+:deep(.red-chip) {
+  background-color: rgba(200, 16, 46, 0.80) !important; 
+  color: white !important;
+  border-color: #c8102e !important;
 }
 
 /* Sidebar */

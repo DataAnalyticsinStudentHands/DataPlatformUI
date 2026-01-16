@@ -152,6 +152,7 @@ including experience selection, background, growth goals, aspirations, and final
                         @update-original-goal-form="updateOriginalGoalForm"
                         @update-experiences="experiences = $event"
                         @update-experienceID="experienceID = $event"
+                        @populate-existing-form="handlePopulateExistingForm"
                     ></goal-form-exp>
                     </v-stepper-window-item>
                     <v-stepper-window-item value="1">
@@ -170,6 +171,7 @@ including experience selection, background, growth goals, aspirations, and final
                     <goal-form-growth
                         ref="GoalFormGrowthRef"
                         :goalForm="goalForm"
+                        :isCHWExperience="isCHWExperience"
                         @form-valid="handleFormValid"
                         @form-invalid="handleFormInvalid('growth')"
                         @scroll-to-error="handleScrollToError"
@@ -231,6 +233,7 @@ including experience selection, background, growth goals, aspirations, and final
                             @update-original-goal-form="updateOriginalGoalForm"
                             @update-experiences="experiences = $event"
                             @update-experienceID="experienceID = $event"
+                            @populate-existing-form="handlePopulateExistingForm"
                         ></goal-form-exp>
                     </div>
                     <div v-show="currentStep === 1" key="step1">
@@ -249,6 +252,7 @@ including experience selection, background, growth goals, aspirations, and final
                         <goal-form-growth
                             ref="GoalFormGrowthRef"
                             :goalForm="goalForm"
+                            :isCHWExperience="isCHWExperience"
                             @form-valid="handleFormValid"
                             @form-invalid="handleFormInvalid('growth')"
                             @scroll-to-error="handleScrollToError"
@@ -545,6 +549,15 @@ data() {
             socialResponsibilityGoal: '',
             digitalLiteracyGoal: '',
         },
+        // Add CHW growth goals (will be populated only for CHW experiences)
+        chwGrowthGoals: {
+            interpersonalRelationshipBuildingGoal: '',
+            serviceCoordinationNavigationGoal: '',
+            evaluationResearchGoal: '',
+            knowledgeBaseHealthIssuesGoal: '',
+            teachingEducationGoal: '',
+            advocacyGoal: '',
+        },
         aspirations: {
             aspirationOne: '',
             aspirationTwo: '',
@@ -580,8 +593,21 @@ async created() {
     await this.fetchLatestGoalSettingForm();
 },
 async mounted() {
-    // Check for incomplete forms when component mounts
-    await this.checkIncompleteForm();
+  // First check for incomplete forms
+  await this.checkIncompleteForm();
+  
+  // If continuing an incomplete form that already has experience selected
+  if (this.expRegistrationIDFromIncomplete) {
+    // The form data is already loaded from incomplete form
+    // Just ensure the experience selection component knows about it
+    this.$nextTick(() => {
+      if (this.$refs.GoalFormExpRef) {
+        this.$refs.GoalFormExpRef.setSelectedExperience(
+          this.expRegistrationIDFromIncomplete
+        );
+      }
+    });
+  }
 },
 watch: {
     // Track current step changes and update allowed navigation
@@ -631,6 +657,27 @@ computed: {
     isUserLoggedIn() {
         const store = useLoggedInUserStore();
         return store.isLoggedIn;
+    },
+
+    // Determine if current experience is CHW type
+    isCHWExperience() {
+        // Check multiple sources for CHW designation
+        if (this.selectedExperience?.value && this.experiences) {
+        const experience = this.experiences.find(exp => 
+            exp.experienceID === this.selectedExperience.value
+        );
+        if (experience?.experienceName === "CHW Certification") {
+            return true;
+        }
+        }
+        
+        // Also check if CHW fields are already populated
+        if (this.goalForm.chwGrowthGoals && 
+            Object.values(this.goalForm.chwGrowthGoals).some(val => val)) {
+        return true;
+        }
+        
+        return false;
     },
 },
 methods: {
@@ -792,9 +839,15 @@ methods: {
     },
 
     // Update selected experience from child component
-    // Now receives object with { text, value, experienceID, instructor }
-    handleSelectedExperience(value) {
+    // MERGED: async keyword from develop_Project_Documents (required for await)
+    async handleSelectedExperience(value) {
         this.selectedExperience = value;
+        
+        // Check if this experience has a completed form
+        if (value && value.hasCompletedForm && value.expRegistrationID) {
+        // Fetch and populate the existing form
+        await this.fetchExistingGoalForm(value.expRegistrationID);
+        }
     },
 
     // Determine if user can jump to a specific step
@@ -1099,7 +1152,9 @@ methods: {
     },
 
     // Create initial incomplete form on first user input
-    // Updated to use expRegistrationID from selectedExperience.value
+    // MERGED: Uses new selectedExperience structure from develop_PublicView
+    // selectedExperience.value = expRegistrationID
+    // selectedExperience.experienceID = experience definition ID
     async handleFirstInput() {
         if (this.isFirstInput) {
             this.isFirstInput = false;
@@ -1174,27 +1229,32 @@ methods: {
         }
     },
 
-    // Auto-save form data as user types
-    updateGoalForm() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        const userID = user.userId;
-        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-
-        const { hichProject, ...restOfGoalForm } = this.goalForm;
-        
-        const payload = {
-            goalForm: restOfGoalForm, 
-            hichProject
-        };
-
-        axios.patch(apiURL, payload, { headers: { token }})
-            .then(response => {
-            })
-            .catch(error => {
-                this.handleError(error);
-            });
-    },
+updateGoalForm() {
+    const user = useLoggedInUserStore();
+    const token = user.token;
+    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
+    
+    // Keep the destructuring but also extract chwGrowthGoals
+    const { hichProject, chwGrowthGoals, ...restOfGoalForm } = this.goalForm;
+    
+    const payload = {
+        goalForm: {
+            ...restOfGoalForm,
+            hichProject,  // Put hichProject back inside goalForm where it belongs
+            // Only include chwGrowthGoals if it's a CHW experience
+            ...(this.isCHWExperience && { chwGrowthGoals })
+        }
+    };
+    
+    axios.patch(apiURL, payload, { headers: { token }})
+        .then(response => {
+            console.log('Auto-save successful');
+        })
+        .catch(error => {
+            console.error('Auto-save error:', error);
+            this.handleError(error);
+        });
+},
 
     // Trigger debounced auto-save
     handleInput() {
@@ -1249,6 +1309,105 @@ methods: {
             this.triggerGoalsValidation();
         });
     },
+
+  async fetchExistingGoalForm(expRegistrationID) {
+    const user = useLoggedInUserStore();
+    const token = user.token;
+    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/by-registration/${expRegistrationID}`;
+    
+    try {
+      const response = await axios.get(apiURL, { headers: { token } });
+      
+      if (response.data.formFound) {
+        const existingForm = response.data.goalForm;
+        
+        // Store the document ID for updating
+        this.foundDocumentId = existingForm._id;
+        
+        // Pre-populate all form fields
+        this.handlePopulateExistingForm(existingForm.goalForm);
+        
+        // Handle HICH project if present
+        if (existingForm.hichProject) {
+          this.goalForm.hichProject = existingForm.hichProject;
+        }
+        
+        return true; // Form was found and populated
+      }
+      return false; // No form found
+    } catch (error) {
+      console.error('Error fetching existing goal form:', error);
+      return false;
+    }
+  },
+  
+handlePopulateExistingForm(existingGoalForm) {
+    // Handle both direct object and wrapped response
+    const formData = existingGoalForm.goalForm || existingGoalForm;
+    
+    if (!formData) return;
+    
+    // Community Engagement
+    if (formData.communityEngagement) {
+        this.goalForm.communityEngagement = {
+            ...this.goalForm.communityEngagement,
+            ...formData.communityEngagement
+        };
+    }
+    
+    // Research Experience
+    if (formData.researchExperience) {
+        this.goalForm.researchExperience = {
+            ...this.goalForm.researchExperience,
+            ...formData.researchExperience
+        };
+    }
+    
+    // Growth Goals
+    if (formData.growthGoal) {
+        this.goalForm.growthGoal = {
+            ...this.goalForm.growthGoal,
+            ...formData.growthGoal
+        };
+    }
+    
+    // CHW Growth Goals (if present)
+    if (formData.chwGrowthGoals) {
+        this.goalForm.chwGrowthGoals = {
+            ...this.goalForm.chwGrowthGoals,
+            ...formData.chwGrowthGoals
+        };
+    }
+    
+    // Aspirations
+    if (formData.aspirations) {
+        this.goalForm.aspirations = {
+            ...this.goalForm.aspirations,
+            ...formData.aspirations
+        };
+    }
+    
+    // Goals
+    if (formData.goals) {
+        this.goalForm.goals = {
+            ...this.goalForm.goals,
+            ...formData.goals
+        };
+    }
+    
+    // HICH Project
+    if (existingGoalForm.hichProject || formData.hichProject) {
+        this.goalForm.hichProject = existingGoalForm.hichProject || formData.hichProject;
+    }
+    
+    // Store the populated form as original for comparison
+    this.originalGoalForm = this.deepClone(this.goalForm);
+    
+    // Allow navigation to all steps since form is complete
+    this.$nextTick(() => {
+        this.allowedStepsForJump = [0, 1, 2, 3, 4, 5];
+    });
+},
 },
 
 // Navigation guard to prevent data loss

@@ -168,8 +168,13 @@ Redesigned UI matching the project pages aesthetic.
               v-for="student in items" 
               :key="student._id" 
               @click="navigateIfEnabled(student._id)"
+              @mouseenter="hoverId = student._id"
+              @mouseleave="hoverId = null"
               class="table-row"
-              :class="{ 'navigation-disabled': isNavigationDisabled }"
+              :class="{ 
+                'navigation-disabled': isNavigationDisabled,
+                'hoverRow': hoverId === student._id && !isNavigationDisabled
+              }"
             >
               <td class="table-cell">
                 <div class="d-flex align-center">
@@ -262,6 +267,7 @@ export default {
       studentsWithGoalForm: [],
       loading: false,
       selectedSession: null,
+      hoverId: null,
       itemsPerPageOptions: [
         { value: 10, title: "10" },
         { value: 25, title: "25" },
@@ -279,7 +285,7 @@ export default {
         this.fetchStudents();
       }
     },
-    completed(newVal) {
+    completed(newVal, oldVal) {
       if (newVal !== null && this.selectedExperience !== null) {
         this.fetchStudents();
       }
@@ -343,6 +349,14 @@ export default {
       return sessions.sort();
     },
 
+    // Format all experiences (preserved from original for backward compatibility)
+    formattedExperiences() {
+      return this.expInstances.map(instance => ({
+        text: `(${instance.sessionName}) ${instance.experienceCategory}: ${instance.experienceName}`,
+        value: instance.expInstanceID
+      }));
+    },
+
     // Filter experiences based on selected session
     filteredExperiences() {
       if (!this.selectedSession) return [];
@@ -370,6 +384,18 @@ export default {
       return this.displayedStudents.length;
     },
 
+    // Pagination length for manual pagination (preserved from original)
+    totalPaginationLength() {
+      return Math.ceil(this.displayedStudents.length / this.itemsPerPage);
+    },
+
+    // Paginated students for manual pagination (preserved from original)
+    paginatedDisplayedStudents() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = this.currentPage * this.itemsPerPage;
+      return this.displayedStudents.slice(start, end);
+    },
+
     tableHeaders() {
       const headers = [
         { title: this.$t('Student'), align: "start", key: "name", sortable: true },
@@ -395,6 +421,9 @@ export default {
   },
 
   methods: {
+    // Fetches active experience instances for the instructor from the backend API.
+    // Upon receiving the response, it maps the instance data to a structured format 
+    // and stores it in the component's state.
     async fetchExperiences() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -422,6 +451,9 @@ export default {
       }
     },
 
+    // Initiates the process of fetching students based on whether they have completed 
+    // goal forms or not. It calls different methods to fetch students with goal forms 
+    // or without goal forms based on the value of the `completed` property.
     async fetchStudents() {
       if (this.selectedExperience === null || this.completed === null) return;
       this.loading = true;
@@ -439,6 +471,10 @@ export default {
       }
     },
 
+    // Fetches students who have not completed a goal form for a specific experience.
+    // It sends a GET request to the backend API with the selected experience ID.
+    // Upon receiving the response, it stores the data of students without a goal form 
+    // for the specified experience in the component's state.
     async fetchStudentsWithoutGoalForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -452,6 +488,10 @@ export default {
       }
     },
 
+    // Fetches students who have completed a goal form for a specific experience.
+    // It sends a GET request to the backend API with the selected experience ID.
+    // Upon receiving the response, it stores the data of students with a goal form 
+    // for the specified experience in the component's state.
     async fetchStudentsWithGoalForm() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -465,33 +505,46 @@ export default {
       }
     },
 
+    // Toggles the navigation state
     toggleNavigation() {
       this.isNavigationDisabled = !this.isNavigationDisabled;
     },
 
+    // Handles changes to items per page and resets to page 1
+    handleItemsPerPageChange() {
+      this.currentPage = 1;
+    },
+
+    // Navigates to the student's profile if navigation is enabled
     navigateIfEnabled(userID) {
       if (!this.isNavigationDisabled) {
         this.navigateToProfile(userID);
       }
     },
 
+    // Navigates to the profile page of a specific student identified by their userID.
     navigateToProfile(userID) {
       useLoggedInUserStore().navigationData = { userID: userID };
       this.$router.push({ name: "instructorSpecificStudent" });
     },
 
+    // Gets initials from first and last name for avatar display
     getInitials(firstName, lastName) {
       return (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
     },
 
+    // Concatenates the first name and last name to form a full name string.
     formatFullName(firstName, lastName) {
       return `${firstName} ${lastName}`;
     },
 
+    // Formats a date to a readable format.
     formatDate(date) {
       return DateTime.fromISO(date).toFormat("MMM dd, yyyy");
     },
 
+    // Navigates to the page to view the goal form of a specific student identified 
+    // by their studentID.
     viewStudentGoalForm(studentID) {
       useLoggedInUserStore().navigationData = {
         studentID: studentID,
@@ -589,6 +642,12 @@ export default {
   background-color: transparent !important;
 }
 
+/* Hover row style from original version */
+.hoverRow {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
 .table-cell {
   padding: 16px 18px !important;
   font-size: 0.95rem;
@@ -633,6 +692,14 @@ export default {
   font-size: 0.9rem;
   padding: 12px 16px;
   border-top: 1px solid #e8e8e8;
+}
+
+/* Autocomplete focus style from original */
+:deep(.v-autocomplete input[type="text"]:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
 }
 
 /* Responsive */

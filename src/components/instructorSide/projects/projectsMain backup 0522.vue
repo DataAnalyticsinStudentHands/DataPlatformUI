@@ -335,7 +335,6 @@ export default {
         // Update API URL to match backend endpoint
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects`; 
         
-        console.log('Fetching projects for instructor:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
         
         if (response.data && response.data.projects) {

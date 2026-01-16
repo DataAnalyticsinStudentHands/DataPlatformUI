@@ -1,8 +1,8 @@
 <!-- 
 inviteMembersDialog.vue
-Reusable dialog component for inviting members to projects via invite codes. 
-Provides code sharing functionality with copy and regenerate options. Includes 
-confirmation dialogs and success feedback for user actions.
+Reusable dialog component for inviting members to projects via invite codes and direct invitations. 
+Provides code sharing functionality with copy and regenerate options, plus direct user invitation
+with search and selection capabilities. Supports pending invitation tracking and retraction.
 -->
 
 <template>
@@ -96,9 +96,9 @@ confirmation dialogs and success feedback for user actions.
         </div>
 
         <!-- Empty State - No other students registered -->
-        <div v-else-if="registeredUsers.length === 0" class="text-center py-8">
+        <div v-else-if="availableUsers.length === 0 && !searchQuery" class="text-center py-8">
           <v-icon size="56" color="grey-lighten-1">mdi-account-group-outline</v-icon>
-          <p class="text-body-1 text-grey-darken-1 mt-3 mb-1">{{ $t('No other students registered') }}</p>
+          <p class="text-body-1 text-grey-darken-1 mt-3 mb-1">{{ $t('No other students available') }}</p>
           <p class="text-body-2 text-grey mb-0">
             {{ $t('There are no other students enrolled in this experience yet. Share your invite code instead.') }}
           </p>
@@ -149,13 +149,24 @@ confirmation dialogs and success feedback for user actions.
                       density="compact"
                     >
                       <template v-slot:prepend>
+                        <!-- Show checkbox for users who can be invited -->
                         <v-checkbox
+                          v-if="!isAlreadyMember(item.userID) && !isAlreadyInvited(item.userID)"
                           :model-value="isUserSelected(item.userID)"
                           @update:model-value="toggleUserSelection(item)"
                           color="#c8102e"
                           hide-details
                           class="mr-2"
                         ></v-checkbox>
+                        <!-- Show icon for members and invited users -->
+                        <div v-else class="mr-2" style="width: 40px; display: flex; justify-content: center;">
+                          <v-icon
+                            :color="isAlreadyMember(item.userID) ? 'success' : 'orange'"
+                            size="small"
+                          >
+                            {{ isAlreadyMember(item.userID) ? 'mdi-check-circle' : 'mdi-clock-outline' }}
+                          </v-icon>
+                        </div>
                       </template>
                       
                       <v-list-item-title class="font-weight-medium">
@@ -166,6 +177,7 @@ confirmation dialogs and success feedback for user actions.
                       </v-list-item-subtitle>
                       
                       <template v-slot:append>
+                        <!-- Already member chip -->
                         <v-chip
                           v-if="isAlreadyMember(item.userID)"
                           size="small"
@@ -173,25 +185,41 @@ confirmation dialogs and success feedback for user actions.
                           variant="tonal"
                         >
                           <v-icon start size="x-small">mdi-check</v-icon>
-                          {{ $t('Already member') }}
+                          {{ $t('Member') }}
                         </v-chip>
-                        <v-chip
-                          v-else-if="item.invitationStatus === 'pending'"
-                          size="small"
-                          color="orange"
-                          variant="tonal"
-                        >
-                          <v-icon start size="x-small">mdi-clock-outline</v-icon>
-                          {{ $t('Invitation pending') }}
-                        </v-chip>
+                        
+                        <!-- Already invited chip with retract option -->
+                        <div v-else-if="isAlreadyInvited(item.userID)" class="d-flex align-center">
+                          <v-chip
+                            size="small"
+                            color="orange"
+                            variant="tonal"
+                            class="mr-2"
+                          >
+                            <v-icon start size="x-small">mdi-clock-outline</v-icon>
+                            {{ $t('Invited') }}
+                          </v-chip>
+                          
+                          <!-- Retract invitation button -->
+                          <v-btn
+                            size="small"
+                            color="grey-darken-1"
+                            variant="tonal"
+                            @click="confirmRetractInvitation(item)"
+                            :loading="retractingUsers.has(item.userID)"
+                            :title="$t('Retract invitation')"
+                          >
+                            <v-icon size="small">mdi-cancel</v-icon>
+                          </v-btn>
+                        </div>
                       </template>
                     </v-list-item>
                   </v-hover>
                 </template>
               </v-virtual-scroll>
               
-              <!-- Empty search results / All members already invited -->
-              <div v-if="filteredRegisteredUsers.length === 0 && !loadingRegisteredUsers" class="text-center py-8">
+              <!-- Empty search results -->
+              <div v-if="filteredRegisteredUsers.length === 0" class="text-center py-8">
                 <v-icon size="48" color="grey-lighten-1">mdi-account-search-outline</v-icon>
                 <p class="text-grey mt-2 mb-0">
                   {{ searchQuery 
@@ -232,7 +260,7 @@ confirmation dialogs and success feedback for user actions.
           :loading="invitingUsers"
           color="#c8102e"
           variant="elevated"
-          @click="sendInvitations"
+          @click="openSendInviteConfirmation"
           prepend-icon="mdi-send"
         >
           {{ $t('Send Invitations') }} 
@@ -244,6 +272,84 @@ confirmation dialogs and success feedback for user actions.
             inline
             class="ml-2"
           ></v-badge>
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Send invitation confirmation dialog -->
+  <v-dialog v-model="showSendInviteConfirmation" max-width="500px">
+    <v-card>
+      <v-card-title class="d-flex align-center pa-4">
+        <v-icon color="#c8102e" size="28" class="mr-2">mdi-account-multiple-plus</v-icon>
+        <span>{{ $t('Confirm Invitations') }}</span>
+      </v-card-title>
+      <v-card-text class="px-4 pb-2">
+        <p class="mb-3">
+          {{ $t('You are about to send invitations to') }} 
+          <strong>{{ selectedUsers.length }}</strong> 
+          {{ selectedUsers.length === 1 ? $t('student') : $t('students') }}.
+        </p>
+        <p class="text-grey-darken-1">
+          {{ $t('They will receive an in-app notification and can accept or decline the invitation to join') }} 
+          <strong>{{ projectName || $t('your project') }}</strong>.
+        </p>
+      </v-card-text>
+      <v-card-actions class="px-4 pb-4">
+        <v-spacer></v-spacer>
+        <v-btn
+          variant="text"
+          color="grey-darken-1"
+          @click="showSendInviteConfirmation = false"
+        >
+          {{ $t('Cancel') }}
+        </v-btn>
+        <v-btn
+          color="#c8102e"
+          variant="elevated"
+          @click="sendInvitations"
+          :loading="invitingUsers"
+          prepend-icon="mdi-send"
+        >
+          {{ $t('Send Invitations') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Retract invitation confirmation dialog -->
+  <v-dialog v-model="showRetractConfirmation" max-width="450px">
+    <v-card>
+      <v-card-title class="d-flex align-center pa-4">
+        <v-icon color="orange" size="28" class="mr-2">mdi-cancel</v-icon>
+        <span>{{ $t('Retract Invitation') }}</span>
+      </v-card-title>
+      <v-card-text class="px-4 pb-2">
+        <p class="mb-3" v-if="userToRetract">
+          {{ $t('Are you sure you want to retract the invitation for') }}
+          <strong>{{ userToRetract.firstName }} {{ userToRetract.lastName }}</strong>?
+        </p>
+        <p class="text-grey-darken-1">
+          {{ $t('They will no longer be able to join the project using their current invitation.') }}
+        </p>
+      </v-card-text>
+      <v-card-actions class="px-4 pb-4">
+        <v-spacer></v-spacer>
+        <v-btn
+          variant="text"
+          color="grey-darken-1"
+          @click="showRetractConfirmation = false"
+        >
+          {{ $t('Cancel') }}
+        </v-btn>
+        <v-btn
+          color="orange"
+          variant="elevated"
+          @click="retractInvitation"
+          :loading="retractingUsers.has(userToRetract?.userID)"
+          prepend-icon="mdi-cancel"
+        >
+          {{ $t('Retract Invitation') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -286,12 +392,17 @@ confirmation dialogs and success feedback for user actions.
         <span>{{ $t('Invitations Sent Successfully') }}</span>
       </v-card-title>
       <v-card-text class="px-4 pb-2">
-        <p class="mb-2">
-          <strong>{{ selectedUsers.length }}</strong> 
-          {{ selectedUsers.length === 1 ? $t('student has') : $t('students have') }} 
+        <p class="mb-2" v-if="invitedUsersCount > 0">
+          <strong>{{ invitedUsersCount }}</strong> 
+          {{ invitedUsersCount === 1 ? $t('student has') : $t('students have') }} 
           {{ $t('been invited to join your project.') }}
         </p>
-        <p class="text-grey-darken-1">{{ $t('They will receive an in-app notification and can accept or decline the invitation.') }}</p>
+        <p class="mb-2" v-else>
+          {{ $t('All selected users have already been invited or are already project members.') }}
+        </p>
+        <p class="text-grey-darken-1" v-if="invitedUsersCount > 0">
+          {{ $t('They will receive an in-app notification and can accept or decline the invitation.') }}
+        </p>
       </v-card-text>
       <v-card-actions class="px-4 pb-4">
         <v-spacer></v-spacer>
@@ -361,18 +472,28 @@ export default {
       // Dialog state management
       inviteSuccessDialog: false,
       showRegenerateConfirmation: false,
+      showSendInviteConfirmation: false,
+      showRetractConfirmation: false,
       
       // Loading states
       invitingUsers: false,
       loadingRegisteredUsers: false,
+      retractingUsers: new Set(),
       
       // Search and selection data
       searchQuery: '',
       registeredUsers: [],
       selectedUsers: [],
+      pendingInvitations: [],
       
       // Invite code data
-      inviteCode: ''
+      inviteCode: '',
+      
+      // Track successfully invited users count
+      invitedUsersCount: 0,
+      
+      // User to retract invitation for
+      userToRetract: null
     };
   },
   computed: {
@@ -396,12 +517,18 @@ export default {
       );
     },
     
-    // Filter registered users based on search and membership status
+    // Users available for invitation (excludes current user)
+    availableUsers() {
+      return this.registeredUsers.filter(user => 
+        user.userID !== this.loggedInUserStore.userId
+      );
+    },
+    
+    // Filter registered users based on search query
     filteredRegisteredUsers() {
-      // First filter out existing members
-      let users = this.registeredUsers.filter(user => !this.isAlreadyMember(user.userID));
+      let users = this.availableUsers;
       
-      // Then apply search filter if there's a query
+      // Apply search filter if present
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         users = users.filter(user => {
@@ -418,7 +545,6 @@ export default {
     // Initialize dialog when opened
     modelValue(newVal) {
       if (newVal === true) {
-        console.log('Dialog opened, calling initializeDialog');
         this.initializeDialog();
       }
     },
@@ -435,7 +561,6 @@ export default {
   // Component initialization
   mounted() {
     if (this.modelValue) {
-      console.log('Dialog mounted with open state, initializing');
       this.initializeDialog();
     }
   },
@@ -443,23 +568,38 @@ export default {
   methods: {
     // Initialize dialog data when opened
     async initializeDialog() {
-      console.log('Initializing dialog for project ID:', this.projectId);
-      console.log('Experience Instance ID:', this.experienceInstanceId);
-      
       // Reset search and selection state
       this.searchQuery = '';
       this.selectedUsers = [];
+      this.invitedUsersCount = 0;
+      this.retractingUsers.clear();
 
       // Fetch required data
       await Promise.all([
         this.fetchInviteCode(),
-        this.fetchRegisteredUsers()
+        this.fetchRegisteredUsers(),
+        this.fetchPendingInvitations()
       ]);
+    },
+
+    // Fetch users with pending invitations for this project
+    async fetchPendingInvitations() {
+      try {
+        const token = this.loggedInUserStore.token;
+        const response = await axios.get(
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${this.projectId}/pending-invitations`,
+          { headers: { token } }
+        );
+        
+        this.pendingInvitations = response.data.pendingInvitations || [];
+      } catch (error) {
+        console.error("Error fetching pending invitations:", error);
+        this.pendingInvitations = [];
+      }
     },
 
     // Fetch current invite code for the project
     async fetchInviteCode() {
-      console.log('Fetching invite code for project ID:', this.projectId);
       try {
         const token = this.loggedInUserStore.token;
         if (!token) throw new Error('missing auth token');
@@ -470,13 +610,12 @@ export default {
           headers: { token }
         });
 
-        console.log('Invite code response:', data);
         this.inviteCode = data.inviteCode ?? '';
       } catch (err) {
         console.error('Error fetching invite code:', err);
         toast.error(this.$t('Error fetching invite code.'), {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--error',
+          toastClassName: 'Toastify__toast--delete',
           multiple: true
         });
         this.inviteCode = '';
@@ -491,7 +630,7 @@ export default {
           console.error("Missing experienceInstanceId:", this.experienceInstanceId);
           toast.error(this.$t("Missing experience information"), {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--error',
+            toastClassName: 'Toastify__toast--delete',
             multiple: true
           });
           this.registeredUsers = [];
@@ -499,7 +638,6 @@ export default {
         }
 
         const token = this.loggedInUserStore.token;
-        console.log(`Fetching registered users from: /studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`);
         
         const response = await axios.get(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`,
@@ -507,12 +645,11 @@ export default {
         );
         
         this.registeredUsers = response.data.users || [];
-        console.log('Registered users loaded:', this.registeredUsers.length);
       } catch (error) {
         console.error("Error fetching registered users:", error.response || error);
         toast.error(this.$t("Error loading registered students"), {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--error',
+          toastClassName: 'Toastify__toast--delete',
           multiple: true
         });
         this.registeredUsers = [];
@@ -538,7 +675,14 @@ export default {
     
     // Check if user is already a project member
     isAlreadyMember(userID) {
-      return this.projectMembers.some(member => member.userID === userID || member.id === userID);
+      return this.projectMembers.some(member => 
+        String(member.id) === String(userID) || String(member.userID) === String(userID)
+      );
+    },
+    
+    // Check if user already has a pending invitation
+    isAlreadyInvited(userID) {
+      return this.pendingInvitations.some(invitation => invitation.userID === userID);
     },
     
     // Clear all selected users
@@ -555,7 +699,19 @@ export default {
     closeSuccessDialog() {
       this.inviteSuccessDialog = false;
       this.localDialog = false;
-      this.$emit('members-invited', this.selectedUsers);
+      
+      // Clear state for next time
+      this.searchQuery = '';
+      this.selectedUsers = [];
+      this.invitedUsersCount = 0;
+    },
+    
+    // Open send invitation confirmation dialog
+    openSendInviteConfirmation() {
+      if (this.selectedUsers.length === 0) {
+        return;
+      }
+      this.showSendInviteConfirmation = true;
     },
     
     // Send invitations to selected users
@@ -564,6 +720,7 @@ export default {
         return;
       }
       
+      this.showSendInviteConfirmation = false;
       this.invitingUsers = true;
       
       try {
@@ -574,18 +731,26 @@ export default {
           notificationType: 'in-app'
         };
         
-        console.log('Sending invitation payload:', payload);
-        
-        await axios.post(
+        const response = await axios.post(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`, 
           payload,
           { headers: { token } }
         );
         
+        // Handle detailed response from backend
+        const { invitedCount, alreadyInvitedCount, alreadyMembersCount, invitedUsers } = response.data;
+        
+        // Store invited users count for success dialog
+        this.invitedUsersCount = invitedCount || 0;
+        
+        // Show success dialog
         this.inviteSuccessDialog = true;
         
+        // Refresh pending invitations to update UI
+        await this.fetchPendingInvitations();
+        
         // Format invited members for parent component
-        const invitedMembers = this.selectedUsers.map(user => ({
+        const invitedMembers = (invitedUsers || []).map(user => ({
           userID: user.userID,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -596,15 +761,103 @@ export default {
         }));
         
         this.$emit('members-invited', invitedMembers);
+        
+        // Show warning if some users couldn't be invited
+        if (alreadyInvitedCount > 0 || alreadyMembersCount > 0) {
+          const skippedCount = alreadyInvitedCount + alreadyMembersCount;
+          toast.warning(
+            this.$t(`${skippedCount} user(s) were skipped (already invited or members)`), 
+            {
+              position: 'top-right',
+              toastClassName: 'Toastify__toast--warning',
+              multiple: true
+            }
+          );
+        }
       } catch (error) {
-        console.error("Error sending invitations:", error);
-        toast.error(this.$t("Error sending invitations. Please try again later."), {
-          position: 'top-right',
-          toastClassName: 'Toastify__toast--delete',
-          multiple: true
-        });
+        console.error("Error sending invitations:", error.response || error);
+        
+        // Handle specific error messages from backend
+        if (error.response?.data?.error) {
+          toast.error(this.$t(error.response.data.error), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: true
+          });
+        } else {
+          toast.error(this.$t("Error sending invitations. Please try again later."), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: true
+          });
+        }
       } finally {
         this.invitingUsers = false;
+      }
+    },
+    
+    // Confirm retraction of invitation
+    confirmRetractInvitation(user) {
+      this.userToRetract = user;
+      this.showRetractConfirmation = true;
+    },
+    
+    // Retract invitation for a user
+    async retractInvitation() {
+      if (!this.userToRetract) return;
+      
+      const userID = this.userToRetract.userID;
+      this.retractingUsers.add(userID);
+      this.showRetractConfirmation = false;
+      
+      try {
+        const token = this.loggedInUserStore.token;
+        const payload = {
+          projectId: this.projectId,
+          userIdToRetract: userID
+        };
+        
+        await axios.delete(
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/retract-invitation`,
+          { 
+            headers: { token },
+            data: payload
+          }
+        );
+        
+        // Refresh pending invitations to update UI
+        await this.fetchPendingInvitations();
+        
+        // Show success message
+        toast.success(
+          this.$t(`Invitation retracted for ${this.userToRetract.firstName} ${this.userToRetract.lastName}`),
+          {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--create',
+            multiple: true
+          }
+        );
+        
+      } catch (error) {
+        console.error("Error retracting invitation:", error.response || error);
+        
+        // Handle specific error messages from backend
+        if (error.response?.data?.error) {
+          toast.error(this.$t(error.response.data.error), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: true
+          });
+        } else {
+          toast.error(this.$t("Error retracting invitation. Please try again later."), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: true
+          });
+        }
+      } finally {
+        this.retractingUsers.delete(userID);
+        this.userToRetract = null;
       }
     },
     
@@ -622,7 +875,7 @@ export default {
           console.error('Failed to copy code: ', err);
           toast.error(this.$t("Failed to copy code"), {
             position: 'top-right',
-            toastClassName: 'Toastify__toast--error',
+            toastClassName: 'Toastify__toast--delete',
             multiple: true
           });
         });
@@ -644,7 +897,6 @@ export default {
           { headers: { token } }
         );
 
-        console.log('New invite code received:', data);
         this.inviteCode = data.inviteCode ?? '';
 
         toast.info(this.$t('New invite code generated'), {
@@ -656,7 +908,7 @@ export default {
         console.error('Error regenerating invite code:', err);
         toast.error(this.$t('Failed to regenerate invite code'), {
           position: 'top-right',
-          toastClassName: 'Toastify__toast--error',
+          toastClassName: 'Toastify__toast--delete',
           multiple: true
         });
       }

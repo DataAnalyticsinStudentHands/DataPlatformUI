@@ -8,8 +8,22 @@
 <template>
   <main class="edit-experience-instance-page">
     <v-container class="py-8">
+      <!-- Loading Overlay -->
+      <v-overlay
+        v-model="isLoading"
+        class="align-center justify-center"
+        persistent
+        contained
+      >
+        <v-progress-circular
+          indeterminate
+          size="64"
+          color="primary"
+        ></v-progress-circular>
+      </v-overlay>
+
       <!-- Page Header -->
-      <div class="page-header mb-6">
+      <div class="page-header mb-6" v-show="!isLoading">
         <div class="d-flex align-center mb-2">
           <v-btn 
             icon 
@@ -31,7 +45,7 @@
         </div>
       </div>
 
-      <v-row>
+      <v-row v-show="!isLoading">
         <!-- Main Form Column -->
         <v-col cols="12" lg="10">
           <v-card class="form-card" elevation="2">
@@ -147,7 +161,17 @@
                 <div class="section-header">
                   <div class="section-number">4</div>
                   <div>
-                    <h2 class="section-title">{{ $t('Activities') }}</h2>
+                    <h2 class="section-title">
+                      {{ $t('Activities') }}
+                      <v-chip 
+                        v-if="!canUpdateActivities && canUpdateExpInstance" 
+                        size="small" 
+                        color="warning" 
+                        class="ml-2"
+                      >
+                        {{ $t('Locked') }} - {{ activitiesLockMessage }}
+                      </v-chip>
+                    </h2>
                     <p class="section-subtitle">{{ $t('Manage activities for this experience instance') }}</p>
                   </div>
                 </div>
@@ -179,7 +203,7 @@
                               <v-list-item-title>{{ activity.activityName }}</v-list-item-title>
                               <template v-slot:append>
                                 <v-btn 
-                                  v-if="canUpdateExpInstance"
+                                  v-if="canUpdateExpInstance && canUpdateActivities"
                                   icon 
                                   variant="text" 
                                   size="small"
@@ -195,7 +219,7 @@
                     </v-col>
 
                     <!-- Add Activities -->
-                    <v-col cols="12" md="6" v-if="showAddActivities">
+                    <v-col cols="12" md="6" v-if="showAddActivities && canUpdateActivities">
                       <div class="activities-panel">
                         <div class="panel-header">
                           <v-icon color="#c8102e" size="20" class="mr-2">mdi-plus-circle-outline</v-icon>
@@ -404,15 +428,40 @@ export default {
       instructor: "",
       originalInstructor: "",
       instructorError: "",
-      // Submission state
+      // Activities lock state
+      canUpdateActivities: true,
+      activitiesLockMessage: "",
+      // Loading states
+      isLoading: true,
       isSubmitting: false
     }
   },
 
   async created() {
-    await this.fetchActivityData();
-    this.fetchExperienceInstance();
-    this.checkIfExpInstanceCanBeDeleted();
+    try {
+      // Start loading
+      this.isLoading = true;
+      
+      // Fetch activity data when the component is created
+      await this.fetchActivityData();
+
+      // Fetch the experience instance data
+      await this.fetchExperienceInstance();
+
+      // Check if activities can be updated (only if user can update instance)
+      if (this.canUpdateExpInstance) {
+        await this.checkIfActivitiesCanBeUpdated();
+      }
+
+      // Check if the experience instance can be deleted
+      await this.checkIfExpInstanceCanBeDeleted();
+    } catch (error) {
+      console.error('Error loading page data:', error);
+      this.handleError(error);
+    } finally {
+      // Always stop loading when done
+      this.isLoading = false;
+    }
   },
 
   computed: {
@@ -452,6 +501,9 @@ export default {
         this.selectedActivities = this.activityData.filter(activity =>
           instanceData.activities.some(instanceActivity => instanceActivity.id === activity._id)
         );
+
+        // Store original activities for comparison
+        this.originalActivities = [...this.selectedActivities];
 
         this.fetchSessionDetails();
         this.fetchExperienceDetails();
@@ -498,6 +550,26 @@ export default {
         this.originalActivityData = [...this.activityData];
       } catch (error) {
         this.handleError(error);
+      }
+    },
+
+    // Checks if activities can be updated for this experience instance
+    async checkIfActivitiesCanBeUpdated() {
+      const user = useLoggedInUserStore();
+      const token = user.token;
+      const instanceID = user.navigationData.id;
+      const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/can-update-activities/${instanceID}`;
+
+      try {
+        const response = await axios.get(url, { headers: { token } });
+        this.canUpdateActivities = response.data.canUpdateActivities;
+        if (!this.canUpdateActivities) {
+          this.activitiesLockMessage = `${response.data.completedExitFormCount} exit form(s) submitted`;
+        }
+      } catch (error) {
+        // If the check fails, default to allowing updates
+        this.canUpdateActivities = true;
+        console.error('Failed to check if activities can be updated:', error);
       }
     },
 
@@ -595,12 +667,19 @@ export default {
             multiple: false
           });
         } else {
-          this.handleError(error);
-          toast.error(this.$t('Failed to update experience instance. Please try again.'), {
+          // Show generic error toast
+          let errorMsg = 'An error occurred while updating the experience instance.';
+          if (error.response && error.response.data) {
+            errorMsg = error.response.data.message || error.response.data.error || errorMsg;
+          }
+          
+          toast.error(errorMsg, {
             position: 'top-right',
             toastClassName: 'Toastify__toast--delete',
             multiple: false
           });
+          
+          this.handleError(error);
         }
       } finally {
         this.isSubmitting = false;
@@ -608,11 +687,17 @@ export default {
     },
 
     selectActivity(activity) {
-      this.selectedActivities.push(activity)
+      if (this.canUpdateActivities) {
+        this.selectedActivities.push(activity);
+      }
     },
 
     removeActivity(activity) {
-      this.selectedActivities = this.selectedActivities.filter(selectedActivity => selectedActivity._id !== activity._id);
+      if (this.canUpdateActivities) {
+        this.selectedActivities = this.selectedActivities.filter(
+          selectedActivity => selectedActivity._id !== activity._id
+        );
+      }
     },
 
     handleError(error) {

@@ -157,9 +157,9 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                     </p>
                   </div>
 
-                  <!-- Research Experience -->
+                  <!-- Current Research Experience -->
                   <div class="form-subsection">
-                    <h4 class="subsection-title">{{ $t('Research Experience') }}</h4>
+                    <h4 class="subsection-title">{{ $t('Current Research Experience') }}</h4>
                     <p class="subsection-question">{{ $t('What kind of research experiences have you had?') }}</p>
                     <div class="response-chips">
                       <v-chip
@@ -176,6 +176,28 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                     </div>
                     <p v-if="displayCurrentResearchExperienceOther" class="other-response">
                       <strong>{{ $t('Other:') }}</strong> {{ goalForm.researchExperience.currentResearchExperienceOther }}
+                    </p>
+                  </div>
+
+                  <!-- Previous Research Experience -->
+                  <div class="form-subsection">
+                    <h4 class="subsection-title">{{ $t('Previous Research Experience') }}</h4>
+                    <p class="subsection-question">{{ $t('From your previous research experiences, which activities have you engaged in?') }}</p>
+                    <div class="response-chips">
+                      <v-chip
+                        v-for="exp in processedPreviousResearchExperience"
+                        :key="exp.id"
+                        :color="exp.checked === 'Yes' ? 'success' : 'grey'"
+                        :variant="exp.checked === 'Yes' ? 'flat' : 'outlined'"
+                        size="small"
+                        class="mr-2 mb-2"
+                      >
+                        <v-icon start size="14">{{ exp.checked === 'Yes' ? 'mdi-check' : 'mdi-close' }}</v-icon>
+                        {{ $t(exp.label) }}
+                      </v-chip>
+                    </div>
+                    <p v-if="displayPreviousResearchExperienceOther" class="other-response">
+                      <strong>{{ $t('Other:') }}</strong> {{ goalForm.researchExperience.previousResearchExperienceOther }}
                     </p>
                   </div>
 
@@ -204,6 +226,7 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                   <!-- Research/Service Interests -->
                   <div class="form-subsection">
                     <h4 class="subsection-title">{{ $t('Research/Service Interests') }}</h4>
+                    <p class="subsection-question">{{ $t('What are your research/service interests?') }}</p>
                     <div class="response-chips">
                       <v-chip
                         v-for="interest in processedInterestResearchService"
@@ -217,6 +240,9 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                         {{ $t(interest.label) }}
                       </v-chip>
                     </div>
+                    <p v-if="displayInterestResearchServiceOther" class="other-response">
+                      <strong>{{ $t('Other:') }}</strong> {{ goalForm.researchExperience.interestResearchServiceOther }}
+                    </p>
                   </div>
 
                   <!-- Leadership Interest -->
@@ -292,9 +318,94 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                         {{ $t(goalForm.growthGoal.professionalResponsibilityGoal) }}
                       </v-chip>
                     </div>
+                    <!-- Social Responsibility Goal (OPTIONAL) -->
+                    <div v-if="goalForm.growthGoal.socialResponsibilityGoal" class="growth-goal-item">
+                      <v-icon color="#c8102e" size="20" class="mb-2">mdi-hand-heart</v-icon>
+                      <h5 class="goal-label">{{ $t('Social Responsibility') }}</h5>
+                      <v-chip color="#c8102e" variant="tonal" size="small">
+                        {{ $t(goalForm.growthGoal.socialResponsibilityGoal) }}
+                      </v-chip>
+                    </div>
+                    <!-- Digital Literacy Goal (OPTIONAL) -->
+                    <div v-if="goalForm.growthGoal.digitalLiteracyGoal" class="growth-goal-item">
+                      <v-icon color="#c8102e" size="20" class="mb-2">mdi-laptop</v-icon>
+                      <h5 class="goal-label">{{ $t('Digital Literacy') }}</h5>
+                      <v-chip color="#c8102e" variant="tonal" size="small">
+                        {{ $t(goalForm.growthGoal.digitalLiteracyGoal) }}
+                      </v-chip>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <!-- CHW Growth Goals Section (OPTIONAL - for CHW certification programs) -->
+              <template v-if="goalForm.chwGrowthGoals && hasChwGrowthGoals">
+                <v-divider></v-divider>
+                <div class="form-section">
+                  <div class="section-header">
+                    <div class="section-icon">
+                      <v-icon color="white" size="18">mdi-certificate</v-icon>
+                    </div>
+                    <div>
+                      <h2 class="section-title">{{ $t('CHW Certification Growth Goals') }}</h2>
+                      <p class="section-subtitle">{{ $t('Community Health Worker certification goals') }}</p>
+                    </div>
+                  </div>
+
+                  <div class="section-content">
+                    <div class="growth-goals-grid">
+                      <!-- Interpersonal & Relationship Building Goal -->
+                      <div v-if="goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal" class="growth-goal-item">
+                        <v-icon color="#c8102e" size="20" class="mb-2">mdi-handshake</v-icon>
+                        <h5 class="goal-label">{{ $t('Interpersonal & Relationship Building') }}</h5>
+                        <v-chip color="#c8102e" variant="tonal" size="small">
+                          {{ $t(goalForm.chwGrowthGoals.interpersonalRelationshipBuildingGoal) }}
+                        </v-chip>
+                      </div>
+                      <!-- Service Coordination & Navigation Goal -->
+                      <div v-if="goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal" class="growth-goal-item">
+                        <v-icon color="#c8102e" size="20" class="mb-2">mdi-compass</v-icon>
+                        <h5 class="goal-label">{{ $t('Service Coordination & Navigation') }}</h5>
+                        <v-chip color="#c8102e" variant="tonal" size="small">
+                          {{ $t(goalForm.chwGrowthGoals.serviceCoordinationNavigationGoal) }}
+                        </v-chip>
+                      </div>
+                      <!-- Evaluation & Research Goal -->
+                      <div v-if="goalForm.chwGrowthGoals.evaluationResearchGoal" class="growth-goal-item">
+                        <v-icon color="#c8102e" size="20" class="mb-2">mdi-clipboard-text-search</v-icon>
+                        <h5 class="goal-label">{{ $t('Evaluation & Research') }}</h5>
+                        <v-chip color="#c8102e" variant="tonal" size="small">
+                          {{ $t(goalForm.chwGrowthGoals.evaluationResearchGoal) }}
+                        </v-chip>
+                      </div>
+                      <!-- Knowledge Base & Health Issues Goal -->
+                      <div v-if="goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal" class="growth-goal-item">
+                        <v-icon color="#c8102e" size="20" class="mb-2">mdi-medical-bag</v-icon>
+                        <h5 class="goal-label">{{ $t('Knowledge Base & Health Issues') }}</h5>
+                        <v-chip color="#c8102e" variant="tonal" size="small">
+                          {{ $t(goalForm.chwGrowthGoals.knowledgeBaseHealthIssuesGoal) }}
+                        </v-chip>
+                      </div>
+                      <!-- Teaching & Education Goal -->
+                      <div v-if="goalForm.chwGrowthGoals.teachingEducationGoal" class="growth-goal-item">
+                        <v-icon color="#c8102e" size="20" class="mb-2">mdi-school</v-icon>
+                        <h5 class="goal-label">{{ $t('Teaching & Education') }}</h5>
+                        <v-chip color="#c8102e" variant="tonal" size="small">
+                          {{ $t(goalForm.chwGrowthGoals.teachingEducationGoal) }}
+                        </v-chip>
+                      </div>
+                      <!-- Advocacy Goal -->
+                      <div v-if="goalForm.chwGrowthGoals.advocacyGoal" class="growth-goal-item">
+                        <v-icon color="#c8102e" size="20" class="mb-2">mdi-bullhorn</v-icon>
+                        <h5 class="goal-label">{{ $t('Advocacy') }}</h5>
+                        <v-chip color="#c8102e" variant="tonal" size="small">
+                          {{ $t(goalForm.chwGrowthGoals.advocacyGoal) }}
+                        </v-chip>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
 
               <v-divider></v-divider>
 
@@ -311,6 +422,9 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                 </div>
 
                 <div class="section-content">
+                  <p class="aspiration-description mb-4">
+                    {{ $t('Aspirations are statements that describe where you want to end up without necessarily describing exactly how you will get there.') }}
+                  </p>
                   <div class="aspiration-item" v-if="goalForm.aspirations.aspirationOne">
                     <div class="aspiration-number">1</div>
                     <p class="aspiration-text">{{ goalForm.aspirations.aspirationOne }}</p>
@@ -341,6 +455,9 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                 </div>
 
                 <div class="section-content">
+                  <p class="goals-description mb-4">
+                    {{ $t('Goals are statements that describe what it means for an experience to be a success from your perspective.') }}
+                  </p>
                   <div class="goal-item" v-if="goalForm.goals.goalOne">
                     <div class="goal-number">1</div>
                     <p class="goal-text">{{ goalForm.goals.goalOne }}</p>
@@ -411,6 +528,12 @@ Redesigned UI matching the project pages aesthetic with sectioned card layout.
                       </template>
                       <v-list-item-title>{{ $t('Growth Goals') }}</v-list-item-title>
                     </v-list-item>
+                    <v-list-item v-if="goalForm.chwGrowthGoals && hasChwGrowthGoals" class="nav-item" @click="scrollToSection('chw-growth')">
+                      <template v-slot:prepend>
+                        <v-icon size="18" color="#c8102e">mdi-certificate</v-icon>
+                      </template>
+                      <v-list-item-title>{{ $t('CHW Growth Goals') }}</v-list-item-title>
+                    </v-list-item>
                     <v-list-item class="nav-item" @click="scrollToSection('aspirations')">
                       <template v-slot:prepend>
                         <v-icon size="18" color="#c8102e">mdi-star-shooting</v-icon>
@@ -459,79 +582,122 @@ export default {
   },
 
   computed: {
+    // Check if any CHW growth goals exist
+    hasChwGrowthGoals() {
+      if (!this.goalForm?.chwGrowthGoals) return false;
+      return Object.keys(this.goalForm.chwGrowthGoals).some(key => 
+        this.goalForm.chwGrowthGoals[key] && this.goalForm.chwGrowthGoals[key].trim() !== ''
+      );
+    },
+
+    // Processes community engagement experiences, excluding "None of the above" and marking others as checked based on conditions
     processedCommunityEngagementExperiences() {
       if (!this.goalForm?.communityEngagement?.communityEngagementExperiences) return [];
       const noneSelected = this.goalForm.communityEngagement.communityEngagementExperiences.some(e => e.label === 'None of the above' && e.checked);
       return this.goalForm.communityEngagement.communityEngagementExperiences
-        .filter(e => e.label !== 'None of the above' && e.label !== 'Other')
-        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }));
+        .filter(e => e.label !== 'None of the above')
+        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }))
+        .filter(e => e.label !== 'Other' || e.checked === 'Yes');
     },
+
+    // Returns whether the "Other" experience in community engagement is checked
     displayOtherExperience() {
       return this.goalForm?.communityEngagement?.communityEngagementExperiences?.find(e => e.label === 'Other')?.checked;
     },
+
+    // Processes previous engagement experiences, excluding "None of the above" and marking others as checked based on conditions
     processedPreviousEngagementExperiences() {
       if (!this.goalForm?.communityEngagement?.previousEngagementExperiences) return [];
       const noneSelected = this.goalForm.communityEngagement.previousEngagementExperiences.some(e => e.label === 'None of the above' && e.checked);
       return this.goalForm.communityEngagement.previousEngagementExperiences
-        .filter(e => e.label !== 'None of the above' && e.label !== 'Other')
-        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }));
+        .filter(e => e.label !== 'None of the above')
+        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }))
+        .filter(e => e.label !== 'Other' || e.checked === 'Yes');
     },
+
+    // Returns whether the "Other" experience in previous engagement is checked
     displayPreviousOtherExperience() {
       return this.goalForm?.communityEngagement?.previousEngagementExperiences?.find(e => e.label === 'Other')?.checked;
     },
+
+    // Processes engagement activities/tools, excluding "None of the above" and marking others as checked based on conditions
     processedEngagementActivitiesTools() {
       if (!this.goalForm?.communityEngagement?.engagementActivitiesTools) return [];
       const noneSelected = this.goalForm.communityEngagement.engagementActivitiesTools.some(t => t.label === 'None of the above' && t.checked);
       return this.goalForm.communityEngagement.engagementActivitiesTools
-        .filter(t => t.label !== 'None of the above' && t.label !== 'Other')
-        .map(t => ({ ...t, checked: noneSelected ? 'No' : (t.checked ? 'Yes' : 'No') }));
+        .filter(t => t.label !== 'None of the above')
+        .map(t => ({ ...t, checked: noneSelected ? 'No' : (t.checked ? 'Yes' : 'No') }))
+        .filter(t => t.label !== 'Other' || t.checked === 'Yes');
     },
+
+    // Returns whether the "Other" engagement activities tool is checked
     displayEngagementActivitiesToolOther() {
       return this.goalForm?.communityEngagement?.engagementActivitiesTools?.find(t => t.label === 'Other')?.checked;
     },
+
+    // Processes current research experiences, excluding "None of the above" and marking others as checked based on conditions
     processedCurrentResearchExperience() {
       if (!this.goalForm?.researchExperience?.currentResearchExperience) return [];
       const noneSelected = this.goalForm.researchExperience.currentResearchExperience.some(e => e.label === 'None of the above' && e.checked);
       return this.goalForm.researchExperience.currentResearchExperience
-        .filter(e => e.label !== 'None of the above' && e.label !== 'Other')
-        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }));
+        .filter(e => e.label !== 'None of the above')
+        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }))
+        .filter(e => e.label !== 'Other' || e.checked === 'Yes');
     },
+
+    // Returns whether the "Other" research experience is checked
     displayCurrentResearchExperienceOther() {
       return this.goalForm?.researchExperience?.currentResearchExperience?.find(e => e.label === 'Other')?.checked;
     },
+
+    // Processes previous research experiences, excluding "None of the above" and marking others as checked based on conditions
     processedPreviousResearchExperience() {
       if (!this.goalForm?.researchExperience?.previousResearchExperience) return [];
       const noneSelected = this.goalForm.researchExperience.previousResearchExperience.some(e => e.id === 9 && e.checked);
       return this.goalForm.researchExperience.previousResearchExperience
-        .filter(e => e.label !== 'None of the above' && e.label !== 'Other')
-        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }));
+        .filter(e => e.label !== 'None of the above')
+        .map(e => ({ ...e, checked: noneSelected ? 'No' : (e.checked ? 'Yes' : 'No') }))
+        .filter(e => e.label !== 'Other' || e.checked === 'Yes');
     },
+
+    // Returns whether the "Other" previous research experience is checked
     displayPreviousResearchExperienceOther() {
       return this.goalForm?.researchExperience?.previousResearchExperience?.find(e => e.id === 8)?.checked;
     },
+
+    // Processes familiar tools, excluding "None of the above" and marking others as checked based on conditions
     processedFamiliarTools() {
       if (!this.goalForm?.researchExperience?.familiarTools) return [];
       const noneSelected = this.goalForm.researchExperience.familiarTools.some(t => t.label === 'None of the above' && t.checked);
       return this.goalForm.researchExperience.familiarTools
-        .filter(t => t.label !== 'None of the above' && t.label !== 'Other')
-        .map(t => ({ ...t, checked: noneSelected ? 'No' : (t.checked ? 'Yes' : 'No') }));
+        .filter(t => t.label !== 'None of the above')
+        .map(t => ({ ...t, checked: noneSelected ? 'No' : (t.checked ? 'Yes' : 'No') }))
+        .filter(t => t.label !== 'Other' || t.checked === 'Yes');
     },
+
+    // Returns whether the "Other" familiar tool is checked
     displayFamiliarToolOther() {
       return this.goalForm?.researchExperience?.familiarTools?.find(t => t.label === 'Other')?.checked;
     },
+
+    // Processes interest in research/service, excluding "None of the above" and marking others as checked based on conditions
     processedInterestResearchService() {
       if (!this.goalForm?.researchExperience?.interestResearchService) return [];
       const noneSelected = this.goalForm.researchExperience.interestResearchService.some(i => i.label === 'None of the above' && i.checked);
       return this.goalForm.researchExperience.interestResearchService
-        .filter(i => i.label !== 'None of the above' && i.label !== 'Other')
-        .map(i => ({ ...i, checked: noneSelected ? 'No' : (i.checked ? 'Yes' : 'No') }));
+        .filter(i => i.label !== 'None of the above')
+        .map(i => ({ ...i, checked: noneSelected ? 'No' : (i.checked ? 'Yes' : 'No') }))
+        .filter(i => i.label !== 'Other' || i.checked === 'Yes');
     },
+
+    // Returns whether the "Other" research/service interest is checked
     displayInterestResearchServiceOther() {
       return this.goalForm?.researchExperience?.interestResearchService?.find(i => i.label === 'Other')?.checked;
     },
   },
 
   methods: {
+    // Fetches the goal form for a specific student and experience instance
     async fetchGoalForm(studentID, expInstanceID) {
       const user = useLoggedInUserStore();
       const token = user.token;
@@ -558,6 +724,11 @@ export default {
     scrollToSection(section) {
       // Implementation for smooth scrolling to sections
       console.log('Scroll to:', section);
+    },
+
+    handleError(error) {
+      console.error('Error fetching goal form:', error);
+      // Add appropriate error handling/notification here
     }
   }
 }
@@ -684,6 +855,13 @@ export default {
 }
 
 /* Aspirations & Goals Items */
+.aspiration-description,
+.goals-description {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
 .aspiration-item,
 .goal-item {
   display: flex;

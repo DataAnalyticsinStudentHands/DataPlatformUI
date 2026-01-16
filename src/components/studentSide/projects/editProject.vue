@@ -115,6 +115,41 @@ project information and leave the project.
 
               <v-divider></v-divider>
 
+              <!-- Section 2: Project Tags (Currently disabled) -->
+              <!-- <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">2</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Project Tags') }}</h2>
+                    <p class="section-subtitle">{{ $t('Select tags that describe your project') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-chip-group
+                    v-model="selectedTags"
+                    column
+                    multiple
+                    selected-class="red-chip"
+                    :disabled="!isProjectOwner || projectData.projectStatus === 'Archived'"
+                  >
+                    <v-chip
+                      v-for="(tag, index) in availableTags"
+                      :key="index"
+                      :value="tag"
+                      filter
+                      variant="outlined"
+                      class="ma-1"
+                      color="red"
+                    >
+                      {{ tag }}
+                    </v-chip>
+                  </v-chip-group>
+                </div>
+              </div>
+
+              <v-divider></v-divider> -->
+
               <!-- Section 2: Project Members -->
               <div class="form-section">
                 <div class="section-header">
@@ -679,7 +714,12 @@ export default {
         v => (v && v.length <= 5000) || this.$t('Project description cannot exceed 5000 characters')
       ],
       
-      // Tags
+      // Available project tags (preserved for future use)
+      availableTags: [
+        "community", "coding", "outreach", "education", "innovation", "campus", 
+        "technology", "empowerment", "collaboration", "digital", "learning", 
+        "network", "nonprofit", "humanity", "social impact"
+      ],
       selectedTags: []
     };
   },
@@ -1235,6 +1275,13 @@ export default {
 
 .got-it-btn:hover {
   background-color: #a00d24 !important;
+}
+
+/* Red chip for tags (preserved for future use) */
+:deep(.red-chip) {
+  background-color: rgba(200, 16, 46, 0.80) !important; 
+  color: white !important;
+  border-color: #c8102e !important;
 }
 
 /* Responsive */

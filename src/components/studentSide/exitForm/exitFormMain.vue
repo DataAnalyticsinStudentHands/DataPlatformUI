@@ -64,7 +64,7 @@
                     <v-stepper-header>
                         <v-stepper-item
                             ref="step0"
-                            title="Experience"
+                            :title="$t('Experience')"
                             icon="mdi-hand-heart"
                             edit-icon="mdi-hand-heart"
                             value="0"
@@ -77,7 +77,7 @@
                         <v-stepper-item
                             ref="step1"
                             v-if="goalFormExists"
-                            title="Aspirations"
+                            :title="$t('Aspirations')"
                             icon="mdi-image-filter-hdr"
                             edit-icon="mdi-image-filter-hdr"
                             value="1"
@@ -90,7 +90,7 @@
                         <v-stepper-item
                             ref="step2"
                             v-if="goalFormExists"
-                            title="Goals"
+                            :title="$t('Goals')"
                             icon="mdi-flag-variant"
                             edit-icon="mdi-flag-variant"
                             value="2"
@@ -103,7 +103,7 @@
                         <v-stepper-item
                             ref="step3"
                             v-if="goalFormExists && activitiesExist"
-                            title="Activities"
+                            :title="$t('Activities')"
                             icon="mdi-toolbox"
                             edit-icon="mdi-toolbox"
                             :value="actCurrentStepValue"
@@ -115,7 +115,7 @@
 
                         <v-stepper-item
                             ref="step4"
-                            title="Growth"
+                            :title="$t('Growth')"
                             icon="mdi-sprout"
                             edit-icon="mdi-sprout"
                             :value="growthCurrentStepValue"
@@ -127,7 +127,7 @@
 
                         <v-stepper-item
                             ref="step5"
-                            title="Review"
+                            :title="$t('Review')"
                             icon="mdi-check-bold"
                             edit-icon="mdi-check-bold"
                             :value="reviewCurrentStepValue"
@@ -215,6 +215,7 @@
                             :key="componentsKey"
                             :exitForm="exitForm"
                             :dataAndSociety="dataAndSociety"
+                            :selectedExperience="selectedExperience"
                             @form-valid="handleFormValid(4)"
                             @form-invalid="handleFormInvalid('growth')"
                             @scroll-to-error="handleScrollToError"
@@ -308,6 +309,7 @@
                             :key="componentsKey"
                             :exitForm="exitForm"
                             :dataAndSociety="dataAndSociety"
+                            :selectedExperience="selectedExperience"
                             @form-valid="handleFormValid(4)"
                             @form-invalid="handleFormInvalid('growth')"
                             @scroll-to-error="handleScrollToError"
@@ -369,39 +371,39 @@
     <v-dialog v-model="leaveDialog" persistent max-width="500px">
         <v-card>
             <v-card-title class="text-h5">
-                Confirm Navigation
+                {{ $t('Confirm Navigation') }}
             </v-card-title>
             <v-card-text>
-                <p>Are you sure you want to leave? <strong>Your responses will be saved for later.</strong></p>
+                <p>{{ $t('Are you sure you want to leave?') }} <strong>{{ $t('Your responses will be saved for later.') }}</strong></p>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn text @click="cancelLeave">
-                    Cancel
+                    {{ $t('Cancel') }}
                 </v-btn>
                 <v-btn color="red darken-2" text @click="confirmLeave">
-                    Yes, Leave
+                    {{ $t('Yes, Leave') }}
                 </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
-    
+
     <!-- Incomplete Form Found Dialog -->
     <v-dialog v-model="showIncompleteFormFoundDialog" persistent max-width="500px">
         <v-card>
             <v-card-title class="text-h5">
-                Resume Your Progress?
+                {{ $t('Resume Your Progress?') }}
             </v-card-title>
             <v-card-text>
-                <p>We found an incomplete Exit Form from your last session. Would you like to continue where you left off or start a new form?</p>
+                <p>{{ $t('We found an incomplete Exit Form from your last session. Would you like to continue where you left off or start a new form?') }}</p>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn text @click="startNew">
-                    Start New
+                    {{ $t('Start New') }}
                 </v-btn>
                 <v-btn color="red darken-2" text @click="continueProgress">
-                    Continue
+                    {{ $t('Continue') }}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -660,6 +662,22 @@ data() {
                 ethicalDecisionMaking: "",
                 professionalResponsibility: ""
             },
+
+            chwGrowth: {
+                interpersonalRelationshipBuilding: "",
+                serviceCoordinationNavigation: "",
+                evaluationResearch: "",
+                knowledgeBaseHealthIssues: "",
+                teachingEducation: "",
+                advocacy: ""
+            },
+
+            hichNetPromoter: {
+                recommendHICH: "",
+                recommendSocialsWorkshops: "",
+                recommendVolunteerProjects: "",
+                recommendMentorshipProgram: ""
+            },
             
             // Open-ended feedback questions
             openEnded: {
@@ -865,6 +883,20 @@ data() {
                 culturalHumility: "",
                 ethicalDecisionMaking: "",
                 professionalResponsibility: ""
+            },
+            chwGrowth: {
+                interpersonalRelationshipBuilding: "",
+                serviceCoordinationNavigation: "",
+                evaluationResearch: "",
+                knowledgeBaseHealthIssues: "",
+                teachingEducation: "",
+                advocacy: ""
+            },
+            hichNetPromoter: {
+                recommendHICH: "",
+                recommendSocialsWorkshops: "",
+                recommendVolunteerProjects: "",
+                recommendMentorshipProgram: ""
             },
             openEnded: {
                 biggestLessons: "",
@@ -1376,19 +1408,22 @@ methods: {
 
             const originalGeneralGrowth = this.originalExitFormTwo.generalGrowth;
             const originalOpenEnded = this.originalExitFormTwo.openEnded;
+            const originalChwGrowth = this.originalExitFormTwo.chwGrowth;
             const currentExperienceContributions = this.exitForm.experienceContributions;
             const currentGeneralGrowth = this.exitForm.generalGrowth;
             const currentOpenEnded = this.exitForm.openEnded;
+            const currentChwGrowth = this.exitForm.chwGrowth;
 
             const experienceContributionsEdited = !isEqual(originalExperienceContributions, currentExperienceContributions);
             const generalGrowthEdited = !isEqual(originalGeneralGrowth, currentGeneralGrowth);
             const openEndedEdited = !isEqual(originalOpenEnded, currentOpenEnded);
+            const chwGrowthEdited = !isEqual(originalChwGrowth, currentChwGrowth);
 
             if (this.dataAndSociety) {
-                const editedCheck = experienceContributionsEdited || enrollAnotherCourseSelectedEdited || completeMinorSelectedEdited || recommendCourseSelectedEdited || pursueCareerSelectedEdited || generalGrowthEdited || openEndedEdited;
+                const editedCheck = experienceContributionsEdited || enrollAnotherCourseSelectedEdited || completeMinorSelectedEdited || recommendCourseSelectedEdited || pursueCareerSelectedEdited || generalGrowthEdited || openEndedEdited || chwGrowthEdited;;
                 return editedCheck;
             } else {
-                const editedCheck = experienceContributionsEdited || generalGrowthEdited || openEndedEdited;
+                const editedCheck = experienceContributionsEdited || generalGrowthEdited || openEndedEdited || chwGrowthEdited;
                 return editedCheck;
             }
         }
@@ -1462,34 +1497,34 @@ methods: {
     },
 
     // Update existing exit form
-    async handleUpdateForm() {
-        const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/exit-forms/' + this.foundDocumentId;
+async handleUpdateForm() {
+    const user = useLoggedInUserStore();
+    let token = user.token;
+    let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/exit-forms/' + this.foundDocumentId;
 
-        const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+    const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
 
-        // Prepare form data for submission
-        const exitFormData = {
-            expRegistrationID: expRegistrationID,
-            exitForm: {
+    // Prepare base form data
+    const exitFormData = {
+        expRegistrationID: expRegistrationID,
+        exitForm: {
             progressMade: {
                 aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
                 aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected || "No aspiration",
                 aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
-                aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
-                aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
-                aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
+                aspirationOneExperienceConnection: this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
+                aspirationTwoExperienceConnection: this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
+                aspirationThreeExperienceConnection: this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
                 goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected || "No goal",
                 goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected || "No goal",
                 goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected || "No goal",
                 goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
                 goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
-                goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
-                goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
-                goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
-                goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
-                goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
+                goalOneExperienceConnection: this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
+                goalTwoExperienceConnection: this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
+                goalThreeExperienceConnection: this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
+                goalFourExperienceConnection: this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
+                goalFiveExperienceConnection: this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
             },
             goalIssues: {
                 goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
@@ -1501,7 +1536,7 @@ methods: {
                 goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
                 goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
                 goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
-                noContributions:this.exitForm.activitiesContribution.noContributions,
+                noContributions: this.exitForm.activitiesContribution.noContributions,
             },
             experienceContributions: this.exitForm.experienceContributions,
             likelihoodOf: {
@@ -1523,39 +1558,85 @@ methods: {
                 supportOthers: this.exitForm.openEnded.supportOthers,
                 comments: this.exitForm.openEnded.comments
             }
-            }
+        }
+    };
+
+    // Only add HICH data if there's actual data (not empty strings)
+    const hasHichData = (
+        (this.exitForm.hichNetPromoter.recommendHICH !== "" && 
+         this.exitForm.hichNetPromoter.recommendHICH !== null && 
+         this.exitForm.hichNetPromoter.recommendHICH !== undefined) ||
+        (this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== "" && 
+         this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== null && 
+         this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== undefined) ||
+        (this.exitForm.hichNetPromoter.recommendVolunteerProjects !== "" && 
+         this.exitForm.hichNetPromoter.recommendVolunteerProjects !== null && 
+         this.exitForm.hichNetPromoter.recommendVolunteerProjects !== undefined) ||
+        (this.exitForm.hichNetPromoter.recommendMentorshipProgram !== "" && 
+         this.exitForm.hichNetPromoter.recommendMentorshipProgram !== null && 
+         this.exitForm.hichNetPromoter.recommendMentorshipProgram !== undefined)
+    );
+
+    if (hasHichData) {
+        exitFormData.exitForm.hichNetPromoter = {
+            recommendHICH: this.exitForm.hichNetPromoter.recommendHICH || "",
+            recommendSocialsWorkshops: this.exitForm.hichNetPromoter.recommendSocialsWorkshops || "",
+            recommendVolunteerProjects: this.exitForm.hichNetPromoter.recommendVolunteerProjects || "",
+            recommendMentorshipProgram: this.exitForm.hichNetPromoter.recommendMentorshipProgram || ""
         };
+    }
 
-        let updatedExitForm = {
-            exitForm: exitFormData,
-            tempIncompleteFormID: this.incompleteFormID
+    // Only add CHW data if there's actual data
+    const hasChwData = (
+        this.exitForm.chwGrowth.interpersonalRelationshipBuilding ||
+        this.exitForm.chwGrowth.serviceCoordinationNavigation ||
+        this.exitForm.chwGrowth.evaluationResearch ||
+        this.exitForm.chwGrowth.knowledgeBaseHealthIssues ||
+        this.exitForm.chwGrowth.teachingEducation ||
+        this.exitForm.chwGrowth.advocacy
+    );
+
+    if (hasChwData) {
+        exitFormData.exitForm.chwGrowth = {
+            interpersonalRelationshipBuilding: this.exitForm.chwGrowth.interpersonalRelationshipBuilding || "",
+            serviceCoordinationNavigation: this.exitForm.chwGrowth.serviceCoordinationNavigation || "",
+            evaluationResearch: this.exitForm.chwGrowth.evaluationResearch || "",
+            knowledgeBaseHealthIssues: this.exitForm.chwGrowth.knowledgeBaseHealthIssues || "",
+            teachingEducation: this.exitForm.chwGrowth.teachingEducation || "",
+            advocacy: this.exitForm.chwGrowth.advocacy || ""
         };
+    }
 
-        axios.put(apiURL, updatedExitForm, { headers: { token } })
-            .then(() => {
-                this.formSubmitSuccess = true;
-                const motivatingMessages = [
-                    "Exit Form updated!",
-                ];
-                const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
-                
-                this.updateChecklistStore();
+    let updatedExitForm = {
+        exitForm: exitFormData.exitForm,
+        tempIncompleteFormID: this.incompleteFormID
+    };
 
-                user.navigationData = {
-                    toastType: 'info',
-                    toastMessage: randomMessage,
-                    toastPosition: 'top-right',
-                    toastCSS: 'Toastify__toast--update'
-                };
+    axios.put(apiURL, updatedExitForm, { headers: { token } })
+        .then(() => {
+            this.formSubmitSuccess = true;
+            const motivatingMessages = [
+                "Exit Form updated!",
+            ];
+            const randomMessage = motivatingMessages[Math.floor(Math.random() * motivatingMessages.length)];
+            
+            this.updateChecklistStore();
 
-                this.$router.push({ 
-                    name: 'studentDashboard'
-                });
-            })
-            .catch((error) => {
-                this.handleError(error);
+            user.navigationData = {
+                toastType: 'info',
+                toastMessage: randomMessage,
+                toastPosition: 'top-right',
+                toastCSS: 'Toastify__toast--update'
+            };
+
+            this.$router.push({ 
+                name: 'studentDashboard'
             });
-    },
+        })
+        .catch((error) => {
+            this.handleError(error);
+        });
+},
 
     // Utility methods
     deepClone(obj) {
@@ -1589,38 +1670,38 @@ methods: {
     },
 
     // Handle first input to create incomplete form
-    async handleFirstInput() {
-        if (this.isFirstInput) {
-            this.isFirstInput = false;
+async handleFirstInput() {
+    if (this.isFirstInput) {
+        this.isFirstInput = false;
 
-            try {
-                const user = useLoggedInUserStore();
-                const token = user.token;
-                let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exit-forms";
+        try {
+            const user = useLoggedInUserStore();
+            const token = user.token;
+            let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exit-forms";
 
-                const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+            const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
 
-                // Prepare initial form data
-                const exitFormData = {
-                    expRegistrationID: expRegistrationID,
-                    exitForm: {
+            // Prepare initial form data
+            const exitFormData = {
+                expRegistrationID: expRegistrationID,
+                exitForm: {
                     progressMade: {
                         aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
                         aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected || "No aspiration",
                         aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
-                        aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
-                        aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
-                        aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
+                        aspirationOneExperienceConnection: this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
+                        aspirationTwoExperienceConnection: this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
+                        aspirationThreeExperienceConnection: this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
                         goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected || "No goal",
                         goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected || "No goal",
                         goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected || "No goal",
                         goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
                         goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
-                        goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
-                        goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
-                        goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
-                        goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
-                        goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
+                        goalOneExperienceConnection: this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
+                        goalTwoExperienceConnection: this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
+                        goalThreeExperienceConnection: this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
+                        goalFourExperienceConnection: this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
+                        goalFiveExperienceConnection: this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
                     },
                     goalIssues: {
                         goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
@@ -1632,7 +1713,7 @@ methods: {
                         goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
                         goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
                         goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
-                        noContributions:this.exitForm.activitiesContribution.noContributions,
+                        noContributions: this.exitForm.activitiesContribution.noContributions,
                     },
                     experienceContributions: this.exitForm.experienceContributions,
                     likelihoodOf: {
@@ -1654,22 +1735,68 @@ methods: {
                         supportOthers: this.exitForm.openEnded.supportOthers,
                         comments: this.exitForm.openEnded.comments
                     }
-                    }
-                };
-
-                try {
-                    const response = await axios.post(apiURL, exitFormData, {
-                        headers: { token }
-                    });
-                    this.incompleteFormID = response.data.exitForm._id;
-                } catch (error) {
-                    this.handleError(error);
                 }
-            } catch (error) {
-                    this.handleError(error);
+            };
+
+            // Only add HICH data if there's actual data
+            const hasHichData = (
+                (this.exitForm.hichNetPromoter.recommendHICH !== "" && 
+                 this.exitForm.hichNetPromoter.recommendHICH !== null && 
+                 this.exitForm.hichNetPromoter.recommendHICH !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== "" && 
+                 this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== null && 
+                 this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendVolunteerProjects !== "" && 
+                 this.exitForm.hichNetPromoter.recommendVolunteerProjects !== null && 
+                 this.exitForm.hichNetPromoter.recommendVolunteerProjects !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendMentorshipProgram !== "" && 
+                 this.exitForm.hichNetPromoter.recommendMentorshipProgram !== null && 
+                 this.exitForm.hichNetPromoter.recommendMentorshipProgram !== undefined)
+            );
+
+            if (hasHichData) {
+                exitFormData.exitForm.hichNetPromoter = {
+                    recommendHICH: this.exitForm.hichNetPromoter.recommendHICH || "",
+                    recommendSocialsWorkshops: this.exitForm.hichNetPromoter.recommendSocialsWorkshops || "",
+                    recommendVolunteerProjects: this.exitForm.hichNetPromoter.recommendVolunteerProjects || "",
+                    recommendMentorshipProgram: this.exitForm.hichNetPromoter.recommendMentorshipProgram || ""
+                };
             }
+
+            // Only add CHW data if there's actual data
+            const hasChwData = (
+                this.exitForm.chwGrowth.interpersonalRelationshipBuilding ||
+                this.exitForm.chwGrowth.serviceCoordinationNavigation ||
+                this.exitForm.chwGrowth.evaluationResearch ||
+                this.exitForm.chwGrowth.knowledgeBaseHealthIssues ||
+                this.exitForm.chwGrowth.teachingEducation ||
+                this.exitForm.chwGrowth.advocacy
+            );
+
+            if (hasChwData) {
+                exitFormData.exitForm.chwGrowth = {
+                    interpersonalRelationshipBuilding: this.exitForm.chwGrowth.interpersonalRelationshipBuilding || "",
+                    serviceCoordinationNavigation: this.exitForm.chwGrowth.serviceCoordinationNavigation || "",
+                    evaluationResearch: this.exitForm.chwGrowth.evaluationResearch || "",
+                    knowledgeBaseHealthIssues: this.exitForm.chwGrowth.knowledgeBaseHealthIssues || "",
+                    teachingEducation: this.exitForm.chwGrowth.teachingEducation || "",
+                    advocacy: this.exitForm.chwGrowth.advocacy || ""
+                };
+            }
+
+            try {
+                const response = await axios.post(apiURL, exitFormData, {
+                    headers: { token }
+                });
+                this.incompleteFormID = response.data.exitForm._id;
+            } catch (error) {
+                this.handleError(error);
+            }
+        } catch (error) {
+            this.handleError(error);
         }
-    },
+    }
+},
 
     // Debounced input handler
     handleInput() {
@@ -1782,6 +1909,16 @@ methods: {
         this.exitForm.generalGrowth = existingExitForm.generalGrowth;
         this.exitForm.openEnded = existingExitForm.openEnded;
 
+        // Restore HICH Net Promoter data if it exists
+        if (existingExitForm.hichNetPromoter) {
+            this.exitForm.hichNetPromoter = existingExitForm.hichNetPromoter;
+        }
+
+        // Restore CHW Growth data if it exists
+        if (existingExitForm.chwGrowth) {
+            this.exitForm.chwGrowth = existingExitForm.chwGrowth;
+        }
+
         this.originalExitForm = JSON.parse(JSON.stringify(this.exitForm));
         this.expRegistrationIDFromIncomplete = this.tempIncompleteForm.incompleteForm.expRegistrationID
         this.incompleteFormID = this.tempIncompleteForm.incompleteForm._id;
@@ -1801,35 +1938,35 @@ methods: {
     },
 
     // Auto-save incomplete form updates
-    updateExitForm() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        const userID = user.userId;
-        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
+updateExitForm() {
+    const user = useLoggedInUserStore();
+    const token = user.token;
+    const userID = user.userId;
+    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
 
-        const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+    const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
 
-        // Prepare autosave data
-        const exitFormData = {
-            expRegistrationID: expRegistrationID,
-            exitForm: {
+    // Prepare autosave data
+    const exitFormData = {
+        expRegistrationID: expRegistrationID,
+        exitForm: {
             progressMade: {
                 aspirationOneProgressResults: this.exitForm.progressMade.aspirationOneProgressSelected || "No aspiration",
                 aspirationTwoProgressResults: this.exitForm.progressMade.aspirationTwoProgressSelected || "No aspiration",
                 aspirationThreeProgressResults: this.exitForm.progressMade.aspirationThreeProgressSelected || "No aspiration",
-                aspirationOneExperienceConnection:this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
-                aspirationTwoExperienceConnection:this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
-                aspirationThreeExperienceConnection:this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
+                aspirationOneExperienceConnection: this.exitForm.progressMade.aspirationOneExperienceConnectionSelected || "No aspiration",
+                aspirationTwoExperienceConnection: this.exitForm.progressMade.aspirationTwoExperienceConnectionSelected || "No aspiration",
+                aspirationThreeExperienceConnection: this.exitForm.progressMade.aspirationThreeExperienceConnectionSelected || "No aspiration",
                 goalOneProgressResults: this.exitForm.progressMade.goalOneProgressSelected || "No goal",
                 goalTwoProgressResults: this.exitForm.progressMade.goalTwoProgressSelected || "No goal",
                 goalThreeProgressResults: this.exitForm.progressMade.goalThreeProgressSelected || "No goal",
                 goalFourProgressResults: this.exitForm.progressMade.goalFourProgressSelected || "No goal",
                 goalFiveProgressResults: this.exitForm.progressMade.goalFiveProgressSelected || "No goal",
-                goalOneExperienceConnection:this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
-                goalTwoExperienceConnection:this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
-                goalThreeExperienceConnection:this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
-                goalFourExperienceConnection:this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
-                goalFiveExperienceConnection:this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
+                goalOneExperienceConnection: this.exitForm.progressMade.goalOneExperienceConnectionSelected || "No goal",
+                goalTwoExperienceConnection: this.exitForm.progressMade.goalTwoExperienceConnectionSelected || "No goal",
+                goalThreeExperienceConnection: this.exitForm.progressMade.goalThreeExperienceConnectionSelected || "No goal",
+                goalFourExperienceConnection: this.exitForm.progressMade.goalFourExperienceConnectionSelected || "No goal",
+                goalFiveExperienceConnection: this.exitForm.progressMade.goalFiveExperienceConnectionSelected || "No goal",
             },
             goalIssues: {
                 goals: this.exitForm.goalIssues.goals.filter(goal => goal.checked).map(goal => goal.label),
@@ -1841,7 +1978,7 @@ methods: {
                 goalThreeContributions: this.exitForm.activitiesContribution.goalThreeContributions,
                 goalFourContributions: this.exitForm.activitiesContribution.goalFourContributions,
                 goalFiveContributions: this.exitForm.activitiesContribution.goalFiveContributions,
-                noContributions:this.exitForm.activitiesContribution.noContributions,
+                noContributions: this.exitForm.activitiesContribution.noContributions,
             },
             experienceContributions: this.exitForm.experienceContributions,
             likelihoodOf: {
@@ -1863,16 +2000,62 @@ methods: {
                 supportOthers: this.exitForm.openEnded.supportOthers,
                 comments: this.exitForm.openEnded.comments
             }
-            }
-        };
+        }
+    };
 
-        axios.patch(apiURL, exitFormData, { headers: { token }})
-            .then(response => {
-            })
-            .catch(error => {
-                this.handleError(error);
-            });
-    },
+    // Only add HICH data if there's actual data
+    const hasHichData = (
+        (this.exitForm.hichNetPromoter.recommendHICH !== "" && 
+         this.exitForm.hichNetPromoter.recommendHICH !== null && 
+         this.exitForm.hichNetPromoter.recommendHICH !== undefined) ||
+        (this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== "" && 
+         this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== null && 
+         this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== undefined) ||
+        (this.exitForm.hichNetPromoter.recommendVolunteerProjects !== "" && 
+         this.exitForm.hichNetPromoter.recommendVolunteerProjects !== null && 
+         this.exitForm.hichNetPromoter.recommendVolunteerProjects !== undefined) ||
+        (this.exitForm.hichNetPromoter.recommendMentorshipProgram !== "" && 
+         this.exitForm.hichNetPromoter.recommendMentorshipProgram !== null && 
+         this.exitForm.hichNetPromoter.recommendMentorshipProgram !== undefined)
+    );
+
+    if (hasHichData) {
+        exitFormData.exitForm.hichNetPromoter = {
+            recommendHICH: this.exitForm.hichNetPromoter.recommendHICH || "",
+            recommendSocialsWorkshops: this.exitForm.hichNetPromoter.recommendSocialsWorkshops || "",
+            recommendVolunteerProjects: this.exitForm.hichNetPromoter.recommendVolunteerProjects || "",
+            recommendMentorshipProgram: this.exitForm.hichNetPromoter.recommendMentorshipProgram || ""
+        };
+    }
+
+    // Only add CHW data if there's actual data
+    const hasChwData = (
+        this.exitForm.chwGrowth.interpersonalRelationshipBuilding ||
+        this.exitForm.chwGrowth.serviceCoordinationNavigation ||
+        this.exitForm.chwGrowth.evaluationResearch ||
+        this.exitForm.chwGrowth.knowledgeBaseHealthIssues ||
+        this.exitForm.chwGrowth.teachingEducation ||
+        this.exitForm.chwGrowth.advocacy
+    );
+
+    if (hasChwData) {
+        exitFormData.exitForm.chwGrowth = {
+            interpersonalRelationshipBuilding: this.exitForm.chwGrowth.interpersonalRelationshipBuilding || "",
+            serviceCoordinationNavigation: this.exitForm.chwGrowth.serviceCoordinationNavigation || "",
+            evaluationResearch: this.exitForm.chwGrowth.evaluationResearch || "",
+            knowledgeBaseHealthIssues: this.exitForm.chwGrowth.knowledgeBaseHealthIssues || "",
+            teachingEducation: this.exitForm.chwGrowth.teachingEducation || "",
+            advocacy: this.exitForm.chwGrowth.advocacy || ""
+        };
+    }
+
+    axios.patch(apiURL, exitFormData, { headers: { token }})
+        .then(response => {
+        })
+        .catch(error => {
+            this.handleError(error);
+        });
+},
 
     // Additional event handlers
     handleUpdateIncompleteExpRegistration() {

@@ -589,7 +589,6 @@ export default {
   
   // Component initialization
   async mounted() {
-    console.log('EditProjectProposal mounted');
     const user = useLoggedInUserStore();
     
     if (!user.navigationData || !user.navigationData.projectID) {
@@ -603,7 +602,6 @@ export default {
       return;
     }
     
-    console.log('Found project ID in navigation data:', user.navigationData.projectID);
     await this.fetchProjectData();
     await this.fetchStudentExperienceInstances();
   },
@@ -627,7 +625,6 @@ export default {
         }
         
         const projectId = user.navigationData.projectID;
-        console.log('Fetching project data for ID:', projectId);
         
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`;
         const response = await axios.get(apiURL, { headers: { token } });
@@ -647,7 +644,6 @@ export default {
             return;
           }
           
-          console.log('Found project:', project);
           
           // Set project data with field mapping
           this.projectData = {
@@ -771,7 +767,6 @@ export default {
           notes: 'Updated via web interface'
         };
         
-        console.log('Updating project with payload:', projectPayload);
         await axios.put(apiURL, projectPayload, { headers: { token } });
 
         user.navigationData = {
@@ -821,7 +816,6 @@ export default {
           projectId: this.projectData._id
         };
         
-        console.log('Cancelling project with payload:', projectPayload);
         await axios.post(apiURL, projectPayload, { headers: { token } });
 
         user.navigationData = {

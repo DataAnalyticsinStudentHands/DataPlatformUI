@@ -117,7 +117,7 @@ props: {
     expRegistrationID: String,
     incompleteFormID: String
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form", "update-experiences", "update-experienceID"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-selected-experience", "update-found-document-id", "update-hich-project", "update-original-goal-form", "update-experiences", "update-experienceID", "populate-existing-form"],
 data() {
     return {
         // Form state and validation
@@ -235,7 +235,7 @@ computed: {
     },
 
     // Format experiences for dropdown display
-    // Now uses expRegistrationID as value (unique) and includes instructor if present
+    // Uses expRegistrationID as value (unique) and includes instructor if present
     formattedExperiences() {
       return this.experiences.map(experience => {
         // Build the display text
@@ -322,7 +322,7 @@ methods: {
     },
 
     // Check if form already exists for selected experience
-    // Now uses expRegistrationID to find the experienceID for the API call
+    // Uses expRegistrationID to find the experienceID for the API call
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
         
@@ -340,20 +340,21 @@ methods: {
 
         try {
             const response = await axios.get(apiURL + `${experienceID}`, {
-            headers: {
-                token: token
-            }
+                headers: { token: token }
             });
 
             if (response.data.documentFound === false) {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
-            return;
+                return;
             }
 
             if (response.data && response.data.id) {
                 this.$emit('update-found-document-id', response.data.id);
                 this.experienceFoundWarning = true;
+                
+                // Fetch the complete form data for pre-population
+                await this.fetchAndEmitExistingForm(this.selectedExperience);
             } else {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
@@ -365,8 +366,39 @@ methods: {
         }
     },
 
+    // Fetch existing form data and emit for pre-population
+    async fetchAndEmitExistingForm(expRegistrationID) {
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        
+        // expRegistrationID is now directly passed as the selectedExperience value
+        if (!expRegistrationID) {
+            console.error('Could not find registration ID for selected experience');
+            return;
+        }
+        
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/by-registration/${expRegistrationID}`;
+        
+        try {
+            const response = await axios.get(apiURL, { headers: { token } });
+            
+            if (response.data.formFound) {
+                // Emit the complete form data to parent for pre-population
+                this.$emit('populate-existing-form', response.data.goalForm);
+                
+                // If it's a HICH project, set the local HICH project data
+                if (response.data.goalForm.hichProject) {
+                    this.hichProject = response.data.goalForm.hichProject;
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching existing goal form:', error);
+            // Don't show error to user - form will just not be pre-populated
+        }
+    },
+
     // Handle experience selection and emit updates
-    // Updated to work with expRegistrationID as the value
+    // Works with expRegistrationID as the value
     updateExperienceID(selected) {
         if (!selected) {
             this.localExperienceID = null;
@@ -387,6 +419,7 @@ methods: {
             text: selectedExperienceData?.text, 
             value: selected,
             experienceID: selectedExp?.experienceID,
+            expRegistrationID: selectedExp?.expRegistrationID,
             instructor: selectedExp?.instructor
         });
         this.$emit("update-experienceID", this.localExperienceID);
@@ -407,6 +440,7 @@ methods: {
                     text: selectedExperienceData?.text, 
                     value: this.selectedExperience,
                     experienceID: matchingExperience.experienceID,
+                    expRegistrationID: matchingExperience.expRegistrationID,
                     instructor: matchingExperience.instructor
                 });
             } else {
