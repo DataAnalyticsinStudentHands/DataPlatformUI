@@ -732,4 +732,4 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-</style>
+</style> 
