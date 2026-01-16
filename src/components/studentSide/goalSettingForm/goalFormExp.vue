@@ -235,16 +235,30 @@ computed: {
     },
 
     // Format experiences for dropdown display
+    // Now uses expRegistrationID as value (unique) and includes instructor if present
     formattedExperiences() {
-      return this.experiences.map(experience => ({
-        text: `${experience.experienceCategory}: ${experience.experienceName}`,
-        value: experience.experienceID,
-      }));
+      return this.experiences.map(experience => {
+        // Build the display text
+        let text = `${experience.experienceCategory}: ${experience.experienceName}`;
+        
+        // Append instructor if present
+        if (experience.instructor) {
+          text += ` (Instructor: ${experience.instructor})`;
+        }
+        
+        return {
+          text: text,
+          value: experience.expRegistrationID, // Use expRegistrationID as unique identifier
+          experienceID: experience.experienceID, // Keep for reference
+          instructor: experience.instructor // Keep for reference
+        };
+      });
     },
 
     // Determine if HICH project checkboxes should be shown
+    // Uses the base experience text (without instructor) for checking
     shouldShowHichCheckboxes() {
-        const experienceText = this.findExperienceText(this.selectedExperience);
+        const experienceText = this.findExperienceBaseText(this.selectedExperience);
         return experienceText.includes('HICH - Project Volunteer') || experienceText.includes('HICH - Project Head');
     },
 
@@ -273,7 +287,9 @@ methods: {
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
           experienceName: experience.experienceName,
-          expRegistrationID: experience.expRegistrationID
+          expRegistrationID: experience.expRegistrationID,
+          expInstanceID: experience.expInstanceID,
+          instructor: experience.instructor || null // Capture instructor field
         }));
         this.$emit("update-original-goal-form", this.goalForm);
         this.$emit("update-experiences", this.localExperiences);
@@ -306,9 +322,18 @@ methods: {
     },
 
     // Check if form already exists for selected experience
+    // Now uses expRegistrationID to find the experienceID for the API call
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
-        const experienceID = this.selectedExperience;
+        
+        // Find the experience object using expRegistrationID (the new value)
+        const selectedExp = this.experiences.find(exp => exp.expRegistrationID === this.selectedExperience);
+        if (!selectedExp) {
+            this.isLoadingExpCheck = false;
+            return;
+        }
+        
+        const experienceID = selectedExp.experienceID;
         const user = useLoggedInUserStore();
         let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
@@ -341,6 +366,7 @@ methods: {
     },
 
     // Handle experience selection and emit updates
+    // Updated to work with expRegistrationID as the value
     updateExperienceID(selected) {
         if (!selected) {
             this.localExperienceID = null;
@@ -349,10 +375,20 @@ methods: {
             return;
         }
 
-        this.localExperienceID = selected;
-        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === selected)?.text;
+        // Find the full experience object
+        const selectedExp = this.experiences.find(exp => exp.expRegistrationID === selected);
+        if (selectedExp) {
+            this.localExperienceID = selectedExp.experienceID;
+        }
+        
+        const selectedExperienceData = this.formattedExperiences.find(exp => exp.value === selected);
 
-        this.$emit("update-selected-experience", { text: selectedExperienceText, value: selected });
+        this.$emit("update-selected-experience", { 
+            text: selectedExperienceData?.text, 
+            value: selected,
+            experienceID: selectedExp?.experienceID,
+            instructor: selectedExp?.instructor
+        });
         this.$emit("update-experienceID", this.localExperienceID);
     },
 
@@ -363,10 +399,16 @@ methods: {
             const matchingExperience = this.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
             if (matchingExperience) {
-                this.selectedExperience = matchingExperience.experienceID;
-                const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+                // Set selectedExperience to expRegistrationID (the new value format)
+                this.selectedExperience = matchingExperience.expRegistrationID;
+                const selectedExperienceData = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
 
-                this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience });
+                this.$emit("update-selected-experience", { 
+                    text: selectedExperienceData?.text, 
+                    value: this.selectedExperience,
+                    experienceID: matchingExperience.experienceID,
+                    instructor: matchingExperience.instructor
+                });
             } else {
                 console.log('No matching experience found for the given expRegistrationID');
             }
@@ -400,10 +442,17 @@ methods: {
         }
     },
 
-    // Find experience text by ID for display purposes
-    findExperienceText(experienceID) {
-        const experience = this.formattedExperiences.find(exp => exp.value === experienceID);
+    // Find experience full text by expRegistrationID for display purposes
+    findExperienceText(expRegistrationID) {
+        const experience = this.formattedExperiences.find(exp => exp.value === expRegistrationID);
         return experience ? experience.text.trim() : '';
+    },
+
+    // Find experience base text (without instructor) for HICH checkbox logic
+    findExperienceBaseText(expRegistrationID) {
+        const experience = this.experiences.find(exp => exp.expRegistrationID === expRegistrationID);
+        if (!experience) return '';
+        return `${experience.experienceCategory}: ${experience.experienceName}`.trim();
     },
 
     // Select experience that matches registration ID
@@ -411,7 +460,8 @@ methods: {
         if (this.expRegistrationID && this.experiences.length) {
             const foundExperience = this.experiences.find(experience => experience.expRegistrationID === this.expRegistrationID);
             if (foundExperience) {
-                this.selectedExperience = foundExperience.experienceID;
+                // Set selectedExperience to expRegistrationID (the new value format)
+                this.selectedExperience = foundExperience.expRegistrationID;
                 this.updateExperienceID(this.selectedExperience);
             }
         }
@@ -419,8 +469,9 @@ methods: {
 
     // Update incomplete form with new experience selection
     async updateIncompleteForm(value) {
-        const selectedExperienceObject = this.localExperiences.find(exp => exp.experienceID === this.selectedExperience);
-        if (this.incompleteFormID) {
+        // Find experience using expRegistrationID (the new value)
+        const selectedExperienceObject = this.localExperiences.find(exp => exp.expRegistrationID === this.selectedExperience);
+        if (this.incompleteFormID && selectedExperienceObject) {
             try {
                 const user = useLoggedInUserStore();
                 const token = user.token;

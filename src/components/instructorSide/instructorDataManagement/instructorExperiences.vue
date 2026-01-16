@@ -204,6 +204,9 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
         item-key="_id"
         item-value="_id"
         v-model="selectedExperiences"
+        v-model:items-per-page="itemsPerPage"
+        v-model:page="currentPage"
+        :items-per-page-options="dataTableItemsPerPageOptions"
         hover
         return-object
         multi-sort
@@ -211,6 +214,8 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
         :mobile-breakpoint="600"
         :sort-by.sync="viewsStore.experiences.sortBy"
         @update:sort-by="handleSortByUpdate"
+        @update:items-per-page="handleItemsPerPageUpdate"
+        @update:page="handlePageUpdate"
       >
         <template v-slot:body="{ items }">
           <template v-if="items.length > 0">
@@ -514,15 +519,31 @@ export default {
       activityBasedExperiences: [],
       mobileSearchDialog: false,
       mobileSearchCategory: "All Fields",
-      mobileSearchQuery: ""
+      mobileSearchQuery: "",
+      dataTableItemsPerPageOptions: [
+        {value: 5, title: "5"},
+        {value: 10, title: "10"},
+        {value: 15, title: "15"},
+        {value: 20, title: "20"},
+        {value: -1, title: "$vuetify.dataFooter.itemsPerPageAll"},
+      ],
+      // Local pagination state initialized from store
+      itemsPerPage: 10,
+      currentPage: 1,
     };
   },
 
   mounted() {
+    // Initialize pagination from store
+    this.itemsPerPage = this.viewsStore.experiences.itemsPerPage;
+    this.currentPage = this.viewsStore.experiences.currentPage;
+
     useLoggedInUserStore().startLoading();
     this.fetchExperienceData()
       .then(() => {
         useLoggedInUserStore().stopLoading();
+        // Restore selected experiences after data is loaded
+        this.restoreSelectedExperiences();
       })
       .catch((error) => {
         this.handleError(error);
@@ -544,6 +565,14 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    // Watch selectedExperiences to persist changes
+    selectedExperiences: {
+      handler(newVal) {
+        const selectedIds = newVal.map(experience => experience._id);
+        this.viewsStore.setSelectedExperienceIds(selectedIds);
+      },
+      deep: true
     }
   },
 
@@ -919,6 +948,23 @@ export default {
 
     handleSortByUpdate(newSortBy) {
       this.viewsStore.updateSorting('experiences', newSortBy);
+    },
+
+    handleItemsPerPageUpdate(newItemsPerPage) {
+      this.viewsStore.updateExperiencesPagination({ itemsPerPage: newItemsPerPage });
+    },
+
+    handlePageUpdate(newPage) {
+      this.viewsStore.updateExperiencesPagination({ currentPage: newPage });
+    },
+
+    restoreSelectedExperiences() {
+      const selectedIds = this.viewsStore.experiences.selectedExperienceIds;
+      if (selectedIds && selectedIds.length > 0) {
+        this.selectedExperiences = this.filteredExperienceData.filter(experience => 
+          selectedIds.includes(experience._id)
+        );
+      }
     },
 
     applyMobileSearch() {

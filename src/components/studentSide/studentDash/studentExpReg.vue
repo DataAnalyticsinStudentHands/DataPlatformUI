@@ -62,7 +62,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                   :key="experience._id"
               >
                   <v-list-item-title>
-                      {{ experience.experienceName }}
+                      {{ formatExperienceDisplay(experience.experienceName, experience.instructor) }}
                   </v-list-item-title>
               </v-list-item>
 
@@ -164,7 +164,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                                 }"
                             >
                             <v-list-item-title class="body-text">
-                              {{ experience.experienceName }}
+                              {{ formatExperienceDisplay(experience.experienceName, experience.instructor) }}
                             </v-list-item-title>
 
                             <template #append>
@@ -214,7 +214,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                               :class="{ 'selection-remove': isMarkedForRemoval(exp) }"
                             >
                                   <v-list-item-title class="body-text">
-                                    {{ exp.experienceName }}
+                                    {{ formatExperienceDisplay(exp.experienceName, exp.instructor) }}
                                   </v-list-item-title>
                             </v-list-item>
                           </v-card>
@@ -268,7 +268,7 @@ Handles experience selection, registration codes, and session-based grouping of 
 <v-dialog v-model="registrationDialog" max-width="400px">
   <v-card>
     <v-card-title nowrap>Enter Registration Code</v-card-title>
-    <v-card-text>{{ currentExperienceName }}</v-card-text>
+    <v-card-text>{{ formatExperienceDisplay(currentExperienceName, currentExperienceInstructor) }}</v-card-text>
     <v-card-text>
       <v-text-field
         v-model="enteredRegistrationCode"
@@ -308,6 +308,7 @@ export default {
             enteredRegistrationCode: '',
             currentExperience: null,
             currentExperienceName: '',
+            currentExperienceInstructor: '',
             experiencesToProcess: [],
             showTip: false,
         }
@@ -355,6 +356,7 @@ export default {
             grouped[sessionID].experiences.push({
               _id: exp._id,
               experienceName: exp.experienceInstance.name,
+              instructor: exp.experienceInstance.instructor || null,
             });
           });
 
@@ -374,6 +376,19 @@ export default {
         }
     },
     methods: {
+      /**
+       * Formats experience name with optional instructor
+       * @param {string} experienceName - The name of the experience
+       * @param {string|null} instructor - Optional instructor name
+       * @returns {string} Formatted display string
+       */
+      formatExperienceDisplay(experienceName, instructor) {
+        if (instructor) {
+          return `${experienceName} - ${instructor}`;
+        }
+        return experienceName;
+      },
+
       // Experience selection management
       toggleExperienceSelection(experience) {
           const index = this.selectedExperienceIDs.indexOf(experience._id);
@@ -415,6 +430,7 @@ export default {
         if (this.experiencesToProcess.length > 0) {
           this.currentExperience = this.experiencesToProcess.shift();
           this.currentExperienceName = this.currentExperience.experienceName;
+          this.currentExperienceInstructor = this.currentExperience.instructor || '';
           this.registrationDialog = true;
         }
       },
@@ -422,6 +438,7 @@ export default {
         this.selectedExperiences.push({
           _id: experience._id,
           experienceName: experience.experienceName,
+          instructor: experience.instructor || null,
           session: { ...session }
         });
       },
@@ -432,6 +449,7 @@ export default {
         this.enteredRegistrationCode = '';
         this.currentExperience = null;
         this.currentExperienceName = '';
+        this.currentExperienceInstructor = '';
         this.experiencesToProcess = [];
       },
       confirmRegistrationCode() {
@@ -496,7 +514,16 @@ export default {
             response.data.sort((a, b) => a.session.name.localeCompare(b.session.name));
 
             response.data.forEach(session => {
-              session.availableExperiences.sort((a, b) => a.experienceName.localeCompare(b.experienceName));
+              session.availableExperiences.sort((a, b) => {
+                // Sort by experience name first, then by instructor if names are equal
+                const nameCompare = a.experienceName.localeCompare(b.experienceName);
+                if (nameCompare !== 0) return nameCompare;
+                // If names are equal, sort by instructor (null/undefined comes first)
+                if (!a.instructor && !b.instructor) return 0;
+                if (!a.instructor) return -1;
+                if (!b.instructor) return 1;
+                return a.instructor.localeCompare(b.instructor);
+              });
             });
           }    
           
@@ -517,6 +544,7 @@ export default {
                   newSelectedExperiences.push({
                     _id: availableExp._id,
                     experienceName: availableExp.experienceName,
+                    instructor: availableExp.instructor || null,
                     session: session.session,
                   });
                 }
@@ -528,11 +556,10 @@ export default {
         });
 
         this.dialog = true;
-        // this.$nextTick(() => { this.showTip = true });
-    this.$nextTick(() => {
-      this.showTip = true;
-      setTimeout(() => { this.showTip = false }, 3000);
-      });
+        this.$nextTick(() => {
+          this.showTip = true;
+          setTimeout(() => { this.showTip = false }, 3000);
+        });
       },
     }
 }

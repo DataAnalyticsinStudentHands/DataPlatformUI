@@ -16,21 +16,31 @@ export const useInstructorViewsStore = defineStore('instructorViews', {
         viewType: 'active',
         sortBy: [],
         searchChips: [],
-        selectedSearchChips: []
+        selectedSearchChips: [],
+        itemsPerPage: 10,
+        currentPage: 1,
+        selectedActivityIds: []
       },
       // Experiences view configuration
       experiences: {
         viewType: 'active',
         sortBy: [],
         searchChips: [],
-        selectedSearchChips: []
+        selectedSearchChips: [],
+        itemsPerPage: 10,
+        currentPage: 1,
+        selectedExperienceIds: []
       },
       // Sessions view configuration
       sessions: {
         viewType: 'active',
         sortBy: [],
         searchChips: [],
-        selectedSearchChips: []
+        selectedSearchChips: [],
+        itemsPerPage: 5,
+        currentPage: 1,
+        expandedSessionIds: [],
+        selectedSessionIds: []
       },
       // Projects view configuration with separate settings for active projects and proposals
       projects: {
@@ -112,6 +122,58 @@ export const useInstructorViewsStore = defineStore('instructorViews', {
           this[view].selectedSearchChips = chips;
         }
       },
+      // Update activities pagination settings
+      updateActivitiesPagination(settings) {
+        if (settings.itemsPerPage !== undefined) {
+          this.activities.itemsPerPage = settings.itemsPerPage;
+        }
+        if (settings.currentPage !== undefined) {
+          this.activities.currentPage = settings.currentPage;
+        }
+      },
+      // Update selected activity IDs
+      setSelectedActivityIds(activityIds) {
+        this.activities.selectedActivityIds = activityIds;
+      },
+      // Update sessions pagination settings
+      updateSessionsPagination(settings) {
+        if (settings.itemsPerPage !== undefined) {
+          this.sessions.itemsPerPage = settings.itemsPerPage;
+        }
+        if (settings.currentPage !== undefined) {
+          this.sessions.currentPage = settings.currentPage;
+        }
+      },
+      // Update expanded session IDs
+      setExpandedSessionIds(sessionIds) {
+        this.sessions.expandedSessionIds = sessionIds;
+      },
+      // Toggle a single session expansion state
+      toggleSessionExpansion(sessionId) {
+        const index = this.sessions.expandedSessionIds.indexOf(sessionId);
+        if (index > -1) {
+          this.sessions.expandedSessionIds.splice(index, 1);
+        } else {
+          this.sessions.expandedSessionIds.push(sessionId);
+        }
+      },
+      // Update selected session IDs
+      setSelectedSessionIds(sessionIds) {
+        this.sessions.selectedSessionIds = sessionIds;
+      },
+      // Update experiences pagination settings
+      updateExperiencesPagination(settings) {
+        if (settings.itemsPerPage !== undefined) {
+          this.experiences.itemsPerPage = settings.itemsPerPage;
+        }
+        if (settings.currentPage !== undefined) {
+          this.experiences.currentPage = settings.currentPage;
+        }
+      },
+      // Update selected experience IDs
+      setSelectedExperienceIds(experienceIds) {
+        this.experiences.selectedExperienceIds = experienceIds;
+      },
       // Update active tab in student progress monitor
       setProgressMonitorTab(tab) {
         this.studentProgressMonitor.activeTab = tab;
@@ -161,6 +223,19 @@ export const useInstructorViewsStore = defineStore('instructorViews', {
       isViewingArchived: (state) => (view) => {
         return state[view] && state[view].viewType === 'archived';
       },
+      // Activities pagination getters
+      getActivitiesItemsPerPage: (state) => state.activities.itemsPerPage,
+      getActivitiesCurrentPage: (state) => state.activities.currentPage,
+      getSelectedActivityIds: (state) => state.activities.selectedActivityIds,
+      // Sessions pagination getters
+      getSessionsItemsPerPage: (state) => state.sessions.itemsPerPage,
+      getSessionsCurrentPage: (state) => state.sessions.currentPage,
+      getExpandedSessionIds: (state) => state.sessions.expandedSessionIds,
+      getSelectedSessionIds: (state) => state.sessions.selectedSessionIds,
+      // Experiences pagination getters
+      getExperiencesItemsPerPage: (state) => state.experiences.itemsPerPage,
+      getExperiencesCurrentPage: (state) => state.experiences.currentPage,
+      getSelectedExperienceIds: (state) => state.experiences.selectedExperienceIds,
       // Student progress monitor getters
       getProgressMonitorTab: (state) => state.studentProgressMonitor.activeTab,
       getEntryFormMonitorSettings: (state) => state.studentProgressMonitor.entryFormMonitor,

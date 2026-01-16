@@ -792,6 +792,7 @@ methods: {
     },
 
     // Update selected experience from child component
+    // Now receives object with { text, value, experienceID, instructor }
     handleSelectedExperience(value) {
         this.selectedExperience = value;
     },
@@ -1098,6 +1099,7 @@ methods: {
     },
 
     // Create initial incomplete form on first user input
+    // Updated to use expRegistrationID from selectedExperience.value
     async handleFirstInput() {
         if (this.isFirstInput) {
             this.isFirstInput = false;
@@ -1107,12 +1109,14 @@ methods: {
                 const token = user.token;
                 let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
                 
-                const selectedExp = this.experiences.find(exp => exp.experienceID === this.selectedExperience.value);
-                const expRegistrationID = selectedExp.expRegistrationID;
+                // selectedExperience.value is now expRegistrationID
+                const expRegistrationID = this.selectedExperience.value;
+                // selectedExperience.experienceID contains the actual experience definition ID
+                const experienceID = this.selectedExperience.experienceID;
 
                 const goalFormSubmission = {
                     expRegistrationID,
-                    experienceID: this.selectedExperience.value,
+                    experienceID: experienceID,
                     goalForm: {
                         communityEngagement: {
                             communityEngagementExperiences: this.goalForm.communityEngagement.communityEngagementExperiences,

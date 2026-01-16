@@ -2,7 +2,7 @@
   instructorSpecificExperienceInstance.vue
   
   View and edit a single Experience Instance's data. Provides functionality to update
-  activities, exit form release date, registration code, and delete the instance.
+  activities, exit form release date, registration code, instructor, and delete the instance.
   Redesigned UI matching the project pages aesthetic.
 -->
 <template>
@@ -23,7 +23,10 @@
           <v-icon color="#c8102e" size="32" class="mr-3">mdi-book-edit-outline</v-icon>
           <div>
             <h1 class="text-h5 font-weight-bold">{{ $t('Edit Experience Instance') }}</h1>
-            <p class="text-body-2 text-medium-emphasis mb-0">{{ experienceData.experienceName }}</p>
+            <p class="text-body-2 text-medium-emphasis mb-0">
+              {{ experienceData.experienceName }}
+              <span v-if="instructor" class="instructor-header-badge">({{ instructor }})</span>
+            </p>
           </div>
         </div>
       </div>
@@ -77,10 +80,45 @@
 
               <v-divider></v-divider>
 
-              <!-- Section 2: Registration Code -->
+              <!-- Section 2: Instructor -->
               <div class="form-section">
                 <div class="section-header">
                   <div class="section-number">2</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Instructor') }}</h2>
+                    <p class="section-subtitle">{{ $t('Optional instructor assignment for this instance') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-text-field
+                    v-model="instructor"
+                    :label="$t('Instructor (Optional)')"
+                    :readonly="!canUpdateExpInstance"
+                    :placeholder="$t('e.g., Dr. Smith, John Doe')"
+                    :error-messages="instructorError"
+                    variant="outlined"
+                    style="max-width: 400px;"
+                    @update:modelValue="clearInstructorError"
+                  >
+                    <template v-slot:prepend-inner>
+                      <v-icon size="20" color="#666">mdi-account-tie-outline</v-icon>
+                    </template>
+                  </v-text-field>
+                  
+                  <p class="text-caption text-medium-emphasis mt-1">
+                    <v-icon size="14" color="#666" class="mr-1">mdi-information-outline</v-icon>
+                    {{ $t('The same experience can exist multiple times in a session with different instructors.') }}
+                  </p>
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
+              <!-- Section 3: Registration Code -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">3</div>
                   <div>
                     <h2 class="section-title">{{ $t('Registration Code') }}</h2>
                     <p class="section-subtitle">{{ $t('Optional code for participant registration') }}</p>
@@ -104,10 +142,10 @@
 
               <v-divider></v-divider>
 
-              <!-- Section 3: Activities -->
+              <!-- Section 4: Activities -->
               <div class="form-section">
                 <div class="section-header">
-                  <div class="section-number">3</div>
+                  <div class="section-number">4</div>
                   <div>
                     <h2 class="section-title">{{ $t('Activities') }}</h2>
                     <p class="section-subtitle">{{ $t('Manage activities for this experience instance') }}</p>
@@ -213,10 +251,10 @@
 
               <v-divider></v-divider>
 
-              <!-- Section 4: Exit Form Release Date -->
+              <!-- Section 5: Exit Form Release Date -->
               <div class="form-section">
                 <div class="section-header">
-                  <div class="section-number">4</div>
+                  <div class="section-number">5</div>
                   <div>
                     <h2 class="section-title">{{ $t('Exit Form Release Date') }}</h2>
                     <p class="section-subtitle">{{ $t('Set when the exit form becomes available') }}</p>
@@ -272,6 +310,7 @@
                   color="#c8102e"
                   class="action-btn submit-btn"
                   @click="handleSubmitForm"
+                  :loading="isSubmitting"
                 >
                   <v-icon start size="18">mdi-content-save</v-icon>
                   {{ $t('Update Experience Instance') }}
@@ -312,20 +351,18 @@
 import { computed } from 'vue';
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
+import { toast } from 'vue3-toastify';
 
 export default {
   name: 'instructorSpecificExperienceInstance',
   setup() {
-    // Access the logged-in user store
     const userStore = useLoggedInUserStore();
 
-    // Computed property to determine if the "Add Activities" section should be shown based on user roles
     const showAddActivities = computed(() => {
       const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
       return allowedRoles.includes(userStore.role);
     });
 
-    // Computed property to determine if the user can update the experience instance based on user roles
     const canUpdateExpInstance = computed(() => {
       const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
       return allowedRoles.includes(userStore.role);
@@ -362,23 +399,23 @@ export default {
         }
       ],
       hoveredItem: null,
-      registrationCode: ""
+      registrationCode: "",
+      // Instructor field
+      instructor: "",
+      originalInstructor: "",
+      instructorError: "",
+      // Submission state
+      isSubmitting: false
     }
   },
 
   async created() {
-    // Fetch activity data when the component is created
     await this.fetchActivityData();
-
-    // Fetch the experience instance data
     this.fetchExperienceInstance();
-
-    // Check if the experience instance can be deleted
     this.checkIfExpInstanceCanBeDeleted();
   },
 
   computed: {
-    // Filters the activity data, excluding already selected activities
     filteredActivityData() {
       if (this.selectedActivities && this.selectedActivities.length > 0) {
         return this.activityData.filter(activity => 
@@ -407,6 +444,10 @@ export default {
         this.exitFormReleaseDate = instanceData.exitFormReleaseDate.slice(0, 10);
         
         this.registrationCode = instanceData.registrationCode || "";
+        
+        // Set instructor field
+        this.instructor = instanceData.instructor || "";
+        this.originalInstructor = instanceData.instructor || "";
 
         this.selectedActivities = this.activityData.filter(activity =>
           instanceData.activities.some(instanceActivity => instanceActivity.id === activity._id)
@@ -512,7 +553,15 @@ export default {
       });
     },
 
+    clearInstructorError() {
+      this.instructorError = "";
+    },
+
     async handleSubmitForm() {
+      // Clear previous errors
+      this.instructorError = "";
+      this.isSubmitting = true;
+
       const user = useLoggedInUserStore();
       let token = user.token;
       const instanceID = user.navigationData.id;
@@ -522,22 +571,39 @@ export default {
         await axios.put(apiURL, {
           exitFormReleaseDate: this.exitFormReleaseDate,
           activities: this.selectedActivities,
-          registrationCode: this.registrationCode
-        }, { headers: { token } })
-        .then(() => {
-          useLoggedInUserStore().navigationData = {
-            activeTab: 0,
-            toastType: 'info',
-            toastMessage: 'Experience Instance updated!',
-            toastPosition: 'top-right',
-            toastCSS: 'Toastify__toast--update'
-          };
-          this.$router.push({ 
-            name: 'instructorDataManagement'
-          });
+          registrationCode: this.registrationCode,
+          instructor: this.instructor.trim() || null
+        }, { headers: { token } });
+
+        useLoggedInUserStore().navigationData = {
+          activeTab: 0,
+          toastType: 'info',
+          toastMessage: 'Experience Instance updated!',
+          toastPosition: 'top-right',
+          toastCSS: 'Toastify__toast--update'
+        };
+        this.$router.push({ 
+          name: 'instructorDataManagement'
         });
       } catch (error) {
-        this.handleError(error);
+        // Handle duplicate instructor error (409 Conflict)
+        if (error.response?.status === 409) {
+          this.instructorError = error.response.data.error || this.$t('This instructor already exists for this experience in this session.');
+          toast.error(this.$t('Duplicate experience instance detected. Please use a different instructor.'), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          });
+        } else {
+          this.handleError(error);
+          toast.error(this.$t('Failed to update experience instance. Please try again.'), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          });
+        }
+      } finally {
+        this.isSubmitting = false;
       }
     },
 
@@ -567,6 +633,11 @@ export default {
 .page-header {
   padding-bottom: 8px;
   border-bottom: 1px solid #e0e0e0;
+}
+
+.instructor-header-badge {
+  color: #666;
+  font-weight: normal;
 }
 
 /* Main Form Card */

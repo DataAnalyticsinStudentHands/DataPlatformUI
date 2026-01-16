@@ -202,12 +202,17 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
         item-key="_id"
         item-value="_id"
         v-model="selectedActivities"
+        v-model:items-per-page="itemsPerPage"
+        v-model:page="currentPage"
+        :items-per-page-options="dataTableItemsPerPageOptions"
         hover
         return-object
         class="activities-table"
         :mobile-breakpoint="600"
         :sort-by.sync="viewsStore.activities.sortBy"
         @update:sort-by="handleSortByUpdate"
+        @update:items-per-page="handleItemsPerPageUpdate"
+        @update:page="handlePageUpdate"
       >
         <template v-slot:body="{ items }">
           <template v-if="items.length > 0">
@@ -497,15 +502,31 @@ export default {
       experienceNameSearchApplied: false,
       mobileSearchDialog: false,
       mobileSearchCategory: "Activity Name",
-      mobileSearchQuery: ""
+      mobileSearchQuery: "",
+      dataTableItemsPerPageOptions: [
+        {value: 5, title: "5"},
+        {value: 10, title: "10"},
+        {value: 15, title: "15"},
+        {value: 20, title: "20"},
+        {value: -1, title: "$vuetify.dataFooter.itemsPerPageAll"},
+      ],
+      // Local pagination state initialized from store
+      itemsPerPage: 10,
+      currentPage: 1,
     };
   },
 
   mounted() {
+    // Initialize pagination from store
+    this.itemsPerPage = this.viewsStore.activities.itemsPerPage;
+    this.currentPage = this.viewsStore.activities.currentPage;
+
     useLoggedInUserStore().startLoading();
     this.fetchActivityData()
       .then(() => {
         useLoggedInUserStore().stopLoading();
+        // Restore selected activities after data is loaded
+        this.restoreSelectedActivities();
       })
       .catch((error) => {
         this.handleError(error);
@@ -527,6 +548,14 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    // Watch selectedActivities to persist changes
+    selectedActivities: {
+      handler(newVal) {
+        const selectedIds = newVal.map(activity => activity._id);
+        this.viewsStore.setSelectedActivityIds(selectedIds);
+      },
+      deep: true
     }
   },
 
@@ -868,6 +897,23 @@ export default {
 
     handleSortByUpdate(newSortBy) {
       this.viewsStore.updateSorting('activities', newSortBy);
+    },
+
+    handleItemsPerPageUpdate(newItemsPerPage) {
+      this.viewsStore.updateActivitiesPagination({ itemsPerPage: newItemsPerPage });
+    },
+
+    handlePageUpdate(newPage) {
+      this.viewsStore.updateActivitiesPagination({ currentPage: newPage });
+    },
+
+    restoreSelectedActivities() {
+      const selectedIds = this.viewsStore.activities.selectedActivityIds;
+      if (selectedIds && selectedIds.length > 0) {
+        this.selectedActivities = this.filteredActivityData.filter(activity => 
+          selectedIds.includes(activity._id)
+        );
+      }
     },
 
     applyMobileSearch() {

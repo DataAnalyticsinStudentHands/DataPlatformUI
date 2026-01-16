@@ -96,10 +96,10 @@ Shows completion status for entry forms, experience registration, goal setting f
                         @click.prevent="navigateToGoalSettingForm(registrationId)"
                         class="text-blue-600 underline hover:text-blue-800 cursor-pointer"
                     >
-                        {{ findExperienceName(registrationId) }}
+                        {{ formatExperienceDisplay(registrationId) }}
                     </a>
                     <span v-else :class="completed ? 'text-green-800' : 'text-red-800'">
-                        {{ findExperienceName(registrationId) }}
+                        {{ formatExperienceDisplay(registrationId) }}
                     </span>
                 </span>
             </v-list-item>
@@ -136,10 +136,10 @@ Shows completion status for entry forms, experience registration, goal setting f
                         @click.prevent="navigateToExitForm(registrationId)"
                         class="text-blue-600 underline hover:text-blue-800 cursor-pointer"
                     >
-                        {{ findExperienceName(registrationId) }}
+                        {{ formatExperienceDisplay(registrationId) }}
                     </a>
                     <span v-else class="'text-green-800'">
-                        {{ findExperienceName(registrationId) }}
+                        {{ formatExperienceDisplay(registrationId) }}
                     </span>
                 </span> 
             </v-list-item>
@@ -214,10 +214,22 @@ export default {
             return this.exitFormCompletion && this.exitFormCompletion[experienceId];
         },
 
-        // Experience name lookup
-        findExperienceName(registrationId) {
+        /**
+         * Formats experience name with optional instructor for display
+         * @param {string} registrationId - The registration ID to look up
+         * @returns {string} Formatted display string (e.g., "Experience Name - Instructor")
+         */
+        formatExperienceDisplay(registrationId) {
             const experience = this.registeredExperiences.find(exp => exp._id === registrationId);
-            return experience ? experience.experienceInstance.name : 'Unknown Experience';
+            if (!experience) {
+                return 'Unknown Experience';
+            }
+            const name = experience.experienceInstance.name;
+            const instructor = experience.experienceInstance.instructor;
+            if (instructor) {
+                return `${name} - ${instructor}`;
+            }
+            return name;
         },
 
         // Navigation methods

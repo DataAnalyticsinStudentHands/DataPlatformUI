@@ -56,6 +56,11 @@
         <p class="review-section-content pl-3">
             {{ displayExperienceText }}
         </p>
+        <!-- Show instructor if present -->
+        <p v-if="displayInstructor" class="review-section-instructor pl-3">
+            <v-icon size="small" class="mr-1">mdi-account-tie</v-icon>
+            {{ $t('Instructor') }}: {{ displayInstructor }}
+        </p>
     </v-col>
 </v-row>
 </div>
@@ -512,16 +517,58 @@ export default {
             }
         },
         
-        // Display experience text from selected or incomplete form
+        // Display experience text from selected or incomplete form (without instructor - shown separately)
         displayExperienceText() {
-            if (this.selectedExperience && this.selectedExperience.text) {
-                return this.selectedExperience.text;
-            } else if (this.expRegistrationIDFromIncompleteBackup) {
-                const matchingExperience = this.exitForm.experiences.find(experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup);
+            // First try from selectedExperience prop
+            if (this.selectedExperience) {
+                // Build base text without instructor (instructor shown separately)
+                const category = this.getExperienceCategory();
+                const name = this.getExperienceName();
+                if (category && name) {
+                    return `${category}: ${name}`;
+                }
+                // Fallback: if text already includes instructor in parentheses, strip it
+                if (this.selectedExperience.text) {
+                    return this.selectedExperience.text.split(' (')[0];
+                }
+            }
+            
+            // Fallback to incomplete form data
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
                 if (matchingExperience) {
                     return `${matchingExperience.experienceCategory}: ${matchingExperience.experienceName}`;
                 }
             }
+            
+            return '';
+        },
+        
+        // Display instructor if present
+        displayInstructor() {
+            // First try from selectedExperience prop
+            if (this.selectedExperience && this.selectedExperience.instructor) {
+                return this.selectedExperience.instructor;
+            }
+            
+            // Try from exitForm directly (set during checkExistingForm)
+            if (this.exitForm.instructor) {
+                return this.exitForm.instructor;
+            }
+            
+            // Fallback to incomplete form data
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
+                if (matchingExperience && matchingExperience.instructor) {
+                    return matchingExperience.instructor;
+                }
+            }
+            
+            return null;
         }
     },
     methods: {
@@ -543,6 +590,31 @@ export default {
                 }
             }
         },
+        
+        // Helper to get experience category from various sources
+        getExperienceCategory() {
+            if (this.selectedExperience) {
+                // Check if we have the raw category/name fields
+                const expRegistrationID = this.selectedExperience.expRegistrationID;
+                if (expRegistrationID && this.exitForm.experiences) {
+                    const exp = this.exitForm.experiences.find(e => e.expRegistrationID === expRegistrationID);
+                    if (exp) return exp.experienceCategory;
+                }
+            }
+            return null;
+        },
+        
+        // Helper to get experience name from various sources
+        getExperienceName() {
+            if (this.selectedExperience) {
+                const expRegistrationID = this.selectedExperience.expRegistrationID;
+                if (expRegistrationID && this.exitForm.experiences) {
+                    const exp = this.exitForm.experiences.find(e => e.expRegistrationID === expRegistrationID);
+                    if (exp) return exp.experienceName;
+                }
+            }
+            return null;
+        }
     },
 }
 </script>
@@ -572,6 +644,19 @@ export default {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+/* Instructor display styling */
+.review-section-instructor {
+    font-size: 0.95rem;
+    color: #555;
+    margin: 5px 0 10px 0;
+    padding: 6px 8px;
+    background-color: #e8f4fc;
+    border: 1px solid #b8d4e8;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
 }
 
 /* Form label styling */

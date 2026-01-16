@@ -460,7 +460,10 @@ data() {
                 {
                 _id: "",
                 experienceCategory: "",
-                experienceName: ""
+                experienceName: "",
+                expRegistrationID: "",      
+                expInstanceID: "",          
+                instructor: null
                 }
             ],
             goalForm:[{
@@ -474,6 +477,8 @@ data() {
                 goal5:"",}
             ],
             goalSettingFormID: "",
+            expInstanceID: "",
+            instructor: null,
             experienceActivities:[],
             
             // Progress tracking for aspirations and goals
@@ -672,7 +677,10 @@ data() {
                 {
                 _id: "",
                 experienceCategory: "",
-                experienceName: ""
+                experienceName: "",
+                expRegistrationID: "",      
+                expInstanceID: "",         
+                instructor: null
                 }
             ],
             goalForm:[{
@@ -686,6 +694,9 @@ data() {
                 goal5:"",}
             ],
             goalSettingFormID: "",
+            expInstanceID: "",          
+            instructor: null,                   
+            experienceActivities:[],
             experienceActivities:[],
             progressMade: {
                 aspirationOneProgressResults: [

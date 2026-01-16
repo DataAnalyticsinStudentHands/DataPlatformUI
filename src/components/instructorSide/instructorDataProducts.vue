@@ -182,6 +182,7 @@
             "userID": "user_id",
             "sessionName": "session",
             "experienceName": "experience",
+            "instructor": "instructor",
             "goalForm.communityEngagement.communityEngagementExperiences.0.checked": "ce_volunteer",
             "goalForm.communityEngagement.communityEngagementExperiences.1.checked": "ce_political",
             "goalForm.communityEngagement.communityEngagementExperiences.2.checked": "ce_faith",
@@ -379,6 +380,7 @@
             "userID": "user_id",
             "sessionName": "session",
             "experienceName": "experience",
+            "instructor": "instructor",
             "goalSettingFormID": "goal_id",
             "exitForm.progressMade.aspirationOneProgressResults": "aspiration1_progress_result",
             "exitForm.progressMade.aspirationTwoProgressResults": "aspiration2_progress_result",
@@ -626,84 +628,85 @@
   },
   
   // Retrieves the CSV header for goal form data.
-  getGoalFormCSVHeader() {
-      // Base headers
-      const ordered_headers = [
-          "_id",
-          "organizationID",
-          "userID",
-          "sessionName",
-          "experienceName",
-      ];
-  
-      // For communityEngagementExperiences
-      for (let i = 0; i < 7; i++) {
-          ordered_headers.push(`goalForm.communityEngagement.communityEngagementExperiences.${i}.checked`);
-      }
-      ordered_headers.push("goalForm.communityEngagement.communityEngagementExperiencesOther");
-  
-      // For previousEngagementExperiences
-      for (let i = 0; i < 9; i++) {
-          ordered_headers.push(`goalForm.communityEngagement.previousEngagementExperiences.${i}.checked`);
-      }
-      ordered_headers.push("goalForm.communityEngagement.previousEngagementExperiencesOther");
-  
-      // For engagementActivitiesTools
-      for (let i = 0; i < 9; i++) {
-          ordered_headers.push(`goalForm.communityEngagement.engagementActivitiesTools.${i}.checked`);
-      }
-      ordered_headers.push("goalForm.communityEngagement.engagementActivitiesToolOther");
-  
-      // For currentResearchExperience
-      for (let i = 0; i < 9; i++) {
-          ordered_headers.push(`goalForm.researchExperience.currentResearchExperience.${i}.checked`);
-      }
-      ordered_headers.push("goalForm.researchExperience.currentResearchExperienceOther");
-  
-      // For previousResearchExperience
-      for (let i = 0; i < 10; i++) {
-          ordered_headers.push(`goalForm.researchExperience.previousResearchExperience.${i}.checked`);
-      }
-      ordered_headers.push("goalForm.researchExperience.previousResearchExperienceOther");
-  
-      // For familiarTools
-      for (let i = 0; i < 12; i++) {
-          ordered_headers.push(`goalForm.researchExperience.familiarTools.${i}.checked`);
-      }
-      ordered_headers.push("goalForm.researchExperience.familiarToolOther");
-  
-      // For interestResearchService
-      for (let i = 0; i < 11; i++) {
-          ordered_headers.push(`goalForm.researchExperience.interestResearchService.${i}.checked`);
-      }
-      ordered_headers.push("goalForm.researchExperience.interestResearchServiceOther");
-  
-      // Append the remaining static headers after the dynamic ones
-      ordered_headers.push(
-          "goalForm.researchExperience.leadershipOption",
-          "goalForm.growthGoal.problemSolvingGoal",
-          "goalForm.growthGoal.effectiveCommunicationGoal",
-          "goalForm.growthGoal.teamworkGoal",
-          "goalForm.growthGoal.culturalHumilityGoal",
-          "goalForm.growthGoal.ethicalDecisionMakingGoal",
-          "goalForm.growthGoal.professionalResponsibilityGoal",
-          "goalForm.growthGoal.socialResponsibilityGoal", 
-          "goalForm.growthGoal.digitalLiteracyGoal",      
-          "goalForm.aspirations.aspirationOne",
-          "goalForm.aspirations.aspirationTwo",
-          "goalForm.aspirations.aspirationThree",
-          "goalForm.goals.goalOne",
-          "goalForm.goals.goalTwo",
-          "goalForm.goals.goalThree",
-          "goalForm.goals.goalFour",
-          "goalForm.goals.goalFive",
-          "createdAt",
-          "updatedAt",
-          "__v"
-      );
-  
-      return ordered_headers;
-  },
+    getGoalFormCSVHeader() {
+        // Base headers - includes "instructor" after "experienceName"
+        const ordered_headers = [
+            "_id",
+            "organizationID",
+            "userID",
+            "sessionName",
+            "experienceName",
+            "instructor",
+        ];
+
+        // For communityEngagementExperiences
+        for (let i = 0; i < 7; i++) {
+            ordered_headers.push(`goalForm.communityEngagement.communityEngagementExperiences.${i}.checked`);
+        }
+        ordered_headers.push("goalForm.communityEngagement.communityEngagementExperiencesOther");
+
+        // For previousEngagementExperiences
+        for (let i = 0; i < 9; i++) {
+            ordered_headers.push(`goalForm.communityEngagement.previousEngagementExperiences.${i}.checked`);
+        }
+        ordered_headers.push("goalForm.communityEngagement.previousEngagementExperiencesOther");
+
+        // For engagementActivitiesTools
+        for (let i = 0; i < 9; i++) {
+            ordered_headers.push(`goalForm.communityEngagement.engagementActivitiesTools.${i}.checked`);
+        }
+        ordered_headers.push("goalForm.communityEngagement.engagementActivitiesToolOther");
+
+        // For currentResearchExperience
+        for (let i = 0; i < 9; i++) {
+            ordered_headers.push(`goalForm.researchExperience.currentResearchExperience.${i}.checked`);
+        }
+        ordered_headers.push("goalForm.researchExperience.currentResearchExperienceOther");
+
+        // For previousResearchExperience
+        for (let i = 0; i < 10; i++) {
+            ordered_headers.push(`goalForm.researchExperience.previousResearchExperience.${i}.checked`);
+        }
+        ordered_headers.push("goalForm.researchExperience.previousResearchExperienceOther");
+
+        // For familiarTools
+        for (let i = 0; i < 12; i++) {
+            ordered_headers.push(`goalForm.researchExperience.familiarTools.${i}.checked`);
+        }
+        ordered_headers.push("goalForm.researchExperience.familiarToolOther");
+
+        // For interestResearchService
+        for (let i = 0; i < 11; i++) {
+            ordered_headers.push(`goalForm.researchExperience.interestResearchService.${i}.checked`);
+        }
+        ordered_headers.push("goalForm.researchExperience.interestResearchServiceOther");
+
+        // Append the remaining static headers after the dynamic ones
+        ordered_headers.push(
+            "goalForm.researchExperience.leadershipOption",
+            "goalForm.growthGoal.problemSolvingGoal",
+            "goalForm.growthGoal.effectiveCommunicationGoal",
+            "goalForm.growthGoal.teamworkGoal",
+            "goalForm.growthGoal.culturalHumilityGoal",
+            "goalForm.growthGoal.ethicalDecisionMakingGoal",
+            "goalForm.growthGoal.professionalResponsibilityGoal",
+            "goalForm.growthGoal.socialResponsibilityGoal", 
+            "goalForm.growthGoal.digitalLiteracyGoal",      
+            "goalForm.aspirations.aspirationOne",
+            "goalForm.aspirations.aspirationTwo",
+            "goalForm.aspirations.aspirationThree",
+            "goalForm.goals.goalOne",
+            "goalForm.goals.goalTwo",
+            "goalForm.goals.goalThree",
+            "goalForm.goals.goalFour",
+            "goalForm.goals.goalFive",
+            "createdAt",
+            "updatedAt",
+            "__v"
+        );
+
+        return ordered_headers;
+    },
   
   // Extracts values from a given object based on the provided header, incorporating special handling for nested fields and 'checked' values. Includes transformations for specific fields like leadership options and growth goals.
   getGoalFormCSVRowValues(obj, header) {
@@ -798,7 +801,7 @@
   },
 
   // Manually orders headers for the exit form CSV based on document structure.
-  getExitFormCSVHeader() {
+    getExitFormCSVHeader() {
         // Manually ordered headers based on the exit form document structure
         const ordered_headers = [
             "_id",
@@ -806,6 +809,7 @@
             "userID",
             "sessionName",
             "experienceName",
+            "instructor",
             "goalSettingFormID",
             "exitForm.progressMade.aspirationOneProgressResults",
             "exitForm.progressMade.aspirationTwoProgressResults",
@@ -848,12 +852,12 @@
             "createdAt",
             "updatedAt",
             "__v",
-            // Include any other fields that are relevant for the CSV export
         ];
         return ordered_headers;
     },
 
     // Extracts values from the given object based on the provided header keys, applying transformations as needed for specific fields. Handles array values, converts to string, and handles special characters for CSV formatting
+
     getExitFormCSVRowValues(obj, header) {
         const values = [];
         
@@ -918,8 +922,16 @@
                 value = value.join(', ');
             }
 
+            // Handle null/undefined - convert to empty string
+            if (value === null || value === undefined) {
+                value = '';
+            }
+            // Handle objects that aren't arrays (prevent [object Object])
+            else if (typeof value === 'object') {
+                value = '';
+            }
             // Convert to string and handle special characters
-            if (value) {
+            else if (value) {
                 value = value.toString().replace(/\r?\n|\r/g, ' ').replace(/"/g, '""');
                 if (value.includes(',')) {
                     value = `"${value}"`;
@@ -931,6 +943,7 @@
 
         return values;
     },
+
 
   // Converts "Yes" to "1", "No" to "0", and leaves other values unchanged.
   transformYesNoToBinary(value) {

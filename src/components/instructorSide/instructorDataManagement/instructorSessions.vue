@@ -221,7 +221,8 @@ Redesigned UI matching the project pages aesthetic.
         item-key="_id"
         v-model="selectedSessions"
         return-object
-        items-per-page="5"
+        v-model:items-per-page="itemsPerPage"
+        v-model:page="currentPage"
         :items-per-page-options="dataTableItemsPerPageOptions"
         v-model:expanded="expandedSessions"
         show-expand
@@ -230,6 +231,8 @@ Redesigned UI matching the project pages aesthetic.
         :mobile-breakpoint="600"
         :sort-by.sync="viewsStore.sessions.sortBy"
         @update:sort-by="handleSortByUpdate"
+        @update:items-per-page="handleItemsPerPageUpdate"
+        @update:page="handlePageUpdate"
       >
         <template v-slot:body="{ items }">
           <template v-if="items.length > 0">
@@ -260,12 +263,12 @@ Redesigned UI matching the project pages aesthetic.
                     size="small"
                     @click="toggleRowExpansion(sessionItem)"
                   >
-                    <v-icon>{{ expandedSessions.includes(sessionItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                    <v-icon>{{ isSessionExpanded(sessionItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                   </v-btn>
                 </td>
               </tr>
               <!-- Expanded row for displaying experience instances -->
-              <tr v-if="expandedSessions.includes(sessionItem)" class="expanded-row">
+              <tr v-if="isSessionExpanded(sessionItem)" class="expanded-row">
                 <td class="pa-0"></td>
                 <td :colspan="sessionHeaders.length - 1" class="pa-0">
                   <div class="expanded-content">
@@ -282,22 +285,25 @@ Redesigned UI matching the project pages aesthetic.
                         density="comfortable"
                       >
                         <template v-slot:item="{ item }">
-                          <tr class="instance-row" @click="editInstance(item)">
-                            <td class="instance-cell">
-                              <span class="text-medium-emphasis">{{ item.experience.category }}</span>
-                            </td>
-                            <td class="instance-cell">
-                              <span class="font-weight-medium">{{ item.experience.name }}</span>
-                            </td>
-                            <td class="instance-cell">
-                              <span class="text-medium-emphasis">{{ formatDate(item.exitFormReleaseDate) }}</span>
-                            </td>
-                            <td class="instance-cell">
-                              <v-chip size="small" variant="tonal" color="grey">
-                                {{ getActivityCount(item.activities) }}
-                              </v-chip>
-                            </td>
-                          </tr>
+                            <tr class="instance-row" @click="editInstance(item)">
+                                <td class="instance-cell">
+                                <span class="text-medium-emphasis">{{ item.experience.category }}</span>
+                                </td>
+                                <td class="instance-cell">
+                                <span class="font-weight-medium">{{ item.experience.name }}</span>
+                                </td>
+                                <td class="instance-cell">
+                                <span class="text-medium-emphasis">{{ item.instructor || '' }}</span>
+                                </td>
+                                <td class="instance-cell">
+                                <span class="text-medium-emphasis">{{ formatDate(item.exitFormReleaseDate) }}</span>
+                                </td>
+                                <td class="instance-cell">
+                                <v-chip size="small" variant="tonal" color="grey">
+                                    {{ getActivityCount(item.activities) }}
+                                </v-chip>
+                                </td>
+                            </tr>
                         </template>
                         <template v-slot:bottom>
                           <div class="instances-table-footer">
@@ -812,41 +818,55 @@ export default {
       expandedSessions: [],
       instanceHeaders: [
         {
-          title: "Experience Category",
-          value: "experience.category",
-          align: "start",
-          sortable: true,
-          key: "experience.category"
+            title: "Experience Category",
+            value: "experience.category",
+            align: "start",
+            sortable: true,
+            key: "experience.category"
         },
         {
-          title: "Experience Name",
-          value: "experience.name",
-          align: "start",
-          sortable: true,
-          key: 'experience.name',
+            title: "Experience Name",
+            value: "experience.name",
+            align: "start",
+            sortable: true,
+            key: 'experience.name',
         },
         {
-          title: "Exit Form Release Date",
-          value: "exitFormReleaseDate",
-          align: "start",
-          sortable: true,
-          key: "exitFormReleaseDate"
+            title: "Instructor",
+            value: "instructor",
+            align: "start",
+            sortable: true,
+            key: "instructor"
         },
         {
-          title: 'Activities',
-          value: 'activityCount',
-          align: 'start',
-          sortable: true,
+            title: "Exit Form Release Date",
+            value: "exitFormReleaseDate",
+            align: "start",
+            sortable: true,
+            key: "exitFormReleaseDate"
+        },
+        {
+            title: 'Activities',
+            value: 'activityCount',
+            align: 'start',
+            sortable: true,
         },
       ],
       filteredInstances: {},
       dialogExitFormReleaseDate: false,
       exitFormReleaseDateFilterType: "On",
       selectedExitFormReleaseDate: new Date(),
+      // Local pagination state initialized from store
+      itemsPerPage: this.viewsStore?.sessions?.itemsPerPage || 5,
+      currentPage: this.viewsStore?.sessions?.currentPage || 1,
     };
   },
 
   async mounted() {
+    // Initialize pagination from store
+    this.itemsPerPage = this.viewsStore.sessions.itemsPerPage;
+    this.currentPage = this.viewsStore.sessions.currentPage;
+    
     useLoggedInUserStore().startLoading();
     await this.fetchInstances();
     
@@ -854,6 +874,10 @@ export default {
       .then(() => {
         useLoggedInUserStore().stopLoading();
         this.performFilter();
+        // Restore expanded sessions after data is loaded
+        this.restoreExpandedSessions();
+        // Restore selected sessions after data is loaded
+        this.restoreSelectedSessions();
       })
       .catch((error) => {
         this.handleError(error);
@@ -868,6 +892,22 @@ export default {
         this.endDateRange = null;
       }
     },
+    // Watch expandedSessions to persist changes
+    expandedSessions: {
+      handler(newVal) {
+        const expandedIds = newVal.map(session => session._id);
+        this.viewsStore.setExpandedSessionIds(expandedIds);
+      },
+      deep: true
+    },
+    // Watch selectedSessions to persist changes
+    selectedSessions: {
+      handler(newVal) {
+        const selectedIds = newVal.map(session => session._id);
+        this.viewsStore.setSelectedSessionIds(selectedIds);
+      },
+      deep: true
+    }
   },
 
   computed: {
@@ -1518,11 +1558,33 @@ export default {
     },
 
     toggleRowExpansion(item) {
-      const index = this.expandedSessions.indexOf(item);
+      const index = this.expandedSessions.findIndex(session => session._id === item._id);
       if (index > -1) {
         this.expandedSessions.splice(index, 1);
       } else {
         this.expandedSessions.push(item);
+      }
+    },
+
+    isSessionExpanded(item) {
+      return this.expandedSessions.some(session => session._id === item._id);
+    },
+
+    restoreExpandedSessions() {
+      const expandedIds = this.viewsStore.sessions.expandedSessionIds;
+      if (expandedIds && expandedIds.length > 0) {
+        this.expandedSessions = this.filteredSessionData.filter(session => 
+          expandedIds.includes(session._id)
+        );
+      }
+    },
+
+    restoreSelectedSessions() {
+      const selectedIds = this.viewsStore.sessions.selectedSessionIds;
+      if (selectedIds && selectedIds.length > 0) {
+        this.selectedSessions = this.filteredSessionData.filter(session => 
+          selectedIds.includes(session._id)
+        );
       }
     },
 
@@ -1550,6 +1612,14 @@ export default {
 
     handleSortByUpdate(newSortBy) {
       this.viewsStore.updateSorting('sessions', newSortBy);
+    },
+
+    handleItemsPerPageUpdate(newItemsPerPage) {
+      this.viewsStore.updateSessionsPagination({ itemsPerPage: newItemsPerPage });
+    },
+
+    handlePageUpdate(newPage) {
+      this.viewsStore.updateSessionsPagination({ currentPage: newPage });
     },
   },
 };

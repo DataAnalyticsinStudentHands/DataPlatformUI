@@ -155,7 +155,8 @@ watch: {
     expRegistrationIDFromIncomplete(newVal) {
         if (newVal) {
             const matchedExperience = this.exitForm.experiences.find(experience => experience.expRegistrationID === newVal);
-            this.selectedExperience = matchedExperience ? matchedExperience.experienceID : null;
+            // Use expRegistrationID as the selection value
+            this.selectedExperience = matchedExperience ? matchedExperience.expRegistrationID : null;
         }
     },
     
@@ -174,12 +175,24 @@ computed: {
     },
 
     // Format experiences for dropdown display
+    // Using expRegistrationID as value to handle duplicate experiences with different instructors
     formattedExperiences() {
-      return this.exitForm.experiences.map(experience => ({
-        text: `${experience.experienceCategory}: ${experience.experienceName}`,
-        value: experience.experienceID,
-        expRegistrationID: experience.expRegistrationID
-      }));
+      return this.exitForm.experiences.map(experience => {
+        // Build display text with optional instructor
+        let displayText = `${experience.experienceCategory}: ${experience.experienceName}`;
+        if (experience.instructor) {
+          displayText += ` (${experience.instructor})`;
+        }
+        
+        return {
+          text: displayText,
+          value: experience.expRegistrationID, // Changed from experienceID to handle duplicates
+          experienceID: experience.experienceID,
+          expRegistrationID: experience.expRegistrationID,
+          expInstanceID: experience.expInstanceID,
+          instructor: experience.instructor
+        };
+      });
     },
 
     // Overall validation state
@@ -200,12 +213,14 @@ methods: {
             
             let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
             
-            // Map API response to experience format
+            // Map API response to experience format - now including instructor and expInstanceID
             tempExitForm.experiences = response.data.map(experience => ({
                 experienceID: experience._id,
                 experienceCategory: experience.experienceCategory,
                 experienceName: experience.experienceName,
-                expRegistrationID: experience.expRegistrationID
+                expRegistrationID: experience.expRegistrationID,
+                expInstanceID: experience.expInstanceID,
+                instructor: experience.instructor || null
             }));
             
             this.$emit("update-original-exit-form", tempExitForm);
@@ -219,6 +234,7 @@ methods: {
     // Check if exit form already exists for selected experience
     async checkExistingForm() {
         this.isLoadingExpCheck = true;
+        // Find by expRegistrationID (the new value field)
         const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.value === this.selectedExperience);
         const expRegistrationID = selectedExperienceInfo ? selectedExperienceInfo.expRegistrationID : null;
 
@@ -237,8 +253,10 @@ methods: {
 
         this.$emit('reset-exit-form');
         
-        tempExitForm.experienceID = selectedExperienceInfo.value;
+        tempExitForm.experienceID = selectedExperienceInfo.experienceID;
         tempExitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
+        tempExitForm.expInstanceID = selectedExperienceInfo.expInstanceID;
+        tempExitForm.instructor = selectedExperienceInfo.instructor;
 
         const user = useLoggedInUserStore();
         const token = user.token;
@@ -252,8 +270,10 @@ methods: {
             });
 
             // Check if experience is Data & Society related
+            // Note: We check the base text without instructor to avoid false negatives
+            const baseText = `${selectedExperienceInfo.text.split(' (')[0]}`;
             const textPatterns = ["Data & Society", "Data And Society", "Data and Society", "Minor Data & Society", "Minor Data And Society", "Minor Data and Society"];
-            const containsDataAndSociety = selectedExperienceInfo && textPatterns.some(pattern => selectedExperienceInfo.text.includes(pattern));
+            const containsDataAndSociety = selectedExperienceInfo && textPatterns.some(pattern => baseText.includes(pattern));
             this.$emit("update-data-and-society", containsDataAndSociety);
 
             // Process goal form data if exists
@@ -277,8 +297,10 @@ methods: {
                 this.$emit("update-original-exit-form", tempExitForm);
 
                 // Update current form state
-                this.exitForm.experienceID = selectedExperienceInfo.value;
+                this.exitForm.experienceID = selectedExperienceInfo.experienceID;
                 this.exitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
+                this.exitForm.expInstanceID = selectedExperienceInfo.expInstanceID;
+                this.exitForm.instructor = selectedExperienceInfo.instructor;
                 this.exitForm.goalSettingFormID = goalFormData._id;
                 this.exitForm.aspiration1 = goalFormData.goalForm.aspirations?.aspirationOne;
                 this.exitForm.aspiration2 = goalFormData.goalForm.aspirations?.aspirationTwo;
@@ -305,8 +327,10 @@ methods: {
 
                 this.$emit("update-original-exit-form", tempExitForm);
 
-                this.exitForm.experienceID = selectedExperienceInfo.value;
+                this.exitForm.experienceID = selectedExperienceInfo.experienceID;
                 this.exitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
+                this.exitForm.expInstanceID = selectedExperienceInfo.expInstanceID;
+                this.exitForm.instructor = selectedExperienceInfo.instructor;
                 this.exitForm.goalSettingFormID = null;
                 this.exitForm.aspiration1 = null;
                 this.exitForm.aspiration2 = null;
@@ -362,19 +386,25 @@ methods: {
         if (!selected) {
             this.exitForm.experienceID = null;
             this.exitForm.expRegistrationID = null;
+            this.exitForm.expInstanceID = null;
+            this.exitForm.instructor = null;
             this.$emit("update-selected-experience", null);
             return;
         }
 
         let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
 
-        tempExitForm.experienceID = selectedExperienceInfo.value;
+        tempExitForm.experienceID = selectedExperienceInfo.experienceID;
         tempExitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
+        tempExitForm.expInstanceID = selectedExperienceInfo.expInstanceID;
+        tempExitForm.instructor = selectedExperienceInfo.instructor;
 
         this.$emit("update-original-exit-form", tempExitForm);
 
-        this.exitForm.experienceID = selectedExperienceInfo.value;
+        this.exitForm.experienceID = selectedExperienceInfo.experienceID;
         this.exitForm.expRegistrationID = selectedExperienceInfo.expRegistrationID;
+        this.exitForm.expInstanceID = selectedExperienceInfo.expInstanceID;
+        this.exitForm.instructor = selectedExperienceInfo.instructor;
 
         this.$emit("update-selected-experience", selectedExperienceInfo);
     },   
@@ -396,9 +426,9 @@ methods: {
         }
     },
 
-    // Find experience display text by ID
-    findExperienceText(experienceID) {
-        const experience = this.formattedExperiences.find(exp => exp.value === experienceID);
+    // Find experience display text by expRegistrationID
+    findExperienceText(expRegistrationID) {
+        const experience = this.formattedExperiences.find(exp => exp.expRegistrationID === expRegistrationID);
         return experience ? experience.text.trim() : '';
     },
 
@@ -412,10 +442,11 @@ methods: {
                     const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
                     if (matchingExperience) {
-                        this.selectedExperience = matchingExperience.experienceID;
-                        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+                        // Use expRegistrationID as the selected value
+                        this.selectedExperience = matchingExperience.expRegistrationID;
+                        const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.expRegistrationID === matchingExperience.expRegistrationID);
 
-                        this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience, expRegistrationID: experienceRegistrationIDFromRoute });
+                        this.$emit("update-selected-experience", selectedExperienceInfo);
                     } else {
                         console.log('No matching experience found for the given expRegistrationID');
                     }
@@ -427,10 +458,11 @@ methods: {
                     const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
                     if (matchingExperience) {
-                        this.selectedExperience = matchingExperience.experienceID;
-                        const selectedExperienceText = this.formattedExperiences.find(exp => exp.value === this.selectedExperience)?.text;
+                        // Use expRegistrationID as the selected value
+                        this.selectedExperience = matchingExperience.expRegistrationID;
+                        const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.expRegistrationID === matchingExperience.expRegistrationID);
 
-                        this.$emit("update-selected-experience", { text: selectedExperienceText, value: this.selectedExperience, expRegistrationID: experienceRegistrationIDFromRoute });
+                        this.$emit("update-selected-experience", selectedExperienceInfo);
                     } else {
                         console.log('No matching experience found for the given expRegistrationID');
                     }
