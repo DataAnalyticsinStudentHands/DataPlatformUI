@@ -9,22 +9,23 @@
 -->
 
 <template>
-<v-container>
+<!-- Disabled form wrapper for read-only display -->
 <v-form disabled>
-<!-- Review Header -->
+<v-container>
+<!-- Review section title -->
 <v-row>
     <v-col>
         <p 
-            class="section-title text-center ma-0"
-        >Exit Form {{$t('Review')}}</p>
+            class="font-weight-black text-h6"
+        >{{$t('Review')}}</p>
     </v-col>
 </v-row>
 <v-row><v-col></v-col></v-row>
 
-<!-- Selected Experience Section -->
+<!-- Selected experience section with responsive edit buttons -->
 <div class="review-section">
 <v-row>
-    <v-col sm="10" xs="12" class="pb-0">
+    <v-col cols="10" class="pb-0">
         <h3 class="review-section-title">
             {{ $t('Selected Experience') }}
             <!-- Mobile edit button -->
@@ -56,360 +57,505 @@
         <p class="review-section-content pl-3">
             {{ displayExperienceText }}
         </p>
+        <!-- Show instructor if present -->
+        <p v-if="displayInstructor" class="review-section-content pl-3">
+            <v-icon size="small" class="mr-1">mdi-account-tie</v-icon>
+            {{ $t('Instructor') }}: {{ displayInstructor }}
+        </p>
     </v-col>
 </v-row>
 </div>
 
 <div v-if="goalFormExists">
-    <!-- Aspirations Progress Section -->
-    <v-row>
-        <v-col sm="10" xs="12">
-            <h2 class="section-title mb-0">{{$t('Aspirations Progress')}}
-                <!-- Mobile edit button -->
-                <v-btn v-if="$vuetify.display.xs"
-                    icon
-                    size="small"
-                    variant="text"
-                    @click="emitStepChange(1)"
-                    class="pb-2"
-                >
-                    <v-icon>mdi-pencil</v-icon>
-                </v-btn>
+    <!-- Aspirations Progress section with responsive edit buttons -->
+    <v-row class="d-flex justify-center align-center">
+        <v-col sm="1" class="d-none d-sm-flex"></v-col>
+        <v-col cols="1" class="d-sm-none"></v-col>
+        <v-col cols="10" class="pb-0">
+            <h2 class="section-title text-center">
+                {{ $t('Aspirations Progress') }}
             </h2>
         </v-col>
+        <v-col cols="1" class="d-sm-none">
+            <!-- Mobile edit button -->
+            <v-btn v-if="$vuetify.display.xs"
+                icon
+                size="small"
+                variant="text"
+                @click="emitStepChange(1)"
+            >
+                <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+        </v-col>
         <!-- Desktop edit button -->
-        <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
+        <v-col cols="1" class="d-none d-sm-flex">
             <v-btn
                 icon
                 size="small"
                 variant="text"
                 @click="emitStepChange(1)"
             >
-            <v-icon>mdi-pencil</v-icon>
+                <v-icon>mdi-pencil</v-icon>
             </v-btn>
         </v-col>
     </v-row>
     <v-row>
-        <v-col>
-        <p>{{$t('At the beginning of the semester, we asked you to share your aspirations. Now we would like to review your progress towards these aspirations.')}}</p>
+        <v-col cols="12">
+            <p class="form-label">{{$t('At the beginning of the semester, we asked you to share your aspirations. Now we would like to review your progress towards these aspirations.')}}</p>
         </v-col>
     </v-row>
     <v-row v-for="(aspiration, index) in aspirations" :key="'asp-' + index">
         <v-col cols="12">
-            <v-list-item>
-                <v-list-item-title>
-                    <strong>{{$t('Aspiration')}} {{ index + 1 }}:</strong> {{ aspiration.text }}
-                </v-list-item-title>
-                <v-list-item class="subtitle-enhanced">
-                    {{ $t(aspiration.progressSelected) }}
-                </v-list-item>
-                <v-list-item class="subtitle-enhanced">
-                    {{ $t(aspiration.experienceConnectionSelected) }}
-                </v-list-item>
-            </v-list-item>
+            <h4 class="aspiration-title">{{$t('Aspiration')}} {{ index + 1 }}</h4>
+            <p class="review-section-content pl-3">{{ aspiration.text }}</p>
+            <p class="form-label pl-3">{{$t('Progress Made')}}:</p>
+            <p class="review-section-content pl-3">{{ $t(aspiration.progressSelected) }}</p>
+            <p class="form-label pl-3">{{$t('Experience Connection')}}:</p>
+            <p class="review-section-content pl-3">{{ $t(aspiration.experienceConnectionSelected) }}</p>
         </v-col>
     </v-row>
     
-    <!-- Goals Progress Section -->
-    <v-row>
-        <v-col sm="10" xs="12">
-            <h2 class="section-title mb-0">{{$t('Goals Progress')}}
-                <!-- Mobile edit button -->
-                <v-btn v-if="$vuetify.display.xs"
-                    icon
-                    size="small"
-                    variant="text"
-                    @click="emitStepChange(2)"
-                    class="pb-2"
-                >
-                    <v-icon>mdi-pencil</v-icon>
-                </v-btn>
+    <!-- Goals Progress section with responsive edit buttons -->
+    <v-row class="d-flex justify-center align-center">
+        <v-col sm="1" class="d-none d-sm-flex"></v-col>
+        <v-col cols="1" class="d-sm-none"></v-col>
+        <v-col cols="10" class="pb-0">
+            <h2 class="section-title text-center">
+                {{ $t('Goals Progress') }}
             </h2>
         </v-col>
+        <v-col cols="1" class="d-sm-none">
+            <!-- Mobile edit button -->
+            <v-btn v-if="$vuetify.display.xs"
+                icon
+                size="small"
+                variant="text"
+                @click="emitStepChange(2)"
+            >
+                <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+        </v-col>
         <!-- Desktop edit button -->
-        <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
+        <v-col cols="1" class="d-none d-sm-flex">
             <v-btn
                 icon
                 size="small"
                 variant="text"
                 @click="emitStepChange(2)"
             >
-            <v-icon>mdi-pencil</v-icon>
+                <v-icon>mdi-pencil</v-icon>
             </v-btn>
         </v-col>
     </v-row>
     <v-row>
-        <v-col>
-            <p>{{$t('Here is how you rated your progress towards each goal and the activities that contributed to your progress.')}}</p>
+        <v-col cols="12">
+            <p class="form-label">{{$t('Here is how you rated your progress towards each goal and the activities that contributed to your progress.')}}</p>
         </v-col>
     </v-row>
     <v-row v-for="(goal, index) in goals" :key="'goal-' + index">
         <v-col cols="12">
-            <v-list-item>
-                <v-list-item-title>
-                    <strong>{{$t('Goal')}} {{ index + 1 }}:</strong> {{ goal.text }}
-                </v-list-item-title>
-                <v-list-item class="subtitle-enhanced">
-                    {{$t('Progress Made')}}: {{ $t(goal.progressMade) }}
-                </v-list-item>
-                <v-list-item class="subtitle-enhanced">
-                    {{$t('Experience Connection')}}: {{ $t(goal.experienceConnection) }}
-                </v-list-item>
-            </v-list-item>
+            <h4 class="goal-title">{{$t('Goal')}} {{ index + 1 }}</h4>
+            <p class="review-section-content pl-3">{{ goal.text }}</p>
+            <p class="form-label pl-3">{{$t('Progress Made')}}:</p>
+            <p class="review-section-content pl-3">{{ $t(goal.progressMade) }}</p>
+            <p class="form-label pl-3">{{$t('Experience Connection')}}:</p>
+            <p class="review-section-content pl-3">{{ $t(goal.experienceConnection) }}</p>
         </v-col>
     </v-row>
     
-    <!-- Goal Barriers Section -->
-    <v-row>
-        <v-col sm="10" xs="12">
-            <h2 class="section-title mb-0">{{$t('Goal Barriers')}}
-                <!-- Mobile edit button -->
-                <v-btn v-if="$vuetify.display.xs"
-                    icon
-                    size="small"
-                    variant="text"
-                    @click="emitStepChange(2)"
-                    class="pb-2"
-                >
-                    <v-icon>mdi-pencil</v-icon>
-                </v-btn>
+    <!-- Goal Barriers section with responsive edit buttons -->
+    <v-row class="d-flex justify-center align-center">
+        <v-col sm="1" class="d-none d-sm-flex"></v-col>
+        <v-col cols="1" class="d-sm-none"></v-col>
+        <v-col cols="10" class="pb-0">
+            <h2 class="section-title text-center">
+                {{ $t('Goal Barriers') }}
             </h2>
         </v-col>
+        <v-col cols="1" class="d-sm-none">
+            <!-- Mobile edit button -->
+            <v-btn v-if="$vuetify.display.xs"
+                icon
+                size="small"
+                variant="text"
+                @click="emitStepChange(2)"
+            >
+                <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+        </v-col>
         <!-- Desktop edit button -->
-        <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
+        <v-col cols="1" class="d-none d-sm-flex">
             <v-btn
                 icon
                 size="small"
                 variant="text"
                 @click="emitStepChange(2)"
             >
-            <v-icon>mdi-pencil</v-icon>
+                <v-icon>mdi-pencil</v-icon>
             </v-btn>
         </v-col>
     </v-row>
     <v-row>
-        <v-col>
-            <p>{{$t('Below are the goals you faced barriers to achieving this semester.')}}</p>
-            <v-list-item
-                v-if="!exitForm.goalIssues.goals[5].checked"
-                v-for="(goal, index) in goalsWithBarriers"
-                :key="'barrier-' + index"
-                class="subtitle-enhanced"
-            >
-                <v-list-item>
-                    {{ goal.label }}
+        <v-col cols="12">
+            <p class="form-label">{{$t('Below are the goals you faced barriers to achieving this semester.')}}</p>
+            <v-list v-if="!exitForm.goalIssues.goals[5].checked" density="compact" class="pa-0">
+                <v-list-item 
+                    v-for="(goal, index) in goalsWithBarriers"
+                    :key="'barrier-' + index"
+                >
+                    <v-list-item-title class="text-subtitle-2">
+                        {{ goal.label }}
+                    </v-list-item-title>
                 </v-list-item>
-            </v-list-item>
-            <p v-if="exitForm.goalIssues.goals[5].checked" class="subtitle-enhanced">{{$t('No significant barriers were faced.')}}</p>
+            </v-list>
+            <p v-if="exitForm.goalIssues.goals[5].checked" class="review-section-content pl-3">{{$t('No significant barriers were faced.')}}</p>
         </v-col>
     </v-row>
     <v-row v-if="exitForm.goalIssues.issuesDescription && exitForm.goalIssues.issuesDescription.length">
         <v-col cols="12">
-            <p>{{$t('For one of the goals you selected above, described below are the barriers encountered and the strategies employed to overcome them:')}}</p>
-            <p class="subtitle-enhanced">{{ exitForm.goalIssues.issuesDescription || $t('No barriers were described.') }}</p>
+            <h3 class="review-section-title">{{ $t('Barriers Description') }}</h3>
+            <p class="form-label">{{$t('For one of the goals you selected above, described below are the barriers encountered and the strategies employed to overcome them:')}}</p>
+            <p class="review-section-content pl-3">{{ exitForm.goalIssues.issuesDescription || $t('No barriers were described.') }}</p>
         </v-col>
     </v-row>
     
-    <!-- Activity Contributions Section -->
+    <!-- Activity Contributions section -->
     <div v-if="activitiesExist">
-        <v-row>
-            <v-col sm="10" xs="12">
-                <h2 class="section-title mb-0">{{$t('Activity Contributions to Goals')}}
+        <v-row class="d-flex justify-center align-center">
+            <v-col sm="1" class="d-none d-sm-flex"></v-col>
+            <v-col cols="1" class="d-sm-none"></v-col>
+            <v-col cols="10" class="pb-0">
+                <h2 class="section-title text-center">
+                    {{ $t('Activity Contributions to Goals') }}
+                </h2>
+            </v-col>
+            <v-col cols="1" class="d-sm-none">
                 <!-- Mobile edit button -->
                 <v-btn v-if="$vuetify.display.xs"
                     icon
                     size="small"
                     variant="text"
                     @click="emitStepChange(3)"
-                    class="pb-2"
                 >
                     <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                </h2>
             </v-col>
             <!-- Desktop edit button -->
-            <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
+            <v-col cols="1" class="d-none d-sm-flex">
                 <v-btn
                     icon
                     size="small"
                     variant="text"
                     @click="emitStepChange(3)"
                 >
-                <v-icon>mdi-pencil</v-icon>
+                    <v-icon>mdi-pencil</v-icon>
                 </v-btn>
             </v-col>
         </v-row>
         <v-row>
-            <v-col>
-                <p>{{$t('Below is a summary of how activities contributed to your goals throughout the semester:')}}</p>
+            <v-col cols="12">
+                <p class="form-label">{{$t('Below is a summary of how activities contributed to your goals throughout the semester:')}}</p>
             </v-col>
         </v-row>
-        <v-row>
+        <v-row v-for="(activity, index) in exitForm.experienceActivities" :key="activity.activityID">
             <v-col cols="12">
-                <v-list dense>
-                    <v-list-item v-for="(activity, index) in exitForm.experienceActivities" :key="activity.activityID">
-                        <v-list-item-title class="font-weight-bold">{{$t('Activity')}} {{ index + 1 }}: {{ activity.activityName }}</v-list-item-title>
-                        <div v-if="goalsContributions(activity.activityID).length === 0">
-                            <v-list-item>
-                                {{$t('No specific goals contributed.')}}
-                            </v-list-item>
-                        </div>
-                        <div v-else>
-                            <v-list-item>
-                                {{$t('Contributed to Goals')}}:
-                            </v-list-item>
-                            <v-list-item 
-                                v-for="(goal, gIndex) in goalsContributions(activity.activityID)" 
-                                :key="'goal-' + gIndex"
-                                class="subtitle-enhanced-nowrap"
-                            >
+                <h4 class="goal-title">{{$t('Activity')}} {{ index + 1 }}: {{ activity.activityName }}</h4>
+                <div v-if="goalsContributions(activity.activityID).length === 0">
+                    <p class="review-section-content pl-3">{{$t('No specific goals contributed.')}}</p>
+                </div>
+                <div v-else>
+                    <p class="form-label pl-3">{{$t('Contributed to Goals')}}:</p>
+                    <v-list density="compact" class="pa-0 pl-3">
+                        <v-list-item 
+                            v-for="(goal, gIndex) in goalsContributions(activity.activityID)" 
+                            :key="'goal-' + gIndex"
+                        >
+                            <v-list-item-title class="text-subtitle-2">
                                 {{ goal }}
-                            </v-list-item>
-                        </div>
-                    </v-list-item>
-                </v-list>
+                            </v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </div>
             </v-col>
         </v-row>
     </div>
 </div>
 
-<!-- Growth and Reflection Section -->
-<v-row class="mt-5">
-    <v-col sm="10" xs="12">
-        <h2 class="section-title mb-0">{{$t('Growth')}}
-                <!-- Mobile edit button -->
-                <v-btn v-if="$vuetify.display.xs"
-                    icon
-                    size="small"
-                    variant="text"
-                    @click="emitStepChange(4)"
-                    class="pb-2"
-                >
-                    <v-icon>mdi-pencil</v-icon>
-                </v-btn>
+<!-- Growth section with responsive edit buttons -->
+<v-row class="d-flex justify-center align-center">
+    <v-col sm="1" class="d-none d-sm-flex"></v-col>
+    <v-col cols="1" class="d-sm-none"></v-col>
+    <v-col cols="10" class="pb-0">
+        <h2 class="section-title text-center">
+            {{ $t('Growth') }}
         </h2>
     </v-col>
+    <v-col cols="1" class="d-sm-none">
+        <!-- Mobile edit button -->
+        <v-btn v-if="$vuetify.display.xs"
+            icon
+            size="small"
+            variant="text"
+            @click="emitStepChange(4)"
+        >
+            <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+    </v-col>
     <!-- Desktop edit button -->
-    <v-col class="text-right pb-0" v-if="$vuetify.display.smAndUp">
+    <v-col cols="1" class="d-none d-sm-flex">
         <v-btn
             icon
             size="small"
             variant="text"
             @click="emitStepChange(4)"
         >
-        <v-icon>mdi-pencil</v-icon>
+            <v-icon>mdi-pencil</v-icon>
         </v-btn>
     </v-col>
 </v-row>
 
 <!-- Professional Goals Contribution -->
 <v-row>
-    <v-col>
-        <p>{{$t('How this experience contributed to your graduate/professional goals:')}}</p>
-    </v-col>
-</v-row>
-<v-row>
     <v-col cols="12">
-        <div class="subtitle-enhanced" style="white-space: pre-line;">{{ exitForm.experienceContributions }}</div>
+        <h3 class="review-section-title">{{ $t('Experience Contributions') }}</h3>
+        <p class="form-label">{{$t('How this experience contributed to your graduate/professional goals:')}}</p>
+        <p class="review-section-content pl-3" style="white-space: pre-line;">{{ exitForm.experienceContributions }}</p>
     </v-col>
 </v-row>
+
+<!-- Data & Society Likelihood Section -->
+<div v-if="isDataAndSocietyExperience">
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Future Plans') }}</h3>
+            <p class="form-label">{{$t('Your likelihood of taking the following actions:')}}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t('Enroll in another Data & Society Course') }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.likelihoodOf.enrollAnotherCourseSelected) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t('Complete the Data & Society minor') }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.likelihoodOf.completeMinorSelected) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t('Recommend this course to a friend') }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.likelihoodOf.recommendCourseSelected) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t('Pursue a career in Data Science') }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.likelihoodOf.pursueCareerSelected) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+</div>
+
+<!-- HICH Net Promoter Section -->
+<div v-if="isHICHExperience">
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('HICH Recommendations') }}</h3>
+            <p class="form-label">{{$t('How likely are you to recommend the following to a friend?')}}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t('HICH') }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.hichNetPromoter.recommendHICH) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t("HICH's socials and workshops") }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.hichNetPromoter.recommendSocialsWorkshops) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t("HICH's volunteer projects") }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.hichNetPromoter.recommendVolunteerProjects) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h4 class="goal-title">{{ $t("HICH's mentorship program") }}</h4>
+            <p class="review-section-content pl-3">{{ $t(exitForm.hichNetPromoter.recommendMentorshipProgram) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+</div>
 
 <!-- Growth Assessment Reviews -->
-<v-row class="mt-5">
+<v-row>
     <v-col cols="12">
-        <p>
+        <h3 class="review-section-title">{{ $t('Problem Solving') }}</h3>
+        <p class="form-label">
             {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('problem solving')}}</u>.
         </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.generalGrowth.problemSolving || $t('No response provided') }}
-        </div>
+        <p class="review-section-content pl-3">{{ $t(exitForm.generalGrowth.problemSolving) || $t('No response provided') }}</p>
     </v-col>
 </v-row>
-<v-row class="mt-5">
+
+<v-row>
     <v-col cols="12">
-        <p>
+        <h3 class="review-section-title">{{ $t('Effective Communication') }}</h3>
+        <p class="form-label">
             {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('effective communication')}}</u>.
         </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.generalGrowth.effectiveCommunication || $t('No response provided') }}
-        </div>
+        <p class="review-section-content pl-3">{{ $t(exitForm.generalGrowth.effectiveCommunication) || $t('No response provided') }}</p>
     </v-col>
 </v-row>
-<v-row class="mt-5">
+
+<v-row>
     <v-col cols="12">
-        <p>
+        <h3 class="review-section-title">{{ $t('Teamwork') }}</h3>
+        <p class="form-label">
             {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('teamwork')}}</u>.
         </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.generalGrowth.teamwork || $t('No response provided') }}
-        </div>
+        <p class="review-section-content pl-3">{{ $t(exitForm.generalGrowth.teamwork) || $t('No response provided') }}</p>
     </v-col>
 </v-row>
-<v-row class="mt-5">
+
+<v-row>
     <v-col cols="12">
-        <p>
+        <h3 class="review-section-title">{{ $t('Cultural Humility') }}</h3>
+        <p class="form-label">
             {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('cultural humility')}}</u>.
         </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.generalGrowth.culturalHumility || $t('No response provided') }}
-        </div>
+        <p class="review-section-content pl-3">{{ $t(exitForm.generalGrowth.culturalHumility) || $t('No response provided') }}</p>
     </v-col>
 </v-row>
-<v-row class="mt-5">
+
+<v-row>
     <v-col cols="12">
-        <p>
+        <h3 class="review-section-title">{{ $t('Ethical Decision Making') }}</h3>
+        <p class="form-label">
             {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('ethical decision making')}}</u>.
         </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.generalGrowth.ethicalDecisionMaking || $t('No response provided') }}
-        </div>
+        <p class="review-section-content pl-3">{{ $t(exitForm.generalGrowth.ethicalDecisionMaking) || $t('No response provided') }}</p>
     </v-col>
 </v-row>
-<v-row class="mt-5">
+
+<v-row>
     <v-col cols="12">
-        <p>
+        <h3 class="review-section-title">{{ $t('Professional Responsibility') }}</h3>
+        <p class="form-label">
             {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('professional responsibility')}}</u>.
         </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.generalGrowth.professionalResponsibility || 'No response provided' }}
-        </div>
+        <p class="review-section-content pl-3">{{ $t(exitForm.generalGrowth.professionalResponsibility) || $t('No response provided') }}</p>
     </v-col>
 </v-row>
+
+<!-- CHW Growth Assessment Section -->
+<div v-if="isCHWExperience">
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Interpersonal Relationship Building') }}</h3>
+            <p class="form-label">
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('interpersonal relationship building')}}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(exitForm.chwGrowth.interpersonalRelationshipBuilding) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Service Coordination and Navigation') }}</h3>
+            <p class="form-label">
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('service coordination and navigation')}}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(exitForm.chwGrowth.serviceCoordinationNavigation) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Evaluation and Research') }}</h3>
+            <p class="form-label">
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('evaluation and research')}}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(exitForm.chwGrowth.evaluationResearch) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Knowledge Base on Health Issues') }}</h3>
+            <p class="form-label">
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('knowledge base on health issues')}}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(exitForm.chwGrowth.knowledgeBaseHealthIssues) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Teaching and Education') }}</h3>
+            <p class="form-label">
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('teaching and education')}}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(exitForm.chwGrowth.teachingEducation) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+
+    <v-row>
+        <v-col cols="12">
+            <h3 class="review-section-title">{{ $t('Advocacy') }}</h3>
+            <p class="form-label">
+                {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('advocacy')}}</u>.
+            </p>
+            <p class="review-section-content pl-3">{{ $t(exitForm.chwGrowth.advocacy) || $t('No response provided') }}</p>
+        </v-col>
+    </v-row>
+</div>
 
 <!-- Open-Ended Reflections -->
-<v-row class="mt-5">
+<v-row>
     <v-col cols="12">
-        <p>
+        <h3 class="review-section-title">{{ $t('Biggest Lessons') }}</h3>
+        <p class="form-label">
             {{$t('What are the biggest lessons and key takeaways you gained from this class and will carry with you moving forward?')}}
         </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.openEnded.biggestLessons || $t('No response provided') }}
-        </div>
-    </v-col>
-</v-row>
-<v-row class="mt-5">
-    <v-col cols="12">
-        <p>
-            {{$t('Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?')}}
-        </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.openEnded.supportOthers || $t('No response provided') }}
-        </div>
-    </v-col>
-</v-row>
-<v-row v-if="exitForm.openEnded.comments && exitForm.openEnded.comments.length" class="mt-5">
-    <v-col cols="12">
-        <p>
-            {{$t('Use this space to provide any other comments or recommendations you would like to share.')}}
-        </p>
-        <div class="subtitle-enhanced">
-            {{ exitForm.openEnded.comments || $t('No response provided') }}
-        </div>
+        <p class="review-section-content pl-3" style="white-space: pre-line;">{{ exitForm.openEnded.biggestLessons || $t('No response provided') }}</p>
     </v-col>
 </v-row>
 
-</v-form>
+<v-row>
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Supporting Others') }}</h3>
+        <p class="form-label">
+            {{$t('Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?')}}
+        </p>
+        <p class="review-section-content pl-3" style="white-space: pre-line;">{{ exitForm.openEnded.supportOthers || $t('No response provided') }}</p>
+    </v-col>
+</v-row>
+
+<v-row v-if="exitForm.openEnded.comments && exitForm.openEnded.comments.length">
+    <v-col cols="12">
+        <h3 class="review-section-title">{{ $t('Additional Comments') }}</h3>
+        <p class="form-label">
+            {{$t('Use this space to provide any other comments or recommendations you would like to share.')}}
+        </p>
+        <p class="review-section-content pl-3" style="white-space: pre-line;">{{ exitForm.openEnded.comments || $t('No response provided') }}</p>
+    </v-col>
+</v-row>
+
 </v-container>
+</v-form>
 </template>
 
 <script>
@@ -512,16 +658,177 @@ export default {
             }
         },
         
-        // Display experience text from selected or incomplete form
+        // Display experience text from selected or incomplete form (without instructor - shown separately)
         displayExperienceText() {
-            if (this.selectedExperience && this.selectedExperience.text) {
-                return this.selectedExperience.text;
-            } else if (this.expRegistrationIDFromIncompleteBackup) {
-                const matchingExperience = this.exitForm.experiences.find(experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup);
+            // First try from selectedExperience prop
+            if (this.selectedExperience) {
+                // Build base text without instructor (instructor shown separately)
+                const category = this.getExperienceCategory();
+                const name = this.getExperienceName();
+                if (category && name) {
+                    return `${category}: ${name}`;
+                }
+                // Fallback: if text already includes instructor in parentheses, strip it
+                if (this.selectedExperience.text) {
+                    return this.selectedExperience.text.split(' (')[0];
+                }
+            }
+            
+            // Fallback to incomplete form data
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
                 if (matchingExperience) {
                     return `${matchingExperience.experienceCategory}: ${matchingExperience.experienceName}`;
                 }
             }
+            
+            return '';
+        },
+        
+        // Display instructor if present
+        displayInstructor() {
+            // First try from selectedExperience prop
+            if (this.selectedExperience && this.selectedExperience.instructor) {
+                return this.selectedExperience.instructor;
+            }
+            
+            // Try from exitForm directly (set during checkExistingForm)
+            if (this.exitForm.instructor) {
+                return this.exitForm.instructor;
+            }
+            
+            // Fallback to incomplete form data
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
+                if (matchingExperience && matchingExperience.instructor) {
+                    return matchingExperience.instructor;
+                }
+            }
+            
+            return null;
+        },
+        
+        // Check if this is a Data & Society experience
+        isDataAndSocietyExperience() {
+            // First check if there's actual likelihood data filled out
+            const hasLikelihoodData = this.exitForm.likelihoodOf && (
+                (this.exitForm.likelihoodOf.enrollAnotherCourseSelected && 
+                 this.exitForm.likelihoodOf.enrollAnotherCourseSelected !== "") ||
+                (this.exitForm.likelihoodOf.completeMinorSelected && 
+                 this.exitForm.likelihoodOf.completeMinorSelected !== "") ||
+                (this.exitForm.likelihoodOf.recommendCourseSelected && 
+                 this.exitForm.likelihoodOf.recommendCourseSelected !== "") ||
+                (this.exitForm.likelihoodOf.pursueCareerSelected && 
+                 this.exitForm.likelihoodOf.pursueCareerSelected !== "")
+            );
+            
+            if (hasLikelihoodData) {
+                return true;
+            }
+            
+            // Then check experience name as fallback using same patterns as exitFormExp.vue
+            const textPatterns = [
+                "Data & Society", "Data And Society", "Data and Society", 
+                "Minor Data & Society", "Minor Data And Society", "Minor Data and Society"
+            ];
+            
+            // Check selectedExperience.text
+            if (this.selectedExperience?.text) {
+                const baseText = this.selectedExperience.text.split(' (')[0];
+                if (textPatterns.some(pattern => baseText.includes(pattern))) {
+                    return true;
+                }
+            }
+            
+            // Check from experiences list using expRegistrationIDFromIncompleteBackup
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
+                if (matchingExperience) {
+                    const expText = `${matchingExperience.experienceCategory}: ${matchingExperience.experienceName}`;
+                    if (textPatterns.some(pattern => expText.includes(pattern))) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        },
+        
+        // Check if this is a CHW experience
+        isCHWExperience() {
+            // First check if there's actual CHW growth data filled out
+            const hasChwData = this.exitForm.chwGrowth && (
+                this.exitForm.chwGrowth.interpersonalRelationshipBuilding ||
+                this.exitForm.chwGrowth.serviceCoordinationNavigation ||
+                this.exitForm.chwGrowth.evaluationResearch ||
+                this.exitForm.chwGrowth.knowledgeBaseHealthIssues ||
+                this.exitForm.chwGrowth.teachingEducation ||
+                this.exitForm.chwGrowth.advocacy
+            );
+            
+            if (hasChwData) {
+                return true;
+            }
+            
+            // Then check experience name as fallback
+            if (this.selectedExperience?.text?.includes('CHW')) {
+                return true;
+            }
+            if (this.selectedExperience?.experienceName?.includes('CHW')) {
+                return true;
+            }
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
+                if (matchingExperience?.experienceName?.includes('CHW')) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        
+        // Check if this is a HICH experience
+        isHICHExperience() {
+            // Check if there's actual HICH net promoter data filled out (not empty strings)
+            const hasHichData = this.exitForm.hichNetPromoter && (
+                (this.exitForm.hichNetPromoter.recommendHICH !== "" && 
+                this.exitForm.hichNetPromoter.recommendHICH !== null && 
+                this.exitForm.hichNetPromoter.recommendHICH !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== "" && 
+                this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== null && 
+                this.exitForm.hichNetPromoter.recommendSocialsWorkshops !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendVolunteerProjects !== "" && 
+                this.exitForm.hichNetPromoter.recommendVolunteerProjects !== null && 
+                this.exitForm.hichNetPromoter.recommendVolunteerProjects !== undefined) ||
+                (this.exitForm.hichNetPromoter.recommendMentorshipProgram !== "" && 
+                this.exitForm.hichNetPromoter.recommendMentorshipProgram !== null && 
+                this.exitForm.hichNetPromoter.recommendMentorshipProgram !== undefined)
+            );
+            
+            if (hasHichData) {
+                return true;
+            }
+            
+            // Then check experience name as fallback
+            if (this.selectedExperience?.text?.includes('HICH')) {
+                return true;
+            }
+            if (this.expRegistrationIDFromIncompleteBackup) {
+                const matchingExperience = this.exitForm.experiences.find(
+                    experience => experience.expRegistrationID === this.expRegistrationIDFromIncompleteBackup
+                );
+                if (matchingExperience?.experienceName?.includes('HICH')) {
+                    return true;
+                }
+            }
+            return false;
         }
     },
     methods: {
@@ -543,6 +850,31 @@ export default {
                 }
             }
         },
+        
+        // Helper to get experience category from various sources
+        getExperienceCategory() {
+            if (this.selectedExperience) {
+                // Check if we have the raw category/name fields
+                const expRegistrationID = this.selectedExperience.expRegistrationID;
+                if (expRegistrationID && this.exitForm.experiences) {
+                    const exp = this.exitForm.experiences.find(e => e.expRegistrationID === expRegistrationID);
+                    if (exp) return exp.experienceCategory;
+                }
+            }
+            return null;
+        },
+        
+        // Helper to get experience name from various sources
+        getExperienceName() {
+            if (this.selectedExperience) {
+                const expRegistrationID = this.selectedExperience.expRegistrationID;
+                if (expRegistrationID && this.exitForm.experiences) {
+                    const exp = this.exitForm.experiences.find(e => e.expRegistrationID === expRegistrationID);
+                    if (exp) return exp.experienceName;
+                }
+            }
+            return null;
+        }
     },
 }
 </script>
@@ -557,94 +889,63 @@ export default {
   background-color: #f9f9f9;
 }
 
-/* Section title styling */
+/* Review section title styling */
 .review-section-title {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
-/* Experience content box styling */
+/* Review section content styling */
 .review-section-content {
-    font-size: 1.1rem;
-    margin: 10px 0;
-    padding: 8px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+/* Text wrapping for content and labels */
+.review-section-content, .form-label {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 /* Form label styling */
 .form-label {
   font-weight: 500;
-  margin-bottom: 10px;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-/* List item configuration */
-.v-list-item {
-  min-width: 0;
-}
-
-/* List item title styling */
-.v-list-item-title {
-  font-size: 1.1rem;
-  font-weight: bold;
   margin-bottom: 5px;
-  white-space: normal;
-  overflow: hidden;
-  text-overflow: clip;
+  font-size: 0.75rem;
+  color: grey;
 }
 
-/* Subtitle styling */
-.v-list-item-subtitle {
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 10px;
-  line-height: 1.4;
+/* List item styling for responsive layout */
+.v-list-item {
+    min-width: 0;
 }
 
-/* Main section titles */
+.v-list-item-title {
+    white-space: normal;
+}
+
+/* Section title styling */
 .section-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
-/* Aspiration and goal titles */
-.aspiration-title, .goal-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-top: 15px;
-  margin-bottom: 10px;
+/* Aspiration title styling */
+.aspiration-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
 }
 
-/* Enhanced subtitle with wrapping */
-.subtitle-enhanced {
-  font-size: 1rem;
-  color: #2c2c2c;
-  line-height: 1.4;
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  margin: 4px 0;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  display: block;
-  overflow-wrap: break-word;
-}
-
-/* Enhanced subtitle without wrapping */
-.subtitle-enhanced-nowrap {
-  font-size: 1rem;
-  color: #2c2c2c;
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  margin: 4px 0;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Goal title styling */
+.goal-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
 }
 </style>

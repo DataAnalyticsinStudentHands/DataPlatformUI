@@ -42,12 +42,19 @@ export const useLoggedInUserStore = defineStore({
       group: null,
       navigationData: null,
       logoutTimer: null,
+      // New invitation tracking
+      projectInvitationCount: 0,
+      lastInvitationCheck: null,
     }
   },
   getters: {
     // Get the current user's role
     getRole() {
       return this.role
+    },
+    // Check if user has pending project invitations
+    hasPendingInvitations() {
+      return this.projectInvitationCount > 0
     }
   },
   actions: {
@@ -95,6 +102,7 @@ export const useLoggedInUserStore = defineStore({
           if (payload.userRole === 'Student') {
             await this.checkFormCompletion();
             await this.fetchRegisteredExperiences();
+            await this.fetchProjectInvitationCount(); // Fetch invitation count on login
           }
 
           // Complete login for non-temporary users
@@ -190,6 +198,11 @@ export const useLoggedInUserStore = defineStore({
     
         this.setTokenHeader(token);
         this.setAutoLogout(payload.exp);
+        
+        // Fetch invitation count for students
+        if (payload.userRole === 'Student') {
+          await this.fetchProjectInvitationCount();
+        }
     
       } catch (error) {
         console.error('Token verification failed:', error);
@@ -264,6 +277,11 @@ export const useLoggedInUserStore = defineStore({
           isLoggedIn: true,
         });
       }
+      
+      // Fetch invitation count for students
+      if (userRole === 'Student') {
+        await this.fetchProjectInvitationCount();
+      }
     },
     // Update user's language preference
     setLanguagePreference(langPref) {
@@ -291,7 +309,35 @@ export const useLoggedInUserStore = defineStore({
       } catch (error) {
         this.handleError(error);
       }
-    },      
+    },
+    // Fetch project invitation count
+    async fetchProjectInvitationCount() {
+      try {
+        const response = await axios.get(`${apiURL}/studentSideData/user/notification-count`, {
+          headers: { token: this.token }
+        });
+        
+        if (response && response.data) {
+          this.projectInvitationCount = response.data.counts.projectInvitations || 0;
+          this.lastInvitationCheck = new Date();
+        }
+      } catch (error) {
+        console.error('Error fetching invitation count:', error);
+        // Don't show error toast for this background operation
+        this.projectInvitationCount = 0;
+      }
+    },
+    // Decrement invitation count when invitation is responded to
+    decrementInvitationCount() {
+      if (this.projectInvitationCount > 0) {
+        this.projectInvitationCount--;
+      }
+      
+      // If no more invitations, clear the last check timestamp
+      if (this.projectInvitationCount === 0) {
+        this.lastInvitationCheck = null;
+      }
+    },
     // Set authorization header for all axios requests
     setTokenHeader(token) {
       if (token) {
@@ -465,7 +511,6 @@ export const useLoggedInUserStore = defineStore({
 
     // Display generic error message to user
     async handleError(error) {
-      console.log(error);
       toast.error("An unexpected error has occurred and has been logged for future improvement. Please try again later.", {
           position: 'top-right',
           toastClassName: 'Toastify__toast--delete',
@@ -479,7 +524,16 @@ export const useLoggedInUserStore = defineStore({
     // Update experience instance creation details
     updateexperienceInstanceCreationDetails(sessions) {
       this.experienceInstanceCreationDetails = sessions;
-    }
+    },
+    // Clear all pending invitations (more semantic than setting count to 0)
+    clearAllInvitations() {
+      this.projectInvitationCount = 0;
+    },
+    
+    // Set invitation count to a specific value
+    setInvitationCount(count) {
+      this.projectInvitationCount = Math.max(0, count); // Ensure non-negative
+    },
   },
   persist: {
     enabled: true,
@@ -505,7 +559,9 @@ export const useLoggedInUserStore = defineStore({
       'orgName',
       'experienceInstanceCreationDetails',
       'instructorDataManagementActiveTab',
-      'group'
+      'group',
+      'projectInvitationCount',
+      'lastInvitationCheck'
     ],
   },
 });

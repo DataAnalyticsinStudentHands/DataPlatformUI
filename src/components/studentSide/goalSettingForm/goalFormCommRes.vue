@@ -1119,21 +1119,39 @@ with validation, checkbox groupings, and conditional "Other" text fields.
       },
   },
   methods: {
-      // Handle form validation and emit appropriate events
-      async handleValidations() {
-          this.formSubmitted = true;
-          const { valid } = await this.$refs.form.validate();
-          if (valid) {
-              this.$emit('form-valid');
-          } else {
-              this.$emit('form-invalid');
-              toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
-                  position: 'top-right',
-                  toastClassName: 'Toastify__toast--delete',
-                  multiple: false
-              });
-          }
-      },
+    async handleValidations() {
+        this.formSubmitted = true;
+        
+        // First check if we have validation errors from checkboxes
+        if (this.hasValidationErrors) {
+            this.$emit('form-invalid');
+            toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+                position: 'top-right',
+                toastClassName: 'Toastify__toast--delete',
+                multiple: false
+            });
+            return false; // Return false to block navigation
+        }
+        
+        // Then validate the form if it exists
+        if (this.$refs.form) {
+            const { valid } = await this.$refs.form.validate();
+            
+            if (valid) {
+                this.$emit('form-valid');
+                return true; // Return true to allow navigation
+            }
+        }
+        
+        // Validation failed
+        this.$emit('form-invalid');
+        toast.error(this.$t("Oops! Error(s) detected. Please review and try again."), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+        });
+        return false; // Return false to block navigation
+    },
   
       // Scroll to first error field and emit scroll event
       scrollToErrorField() {

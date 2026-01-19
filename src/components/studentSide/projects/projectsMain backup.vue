@@ -337,9 +337,7 @@ export default {
         const user = this.loggedInUserStore;
         let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`; 
-        console.log('Fetching projects for user:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
-        console.log('API Response:', response.data);
         if (response.data && response.data.projects) {
           const projects = response.data.projects.map(project => {
             // Extract experience information from project data
@@ -410,7 +408,6 @@ export default {
         experienceInstanceName: project.experienceInfo || this.$t('Not assigned')
       };
       
-      console.log('Opening invite dialog for project:', this.projectData);
       this.inviteDialog = true;
     },
 
@@ -483,8 +480,6 @@ export default {
     
     // Handle successful member invitations
     handleMembersInvited(invitedUsers) {
-      console.log('Users invited to project:', this.projectData.name);
-      console.log('Invited users:', invitedUsers);
       
       toast.success(this.$t("Members successfully invited to the project!"), {
         position: 'top-right',
@@ -495,13 +490,11 @@ export default {
     
     // Open join project dialog
     joinProject() {
-      console.log('Join a Project button clicked');
       this.joinDialog = true;
     },
 
     // Handle successful project join
     async handleJoinWithCode(joinData) {
-      console.log('Project join successful:', joinData);
       
       // Refresh projects list to include newly joined project
       await this.fetchProjects();

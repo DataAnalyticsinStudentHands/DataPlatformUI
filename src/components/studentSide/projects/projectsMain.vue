@@ -8,472 +8,539 @@ With state persistence via Pinia store.
 -->
 
 <template>
-  <v-container :class="{ 'pa-0': isWelcomeActive }" fluid fill-height> 
-    <!-- Loading state while fetching projects -->
-    <v-row v-if="loading" class="fill-height" align="center" justify="center">
-      <v-col cols="auto">
-        <v-progress-circular indeterminate color="#c8102e" size="64"></v-progress-circular>
-      </v-col>
-    </v-row>
-
-    <template v-else>
-      <!-- Welcome screen for new users with no projects -->
-      <v-row v-if="isWelcomeActive" class="text-center fill-height" align="center" justify="center"
-        :style="{ background: 'white' }" 
-      >
-        <v-col cols="12" sm="12" md="8" lg="6" class="px-4"> 
-          <div class="welcome-content-container">
-            <div class="text-center mb-4">
-              <v-icon size="x-large" color="#c8102e" class="mb-3">mdi-trophy</v-icon>
-              <h1 class="text-h4 text-sm-h4 text-h5 font-weight-bold">
-                {{ $t('Welcome to Projects!') }}
-              </h1>
-            </div>
-            <div class="d-flex flex-column align-center">
-              <v-btn
-                @click="proposeNewProject" 
-                color="#c8102e"
-                :size="$vuetify.display.xs ? 'large' : 'x-large'"
-                class="text-white mb-4"
-                prepend-icon="mdi-plus"
-                elevation="2"
-                block
-              >
-                {{ $t('Propose My First Project') }}
-              </v-btn>
-              <v-btn
-                color="#c8102e"
-                :size="$vuetify.display.xs ? 'large' : 'x-large'"
-                class="text-white"
-                prepend-icon="mdi-account-group"
-                elevation="2"
-                block
-                @click="joinProject"
-              >
-                {{ $t('Join a Project') }}
-              </v-btn>
-            </div>
-          </div>
+  <main class="projects-page">
+    <v-container class="py-8">
+      <!-- Loading state while fetching projects -->
+      <v-row v-if="loading" class="fill-height" align="center" justify="center" style="min-height: 60vh;">
+        <v-col cols="auto">
+          <v-progress-circular indeterminate color="#c8102e" size="72"></v-progress-circular>
         </v-col>
       </v-row>
 
-      <!-- Main projects interface -->
-      <div v-if="!isWelcomeActive">
-        <v-container>
-          <!-- Page header -->
-          <v-row>
-            <v-col>
-              <h1 class="text-h4 text-sm-h4 text-h5 font-weight-bold">{{ $t('Projects') }}</h1>
-            </v-col>
-          </v-row>
-          
-          <!-- Tabs and action buttons -->
-          <v-row>
-            <v-col cols="12">
-              <!-- Tabs -->
-              <v-card flat class="mb-3">
-                <v-tabs
-                  v-model="activeTab"
+      <template v-else>
+        <!-- Welcome screen for new users with no projects -->
+        <div v-if="isWelcomeActive" class="welcome-wrapper">
+          <v-card class="welcome-card mx-auto" elevation="3" max-width="650">
+            <div class="welcome-header">
+              <v-icon size="72" color="white" class="mb-4">mdi-trophy-outline</v-icon>
+              <h1 class="text-h3 font-weight-bold text-white mb-2">{{ $t('Welcome to Projects!') }}</h1>
+              <p class="text-body-1 welcome-subtitle mb-0">{{ $t('Get started by proposing your own project or joining an existing one') }}</p>
+            </div>
+            
+            <v-card-text class="pa-8">
+              <div class="welcome-actions">
+                <v-btn
+                  @click="proposeNewProject" 
                   color="#c8102e"
-                  align-tabs="start"
+                  size="x-large"
+                  class="welcome-btn mb-4"
+                  prepend-icon="mdi-lightbulb-outline"
+                  elevation="2"
+                  block
                 >
-                  <!-- Dynamic tab title based on archive view state -->
-                  <v-tab value="my-projects">
-                    {{ activeTab === 'my-projects' && viewingArchivedProjects ? $t('My Archived Projects') : $t('My Projects') }}
-                  </v-tab>
-                  <v-tab value="proposed-projects">{{ $t('Proposed Projects') }}</v-tab>
-                </v-tabs>
-              </v-card>
-            </v-col>
-          </v-row>
+                  {{ $t('Propose My First Project') }}
+                </v-btn>
+                
+                <div class="text-center my-4">
+                  <span class="text-medium-emphasis text-body-1">{{ $t('or') }}</span>
+                </div>
+                
+                <v-btn
+                  variant="outlined"
+                  size="x-large"
+                  class="welcome-btn-outlined"
+                  prepend-icon="mdi-account-group"
+                  block
+                  @click="joinProject"
+                >
+                  {{ $t('Join a Project') }}
+                </v-btn>
+              </div>
+            </v-card-text>
+          </v-card>
+        </div>
 
-          <!-- Action buttons row -->
-          <v-row>
-            <v-col cols="12">
-              <v-card flat>
-                <v-card-title>
-                  <v-row align="center" no-gutters>
-                    <!-- Search Fields for sm Screens and Up -->
-                    <v-col lg="5" md="4" sm="3" class="d-none d-sm-flex pr-2">
-                      <!-- Search Fields -->
-                      <v-text-field
-                        v-model="projectSearch"
-                        density="compact"
-                        :label="searchLabel"
-                        flat
-                        hide-details
-                        clearable
-                        variant="solo-filled"
-                        @keyup.enter="addSearchChip"
-                      >
-                        <!-- Search Menu Icons for sm Screens and Up -->
-                        <template v-slot:prepend-inner>
-                          <v-menu
-                            location="bottom"
-                          >
-                            <template v-slot:activator="{ props }">
-                              <div
-                                v-bind="props"
-                                class="pointer-cursor"
-                                @click.stop
-                              >
-                                <v-icon size="small">mdi-magnify</v-icon>
-                                <v-icon size="x-small">mdi-chevron-down</v-icon>
-                              </div>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                v-for="item in searchMenuItems"
-                                :key="item"
-                                @click="updateSearchCriteria(item)"
-                              >
-                                <v-list-item-title>{{ item }}</v-list-item-title>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </template>
-                        <template v-slot:append-inner>
-                          <div class="pointer-cursor" @click="addSearchChip">
-                            <v-icon size="small">mdi-chevron-right</v-icon>
+        <!-- Main projects interface -->
+        <div v-else>
+          <!-- Page Header -->
+          <div class="page-header mb-6">
+            <div class="d-flex align-center mb-2">
+              <v-icon color="#c8102e" size="36" class="mr-3">mdi-folder-multiple-outline</v-icon>
+              <div class="flex-grow-1">
+                <div class="d-flex align-center flex-wrap">
+                  <h1 class="text-h4 font-weight-bold mr-3">{{ $t('My Projects') }}</h1>
+                </div>
+                <p class="text-body-1 text-medium-emphasis mb-0">{{ $t('Manage and track all your project work') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Content Card -->
+          <v-card class="main-card" elevation="2">
+            <!-- Tabs Section -->
+            <div class="tabs-section">
+              <v-tabs
+                v-model="activeTab"
+                color="#c8102e"
+                class="custom-tabs"
+              >
+                <v-tab value="my-projects" class="custom-tab">
+                  <v-icon start size="22">mdi-folder-open-outline</v-icon>
+                  <span class="d-none d-sm-inline">
+                    {{ viewingArchivedProjects ? $t('Archived Projects') : $t('Active Projects') }}
+                  </span>
+                  <span class="d-inline d-sm-none">
+                    {{ viewingArchivedProjects ? $t('Archived') : $t('Active') }}
+                  </span>
+                  <v-chip 
+                    v-if="myProjects.length > 0" 
+                    size="small" 
+                    class="ml-2"
+                    :color="viewingArchivedProjects ? 'grey' : '#c8102e'"
+                    variant="tonal"
+                  >
+                    {{ myProjects.length }}
+                  </v-chip>
+                </v-tab>
+                <v-tab value="proposed-projects" class="custom-tab">
+                  <v-icon start size="22">mdi-file-document-edit-outline</v-icon>
+                  <span class="d-none d-sm-inline">{{ $t('Proposed Projects') }}</span>
+                  <span class="d-inline d-sm-none">{{ $t('Proposed') }}</span>
+                  <v-chip 
+                    v-if="proposedProjects.length > 0" 
+                    size="small" 
+                    class="ml-2"
+                    color="deep-orange"
+                    variant="tonal"
+                  >
+                    {{ proposedProjects.length }}
+                  </v-chip>
+                </v-tab>
+              </v-tabs>
+            </div>
+
+            <v-divider></v-divider>
+
+            <!-- Toolbar Section -->
+            <div class="toolbar-section">
+              <v-row align="center" no-gutters>
+                <!-- Search Field - Desktop/Tablet -->
+                <v-col lg="5" md="4" sm="4" class="d-none d-sm-flex pr-3">
+                  <v-text-field
+                    v-model="projectSearch"
+                    density="comfortable"
+                    :placeholder="searchPlaceholder"
+                    flat
+                    hide-details
+                    clearable
+                    variant="outlined"
+                    class="search-field"
+                    @keyup.enter="addSearchChip"
+                  >
+                    <template v-slot:prepend-inner>
+                      <v-menu location="bottom start">
+                        <template v-slot:activator="{ props }">
+                          <div v-bind="props" class="search-menu-trigger">
+                            <v-icon size="22" color="#666">mdi-magnify</v-icon>
+                            <v-icon size="16" color="#999">mdi-chevron-down</v-icon>
                           </div>
                         </template>
-                      </v-text-field>
-                    </v-col>
-                    
-                    <!-- Spacer for larger screens -->
-                    <v-spacer class="d-none d-lg-flex"></v-spacer>
-                    
-                    <!-- View Archived Button for sm Screens and Up-->
-                    <v-col lg="auto" md="auto" sm="auto" class="d-none d-sm-flex px-1">
-                      <v-btn 
-                        v-if="activeTab === 'my-projects'"
-                        @click="toggleArchivedProjectsView"
-                        elevation="1"
-                        :size="$vuetify.display.smAndDown ? 'small' : 'default'"
-                        :append-icon="viewingArchivedProjects ? '' : 'mdi-archive-arrow-down-outline'"
-                        :prepend-icon="viewingArchivedProjects ? 'mdi-folder-open-outline' : ''"
-                      >
-                        <span class="d-none d-md-inline">{{ viewingArchivedProjects ? $t('View Active') : $t('View Archive') }}</span>
-                        <span class="d-inline d-md-none">{{ viewingArchivedProjects ? $t('Active') : $t('Archive') }}</span>
-                      </v-btn>
-                    </v-col>
-                    
-                    <!-- Add New Project Button for sm Screens and Up -->
-                    <v-col lg="auto" md="auto" sm="auto" class="d-none d-sm-flex px-1">
-                      <v-btn
-                        @click="proposeNewProject"
-                        elevation="1"
-                        prepend-icon="mdi-plus"
-                        color="#c8102e"
-                        :size="$vuetify.display.smAndDown ? 'small' : 'default'"
-                      >
-                        <span class="d-none d-lg-inline">{{ $t('Propose New Project') }}</span>
-                        <span class="d-inline d-lg-none">{{ $t('New') }}</span>
-                      </v-btn>
-                    </v-col>
-                    
-                    <!-- Join Project Button for sm Screens and Up -->
-                    <v-col lg="auto" md="auto" sm="auto" class="d-none d-sm-flex pl-1">
-                      <v-btn
-                        @click="joinProject"
-                        elevation="1"
-                        prepend-icon="mdi-account-group"
-                        color="#c8102e"
-                        :size="$vuetify.display.smAndDown ? 'small' : 'default'"
-                      >
-                        <span class="d-none d-lg-inline">{{ $t('Join a Project') }}</span>
-                        <span class="d-inline d-lg-none">{{ $t('Join') }}</span>
-                      </v-btn>
-                    </v-col>
-                    
-                    <!-- XS Screen Layout - All buttons in one row -->
-                    <v-col cols="12" class="d-flex d-sm-none justify-space-between align-center">
-                      <!-- Search button -->
+                        <v-list density="comfortable" class="search-menu-list">
+                          <v-list-subheader>{{ $t('Search by') }}</v-list-subheader>
+                          <v-list-item
+                            v-for="item in searchMenuItems"
+                            :key="item"
+                            @click="updateSearchCriteria(item)"
+                            :active="searchLabel === 'Search by ' + item"
+                          >
+                            <template v-slot:prepend>
+                              <v-icon size="20">{{ getSearchIcon(item) }}</v-icon>
+                            </template>
+                            <v-list-item-title>{{ item }}</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </template>
+                    <template v-slot:append-inner>
                       <v-btn 
                         icon 
-                        size="small"
-                        variant="text"
-                        @click="xsdialogSearch = true"
-                      >
-                        <v-icon size="small">mdi-magnify</v-icon>
-                      </v-btn>
-                      
-                      <!-- View Archived button -->
-                      <v-btn
-                        v-if="activeTab === 'my-projects'"
-                        icon
-                        size="small"
-                        variant="text"
-                        @click="toggleArchivedProjectsView"
-                      >
-                        <v-icon size="small">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive' }}</v-icon>
-                      </v-btn>
-                      
-                      <!-- Spacer when archive button is hidden -->
-                      <div v-else style="width: 40px;"></div>
-                      
-                      <!-- Add New Project button -->
-                      <v-btn 
-                        icon
                         size="small" 
-                        color="#c8102e" 
-                        @click="proposeNewProject"
-                      >
-                        <v-icon size="small">mdi-plus</v-icon>
-                      </v-btn>
-                      
-                      <!-- Join Project button -->
-                      <v-btn 
-                        icon
-                        size="small"
                         variant="text"
-                        @click="joinProject"
+                        @click="addSearchChip"
+                        :disabled="!projectSearch"
                       >
-                        <v-icon size="small">mdi-account-group</v-icon>
+                        <v-icon size="20">mdi-arrow-right</v-icon>
                       </v-btn>
-                    </v-col>
-                  </v-row>
+                    </template>
+                  </v-text-field>
+                </v-col>
+                
+                <v-spacer class="d-none d-md-flex"></v-spacer>
+                
+                <!-- Action Buttons - Desktop/Tablet -->
+                <v-col cols="auto" class="d-none d-sm-flex align-center action-buttons-group">
+                  <!-- View Archived Button -->
+                  <v-btn 
+                    v-if="activeTab === 'my-projects'"
+                    @click="toggleArchivedProjectsView"
+                    variant="tonal"
+                    :color="viewingArchivedProjects ? '#c8102e' : 'grey-darken-4'"
+                    size="default"
+                    class="action-btn mr-2"
+                  >
+                    <v-icon start size="20">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
+                    <span class="d-none d-md-inline grey-darken-4">{{ viewingArchivedProjects ? $t('View Active') : $t('View Archived') }}</span>
+                    <span class="d-inline d-md-none">{{ viewingArchivedProjects ? $t('Active') : $t('Archive') }}</span>
+                  </v-btn>
                   
-                  <!-- Search Chips Row -->
-                  <v-row v-if="showChipsRow">
-                    <v-col>
-                      <v-chip-group
-                        v-if="searchChips.length"
-                        v-model="selectedSearchChips"
-                        column
-                        multiple
-                      >
-                        <v-chip
-                          v-for="(criteria, index) in searchChips"
-                          :key="index"
-                          @click="selectSearchChip(index)"
-                          filter
-                          variant="outlined"
-                          class="ma-2"
+                  <!-- Propose New Project Button -->
+                  <v-btn
+                    @click="proposeNewProject"
+                    color="#c8102e"
+                    size="default"
+                    class="action-btn mr-2"
+                  >
+                    <v-icon start size="20">mdi-plus</v-icon>
+                    <span class="d-none d-lg-inline">{{ $t('Propose Project') }}</span>
+                    <span class="d-inline d-lg-none">{{ $t('New') }}</span>
+                  </v-btn>
+                  
+                  <!-- Join Project Button -->
+                  <v-btn
+                    @click="joinProject"
+                    variant="outlined"
+                    color="#c8102e"
+                    size="default"
+                    class="action-btn"
+                  >
+                    <v-icon start size="20">mdi-account-plus-outline</v-icon>
+                    <span class="d-none d-lg-inline">{{ $t('Join Project') }}</span>
+                    <span class="d-inline d-lg-none">{{ $t('Join') }}</span>
+                  </v-btn>
+                </v-col>
+                
+                <!-- Mobile Action Bar -->
+                <v-col cols="12" class="d-flex d-sm-none mobile-action-bar">
+                  <v-btn 
+                    icon 
+                    variant="text"
+                    size="default"
+                    @click="xsdialogSearch = true"
+                    class="mobile-action-btn"
+                  >
+                    <v-icon size="24">mdi-magnify</v-icon>
+                  </v-btn>
+                  
+                  <v-btn
+                    v-if="activeTab === 'my-projects'"
+                    icon
+                    variant="text"
+                    size="default"
+                    @click="toggleArchivedProjectsView"
+                    class="mobile-action-btn"
+                    :color="viewingArchivedProjects ? '#c8102e' : undefined"
+                  >
+                    <v-icon size="24">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
+                  </v-btn>
+                  <div v-else style="width: 48px;"></div>
+                  
+                  <v-spacer></v-spacer>
+                  
+                  <v-btn 
+                    icon
+                    color="#c8102e" 
+                    size="default"
+                    @click="proposeNewProject"
+                    class="mobile-action-btn"
+                  >
+                    <v-icon size="24">mdi-plus</v-icon>
+                  </v-btn>
+                  
+                  <v-btn 
+                    icon
+                    variant="text"
+                    size="default"
+                    @click="joinProject"
+                    class="mobile-action-btn"
+                  >
+                    <v-icon size="24">mdi-account-plus-outline</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              
+              <!-- Active Search Chips -->
+              <div v-if="searchChips.length > 0" class="search-chips-container mt-3">
+                <div class="d-flex align-center flex-wrap">
+                  <span class="text-body-2 text-medium-emphasis mr-2">{{ $t('Filters:') }}</span>
+                  <v-chip
+                    v-for="(criteria, index) in searchChips"
+                    :key="index"
+                    :color="selectedSearchChips.includes(index) ? '#c8102e' : 'grey'"
+                    :variant="selectedSearchChips.includes(index) ? 'flat' : 'outlined'"
+                    size="default"
+                    class="search-chip mr-2 mb-1"
+                    @click="selectSearchChip(index)"
+                    closable
+                    @click:close="removeSearchChip(index)"
+                  >
+                    <v-icon start size="16">{{ getSearchIcon(criteria.category) }}</v-icon>
+                    {{ criteria.category }}: {{ criteria.term }}
+                  </v-chip>
+                  <v-btn 
+                    v-if="searchChips.length > 1"
+                    variant="text" 
+                    size="small" 
+                    color="#c8102e"
+                    @click="clearAllFilters"
+                    class="mb-1"
+                  >
+                    {{ $t('Clear all') }}
+                  </v-btn>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Content -->
+            <v-window v-model="activeTab">
+              <!-- My Projects Tab -->
+              <v-window-item value="my-projects">
+                <div class="table-container">
+                  <v-data-table
+                    :headers="projectHeaders"
+                    :items="filteredMyProjects"
+                    item-key="_id"
+                    hover
+                    class="projects-table"
+                    :mobile-breakpoint="600"
+                    v-model:items-per-page="myProjectsItemsPerPage"
+                    v-model:page="myProjectsCurrentPage"
+                    v-model:sort-by="myProjectsSortBy"
+                    :items-per-page-options="itemsPerPageOptions"
+                  >
+                    <template v-slot:body="{ items }">
+                      <template v-if="items.length > 0">
+                        <tr 
+                          v-for="item in items" 
+                          :key="item._id" 
+                          @click="viewProject(item)" 
+                          class="table-row"
+                          :id="`project-${item._id}`"
                         >
-                          {{ criteria.category + `="` + criteria.term + `"` }}
-                          <v-icon
-                            end
-                            @click.stop="removeSearchChip(index)"
-                          >mdi-close</v-icon>
-                        </v-chip>
-                      </v-chip-group>
-                    </v-col>
-                  </v-row>
-                </v-card-title>
-              </v-card>
-            </v-col>
-          </v-row>
+                          <td class="table-cell">
+                            <span class="font-weight-medium project-name">{{ item.projectName }}</span>
+                          </td>
+                          <td class="table-cell d-none d-sm-table-cell">
+                            <span class="text-medium-emphasis experience-text">{{ item.experienceInfo }}</span>
+                          </td>
+                          <td class="table-cell">
+                            <v-chip
+                              size="default"
+                              :color="getStatusColor(item.projectStatus)"
+                              variant="tonal"
+                              class="status-chip"
+                            >
+                              <v-icon start size="14">{{ getStatusIcon(item.projectStatus) }}</v-icon>
+                              {{ item.projectStatus }}
+                            </v-chip>
+                          </td>
+                          <td class="table-cell d-none d-sm-table-cell">
+                            <span class="text-body-2 text-medium-emphasis">{{ formatDate(item.updatedAt) }}</span>
+                          </td>
+                        </tr>
+                      </template>
+                      <template v-else>
+                        <tr>
+                          <td :colspan="projectHeaders.length" class="empty-state-cell">
+                            <div class="empty-state">
+                              <v-icon size="56" color="#ccc" class="mb-3">
+                                {{ viewingArchivedProjects ? 'mdi-archive-off-outline' : 'mdi-folder-open-outline' }}
+                              </v-icon>
+                              <p class="text-h6 text-medium-emphasis mb-1">
+                                {{ viewingArchivedProjects ? $t('No archived projects') : $t('No active projects yet') }}
+                              </p>
+                              <p class="text-body-2 text-disabled mb-0">
+                                {{ viewingArchivedProjects 
+                                  ? $t('Projects you archive will appear here') 
+                                  : $t('Propose a new project or join an existing one to get started') 
+                                }}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      </template>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-window-item>
+              
+              <!-- Proposed Projects Tab -->
+              <v-window-item value="proposed-projects">
+                <div class="table-container">
+                  <v-data-table
+                    :headers="projectHeaders"
+                    :items="filteredProposedProjects"
+                    item-key="_id"
+                    hover
+                    class="projects-table"
+                    :mobile-breakpoint="600"
+                    v-model:items-per-page="proposedProjectsItemsPerPage"
+                    v-model:page="proposedProjectsCurrentPage"
+                    v-model:sort-by="proposedProjectsSortBy"
+                    :items-per-page-options="itemsPerPageOptions"
+                  >
+                    <template v-slot:body="{ items }">
+                      <template v-if="items.length > 0">
+                        <tr 
+                          v-for="item in items" 
+                          :key="item._id" 
+                          @click="viewProjectProposal(item)" 
+                          class="table-row"
+                        >
+                          <td class="table-cell">
+                            <span class="font-weight-medium project-name">{{ item.projectName }}</span>
+                          </td>
+                          <td class="table-cell d-none d-sm-table-cell">
+                            <span class="text-medium-emphasis experience-text">{{ item.experienceInfo }}</span>
+                          </td>
+                          <td class="table-cell">
+                            <v-chip
+                              size="default"
+                              :color="getStatusColor(item.projectStatus)"
+                              variant="tonal"
+                              class="status-chip"
+                            >
+                              <v-icon start size="14">{{ getStatusIcon(item.projectStatus) }}</v-icon>
+                              {{ item.projectStatus }}
+                            </v-chip>
+                          </td>
+                          <td class="table-cell d-none d-sm-table-cell">
+                            <span class="text-body-2 text-medium-emphasis">{{ formatDate(item.updatedAt) }}</span>
+                          </td>
+                        </tr>
+                      </template>
+                      <template v-else>
+                        <tr>
+                          <td :colspan="projectHeaders.length" class="empty-state-cell">
+                            <div class="empty-state">
+                              <v-icon size="56" color="#ccc" class="mb-3">mdi-file-document-plus-outline</v-icon>
+                              <p class="text-h6 text-medium-emphasis mb-1">{{ $t('No proposed projects') }}</p>
+                              <p class="text-body-2 text-disabled mb-4">{{ $t('Submit a project proposal to get started') }}</p>
+                              <v-btn 
+                                color="#c8102e" 
+                                size="default"
+                                @click.stop="proposeNewProject"
+                              >
+                                <v-icon start size="18">mdi-plus</v-icon>
+                                {{ $t('Propose Project') }}
+                              </v-btn>
+                            </div>
+                          </td>
+                        </tr>
+                      </template>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-window-item>
+            </v-window>
+          </v-card>
+        </div>
+      </template>
+
+      <!-- Member invitation dialog -->
+      <invite-members-dialog
+        v-if="inviteDialog && projectData._id"
+        v-model="inviteDialog"
+        :project-id="projectData._id"
+        :project-name="projectData.name"
+        :experience-instance-id="projectData.instanceId"
+        :experience-instance-name="projectData.experienceInstanceName"
+        @members-invited="handleMembersInvited"
+      />
+
+      <!-- Join project dialog -->
+      <join-project-dialog
+        v-model="joinDialog"
+        :invitations="pendingInvitations"
+        :loading-invitations="loadingInvitations"
+        :invitations-only="dialogInvitationsOnlyMode"
+        @join="handleJoinWithCode"
+        @accept-invitation="handleAcceptInvitation"
+        @decline-invitation="handleDeclineInvitation"
+        @invitations-processed="handleInvitationsProcessed"
+      />
+
+      <!-- Mobile Search Dialog -->
+      <v-dialog v-model="xsdialogSearch" max-width="420px">
+        <v-card class="mobile-search-dialog">
+          <v-card-title class="d-flex align-center pa-5">
+            <v-icon color="#c8102e" size="26" class="mr-2">mdi-magnify</v-icon>
+            <span class="text-h5 font-weight-bold">{{ $t('Search Projects') }}</span>
+            <v-spacer></v-spacer>
+            <v-btn icon variant="text" size="default" @click="xsCancelSearchDialog">
+              <v-icon size="24">mdi-close</v-icon>
+            </v-btn>
+          </v-card-title>
           
-          <!-- Tab content windows -->
-          <v-window v-model="activeTab">
-            <!-- My Projects tab content -->
-            <v-window-item value="my-projects">
-              <v-row v-if="loading">
-                <v-col>
-                  <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
-                </v-col>
-              </v-row>
-              <v-row v-else>
-                <v-col>
-                  <v-card flat>
-                    <v-data-table
-                      :headers="projectHeaders"
-                      :items="filteredMyProjects"
-                      item-key="_id"
-                      hover
-                      class="cursor-pointer"
-                      :mobile-breakpoint="600"
-                      v-model:items-per-page="myProjectsItemsPerPage"
-                      v-model:page="myProjectsCurrentPage"
-                      v-model:sort-by="myProjectsSortBy"
-                      :items-per-page-options="itemsPerPageOptions"
-                    >
-                      <template v-slot:body="{ items }">
-                        <template v-if="items.length > 0">
-                          <tr v-for="item in items" :key="item._id" @click="viewProject(item)" class="cursor-pointer">
-                            <td>{{ item.projectName }}</td>
-                            <td class="d-none d-sm-table-cell">{{ item.experienceInfo }}</td>
-                            <td>
-                              <v-chip
-                                size="small"
-                                :color="getStatusColor(item.projectStatus)"
-                                :text-color="getStatusTextColor(item.projectStatus)"
-                              >
-                                {{ item.projectStatus }}
-                              </v-chip>
-                            </td>
-                            <td class="d-none d-sm-table-cell">{{ formatDate(item.updatedAt) }}</td>
-                          </tr>
-                        </template>
-                        <template v-else>
-                          <tr>
-                            <td :colspan="projectHeaders.length" class="text-center py-6">
-                              {{ viewingArchivedProjects ? $t('You have no archived projects.') : $t('You are not associated with any active projects yet.') }}
-                            </td>
-                          </tr>
-                        </template>
-                      </template>
-                    </v-data-table>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-window-item>
+          <v-divider></v-divider>
+          
+          <v-card-text class="pa-5">
+            <v-select
+              v-model="xsSearchFilterSelection"
+              :items="['Project Name', 'Experience', 'Status']"
+              :label="$t('Filter by')"
+              variant="outlined"
+              density="comfortable"
+              hide-details
+              class="mb-4"
+            >
+              <template v-slot:prepend-inner>
+                <v-icon size="22">mdi-filter-variant</v-icon>
+              </template>
+            </v-select>
             
-            <!-- Proposed Projects tab content -->
-            <v-window-item value="proposed-projects">
-              <v-row v-if="loading">
-                <v-col>
-                  <v-skeleton-loader type="table-row@3"></v-skeleton-loader>
-                </v-col>
-              </v-row>
-              <v-row v-else>
-                <v-col>
-                  <v-card flat>
-                    <v-data-table
-                      :headers="projectHeaders"
-                      :items="filteredProposedProjects"
-                      item-key="_id"
-                      hover
-                      class="cursor-pointer"
-                      :mobile-breakpoint="600"
-                      v-model:items-per-page="proposedProjectsItemsPerPage"
-                      v-model:page="proposedProjectsCurrentPage"
-                      v-model:sort-by="proposedProjectsSortBy"
-                      :items-per-page-options="itemsPerPageOptions"
-                    >
-                      <template v-slot:body="{ items }">
-                        <template v-if="items.length > 0">
-                          <tr v-for="item in items" :key="item._id" @click="viewProjectProposal(item)" class="cursor-pointer">
-                            <td>{{ item.projectName }}</td>
-                            <td class="d-none d-sm-table-cell">{{ item.experienceInfo }}</td>
-                            <td>
-                              <v-chip
-                                size="small"
-                                :color="getStatusColor(item.projectStatus)"
-                                :text-color="getStatusTextColor(item.projectStatus)"
-                              >
-                                {{ item.projectStatus }}
-                              </v-chip>
-                            </td>
-                            <td class="d-none d-sm-table-cell">{{ formatDate(item.updatedAt) }}</td>
-                          </tr>
-                        </template>
-                        <template v-else>
-                          <tr>
-                            <td :colspan="projectHeaders.length" class="text-center py-6">
-                              {{ $t('You have not proposed any projects yet.') }}
-                            </td>
-                          </tr>
-                        </template>
-                      </template>
-                    </v-data-table>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-window-item>
-          </v-window>
-        </v-container>
-      </div>
-
-    </template>
-
-    <!-- Member invitation dialog -->
-    <invite-members-dialog
-      v-if="inviteDialog && projectData._id"
-      v-model="inviteDialog"
-      :project-id="projectData._id"
-      :project-name="projectData.name"
-      :experience-instance-id="projectData.instanceId"
-      :experience-instance-name="projectData.experienceInstanceName"
-      @members-invited="handleMembersInvited"
-    />
-
-    <!-- Join project dialog -->
-    <join-project-dialog
-      v-model="joinDialog"
-      @join="handleJoinWithCode"
-    />
-
-    <!-- Dialog for Search Fields for xs Screens -->
-    <v-dialog
-      v-model="xsdialogSearch"
-      width="100%"
-      persistent
-    >
-      <v-card>
-        <v-card-title>
-          <v-row>
-            <v-col>
-              Select a Filter:
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-select
-                v-model="xsSearchFilterSelection"
-                :items="['Project Name', 'Experience', 'Status']"
-              ></v-select>
-            </v-col>
-          </v-row>
-        </v-card-title>
-        <v-card-item v-if="xsSearchFilterSelection === 'Project Name'">
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model="projectSearch"
-                density="comfortable"
-                :label="searchLabel"
-                flat
-                hide-details
-                clearable
-                variant="solo-filled"
-              >
-              </v-text-field>
-            </v-col>
-          </v-row>
-        </v-card-item>
-        <v-card-item v-if="xsSearchFilterSelection === 'Experience'">
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model="experienceSearch"
-                density="comfortable"
-                label="Search Experience"
-                flat
-                hide-details
-                clearable
-                variant="solo-filled"
-              >
-              </v-text-field>
-            </v-col>
-          </v-row>
-        </v-card-item>
-        <v-card-item v-if="xsSearchFilterSelection === 'Status'">
-          <v-row>
-            <v-col>
-              <v-select
-                v-model="statusSearch"
-                :items="['Active', 'Proposed', 'Archived']"
-                label="Select Status"
-                density="comfortable"
-                hide-details
-              ></v-select>
-            </v-col>
-          </v-row>
-        </v-card-item>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="xsCancelSearchDialog">Cancel</v-btn>
-          <v-btn 
-            color="#c8102e"
-            @click="xsApplySearchFilters"
-          >Apply</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-  </v-container>
+            <v-text-field
+              v-if="xsSearchFilterSelection === 'Project Name'"
+              v-model="projectSearch"
+              :label="$t('Project Name')"
+              variant="outlined"
+              density="comfortable"
+              hide-details
+              clearable
+            ></v-text-field>
+            
+            <v-text-field
+              v-if="xsSearchFilterSelection === 'Experience'"
+              v-model="experienceSearch"
+              :label="$t('Experience')"
+              variant="outlined"
+              density="comfortable"
+              hide-details
+              clearable
+            ></v-text-field>
+            
+            <v-select
+              v-if="xsSearchFilterSelection === 'Status'"
+              v-model="statusSearch"
+              :items="['Active', 'Proposed', 'Archived']"
+              :label="$t('Status')"
+              variant="outlined"
+              density="comfortable"
+              hide-details
+            ></v-select>
+          </v-card-text>
+          
+          <v-card-actions class="pa-5 pt-0">
+            <v-btn variant="text" size="default" @click="xsCancelSearchDialog">{{ $t('Cancel') }}</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="#c8102e" size="default" @click="xsApplySearchFilters">
+              <v-icon start size="20">mdi-check</v-icon>
+              {{ $t('Apply Filter') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-container>
+  </main>
 </template>
 
 <script>
@@ -508,11 +575,10 @@ export default {
       projectSearch: "",
       experienceSearch: "",
       statusSearch: "",
-      searchLabel: "Search Project Name",
+      searchLabel: "Search by Project Name",
       searchMenuItems: [
         "Project Name",
         "Experience"
-        // "Status"
       ],
       xsdialogSearch: false,
       xsSearchFilterSelection: null,
@@ -540,10 +606,25 @@ export default {
         name: '',
         experienceInstanceName: ''
       },
-      projectMembers: []
+      projectMembers: [],
+
+      // Project invitations dialog
+      pendingInvitations: [],
+      loadingInvitations: false,
+      dialogInvitationsOnlyMode: false,
     };
   },
   computed: {
+    // Search placeholder based on current search type
+    searchPlaceholder() {
+      return this.searchLabel.replace('Search by ', this.$t('Search by '));
+    },
+    
+    // Total project count for header chip
+    projectCount() {
+      return this.allMyProjects.length + this.proposedProjects.length;
+    },
+    
     // Sync with store - active tab
     activeTab: {
       get() {
@@ -645,11 +726,6 @@ export default {
       return !this.loading && this.allMyProjects.length === 0 && this.proposedProjects.length === 0;
     },
     
-    // Show chips row when there are search chips
-    showChipsRow() {
-      return this.searchChips.length > 0;
-    },
-    
     // Filter projects based on archive view state
     myProjects() {
       if (this.viewingArchivedProjects) {
@@ -675,7 +751,19 @@ export default {
       if (newTab !== 'my-projects' && this.viewingArchivedProjects) {
         this.viewingArchivedProjects = false;
       }
-    }
+    },
+
+    joinDialog(newVal) {
+      if (newVal && this.loggedInUserStore.getRole === 'Student') {
+        // Refresh invitations when dialog opens
+        this.fetchPendingInvitations();
+      } else if (!newVal) {
+        // Reset mode when dialog closes
+        setTimeout(() => {
+          this.dialogInvitationsOnlyMode = false;
+        }, 300);
+      }
+    },
   },
   
   // Component initialization
@@ -688,10 +776,40 @@ export default {
       });
       loggedInUserStore.navigationData = null;
     }
+    
     await this.fetchProjects();
+    
+    // Check for pending invitations after loading projects
+    await this.checkAndShowInvitations();
   },
   
   methods: {
+    // Get icon for search category
+    getSearchIcon(category) {
+      switch (category) {
+        case 'Project Name': return 'mdi-folder-outline';
+        case 'Experience': return 'mdi-school-outline';
+        case 'Status': return 'mdi-tag-outline';
+        default: return 'mdi-magnify';
+      }
+    },
+    
+    // Get icon for project status
+    getStatusIcon(status) {
+      switch (status) {
+        case 'Active': return 'mdi-check-circle';
+        case 'Proposed': return 'mdi-clock-outline';
+        case 'Archived': return 'mdi-archive';
+        default: return 'mdi-help-circle';
+      }
+    },
+    
+    // Clear all search filters
+    clearAllFilters() {
+      this.searchChips = [];
+      this.selectedSearchChips = [];
+    },
+    
     // Fetch all projects from API
     async fetchProjects() {
       this.loading = true;
@@ -701,12 +819,9 @@ export default {
         const user = this.loggedInUserStore;
         let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`; 
-        console.log('Fetching projects for user:', user.userId);
         const response = await axios.get(apiURL, { headers: { token } });
-        console.log('API Response:', response.data);
         if (response.data && response.data.projects) {
           const projects = response.data.projects.map(project => {
-            // Extract experience information from project data
             let experienceInfo = this.$t('Not assigned');
             if (project.experience) {
               experienceInfo = project.experience.experienceName;
@@ -718,7 +833,6 @@ export default {
             };
           });
           
-          // Separate projects by status
           this.allMyProjects = projects.filter(p => p.projectStatus === 'Active' || p.projectStatus === 'Archived');
           this.proposedProjects = projects.filter(p => p.projectStatus === 'Proposed');
         }
@@ -769,21 +883,18 @@ export default {
     
     // Update search criteria based on menu selection
     updateSearchCriteria(item) {
-      this.searchLabel = "Search " + item;
+      this.searchLabel = "Search by " + item;
     },
     
     // Add a new search chip
     addSearchChip() {
       if (this.projectSearch) {
-        // Create new array with the new chip
         const newChips = [...this.searchChips, {
-          category: this.searchLabel.replace("Search ", ""),
+          category: this.searchLabel.replace("Search by ", ""),
           term: this.projectSearch
         }];
         this.searchChips = newChips;
-        // Select the new chip by default
         this.selectedSearchChips = [...this.selectedSearchChips, newChips.length - 1];
-        // Clear the input field after adding the chip
         this.projectSearch = "";
       }
     },
@@ -792,22 +903,17 @@ export default {
     selectSearchChip(index) {
       const selectedIndex = this.selectedSearchChips.indexOf(index);
       if (selectedIndex >= 0) {
-        // If the chip is already selected, remove it
         this.selectedSearchChips = this.selectedSearchChips.filter(i => i !== index);
       } else {
-        // If the chip is not selected, add it
         this.selectedSearchChips = [...this.selectedSearchChips, index];
       }
     },
     
     // Remove a search chip
     removeSearchChip(index) {
-      // Create new chips array without the removed chip
       const newChips = this.searchChips.filter((_, i) => i !== index);
       this.searchChips = newChips;
-      // Update selectedSearchChips to reflect the removal
       let newSelectedChips = this.selectedSearchChips.filter(i => i !== index);
-      // Adjust the indexes of the remaining selected chips
       newSelectedChips = newSelectedChips.map(i => i > index ? i - 1 : i);
       this.selectedSearchChips = newSelectedChips;
     },
@@ -884,21 +990,18 @@ export default {
         return;
       }
 
-      // Set minimal required data for the invite dialog
       this.projectData = {
         _id: project._id,
         name: project.projectName,
         experienceInstanceName: project.experienceInfo || this.$t('Not assigned')
       };
       
-      console.log('Opening invite dialog for project:', this.projectData);
       this.inviteDialog = true;
     },
 
     // Fetch project members for invitation dialog
     async fetchProjectMembers(projectId) {
       try {
-        // Mock data for demonstration - replace with actual API call
         this.projectMembers = [
           {
             id: 'usr001',
@@ -951,7 +1054,7 @@ export default {
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'green';
-        case 'Proposed': return 'orange';
+        case 'Proposed': return 'deep-orange';
         case 'Archived': return 'grey';
         default: return 'grey';
       }
@@ -964,26 +1067,26 @@ export default {
     
     // Handle successful member invitations
     handleMembersInvited(invitedUsers) {
-      console.log('Users invited to project:', this.projectData.name);
-      console.log('Invited users:', invitedUsers);
-      
       toast.success(this.$t("Members successfully invited to the project!"), {
         position: 'top-right',
-        toastClassName: 'Toastify__toast--update',
+        toastClassName: 'Toastify__toast--create',
         multiple: false
       });
     },
     
     // Open join project dialog
-    joinProject() {
-      console.log('Join a Project button clicked');
+    async joinProject() {
+      // Fetch latest invitations before opening dialog
+      if (this.loggedInUserStore.getRole === 'Student') {
+        await this.fetchPendingInvitations();
+      }
+      
+      this.dialogInvitationsOnlyMode = false; // Set to full mode (with tabs)
       this.joinDialog = true;
     },
 
     // Handle successful project join
     async handleJoinWithCode(joinData) {
-      console.log('Project join successful:', joinData);
-      
       // Refresh projects list to include newly joined project
       await this.fetchProjects();
       
@@ -1000,46 +1103,345 @@ export default {
           }
         }, 300);
       }
+    },
+
+    // Fetch pending project invitations
+    async fetchPendingInvitations() {
+      this.loadingInvitations = true;
+      try {
+        const token = this.loggedInUserStore.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations`;
+        
+        const response = await axios.get(apiURL, { headers: { token } });
+        
+        if (response.data && response.data.invitations) {
+          this.pendingInvitations = response.data.invitations;
+        }
+      } catch (error) {
+        console.error("Error fetching invitations:", error);
+        toast.error(this.$t("Error loading project invitations"), {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false
+        });
+      } finally {
+        this.loadingInvitations = false;
+      }
+    },
+
+    // Check and show invitations dialog if needed
+    async checkAndShowInvitations() {
+      await this.fetchPendingInvitations();
+      
+      if (this.pendingInvitations.length > 0) {
+        this.dialogInvitationsOnlyMode = true; // Set to invitations-only mode
+        this.joinDialog = true;
+      } else {
+        this.loggedInUserStore.projectInvitationCount = 0;
+      }
+    },
+
+    // Accepting invitations
+    async handleAcceptInvitation(invitationId) {
+      try {
+        const token = this.loggedInUserStore.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations/${invitationId}/respond`;
+        
+        const response = await axios.post(apiURL, 
+          { accept: true }, 
+          { headers: { token } }
+        );
+        
+        if (response.data) {
+          // Decrement the invitation count
+          this.loggedInUserStore.decrementInvitationCount();
+          
+          toast.success(response.data.message || this.$t("Successfully joined the project!"), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--create',
+            multiple: false
+          });
+        }
+      } catch (error) {
+        console.error('Error accepting invitation:', error);
+        toast.error(
+          error.response?.data?.error || this.$t("Failed to accept invitation"),
+          {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          }
+        );
+        throw error; // Re-throw so dialog knows it failed
+      }
+    },
+
+    // Declining invitations
+    async handleDeclineInvitation(invitationId) {
+      try {
+        const token = this.loggedInUserStore.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations/${invitationId}/respond`;
+        
+        const response = await axios.post(apiURL, 
+          { accept: false }, 
+          { headers: { token } }
+        );
+        
+        if (response.data) {
+          // Decrement the invitation count
+          this.loggedInUserStore.decrementInvitationCount();
+          
+          toast.info(response.data.message || this.$t("Invitation declined"), {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--update',
+            multiple: false
+          });
+        }
+      } catch (error) {
+        console.error('Error declining invitation:', error);
+        toast.error(
+          error.response?.data?.error || this.$t("Failed to decline invitation"),
+          {
+            position: 'top-right',
+            toastClassName: 'Toastify__toast--delete',
+            multiple: false
+          }
+        );
+        throw error; // Re-throw so dialog knows it failed
+      }
+    },
+
+    async handleInvitationsProcessed() {
+      // Refresh the invitation count from the server
+      await this.loggedInUserStore.fetchProjectInvitationCount();
+      
+      // Refresh the projects list to show newly joined projects
+      await this.fetchProjects();
+      
+      // If in invitations-only mode and no more invitations, close the dialog
+      if (this.dialogInvitationsOnlyMode && this.pendingInvitations.length === 0) {
+        this.joinDialog = false;
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-.cursor-pointer {
-  cursor: pointer;
+/* Page Background */
+.projects-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
 }
 
-.pointer-cursor {
-  cursor: pointer;
+/* Page Header */
+.page-header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.v-container.fill-height {
-  min-height: 80vh;
-}
-
-.welcome-content-container {
-  min-height: 250px;
+/* Welcome Screen */
+.welcome-wrapper {
+  min-height: 70vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.welcome-card {
+  border-radius: 16px;
   overflow: hidden;
 }
 
-.v-data-table .v-data-table__tbody tr td[colspan] {
+.welcome-header {
+  background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
+  padding: 56px 40px;
   text-align: center;
 }
 
-.dialog-card {
+.welcome-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
+}
+
+.welcome-actions {
+  padding: 8px 0;
+}
+
+.welcome-btn {
+  text-transform: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.25px;
+  height: 52px;
+}
+
+.welcome-btn-outlined {
+  border-color: #c8102e;
+  color: #c8102e;
+  text-transform: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.25px;
+  height: 52px;
+}
+
+/* Main Card */
+.main-card {
   border-radius: 12px;
   overflow: hidden;
 }
 
-.dialog-header {
-  background: linear-gradient(135deg, #c8102e, #ff5252);
+/* Tabs Section */
+.tabs-section {
+  background-color: #fafafa;
 }
 
+.custom-tabs {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.custom-tab {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.25px;
+  min-width: 140px;
+  height: 52px;
+}
+
+/* Toolbar Section */
+.toolbar-section {
+  padding: 18px 24px;
+  background-color: white;
+}
+
+.search-field {
+  max-width: 420px;
+}
+
+.search-menu-trigger {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.search-menu-trigger:hover {
+  background-color: #f5f5f5;
+}
+
+.search-menu-list {
+  min-width: 200px;
+}
+
+.action-buttons-group {
+  gap: 10px;
+}
+
+.action-btn {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.25px;
+}
+
+/* Mobile Action Bar */
+.mobile-action-bar {
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.mobile-action-btn {
+  margin: 0 6px;
+}
+
+/* Search Chips */
+.search-chips-container {
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.search-chip {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.search-chip :deep(.v-chip__content) {
+  gap: 4px;
+}
+
+.search-chip :deep(.v-chip__close) {
+  margin: 0;
+}
+
+/* Table Container */
+.table-container {
+  border-top: 1px solid #e8e8e8;
+}
+
+.projects-table {
+  border-radius: 0;
+  font-size: 0.95rem;
+}
+
+.projects-table :deep(.v-data-table-header) {
+  font-size: 0.9rem;
+}
+
+.projects-table :deep(th) {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  padding: 14px 18px !important;
+}
+
+.table-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.table-row:hover {
+  background-color: rgba(200, 16, 46, 0.04) !important;
+}
+
+.table-cell {
+  padding: 18px 18px !important;
+  font-size: 0.95rem;
+}
+
+.project-name {
+  font-size: 0.95rem;
+}
+
+.experience-text {
+  font-size: 0.9rem;
+}
+
+.status-chip {
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+/* Empty State */
+.empty-state-cell {
+  padding: 56px 28px !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Mobile Search Dialog */
+.mobile-search-dialog {
+  border-radius: 12px;
+}
+
+/* Newly Joined Animation */
 .newly-joined {
   animation: highlight-pulse 3s ease-in-out;
 }
@@ -1049,24 +1451,20 @@ export default {
     box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.4);
     transform: scale(1);
   }
-  
   25% { 
     box-shadow: 0 0 0 10px rgba(200, 16, 46, 0.0);
     transform: scale(1.02);
     background-color: rgba(200, 16, 46, 0.1);
   }
-  
   50% { 
     box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.0);
     transform: scale(1);
   }
-  
   75% { 
     box-shadow: 0 0 0 5px rgba(200, 16, 46, 0.0);
     transform: scale(1.01);
     background-color: rgba(200, 16, 46, 0.05);
   }
-  
   100% { 
     box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.0);
     transform: scale(1);
@@ -1074,23 +1472,46 @@ export default {
   }
 }
 
-/* Mobile specific styles */
+/* Data table pagination styling */
+.projects-table :deep(.v-data-table-footer) {
+  font-size: 0.9rem;
+  padding: 12px 16px;
+}
+
+.projects-table :deep(.v-data-table-footer .v-select) {
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .toolbar-section {
+    padding: 14px 18px;
+  }
+}
+
 @media (max-width: 600px) {
-  .v-tabs {
-    min-height: 40px;
+  .page-header {
+    padding-bottom: 12px;
   }
   
-  .v-tab {
-    min-width: auto;
-    padding: 0 12px;
+  .welcome-header {
+    padding: 40px 28px;
   }
   
-  .welcome-content-container h1 {
-    font-size: 1.5rem !important;
+  .welcome-header h1 {
+    font-size: 1.75rem !important;
   }
   
-  .v-btn.v-size--large {
-    font-size: 0.875rem;
+  .toolbar-section {
+    padding: 10px 14px;
+  }
+  
+  .table-cell {
+    padding: 14px 12px !important;
+  }
+  
+  .empty-state-cell {
+    padding: 40px 18px !important;
   }
 }
 </style>

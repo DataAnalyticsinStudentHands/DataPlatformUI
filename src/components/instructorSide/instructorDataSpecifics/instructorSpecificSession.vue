@@ -1,153 +1,311 @@
+<!--
+  instructorSpecificSession.vue
+  
+  View and edit a single Session's data. Provides functionality to update session details,
+  delete session (if eligible), with confirmation dialogs showing affected experience instances.
+  Redesigned UI matching the project pages aesthetic.
+-->
 <template>
-  <main>
-    <v-form>
-      <v-container>
-        <!-- Display the original session name as the title -->
-        <p class="font-weight-black text-h6">Session: {{ session.originalSessionName }}</p><br>
-        
-        <!-- Session name input field -->
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="session.sessionName" label="Session Name" :readonly="!isAllowedToUpdate"></v-text-field>
-          </v-col>
-        </v-row>
-  
-        <!-- Session start and end date input fields -->
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-text-field type="date" v-model="session.sessionPeriod.startDate" label="Session Start Date" :readonly="!isAllowedToUpdate"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field type="date" v-model="session.sessionPeriod.endDate" label="Session End Date" :readonly="!isAllowedToUpdate"></v-text-field>
-          </v-col>
-        </v-row>
-  
-        <v-row>
-          <v-col class="d-flex align-center justify-start">
-            <!-- Error message display -->
-            <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-  
-            <!-- Cancel button to navigate back -->
-            <v-btn @click="$router.back()">Cancel</v-btn>
+  <main class="edit-session-page">
+    <v-container class="py-8">
+      <!-- Page Header -->
+      <div class="page-header mb-6">
+        <div class="d-flex align-center mb-2">
+          <v-btn 
+            icon 
+            variant="text" 
+            size="small" 
+            @click="$router.back()"
+            class="mr-2"
+          >
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
+          <v-icon color="#c8102e" size="32" class="mr-3">mdi-calendar-edit</v-icon>
+          <div>
+            <h1 class="text-h5 font-weight-bold">{{ $t('Edit Session') }}</h1>
+            <p class="text-body-2 text-medium-emphasis mb-0">{{ session.originalSessionName }}</p>
+          </div>
+        </div>
+      </div>
 
-            <!-- Update button -->
-            <div v-if="!isAllowedToUpdate" 
-                v-tooltip.bottom="'You do not have the necessary privileges to update this Session.'" 
-                style="display: inline-block;"
-                class="ml-2">
-              <v-btn
-                style="text-align:center; margin-left: 10px;"
-                :loading="updateLoading"
-                :disabled="true"
-              >
-                Update
-              </v-btn>
-            </div>
+      <v-row>
+        <!-- Main Form Column -->
+        <v-col cols="12" lg="8">
+          <v-card class="form-card" elevation="2">
+            <v-form ref="form">
+              <!-- Section 1: Session Information -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">1</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Session Information') }}</h2>
+                    <p class="section-subtitle">{{ $t('Update the session details') }}</p>
+                  </div>
+                </div>
 
-            <div v-else class="ml-2">
-              <v-btn
-                style="text-align:center; margin-left: 10px;"
-                @click="checkAssociatedInstances('update')"
-                :loading="updateLoading"
-              >
-                Update
-              </v-btn>
-            </div>
+                <div class="section-content">
+                  <v-text-field
+                    v-model="session.sessionName"
+                    :label="$t('Session Name')"
+                    :placeholder="$t('Enter a descriptive name for your session')"
+                    :readonly="!isAllowedToUpdate"
+                    variant="outlined"
+                    counter="100"
+                  >
+                    <template v-slot:prepend-inner>
+                      <v-icon size="20" color="#666">mdi-calendar-text</v-icon>
+                    </template>
+                  </v-text-field>
+                </div>
+              </div>
 
-          </v-col>
-  
+              <v-divider></v-divider>
+
+              <!-- Section 2: Session Period -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">2</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Session Period') }}</h2>
+                    <p class="section-subtitle">{{ $t('Define the start and end dates for this session') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        type="date"
+                        v-model="session.sessionPeriod.startDate"
+                        :label="$t('Start Date')"
+                        :readonly="!isAllowedToUpdate"
+                        variant="outlined"
+                      >
+                        <template v-slot:prepend-inner>
+                          <v-icon size="20" color="#666">mdi-calendar-start</v-icon>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        type="date"
+                        v-model="session.sessionPeriod.endDate"
+                        :label="$t('End Date')"
+                        :readonly="!isAllowedToUpdate"
+                        variant="outlined"
+                      >
+                        <template v-slot:prepend-inner>
+                          <v-icon size="20" color="#666">mdi-calendar-end</v-icon>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
+
+                  <!-- Error Message Alert -->
+                  <v-alert
+                    v-if="errorMessage"
+                    type="error"
+                    variant="tonal"
+                    class="mt-2"
+                    closable
+                    @click:close="errorMessage = ''"
+                  >
+                    {{ errorMessage }}
+                  </v-alert>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <v-btn 
+                  variant="outlined"
+                  size="large"
+                  @click="$router.back()"
+                  class="action-btn"
+                >
+                  {{ $t('Cancel') }}
+                </v-btn>
+
+                <!-- Delete Button -->
+                <v-btn
+                  v-if="canSessionBeDeleted"
+                  variant="outlined"
+                  size="large"
+                  color="error"
+                  @click="checkAssociatedInstances('delete')"
+                  :loading="deleteLoading"
+                  class="action-btn ml-3"
+                >
+                  <v-icon start size="18">mdi-delete-outline</v-icon>
+                  {{ $t('Delete') }}
+                </v-btn>
+
+                <v-spacer></v-spacer>
+
+                <!-- Update Button (disabled state with tooltip) -->
+                <div
+                  v-if="!isAllowedToUpdate"
+                  v-tooltip.bottom="$t('You do not have the necessary privileges to update this Session.')"
+                  style="display: inline-block;"
+                >
+                  <v-btn 
+                    size="large"
+                    color="#c8102e"
+                    class="action-btn submit-btn"
+                    :disabled="true"
+                  >
+                    <v-icon start size="18">mdi-content-save</v-icon>
+                    {{ $t('Update Session') }}
+                  </v-btn>
+                </div>
+
+                <!-- Update Button (enabled state) -->
+                <v-btn
+                  v-else
+                  size="large"
+                  color="#c8102e"
+                  class="action-btn submit-btn"
+                  :loading="updateLoading"
+                  :disabled="!session.sessionName"
+                  @click="checkAssociatedInstances('update')"
+                >
+                  <v-icon start size="18">mdi-content-save</v-icon>
+                  {{ $t('Update Session') }}
+                </v-btn>
+              </div>
+            </v-form>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <!-- Simple Delete Confirmation Dialog -->
+    <v-dialog v-model="showDeleteDialog" persistent max-width="450px">
+      <v-card class="confirm-dialog">
+        <v-card-title class="d-flex align-center pa-5 error-dialog-header">
+          <v-icon color="error" size="28" class="mr-3">mdi-delete-alert-outline</v-icon>
+          <span class="text-h6 font-weight-bold">{{ $t('Confirm Delete') }}</span>
+        </v-card-title>
+        <v-card-text class="px-5 pb-4">
+          <p class="text-body-1 mb-0">
+            {{ $t('Are you sure you want to delete this session?') }}
+          </p>
+        </v-card-text>
+        <v-card-actions class="pa-5 pt-0">
           <v-spacer></v-spacer>
-  
-          <!-- Delete button with loading state, shown if the session can be deleted -->
-          <v-col cols="auto" v-if="canSessionBeDeleted">
-            <v-btn @click="checkAssociatedInstances('delete')" :loading="deleteLoading">Delete</v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-form>
-  </main>
-  
-  <!-- Confirmation Dialog for Delete (No Instances) - This shows only if no instances are found for deletion -->
-  <v-dialog v-model="showDeleteDialog" persistent width="auto">
-    <v-card>
-      <v-card-title class="headline">Confirm Delete</v-card-title>
-      <v-card-text>Are you sure you want to delete this session?</v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="red-darken-1" text @click="showDeleteDialog = false">No</v-btn>
-        <v-btn color="green-darken-1" text @click="confirmDelete">Yes</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  
-  <!-- Delete Dialog with Instances (Displayed if there are experience instances) -->
-  <v-dialog v-model="deleteDialogWithInstances" persistent width="auto">
-    <v-card>
-      <v-card-title>
-        <v-icon left>mdi-delete-alert</v-icon>
-        Confirm Delete
-      </v-card-title>
-      <v-card-text>
-        The following Experience Instances will be deleted:
-        <v-list density="compact">
-          <v-list-item v-for="instance in associatedInstances" :key="instance._id">
-            <v-list-item-title class="font-weight-bold">{{ session.originalSessionName }} - {{ instance.experience.name }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-        <v-divider></v-divider>
-        <div class="mt-3">
-          Are you sure you want to delete this Session?
-        </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="red-darken-1" text @click="deleteDialogWithInstances = false">No</v-btn>
-        <v-btn color="green-darken-1" text @click="deleteSession">Yes</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  
-  <!-- Update Dialog (Displayed if there are experience instances and user tries to update) -->
-  <v-dialog v-model="updateDialog" persistent width="auto">
-    <v-card>
-      <v-card-title>
-        <v-icon left>mdi-update</v-icon>
-        Confirm Update
-      </v-card-title>
-      <v-card-text>
-        The following Experience Instances will be updated:
-        <v-list density="compact">
-            <v-list-item v-for="instance in associatedInstances" :key="instance._id">
-                <v-list-item-title class="font-weight-bold">{{ session.originalSessionName }} - {{ instance.experience.name }}</v-list-item-title>
-            </v-list-item>
-        </v-list>
-        <v-divider></v-divider>
-        <div class="mt-3">
-          Are you sure you want to update this Session?
-        </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="red darken-1" text @click="updateDialog = false">No</v-btn>
-        <v-btn color="green darken-1" text @click="proceedWithUpdate">Yes</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+          <v-btn variant="text" @click="showDeleteDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete">
+            <v-icon start size="18">mdi-delete</v-icon>
+            {{ $t('Delete') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-  <!-- Update Dialog with No Instances (Displayed if no instances are found and user tries to update) -->
-  <v-dialog v-model="showUpdateDialogNoInstances" persistent width="auto">
-    <v-card>
-      <v-card-title class="headline">Confirm Update</v-card-title>
-      <v-card-text>Are you sure you want to update this session?</v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="red-darken-1" text @click="showUpdateDialogNoInstances = false">No</v-btn>
-        <v-btn color="green-darken-1" text @click="confirmUpdateNoInstances">Yes</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <!-- Simple Update Confirmation Dialog -->
+    <v-dialog v-model="showUpdateDialogNoInstances" persistent max-width="450px">
+      <v-card class="confirm-dialog">
+        <v-card-title class="d-flex align-center pa-5 info-dialog-header">
+          <v-icon color="#c8102e" size="28" class="mr-3">mdi-content-save-check-outline</v-icon>
+          <span class="text-h6 font-weight-bold">{{ $t('Confirm Update') }}</span>
+        </v-card-title>
+        <v-card-text class="px-5 pb-4">
+          <p class="text-body-1 mb-0">
+            {{ $t('Are you sure you want to update this session?') }}
+          </p>
+        </v-card-text>
+        <v-card-actions class="pa-5 pt-0">
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="showUpdateDialogNoInstances = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
+          <v-btn color="#c8102e" variant="flat" @click="confirmUpdateNoInstances" class="confirm-btn">
+            <v-icon start size="18">mdi-check</v-icon>
+            {{ $t('Update') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Update Dialog with Instances -->
+    <v-dialog v-model="updateDialog" persistent max-width="550px">
+      <v-card class="confirm-dialog">
+        <v-card-title class="d-flex align-center pa-5 warning-dialog-header">
+          <v-icon color="warning" size="28" class="mr-3">mdi-alert-circle-outline</v-icon>
+          <span class="text-h6 font-weight-bold">{{ $t('Confirm Update') }}</span>
+        </v-card-title>
+        <v-card-text class="px-5 pb-4">
+          <v-alert type="info" variant="tonal" class="mb-4">
+            {{ $t('The following Experience Instances will be updated:') }}
+          </v-alert>
+          <div class="instances-list">
+            <div
+              v-for="instance in associatedInstances"
+              :key="instance._id"
+              class="instance-item"
+            >
+              <v-icon color="#c8102e" size="18" class="mr-2">mdi-school-outline</v-icon>
+              <span class="font-weight-medium">{{ session.originalSessionName }}</span>
+              <span class="text-medium-emphasis mx-1">-</span>
+              <span>{{ instance.experience.name }}</span>
+            </div>
+          </div>
+          <v-divider class="my-4"></v-divider>
+          <p class="text-body-1 mb-0">
+            {{ $t('Are you sure you want to update this Session?') }}
+          </p>
+        </v-card-text>
+        <v-card-actions class="pa-5 pt-0">
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="updateDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
+          <v-btn color="#c8102e" variant="flat" @click="proceedWithUpdate" class="confirm-btn">
+            <v-icon start size="18">mdi-check</v-icon>
+            {{ $t('Update') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Dialog with Instances -->
+    <v-dialog v-model="deleteDialogWithInstances" persistent max-width="550px">
+      <v-card class="confirm-dialog">
+        <v-card-title class="d-flex align-center pa-5 error-dialog-header">
+          <v-icon color="error" size="28" class="mr-3">mdi-delete-alert-outline</v-icon>
+          <span class="text-h6 font-weight-bold">{{ $t('Confirm Delete') }}</span>
+        </v-card-title>
+        <v-card-text class="px-5 pb-4">
+          <v-alert type="warning" variant="tonal" class="mb-4">
+            {{ $t('The following Experience Instances will be deleted:') }}
+          </v-alert>
+          <div class="instances-list">
+            <div
+              v-for="instance in associatedInstances"
+              :key="instance._id"
+              class="instance-item"
+            >
+              <v-icon color="#c8102e" size="18" class="mr-2">mdi-school-outline</v-icon>
+              <span class="font-weight-medium">{{ session.originalSessionName }}</span>
+              <span class="text-medium-emphasis mx-1">-</span>
+              <span>{{ instance.experience.name }}</span>
+            </div>
+          </div>
+          <v-divider class="my-4"></v-divider>
+          <p class="text-body-1 mb-0">
+            {{ $t('Are you sure you want to delete this Session?') }}
+          </p>
+        </v-card-text>
+        <v-card-actions class="pa-5 pt-0">
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="deleteDialogWithInstances = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="deleteSession">
+            <v-icon start size="18">mdi-delete</v-icon>
+            {{ $t('Delete') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </main>
 </template>
-  
+
 <script>
 import axios from "axios";
 import { DateTime } from "luxon";
@@ -166,22 +324,19 @@ export default {
         }
       },
       errorMessage: "",
-      canSessionBeDeleted: false, // Tracks if the session can be deleted
-      showDeleteDialog: false, // Controls the display of the simple confirmation dialog when no instances are found for delete
-      updateDialog: false, // Controls display of the update confirmation dialog if instances exist
-      updateLoading: false, // Tracks loading state for update action
-      deleteLoading: false, // Tracks loading state for delete action
-      associatedInstances: [], // Holds instances related to the session
-      deleteDialogWithInstances: false, // Controls display of the delete confirmation dialog when instances are present
-      showUpdateDialogNoInstances: false, // Controls display of the simple confirmation dialog when no instances for update
+      canSessionBeDeleted: false,
+      showDeleteDialog: false,
+      updateDialog: false,
+      updateLoading: false,
+      deleteLoading: false,
+      associatedInstances: [],
+      deleteDialogWithInstances: false,
+      showUpdateDialogNoInstances: false,
     };
   },
 
   created() {
-    // Fetch the session data when the component is created
     this.fetchSessionData();
-
-    // Check if the session can be deleted
     this.checkIfSessionCanBeDeleted();
   },
 
@@ -194,8 +349,6 @@ export default {
   },
 
   methods: {
-    // Fetches session data from the backend API using the session ID provided in the route parameters.
-    // Updates the session properties accordingly.
     fetchSessionData() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -208,7 +361,6 @@ export default {
           let data = resp.data;
           this.session.originalSessionName = data.sessionName;
           this.session.sessionName = data.sessionName;
-          // Format the dates to 'yyyy-MM-dd'
           this.session.sessionPeriod.startDate = DateTime.fromISO(data.sessionPeriod.startDate).toFormat('yyyy-MM-dd');
           this.session.sessionPeriod.endDate = DateTime.fromISO(data.sessionPeriod.endDate).toFormat('yyyy-MM-dd');
         })
@@ -217,8 +369,6 @@ export default {
         });
     },
 
-    // Checks whether the session can be deleted by making a request to the backend API.
-    // Sets the `canSessionBeDeleted` flag based on the response data.
     async checkIfSessionCanBeDeleted() {
       try {
         const user = useLoggedInUserStore();
@@ -232,9 +382,6 @@ export default {
       }
     },
 
-    // Checks for associated instances related to the session based on the provided action.
-    // If updating and instances are found, show update dialog; if none, show a simple confirmation dialog.
-    // If deleting and instances are found, show delete dialog with instances; if none, show a simple confirmation dialog.
     async checkAssociatedInstances(action) {
       if (action === "update") {
         this.updateLoading = true;
@@ -250,20 +397,16 @@ export default {
 
         if (action === "update") {
           if (checkResponse.data.expInstancesFound) {
-            // If instances are found, show update dialog
             this.associatedInstances = checkResponse.data.instancesForSession;
             this.updateDialog = true;
           } else {
-            // If no instances found, now show a simple confirmation dialog before updating
             this.showUpdateDialogNoInstances = true;
           }
         } else if (action === "delete") {
           if (checkResponse.data.expInstancesFound) {
-            // If instances are found, show delete dialog with instances
             this.associatedInstances = checkResponse.data.instancesForSession;
             this.deleteDialogWithInstances = true;
           } else {
-            // If no instances found, show a simple confirmation dialog before deleting
             this.showDeleteDialog = true;
           }
         }
@@ -275,19 +418,16 @@ export default {
       }
     },
 
-    // Executes the deletion process for the session after confirmation.
     confirmDelete() {
       this.deleteSession();
       this.showDeleteDialog = false;
     },
 
-    // Confirms the update when no instances are found.
     confirmUpdateNoInstances() {
       this.showUpdateDialogNoInstances = false;
       this.proceedWithUpdate();
     },
 
-    // Deletes the session from the backend. Upon successful deletion, redirects to the data management page with a success message displayed as a toast notification.
     async deleteSession() {
       try {
         const user = useLoggedInUserStore();
@@ -311,9 +451,6 @@ export default {
       }
     },
 
-    // Updates the session details with the provided information.
-    // After successfully updating the session, redirects to the data management page
-    // while displaying a toast notification confirming the update.
     proceedWithUpdate() {
       const user = useLoggedInUserStore();
       let token = user.token;
@@ -343,21 +480,159 @@ export default {
       });
     },
 
-    // Handles and displays error messages returned by API calls.
     handleError(error) {
       this.errorMessage = (error.response && error.response.data && error.response.data.error) ? error.response.data.error : error.message;
     }
   }
 };
 </script>
-  
-<style>
-#contentNavbar .nav-link.router-link-exact-active {
-  background-color: #eee;
+
+<style scoped>
+/* Page Background */
+.edit-session-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
 }
 
-.error-message {
-  color: red;
-  margin-top: 10px;
+/* Page Header */
+.page-header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Main Form Card */
+.form-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Form Sections */
+.form-section {
+  padding: 28px 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.section-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #c8102e;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1a1a1a;
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0;
+}
+
+.section-content {
+  padding-left: 48px;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  align-items: center;
+  padding: 20px 32px;
+  background-color: #fafafa;
+  border-top: 1px solid #e8e8e8;
+}
+
+.action-btn {
+  min-width: 120px;
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+.submit-btn {
+  color: white !important;
+}
+
+.confirm-btn {
+  color: white !important;
+}
+
+/* Dialogs */
+.confirm-dialog {
+  border-radius: 12px;
+}
+
+.error-dialog-header {
+  background-color: #ffebee;
+}
+
+.warning-dialog-header {
+  background-color: #fff8e1;
+}
+
+.info-dialog-header {
+  background-color: rgba(200, 16, 46, 0.08);
+}
+
+/* Instances List in Dialogs */
+.instances-list {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 8px 0;
+}
+
+.instance-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.instance-item:last-child {
+  border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .form-section {
+    padding: 24px 20px;
+  }
+  
+  .section-content {
+    padding-left: 0;
+    margin-top: 16px;
+  }
+  
+  .form-actions {
+    padding: 16px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .form-actions .v-spacer {
+    display: none;
+  }
+  
+  .action-btn {
+    flex: 1 1 auto;
+  }
 }
 </style>
