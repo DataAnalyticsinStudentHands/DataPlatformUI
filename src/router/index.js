@@ -657,64 +657,64 @@ const routes = [
     component: () => import("../components/error/errorView.vue"),
   },
   // Public routes from develop_Project_Documents
-  {
-    path: "/publicProjects",
-    name: "publicProjects",
-    component: () => import("../components/dev/publicProjects.vue"),
-  },
-  {
-    path: "/publicGallery",
-    name: "publicGallery",
-    component: () => import("../components/dev/publicGallery.vue"),
-  },
-  {
-    path: "/publicGallery2",
-    name: "publicGallery2",
-    component: () => import("../components/dev/publicGallery2.vue"),
-  },
-  {
-    path: "/kpis",
-    name: "kpis",
-    component: () => import("../components/dev/kpis.vue"),
-  },
-  // Public routes from develop_PublicView
-  {
-    path: "/public1",
-    name: "public1",
-    component: () => import("@/components/dev/public1.vue"),
-  },
-  {
-    path: "/public2",
-    name: "public2",
-    component: () => import("@/components/dev/indProjectPage1.vue"),
-  },
-  {
-    path: "/public3",
-    name: "public3",
-    component: () => import("@/components/dev/indProjectPage2.vue"),
-  },
-  {
-    path: "/public4",
-    name: "public4",
-    component: () => import("@/components/dev/indProjectPage1-2.vue"),
-  },
-  {
-    path: "/public5",
-    name: "public5",
-    component: () => import("@/components/dev/indProjectPage2-2.vue"),
-  },
-  {
-    path: "/public6",
-    name: "public6",
-    component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
-  },
-  // Admin routes
-  {
-    path: "/admin/backup",
-    name: "AdminBackupManager",
-    component: () => import("@/components/admin/BackupDashboard.vue"),
-    beforeEnter: requireAuth(["Org Admin"]),
-  },
+  // {
+  //   path: "/publicProjects",
+  //   name: "publicProjects",
+  //   component: () => import("../components/dev/publicProjects.vue"),
+  // },
+  // {
+  //   path: "/publicGallery",
+  //   name: "publicGallery",
+  //   component: () => import("../components/dev/publicGallery.vue"),
+  // },
+  // {
+  //   path: "/publicGallery2",
+  //   name: "publicGallery2",
+  //   component: () => import("../components/dev/publicGallery2.vue"),
+  // },
+  // {
+  //   path: "/kpis",
+  //   name: "kpis",
+  //   component: () => import("../components/dev/kpis.vue"),
+  // },
+  // // Public routes from develop_PublicView
+  // {
+  //   path: "/public1",
+  //   name: "public1",
+  //   component: () => import("@/components/dev/public1.vue"),
+  // },
+  // {
+  //   path: "/public2",
+  //   name: "public2",
+  //   component: () => import("@/components/dev/indProjectPage1.vue"),
+  // },
+  // {
+  //   path: "/public3",
+  //   name: "public3",
+  //   component: () => import("@/components/dev/indProjectPage2.vue"),
+  // },
+  // {
+  //   path: "/public4",
+  //   name: "public4",
+  //   component: () => import("@/components/dev/indProjectPage1-2.vue"),
+  // },
+  // {
+  //   path: "/public5",
+  //   name: "public5",
+  //   component: () => import("@/components/dev/indProjectPage2-2.vue"),
+  // },
+  // {
+  //   path: "/public6",
+  //   name: "public6",
+  //   component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
+  // },
+  // // Admin routes
+  // {
+  //   path: "/admin/backup",
+  //   name: "AdminBackupManager",
+  //   component: () => import("@/components/admin/BackupDashboard.vue"),
+  //   beforeEnter: requireAuth(["Org Admin"]),
+  // },
 ];
 
 // Create router instance with base path
@@ -739,24 +739,42 @@ const publicPaths = [
   "/updateproject",
   "/proposedprojects",
   "/viewproject",
-  "/myprojects",
-  // From develop_Project_Documents
-  "/publicGallery",
-  "/publicGallery2",
-  "/publicProjects",
-  "/kpis",
-  // From develop_PublicView
-  "/proposaldemo1",
-  "/proposaldemo2",
-  "/proposaldemo3",
-  "/proposaldemo4",
-  "/public1",
-  "/public2",
-  "/public3",
-  "/public4",
-  "/public5",
-  "/public6",
+  "/myprojects"
 ];
+
+// const publicPaths = [
+//   "/login",
+//   "/register",
+//   "/passResetRequest",
+//   "/passResetCode",
+//   "/passResetNewEntry",
+//   "/verifyAccWithCode",
+//   "/verifyAccWithEmailCode",
+//   "/sendNewCode",
+//   "/projectportal",
+//   "/createproject",
+//   "/createprojectstepper",
+//   "/updateproject",
+//   "/proposedprojects",
+//   "/viewproject",
+//   "/myprojects",
+//   // From develop_Project_Documents
+//   "/publicGallery",
+//   "/publicGallery2",
+//   "/publicProjects",
+//   "/kpis",
+//   // From develop_PublicView
+//   "/proposaldemo1",
+//   "/proposaldemo2",
+//   "/proposaldemo3",
+//   "/proposaldemo4",
+//   "/public1",
+//   "/public2",
+//   "/public3",
+//   "/public4",
+//   "/public5",
+//   "/public6",
+// ];
 
 // Global navigation guard for authentication and role-based routing
 router.beforeEach(async (to, from, next) => {

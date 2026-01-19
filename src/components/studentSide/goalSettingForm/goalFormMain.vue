@@ -663,13 +663,6 @@ computed: {
 
     // Determine if current experience is CHW type
     isCHWExperience() {
-        // DEBUG: Uncomment these lines to see what's happening
-        console.log('=== isCHWExperience DEBUG ===');
-        console.log('selectedExperience:', this.selectedExperience);
-        console.log('selectedExperience.value:', this.selectedExperience?.value);
-        console.log('selectedExperience.experienceID:', this.selectedExperience?.experienceID);
-        console.log('experiences count:', this.experiences?.length);
-        
         // Method 1: Use the experienceID property directly from selectedExperience
         // This is the CORRECT approach since selectedExperience now carries experienceID
         if (this.selectedExperience?.experienceID && this.experiences) {
@@ -677,10 +670,10 @@ computed: {
                 exp.experienceID === this.selectedExperience.experienceID
             );
             
-            console.log('Found experience via experienceID:', experience?.experienceName);
+            // console.log('Found experience via experienceID:', experience?.experienceName);
             
             if (experience?.experienceName === "CHW Certification") {
-                console.log('✅ CHW Certification detected!');
+                // console.log('✅ CHW Certification detected!');
                 return true;
             }
         }
@@ -691,10 +684,10 @@ computed: {
                 exp.expRegistrationID === this.selectedExperience.value
             );
             
-            console.log('Found experience via expRegistrationID:', experience?.experienceName);
+            // console.log('Found experience via expRegistrationID:', experience?.experienceName);
             
             if (experience?.experienceName === "CHW Certification") {
-                console.log('✅ CHW Certification detected via fallback!');
+                // console.log('✅ CHW Certification detected via fallback!');
                 return true;
             }
         }
@@ -702,11 +695,11 @@ computed: {
         // Method 3: Check if CHW fields are already populated (for incomplete forms)
         if (this.goalForm.chwGrowthGoals && 
             Object.values(this.goalForm.chwGrowthGoals).some(val => val)) {
-            console.log('✅ CHW detected via existing chwGrowthGoals data');
+            // console.log('✅ CHW detected via existing chwGrowthGoals data');
             return true;
         }
         
-        console.log('❌ Not a CHW experience');
+        // console.log('❌ Not a CHW experience');
         return false;
     },
 },
@@ -1275,7 +1268,7 @@ methods: {
         
         // If no form ID exists yet, don't try to update
         if (!formId) {
-            console.log('No form ID available for auto-save');
+            // console.log('No form ID available for auto-save');
             return;
         }
         
