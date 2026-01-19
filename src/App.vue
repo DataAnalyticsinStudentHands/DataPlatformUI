@@ -23,18 +23,14 @@
         :temporary="!isMdAndUp"
       >
         <!-- Collapsed rail state shows only menu icon -->
-        <div v-if="rail">
-          <v-list-item
-            lines="two"
-          >
-            <v-btn
-              size="large"
-              variant="text"
-              icon="mdi-menu"
-              @click="rail = !rail"
-              class="text-white"
-            ></v-btn> 
-          </v-list-item>
+        <div v-if="rail" class="rail-menu-container">
+          <v-btn
+            size="large"
+            variant="text"
+            icon="mdi-menu"
+            @click="rail = !rail"
+            class="text-white"
+          ></v-btn> 
         </div>
         <!-- Expanded state shows full navigation menu -->
         <div v-else>
@@ -489,5 +485,12 @@ export default {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.rail-menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
 }
 </style>

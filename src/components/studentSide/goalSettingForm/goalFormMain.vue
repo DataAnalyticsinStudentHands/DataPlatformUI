@@ -147,7 +147,7 @@ including experience selection, background, growth goals, aspirations, and final
                         @scroll-to-error="handleScrollToError"
                         @validation-change="handleValidationChange('exp', $event)"
                         @update-selected-experience="handleSelectedExperience"
-                        @update-found-document-id="foundDocumentId = $event"
+                        @update-found-document-id="handleFoundDocumentId"
                         @update-hich-project="updateHichProject"
                         @update-original-goal-form="updateOriginalGoalForm"
                         @update-experiences="experiences = $event"
@@ -229,7 +229,7 @@ including experience selection, background, growth goals, aspirations, and final
                             @scroll-to-error="handleScrollToError"
                             @validation-change="handleValidationChange('exp', $event)"
                             @update-selected-experience="handleSelectedExperience"
-                            @update-found-document-id="foundDocumentId = $event"
+                            @update-found-document-id="handleFoundDocumentId"
                             @update-hich-project="updateHichProject"
                             @update-original-goal-form="updateOriginalGoalForm"
                             @update-experiences="experiences = $event"
@@ -880,6 +880,15 @@ methods: {
         }
     },
 
+    // Handle when an existing form is found - prevents creating a new incomplete form
+    handleFoundDocumentId(id) {
+        this.foundDocumentId = id;
+        if (id) {
+            // An existing completed form was found - prevent creating a new one
+            this.isFirstInput = false;
+        }
+    },
+
     // Determine if user can jump to a specific step
     checkJump(step) {
         const stepToSectionMap = {
@@ -1259,32 +1268,43 @@ methods: {
         }
     },
 
-updateGoalForm() {
-    const user = useLoggedInUserStore();
-    const token = user.token;
-    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-    
-    // Keep the destructuring but also extract chwGrowthGoals
-    const { hichProject, chwGrowthGoals, ...restOfGoalForm } = this.goalForm;
-    
-    const payload = {
-        goalForm: {
-            ...restOfGoalForm,
-            hichProject,  // Put hichProject back inside goalForm where it belongs
-            // Only include chwGrowthGoals if it's a CHW experience
-            ...(this.isCHWExperience && { chwGrowthGoals })
+    // Auto-save goal form updates - handles both new incomplete forms and existing completed forms
+    updateGoalForm() {
+        // Use incompleteFormID for new forms, or foundDocumentId for existing completed forms
+        const formId = this.incompleteFormID || this.foundDocumentId;
+        
+        // If no form ID exists yet, don't try to update
+        if (!formId) {
+            console.log('No form ID available for auto-save');
+            return;
         }
-    };
-    
-    axios.patch(apiURL, payload, { headers: { token }})
-        .then(response => {
-            console.log('Auto-save successful');
-        })
-        .catch(error => {
-            console.error('Auto-save error:', error);
-            this.handleError(error);
-        });
-},
+        
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${formId}`;
+        
+        // Extract hichProject and chwGrowthGoals from goalForm
+        const { hichProject, chwGrowthGoals, ...restOfGoalForm } = this.goalForm;
+        
+        const payload = {
+            goalForm: {
+                ...restOfGoalForm,
+                // Only include chwGrowthGoals if it's a CHW experience
+                ...(this.isCHWExperience && { chwGrowthGoals })
+            },
+            // Send hichProject as a SEPARATE field, not inside goalForm
+            hichProject: hichProject
+        };
+        
+        axios.patch(apiURL, payload, { headers: { token }})
+            .then(response => {
+                console.log('Auto-save successful');
+            })
+            .catch(error => {
+                console.error('Auto-save error:', error);
+                this.handleError(error);
+            });
+    },
 
     // Trigger debounced auto-save
     handleInput() {

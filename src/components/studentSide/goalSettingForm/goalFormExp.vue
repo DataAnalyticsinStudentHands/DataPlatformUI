@@ -427,7 +427,12 @@ methods: {
 
     // Select experience based on route parameter
     selectExperienceFromRouteParam() {
-        const experienceRegistrationIDFromRoute = useLoggedInUserStore().navigationData.registrationID;
+        const navigationData = useLoggedInUserStore().navigationData;
+        
+        // Add null check
+        if (!navigationData) return;
+        
+        const experienceRegistrationIDFromRoute = navigationData.registrationID;
         if (experienceRegistrationIDFromRoute) {
             const matchingExperience = this.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
@@ -447,7 +452,7 @@ methods: {
                 console.log('No matching experience found for the given expRegistrationID');
             }
         }
-    },    
+    }, 
 
     // Handle form validation with HICH project checks
     async handleValidations() {

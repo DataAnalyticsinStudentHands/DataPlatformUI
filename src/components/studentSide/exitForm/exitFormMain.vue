@@ -159,7 +159,7 @@
                             @validation-change="handleValidationChange('exp', $event)"
                             @update-original-exit-form="updateOriginalExitForm"
                             @update-selected-experience="handleSelectedExperience"
-                            @update-found-document-id="foundDocumentId = $event"
+                            @update-found-document-id="handleFoundDocumentId"
                             @reset-exit-form="resetExitForm"
                             @reset-error-flags="resetErrorFlags"
                             @update-goal-form-exists="handleGoalFormExists"
@@ -167,6 +167,7 @@
                             @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                             @update-data-and-society="handleUpdateDataAndSociety"
                             @update-first-input="handleUpdateFirstInput"
+                            @populate-existing-form="handlePopulateExistingForm"
                         ></exit-form-exp>
                         </v-stepper-window-item>
                         <!-- Aspirations Step -->
@@ -257,7 +258,7 @@
                             @validation-change="handleValidationChange('exp', $event)"
                             @update-original-exit-form="updateOriginalExitForm"
                             @update-selected-experience="handleSelectedExperience"
-                            @update-found-document-id="foundDocumentId = $event"
+                            @update-found-document-id="handleFoundDocumentId"
                             @reset-exit-form="resetExitForm"
                             @reset-error-flags="resetErrorFlags"
                             @update-goal-form-exists="handleGoalFormExists"
@@ -265,6 +266,7 @@
                             @update-incomplete-exp-registration="handleUpdateIncompleteExpRegistration"
                             @update-data-and-society="handleUpdateDataAndSociety"
                             @update-first-input="handleUpdateFirstInput"
+                            @populate-existing-form="handlePopulateExistingForm"
                         ></exit-form-exp>
                         </v-stepper-window-item>
                         <v-stepper-window-item value="1">
@@ -1261,6 +1263,15 @@ methods: {
         }
     },
 
+    // Handle when an existing form is found
+    handleFoundDocumentId(id) {
+        this.foundDocumentId = id;
+        if (id) {
+            // An existing completed form was found - prevent creating a new one
+            this.isFirstInput = false;
+        }
+    },
+
     // Step navigation validation
     checkJump(step) {
         const stepToSectionMap = {
@@ -1937,14 +1948,152 @@ async handleFirstInput() {
         });
     },
 
+    // Handle pre-population of existing completed exit form
+    handlePopulateExistingForm(existingExitFormData) {
+        // Handle both direct object and wrapped response
+        const formData = existingExitFormData.exitForm || existingExitFormData;
+        
+        if (!formData) return;
+
+        // Transform saved progress data to current form structure (similar to continueProgress)
+        if (formData.progressMade) {
+            // Restore aspiration progress and connections
+            const aspirations = ['aspirationOne', 'aspirationTwo', 'aspirationThree'];
+            aspirations.forEach(aspiration => {
+                const selectedProgress = formData.progressMade[aspiration + 'ProgressResults'];
+                if (selectedProgress && selectedProgress !== "No aspiration") {
+                    this.exitForm.progressMade[aspiration + 'ProgressSelected'] = selectedProgress;
+                    this.exitForm.progressMade[aspiration + 'ProgressResults'] = this.exitForm.progressMade[aspiration + 'ProgressResults'].map(option => ({
+                        ...option,
+                        checked: option.label === selectedProgress
+                    }));
+                }
+
+                const selectedConnection = formData.progressMade[aspiration + 'ExperienceConnection'];
+                if (selectedConnection && selectedConnection !== "No aspiration") {
+                    this.exitForm.progressMade[aspiration + 'ExperienceConnectionSelected'] = selectedConnection;
+                    this.exitForm.progressMade[aspiration + 'ExperienceConnection'] = this.exitForm.progressMade[aspiration + 'ExperienceConnection'].map(option => ({
+                        ...option,
+                        checked: option.label === selectedConnection
+                    }));
+                }
+            });
+
+            // Restore goal progress and connections
+            const goals = ['goalOne', 'goalTwo', 'goalThree', 'goalFour', 'goalFive'];
+            goals.forEach(goal => {
+                const selectedProgress = formData.progressMade[goal + 'ProgressResults'];
+                if (selectedProgress && selectedProgress !== "No goal") {
+                    this.exitForm.progressMade[goal + 'ProgressSelected'] = selectedProgress;
+                    this.exitForm.progressMade[goal + 'ProgressResults'] = this.exitForm.progressMade[goal + 'ProgressResults'].map(option => ({
+                        ...option,
+                        checked: option.label === selectedProgress
+                    }));
+                }
+
+                const selectedConnection = formData.progressMade[goal + 'ExperienceConnection'];
+                if (selectedConnection && selectedConnection !== "No goal") {
+                    this.exitForm.progressMade[goal + 'ExperienceConnectionSelected'] = selectedConnection;
+                    this.exitForm.progressMade[goal + 'ExperienceConnection'] = this.exitForm.progressMade[goal + 'ExperienceConnection'].map(option => ({
+                        ...option,
+                        checked: option.label === selectedConnection
+                    }));
+                }
+            });
+        }
+
+        // Restore goal issues selections
+        if (formData.goalIssues) {
+            const dbGoals = formData.goalIssues.goals || [];
+            this.exitForm.goalIssues.goals = this.exitForm.goalIssues.goals.map(goal => ({
+                ...goal,
+                checked: dbGoals.includes(goal.label)
+            }));
+            this.exitForm.goalIssues.issuesDescription = formData.goalIssues.issuesDescription || "";
+        }
+
+        // Restore activities contribution
+        if (formData.activitiesContribution) {
+            this.exitForm.activitiesContribution = {
+                ...this.exitForm.activitiesContribution,
+                ...formData.activitiesContribution
+            };
+        }
+
+        // Restore experience contributions
+        if (formData.experienceContributions) {
+            this.exitForm.experienceContributions = formData.experienceContributions;
+        }
+
+        // Restore likelihood selections
+        if (formData.likelihoodOf) {
+            const likelihoodCategories = ['enrollAnotherCourse', 'completeMinor', 'recommendCourse', 'pursueCareer'];
+            likelihoodCategories.forEach(category => {
+                if (formData.likelihoodOf[category]) {
+                    this.exitForm.likelihoodOf[category + 'Selected'] = formData.likelihoodOf[category];
+                }
+            });
+        }
+
+        // Restore general growth
+        if (formData.generalGrowth) {
+            this.exitForm.generalGrowth = {
+                ...this.exitForm.generalGrowth,
+                ...formData.generalGrowth
+            };
+        }
+
+        // Restore open ended responses
+        if (formData.openEnded) {
+            this.exitForm.openEnded = {
+                ...this.exitForm.openEnded,
+                ...formData.openEnded
+            };
+        }
+
+        // Restore HICH Net Promoter data if it exists
+        if (formData.hichNetPromoter) {
+            this.exitForm.hichNetPromoter = {
+                ...this.exitForm.hichNetPromoter,
+                ...formData.hichNetPromoter
+            };
+        }
+
+        // Restore CHW Growth data if it exists
+        if (formData.chwGrowth) {
+            this.exitForm.chwGrowth = {
+                ...this.exitForm.chwGrowth,
+                ...formData.chwGrowth
+            };
+        }
+
+        // Store the populated form as original for comparison
+        this.originalExitForm = this.deepClone(this.exitForm);
+
+        // Allow navigation to all steps since form is complete
+        this.$nextTick(() => {
+            this.allowedStepsForJump = [0, 1, 2, 3, 4, 5];
+        });
+    },
+
     // Auto-save incomplete form updates
 updateExitForm() {
+    // Use incompleteFormID for new forms, or foundDocumentId for existing completed forms
+    const formId = this.incompleteFormID || this.foundDocumentId;
+    
+    // If no form ID exists yet, don't try to update
+    if (!formId) {
+        console.log('No form ID available for auto-save');
+        return;
+    }
+    
     const user = useLoggedInUserStore();
     const token = user.token;
     const userID = user.userId;
-    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
+    const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${formId}`;
 
-    const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
+    const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || 
+        (this.tempIncompleteForm?.incompleteForm?.expRegistrationID);
 
     // Prepare autosave data
     const exitFormData = {

@@ -87,7 +87,7 @@ props: {
     startNewSelected: Boolean,
     currentlyUsingIncompleteForm: Boolean
 },
-emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration", "update-data-and-society", "update-first-input"],
+emits: ["form-valid", "form-invalid", "scroll-to-error", "validation-change", "update-original-exit-form", "update-selected-experience", "update-found-document-id", "reset-exit-form", "update-activities-exist", "update-goal-form-exists", "reset-error-flags", "update-incomplete-exp-registration", "update-data-and-society", "update-first-input", "populate-existing-form"],
 data() {
     return {
         formSubmitted: false,
@@ -346,13 +346,21 @@ methods: {
             if (response.data && response.data.exitFormFound === false) {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
+                // Only allow first input for NEW forms
+                this.$emit("update-first-input", true);
             }
             else if (response.data && response.data.exitFormFound) {
                 this.$emit('update-found-document-id', response.data.exitFormID);
                 this.experienceFoundWarning = true;
+                // PREVENT creating new form when existing completed form found
+                this.$emit("update-first-input", false);
+                
+                // Fetch the complete form data for pre-population
+                await this.fetchAndEmitExistingForm(expRegistrationID);
             } else {
                 this.$emit('update-found-document-id', null);
                 this.experienceFoundWarning = false;
+                this.$emit("update-first-input", true);
             }
 
             // Process activities if they exist
@@ -366,7 +374,6 @@ methods: {
             }
 
             this.$emit('reset-error-flags');
-            this.$emit("update-first-input", true);
             this.$emit("update-selected-experience", selectedExperienceInfo);
 
         } catch (error) {
@@ -376,6 +383,31 @@ methods: {
             if (this.expRegistrationIDFromIncomplete && this.expRegistrationIDFromIncomplete.length) {
                 this.$emit("update-incomplete-exp-registration");
             }
+        }
+    },
+
+    // Fetch existing exit form data and emit for pre-population
+    async fetchAndEmitExistingForm(expRegistrationID) {
+        const user = useLoggedInUserStore();
+        const token = user.token;
+        
+        if (!expRegistrationID) {
+            console.error('Could not find registration ID for selected experience');
+            return;
+        }
+        
+        const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/by-registration/${expRegistrationID}`;
+        
+        try {
+            const response = await axios.get(apiURL, { headers: { token } });
+            
+            if (response.data.formFound) {
+                // Emit the complete form data to parent for pre-population
+                this.$emit('populate-existing-form', response.data.exitForm);
+            }
+        } catch (error) {
+            console.error('Error fetching existing exit form:', error);
+            // Don't show error to user - form will just not be pre-populated
         }
     },
 
@@ -434,10 +466,15 @@ methods: {
 
     // Auto-select experience from route parameters
     selectExperienceFromRouteParam() {
+        const navigationData = useLoggedInUserStore().navigationData;
+        
+        // Add null check to prevent "can't access property" error
+        if (!navigationData) return;
+        
         // Handle incomplete form or new form selection
         if (this.tempIncompleteForm && this.tempIncompleteForm.incompleteForm && Object.keys(this.tempIncompleteForm.incompleteForm).length > 0) {
             if (this.startNewSelected) {
-                const experienceRegistrationIDFromRoute = useLoggedInUserStore().navigationData.registrationID;
+                const experienceRegistrationIDFromRoute = navigationData.registrationID;
                 if (experienceRegistrationIDFromRoute) {
                     const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
@@ -453,22 +490,22 @@ methods: {
                 }
             }
         } else {
-            const experienceRegistrationIDFromRoute = useLoggedInUserStore().navigationData.registrationID;
-                if (experienceRegistrationIDFromRoute) {
-                    const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
+            const experienceRegistrationIDFromRoute = navigationData.registrationID;
+            if (experienceRegistrationIDFromRoute) {
+                const matchingExperience = this.exitForm.experiences.find(exp => exp.expRegistrationID === experienceRegistrationIDFromRoute);
 
-                    if (matchingExperience) {
-                        // Use expRegistrationID as the selected value
-                        this.selectedExperience = matchingExperience.expRegistrationID;
-                        const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.expRegistrationID === matchingExperience.expRegistrationID);
+                if (matchingExperience) {
+                    // Use expRegistrationID as the selected value
+                    this.selectedExperience = matchingExperience.expRegistrationID;
+                    const selectedExperienceInfo = this.formattedExperiences.find(exp => exp.expRegistrationID === matchingExperience.expRegistrationID);
 
-                        this.$emit("update-selected-experience", selectedExperienceInfo);
-                    } else {
-                        console.log('No matching experience found for the given expRegistrationID');
-                    }
+                    this.$emit("update-selected-experience", selectedExperienceInfo);
+                } else {
+                    console.log('No matching experience found for the given expRegistrationID');
                 }
+            }
         }
-    },    
+    },
 },
 }
 </script>
