@@ -1,0 +1,252 @@
+/**
+ * src/components/dev/projectView/components/ProjectHeroSingle.vue
+ *
+ * Hero header component for single-author projects (Research template).
+ * Displays project label, title, description, and a single author card with testimonial.
+ */
+
+<template>
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-left">
+        <!-- Label -->
+        <div class="hero-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+          <span>{{ label.text }}</span>
+        </div>
+
+        <!-- Title -->
+        <h1>{{ title }}</h1>
+
+        <!-- Description -->
+        <p class="hero-description">{{ description }}</p>
+      </div>
+
+      <!-- Author Card -->
+      <div class="hero-author">
+        <img
+          class="author-avatar"
+          :src="authorAvatarSrc"
+          :alt="`${author.name} headshot`"
+          @error="handleImageError"
+        />
+        <div class="author-details">
+          <div class="author-info">
+            <span class="author-name">{{ author.name }}</span>
+            <span class="author-role">{{ author.role }}</span>
+          </div>
+          <blockquote v-if="author.quote" class="author-quote">
+            {{ author.quote }}
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </header>
+</template>
+
+<script setup>
+import { computed, ref } from 'vue';
+
+const props = defineProps({
+  label: {
+    type: Object,
+    required: true,
+    default: () => ({ icon: 'layers', text: '' }),
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  author: {
+    type: Object,
+    required: true,
+    default: () => ({
+      name: '',
+      role: '',
+      quote: '',
+      avatarUrl: '',
+    }),
+  },
+});
+
+const imageError = ref(false);
+
+const authorAvatarSrc = computed(() => {
+  if (imageError.value || !props.author.avatarUrl) {
+    // Return placeholder/default avatar
+    return 'data:image/svg+xml,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+        <rect fill="#6366f1" width="100" height="100"/>
+        <text x="50" y="55" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">
+          ${props.author.name ? props.author.name.charAt(0).toUpperCase() : '?'}
+        </text>
+      </svg>
+    `);
+  }
+  return props.author.avatarUrl;
+});
+
+function handleImageError() {
+  imageError.value = true;
+}
+</script>
+
+<style scoped>
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 28px 32px 24px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.04) 100%);
+}
+
+.hero-content {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #a5b4fc;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.hero h1 {
+  color: white;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.3px;
+  line-height: 1.25;
+}
+
+.hero-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.hero-author {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px 24px;
+  min-width: 340px;
+}
+
+.author-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.author-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.author-name {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.author-role {
+  color: #a5b4fc;
+  font-size: 13px;
+}
+
+.author-quote {
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.5;
+  padding: 0;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .hero-author {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 20px 24px;
+  }
+
+  .hero h1 {
+    font-size: 22px;
+  }
+
+  .hero-author {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .author-details {
+    align-items: center;
+  }
+
+  .author-info {
+    align-items: center;
+  }
+}
+</style>

@@ -657,64 +657,102 @@ const routes = [
     component: () => import("../components/error/errorView.vue"),
   },
   // Public routes from develop_Project_Documents
-  // {
-  //   path: "/publicProjects",
-  //   name: "publicProjects",
-  //   component: () => import("../components/dev/publicProjects.vue"),
-  // },
-  // {
-  //   path: "/publicGallery",
-  //   name: "publicGallery",
-  //   component: () => import("../components/dev/publicGallery.vue"),
-  // },
-  // {
-  //   path: "/publicGallery2",
-  //   name: "publicGallery2",
-  //   component: () => import("../components/dev/publicGallery2.vue"),
-  // },
-  // {
-  //   path: "/kpis",
-  //   name: "kpis",
-  //   component: () => import("../components/dev/kpis.vue"),
-  // },
-  // // Public routes from develop_PublicView
-  // {
-  //   path: "/public1",
-  //   name: "public1",
-  //   component: () => import("@/components/dev/public1.vue"),
-  // },
-  // {
-  //   path: "/public2",
-  //   name: "public2",
-  //   component: () => import("@/components/dev/indProjectPage1.vue"),
-  // },
-  // {
-  //   path: "/public3",
-  //   name: "public3",
-  //   component: () => import("@/components/dev/indProjectPage2.vue"),
-  // },
-  // {
-  //   path: "/public4",
-  //   name: "public4",
-  //   component: () => import("@/components/dev/indProjectPage1-2.vue"),
-  // },
-  // {
-  //   path: "/public5",
-  //   name: "public5",
-  //   component: () => import("@/components/dev/indProjectPage2-2.vue"),
-  // },
-  // {
-  //   path: "/public6",
-  //   name: "public6",
-  //   component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
-  // },
-  // // Admin routes
-  // {
-  //   path: "/admin/backup",
-  //   name: "AdminBackupManager",
-  //   component: () => import("@/components/admin/BackupDashboard.vue"),
-  //   beforeEnter: requireAuth(["Org Admin"]),
-  // },
+  {
+    path: "/publicProjects",
+    name: "publicProjects",
+    component: () => import("../components/dev/publicProjects.vue"),
+  },
+  {
+    path: "/publicGallery",
+    name: "publicGallery",
+    component: () => import("../components/dev/publicGallery.vue"),
+  },
+  {
+    path: "/publicGallery2",
+    name: "publicGallery2",
+    component: () => import("../components/dev/publicGallery2.vue"),
+  },
+  {
+    path: "/kpis",
+    name: "kpis",
+    component: () => import("../components/dev/kpis.vue"),
+  },
+  // Public routes from develop_PublicView
+  {
+    path: "/public1",
+    name: "public1",
+    component: () => import("@/components/dev/public1.vue"),
+  },
+  {
+    path: "/public2",
+    name: "public2",
+    component: () => import("@/components/dev/indProjectPage1.vue"),
+  },
+  {
+    path: "/public3",
+    name: "public3",
+    component: () => import("@/components/dev/indProjectPage2.vue"),
+  },
+  {
+    path: "/public4",
+    name: "public4",
+    component: () => import("@/components/dev/indProjectPage1-2.vue"),
+  },
+  {
+    path: "/public5",
+    name: "public5",
+    component: () => import("@/components/dev/indProjectPage2-2.vue"),
+  },
+  {
+    path: "/public6",
+    name: "public6",
+    component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
+  },
+  // Admin routes
+  {
+    path: "/admin/backup",
+    name: "AdminBackupManager",
+    component: () => import("@/components/admin/BackupDashboard.vue"),
+    beforeEnter: requireAuth(["Org Admin"]),
+  },
+
+  // ==========================================================================
+  // PROJECT VIEW ROUTES (Phase 6)
+  // ==========================================================================
+
+  // Project Editor - Create new project (authenticated, requires experiences)
+  {
+    path: "/projectEditor",
+    name: "projectEditor",
+    component: () =>
+      import("@/components/dev/projectView/pages/ProjectEditorPage.vue"),
+    beforeEnter: requireStudentWithExperiences,
+  },
+
+  // Project Editor - Edit existing project (authenticated, requires experiences)
+  {
+    path: "/projectEditor/:projectId",
+    name: "projectEditorEdit",
+    component: () =>
+      import("@/components/dev/projectView/pages/ProjectEditorPage.vue"),
+    beforeEnter: requireStudentWithExperiences,
+  },
+
+  // Public Project View - View published project (public, no auth required)
+  {
+    path: "/project/:projectId",
+    name: "publicProjectView",
+    component: () =>
+      import("@/components/dev/projectView/pages/ProjectViewPage.vue"),
+  },
+
+  // Dev Preview - Direct access to editor for testing (public for dev purposes)
+  {
+    path: "/dev/projectPreview",
+    name: "devProjectPreview",
+    component: () =>
+      import("@/components/dev/projectView/ProjectEditorMain.vue"),
+  },
 ];
 
 // Create router instance with base path
@@ -739,7 +777,20 @@ const publicPaths = [
   "/updateproject",
   "/proposedprojects",
   "/viewproject",
-  "/myprojects"
+  "/myprojects",
+  "/public1",
+  "/public2",
+  "/public3",
+  "/public4",
+  "/public5",
+  "/public6",
+  // Project View public routes
+  "/dev/projectPreview",
+];
+
+// Pattern-based public paths (for dynamic routes like /project/:projectId)
+const publicPathPatterns = [
+  /^\/project\/[^/]+$/,  // Matches /project/:projectId
 ];
 
 // const publicPaths = [
@@ -776,13 +827,28 @@ const publicPaths = [
 //   "/public6",
 // ];
 
+/**
+ * Check if a path is public (no authentication required)
+ * @param {string} path - The route path to check
+ * @returns {boolean} - True if the path is public
+ */
+function isPublicPath(path) {
+  // Check exact matches
+  if (publicPaths.includes(path)) {
+    return true;
+  }
+  
+  // Check pattern matches (for dynamic routes)
+  return publicPathPatterns.some(pattern => pattern.test(path));
+}
+
 // Global navigation guard for authentication and role-based routing
 router.beforeEach(async (to, from, next) => {
   const userStore = useLoggedInUserStore();
   const token = localStorage.getItem("token");
   const currentTime = Math.floor(Date.now() / 1000);
 
-  const isPublicRoute = publicPaths.includes(to.path);
+  const isPublicRoute = isPublicPath(to.path);
 
   if (token) {
     try {
