@@ -242,7 +242,8 @@ defineExpose({
 .preview-content {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: #f4f5f7;
 }
 
@@ -281,16 +282,27 @@ defineExpose({
   max-width: 300px;
 }
 
-/* Template wrapper fills the container and lets template handle internal scrolling */
+/* Template wrapper - natural height, preview-content handles scrolling */
 .template-wrapper {
-  height: 100%;
   width: 100%;
-  overflow: hidden;
 }
 
-/* Ensure the template renderer also fills the space */
-.template-wrapper :deep(> *) {
-  height: 100%;
+/* Override template's viewport-filling behavior for preview context */
+.template-wrapper :deep(.page) {
+  height: auto;
+  min-height: auto;
+  overflow: visible;
+}
+
+/* Let content grid flow naturally */
+.template-wrapper :deep(.content-grid) {
+  overflow: visible;
+}
+
+/* Let left/right columns show full content */
+.template-wrapper :deep(.left),
+.template-wrapper :deep(.right) {
+  overflow: visible;
 }
 
 .fullscreen-close-btn {

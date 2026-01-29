@@ -1012,7 +1012,7 @@ export function getTemplateInfo(templateType) {
     },
     [TEMPLATE_TYPES.DEVELOPMENT]: {
       id: TEMPLATE_TYPES.DEVELOPMENT,
-      name: 'Team Development',
+      name: 'Development',
       description: 'Multi-author layout with timeline and impact sections. Ideal for software projects, team collaborations, and development work.',
       features: ['Multiple team members', 'Development timeline', 'Impact summary grid', 'Image/diagram poster'],
       thumbnail: '/thumbnails/development-template.png',

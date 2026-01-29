@@ -140,14 +140,14 @@
               {{ showPreview ? $t('Hide Preview') : $t('Show Preview') }}
             </v-btn>
 
-            <v-btn
+            <!-- <v-btn
               variant="text"
               color="#666"
               @click="toggleSampleData"
             >
               <v-icon start>{{ useSampleDataInPreview ? 'mdi-file-document' : 'mdi-file-document-outline' }}</v-icon>
               {{ useSampleDataInPreview ? $t('Using Sample Data') : $t('Use Sample Data') }}
-            </v-btn>
+            </v-btn> -->
           </div>
 
           <div class="actions-right">

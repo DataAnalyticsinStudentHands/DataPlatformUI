@@ -128,7 +128,7 @@
       <span>
         {{ $t('Not sure which to choose?') }}
         <strong>{{ $t('Research') }}</strong> {{ $t('is ideal for individual projects with a single author.') }}
-        <strong>{{ $t('Team Development') }}</strong> {{ $t('works best for collaborative projects with multiple contributors.') }}
+        <strong>{{ $t('Development') }}</strong> {{ $t('works best for collaborative projects with multiple contributors.') }}
       </span>
     </div>
   </div>
