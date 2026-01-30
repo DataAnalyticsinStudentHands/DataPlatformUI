@@ -65,9 +65,12 @@
                 :label="$t('Label') + ' *'"
                 :placeholder="$t('e.g., For Students')"
                 variant="outlined"
-                density="compact"
                 :counter="50"
-              ></v-text-field>
+              >
+                <template v-slot:prepend-inner>
+                  <v-icon size="20" color="#666">mdi-label-outline</v-icon>
+                </template>
+              </v-text-field>
             </v-col>
 
             <!-- Description -->
@@ -78,9 +81,12 @@
                 :label="$t('Description') + ' *'"
                 :placeholder="$t('Describe the impact')"
                 variant="outlined"
-                density="compact"
                 :counter="200"
-              ></v-text-field>
+              >
+                <template v-slot:prepend-inner>
+                  <v-icon size="20" color="#666">mdi-text</v-icon>
+                </template>
+              </v-text-field>
             </v-col>
           </v-row>
         </div>

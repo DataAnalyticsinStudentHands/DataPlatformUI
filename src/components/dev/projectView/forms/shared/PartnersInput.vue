@@ -70,9 +70,12 @@
                 :label="$t('Acronym') + ' *'"
                 :placeholder="$t('e.g., EPA')"
                 variant="outlined"
-                density="compact"
                 :counter="20"
-              ></v-text-field>
+              >
+                <template v-slot:prepend-inner>
+                  <v-icon size="20" color="#666">mdi-alphabetical</v-icon>
+                </template>
+              </v-text-field>
             </v-col>
 
             <!-- Full Name -->
@@ -83,9 +86,12 @@
                 :label="$t('Organization Name') + ' *'"
                 :placeholder="$t('Full organization name')"
                 variant="outlined"
-                density="compact"
                 :counter="150"
-              ></v-text-field>
+              >
+                <template v-slot:prepend-inner>
+                  <v-icon size="20" color="#666">mdi-office-building-outline</v-icon>
+                </template>
+              </v-text-field>
             </v-col>
 
             <!-- Color Picker -->
@@ -97,12 +103,11 @@
                     :model-value="partner.color"
                     :label="$t('Color')"
                     variant="outlined"
-                    density="compact"
                     readonly
                   >
                     <template v-slot:prepend-inner>
-                      <div 
-                        class="color-swatch" 
+                      <div
+                        class="color-swatch"
                         :style="{ backgroundColor: partner.color }"
                       ></div>
                     </template>

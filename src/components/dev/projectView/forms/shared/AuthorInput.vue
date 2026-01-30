@@ -75,7 +75,6 @@
           :label="$t('Name') + ' *'"
           :placeholder="$t('Full name')"
           variant="outlined"
-          density="comfortable"
           :rules="nameRules"
           :counter="100"
           class="mb-3"
@@ -91,7 +90,6 @@
           :label="$t('Role/Title') + ' *'"
           :placeholder="$t('e.g., 2023 Pharis Fellow, Lead Developer')"
           variant="outlined"
-          density="comfortable"
           :rules="roleRules"
           :counter="100"
           class="mb-3"
@@ -107,7 +105,6 @@
           :label="$t('Testimonial Quote')"
           :placeholder="$t('Share what you learned or how this project impacted you...')"
           variant="outlined"
-          density="comfortable"
           :counter="500"
           rows="3"
           auto-grow

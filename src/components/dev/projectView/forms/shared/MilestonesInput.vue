@@ -28,11 +28,10 @@
                 :label="$t('Milestone Title') + ' *'"
                 :placeholder="$t('e.g., JWT Authentication')"
                 variant="outlined"
-                density="compact"
                 :counter="100"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="18" color="#666">mdi-flag-outline</v-icon>
+                  <v-icon size="20" color="#666">mdi-flag-outline</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -45,11 +44,10 @@
                 :label="$t('Description') + ' *'"
                 :placeholder="$t('Brief description')"
                 variant="outlined"
-                density="compact"
                 :counter="200"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="18" color="#666">mdi-text</v-icon>
+                  <v-icon size="20" color="#666">mdi-text</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -63,7 +61,6 @@
                     :model-value="milestone.color"
                     :label="$t('Color')"
                     variant="outlined"
-                    density="compact"
                     readonly
                     hide-details
                   >

@@ -42,7 +42,6 @@
                 :label="$t('Statistic') + ' *'"
                 :placeholder="$t('e.g., 350%, 7+, RBAC')"
                 variant="outlined"
-                density="comfortable"
                 :counter="50"
               >
                 <template v-slot:prepend-inner>
@@ -59,7 +58,6 @@
                 :label="$t('Description') + ' *'"
                 :placeholder="$t('Brief explanation')"
                 variant="outlined"
-                density="comfortable"
                 :counter="200"
               >
                 <template v-slot:prepend-inner>
@@ -77,7 +75,6 @@
                     :model-value="finding.color"
                     :label="$t('Color')"
                     variant="outlined"
-                    density="compact"
                     readonly
                   >
                     <template v-slot:prepend-inner>

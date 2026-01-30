@@ -14,7 +14,6 @@
       :label="label"
       :placeholder="placeholder"
       variant="outlined"
-      density="comfortable"
       :counter="maxTagLength"
       :error-messages="errorMessage"
       @keyup.enter="addTag"
