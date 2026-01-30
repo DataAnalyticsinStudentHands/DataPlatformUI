@@ -74,7 +74,7 @@
       </div>
 
       <!-- Direct Template Render - fills container height -->
-      <div v-else class="template-wrapper">
+      <div v-else class="template-wrapper" :class="{ 'has-poster': hasPoster }">
         <ProjectTemplate
           :key="previewKey"
           :project="previewProject"
@@ -174,6 +174,13 @@ const sectionCount = computed(() => {
   // Mandatory sections (4) + enabled optional sections
   const optionalCount = (props.project.enabledSections || []).length;
   return 4 + optionalCount; // 4 mandatory: hero, tags, findings, footer
+});
+
+// Check if poster section is enabled (for conditional horizontal scrolling)
+const hasPoster = computed(() => {
+  if (!props.project) return false;
+  const enabledSections = props.project.enabledSections || [];
+  return enabledSections.includes('poster') && props.project.poster;
 });
 
 // Get poster with preview URL (handles both uploaded files and existing URLs)
@@ -368,9 +375,13 @@ defineExpose({
 }
 
 /* Template wrapper - natural height, preview-content handles scrolling */
-/* Min-width ensures content displays at readable size with horizontal scroll */
+/* Without poster: content resizes to fit without horizontal scrolling */
+/* With poster: min-width ensures content displays at readable size with horizontal scroll */
 .template-wrapper {
   width: 100%;
+}
+
+.template-wrapper.has-poster {
   min-width: 1000px;
 }
 
