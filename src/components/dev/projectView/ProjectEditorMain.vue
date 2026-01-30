@@ -505,6 +505,12 @@ function loadDraft() {
 
       enabledSections.value = parsed.enabledSections || migratedData.enabledSections || [];
       projectData.value = migratedData;
+
+      // Initialize section data for all enabled sections (fixes missing poster/etc when loading draft)
+      enabledSections.value.forEach(sectionId => {
+        projectData.value = initializeSectionData(projectData.value, sectionId);
+      });
+
       currentStep.value = Math.min(parsed.step || 1, 2); // Don't auto-advance to preview
       return true;
     }

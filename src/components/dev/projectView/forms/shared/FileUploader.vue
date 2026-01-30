@@ -185,12 +185,12 @@ const acceptHint = computed(() => {
   return `${formats.join(', ')} · Max ${props.maxSizeMb}MB`;
 });
 
-// Check if has file
-const hasFile = computed(() => props.modelValue || props.existingUrl);
+// Check if has file (only consider File objects, not corrupted localStorage data)
+const hasFile = computed(() => (props.modelValue instanceof File) || props.existingUrl);
 
 // File name
 const fileName = computed(() => {
-  if (props.modelValue) return props.modelValue.name;
+  if (props.modelValue instanceof File) return props.modelValue.name;
   if (props.existingUrl) {
     const parts = props.existingUrl.split('/');
     return parts[parts.length - 1] || 'Uploaded file';
@@ -200,7 +200,7 @@ const fileName = computed(() => {
 
 // File type
 const fileType = computed(() => {
-  if (props.modelValue) {
+  if (props.modelValue instanceof File) {
     if (props.modelValue.type === 'application/pdf') return 'pdf';
     if (props.modelValue.type.startsWith('image/')) return 'image';
   }
@@ -213,7 +213,8 @@ const fileType = computed(() => {
 
 // Preview URL for images
 const previewUrl = computed(() => {
-  if (props.modelValue && props.modelValue.type.startsWith('image/')) {
+  // Only create object URL for actual File/Blob objects (not corrupted localStorage data)
+  if (props.modelValue && props.modelValue instanceof File && props.modelValue.type.startsWith('image/')) {
     return URL.createObjectURL(props.modelValue);
   }
   if (props.existingUrl && fileType.value === 'image') {
@@ -224,7 +225,7 @@ const previewUrl = computed(() => {
 
 // Formatted file size
 const formattedFileSize = computed(() => {
-  if (!props.modelValue) return '';
+  if (!(props.modelValue instanceof File)) return '';
   const bytes = props.modelValue.size;
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
