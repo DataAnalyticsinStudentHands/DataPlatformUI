@@ -1,17 +1,22 @@
 /**
  * src/components/dev/projectView/types/projectTypes.js
  *
- * Data model definitions for dynamic project view templates.
- * Defines structures, defaults, validators, and sample data for both
- * Research (single-author) and Development (multi-author) templates.
+ * Unified data model for modular project view.
+ * Supports configurable sections with consistent data structure.
  */
+
+import {
+  DEFAULT_ENABLED_SECTIONS,
+  getOptionalSections,
+  isSectionEnabled
+} from './sectionTypes.js';
 
 // =============================================================================
 // ENUMS & CONSTANTS
 // =============================================================================
 
 /**
- * Available template types
+ * Project template types
  */
 export const TEMPLATE_TYPES = {
   RESEARCH: 'research',
@@ -61,7 +66,7 @@ export const FINDING_VARIANT_STYLES = {
 };
 
 /**
- * Preset colors for partners (user can also pick custom)
+ * Preset colors for partners
  */
 export const PARTNER_COLOR_PRESETS = [
   { name: 'Green', value: '#059669' },
@@ -98,13 +103,22 @@ export const IMPACT_ICON_PRESETS = [
   '🏆', '📈', '🤝', '💻', '📚', '⚡', '🔧', '🎨',
 ];
 
+/**
+ * Footer banner variants
+ */
+export const FOOTER_VARIANTS = {
+  INFO: 'info',       // Yellow
+  NOTICE: 'notice',   // Blue
+  SUCCESS: 'success', // Green
+};
+
 // =============================================================================
 // TYPE DEFINITIONS (JSDoc for IDE support)
 // =============================================================================
 
 /**
  * @typedef {Object} ProjectLabel
- * @property {string} icon - SVG path or icon identifier
+ * @property {string} icon - Icon identifier (e.g., 'layers')
  * @property {string} text - Label text (e.g., "Pharis Fellowship")
  */
 
@@ -112,7 +126,7 @@ export const IMPACT_ICON_PRESETS = [
  * @typedef {Object} Author
  * @property {string} id - Unique identifier
  * @property {string} name - Author's display name
- * @property {string} role - Role/title (e.g., "2023 Pharis Fellow", "Lead Developer")
+ * @property {string} role - Role/title
  * @property {string} quote - Testimonial quote
  * @property {string} avatarUrl - URL to avatar image
  * @property {File|null} avatarFile - Local file for upload (not persisted)
@@ -121,17 +135,23 @@ export const IMPACT_ICON_PRESETS = [
 /**
  * @typedef {Object} Finding
  * @property {string} id - Unique identifier
- * @property {string} stat - The statistic/number to display (e.g., "350%", "7+")
+ * @property {string} stat - The statistic/number to display
  * @property {string} description - Description of the finding
  * @property {string} variant - One of FINDING_VARIANTS
  */
 
 /**
+ * @typedef {Object} Conclusion
+ * @property {string} text - The conclusion paragraph
+ * @property {string} attribution - Who said it
+ */
+
+/**
  * @typedef {Object} Partner
  * @property {string} id - Unique identifier
- * @property {string} acronym - Short name (e.g., "EPA", "UH Honors")
+ * @property {string} acronym - Short name
  * @property {string} name - Full organization name
- * @property {string} color - Hex color for the icon background
+ * @property {string} color - Hex color for the icon
  */
 
 /**
@@ -139,28 +159,22 @@ export const IMPACT_ICON_PRESETS = [
  * @property {string} id - Unique identifier
  * @property {string} title - Milestone title
  * @property {string} description - Brief description
- * @property {string} color - Hex color for the timeline marker
+ * @property {string} color - Hex color for the marker
  */
 
 /**
  * @typedef {Object} ImpactItem
  * @property {string} id - Unique identifier
  * @property {string} icon - Emoji or icon character
- * @property {string} label - Short label (e.g., "For Students")
+ * @property {string} label - Short label
  * @property {string} text - Description text
- */
-
-/**
- * @typedef {Object} Conclusion
- * @property {string} text - The conclusion paragraph
- * @property {string} attribution - Who said it (e.g., "— Carlos Mendieta")
  */
 
 /**
  * @typedef {Object} PosterConfig
  * @property {string} type - 'pdf' or 'image'
  * @property {string} url - URL to the poster file
- * @property {string} title - Title shown above poster (e.g., "Research Poster")
+ * @property {string} title - Title shown above poster
  * @property {File|null} file - Local file for upload (not persisted)
  */
 
@@ -168,41 +182,26 @@ export const IMPACT_ICON_PRESETS = [
  * @typedef {Object} FooterConfig
  * @property {string} icon - Emoji or icon
  * @property {string} message - Footer message text
- * @property {string} variant - 'info' (yellow), 'notice' (blue), 'success' (green)
+ * @property {string} variant - 'info', 'notice', or 'success'
  */
 
-// =============================================================================
-// BASE PROJECT STRUCTURE (shared fields)
-// =============================================================================
-
 /**
- * @typedef {Object} BaseProject
+ * @typedef {Object} Project
  * @property {string} id - Unique project identifier
- * @property {string} templateType - One of TEMPLATE_TYPES
  * @property {ProjectLabel} label - Hero section label
  * @property {string} title - Project title
  * @property {string} description - Project description
+ * @property {Author[]} authors - Array of authors (min 1)
  * @property {string[]} tags - Array of tag strings
- * @property {Finding[]} findings - Key findings/achievements (max 3)
- * @property {Conclusion} conclusion - Conclusion text and attribution
+ * @property {Finding[]} findings - Key findings (1-3)
+ * @property {Conclusion} conclusion - Conclusion text
  * @property {Partner[]} partners - Partner organizations
- * @property {PosterConfig} poster - Poster configuration
- * @property {FooterConfig} footer - Footer banner configuration
- * @property {Object} metadata - Additional metadata
- * @property {string} metadata.createdAt - ISO date string
- * @property {string} metadata.updatedAt - ISO date string
- * @property {string} metadata.createdBy - User ID
- * @property {string} metadata.status - 'draft', 'published', 'archived'
- */
-
-/**
- * @typedef {BaseProject & { author: Author }} ResearchProject
- * Research template with single author
- */
-
-/**
- * @typedef {BaseProject & { authors: Author[], milestones: Milestone[], impactItems: ImpactItem[] }} DevelopmentProject
- * Development template with multiple authors, timeline, and impact section
+ * @property {Milestone[]} milestones - Timeline milestones
+ * @property {ImpactItem[]} impactItems - Impact summary items
+ * @property {PosterConfig|null} poster - Poster configuration
+ * @property {FooterConfig} footer - Footer banner
+ * @property {string[]} enabledSections - IDs of enabled optional sections
+ * @property {Object} metadata - Project metadata
  */
 
 // =============================================================================
@@ -219,7 +218,7 @@ export function generateId() {
 
 /**
  * Create an empty author object
- * @param {Partial<Author>} overrides - Optional field overrides
+ * @param {Partial<Author>} overrides
  * @returns {Author}
  */
 export function createEmptyAuthor(overrides = {}) {
@@ -236,7 +235,7 @@ export function createEmptyAuthor(overrides = {}) {
 
 /**
  * Create an empty finding object
- * @param {Partial<Finding>} overrides - Optional field overrides
+ * @param {Partial<Finding>} overrides
  * @returns {Finding}
  */
 export function createEmptyFinding(overrides = {}) {
@@ -251,7 +250,7 @@ export function createEmptyFinding(overrides = {}) {
 
 /**
  * Create an empty partner object
- * @param {Partial<Partner>} overrides - Optional field overrides
+ * @param {Partial<Partner>} overrides
  * @returns {Partner}
  */
 export function createEmptyPartner(overrides = {}) {
@@ -266,7 +265,7 @@ export function createEmptyPartner(overrides = {}) {
 
 /**
  * Create an empty milestone object
- * @param {Partial<Milestone>} overrides - Optional field overrides
+ * @param {Partial<Milestone>} overrides
  * @returns {Milestone}
  */
 export function createEmptyMilestone(overrides = {}) {
@@ -281,7 +280,7 @@ export function createEmptyMilestone(overrides = {}) {
 
 /**
  * Create an empty impact item object
- * @param {Partial<ImpactItem>} overrides - Optional field overrides
+ * @param {Partial<ImpactItem>} overrides
  * @returns {ImpactItem}
  */
 export function createEmptyImpactItem(overrides = {}) {
@@ -296,7 +295,7 @@ export function createEmptyImpactItem(overrides = {}) {
 
 /**
  * Create an empty conclusion object
- * @param {Partial<Conclusion>} overrides - Optional field overrides
+ * @param {Partial<Conclusion>} overrides
  * @returns {Conclusion}
  */
 export function createEmptyConclusion(overrides = {}) {
@@ -309,42 +308,42 @@ export function createEmptyConclusion(overrides = {}) {
 
 /**
  * Create an empty poster config
- * @param {'pdf'|'image'} type - Poster type
- * @param {Partial<PosterConfig>} overrides - Optional field overrides
+ * @param {'pdf'|'image'} type
+ * @param {Partial<PosterConfig>} overrides
  * @returns {PosterConfig}
  */
 export function createEmptyPoster(type = 'pdf', overrides = {}) {
   return {
     type,
     url: '',
-    title: type === 'pdf' ? 'Research Poster' : 'System Architecture',
+    title: type === 'pdf' ? 'Research Poster' : 'Project Diagram',
     file: null,
     ...overrides,
   };
 }
 
 /**
- * Create an empty footer config
- * @param {Partial<FooterConfig>} overrides - Optional field overrides
+ * Create a default footer config
+ * @param {Partial<FooterConfig>} overrides
  * @returns {FooterConfig}
  */
-export function createEmptyFooter(overrides = {}) {
+export function createDefaultFooter(overrides = {}) {
   return {
     icon: 'ℹ️',
-    message: 'This project page is publicly viewable via a secure link. The student may revoke access at any time.',
-    variant: 'info',
+    message: 'This project page is publicly viewable via a secure link. The author(s) may revoke access at any time.',
+    variant: FOOTER_VARIANTS.INFO,
     ...overrides,
   };
 }
 
 /**
  * Create an empty label object
- * @param {Partial<ProjectLabel>} overrides - Optional field overrides
+ * @param {Partial<ProjectLabel>} overrides
  * @returns {ProjectLabel}
  */
 export function createEmptyLabel(overrides = {}) {
   return {
-    icon: 'layers', // Icon identifier
+    icon: 'layers',
     text: '',
     ...overrides,
   };
@@ -352,7 +351,7 @@ export function createEmptyLabel(overrides = {}) {
 
 /**
  * Create metadata object
- * @param {string} userId - User ID of creator
+ * @param {string} userId
  * @returns {Object}
  */
 export function createMetadata(userId = '') {
@@ -366,108 +365,142 @@ export function createMetadata(userId = '') {
 }
 
 // =============================================================================
-// TEMPLATE FACTORIES - Create Empty Projects
+// PROJECT FACTORY - Unified Project Creation
 // =============================================================================
 
 /**
- * Create an empty Research project (Template 1 - Single Author)
+ * Create an empty project with the unified structure
  * @param {string} userId - User ID of creator
- * @returns {ResearchProject}
+ * @param {string[]} enabledSections - Initial enabled optional sections
+ * @returns {Project}
  */
-export function createEmptyResearchProject(userId = '') {
+export function createEmptyProject(userId = '', enabledSections = DEFAULT_ENABLED_SECTIONS) {
   return {
     id: generateId(),
-    templateType: TEMPLATE_TYPES.RESEARCH,
-    label: createEmptyLabel({ text: 'Research Fellowship' }),
-    title: '',
-    description: '',
-    author: createEmptyAuthor(),
-    tags: [],
-    findings: [
-      createEmptyFinding({ variant: FINDING_VARIANTS.CRITICAL }),
-      createEmptyFinding({ variant: FINDING_VARIANTS.DATA }),
-      createEmptyFinding({ variant: FINDING_VARIANTS.WARNING }),
-    ],
-    conclusion: createEmptyConclusion(),
-    partners: [],
-    poster: createEmptyPoster('pdf', { title: 'Research Poster' }),
-    footer: createEmptyFooter(),
-    metadata: createMetadata(userId),
-  };
-}
 
-/**
- * Create an empty Development project (Template 2 - Multi Author)
- * @param {string} userId - User ID of creator
- * @returns {DevelopmentProject}
- */
-export function createEmptyDevelopmentProject(userId = '') {
-  return {
-    id: generateId(),
-    templateType: TEMPLATE_TYPES.DEVELOPMENT,
-    label: createEmptyLabel({ text: 'Project Development' }),
+    // === MANDATORY SECTION DATA ===
+    label: createEmptyLabel({ text: 'Project' }),
     title: '',
     description: '',
     authors: [createEmptyAuthor()],
     tags: [],
     findings: [
-      createEmptyFinding({ variant: FINDING_VARIANTS.SUCCESS }),
       createEmptyFinding({ variant: FINDING_VARIANTS.DATA }),
-      createEmptyFinding({ variant: FINDING_VARIANTS.PURPLE }),
     ],
     conclusion: createEmptyConclusion(),
-    milestones: [],
-    impactItems: [
-      createEmptyImpactItem({ icon: '👨‍🎓', label: 'For Students' }),
-      createEmptyImpactItem({ icon: '👩‍🏫', label: 'For Instructors' }),
-      createEmptyImpactItem({ icon: '🔬', label: 'For Researchers' }),
-      createEmptyImpactItem({ icon: '🎯', label: 'For Programs' }),
-    ],
+    footer: createDefaultFooter(),
+
+    // === OPTIONAL SECTION DATA ===
     partners: [],
-    poster: createEmptyPoster('image', { title: 'System Architecture' }),
-    footer: createEmptyFooter({ variant: 'notice' }),
+    milestones: [],
+    impactItems: [],
+    poster: null, // null when poster section is disabled
+
+    // === SECTION CONFIGURATION ===
+    enabledSections: [...enabledSections],
+
+    // === METADATA ===
     metadata: createMetadata(userId),
   };
 }
 
 /**
- * Create an empty project based on template type
- * @param {string} templateType - One of TEMPLATE_TYPES
- * @param {string} userId - User ID of creator
- * @returns {ResearchProject|DevelopmentProject}
+ * Initialize data for a newly enabled section
+ * @param {Project} project - Current project
+ * @param {string} sectionId - Section being enabled
+ * @returns {Project} Updated project with initialized section data
  */
-export function createEmptyProject(templateType, userId = '') {
-  if (templateType === TEMPLATE_TYPES.DEVELOPMENT) {
-    return createEmptyDevelopmentProject(userId);
+export function initializeSectionData(project, sectionId) {
+  const updated = cloneProject(project);
+
+  switch (sectionId) {
+    case 'partners':
+      if (updated.partners.length === 0) {
+        updated.partners = [createEmptyPartner()];
+      }
+      break;
+    case 'timeline':
+      if (updated.milestones.length === 0) {
+        updated.milestones = [
+          createEmptyMilestone(),
+          createEmptyMilestone(),
+        ];
+      }
+      break;
+    case 'impact':
+      if (updated.impactItems.length === 0) {
+        updated.impactItems = [
+          createEmptyImpactItem({ icon: '👨‍🎓', label: 'For Students' }),
+          createEmptyImpactItem({ icon: '👩‍🏫', label: 'For Instructors' }),
+        ];
+      }
+      break;
+    case 'poster':
+      if (!updated.poster) {
+        updated.poster = createEmptyPoster('pdf');
+      }
+      break;
   }
-  return createEmptyResearchProject(userId);
+
+  return updated;
+}
+
+/**
+ * Clear data for a disabled section (optional - keeps data by default)
+ * @param {Project} project - Current project
+ * @param {string} sectionId - Section being disabled
+ * @param {boolean} clearData - Whether to clear the data
+ * @returns {Project} Updated project
+ */
+export function clearSectionData(project, sectionId, clearData = false) {
+  if (!clearData) return project;
+
+  const updated = cloneProject(project);
+
+  switch (sectionId) {
+    case 'partners':
+      updated.partners = [];
+      break;
+    case 'timeline':
+      updated.milestones = [];
+      break;
+    case 'impact':
+      updated.impactItems = [];
+      break;
+    case 'poster':
+      updated.poster = null;
+      break;
+  }
+
+  return updated;
 }
 
 // =============================================================================
-// SAMPLE DATA - Based on hardcoded templates
+// SAMPLE DATA
 // =============================================================================
 
 /**
- * Sample Research Project (Template 1)
- * Based on Carlos Mendieta's Environmental Racism research
+ * Sample project with all sections populated
+ * Useful for preview and testing
  */
-export const SAMPLE_RESEARCH_PROJECT = {
-  id: 'sample-research-001',
-  templateType: TEMPLATE_TYPES.RESEARCH,
+export const SAMPLE_PROJECT = {
+  id: 'sample-project-001',
   label: {
     icon: 'layers',
-    text: 'Pharis Fellowship',
+    text: 'Research Fellowship',
   },
   title: "Tracing the Roots of Environmental Racism in Houston's Fifth Ward",
   description: 'Investigating how industrial sites have been disproportionately placed in less affluent areas, pushing low-income minorities closer to environmentally toxic areas and increasing cancer risk exposure.',
-  author: {
-    id: 'author-carlos-001',
-    name: 'Carlos Mendieta',
-    role: '2023 Pharis Fellow',
-    quote: '"This project pushed me to think more deeply about how data can drive meaningful decisions."',
-    avatarUrl: '@/assets/carlos_headshot.jpg',
-    avatarFile: null,
-  },
+  authors: [
+    {
+      id: 'author-001',
+      name: 'Carlos Mendieta',
+      role: '2023 Pharis Fellow',
+      quote: '"This project pushed me to think more deeply about how data can drive meaningful decisions."',
+      avatarUrl: '',
+      avatarFile: null,
+    },
+  ],
   tags: ['Environmental Justice', 'Cancer Cluster', 'Housing Equity'],
   findings: [
     {
@@ -490,178 +523,97 @@ export const SAMPLE_RESEARCH_PROJECT = {
     },
   ],
   conclusion: {
-    text: 'The data visualized does provide support to my hypothesis that individuals in Houston that could only afford the cheapest housing accommodations were potentially moved into generally more environmentally toxic areas, posing as cancer and other fatal health risks.',
+    text: 'The data visualized does provide support to my hypothesis that individuals in Houston that could only afford the cheapest housing accommodations were potentially moved into generally more environmentally toxic areas.',
     attribution: '— Carlos Mendieta',
   },
   partners: [
     { id: 'partner-001', acronym: 'EPA', name: 'Environmental Protection Agency', color: '#059669' },
     { id: 'partner-002', acronym: 'UH Honors', name: 'The Honors College, University of Houston', color: '#c8102e' },
-    { id: 'partner-003', acronym: 'Humana', name: 'Humana Institute', color: '#00b5ad' },
-    { id: 'partner-004', acronym: 'CHWI', name: 'Community Health Workers Initiative', color: '#2563eb' },
-    { id: 'partner-005', acronym: 'HPE DSI', name: 'Hewlett Packard Enterprise Data Science Institute', color: '#7c3aed' },
-    { id: 'partner-006', acronym: 'ERC', name: 'Education Research Center, UH College of Education', color: '#ea580c' },
+    { id: 'partner-003', acronym: 'HPE DSI', name: 'Hewlett Packard Enterprise Data Science Institute', color: '#7c3aed' },
+  ],
+  milestones: [
+    { id: 'milestone-001', title: 'Data Collection', description: 'Gathered housing and health data', color: '#059669' },
+    { id: 'milestone-002', title: 'Analysis Phase', description: 'Statistical analysis of correlations', color: '#2563eb' },
+    { id: 'milestone-003', title: 'Visualization', description: 'Created interactive maps', color: '#7c3aed' },
+    { id: 'milestone-004', title: 'Publication', description: 'Presented findings at URD', color: '#ea580c' },
+  ],
+  impactItems: [
+    { id: 'impact-001', icon: '👨‍🎓', label: 'For Students', text: 'Hands-on research experience with real-world data' },
+    { id: 'impact-002', icon: '🏘️', label: 'For Communities', text: 'Evidence for environmental justice advocacy' },
+    { id: 'impact-003', icon: '📊', label: 'For Researchers', text: 'Methodology for analyzing environmental inequity' },
+    { id: 'impact-004', icon: '🏛️', label: 'For Policymakers', text: 'Data-driven insights for zoning decisions' },
   ],
   poster: {
     type: 'pdf',
-    url: '@/assets/carlos_URD_poster.pdf',
+    url: '',
     title: 'Research Poster',
     file: null,
   },
   footer: {
     icon: 'ℹ️',
-    message: 'This project page is publicly viewable via a secure link. The student may revoke access at any time.',
+    message: 'This project page is publicly viewable via a secure link. The author(s) may revoke access at any time.',
     variant: 'info',
   },
+  enabledSections: ['partners', 'timeline', 'impact', 'poster'],
   metadata: {
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-20T14:30:00Z',
-    createdBy: 'user-carlos-001',
+    createdBy: 'user-001',
     status: 'published',
   },
 };
 
 /**
- * Sample Development Project (Template 2)
- * Based on Engaged Data Science platform project
+ * Alias for research-type sample project
+ */
+export const SAMPLE_RESEARCH_PROJECT = SAMPLE_PROJECT;
+
+/**
+ * Alias for development-type sample project (same structure)
  */
 export const SAMPLE_DEVELOPMENT_PROJECT = {
-  id: 'sample-dev-001',
-  templateType: TEMPLATE_TYPES.DEVELOPMENT,
+  ...SAMPLE_PROJECT,
+  id: 'sample-development-001',
   label: {
-    icon: 'layers',
-    text: 'Engaged Data Science',
+    icon: 'code',
+    text: 'Development Project',
   },
-  title: 'Building a Data Platform for Goal-Driven Experiences',
-  description: 'Developing a comprehensive web application that captures and connects student goals to their experiential learning journeys, enabling progress tracking, reflections, and actionable insights for instructors and program leaders.',
+  title: 'Building a Scalable Data Pipeline for Real-Time Analytics',
+  description: 'Designed and implemented a high-throughput data processing system capable of ingesting, transforming, and serving analytics data in real-time.',
   authors: [
     {
-      id: 'author-philip-001',
-      name: 'Philip',
+      id: 'author-dev-001',
+      name: 'Jordan Chen',
       role: 'Lead Developer',
-      quote: '"Building this platform taught me that great software comes from asking better questions—understanding what users actually need."',
-      avatarUrl: '@/assets/philip_headshot.jpg',
-      avatarFile: null,
-    },
-    {
-      id: 'author-navya-001',
-      name: 'Navya',
-      role: 'Application Developer',
-      quote: '"This was my first exposure to professional software development, learning to build with scalability and maintainability in mind."',
-      avatarUrl: '@/assets/navya_headshot.jpg',
+      quote: '"Building systems that scale taught me the importance of architecture decisions early in the process."',
+      avatarUrl: '',
       avatarFile: null,
     },
   ],
-  tags: ['Educational Technology', 'Experiential Learning', 'Full-Stack Development', 'FERPA-Compliant'],
+  tags: ['Data Engineering', 'Real-Time Processing', 'Cloud Infrastructure'],
   findings: [
     {
-      id: 'achievement-001',
-      stat: '7+',
-      description: 'Major releases delivered across the platform',
+      id: 'finding-dev-001',
+      stat: '10K+',
+      description: 'Events processed per second',
       variant: FINDING_VARIANTS.SUCCESS,
     },
     {
-      id: 'achievement-002',
-      stat: 'RBAC',
-      description: 'Role-based access control with FERPA compliance',
+      id: 'finding-dev-002',
+      stat: '<100ms',
+      description: 'End-to-end latency achieved',
       variant: FINDING_VARIANTS.DATA,
     },
     {
-      id: 'achievement-003',
-      stat: 'Cloud',
-      description: 'Migrated to scalable Reclaim Cloud infrastructure',
+      id: 'finding-dev-003',
+      stat: '99.9%',
+      description: 'System uptime maintained',
       variant: FINDING_VARIANTS.PURPLE,
     },
   ],
   conclusion: {
-    text: 'The platform connects goals to experiences to outcomes through a carefully designed data model. What used to require manual tracking across spreadsheets now flows automatically, giving instructors and program leaders a foundation for improving their experiences.',
-    attribution: '— Philip, Lead Developer',
-  },
-  milestones: [
-    {
-      id: 'milestone-001',
-      title: 'JWT Authentication',
-      description: 'Protected all endpoints with token-based auth',
-      color: '#059669',
-    },
-    {
-      id: 'milestone-002',
-      title: 'Student Forms UI Overhaul',
-      description: 'Stepped workflows with auto-save and validation',
-      color: '#2563eb',
-    },
-    {
-      id: 'milestone-003',
-      title: 'Instructor Tools Suite',
-      description: 'Filtering, progress monitor, and export tools',
-      color: '#7c3aed',
-    },
-    {
-      id: 'milestone-004',
-      title: 'Cloud Migration',
-      description: 'Moved to Reclaim Cloud for scalability',
-      color: '#ea580c',
-    },
-    {
-      id: 'milestone-005',
-      title: 'Security 2.0 & RBAC',
-      description: 'FERPA-aligned role-based access control',
-      color: '#dc2626',
-    },
-    {
-      id: 'milestone-006',
-      title: 'Projects Module',
-      description: 'Document management with Clowder integration',
-      color: '#0891b2',
-    },
-  ],
-  impactItems: [
-    {
-      id: 'impact-001',
-      icon: '👨‍🎓',
-      label: 'For Students',
-      text: 'Guided, auto-saving forms that reduce frustration',
-    },
-    {
-      id: 'impact-002',
-      icon: '👩‍🏫',
-      label: 'For Instructors',
-      text: 'Real-time progress monitoring & flexible exports',
-    },
-    {
-      id: 'impact-003',
-      icon: '🔬',
-      label: 'For Researchers',
-      text: 'Clean, structured data with full provenance',
-    },
-    {
-      id: 'impact-004',
-      icon: '🎯',
-      label: 'For Programs',
-      text: 'Foundation for understanding effective learning',
-    },
-  ],
-  partners: [
-    { id: 'partner-001', acronym: 'UH Honors', name: 'The Honors College, University of Houston', color: '#2196F3' },
-    { id: 'partner-002', acronym: 'HPE DSI', name: 'Hewlett Packard Enterprise Data Science Institute', color: '#9C27B0' },
-    { id: 'partner-003', acronym: 'Data & Society', name: 'Data & Society Research Program, UH', color: '#009688' },
-    { id: 'partner-004', acronym: 'ERC', name: 'Education Research Center, UH College of Education', color: '#FF9800' },
-  ],
-  poster: {
-    type: 'image',
-    url: '@/assets/sample_architecture.png',
-    title: 'System Architecture',
-    file: null,
-  },
-  footer: {
-    icon: 'ℹ️',
-    message: 'This project page is publicly viewable via a secure link. Team members may revoke access at any time.',
-    variant: 'notice',
-  },
-  metadata: {
-    createdAt: '2024-02-01T09:00:00Z',
-    updatedAt: '2024-02-15T16:45:00Z',
-    createdBy: 'user-philip-001',
-    status: 'published',
+    text: 'The implementation demonstrates that with careful architecture and modern tooling, it is possible to build cost-effective real-time data pipelines that meet enterprise-grade reliability requirements.',
+    attribution: '— Jordan Chen',
   },
 };
 
@@ -670,21 +622,13 @@ export const SAMPLE_DEVELOPMENT_PROJECT = {
 // =============================================================================
 
 /**
- * Validation error object
  * @typedef {Object} ValidationError
- * @property {string} field - Field path (e.g., 'author.name', 'findings[0].stat')
+ * @property {string} field - Field path
  * @property {string} message - Error message
  */
 
 /**
  * Validate a string field
- * @param {string} value - Value to validate
- * @param {string} fieldName - Human-readable field name
- * @param {Object} options - Validation options
- * @param {boolean} options.required - Is field required
- * @param {number} options.minLength - Minimum length
- * @param {number} options.maxLength - Maximum length
- * @returns {string|null} Error message or null if valid
  */
 export function validateString(value, fieldName, options = {}) {
   const { required = false, minLength = 0, maxLength = Infinity } = options;
@@ -706,12 +650,6 @@ export function validateString(value, fieldName, options = {}) {
 
 /**
  * Validate an array field
- * @param {Array} value - Array to validate
- * @param {string} fieldName - Human-readable field name
- * @param {Object} options - Validation options
- * @param {number} options.minItems - Minimum items
- * @param {number} options.maxItems - Maximum items
- * @returns {string|null} Error message or null if valid
  */
 export function validateArray(value, fieldName, options = {}) {
   const { minItems = 0, maxItems = Infinity } = options;
@@ -733,9 +671,6 @@ export function validateArray(value, fieldName, options = {}) {
 
 /**
  * Validate an author object
- * @param {Author} author - Author to validate
- * @param {string} prefix - Field path prefix
- * @returns {ValidationError[]} Array of errors
  */
 export function validateAuthor(author, prefix = 'author') {
   const errors = [];
@@ -754,9 +689,6 @@ export function validateAuthor(author, prefix = 'author') {
 
 /**
  * Validate a finding object
- * @param {Finding} finding - Finding to validate
- * @param {string} prefix - Field path prefix
- * @returns {ValidationError[]} Array of errors
  */
 export function validateFinding(finding, prefix = 'finding') {
   const errors = [];
@@ -776,9 +708,6 @@ export function validateFinding(finding, prefix = 'finding') {
 
 /**
  * Validate a partner object
- * @param {Partner} partner - Partner to validate
- * @param {string} prefix - Field path prefix
- * @returns {ValidationError[]} Array of errors
  */
 export function validatePartner(partner, prefix = 'partner') {
   const errors = [];
@@ -789,7 +718,6 @@ export function validatePartner(partner, prefix = 'partner') {
   const nameError = validateString(partner.name, 'Organization Name', { required: true, maxLength: 150 });
   if (nameError) errors.push({ field: `${prefix}.name`, message: nameError });
 
-  // Validate hex color
   if (!/^#[0-9A-Fa-f]{6}$/.test(partner.color)) {
     errors.push({ field: `${prefix}.color`, message: 'Invalid color format' });
   }
@@ -799,9 +727,6 @@ export function validatePartner(partner, prefix = 'partner') {
 
 /**
  * Validate a milestone object
- * @param {Milestone} milestone - Milestone to validate
- * @param {string} prefix - Field path prefix
- * @returns {ValidationError[]} Array of errors
  */
 export function validateMilestone(milestone, prefix = 'milestone') {
   const errors = [];
@@ -821,9 +746,6 @@ export function validateMilestone(milestone, prefix = 'milestone') {
 
 /**
  * Validate an impact item object
- * @param {ImpactItem} item - Impact item to validate
- * @param {string} prefix - Field path prefix
- * @returns {ValidationError[]} Array of errors
  */
 export function validateImpactItem(item, prefix = 'impactItem') {
   const errors = [];
@@ -841,25 +763,37 @@ export function validateImpactItem(item, prefix = 'impactItem') {
 }
 
 /**
- * Validate a complete Research project
- * @param {ResearchProject} project - Project to validate
+ * Validate a complete project
+ * @param {Project} project - Project to validate
  * @returns {ValidationError[]} Array of errors
  */
-export function validateResearchProject(project) {
+export function validateProject(project) {
   const errors = [];
+  const enabledSections = project.enabledSections || [];
 
-  // Basic fields
+  // === MANDATORY FIELDS ===
+
+  // Title
   const titleError = validateString(project.title, 'Project Title', { required: true, maxLength: 200 });
   if (titleError) errors.push({ field: 'title', message: titleError });
 
+  // Description
   const descError = validateString(project.description, 'Description', { required: true, maxLength: 1000 });
   if (descError) errors.push({ field: 'description', message: descError });
 
+  // Label
   const labelError = validateString(project.label?.text, 'Label', { required: true, maxLength: 50 });
   if (labelError) errors.push({ field: 'label.text', message: labelError });
 
-  // Author
-  errors.push(...validateAuthor(project.author, 'author'));
+  // Authors (min 1)
+  const authorsError = validateArray(project.authors, 'Authors', { minItems: 1, maxItems: 6 });
+  if (authorsError) {
+    errors.push({ field: 'authors', message: authorsError });
+  } else {
+    project.authors.forEach((author, index) => {
+      errors.push(...validateAuthor(author, `authors[${index}]`));
+    });
+  }
 
   // Tags
   const tagsError = validateArray(project.tags, 'Tags', { minItems: 1, maxItems: 10 });
@@ -879,104 +813,51 @@ export function validateResearchProject(project) {
   const conclusionError = validateString(project.conclusion?.text, 'Conclusion', { required: true, maxLength: 1000 });
   if (conclusionError) errors.push({ field: 'conclusion.text', message: conclusionError });
 
-  // Partners (optional but validate if present)
-  if (project.partners?.length > 0) {
+  // === OPTIONAL SECTIONS (only validate if enabled) ===
+
+  // Partners
+  if (isSectionEnabled('partners', enabledSections) && project.partners?.length > 0) {
     project.partners.forEach((partner, index) => {
       errors.push(...validatePartner(partner, `partners[${index}]`));
     });
+  }
+
+  // Timeline
+  if (isSectionEnabled('timeline', enabledSections)) {
+    const milestonesError = validateArray(project.milestones, 'Timeline Milestones', { minItems: 2, maxItems: 10 });
+    if (milestonesError) {
+      errors.push({ field: 'milestones', message: milestonesError });
+    } else {
+      project.milestones.forEach((milestone, index) => {
+        errors.push(...validateMilestone(milestone, `milestones[${index}]`));
+      });
+    }
+  }
+
+  // Impact
+  if (isSectionEnabled('impact', enabledSections)) {
+    const impactError = validateArray(project.impactItems, 'Impact Items', { minItems: 2, maxItems: 6 });
+    if (impactError) {
+      errors.push({ field: 'impactItems', message: impactError });
+    } else {
+      project.impactItems.forEach((item, index) => {
+        errors.push(...validateImpactItem(item, `impactItems[${index}]`));
+      });
+    }
+  }
+
+  // Poster (if enabled, must have title)
+  if (isSectionEnabled('poster', enabledSections) && project.poster) {
+    const posterTitleError = validateString(project.poster.title, 'Poster Title', { required: true, maxLength: 100 });
+    if (posterTitleError) errors.push({ field: 'poster.title', message: posterTitleError });
   }
 
   return errors;
 }
 
 /**
- * Validate a complete Development project
- * @param {DevelopmentProject} project - Project to validate
- * @returns {ValidationError[]} Array of errors
- */
-export function validateDevelopmentProject(project) {
-  const errors = [];
-
-  // Basic fields
-  const titleError = validateString(project.title, 'Project Title', { required: true, maxLength: 200 });
-  if (titleError) errors.push({ field: 'title', message: titleError });
-
-  const descError = validateString(project.description, 'Description', { required: true, maxLength: 1000 });
-  if (descError) errors.push({ field: 'description', message: descError });
-
-  const labelError = validateString(project.label?.text, 'Label', { required: true, maxLength: 50 });
-  if (labelError) errors.push({ field: 'label.text', message: labelError });
-
-  // Authors
-  const authorsError = validateArray(project.authors, 'Team Members', { minItems: 1, maxItems: 6 });
-  if (authorsError) {
-    errors.push({ field: 'authors', message: authorsError });
-  } else {
-    project.authors.forEach((author, index) => {
-      errors.push(...validateAuthor(author, `authors[${index}]`));
-    });
-  }
-
-  // Tags
-  const tagsError = validateArray(project.tags, 'Tags', { minItems: 1, maxItems: 10 });
-  if (tagsError) errors.push({ field: 'tags', message: tagsError });
-
-  // Findings/Achievements
-  const findingsError = validateArray(project.findings, 'Key Achievements', { minItems: 1, maxItems: 3 });
-  if (findingsError) {
-    errors.push({ field: 'findings', message: findingsError });
-  } else {
-    project.findings.forEach((finding, index) => {
-      errors.push(...validateFinding(finding, `findings[${index}]`));
-    });
-  }
-
-  // Conclusion
-  const conclusionError = validateString(project.conclusion?.text, 'Conclusion', { required: true, maxLength: 1000 });
-  if (conclusionError) errors.push({ field: 'conclusion.text', message: conclusionError });
-
-  // Milestones (optional but validate if present)
-  if (project.milestones?.length > 0) {
-    project.milestones.forEach((milestone, index) => {
-      errors.push(...validateMilestone(milestone, `milestones[${index}]`));
-    });
-  }
-
-  // Impact Items
-  const impactError = validateArray(project.impactItems, 'Impact Items', { minItems: 1, maxItems: 6 });
-  if (impactError) {
-    errors.push({ field: 'impactItems', message: impactError });
-  } else {
-    project.impactItems.forEach((item, index) => {
-      errors.push(...validateImpactItem(item, `impactItems[${index}]`));
-    });
-  }
-
-  // Partners (optional but validate if present)
-  if (project.partners?.length > 0) {
-    project.partners.forEach((partner, index) => {
-      errors.push(...validatePartner(partner, `partners[${index}]`));
-    });
-  }
-
-  return errors;
-}
-
-/**
- * Validate any project based on its template type
- * @param {ResearchProject|DevelopmentProject} project - Project to validate
- * @returns {ValidationError[]} Array of errors
- */
-export function validateProject(project) {
-  if (project.templateType === TEMPLATE_TYPES.DEVELOPMENT) {
-    return validateDevelopmentProject(project);
-  }
-  return validateResearchProject(project);
-}
-
-/**
- * Check if a project is valid (has no validation errors)
- * @param {ResearchProject|DevelopmentProject} project - Project to validate
+ * Check if a project is valid
+ * @param {Project} project
  * @returns {boolean}
  */
 export function isProjectValid(project) {
@@ -989,59 +870,22 @@ export function isProjectValid(project) {
 
 /**
  * Deep clone a project object
- * @param {ResearchProject|DevelopmentProject} project - Project to clone
- * @returns {ResearchProject|DevelopmentProject}
+ * @param {Project} project
+ * @returns {Project}
  */
 export function cloneProject(project) {
   return JSON.parse(JSON.stringify(project));
 }
 
 /**
- * Get template display info
- * @param {string} templateType - One of TEMPLATE_TYPES
- * @returns {Object} Template metadata
- */
-export function getTemplateInfo(templateType) {
-  const templates = {
-    [TEMPLATE_TYPES.RESEARCH]: {
-      id: TEMPLATE_TYPES.RESEARCH,
-      name: 'Research Fellowship',
-      description: 'Single author layout with PDF poster. Ideal for research projects, fellowships, and individual academic work.',
-      features: ['Single author with testimonial', 'PDF poster with zoom', 'Key findings display', 'Partner organizations'],
-      thumbnail: '/thumbnails/research-template.png',
-    },
-    [TEMPLATE_TYPES.DEVELOPMENT]: {
-      id: TEMPLATE_TYPES.DEVELOPMENT,
-      name: 'Development',
-      description: 'Multi-author layout with timeline and impact sections. Ideal for software projects, team collaborations, and development work.',
-      features: ['Multiple team members', 'Development timeline', 'Impact summary grid', 'Image/diagram poster'],
-      thumbnail: '/thumbnails/development-template.png',
-    },
-  };
-
-  return templates[templateType] || templates[TEMPLATE_TYPES.RESEARCH];
-}
-
-/**
- * Get all available templates
- * @returns {Object[]} Array of template info objects
- */
-export function getAllTemplates() {
-  return Object.values(TEMPLATE_TYPES).map(getTemplateInfo);
-}
-
-/**
  * Convert project to API-safe format (remove File objects)
- * @param {ResearchProject|DevelopmentProject} project - Project to convert
- * @returns {Object} API-safe project object
+ * @param {Project} project
+ * @returns {Object}
  */
 export function projectToApiFormat(project) {
   const clone = cloneProject(project);
 
-  // Remove File objects from author(s)
-  if (clone.author) {
-    delete clone.author.avatarFile;
-  }
+  // Remove File objects from authors
   if (clone.authors) {
     clone.authors.forEach(author => {
       delete author.avatarFile;
@@ -1058,30 +902,69 @@ export function projectToApiFormat(project) {
 
 /**
  * Merge partial project data with defaults
- * @param {Partial<ResearchProject|DevelopmentProject>} partial - Partial project data
- * @param {string} templateType - Template type for defaults
- * @returns {ResearchProject|DevelopmentProject}
+ * @param {Partial<Project>} partial
+ * @returns {Project}
  */
-export function mergeWithDefaults(partial, templateType) {
-  const defaults = createEmptyProject(templateType);
+export function mergeWithDefaults(partial) {
+  const defaults = createEmptyProject();
   return {
     ...defaults,
     ...partial,
     label: { ...defaults.label, ...partial.label },
     conclusion: { ...defaults.conclusion, ...partial.conclusion },
-    poster: { ...defaults.poster, ...partial.poster },
     footer: { ...defaults.footer, ...partial.footer },
     metadata: { ...defaults.metadata, ...partial.metadata },
+    enabledSections: partial.enabledSections || defaults.enabledSections,
   };
+}
+
+// =============================================================================
+// MIGRATION - Convert old format to new
+// =============================================================================
+
+/**
+ * Migrate old template-based project to new unified format
+ * @param {Object} oldProject - Project in old format
+ * @returns {Project} Project in new format
+ */
+export function migrateProject(oldProject) {
+  // Already in new format
+  if (Array.isArray(oldProject.enabledSections)) {
+    return oldProject;
+  }
+
+  // Detect old format by templateType
+  if (oldProject.templateType) {
+    const wasResearch = oldProject.templateType === 'research';
+
+    // Determine which sections have data
+    const enabledSections = [];
+    if (oldProject.partners?.length > 0) enabledSections.push('partners');
+    if (oldProject.milestones?.length > 0) enabledSections.push('timeline');
+    if (oldProject.impactItems?.length > 0) enabledSections.push('impact');
+    if (oldProject.poster?.url) enabledSections.push('poster');
+
+    return {
+      ...oldProject,
+      // Convert single author to array
+      authors: wasResearch && oldProject.author
+        ? [oldProject.author]
+        : (oldProject.authors || [createEmptyAuthor()]),
+      enabledSections,
+      // Remove old fields
+      templateType: undefined,
+      author: undefined,
+    };
+  }
+
+  // Unknown format, return as-is with defaults
+  return mergeWithDefaults(oldProject);
 }
 
 // =============================================================================
 // FORM FIELD CONFIGURATIONS
 // =============================================================================
 
-/**
- * Field configuration for form generation
- */
 export const FORM_FIELD_CONFIG = {
   title: {
     label: 'Project Title',
@@ -1100,7 +983,7 @@ export const FORM_FIELD_CONFIG = {
   },
   labelText: {
     label: 'Category Label',
-    placeholder: 'e.g., Pharis Fellowship, Engaged Data Science',
+    placeholder: 'e.g., Pharis Fellowship, Research Project',
     maxLength: 50,
     required: true,
     helpText: 'A short label that appears above the title',
@@ -1163,7 +1046,7 @@ export const FORM_FIELD_CONFIG = {
   },
   milestoneTitle: {
     label: 'Milestone Title',
-    placeholder: 'e.g., JWT Authentication',
+    placeholder: 'e.g., Data Collection Phase',
     maxLength: 100,
     required: true,
   },
@@ -1192,6 +1075,10 @@ export const FORM_FIELD_CONFIG = {
   },
 };
 
+// =============================================================================
+// EXPORTS
+// =============================================================================
+
 export default {
   // Constants
   TEMPLATE_TYPES,
@@ -1200,6 +1087,7 @@ export default {
   PARTNER_COLOR_PRESETS,
   MILESTONE_COLOR_PRESETS,
   IMPACT_ICON_PRESETS,
+  FOOTER_VARIANTS,
   FORM_FIELD_CONFIG,
 
   // Factory functions
@@ -1211,14 +1099,15 @@ export default {
   createEmptyImpactItem,
   createEmptyConclusion,
   createEmptyPoster,
-  createEmptyFooter,
+  createDefaultFooter,
   createEmptyLabel,
   createMetadata,
-  createEmptyResearchProject,
-  createEmptyDevelopmentProject,
   createEmptyProject,
+  initializeSectionData,
+  clearSectionData,
 
   // Sample data
+  SAMPLE_PROJECT,
   SAMPLE_RESEARCH_PROJECT,
   SAMPLE_DEVELOPMENT_PROJECT,
 
@@ -1230,15 +1119,12 @@ export default {
   validatePartner,
   validateMilestone,
   validateImpactItem,
-  validateResearchProject,
-  validateDevelopmentProject,
   validateProject,
   isProjectValid,
 
   // Utilities
   cloneProject,
-  getTemplateInfo,
-  getAllTemplates,
   projectToApiFormat,
   mergeWithDefaults,
+  migrateProject,
 };

@@ -7,8 +7,12 @@
 
 // Main editor components
 export { default as ProjectEditorMain } from './ProjectEditorMain.vue';
-export { default as ProjectTemplateSelector } from './ProjectTemplateSelector.vue';
+export { default as SectionConfigurator } from './SectionConfigurator.vue';
+export { default as SectionAddMenu } from './SectionAddMenu.vue';
 export { default as ProjectPreview } from './ProjectPreview.vue';
+
+// Legacy component (deprecated, use SectionConfigurator instead)
+export { default as ProjectTemplateSelector } from './ProjectTemplateSelector.vue';
 
 // Re-export templates
 export * from './templates';
@@ -24,3 +28,4 @@ export * from './pages';
 
 // Re-export types and utilities
 export * from './types/projectTypes.js';
+export * from './types/sectionTypes.js';

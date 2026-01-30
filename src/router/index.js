@@ -782,7 +782,9 @@ const publicPaths = [
   "/public2",
   "/public3",
   "/public4",
+  // Carlos
   "/public5",
+  // Phil Navya
   "/public6",
   // Project View public routes
   "/dev/projectPreview",

@@ -30,9 +30,9 @@
       <!-- Avatar Preview & Upload -->
       <div class="avatar-section">
         <div class="avatar-preview">
-          <img 
-            v-if="avatarPreviewUrl" 
-            :src="avatarPreviewUrl" 
+          <img
+            v-if="avatarPreviewUrl"
+            :src="avatarPreviewUrl"
             :alt="modelValue.name || 'Author avatar'"
           />
           <div v-else class="avatar-placeholder">
@@ -58,6 +58,14 @@
           @change="handleFileChange"
         />
       </div>
+
+      <!-- Avatar Cropper Dialog -->
+      <AvatarCropperDialog
+        v-model="showCropperDialog"
+        :image-file="pendingImageFile"
+        @cropped="handleCroppedImage"
+        @cancel="handleCropperCancel"
+      />
 
       <!-- Form Fields -->
       <div class="fields-section">
@@ -115,6 +123,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import AvatarCropperDialog from './AvatarCropperDialog.vue';
 
 const props = defineProps({
   modelValue: {
@@ -150,6 +159,8 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'remove']);
 
 const fileInput = ref(null);
+const showCropperDialog = ref(false);
+const pendingImageFile = ref(null);
 
 // Validation rules
 const nameRules = [
@@ -191,16 +202,32 @@ function triggerFileInput() {
   fileInput.value?.click();
 }
 
-// Handle file selection
+// Handle file selection - opens cropper dialog
 function handleFileChange(event) {
   const file = event.target.files?.[0];
   if (file) {
-    emit('update:modelValue', {
-      ...props.modelValue,
-      avatarFile: file,
-      avatarUrl: '' // Clear URL when file is selected
-    });
+    pendingImageFile.value = file;
+    showCropperDialog.value = true;
   }
+  // Reset the input so the same file can be selected again
+  if (fileInput.value) {
+    fileInput.value.value = '';
+  }
+}
+
+// Handle cropped image from dialog
+function handleCroppedImage(croppedFile) {
+  emit('update:modelValue', {
+    ...props.modelValue,
+    avatarFile: croppedFile,
+    avatarUrl: '' // Clear URL when file is selected
+  });
+  pendingImageFile.value = null;
+}
+
+// Handle cropper cancel
+function handleCropperCancel() {
+  pendingImageFile.value = null;
 }
 </script>
 

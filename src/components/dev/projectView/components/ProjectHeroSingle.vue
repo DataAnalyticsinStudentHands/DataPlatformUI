@@ -78,18 +78,25 @@ const props = defineProps({
 const imageError = ref(false);
 
 const authorAvatarSrc = computed(() => {
-  if (imageError.value || !props.author.avatarUrl) {
-    // Return placeholder/default avatar
-    return 'data:image/svg+xml,' + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-        <rect fill="#6366f1" width="100" height="100"/>
-        <text x="50" y="55" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">
-          ${props.author.name ? props.author.name.charAt(0).toUpperCase() : '?'}
-        </text>
-      </svg>
-    `);
+  // Check for uploaded file first (from cropper)
+  if (props.author.avatarFile) {
+    return URL.createObjectURL(props.author.avatarFile);
   }
-  return props.author.avatarUrl;
+
+  // Fall back to URL
+  if (!imageError.value && props.author.avatarUrl) {
+    return props.author.avatarUrl;
+  }
+
+  // Return placeholder/default avatar
+  return 'data:image/svg+xml,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+      <rect fill="#6366f1" width="100" height="100"/>
+      <text x="50" y="55" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">
+        ${props.author.name ? props.author.name.charAt(0).toUpperCase() : '?'}
+      </text>
+    </svg>
+  `);
 });
 
 function handleImageError() {

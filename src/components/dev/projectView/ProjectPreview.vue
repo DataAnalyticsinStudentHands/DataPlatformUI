@@ -2,7 +2,7 @@
  * src/components/dev/projectView/ProjectPreview.vue
  *
  * Live preview pane showing rendered template.
- * Renders template directly with proper height for viewport-based template layouts.
+ * Renders the unified template with proper height for viewport-based layouts.
  */
 
 <template>
@@ -12,14 +12,14 @@
       <div class="preview-title-section">
         <v-icon size="20" color="#c8102e" class="mr-2">mdi-eye-outline</v-icon>
         <h3 class="preview-title">{{ $t('Live Preview') }}</h3>
-        <v-chip 
-          v-if="project?.templateType"
-          size="x-small" 
-          color="#c8102e" 
+        <v-chip
+          v-if="sectionCount > 0"
+          size="x-small"
+          color="#6366f1"
           variant="tonal"
           class="ml-2"
         >
-          {{ project.templateType === 'development' ? 'Team' : 'Research' }}
+          {{ sectionCount }} {{ $t('sections') }}
         </v-chip>
       </div>
 
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Preview Content -->
-    <div 
+    <div
       ref="contentRef"
       class="preview-content"
       :class="{ 'fullscreen': isFullscreen }"
@@ -75,9 +75,9 @@
 
       <!-- Direct Template Render - fills container height -->
       <div v-else class="template-wrapper">
-        <ProjectTemplateRenderer 
+        <ProjectTemplate
           :key="previewKey"
-          :project="previewProject" 
+          :project="previewProject"
         />
       </div>
 
@@ -98,12 +98,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { ProjectTemplateRenderer } from './templates';
-import { 
-  SAMPLE_RESEARCH_PROJECT, 
-  SAMPLE_DEVELOPMENT_PROJECT,
-  TEMPLATE_TYPES 
-} from './types/projectTypes.js';
+import { ProjectTemplate } from './templates';
+import { SAMPLE_PROJECT } from './types/projectTypes.js';
 
 const props = defineProps({
   project: {
@@ -129,27 +125,31 @@ const hasValidProject = computed(() => {
   return props.project.title || props.project.description || props.useSampleData;
 });
 
+// Count enabled sections for display
+const sectionCount = computed(() => {
+  if (!props.project) return 0;
+  // Mandatory sections (4) + enabled optional sections
+  const optionalCount = (props.project.enabledSections || []).length;
+  return 4 + optionalCount; // 4 mandatory: hero, tags, findings, footer
+});
+
 // Get preview project (use sample data to fill gaps if needed)
 const previewProject = computed(() => {
   if (!props.project) {
-    return props.project?.templateType === TEMPLATE_TYPES.DEVELOPMENT 
-      ? SAMPLE_DEVELOPMENT_PROJECT 
-      : SAMPLE_RESEARCH_PROJECT;
+    return SAMPLE_PROJECT;
   }
 
   if (props.useSampleData) {
     // Merge with sample data for preview
-    const sample = props.project.templateType === TEMPLATE_TYPES.DEVELOPMENT
-      ? SAMPLE_DEVELOPMENT_PROJECT
-      : SAMPLE_RESEARCH_PROJECT;
-    
     return {
-      ...sample,
+      ...SAMPLE_PROJECT,
       ...props.project,
-      label: { ...sample.label, ...props.project.label },
-      conclusion: { ...sample.conclusion, ...props.project.conclusion },
-      poster: { ...sample.poster, ...props.project.poster },
-      footer: { ...sample.footer, ...props.project.footer },
+      label: { ...SAMPLE_PROJECT.label, ...props.project.label },
+      conclusion: { ...SAMPLE_PROJECT.conclusion, ...props.project.conclusion },
+      poster: props.project.poster || SAMPLE_PROJECT.poster,
+      footer: { ...SAMPLE_PROJECT.footer, ...props.project.footer },
+      // Use project's enabled sections, not sample
+      enabledSections: props.project.enabledSections || [],
     };
   }
 
@@ -160,7 +160,7 @@ const previewProject = computed(() => {
 function toggleFullscreen() {
   isFullscreen.value = !isFullscreen.value;
   emit('fullscreen-change', isFullscreen.value);
-  
+
   if (isFullscreen.value) {
     document.body.style.overflow = 'hidden';
   } else {
@@ -288,10 +288,8 @@ defineExpose({
 }
 
 /* Override template's viewport-filling behavior for preview context */
-.template-wrapper :deep(.page) {
-  height: auto;
+.template-wrapper :deep(.project-template) {
   min-height: auto;
-  overflow: visible;
 }
 
 /* Let content grid flow naturally */
@@ -299,10 +297,90 @@ defineExpose({
   overflow: visible;
 }
 
-/* Let left/right columns show full content */
-.template-wrapper :deep(.left),
-.template-wrapper :deep(.right) {
+/* Let columns show full content */
+.template-wrapper :deep(.info-column),
+.template-wrapper :deep(.poster-column) {
   overflow: visible;
+}
+
+/* ================================================
+   PREVIEW-SPECIFIC HERO OVERRIDES
+   Force compact "desktop" layout in preview context
+   ================================================ */
+
+/* Keep hero side-by-side layout, don't stack */
+.template-wrapper :deep(.hero-content) {
+  flex-direction: row !important;
+  gap: 16px;
+}
+
+/* Reduce hero padding for preview */
+.template-wrapper :deep(.hero) {
+  padding: 16px 20px;
+}
+
+/* Compact title */
+.template-wrapper :deep(.hero h1) {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+/* Compact label */
+.template-wrapper :deep(.hero-label) {
+  font-size: 9px;
+  margin-bottom: 6px;
+}
+
+/* Compact description */
+.template-wrapper :deep(.hero-description) {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Compact authors container */
+.template-wrapper :deep(.hero-authors) {
+  min-width: 280px;
+  gap: 8px;
+  flex-direction: column !important;
+}
+
+/* Single author card (ProjectHeroSingle) */
+.template-wrapper :deep(.hero-author) {
+  min-width: 240px;
+  padding: 12px 14px;
+  gap: 12px;
+}
+
+/* Compact author cards */
+.template-wrapper :deep(.author-card) {
+  padding: 10px 12px;
+  gap: 10px;
+  border-radius: 8px;
+}
+
+/* Smaller avatars in preview */
+.template-wrapper :deep(.author-avatar) {
+  width: 56px;
+  height: 56px;
+  border-width: 2px;
+}
+
+/* Compact author text */
+.template-wrapper :deep(.author-name) {
+  font-size: 13px;
+}
+
+.template-wrapper :deep(.author-role) {
+  font-size: 10px;
+}
+
+.template-wrapper :deep(.author-quote) {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.template-wrapper :deep(.author-details) {
+  gap: 3px;
 }
 
 .fullscreen-close-btn {

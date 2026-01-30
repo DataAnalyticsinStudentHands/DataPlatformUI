@@ -2,7 +2,7 @@
  * src/components/dev/projectView/ProjectEditorMain.vue
  *
  * Main orchestrator component for project creation/editing.
- * Implements a three-step flow: Select Template → Fill Form → Preview & Submit
+ * Implements a three-step flow: Configure Sections → Fill Form → Preview & Submit
  */
 
 <template>
@@ -32,8 +32,8 @@
 
         <!-- Auto-save Indicator -->
         <div v-if="currentStep === 2" class="autosave-indicator">
-          <v-icon 
-            size="16" 
+          <v-icon
+            size="16"
             :color="saveStatus === 'saved' ? '#16a34a' : '#666'"
             class="mr-1"
           >
@@ -46,11 +46,11 @@
       <!-- Stepper -->
       <div class="stepper-container">
         <div class="stepper">
-          <div 
-            v-for="(step, index) in steps" 
+          <div
+            v-for="(step, index) in steps"
             :key="index"
             class="step"
-            :class="{ 
+            :class="{
               'active': currentStep === index + 1,
               'completed': currentStep > index + 1,
               'clickable': index + 1 < currentStep
@@ -72,18 +72,16 @@
 
     <!-- Main Content Area -->
     <div class="editor-content">
-      <!-- Step 1: Template Selection -->
+      <!-- Step 1: Section Configuration -->
       <div v-show="currentStep === 1" class="step-content">
-        <ProjectTemplateSelector
-          v-model="selectedTemplate"
-          @select="handleTemplateSelect"
+        <SectionConfigurator
+          v-model="enabledSections"
         />
 
         <div class="step-actions centered">
           <v-btn
             color="#c8102e"
             size="large"
-            :disabled="!selectedTemplate"
             @click="proceedToForm"
           >
             {{ $t('Continue') }}
@@ -98,7 +96,7 @@
           <!-- Form Panel -->
           <div class="form-panel">
             <v-card class="form-card" elevation="0">
-              <ProjectFormContainer
+              <ProjectForm
                 ref="formRef"
                 v-model="projectData"
                 :show-validation="showValidation"
@@ -139,15 +137,6 @@
               <v-icon start>{{ showPreview ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
               {{ showPreview ? $t('Hide Preview') : $t('Show Preview') }}
             </v-btn>
-
-            <!-- <v-btn
-              variant="text"
-              color="#666"
-              @click="toggleSampleData"
-            >
-              <v-icon start>{{ useSampleDataInPreview ? 'mdi-file-document' : 'mdi-file-document-outline' }}</v-icon>
-              {{ useSampleDataInPreview ? $t('Using Sample Data') : $t('Use Sample Data') }}
-            </v-btn> -->
           </div>
 
           <div class="actions-right">
@@ -252,15 +241,17 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import ProjectTemplateSelector from './ProjectTemplateSelector.vue';
-import { ProjectFormContainer } from './forms';
+import SectionConfigurator from './SectionConfigurator.vue';
+import ProjectForm from './forms/ProjectForm.vue';
 import ProjectPreview from './ProjectPreview.vue';
-import { 
-  TEMPLATE_TYPES, 
+import {
   createEmptyProject,
   validateProject,
-  cloneProject
+  cloneProject,
+  migrateProject,
+  initializeSectionData
 } from './types/projectTypes.js';
+import { DEFAULT_ENABLED_SECTIONS } from './types/sectionTypes.js';
 
 const props = defineProps({
   // Existing project data for editing mode
@@ -284,7 +275,7 @@ const finalPreviewRef = ref(null);
 
 // State
 const currentStep = ref(1);
-const selectedTemplate = ref('');
+const enabledSections = ref([...DEFAULT_ENABLED_SECTIONS]);
 const projectData = ref(null);
 const showPreview = ref(true);
 const useSampleDataInPreview = ref(true);
@@ -304,13 +295,13 @@ const isSubmitting = ref(false);
 const isEditing = computed(() => !!props.projectId || !!props.initialProject);
 
 const steps = computed(() => [
-  'Select Template',
+  'Configure',
   'Fill Details',
   'Preview & Submit'
 ]);
 
 const stepDescriptions = computed(() => [
-  'Choose the layout that best fits your project',
+  'Choose which sections to include in your project page',
   'Enter your project information',
   'Review and publish your project page'
 ]);
@@ -347,25 +338,27 @@ const saveStatusClass = computed(() => ({
 }));
 
 // Methods
-function handleTemplateSelect(templateId) {
-  selectedTemplate.value = templateId;
-}
-
 function proceedToForm() {
-  if (!selectedTemplate.value) return;
-  
-  // Initialize project data based on template
-  if (!projectData.value || projectData.value.templateType !== selectedTemplate.value) {
-    projectData.value = createEmptyProject(selectedTemplate.value);
+  // Initialize project data with selected sections
+  if (!projectData.value) {
+    projectData.value = createEmptyProject('', enabledSections.value);
+  } else {
+    // Update enabled sections
+    projectData.value.enabledSections = [...enabledSections.value];
   }
-  
+
+  // Initialize data for each enabled section
+  enabledSections.value.forEach(sectionId => {
+    projectData.value = initializeSectionData(projectData.value, sectionId);
+  });
+
   currentStep.value = 2;
 }
 
 function proceedToPreview() {
   showValidation.value = true;
   validationErrors.value = validateProject(projectData.value);
-  
+
   if (validationErrors.value.length === 0) {
     currentStep.value = 3;
   }
@@ -387,10 +380,6 @@ function togglePreview() {
   showPreview.value = !showPreview.value;
 }
 
-function toggleSampleData() {
-  useSampleDataInPreview.value = !useSampleDataInPreview.value;
-}
-
 function handleValidationChange(isValid, errors) {
   isFormValid.value = isValid;
   if (showValidation.value) {
@@ -409,10 +398,10 @@ function scheduleAutoSave() {
   if (autoSaveTimeout) {
     clearTimeout(autoSaveTimeout);
   }
-  
+
   hasUnsavedChanges.value = true;
   saveStatus.value = 'idle';
-  
+
   autoSaveTimeout = setTimeout(async () => {
     await autoSave();
   }, 2000);
@@ -420,19 +409,19 @@ function scheduleAutoSave() {
 
 async function autoSave() {
   if (!projectData.value) return;
-  
+
   try {
     saveStatus.value = 'saving';
     // Save to localStorage for now
     localStorage.setItem('projectDraft', JSON.stringify({
-      template: selectedTemplate.value,
+      enabledSections: enabledSections.value,
       data: projectData.value,
       step: currentStep.value,
       timestamp: new Date().toISOString()
     }));
-    
+
     await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-    
+
     saveStatus.value = 'saved';
     hasUnsavedChanges.value = false;
   } catch (error) {
@@ -454,11 +443,11 @@ async function saveDraft() {
 async function submitProject() {
   showValidation.value = true;
   validationErrors.value = validateProject(projectData.value);
-  
+
   if (validationErrors.value.length > 0) {
     return;
   }
-  
+
   isSubmitting.value = true;
   try {
     // Clear draft on successful submit
@@ -475,8 +464,12 @@ function loadDraft() {
     const draft = localStorage.getItem('projectDraft');
     if (draft) {
       const parsed = JSON.parse(draft);
-      selectedTemplate.value = parsed.template;
-      projectData.value = parsed.data;
+
+      // Migrate if needed (handles old template-based format)
+      const migratedData = migrateProject(parsed.data);
+
+      enabledSections.value = parsed.enabledSections || migratedData.enabledSections || [];
+      projectData.value = migratedData;
       currentStep.value = Math.min(parsed.step || 1, 2); // Don't auto-advance to preview
       return true;
     }
@@ -509,14 +502,23 @@ watch(projectData, () => {
   }
 }, { deep: true });
 
+// Sync enabledSections with projectData when on form step
+watch(enabledSections, (newVal) => {
+  if (projectData.value && currentStep.value >= 2) {
+    projectData.value.enabledSections = [...newVal];
+  }
+}, { deep: true });
+
 // Lifecycle
 onMounted(() => {
   window.addEventListener('beforeunload', handleBeforeUnload);
-  
+
   // Load initial project or draft
   if (props.initialProject) {
-    projectData.value = cloneProject(props.initialProject);
-    selectedTemplate.value = projectData.value.templateType;
+    // Migrate old format if needed
+    const migratedProject = migrateProject(cloneProject(props.initialProject));
+    projectData.value = migratedProject;
+    enabledSections.value = migratedProject.enabledSections || [];
     currentStep.value = 2;
   } else {
     loadDraft();

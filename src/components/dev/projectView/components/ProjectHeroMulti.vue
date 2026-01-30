@@ -79,18 +79,25 @@ const props = defineProps({
 const imageErrors = ref(new Set());
 
 function getAvatarSrc(author) {
-  if (imageErrors.value.has(author.id) || !author.avatarUrl) {
-    // Return placeholder/default avatar
-    return 'data:image/svg+xml,' + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 90 90">
-        <rect fill="#6366f1" width="90" height="90"/>
-        <text x="45" y="50" font-family="Arial" font-size="36" fill="white" text-anchor="middle" dominant-baseline="middle">
-          ${author.name ? author.name.charAt(0).toUpperCase() : '?'}
-        </text>
-      </svg>
-    `);
+  // Check for uploaded file first (from cropper)
+  if (author.avatarFile) {
+    return URL.createObjectURL(author.avatarFile);
   }
-  return author.avatarUrl;
+
+  // Fall back to URL
+  if (!imageErrors.value.has(author.id) && author.avatarUrl) {
+    return author.avatarUrl;
+  }
+
+  // Return placeholder/default avatar
+  return 'data:image/svg+xml,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 90 90">
+      <rect fill="#6366f1" width="90" height="90"/>
+      <text x="45" y="50" font-family="Arial" font-size="36" fill="white" text-anchor="middle" dominant-baseline="middle">
+        ${author.name ? author.name.charAt(0).toUpperCase() : '?'}
+      </text>
+    </svg>
+  `);
 }
 
 function handleImageError(event, authorId) {
