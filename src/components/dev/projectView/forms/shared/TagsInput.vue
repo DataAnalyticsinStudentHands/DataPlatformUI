@@ -1,8 +1,9 @@
 /**
  * src/components/dev/projectView/forms/shared/TagsInput.vue
  *
- * Tag entry component with add/remove functionality.
+ * Tag entry component with add/remove functionality and color selection.
  * Supports Enter key to add and click to remove tags.
+ * Each tag can have a custom color via preset or hex input.
  */
 
 <template>
@@ -43,18 +44,67 @@
 
     <!-- Tags Display -->
     <div class="tags-display">
-      <v-chip
+      <div
         v-for="(tag, index) in modelValue"
-        :key="index"
-        closable
-        color="#c8102e"
-        variant="tonal"
-        size="default"
-        class="tag-chip"
-        @click:close="removeTag(index)"
+        :key="tag.id"
+        class="tag-item"
       >
-        {{ tag }}
-      </v-chip>
+        <v-chip
+          closable
+          :color="tag.color"
+          variant="tonal"
+          size="default"
+          class="tag-chip"
+          @click:close="removeTag(index)"
+        >
+          {{ tag.text }}
+        </v-chip>
+
+        <!-- Color Picker Menu -->
+        <v-menu :close-on-content-click="false">
+          <template v-slot:activator="{ props }">
+            <button
+              v-bind="props"
+              type="button"
+              class="color-picker-btn"
+              :style="{ backgroundColor: tag.color }"
+              :title="$t('Change color')"
+            >
+              <v-icon size="12" color="white">mdi-palette</v-icon>
+            </button>
+          </template>
+          <v-card class="color-picker-card">
+            <v-card-text class="pa-3">
+              <p class="text-caption font-weight-medium mb-2">{{ $t('Select Color') }}</p>
+              <div class="color-presets">
+                <button
+                  v-for="preset in colorPresets"
+                  :key="preset.value"
+                  type="button"
+                  class="color-preset-btn"
+                  :class="{ active: tag.color === preset.value }"
+                  :style="{ backgroundColor: preset.value }"
+                  :title="preset.name"
+                  @click="updateTagColor(index, preset.value)"
+                >
+                  <v-icon v-if="tag.color === preset.value" size="16" color="white">
+                    mdi-check
+                  </v-icon>
+                </button>
+              </div>
+              <v-text-field
+                :model-value="tag.color"
+                @update:model-value="updateTagColor(index, $event)"
+                label="Custom hex"
+                variant="outlined"
+                density="compact"
+                class="mt-3"
+                placeholder="#000000"
+              ></v-text-field>
+            </v-card-text>
+          </v-card>
+        </v-menu>
+      </div>
 
       <!-- Empty State -->
       <div v-if="modelValue.length === 0" class="empty-tags">
@@ -91,6 +141,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { TAG_COLOR_PRESETS, createEmptyTag } from '../../types/projectTypes.js';
 
 const props = defineProps({
   modelValue: {
@@ -135,6 +186,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const newTag = ref('');
+const colorPresets = TAG_COLOR_PRESETS;
 
 // Error message for input
 const errorMessage = computed(() => {
@@ -153,12 +205,13 @@ const canAddTag = computed(() => {
   return trimmed.length > 0 &&
          trimmed.length <= props.maxTagLength &&
          props.modelValue.length < props.maxTags &&
-         !props.modelValue.includes(trimmed);
+         !props.modelValue.some(tag => tag.text === trimmed);
 });
 
 // Available suggestions (not already added)
 const availableSuggestions = computed(() => {
-  return props.suggestions.filter(s => !props.modelValue.includes(s)).slice(0, 6);
+  const existingTexts = props.modelValue.map(tag => tag.text);
+  return props.suggestions.filter(s => !existingTexts.includes(s)).slice(0, 6);
 });
 
 // Add a new tag
@@ -166,7 +219,14 @@ function addTag() {
   const trimmed = newTag.value.trim();
   if (!canAddTag.value) return;
 
-  emit('update:modelValue', [...props.modelValue, trimmed]);
+  // Cycle through preset colors for new tags
+  const colorIndex = props.modelValue.length % colorPresets.length;
+  const newTagObj = createEmptyTag({
+    text: trimmed,
+    color: colorPresets[colorIndex].value
+  });
+
+  emit('update:modelValue', [...props.modelValue, newTagObj]);
   newTag.value = '';
 }
 
@@ -177,11 +237,26 @@ function removeTag(index) {
   emit('update:modelValue', updated);
 }
 
+// Update tag color
+function updateTagColor(index, color) {
+  const updated = [...props.modelValue];
+  updated[index] = { ...updated[index], color };
+  emit('update:modelValue', updated);
+}
+
 // Add a suggestion
 function addSuggestion(suggestion) {
   if (props.modelValue.length >= props.maxTags) return;
-  if (props.modelValue.includes(suggestion)) return;
-  emit('update:modelValue', [...props.modelValue, suggestion]);
+  if (props.modelValue.some(tag => tag.text === suggestion)) return;
+
+  // Cycle through preset colors
+  const colorIndex = props.modelValue.length % colorPresets.length;
+  const newTagObj = createEmptyTag({
+    text: suggestion,
+    color: colorPresets[colorIndex].value
+  });
+
+  emit('update:modelValue', [...props.modelValue, newTagObj]);
 }
 </script>
 
@@ -206,6 +281,13 @@ function addSuggestion(suggestion) {
   border-radius: 8px;
 }
 
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
 .tag-chip {
   font-weight: 500;
 }
@@ -214,6 +296,55 @@ function addSuggestion(suggestion) {
 .tag-chip :deep(.v-chip__close) {
   margin-inline-start: 6px;
   margin-inline-end: 0;
+}
+
+.color-picker-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.color-picker-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.color-picker-card {
+  min-width: 220px;
+}
+
+.color-presets {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.color-preset-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.color-preset-btn:hover {
+  transform: scale(1.1);
+}
+
+.color-preset-btn.active {
+  border-color: #333;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
 }
 
 .empty-tags {

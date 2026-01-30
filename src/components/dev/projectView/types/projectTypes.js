@@ -96,6 +96,38 @@ export const MILESTONE_COLOR_PRESETS = [
 ];
 
 /**
+ * Preset colors for tags
+ */
+export const TAG_COLOR_PRESETS = [
+  { name: 'Indigo', value: '#4338ca' },
+  { name: 'Blue', value: '#2563eb' },
+  { name: 'Teal', value: '#0d9488' },
+  { name: 'Green', value: '#059669' },
+  { name: 'Purple', value: '#7c3aed' },
+  { name: 'Pink', value: '#db2777' },
+  { name: 'Red', value: '#dc2626' },
+  { name: 'Orange', value: '#ea580c' },
+  { name: 'Amber', value: '#d97706' },
+  { name: 'Slate', value: '#475569' },
+];
+
+/**
+ * Preset colors for findings/achievements
+ */
+export const FINDING_COLOR_PRESETS = [
+  { name: 'Red', value: '#b91c1c' },
+  { name: 'Blue', value: '#1d4ed8' },
+  { name: 'Amber', value: '#b45309' },
+  { name: 'Green', value: '#16a34a' },
+  { name: 'Purple', value: '#7c3aed' },
+  { name: 'Cyan', value: '#0891b2' },
+  { name: 'Pink', value: '#db2777' },
+  { name: 'Indigo', value: '#4f46e5' },
+  { name: 'Teal', value: '#0d9488' },
+  { name: 'Slate', value: '#475569' },
+];
+
+/**
  * Common impact icons (emojis)
  */
 export const IMPACT_ICON_PRESETS = [
@@ -137,7 +169,7 @@ export const FOOTER_VARIANTS = {
  * @property {string} id - Unique identifier
  * @property {string} stat - The statistic/number to display
  * @property {string} description - Description of the finding
- * @property {string} variant - One of FINDING_VARIANTS
+ * @property {string} color - Hex color for the finding card
  */
 
 /**
@@ -152,6 +184,8 @@ export const FOOTER_VARIANTS = {
  * @property {string} acronym - Short name
  * @property {string} name - Full organization name
  * @property {string} color - Hex color for the icon
+ * @property {string} iconUrl - URL to organization icon/logo
+ * @property {File|null} iconFile - Local file for upload (not persisted)
  */
 
 /**
@@ -160,6 +194,13 @@ export const FOOTER_VARIANTS = {
  * @property {string} title - Milestone title
  * @property {string} description - Brief description
  * @property {string} color - Hex color for the marker
+ */
+
+/**
+ * @typedef {Object} Tag
+ * @property {string} id - Unique identifier
+ * @property {string} text - Tag text
+ * @property {string} color - Hex color for the tag
  */
 
 /**
@@ -243,7 +284,7 @@ export function createEmptyFinding(overrides = {}) {
     id: generateId(),
     stat: '',
     description: '',
-    variant: FINDING_VARIANTS.DATA,
+    color: FINDING_COLOR_PRESETS[0].value,
     ...overrides,
   };
 }
@@ -259,6 +300,8 @@ export function createEmptyPartner(overrides = {}) {
     acronym: '',
     name: '',
     color: PARTNER_COLOR_PRESETS[0].value,
+    iconUrl: '',
+    iconFile: null,
     ...overrides,
   };
 }
@@ -274,6 +317,20 @@ export function createEmptyMilestone(overrides = {}) {
     title: '',
     description: '',
     color: MILESTONE_COLOR_PRESETS[0].value,
+    ...overrides,
+  };
+}
+
+/**
+ * Create an empty tag object
+ * @param {Partial<Tag>} overrides
+ * @returns {Tag}
+ */
+export function createEmptyTag(overrides = {}) {
+  return {
+    id: generateId(),
+    text: '',
+    color: TAG_COLOR_PRESETS[0].value,
     ...overrides,
   };
 }
@@ -385,7 +442,7 @@ export function createEmptyProject(userId = '', enabledSections = DEFAULT_ENABLE
     authors: [createEmptyAuthor()],
     tags: [],
     findings: [
-      createEmptyFinding({ variant: FINDING_VARIANTS.DATA }),
+      createEmptyFinding({ color: FINDING_COLOR_PRESETS[1].value }),
     ],
     conclusion: createEmptyConclusion(),
     footer: createDefaultFooter(),
@@ -501,25 +558,29 @@ export const SAMPLE_PROJECT = {
       avatarFile: null,
     },
   ],
-  tags: ['Environmental Justice', 'Cancer Cluster', 'Housing Equity'],
+  tags: [
+    { id: 'tag-001', text: 'Environmental Justice', color: '#4338ca' },
+    { id: 'tag-002', text: 'Cancer Cluster', color: '#dc2626' },
+    { id: 'tag-003', text: 'Housing Equity', color: '#059669' },
+  ],
   findings: [
     {
       id: 'finding-001',
       stat: '350%',
       description: 'Higher childhood leukemia cases in Fifth Ward',
-      variant: FINDING_VARIANTS.CRITICAL,
+      color: '#b91c1c',
     },
     {
       id: 'finding-002',
       stat: '2005–2022',
       description: 'Years of housing data analyzed',
-      variant: FINDING_VARIANTS.DATA,
+      color: '#1d4ed8',
     },
     {
       id: 'finding-003',
       stat: 'Multiple',
       description: 'Industrial sites near residential areas',
-      variant: FINDING_VARIANTS.WARNING,
+      color: '#b45309',
     },
   ],
   conclusion: {
@@ -590,25 +651,29 @@ export const SAMPLE_DEVELOPMENT_PROJECT = {
       avatarFile: null,
     },
   ],
-  tags: ['Data Engineering', 'Real-Time Processing', 'Cloud Infrastructure'],
+  tags: [
+    { id: 'tag-dev-001', text: 'Data Engineering', color: '#2563eb' },
+    { id: 'tag-dev-002', text: 'Real-Time Processing', color: '#7c3aed' },
+    { id: 'tag-dev-003', text: 'Cloud Infrastructure', color: '#0d9488' },
+  ],
   findings: [
     {
       id: 'finding-dev-001',
       stat: '10K+',
       description: 'Events processed per second',
-      variant: FINDING_VARIANTS.SUCCESS,
+      color: '#16a34a',
     },
     {
       id: 'finding-dev-002',
       stat: '<100ms',
       description: 'End-to-end latency achieved',
-      variant: FINDING_VARIANTS.DATA,
+      color: '#1d4ed8',
     },
     {
       id: 'finding-dev-003',
       stat: '99.9%',
       description: 'System uptime maintained',
-      variant: FINDING_VARIANTS.PURPLE,
+      color: '#7c3aed',
     },
   ],
   conclusion: {
@@ -699,8 +764,8 @@ export function validateFinding(finding, prefix = 'finding') {
   const descError = validateString(finding.description, 'Description', { required: true, maxLength: 200 });
   if (descError) errors.push({ field: `${prefix}.description`, message: descError });
 
-  if (!Object.values(FINDING_VARIANTS).includes(finding.variant)) {
-    errors.push({ field: `${prefix}.variant`, message: 'Invalid variant' });
+  if (!/^#[0-9A-Fa-f]{6}$/.test(finding.color)) {
+    errors.push({ field: `${prefix}.color`, message: 'Invalid color format' });
   }
 
   return errors;
@@ -738,6 +803,22 @@ export function validateMilestone(milestone, prefix = 'milestone') {
   if (descError) errors.push({ field: `${prefix}.description`, message: descError });
 
   if (!/^#[0-9A-Fa-f]{6}$/.test(milestone.color)) {
+    errors.push({ field: `${prefix}.color`, message: 'Invalid color format' });
+  }
+
+  return errors;
+}
+
+/**
+ * Validate a tag object
+ */
+export function validateTag(tag, prefix = 'tag') {
+  const errors = [];
+
+  const textError = validateString(tag.text, 'Tag text', { required: true, maxLength: 50 });
+  if (textError) errors.push({ field: `${prefix}.text`, message: textError });
+
+  if (!/^#[0-9A-Fa-f]{6}$/.test(tag.color)) {
     errors.push({ field: `${prefix}.color`, message: 'Invalid color format' });
   }
 
@@ -797,7 +878,13 @@ export function validateProject(project) {
 
   // Tags
   const tagsError = validateArray(project.tags, 'Tags', { minItems: 1, maxItems: 10 });
-  if (tagsError) errors.push({ field: 'tags', message: tagsError });
+  if (tagsError) {
+    errors.push({ field: 'tags', message: tagsError });
+  } else {
+    project.tags.forEach((tag, index) => {
+      errors.push(...validateTag(tag, `tags[${index}]`));
+    });
+  }
 
   // Findings
   const findingsError = validateArray(project.findings, 'Key Findings', { minItems: 1, maxItems: 3 });
@@ -889,6 +976,13 @@ export function projectToApiFormat(project) {
   if (clone.authors) {
     clone.authors.forEach(author => {
       delete author.avatarFile;
+    });
+  }
+
+  // Remove File objects from partners
+  if (clone.partners) {
+    clone.partners.forEach(partner => {
+      delete partner.iconFile;
     });
   }
 
@@ -1084,8 +1178,10 @@ export default {
   TEMPLATE_TYPES,
   FINDING_VARIANTS,
   FINDING_VARIANT_STYLES,
+  FINDING_COLOR_PRESETS,
   PARTNER_COLOR_PRESETS,
   MILESTONE_COLOR_PRESETS,
+  TAG_COLOR_PRESETS,
   IMPACT_ICON_PRESETS,
   FOOTER_VARIANTS,
   FORM_FIELD_CONFIG,
@@ -1096,6 +1192,7 @@ export default {
   createEmptyFinding,
   createEmptyPartner,
   createEmptyMilestone,
+  createEmptyTag,
   createEmptyImpactItem,
   createEmptyConclusion,
   createEmptyPoster,
@@ -1118,6 +1215,7 @@ export default {
   validateFinding,
   validatePartner,
   validateMilestone,
+  validateTag,
   validateImpactItem,
   validateProject,
   isProjectValid,

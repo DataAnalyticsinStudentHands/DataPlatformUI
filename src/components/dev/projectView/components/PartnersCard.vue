@@ -30,11 +30,13 @@
         :key="partner.id" 
         class="partner-card"
       >
-        <div 
-          class="partner-icon" 
-          :style="{ backgroundColor: partner.color }"
+        <div
+          class="partner-icon"
+          :class="{ 'has-image': getIconUrl(partner) }"
+          :style="{ backgroundColor: getIconUrl(partner) ? 'transparent' : partner.color }"
         >
-          <span>{{ partner.acronym.charAt(0) }}</span>
+          <img v-if="getIconUrl(partner)" :src="getIconUrl(partner)" :alt="partner.acronym" />
+          <span v-else>{{ partner.acronym.charAt(0) }}</span>
         </div>
         <div class="partner-info">
           <div class="partner-acronym">{{ partner.acronym }}</div>
@@ -73,6 +75,14 @@ const gridClass = computed(() => ({
   [`cols-${props.columns}`]: true,
   'compact': props.compact,
 }));
+
+// Get icon URL (from file or URL)
+function getIconUrl(partner) {
+  if (partner.iconFile) {
+    return URL.createObjectURL(partner.iconFile);
+  }
+  return partner.iconUrl || '';
+}
 </script>
 
 <style scoped>
@@ -179,6 +189,18 @@ const gridClass = computed(() => ({
   justify-content: center;
   flex-shrink: 0;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.partner-icon.has-image {
+  border: 1px solid #e8e8ee;
+  background: #fff;
+}
+
+.partner-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .partner-icon span {

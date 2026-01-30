@@ -6,6 +6,7 @@
 
 export { default as AuthorInput } from './AuthorInput.vue';
 export { default as AvatarCropperDialog } from './AvatarCropperDialog.vue';
+export { default as IconCropperDialog } from './IconCropperDialog.vue';
 export { default as TagsInput } from './TagsInput.vue';
 export { default as FindingsInput } from './FindingsInput.vue';
 export { default as PartnersInput } from './PartnersInput.vue';

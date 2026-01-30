@@ -1,8 +1,9 @@
 /**
  * src/components/dev/projectView/forms/shared/FindingsInput.vue
  *
- * Findings/achievements entry component with variant color selection.
- * Manages an array of findings with stat, description, and color variant.
+ * Findings/achievements entry component with color picker.
+ * Manages an array of findings with stat, description, and color.
+ * Uses consistent color picker pattern with presets and custom hex input.
  */
 
 <template>
@@ -10,10 +11,10 @@
     <!-- Findings List -->
     <div class="findings-list">
       <div
-        v-for="(finding, index) in modelValue"
+        v-for="(finding, index) in normalizedFindings"
         :key="finding.id"
         class="finding-item"
-        :class="getVariantClass(finding.variant)"
+        :style="{ borderLeftColor: finding.color }"
       >
         <div class="finding-header">
           <div class="finding-index">
@@ -67,35 +68,60 @@
               </v-text-field>
             </v-col>
 
-            <!-- Variant Selection -->
+            <!-- Color Picker -->
             <v-col cols="12" sm="3">
-              <v-select
-                :model-value="finding.variant"
-                @update:model-value="updateFinding(index, 'variant', $event)"
-                :items="variantOptions"
-                item-title="label"
-                item-value="value"
-                :label="$t('Color')"
-                variant="outlined"
-                density="comfortable"
-              >
-                <template v-slot:prepend-inner>
-                  <div 
-                    class="variant-dot" 
-                    :style="{ backgroundColor: getVariantColor(finding.variant) }"
-                  ></div>
-                </template>
-                <template v-slot:item="{ item, props }">
-                  <v-list-item v-bind="props">
-                    <template v-slot:prepend>
-                      <div 
-                        class="variant-dot mr-3" 
-                        :style="{ backgroundColor: getVariantColor(item.value) }"
+              <v-menu :close-on-content-click="false">
+                <template v-slot:activator="{ props }">
+                  <v-text-field
+                    v-bind="props"
+                    :model-value="finding.color"
+                    :label="$t('Color')"
+                    variant="outlined"
+                    density="compact"
+                    readonly
+                  >
+                    <template v-slot:prepend-inner>
+                      <div
+                        class="color-swatch"
+                        :style="{ backgroundColor: finding.color }"
                       ></div>
                     </template>
-                  </v-list-item>
+                    <template v-slot:append-inner>
+                      <v-icon size="18">mdi-chevron-down</v-icon>
+                    </template>
+                  </v-text-field>
                 </template>
-              </v-select>
+                <v-card class="color-picker-card">
+                  <v-card-text class="pa-3">
+                    <p class="text-caption font-weight-medium mb-2">{{ $t('Select Color') }}</p>
+                    <div class="color-presets">
+                      <button
+                        v-for="preset in colorPresets"
+                        :key="preset.value"
+                        type="button"
+                        class="color-preset-btn"
+                        :class="{ active: finding.color === preset.value }"
+                        :style="{ backgroundColor: preset.value }"
+                        :title="preset.name"
+                        @click="updateFinding(index, 'color', preset.value)"
+                      >
+                        <v-icon v-if="finding.color === preset.value" size="16" color="white">
+                          mdi-check
+                        </v-icon>
+                      </button>
+                    </div>
+                    <v-text-field
+                      :model-value="finding.color"
+                      @update:model-value="updateFinding(index, 'color', $event)"
+                      label="Custom hex"
+                      variant="outlined"
+                      density="compact"
+                      class="mt-3"
+                      placeholder="#000000"
+                    ></v-text-field>
+                  </v-card-text>
+                </v-card>
+              </v-menu>
             </v-col>
           </v-row>
         </div>
@@ -123,7 +149,8 @@
 </template>
 
 <script setup>
-import { FINDING_VARIANTS, createEmptyFinding } from '../../types/projectTypes.js';
+import { computed } from 'vue';
+import { FINDING_COLOR_PRESETS, createEmptyFinding } from '../../types/projectTypes.js';
 
 const props = defineProps({
   modelValue: {
@@ -142,41 +169,32 @@ const props = defineProps({
   maxItems: {
     type: Number,
     default: 3
-  },
-  defaultVariants: {
-    type: Array,
-    default: () => ['critical', 'data', 'warning']
   }
 });
 
 const emit = defineEmits(['update:modelValue']);
 
-// Variant options for dropdown
-const variantOptions = [
-  { label: 'Red (Critical)', value: FINDING_VARIANTS.CRITICAL },
-  { label: 'Blue (Data)', value: FINDING_VARIANTS.DATA },
-  { label: 'Yellow (Warning)', value: FINDING_VARIANTS.WARNING },
-  { label: 'Green (Success)', value: FINDING_VARIANTS.SUCCESS },
-  { label: 'Purple (Technical)', value: FINDING_VARIANTS.PURPLE }
-];
+const colorPresets = FINDING_COLOR_PRESETS;
+const defaultColor = FINDING_COLOR_PRESETS[0].value;
 
-// Variant colors for display
-const variantColors = {
-  [FINDING_VARIANTS.CRITICAL]: '#b91c1c',
-  [FINDING_VARIANTS.DATA]: '#1d4ed8',
-  [FINDING_VARIANTS.WARNING]: '#b45309',
-  [FINDING_VARIANTS.SUCCESS]: '#16a34a',
-  [FINDING_VARIANTS.PURPLE]: '#7c3aed'
-};
+// Ensure all findings have a valid color (fallback to first preset if missing)
+const normalizedFindings = computed(() => {
+  return props.modelValue.map((finding, index) => {
+    if (finding.color) {
+      return finding;
+    }
+    // Assign cycling color if missing
+    const colorIndex = index % colorPresets.length;
+    return {
+      ...finding,
+      color: colorPresets[colorIndex].value
+    };
+  });
+});
 
-// Get variant color
-function getVariantColor(variant) {
-  return variantColors[variant] || variantColors[FINDING_VARIANTS.DATA];
-}
-
-// Get variant CSS class
-function getVariantClass(variant) {
-  return `variant-${variant}`;
+// Get the actual color for a finding (with fallback)
+function getFindingColor(index) {
+  return normalizedFindings.value[index]?.color || defaultColor;
 }
 
 // Update a single finding field
@@ -189,12 +207,10 @@ function updateFinding(index, field, value) {
 // Add a new finding
 function addFinding() {
   if (props.modelValue.length >= props.maxItems) return;
-  
-  // Use default variant based on position
-  const variantIndex = props.modelValue.length % props.defaultVariants.length;
-  const variant = props.defaultVariants[variantIndex];
-  
-  const newFinding = createEmptyFinding({ variant });
+
+  // Cycle through preset colors
+  const colorIndex = props.modelValue.length % colorPresets.length;
+  const newFinding = createEmptyFinding({ color: colorPresets[colorIndex].value });
   emit('update:modelValue', [...props.modelValue, newFinding]);
 }
 
@@ -227,27 +243,6 @@ function removeFinding(index) {
   transition: border-color 0.2s ease;
 }
 
-/* Variant border colors */
-.finding-item.variant-critical {
-  border-left-color: #b91c1c;
-}
-
-.finding-item.variant-data {
-  border-left-color: #1d4ed8;
-}
-
-.finding-item.variant-warning {
-  border-left-color: #b45309;
-}
-
-.finding-item.variant-success {
-  border-left-color: #16a34a;
-}
-
-.finding-item.variant-purple {
-  border-left-color: #7c3aed;
-}
-
 .finding-header {
   display: flex;
   align-items: center;
@@ -265,11 +260,42 @@ function removeFinding(index) {
   margin: 0 -8px;
 }
 
-.variant-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.color-picker-card {
+  min-width: 220px;
+}
+
+.color-presets {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.color-preset-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.color-preset-btn:hover {
+  transform: scale(1.1);
+}
+
+.color-preset-btn.active {
+  border-color: #333;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
 }
 
 .add-finding-btn {

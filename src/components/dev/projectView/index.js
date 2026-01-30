@@ -10,6 +10,7 @@ export { default as ProjectEditorMain } from './ProjectEditorMain.vue';
 export { default as SectionConfigurator } from './SectionConfigurator.vue';
 export { default as SectionAddMenu } from './SectionAddMenu.vue';
 export { default as ProjectPreview } from './ProjectPreview.vue';
+export { default as PreviewSubmitStep } from './PreviewSubmitStep.vue';
 
 // Legacy component (deprecated, use SectionConfigurator instead)
 export { default as ProjectTemplateSelector } from './ProjectTemplateSelector.vue';

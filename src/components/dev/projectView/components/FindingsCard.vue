@@ -2,7 +2,7 @@
  * src/components/dev/projectView/components/FindingsCard.vue
  *
  * Key findings/achievements display with colored stat cards and conclusion text.
- * Supports multiple color variants via the finding.variant property.
+ * Supports dynamic colors via the finding.color property.
  * Used in both Research and Development templates.
  */
 
@@ -19,13 +19,13 @@
 
     <!-- Findings Grid -->
     <div class="findings-grid" :class="gridClass">
-      <div 
-        v-for="finding in findings" 
+      <div
+        v-for="finding in normalizedFindings"
         :key="finding.id"
         class="finding"
-        :class="getVariantClass(finding.variant)"
+        :style="getFindingStyle(finding.color)"
       >
-        <div class="finding-stat">{{ finding.stat }}</div>
+        <div class="finding-stat" :style="{ color: finding.color }">{{ finding.stat }}</div>
         <p>{{ finding.description }}</p>
       </div>
     </div>
@@ -42,7 +42,6 @@
 
 <script setup>
 import { computed } from 'vue';
-import { FINDING_VARIANTS } from '../types/projectTypes.js';
 
 const props = defineProps({
   headerTitle: {
@@ -69,15 +68,63 @@ const gridClass = computed(() => ({
   [`grid-${props.findings.length}`]: true,
 }));
 
-function getVariantClass(variant) {
-  const variantMap = {
-    [FINDING_VARIANTS.CRITICAL]: 'finding-critical',
-    [FINDING_VARIANTS.DATA]: 'finding-data',
-    [FINDING_VARIANTS.WARNING]: 'finding-warning',
-    [FINDING_VARIANTS.SUCCESS]: 'finding-success',
-    [FINDING_VARIANTS.PURPLE]: 'finding-purple',
+// Legacy variant to color mapping for backwards compatibility
+const variantColorMap = {
+  'critical': '#b91c1c',
+  'data': '#1d4ed8',
+  'warning': '#b45309',
+  'success': '#16a34a',
+  'purple': '#7c3aed',
+};
+
+// Normalize findings to always have a color property
+const normalizedFindings = computed(() => {
+  return props.findings.map((finding, index) => {
+    // If finding already has a color, use it
+    if (finding.color) {
+      return finding;
+    }
+    // Legacy support: convert variant to color
+    if (finding.variant && variantColorMap[finding.variant]) {
+      return {
+        ...finding,
+        color: variantColorMap[finding.variant],
+      };
+    }
+    // Fallback to blue
+    return {
+      ...finding,
+      color: '#1d4ed8',
+    };
+  });
+});
+
+// Generate finding card styles based on color
+function getFindingStyle(color) {
+  const rgb = hexToRgb(color);
+  if (!rgb) {
+    return {};
+  }
+
+  // Create light tinted background gradient
+  const bgStart = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05)`;
+  const bgEnd = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`;
+  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
+
+  return {
+    background: `linear-gradient(135deg, ${bgStart} 0%, ${bgEnd} 100%)`,
+    border: `1px solid ${borderColor}`,
   };
-  return variantMap[variant] || 'finding-data';
+}
+
+// Convert hex to RGB
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16),
+  } : null;
 }
 </script>
 
@@ -164,47 +211,6 @@ function getVariantClass(variant) {
 .findings-grid.compact .finding p {
   font-size: 10px;
   line-height: 1.3;
-}
-
-/* Variant Styles */
-.finding-critical {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  border: 1px solid #fecaca;
-}
-.finding-critical .finding-stat {
-  color: #b91c1c;
-}
-
-.finding-data {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border: 1px solid #bfdbfe;
-}
-.finding-data .finding-stat {
-  color: #1d4ed8;
-}
-
-.finding-warning {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border: 1px solid #fde68a;
-}
-.finding-warning .finding-stat {
-  color: #b45309;
-}
-
-.finding-success {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border: 1px solid #bbf7d0;
-}
-.finding-success .finding-stat {
-  color: #16a34a;
-}
-
-.finding-purple {
-  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-  border: 1px solid #e9d5ff;
-}
-.finding-purple .finding-stat {
-  color: #7c3aed;
 }
 
 .finding-stat {

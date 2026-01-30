@@ -157,6 +157,8 @@ function handleImageError(event, authorId) {
   margin: 0 0 10px 0;
   letter-spacing: -0.3px;
   line-height: 1.25;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .hero-description {
@@ -164,6 +166,8 @@ function handleImageError(event, authorId) {
   font-size: 13px;
   line-height: 1.5;
   margin: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .hero-authors {
@@ -182,6 +186,7 @@ function handleImageError(event, authorId) {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 18px 22px;
+  min-width: 0; /* Allow flexbox child to shrink below content size */
 }
 
 .author-avatar {
@@ -211,12 +216,16 @@ function handleImageError(event, authorId) {
   color: white;
   font-size: 18px;
   font-weight: 600;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .author-role {
   color: #a5b4fc;
   font-size: 13px;
   font-weight: 500;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .author-quote {
@@ -227,6 +236,8 @@ function handleImageError(event, authorId) {
   line-height: 1.45;
   padding: 0;
   border: none;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Responsive */

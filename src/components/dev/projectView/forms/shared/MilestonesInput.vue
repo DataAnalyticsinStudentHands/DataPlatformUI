@@ -54,7 +54,7 @@
               </v-text-field>
             </v-col>
 
-            <!-- Color -->
+            <!-- Color Picker -->
             <v-col cols="12" sm="2">
               <v-menu :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
@@ -68,15 +68,19 @@
                     hide-details
                   >
                     <template v-slot:prepend-inner>
-                      <div 
-                        class="color-dot" 
+                      <div
+                        class="color-swatch"
                         :style="{ backgroundColor: milestone.color }"
                       ></div>
+                    </template>
+                    <template v-slot:append-inner>
+                      <v-icon size="18">mdi-chevron-down</v-icon>
                     </template>
                   </v-text-field>
                 </template>
                 <v-card class="color-picker-card">
                   <v-card-text class="pa-3">
+                    <p class="text-caption font-weight-medium mb-2">{{ $t('Select Color') }}</p>
                     <div class="color-presets">
                       <button
                         v-for="preset in colorPresets"
@@ -88,11 +92,20 @@
                         :title="preset.name"
                         @click="updateMilestone(index, 'color', preset.value)"
                       >
-                        <v-icon v-if="milestone.color === preset.value" size="14" color="white">
+                        <v-icon v-if="milestone.color === preset.value" size="16" color="white">
                           mdi-check
                         </v-icon>
                       </button>
                     </div>
+                    <v-text-field
+                      :model-value="milestone.color"
+                      @update:model-value="updateMilestone(index, 'color', $event)"
+                      label="Custom hex"
+                      variant="outlined"
+                      density="compact"
+                      class="mt-3"
+                      placeholder="#000000"
+                    ></v-text-field>
                   </v-card-text>
                 </v-card>
               </v-menu>
@@ -230,27 +243,27 @@ function removeMilestone(index) {
   margin-top: 4px;
 }
 
-.color-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .color-picker-card {
-  min-width: 200px;
+  min-width: 220px;
 }
 
 .color-presets {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
 }
 
 .color-preset-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
   border: 2px solid transparent;
   cursor: pointer;
   display: flex;
@@ -264,8 +277,8 @@ function removeMilestone(index) {
 }
 
 .color-preset-btn.active {
-  border-color: white;
-  box-shadow: 0 0 0 2px #333;
+  border-color: #333;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
 }
 
 .empty-state {

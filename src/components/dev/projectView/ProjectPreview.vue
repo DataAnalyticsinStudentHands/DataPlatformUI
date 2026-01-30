@@ -60,11 +60,11 @@
       </div>
     </div>
 
-    <!-- Preview Content -->
+    <!-- Preview Content (inline when not fullscreen) -->
     <div
+      v-if="!isFullscreen"
       ref="contentRef"
       class="preview-content"
-      :class="{ 'fullscreen': isFullscreen }"
     >
       <!-- Empty State -->
       <div v-if="!hasValidProject" class="empty-preview">
@@ -80,24 +80,47 @@
           :project="previewProject"
         />
       </div>
-
-      <!-- Fullscreen Close Button -->
-      <v-btn
-        v-if="isFullscreen"
-        icon
-        variant="flat"
-        color="white"
-        class="fullscreen-close-btn"
-        @click="toggleFullscreen"
-      >
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
     </div>
+
+    <!-- Fullscreen Content (teleported to body to escape Vuetify layout) -->
+    <Teleport to="body">
+      <div
+        v-if="isFullscreen"
+        class="fullscreen-overlay"
+      >
+        <!-- Close Button -->
+        <v-btn
+          icon
+          variant="elevated"
+          color="white"
+          class="fullscreen-close-btn"
+          @click="toggleFullscreen"
+        >
+          <v-icon color="#333">mdi-close</v-icon>
+        </v-btn>
+
+        <!-- Fullscreen Template Content -->
+        <div class="fullscreen-content">
+          <div v-if="!hasValidProject" class="empty-preview">
+            <v-icon size="64" color="#ccc">mdi-file-document-outline</v-icon>
+            <p class="empty-title">{{ $t('No Preview Available') }}</p>
+            <p class="empty-subtitle">{{ $t('Fill out the form to see a live preview of your project page.') }}</p>
+          </div>
+
+          <div v-else class="template-wrapper-fullscreen">
+            <ProjectTemplate
+              :key="previewKey + '-fullscreen'"
+              :project="previewProject"
+            />
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { ProjectTemplate } from './templates';
 import { SAMPLE_PROJECT } from './types/projectTypes.js';
 
@@ -119,6 +142,26 @@ const isFullscreen = ref(false);
 const isRefreshing = ref(false);
 const previewKey = ref(0);
 
+// Track object URL for poster file preview (to clean up on change)
+const posterObjectUrl = ref(null);
+
+// Watch for poster file changes and create object URL for preview
+watch(
+  () => props.project?.poster?.file,
+  (newFile, oldFile) => {
+    // Revoke old object URL to prevent memory leaks
+    if (posterObjectUrl.value) {
+      URL.revokeObjectURL(posterObjectUrl.value);
+      posterObjectUrl.value = null;
+    }
+    // Create new object URL if there's a file
+    if (newFile instanceof File) {
+      posterObjectUrl.value = URL.createObjectURL(newFile);
+    }
+  },
+  { immediate: true }
+);
+
 // Check if we have valid project data to preview
 const hasValidProject = computed(() => {
   if (!props.project) return false;
@@ -131,6 +174,25 @@ const sectionCount = computed(() => {
   // Mandatory sections (4) + enabled optional sections
   const optionalCount = (props.project.enabledSections || []).length;
   return 4 + optionalCount; // 4 mandatory: hero, tags, findings, footer
+});
+
+// Get poster with preview URL (handles both uploaded files and existing URLs)
+const posterWithPreviewUrl = computed(() => {
+  const poster = props.project?.poster;
+  if (!poster) return null;
+
+  // If there's an uploaded file, use the object URL for preview
+  if (poster.file instanceof File && posterObjectUrl.value) {
+    const isPdf = poster.file.type === 'application/pdf';
+    return {
+      ...poster,
+      url: posterObjectUrl.value,
+      type: isPdf ? 'pdf' : 'image'
+    };
+  }
+
+  // Otherwise use existing URL
+  return poster;
 });
 
 // Get preview project (use sample data to fill gaps if needed)
@@ -146,14 +208,18 @@ const previewProject = computed(() => {
       ...props.project,
       label: { ...SAMPLE_PROJECT.label, ...props.project.label },
       conclusion: { ...SAMPLE_PROJECT.conclusion, ...props.project.conclusion },
-      poster: props.project.poster || SAMPLE_PROJECT.poster,
+      poster: posterWithPreviewUrl.value || SAMPLE_PROJECT.poster,
       footer: { ...SAMPLE_PROJECT.footer, ...props.project.footer },
       // Use project's enabled sections, not sample
       enabledSections: props.project.enabledSections || [],
     };
   }
 
-  return props.project;
+  // Return project with the preview-enabled poster
+  return {
+    ...props.project,
+    poster: posterWithPreviewUrl.value
+  };
 });
 
 // Toggle fullscreen mode
@@ -191,6 +257,10 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown);
   document.body.style.overflow = '';
+  // Clean up poster object URL
+  if (posterObjectUrl.value) {
+    URL.revokeObjectURL(posterObjectUrl.value);
+  }
 });
 
 // Expose methods to parent
@@ -207,7 +277,8 @@ defineExpose({
   height: 100%;
   background: white;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   border: 1px solid #e0e0e0;
 }
 
@@ -219,6 +290,9 @@ defineExpose({
   background: white;
   border-bottom: 1px solid #e8e8e8;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .preview-title-section {
@@ -240,22 +314,33 @@ defineExpose({
 }
 
 .preview-content {
-  flex: 1;
+  flex: 1 0 auto;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   background: #f4f5f7;
 }
 
-.preview-content.fullscreen {
+/* Fullscreen overlay - teleported to body, sits above everything */
+.fullscreen-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 9999;
-  border-radius: 0;
+  z-index: 99999;
   background: #f4f5f7;
+}
+
+.fullscreen-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.template-wrapper-fullscreen {
+  width: 100%;
+  min-height: 100%;
 }
 
 .empty-preview {
@@ -283,8 +368,10 @@ defineExpose({
 }
 
 /* Template wrapper - natural height, preview-content handles scrolling */
+/* Min-width ensures content displays at readable size with horizontal scroll */
 .template-wrapper {
   width: 100%;
+  min-width: 1000px;
 }
 
 /* Override template's viewport-filling behavior for preview context */
@@ -298,9 +385,19 @@ defineExpose({
 }
 
 /* Let columns show full content */
-.template-wrapper :deep(.info-column),
+.template-wrapper :deep(.info-column) {
+  overflow: visible;
+}
+
+/* Make poster column more prominent in preview (closer to fullscreen appearance) */
 .template-wrapper :deep(.poster-column) {
   overflow: visible;
+  min-height: 600px;
+}
+
+/* Ensure poster card fills the column height */
+.template-wrapper :deep(.poster-card) {
+  min-height: 550px;
 }
 
 /* ================================================
@@ -314,6 +411,11 @@ defineExpose({
   gap: 16px;
 }
 
+/* Ensure hero-left can shrink for text wrapping */
+.template-wrapper :deep(.hero-left) {
+  min-width: 0;
+}
+
 /* Reduce hero padding for preview */
 .template-wrapper :deep(.hero) {
   padding: 16px 20px;
@@ -323,6 +425,8 @@ defineExpose({
 .template-wrapper :deep(.hero h1) {
   font-size: 18px;
   margin-bottom: 6px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Compact label */
@@ -335,11 +439,14 @@ defineExpose({
 .template-wrapper :deep(.hero-description) {
   font-size: 11px;
   line-height: 1.4;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Compact authors container */
 .template-wrapper :deep(.hero-authors) {
   min-width: 280px;
+  max-width: 320px; /* Constrain width to force text wrapping */
   gap: 8px;
   flex-direction: column !important;
 }
@@ -347,6 +454,7 @@ defineExpose({
 /* Single author card (ProjectHeroSingle) */
 .template-wrapper :deep(.hero-author) {
   min-width: 240px;
+  max-width: 320px; /* Constrain width to force text wrapping */
   padding: 12px 14px;
   gap: 12px;
 }
@@ -356,6 +464,7 @@ defineExpose({
   padding: 10px 12px;
   gap: 10px;
   border-radius: 8px;
+  min-width: 0; /* Allow flexbox child to shrink below content size */
 }
 
 /* Smaller avatars in preview */
@@ -377,18 +486,29 @@ defineExpose({
 .template-wrapper :deep(.author-quote) {
   font-size: 10px;
   line-height: 1.35;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .template-wrapper :deep(.author-details) {
   gap: 3px;
+  min-width: 0; /* Allow flexbox child to shrink below content size */
+}
+
+/* Ensure all author text wraps properly */
+.template-wrapper :deep(.author-name),
+.template-wrapper :deep(.author-role) {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .fullscreen-close-btn {
   position: fixed;
   top: 16px;
   right: 16px;
-  z-index: 10000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #e0e0e0;
 }
 
 /* Rotating animation for refresh icon */

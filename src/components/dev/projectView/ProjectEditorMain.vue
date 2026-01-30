@@ -7,8 +7,8 @@
 
 <template>
   <div class="project-editor">
-    <!-- Editor Header -->
-    <div class="editor-header">
+    <!-- Editor Header (hidden in fullscreen mode) -->
+    <div v-show="!isPreviewFullscreen" class="editor-header">
       <div class="header-content">
         <div class="header-title-section">
           <v-btn
@@ -143,7 +143,6 @@
             <v-btn
               color="#c8102e"
               size="large"
-              :disabled="!isFormValid"
               @click="proceedToPreview"
             >
               {{ $t('Preview') }}
@@ -155,64 +154,18 @@
 
       <!-- Step 3: Final Preview & Submit -->
       <div v-show="currentStep === 3" class="step-content preview-step">
-        <div class="final-preview-container">
-          <ProjectPreview
-            ref="finalPreviewRef"
-            :project="projectData"
-            :use-sample-data="false"
-          />
-        </div>
-
-        <!-- Validation Summary -->
-        <div v-if="validationErrors.length > 0" class="validation-summary">
-          <v-alert type="warning" variant="tonal" class="mb-4">
-            <template v-slot:title>
-              {{ $t('Please fix the following issues:') }}
-            </template>
-            <ul class="error-list">
-              <li v-for="error in validationErrors" :key="error.field">
-                {{ error.message }}
-              </li>
-            </ul>
-          </v-alert>
-        </div>
-
-        <!-- Final Actions -->
-        <div class="step-actions">
-          <div class="actions-left">
-            <v-btn
-              variant="outlined"
-              @click="goBack"
-            >
-              <v-icon start>mdi-pencil</v-icon>
-              {{ $t('Edit') }}
-            </v-btn>
-          </div>
-
-          <div class="actions-right">
-            <v-btn
-              variant="outlined"
-              color="#666"
-              class="mr-3"
-              @click="saveDraft"
-              :loading="isSavingDraft"
-            >
-              <v-icon start>mdi-content-save-outline</v-icon>
-              {{ $t('Save Draft') }}
-            </v-btn>
-
-            <v-btn
-              color="#c8102e"
-              size="large"
-              :disabled="validationErrors.length > 0"
-              :loading="isSubmitting"
-              @click="submitProject"
-            >
-              <v-icon start>mdi-check-circle</v-icon>
-              {{ isEditing ? $t('Update Project') : $t('Publish Project') }}
-            </v-btn>
-          </div>
-        </div>
+        <PreviewSubmitStep
+          ref="finalPreviewRef"
+          :project="projectData"
+          :validation-errors="validationErrors"
+          :is-editing="isEditing"
+          :is-saving="isSavingDraft"
+          :is-submitting="isSubmitting"
+          @edit="goBack"
+          @save-draft="saveDraft"
+          @submit="submitProject"
+          @fullscreen-change="handleFullscreenChange"
+        />
       </div>
     </div>
 
@@ -241,9 +194,11 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { toast } from 'vue3-toastify';
 import SectionConfigurator from './SectionConfigurator.vue';
 import ProjectForm from './forms/ProjectForm.vue';
 import ProjectPreview from './ProjectPreview.vue';
+import PreviewSubmitStep from './PreviewSubmitStep.vue';
 import {
   createEmptyProject,
   validateProject,
@@ -291,6 +246,9 @@ const saveStatus = ref('idle'); // 'idle', 'saving', 'saved', 'error'
 const isSavingDraft = ref(false);
 const isSubmitting = ref(false);
 
+// Fullscreen state (from preview component)
+const isPreviewFullscreen = ref(false);
+
 // Computed
 const isEditing = computed(() => !!props.projectId || !!props.initialProject);
 
@@ -337,6 +295,45 @@ const saveStatusClass = computed(() => ({
   'text-medium-emphasis': saveStatus.value === 'idle'
 }));
 
+// Human-readable validation summary for display
+const validationSummary = computed(() => {
+  const summary = [];
+  const fieldLabels = {
+    'title': 'Project Title',
+    'description': 'Project Description',
+    'label.text': 'Category Label',
+    'conclusion.text': 'Conclusion',
+    'authors': 'Authors',
+    'tags': 'Tags',
+    'findings': 'Key Findings',
+    'milestones': 'Timeline Milestones',
+    'impactItems': 'Impact Items',
+    'poster.title': 'Poster Title',
+  };
+
+  for (const error of validationErrors.value) {
+    // Handle array item errors (e.g., authors[0].name)
+    const match = error.field.match(/^(\w+)\[(\d+)\]\.(\w+)$/);
+    if (match) {
+      const [, arrayName, index, fieldName] = match;
+      const itemNum = parseInt(index) + 1;
+      const arrayLabel = fieldLabels[arrayName] || arrayName;
+      const readableField = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+      summary.push(`${arrayLabel} #${itemNum}: ${readableField} is required`);
+    } else {
+      // Simple field error
+      const label = fieldLabels[error.field] || error.field;
+      if (error.message.includes('at least')) {
+        summary.push(`${label}: Add ${error.message.split('at least ')[1]}`);
+      } else {
+        summary.push(`${label}: ${error.message}`);
+      }
+    }
+  }
+
+  return summary;
+});
+
 // Methods
 function proceedToForm() {
   // Initialize project data with selected sections
@@ -361,6 +358,20 @@ function proceedToPreview() {
 
   if (validationErrors.value.length === 0) {
     currentStep.value = 3;
+  } else {
+    // Show toast with validation errors
+    const errorList = validationSummary.value.slice(0, 5);
+    const moreCount = validationSummary.value.length - 5;
+    let message = errorList.map(e => `• ${e}`).join('\n');
+    if (moreCount > 0) {
+      message += `\n• +${moreCount} more...`;
+    }
+
+    toast.error(message, {
+      position: 'top-right',
+      toastClassName: 'Toastify__toast--delete',
+      multiple: false
+    });
   }
 }
 
@@ -382,13 +393,12 @@ function togglePreview() {
 
 function handleValidationChange(isValid, errors) {
   isFormValid.value = isValid;
-  if (showValidation.value) {
-    validationErrors.value = errors || [];
-  }
+  // Always track errors for the validation summary display
+  validationErrors.value = errors || [];
 }
 
 function handleFullscreenChange(isFullscreen) {
-  // Could add additional handling here
+  isPreviewFullscreen.value = isFullscreen;
 }
 
 // Auto-save functionality
@@ -465,8 +475,33 @@ function loadDraft() {
     if (draft) {
       const parsed = JSON.parse(draft);
 
+      // Validate parsed data has expected structure
+      if (!parsed.data || typeof parsed.data !== 'object') {
+        console.warn('Invalid draft data structure, clearing localStorage');
+        localStorage.removeItem('projectDraft');
+        return false;
+      }
+
       // Migrate if needed (handles old template-based format)
       const migratedData = migrateProject(parsed.data);
+
+      // Clean up any non-serializable data that may have been corrupted
+      // File objects become null/empty when JSON serialized
+      if (migratedData.partners) {
+        migratedData.partners = migratedData.partners.map(p => ({
+          ...p,
+          iconFile: null // File objects can't survive localStorage
+        }));
+      }
+      if (migratedData.authors) {
+        migratedData.authors = migratedData.authors.map(a => ({
+          ...a,
+          avatarFile: null // File objects can't survive localStorage
+        }));
+      }
+      if (migratedData.poster) {
+        migratedData.poster = { ...migratedData.poster, file: null };
+      }
 
       enabledSections.value = parsed.enabledSections || migratedData.enabledSections || [];
       projectData.value = migratedData;
@@ -474,7 +509,9 @@ function loadDraft() {
       return true;
     }
   } catch (error) {
-    console.error('Failed to load draft:', error);
+    console.error('Failed to load draft, clearing localStorage:', error);
+    // Clear corrupted localStorage data to prevent recurring errors
+    localStorage.removeItem('projectDraft');
   }
   return false;
 }
@@ -705,10 +742,15 @@ defineExpose({
   justify-content: center;
 }
 
-.actions-left,
+.actions-left {
+  display: flex;
+  align-items: center;
+}
+
 .actions-right {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .actions-center {
@@ -749,6 +791,8 @@ defineExpose({
   top: 120px;
   height: calc(100vh - 200px);
   min-height: 600px;
+  min-width: 0; /* Allow shrinking below content size */
+  overflow: hidden; /* Contain horizontal scroll within preview */
   display: flex;
   flex-direction: column;
 }
@@ -760,30 +804,11 @@ defineExpose({
 
 /* Preview Step */
 .preview-step {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.final-preview-container {
-  height: calc(100vh - 280px);
-  min-height: 600px;
-  margin-bottom: 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.validation-summary {
-  margin-bottom: 16px;
-}
-
-.error-list {
-  margin: 8px 0 0 0;
-  padding-left: 20px;
-}
-
-.error-list li {
-  margin-bottom: 4px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  height: calc(100vh - 180px);
+  min-height: 700px;
 }
 
 /* Responsive */
@@ -798,6 +823,11 @@ defineExpose({
 
   .form-preview-layout.preview-hidden .preview-panel {
     display: none;
+  }
+
+  .preview-step {
+    height: auto;
+    min-height: auto;
   }
 }
 
