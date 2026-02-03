@@ -708,13 +708,13 @@ const routes = [
   //   name: "public6",
   //   component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
   // },
-  // // Admin routes
-  // {
-  //   path: "/admin/backup",
-  //   name: "AdminBackupManager",
-  //   component: () => import("@/components/admin/BackupDashboard.vue"),
-  //   beforeEnter: requireAuth(["Org Admin"]),
-  // },
+  // Admin routes
+  {
+    path: "/admin/backup",
+    name: "AdminBackupManager",
+    component: () => import("@/components/admin/BackupDashboard.vue"),
+    beforeEnter: requireAuth(["Org Admin"]),
+  },
 ];
 
 // Create router instance with base path
