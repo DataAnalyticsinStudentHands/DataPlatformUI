@@ -30,14 +30,7 @@
         :key="partner.id" 
         class="partner-card"
       >
-        <div
-          class="partner-icon"
-          :class="{ 'has-image': getIconUrl(partner) }"
-          :style="{ backgroundColor: getIconUrl(partner) ? 'transparent' : partner.color }"
-        >
-          <img v-if="getIconUrl(partner)" :src="getIconUrl(partner)" :alt="partner.acronym" />
-          <span v-else>{{ partner.acronym.charAt(0) }}</span>
-        </div>
+        <div class="partner-color-dot" :style="{ backgroundColor: partner.color }"></div>
         <div class="partner-info">
           <div class="partner-acronym">{{ partner.acronym }}</div>
           <div class="partner-name">{{ partner.name }}</div>
@@ -75,14 +68,6 @@ const gridClass = computed(() => ({
   [`cols-${props.columns}`]: true,
   'compact': props.compact,
 }));
-
-// Get icon URL (from file or URL)
-function getIconUrl(partner) {
-  if (partner.iconFile) {
-    return URL.createObjectURL(partner.iconFile);
-  }
-  return partner.iconUrl || '';
-}
 </script>
 
 <style scoped>
@@ -169,54 +154,24 @@ function getIconUrl(partner) {
   border-color: rgba(99, 102, 241, 0.5);
 }
 
-.partner-card:hover .partner-icon {
-  transform: scale(1.15) rotate(5deg);
-}
-
 /* Compact variant */
 .partners-grid.compact .partner-card:hover {
   transform: translateY(-6px) scale(1.02);
   box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15);
 }
 
-/* Partner Icon */
-.partner-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Partner Color Dot */
+.partner-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
 }
 
-.partner-icon.has-image {
-  border: 1px solid #e8e8ee;
-  background: #fff;
-}
-
-.partner-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.partner-icon span {
-  color: white;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-/* Compact icon */
-.partners-grid.compact .partner-icon {
-  width: 28px;
-  height: 28px;
-}
-
-.partners-grid.compact .partner-icon span {
-  font-size: 12px;
+/* Compact dot */
+.partners-grid.compact .partner-color-dot {
+  width: 8px;
+  height: 8px;
 }
 
 /* Partner Info */

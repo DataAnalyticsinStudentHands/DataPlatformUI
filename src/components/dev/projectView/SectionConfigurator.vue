@@ -157,11 +157,6 @@
                   <div class="block-title">Tags</div>
                 </div>
 
-                <!-- Findings (always) -->
-                <div class="preview-block medium">
-                  <div class="block-title">Key Findings</div>
-                </div>
-
                 <!-- Optional sections in order -->
                 <template v-for="section in enabledSidebarSections" :key="section.id">
                   <div class="preview-block small optional-block">

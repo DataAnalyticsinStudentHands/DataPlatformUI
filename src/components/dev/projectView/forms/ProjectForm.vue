@@ -318,9 +318,17 @@
             :accept-pdf="true"
             :accept-images="true"
             :max-size-mb="10"
+            :show-error="showValidation && !formData.poster.file && !formData.poster.url"
             title-placeholder="e.g., Research Poster"
             @remove="clearPosterUrl"
           />
+          <p
+            v-if="showValidation && formData.poster && !formData.poster.file && !formData.poster.url"
+            class="poster-error text-caption mt-2"
+          >
+            <v-icon size="14" color="error" class="mr-1">mdi-alert-circle</v-icon>
+            {{ $t('Please upload a poster or diagram file to continue') }}
+          </p>
         </div>
       </div>
     </template>
@@ -613,6 +621,12 @@ defineExpose({
   padding-top: 24px;
   display: flex;
   justify-content: center;
+}
+
+.poster-error {
+  color: #c8102e;
+  display: flex;
+  align-items: center;
 }
 
 /* Responsive */

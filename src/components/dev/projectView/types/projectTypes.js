@@ -183,9 +183,7 @@ export const FOOTER_VARIANTS = {
  * @property {string} id - Unique identifier
  * @property {string} acronym - Short name
  * @property {string} name - Full organization name
- * @property {string} color - Hex color for the icon
- * @property {string} iconUrl - URL to organization icon/logo
- * @property {File|null} iconFile - Local file for upload (not persisted)
+ * @property {string} color - Hex color for the badge
  */
 
 /**
@@ -300,8 +298,6 @@ export function createEmptyPartner(overrides = {}) {
     acronym: '',
     name: '',
     color: PARTNER_COLOR_PRESETS[0].value,
-    iconUrl: '',
-    iconFile: null,
     ...overrides,
   };
 }
@@ -933,10 +929,15 @@ export function validateProject(project) {
     }
   }
 
-  // Poster (if enabled, must have title)
+  // Poster (if enabled, must have title and a file)
   if (isSectionEnabled('poster', enabledSections) && project.poster) {
     const posterTitleError = validateString(project.poster.title, 'Poster Title', { required: true, maxLength: 100 });
     if (posterTitleError) errors.push({ field: 'poster.title', message: posterTitleError });
+
+    // Must have either an uploaded file or an existing URL
+    if (!project.poster.file && !project.poster.url) {
+      errors.push({ field: 'poster.file', message: 'A poster or diagram file is required' });
+    }
   }
 
   return errors;
@@ -976,13 +977,6 @@ export function projectToApiFormat(project) {
   if (clone.authors) {
     clone.authors.forEach(author => {
       delete author.avatarFile;
-    });
-  }
-
-  // Remove File objects from partners
-  if (clone.partners) {
-    clone.partners.forEach(partner => {
-      delete partner.iconFile;
     });
   }
 

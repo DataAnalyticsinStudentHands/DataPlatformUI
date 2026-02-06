@@ -309,6 +309,7 @@ const validationSummary = computed(() => {
     'milestones': 'Timeline Milestones',
     'impactItems': 'Impact Items',
     'poster.title': 'Poster Title',
+    'poster.file': 'Poster / Diagram',
   };
 
   for (const error of validationErrors.value) {
@@ -487,12 +488,6 @@ function loadDraft() {
 
       // Clean up any non-serializable data that may have been corrupted
       // File objects become null/empty when JSON serialized
-      if (migratedData.partners) {
-        migratedData.partners = migratedData.partners.map(p => ({
-          ...p,
-          iconFile: null // File objects can't survive localStorage
-        }));
-      }
       if (migratedData.authors) {
         migratedData.authors = migratedData.authors.map(a => ({
           ...a,
@@ -794,9 +789,9 @@ defineExpose({
 
 .preview-panel {
   position: sticky;
-  top: 120px;
-  height: calc(100vh - 200px);
-  min-height: 600px;
+  top: 152px;
+  height: calc(100vh - 240px);
+  min-height: 400px;
   min-width: 0; /* Allow shrinking below content size */
   overflow: hidden; /* Contain horizontal scroll within preview */
   display: flex;

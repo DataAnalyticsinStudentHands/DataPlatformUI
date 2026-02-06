@@ -14,52 +14,6 @@
         :key="partner.id"
         class="partner-item"
       >
-        <div class="partner-preview">
-          <!-- Icon with upload capability -->
-          <div
-            class="partner-icon-wrapper"
-            @click="triggerIconUpload(index)"
-          >
-            <div
-              v-if="getIconPreview(partner)"
-              class="partner-icon has-image"
-            >
-              <img :src="getIconPreview(partner)" alt="Partner icon" />
-              <div class="icon-overlay">
-                <v-icon size="14" color="white">mdi-pencil</v-icon>
-              </div>
-            </div>
-            <div
-              v-else
-              class="partner-icon"
-              :style="{ backgroundColor: partner.color }"
-            >
-              {{ partner.acronym ? partner.acronym.charAt(0) : '?' }}
-              <div class="icon-overlay">
-                <v-icon size="14" color="white">mdi-camera-plus</v-icon>
-              </div>
-            </div>
-          </div>
-          <v-btn
-            v-if="getIconPreview(partner)"
-            icon
-            variant="text"
-            size="x-small"
-            color="error"
-            class="remove-icon-btn"
-            @click.stop="removeIcon(index)"
-          >
-            <v-icon size="14">mdi-close</v-icon>
-          </v-btn>
-          <input
-            :ref="el => setIconInputRef(el, index)"
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
-            hidden
-            @change="handleIconChange($event, index)"
-          />
-        </div>
-
         <div class="partner-fields">
           <v-row dense>
             <!-- Acronym -->
@@ -182,20 +136,11 @@
       {{ $t('Add Partner') }}
     </v-btn>
 
-    <!-- Icon Cropper Dialog -->
-    <IconCropperDialog
-      v-model="showCropperDialog"
-      :image-file="pendingIconFile"
-      @cropped="onIconCropped"
-      @cancel="onCropperCancel"
-    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { PARTNER_COLOR_PRESETS, createEmptyPartner } from '../../types/projectTypes.js';
-import IconCropperDialog from './IconCropperDialog.vue';
 
 const props = defineProps({
   modelValue: {
@@ -212,79 +157,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const colorPresets = PARTNER_COLOR_PRESETS;
-const iconInputRefs = ref({});
-
-// Cropper dialog state
-const showCropperDialog = ref(false);
-const pendingIconFile = ref(null);
-const pendingIconIndex = ref(null);
-
-// Set ref for icon input by index
-function setIconInputRef(el, index) {
-  if (el) {
-    iconInputRefs.value[index] = el;
-  }
-}
-
-// Get icon preview URL
-function getIconPreview(partner) {
-  if (partner.iconFile) {
-    return URL.createObjectURL(partner.iconFile);
-  }
-  return partner.iconUrl || '';
-}
-
-// Trigger icon file input
-function triggerIconUpload(index) {
-  iconInputRefs.value[index]?.click();
-}
-
-// Handle icon file change - opens cropper dialog
-function handleIconChange(event, index) {
-  const file = event.target.files?.[0];
-  if (file) {
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
-    if (!validTypes.includes(file.type)) {
-      return;
-    }
-    // Validate file size (max 5MB before cropping)
-    if (file.size > 5 * 1024 * 1024) {
-      return;
-    }
-    // Open cropper dialog
-    pendingIconFile.value = file;
-    pendingIconIndex.value = index;
-    showCropperDialog.value = true;
-  }
-  // Reset input
-  if (iconInputRefs.value[index]) {
-    iconInputRefs.value[index].value = '';
-  }
-}
-
-// Handle cropped icon from dialog
-function onIconCropped(croppedFile) {
-  if (pendingIconIndex.value !== null) {
-    updatePartner(pendingIconIndex.value, 'iconFile', croppedFile);
-  }
-  // Reset pending state
-  pendingIconFile.value = null;
-  pendingIconIndex.value = null;
-}
-
-// Handle cropper cancel
-function onCropperCancel() {
-  pendingIconFile.value = null;
-  pendingIconIndex.value = null;
-}
-
-// Remove icon
-function removeIcon(index) {
-  const updated = [...props.modelValue];
-  updated[index] = { ...updated[index], iconFile: null, iconUrl: '' };
-  emit('update:modelValue', updated);
-}
 
 // Update a single partner field
 function updatePartner(index, field, value) {
@@ -331,64 +203,6 @@ function removePartner(index) {
   border: 1px solid #e8e8e8;
   border-radius: 8px;
   padding: 12px;
-}
-
-.partner-preview {
-  flex-shrink: 0;
-  position: relative;
-}
-
-.partner-icon-wrapper {
-  cursor: pointer;
-  position: relative;
-}
-
-.partner-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.partner-icon.has-image {
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
-}
-
-.partner-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.icon-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.partner-icon-wrapper:hover .icon-overlay {
-  opacity: 1;
-}
-
-.remove-icon-btn {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: white !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .partner-fields {

@@ -76,7 +76,7 @@ export const SECTIONS = {
     id: 'findings',
     name: 'Key Findings',
     description: 'Highlight 1-3 key statistics or achievements with a conclusion',
-    mandatory: true,
+    mandatory: false,
     order: 20,
     formOrder: 3,
     zone: ZONES.SIDEBAR,
@@ -290,12 +290,12 @@ export function getSectionsByIds(sectionIds) {
  * Default enabled sections for new projects
  * These are pre-selected when creating a new project
  */
-export const DEFAULT_ENABLED_SECTIONS = ['partners', 'poster'];
+export const DEFAULT_ENABLED_SECTIONS = ['findings', 'partners', 'poster'];
 
 /**
  * Recommended sections shown prominently in the configurator
  */
-export const RECOMMENDED_SECTIONS = ['partners', 'poster'];
+export const RECOMMENDED_SECTIONS = ['findings', 'partners', 'poster'];
 
 // =============================================================================
 // EXPORTS
