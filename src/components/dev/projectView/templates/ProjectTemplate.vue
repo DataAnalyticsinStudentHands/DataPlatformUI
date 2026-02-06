@@ -51,11 +51,12 @@
           :compact="hasManyOptionalSections"
         />
 
-        <!-- Timeline (optional, order: 40) -->
+        <!-- Timeline (optional, order: 40) — stays in sidebar unless horizontal + poster -->
         <TimelineCard
-          v-if="isSectionEnabled('timeline') && project.milestones && project.milestones.length > 0"
+          v-if="showTimelineInSidebar"
           title="Project Timeline"
           :milestones="project.milestones"
+          :layout="project.timelineLayout || 'vertical'"
         />
 
         <!-- Impact (optional, order: 50) -->
@@ -81,6 +82,15 @@
         />
       </div>
     </div>
+
+    <!-- Horizontal Timeline — full width below grid when poster is present -->
+    <TimelineCard
+      v-if="showTimelineBelowGrid"
+      title="Project Timeline"
+      :milestones="project.milestones"
+      layout="horizontal"
+      class="full-width-timeline"
+    />
 
     <!-- Footer Banner (always rendered) -->
     <FooterBanner
@@ -134,6 +144,26 @@ const hasManyOptionalSections = computed(() => {
   const enabledCount = sidebarSections.filter(s => isSectionEnabled(s)).length;
   return enabledCount >= 2;
 });
+
+// Timeline has milestones to show
+const hasTimeline = computed(() => {
+  return isSectionEnabled('timeline') && props.project.milestones && props.project.milestones.length > 0;
+});
+
+// Is the timeline set to horizontal
+const isHorizontalTimeline = computed(() => {
+  return (props.project.timelineLayout || 'vertical') === 'horizontal';
+});
+
+// Show timeline in the sidebar: vertical layout, OR horizontal without poster (full-width sidebar)
+const showTimelineInSidebar = computed(() => {
+  return hasTimeline.value && (!isHorizontalTimeline.value || !hasPoster.value);
+});
+
+// Show timeline below the grid: horizontal layout AND poster present
+const showTimelineBelowGrid = computed(() => {
+  return hasTimeline.value && isHorizontalTimeline.value && hasPoster.value;
+});
 </script>
 
 <style scoped>
@@ -168,6 +198,11 @@ const hasManyOptionalSections = computed(() => {
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+
+/* Full-width horizontal timeline below the grid */
+.full-width-timeline {
+  margin-top: 12px;
 }
 
 /* Responsive: Stack on smaller screens */

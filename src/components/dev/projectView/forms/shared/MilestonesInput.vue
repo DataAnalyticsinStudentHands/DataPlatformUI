@@ -1,7 +1,8 @@
 /**
  * src/components/dev/projectView/forms/shared/MilestonesInput.vue
  *
- * Timeline milestones entry component with title, description, and color.
+ * Timeline milestones entry component with title, description, color, and date picker.
+ * Supports single date or date range per milestone using Vuetify date pickers.
  * Used for Development template timeline display.
  */
 
@@ -19,8 +20,8 @@
         </div>
 
         <div class="milestone-fields">
+          <!-- Row 1: Title, Description, Color -->
           <v-row dense>
-            <!-- Title -->
             <v-col cols="12" sm="5">
               <v-text-field
                 :model-value="milestone.title"
@@ -36,7 +37,6 @@
               </v-text-field>
             </v-col>
 
-            <!-- Description -->
             <v-col cols="12" sm="5">
               <v-text-field
                 :model-value="milestone.description"
@@ -52,7 +52,6 @@
               </v-text-field>
             </v-col>
 
-            <!-- Color Picker -->
             <v-col cols="12" sm="2">
               <v-menu :close-on-content-click="false">
                 <template v-slot:activator="{ props }">
@@ -108,6 +107,110 @@
               </v-menu>
             </v-col>
           </v-row>
+
+          <!-- Row 2: Date Type Toggle -->
+          <v-row dense class="mt-n1">
+            <v-col cols="12" class="d-flex align-center">
+              <v-btn-toggle
+                :model-value="milestone.dateType || 'single'"
+                @update:model-value="handleDateTypeChange(index, $event)"
+                mandatory
+                density="compact"
+                color="#c8102e"
+                variant="outlined"
+                class="date-type-toggle"
+              >
+                <v-btn value="single" size="small">
+                  <v-icon start size="14">mdi-calendar</v-icon>
+                  {{ $t('Date') }}
+                </v-btn>
+                <v-btn value="range" size="small">
+                  <v-icon start size="14">mdi-calendar-range</v-icon>
+                  {{ $t('Range') }}
+                </v-btn>
+              </v-btn-toggle>
+            </v-col>
+          </v-row>
+
+          <!-- Row 3: Date Picker(s) -->
+          <v-row dense>
+            <!-- Start / Single Date -->
+            <v-col cols="12" :sm="(milestone.dateType || 'single') === 'range' ? 6 : 12">
+              <v-menu
+                :close-on-content-click="false"
+                :model-value="openMenus[`${index}-start`] || false"
+                @update:model-value="setMenuOpen(index, 'start', $event)"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-text-field
+                    v-bind="props"
+                    :model-value="formatDate(milestone.dateStart)"
+                    :label="(milestone.dateType || 'single') === 'range' ? $t('Start Date') : $t('Date')"
+                    :placeholder="$t('Select date')"
+                    variant="outlined"
+                    readonly
+                    hide-details
+                    clearable
+                    @click:clear.stop="updateMilestone(index, 'dateStart', null)"
+                  >
+                    <template v-slot:prepend-inner>
+                      <v-icon size="20" color="#666">mdi-calendar</v-icon>
+                    </template>
+                  </v-text-field>
+                </template>
+                <v-date-picker
+                  :model-value="parseDate(milestone.dateStart)"
+                  @update:model-value="(val) => handleDateSelect(index, 'dateStart', val)"
+                  color="#c8102e"
+                  show-adjacent-months
+                />
+              </v-menu>
+            </v-col>
+
+            <!-- End Date (only for range) -->
+            <v-col
+              v-if="(milestone.dateType || 'single') === 'range'"
+              cols="12"
+              sm="6"
+            >
+              <v-menu
+                :close-on-content-click="false"
+                :model-value="openMenus[`${index}-end`] || false"
+                @update:model-value="setMenuOpen(index, 'end', $event)"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-text-field
+                    v-bind="props"
+                    :model-value="formatDate(milestone.dateEnd)"
+                    :label="$t('End Date')"
+                    :placeholder="$t('Select date')"
+                    variant="outlined"
+                    readonly
+                    hide-details
+                    clearable
+                    @click:clear.stop="updateMilestone(index, 'dateEnd', null)"
+                  >
+                    <template v-slot:prepend-inner>
+                      <v-icon size="20" color="#666">mdi-calendar-arrow-right</v-icon>
+                    </template>
+                  </v-text-field>
+                </template>
+                <v-date-picker
+                  :model-value="parseDate(milestone.dateEnd)"
+                  @update:model-value="(val) => handleDateSelect(index, 'dateEnd', val)"
+                  color="#c8102e"
+                  :min="milestone.dateStart ? parseDate(milestone.dateStart) : undefined"
+                  show-adjacent-months
+                />
+              </v-menu>
+            </v-col>
+          </v-row>
+
+          <!-- Date summary display -->
+          <div v-if="milestone.dateStart" class="date-summary">
+            <v-icon size="14" color="#666" class="mr-1">mdi-clock-outline</v-icon>
+            <span>{{ getDateSummary(milestone) }}</span>
+          </div>
         </div>
 
         <v-btn
@@ -151,6 +254,7 @@
 </template>
 
 <script setup>
+import { reactive } from 'vue';
 import { MILESTONE_COLOR_PRESETS, createEmptyMilestone } from '../../types/projectTypes.js';
 
 const props = defineProps({
@@ -162,6 +266,10 @@ const props = defineProps({
   maxMilestones: {
     type: Number,
     default: 10
+  },
+  minMilestones: {
+    type: Number,
+    default: 0
   }
 });
 
@@ -169,26 +277,108 @@ const emit = defineEmits(['update:modelValue']);
 
 const colorPresets = MILESTONE_COLOR_PRESETS;
 
-// Update a single milestone field
+// Track which date picker menus are open
+const openMenus = reactive({});
+
+function setMenuOpen(index, field, value) {
+  openMenus[`${index}-${field}`] = value;
+}
+
+// ========================
+// Date helpers
+// ========================
+
+/**
+ * Parse an ISO date string (YYYY-MM-DD) into a Date object for v-date-picker
+ */
+function parseDate(isoString) {
+  if (!isoString) return undefined;
+  const [year, month, day] = isoString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+/**
+ * Format an ISO date string for display (e.g., "Jan 15, 2023")
+ */
+function formatDate(isoString) {
+  if (!isoString) return '';
+  const [year, month, day] = isoString.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+/**
+ * Convert a Date object from v-date-picker to ISO string (YYYY-MM-DD)
+ */
+function dateToIso(dateValue) {
+  if (!dateValue) return null;
+  // v-date-picker may return Date object, array, or string depending on Vuetify version
+  const d = Array.isArray(dateValue) ? dateValue[0] : dateValue;
+  if (d instanceof Date) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+  if (typeof d === 'string') return d;
+  return null;
+}
+
+/**
+ * Get a human-readable date summary for a milestone
+ */
+function getDateSummary(milestone) {
+  if (!milestone.dateStart) return '';
+  const start = formatDate(milestone.dateStart);
+  if (milestone.dateType === 'range' && milestone.dateEnd) {
+    return `${start} — ${formatDate(milestone.dateEnd)}`;
+  }
+  return start;
+}
+
+// ========================
+// Milestone CRUD
+// ========================
+
 function updateMilestone(index, field, value) {
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };
   emit('update:modelValue', updated);
 }
 
-// Add a new milestone
+function handleDateTypeChange(index, newType) {
+  if (!newType) return;
+  const updated = [...props.modelValue];
+  updated[index] = {
+    ...updated[index],
+    dateType: newType,
+    // Clear end date when switching to single
+    dateEnd: newType === 'single' ? null : updated[index].dateEnd
+  };
+  emit('update:modelValue', updated);
+}
+
+function handleDateSelect(index, field, dateValue) {
+  const iso = dateToIso(dateValue);
+  updateMilestone(index, field, iso);
+  // Close the menu after selection
+  const menuKey = field === 'dateStart' ? 'start' : 'end';
+  setMenuOpen(index, menuKey, false);
+}
+
 function addMilestone() {
   if (props.modelValue.length >= props.maxMilestones) return;
-  
-  // Cycle through preset colors
   const colorIndex = props.modelValue.length % colorPresets.length;
   const newMilestone = createEmptyMilestone({ color: colorPresets[colorIndex].value });
-  
   emit('update:modelValue', [...props.modelValue, newMilestone]);
 }
 
-// Remove a milestone
 function removeMilestone(index) {
+  if (props.modelValue.length <= props.minMilestones) return;
   const updated = [...props.modelValue];
   updated.splice(index, 1);
   emit('update:modelValue', updated);
@@ -240,6 +430,29 @@ function removeMilestone(index) {
   margin-top: 4px;
 }
 
+/* Date Type Toggle */
+.date-type-toggle {
+  border-radius: 6px;
+}
+
+.date-type-toggle .v-btn {
+  text-transform: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Date Summary */
+.date-summary {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #666;
+  padding: 4px 0 0 0;
+  margin-top: -4px;
+}
+
+/* Color Picker */
 .color-swatch {
   width: 20px;
   height: 20px;
@@ -310,6 +523,11 @@ function removeMilestone(index) {
     position: absolute;
     top: 8px;
     right: 8px;
+  }
+
+  .date-type-toggle {
+    width: 100%;
+    margin-bottom: 8px;
   }
 }
 </style>

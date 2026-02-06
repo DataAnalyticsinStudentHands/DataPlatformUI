@@ -36,11 +36,12 @@
           :compact="true"
         />
 
-        <!-- Development Timeline -->
+        <!-- Development Timeline — stays in sidebar unless horizontal -->
         <TimelineCard
-          v-if="project.milestones && project.milestones.length > 0"
+          v-if="project.milestones && project.milestones.length > 0 && (project.timelineLayout || 'vertical') === 'vertical'"
           title="Development Timeline"
           :milestones="project.milestones"
+          layout="vertical"
         />
 
         <!-- Platform Impact -->
@@ -68,6 +69,15 @@
         />
       </div>
     </div>
+
+    <!-- Horizontal Timeline — full width below grid -->
+    <TimelineCard
+      v-if="project.milestones && project.milestones.length > 0 && (project.timelineLayout || 'vertical') === 'horizontal'"
+      title="Development Timeline"
+      :milestones="project.milestones"
+      layout="horizontal"
+      class="full-width-timeline"
+    />
 
     <!-- Footer Banner -->
     <FooterBanner
@@ -127,6 +137,11 @@ const props = defineProps({
 .poster-column {
   display: flex;
   flex-direction: column;
+}
+
+/* Full-width horizontal timeline below the grid */
+.full-width-timeline {
+  margin-top: 12px;
 }
 
 /* Responsive: Stack on smaller screens */

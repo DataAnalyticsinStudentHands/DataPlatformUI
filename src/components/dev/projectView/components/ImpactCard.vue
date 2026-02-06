@@ -1,7 +1,7 @@
 /**
  * src/components/dev/projectView/components/ImpactCard.vue
  *
- * Impact summary grid with emoji icons and hover animations.
+ * Impact summary grid with MDI icons and hover animations.
  * Displays the impact of the project on different stakeholder groups.
  * Used exclusively in the Development template.
  */
@@ -23,7 +23,9 @@
         :key="item.id" 
         class="impact-item"
       >
-        <div class="impact-icon">{{ item.icon }}</div>
+        <div class="impact-icon">
+          <v-icon size="22" color="#1a1a2e">{{ resolveIcon(item.icon) }}</v-icon>
+        </div>
         <div class="impact-label">{{ item.label }}</div>
         <div class="impact-text">{{ item.text }}</div>
       </div>
@@ -55,6 +57,12 @@ const props = defineProps({
     validator: (value) => [1, 2, 3, 4].includes(value),
   },
 });
+
+const DEFAULT_ICON = 'mdi-target';
+
+function resolveIcon(icon) {
+  return icon && icon.startsWith('mdi-') ? icon : DEFAULT_ICON;
+}
 
 const gridClass = computed(() => ({
   [`cols-${props.columns}`]: true,
@@ -130,8 +138,10 @@ const gridClass = computed(() => ({
 }
 
 .impact-icon {
-  font-size: 20px;
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .impact-label {

@@ -1,7 +1,7 @@
 /**
  * src/components/dev/projectView/forms/shared/ImpactInput.vue
  *
- * Impact items entry component with emoji picker, label, and description.
+ * Impact items entry component with MDI icon picker, label, and description.
  * Used for Development template impact grid display.
  */
 
@@ -14,42 +14,33 @@
         :key="item.id"
         class="impact-item"
       >
-        <!-- Emoji Selector -->
+        <!-- Icon Selector -->
         <v-menu :close-on-content-click="false">
           <template v-slot:activator="{ props }">
-            <button 
+            <button
               type="button"
-              v-bind="props" 
-              class="emoji-selector"
+              v-bind="props"
+              class="icon-selector"
             >
-              <span class="emoji-display">{{ item.icon }}</span>
+              <v-icon size="24" color="#1a1a2e">{{ resolveIcon(item.icon) }}</v-icon>
               <v-icon size="12" class="edit-icon">mdi-pencil</v-icon>
             </button>
           </template>
-          <v-card class="emoji-picker-card">
+          <v-card class="icon-picker-card">
             <v-card-text class="pa-3">
               <p class="text-caption font-weight-medium mb-2">{{ $t('Select Icon') }}</p>
-              <div class="emoji-grid">
+              <div class="icon-grid">
                 <button
-                  v-for="emoji in emojiPresets"
-                  :key="emoji"
+                  v-for="iconName in iconPresets"
+                  :key="iconName"
                   type="button"
-                  class="emoji-btn"
-                  :class="{ active: item.icon === emoji }"
-                  @click="updateItem(index, 'icon', emoji)"
+                  class="icon-btn"
+                  :class="{ active: item.icon === iconName }"
+                  @click="updateItem(index, 'icon', iconName)"
                 >
-                  {{ emoji }}
+                  <v-icon size="20">{{ iconName }}</v-icon>
                 </button>
               </div>
-              <v-text-field
-                :model-value="item.icon"
-                @update:model-value="updateItem(index, 'icon', $event)"
-                :label="$t('Custom emoji')"
-                variant="outlined"
-                density="compact"
-                class="mt-3"
-                :counter="10"
-              ></v-text-field>
             </v-card-text>
           </v-card>
         </v-menu>
@@ -146,7 +137,13 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-const emojiPresets = IMPACT_ICON_PRESETS;
+const iconPresets = IMPACT_ICON_PRESETS;
+const DEFAULT_ICON = 'mdi-target';
+
+// Resolve icon - fallback to default if empty or not an MDI icon
+function resolveIcon(icon) {
+  return icon && icon.startsWith('mdi-') ? icon : DEFAULT_ICON;
+}
 
 // Update a single item field
 function updateItem(index, field, value) {
@@ -159,9 +156,9 @@ function updateItem(index, field, value) {
 function addItem() {
   if (props.modelValue.length >= props.maxItems) return;
   
-  // Cycle through emoji presets
-  const emojiIndex = props.modelValue.length % emojiPresets.length;
-  const newItem = createEmptyImpactItem({ icon: emojiPresets[emojiIndex] });
+  // Cycle through icon presets
+  const iconIndex = props.modelValue.length % iconPresets.length;
+  const newItem = createEmptyImpactItem({ icon: iconPresets[iconIndex] });
   
   emit('update:modelValue', [...props.modelValue, newItem]);
 }
@@ -196,7 +193,7 @@ function removeItem(index) {
   padding: 12px;
 }
 
-.emoji-selector {
+.icon-selector {
   width: 48px;
   height: 48px;
   border-radius: 8px;
@@ -211,14 +208,9 @@ function removeItem(index) {
   transition: all 0.2s ease;
 }
 
-.emoji-selector:hover {
+.icon-selector:hover {
   border-color: #c8102e;
   background: #fff5f5;
-}
-
-.emoji-display {
-  font-size: 24px;
-  line-height: 1;
 }
 
 .edit-icon {
@@ -233,7 +225,7 @@ function removeItem(index) {
   transition: opacity 0.2s ease;
 }
 
-.emoji-selector:hover .edit-icon {
+.icon-selector:hover .edit-icon {
   opacity: 1;
 }
 
@@ -247,36 +239,35 @@ function removeItem(index) {
   margin-top: 4px;
 }
 
-.emoji-picker-card {
-  min-width: 260px;
+.icon-picker-card {
+  min-width: 280px;
 }
 
-.emoji-grid {
+.icon-grid {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 4px;
 }
 
-.emoji-btn {
+.icon-btn {
   width: 32px;
   height: 32px;
   border: 1px solid transparent;
   border-radius: 6px;
   background: none;
   cursor: pointer;
-  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease;
 }
 
-.emoji-btn:hover {
+.icon-btn:hover {
   background: #f5f5f5;
   border-color: #e0e0e0;
 }
 
-.emoji-btn.active {
+.icon-btn.active {
   background: #c8102e15;
   border-color: #c8102e;
 }

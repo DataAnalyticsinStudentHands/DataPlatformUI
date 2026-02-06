@@ -113,6 +113,7 @@ const emit = defineEmits(['update:modelValue', 'cropped', 'cancel']);
 const cropperRef = ref(null);
 const cropperReady = ref(false);
 const zoomLevel = ref(1);
+const lastAppliedZoom = ref(1);
 const minZoom = ref(0.5);
 const maxZoom = ref(3);
 
@@ -137,6 +138,7 @@ function onCropperReady() {
   cropperReady.value = true;
   // Reset zoom level
   zoomLevel.value = 1;
+  lastAppliedZoom.value = 1;
 }
 
 // Reset state when dialog opens
@@ -144,23 +146,25 @@ watch(() => props.modelValue, (isOpen) => {
   if (isOpen) {
     cropperReady.value = false;
     zoomLevel.value = 1;
+    lastAppliedZoom.value = 1;
   }
 });
 
 // Zoom functions
 function zoomIn() {
-  zoomLevel.value = Math.min(zoomLevel.value + 0.2, maxZoom.value);
-  applyZoom(zoomLevel.value);
+  const newZoom = Math.min(zoomLevel.value + 0.2, maxZoom.value);
+  applyZoom(newZoom);
 }
 
 function zoomOut() {
-  zoomLevel.value = Math.max(zoomLevel.value - 0.2, minZoom.value);
-  applyZoom(zoomLevel.value);
+  const newZoom = Math.max(zoomLevel.value - 0.2, minZoom.value);
+  applyZoom(newZoom);
 }
 
 function applyZoom(level) {
   if (cropperRef.value) {
-    cropperRef.value.zoom(level / zoomLevel.value);
+    cropperRef.value.zoom(level / lastAppliedZoom.value);
+    lastAppliedZoom.value = level;
     zoomLevel.value = level;
   }
 }

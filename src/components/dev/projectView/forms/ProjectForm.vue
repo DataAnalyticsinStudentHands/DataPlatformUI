@@ -246,6 +246,30 @@
         </div>
 
         <div class="section-content">
+          <!-- Timeline Layout Toggle -->
+          <div class="timeline-layout-toggle mb-4">
+            <p class="text-caption font-weight-medium text-medium-emphasis mb-2">
+              {{ $t('Timeline Layout') }}
+            </p>
+            <v-btn-toggle
+              v-model="formData.timelineLayout"
+              mandatory
+              density="compact"
+              color="#6366f1"
+              variant="outlined"
+              class="layout-toggle"
+            >
+              <v-btn :value="TIMELINE_LAYOUTS.VERTICAL" size="small">
+                <v-icon start size="16">mdi-view-sequential-outline</v-icon>
+                {{ $t('Vertical') }}
+              </v-btn>
+              <v-btn :value="TIMELINE_LAYOUTS.HORIZONTAL" size="small">
+                <v-icon start size="16">mdi-view-column-outline</v-icon>
+                {{ $t('Horizontal') }}
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+
           <MilestonesInput
             v-model="formData.milestones"
             :min-milestones="2"
@@ -358,7 +382,8 @@ import {
   createEmptyAuthor,
   validateProject,
   cloneProject,
-  initializeSectionData
+  initializeSectionData,
+  TIMELINE_LAYOUTS
 } from '../types/projectTypes.js';
 import {
   isSectionEnabled as checkSectionEnabled,
@@ -643,5 +668,17 @@ defineExpose({
   .add-section-container {
     padding: 0 20px 24px;
   }
+}
+
+/* Timeline Layout Toggle */
+.timeline-layout-toggle {
+  padding: 0 0 4px;
+}
+
+.layout-toggle .v-btn {
+  text-transform: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 </style>

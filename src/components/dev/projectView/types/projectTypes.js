@@ -82,6 +82,14 @@ export const PARTNER_COLOR_PRESETS = [
 ];
 
 /**
+ * Timeline layout options
+ */
+export const TIMELINE_LAYOUTS = {
+  VERTICAL: 'vertical',
+  HORIZONTAL: 'horizontal',
+};
+
+/**
  * Preset milestone colors for timeline
  */
 export const MILESTONE_COLOR_PRESETS = [
@@ -128,11 +136,13 @@ export const FINDING_COLOR_PRESETS = [
 ];
 
 /**
- * Common impact icons (emojis)
+ * Common impact icons (MDI icon names)
  */
 export const IMPACT_ICON_PRESETS = [
-  '👨‍🎓', '👩‍🏫', '🔬', '🎯', '📊', '💡', '🚀', '🌍',
-  '🏆', '📈', '🤝', '💻', '📚', '⚡', '🔧', '🎨',
+  'mdi-school-outline', 'mdi-account-group-outline', 'mdi-microscope', 'mdi-target',
+  'mdi-chart-bar', 'mdi-lightbulb-outline', 'mdi-rocket-launch-outline', 'mdi-earth',
+  'mdi-trophy-outline', 'mdi-trending-up', 'mdi-handshake-outline', 'mdi-laptop',
+  'mdi-bookshelf', 'mdi-flash-outline', 'mdi-wrench-outline', 'mdi-palette-outline',
 ];
 
 /**
@@ -192,6 +202,9 @@ export const FOOTER_VARIANTS = {
  * @property {string} title - Milestone title
  * @property {string} description - Brief description
  * @property {string} color - Hex color for the marker
+ * @property {'single'|'range'} dateType - Whether this is a single date or range
+ * @property {string|null} dateStart - ISO date string (YYYY-MM-DD) or null
+ * @property {string|null} dateEnd - ISO date string (YYYY-MM-DD) or null, only for range
  */
 
 /**
@@ -204,7 +217,7 @@ export const FOOTER_VARIANTS = {
 /**
  * @typedef {Object} ImpactItem
  * @property {string} id - Unique identifier
- * @property {string} icon - Emoji or icon character
+ * @property {string} icon - MDI icon name (e.g., 'mdi-target')
  * @property {string} label - Short label
  * @property {string} text - Description text
  */
@@ -236,6 +249,7 @@ export const FOOTER_VARIANTS = {
  * @property {Conclusion} conclusion - Conclusion text
  * @property {Partner[]} partners - Partner organizations
  * @property {Milestone[]} milestones - Timeline milestones
+ * @property {'vertical'|'horizontal'} timelineLayout - Timeline display layout
  * @property {ImpactItem[]} impactItems - Impact summary items
  * @property {PosterConfig|null} poster - Poster configuration
  * @property {FooterConfig} footer - Footer banner
@@ -313,6 +327,9 @@ export function createEmptyMilestone(overrides = {}) {
     title: '',
     description: '',
     color: MILESTONE_COLOR_PRESETS[0].value,
+    dateType: 'single',   // 'single' or 'range'
+    dateStart: null,       // ISO string 'YYYY-MM-DD' or null
+    dateEnd: null,         // ISO string 'YYYY-MM-DD' or null (range only)
     ...overrides,
   };
 }
@@ -339,7 +356,7 @@ export function createEmptyTag(overrides = {}) {
 export function createEmptyImpactItem(overrides = {}) {
   return {
     id: generateId(),
-    icon: '🎯',
+    icon: 'mdi-target',
     label: '',
     text: '',
     ...overrides,
@@ -446,6 +463,7 @@ export function createEmptyProject(userId = '', enabledSections = DEFAULT_ENABLE
     // === OPTIONAL SECTION DATA ===
     partners: [],
     milestones: [],
+    timelineLayout: TIMELINE_LAYOUTS.VERTICAL,
     impactItems: [],
     poster: null, // null when poster section is disabled
 
@@ -483,8 +501,8 @@ export function initializeSectionData(project, sectionId) {
     case 'impact':
       if (updated.impactItems.length === 0) {
         updated.impactItems = [
-          createEmptyImpactItem({ icon: '👨‍🎓', label: 'For Students' }),
-          createEmptyImpactItem({ icon: '👩‍🏫', label: 'For Instructors' }),
+          createEmptyImpactItem({ icon: 'mdi-school-outline', label: 'For Students' }),
+          createEmptyImpactItem({ icon: 'mdi-account-group-outline', label: 'For Instructors' }),
         ];
       }
       break;
@@ -589,16 +607,17 @@ export const SAMPLE_PROJECT = {
     { id: 'partner-003', acronym: 'HPE DSI', name: 'Hewlett Packard Enterprise Data Science Institute', color: '#7c3aed' },
   ],
   milestones: [
-    { id: 'milestone-001', title: 'Data Collection', description: 'Gathered housing and health data', color: '#059669' },
-    { id: 'milestone-002', title: 'Analysis Phase', description: 'Statistical analysis of correlations', color: '#2563eb' },
-    { id: 'milestone-003', title: 'Visualization', description: 'Created interactive maps', color: '#7c3aed' },
-    { id: 'milestone-004', title: 'Publication', description: 'Presented findings at URD', color: '#ea580c' },
+    { id: 'milestone-001', title: 'Data Collection', description: 'Gathered housing and health data', color: '#059669', dateType: 'range', dateStart: '2023-01-15', dateEnd: '2023-03-20' },
+    { id: 'milestone-002', title: 'Analysis Phase', description: 'Statistical analysis of correlations', color: '#2563eb', dateType: 'range', dateStart: '2023-03-21', dateEnd: '2023-06-15' },
+    { id: 'milestone-003', title: 'Visualization', description: 'Created interactive maps', color: '#7c3aed', dateType: 'single', dateStart: '2023-07-01', dateEnd: null },
+    { id: 'milestone-004', title: 'Publication', description: 'Presented findings at URD', color: '#ea580c', dateType: 'single', dateStart: '2023-09-15', dateEnd: null },
   ],
+  timelineLayout: 'vertical',
   impactItems: [
-    { id: 'impact-001', icon: '👨‍🎓', label: 'For Students', text: 'Hands-on research experience with real-world data' },
-    { id: 'impact-002', icon: '🏘️', label: 'For Communities', text: 'Evidence for environmental justice advocacy' },
-    { id: 'impact-003', icon: '📊', label: 'For Researchers', text: 'Methodology for analyzing environmental inequity' },
-    { id: 'impact-004', icon: '🏛️', label: 'For Policymakers', text: 'Data-driven insights for zoning decisions' },
+    { id: 'impact-001', icon: 'mdi-school-outline', label: 'For Students', text: 'Hands-on research experience with real-world data' },
+    { id: 'impact-002', icon: 'mdi-home-group', label: 'For Communities', text: 'Evidence for environmental justice advocacy' },
+    { id: 'impact-003', icon: 'mdi-chart-bar', label: 'For Researchers', text: 'Methodology for analyzing environmental inequity' },
+    { id: 'impact-004', icon: 'mdi-bank-outline', label: 'For Policymakers', text: 'Data-driven insights for zoning decisions' },
   ],
   poster: {
     type: 'pdf',
@@ -827,7 +846,7 @@ export function validateTag(tag, prefix = 'tag') {
 export function validateImpactItem(item, prefix = 'impactItem') {
   const errors = [];
 
-  const iconError = validateString(item.icon, 'Icon', { required: true, maxLength: 10 });
+  const iconError = validateString(item.icon, 'Icon', { required: true, maxLength: 50 });
   if (iconError) errors.push({ field: `${prefix}.icon`, message: iconError });
 
   const labelError = validateString(item.label, 'Label', { required: true, maxLength: 50 });
@@ -1170,6 +1189,7 @@ export const FORM_FIELD_CONFIG = {
 export default {
   // Constants
   TEMPLATE_TYPES,
+  TIMELINE_LAYOUTS,
   FINDING_VARIANTS,
   FINDING_VARIANT_STYLES,
   FINDING_COLOR_PRESETS,
