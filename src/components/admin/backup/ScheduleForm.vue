@@ -34,75 +34,88 @@
         :loading="saving"
         :disabled="saving"
       >
-        {{ saving ? 'Saving…' : 'Save Schedule' }}
+        {{ saving ? "Saving…" : "Save Schedule" }}
       </v-btn>
     </form>
   </div>
 </template>
 
-
 <script>
-import axios from 'axios';
-import { toast } from 'vue3-toastify';
+import axios from "axios";
+import { toast } from "vue3-toastify";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
-  name: 'ScheduleForm',
-  emits: ['schedule-updated'],
+  name: "ScheduleForm",
+  emits: ["schedule-updated"],
   data() {
     return {
-      recurrence: 'biweekly',  
+      recurrence: "biweekly",
       recurrenceOptions: [
-        { text: 'Every day', value: 'daily' },
-        { text: 'Every week', value: 'weekly' },
-        { text: 'Every 2 weeks', value: 'biweekly' },
-        { text: 'Every month', value: 'monthly' },
-        { text: 'No automatic schedule', value: 'none' }
+        { text: "Every day", value: "daily" },
+        { text: "Every week", value: "weekly" },
+        { text: "Every 2 weeks", value: "biweekly" },
+        { text: "Every month", value: "monthly" },
+        { text: "No automatic schedule", value: "none" },
       ],
       loading: false,
-      saving: false
+      saving: false,
     };
   },
   async mounted() {
     this.loading = true;
     const API = import.meta.env.VITE_ROOT_API;
     const userStore = useLoggedInUserStore();
-    const headers = { token: userStore.token }; 
+    const headers = { token: userStore.token };
 
     try {
       const url = `${API}/backup/config`;
-        const { data } = await axios.get(
-          url,
-          { headers }
-        );
-      this.recurrence = data.recurrence || 'biweekly';
+      const { data } = await axios.get(url, { headers });
+      // CHANGE 1
+      // this.recurrence = data.recurrence || 'biweekly';
+      this.recurrence = data?.schedule?.type || "biweekly";
     } catch (err) {
-      console.error('Failed to load config:', err);
+      console.error("Failed to load config:", err);
     } finally {
       this.loading = false;
     }
   },
   methods: {
     async save() {
-      // Persists the updated recurrence to the server.
       this.saving = true;
-      const API        = import.meta.env.VITE_ROOT_API;
-      const userStore  = useLoggedInUserStore();
-      const headers    = { token: userStore.token };
-      const url        = `${API}/backup/config`;
-      const payload    = { recurrence: this.recurrence };
-        
+      const API = import.meta.env.VITE_ROOT_API;
+      const userStore = useLoggedInUserStore();
+      const headers = { token: userStore.token };
+      const url = `${API}/backup/config`;
+
+      const map = {
+        daily: "0 0 * * *",
+        weekly: "0 0 * * 0",
+        biweekly: "0 0 */14 * *", // ← ADD THIS
+        monthly: "0 0 1 * *",
+      };
+
+      let payload;
+      if (this.recurrence === "none") {
+        payload = { enabled: false };
+      } else {
+        payload = {
+          enabled: true,
+          schedule: { type: this.recurrence, value: map[this.recurrence] },
+        };
+      }
+
       try {
         await axios.put(url, payload, { headers });
-        toast.success('Schedule updated!');
-        this.$emit('schedule-updated');
+        toast.success("Schedule updated!");
+        this.$emit("schedule-updated");
       } catch (err) {
         console.error(err);
-        toast.error('Could not update schedule');
+        toast.error("Could not update schedule");
       } finally {
         this.saving = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
