@@ -101,6 +101,7 @@
                 v-model="projectData"
                 :show-validation="showValidation"
                 @validation-change="handleValidationChange"
+                @remove-avatar="handleRemoveAvatar"
               />
             </v-card>
           </div>
@@ -199,6 +200,7 @@ import SectionConfigurator from './SectionConfigurator.vue';
 import ProjectForm from './forms/ProjectForm.vue';
 import ProjectPreview from './ProjectPreview.vue';
 import PreviewSubmitStep from './PreviewSubmitStep.vue';
+import formService from './services/projectViewFormService.js';
 import {
   createEmptyProject,
   validateProject,
@@ -216,6 +218,11 @@ const props = defineProps({
   },
   // Project ID for editing
   projectId: {
+    type: String,
+    default: ''
+  },
+  // Backend form document _id (from parent page)
+  formId: {
     type: String,
     default: ''
   }
@@ -402,8 +409,22 @@ function handleFullscreenChange(isFullscreen) {
   isPreviewFullscreen.value = isFullscreen;
 }
 
+async function handleRemoveAvatar(authorId) {
+  if (!props.formId || !authorId) return;
+  try {
+    await formService.deleteAvatar(props.formId, authorId);
+  } catch (err) {
+    console.error('Failed to delete avatar:', err);
+    toast.error('Failed to remove avatar. Please try again.', {
+      position: 'top-right',
+      toastClassName: 'Toastify__toast--delete'
+    });
+  }
+}
+
 // Auto-save functionality
 let autoSaveTimeout = null;
+let isAutoSaving = false;
 
 function scheduleAutoSave() {
   if (autoSaveTimeout) {
@@ -419,26 +440,138 @@ function scheduleAutoSave() {
 }
 
 async function autoSave() {
-  if (!projectData.value) return;
+  if (!projectData.value || !props.formId || isAutoSaving) return;
 
+  isAutoSaving = true;
   try {
     saveStatus.value = 'saving';
-    // Save to localStorage for now
-    localStorage.setItem('projectDraft', JSON.stringify({
-      enabledSections: enabledSections.value,
-      data: projectData.value,
-      step: currentStep.value,
-      timestamp: new Date().toISOString()
-    }));
 
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+    // 1. Handle pending avatar file uploads
+    if (projectData.value.authors) {
+      for (const author of projectData.value.authors) {
+        if (author.avatarFile instanceof File) {
+          // Need the backend _id for this author
+          const authorBackendId = author.id;
+          try {
+            const uploadResponse = await formService.uploadAvatar(
+              props.formId,
+              authorBackendId,
+              author.avatarFile
+            );
+            // Sync full form state from response
+            const synced = formService.fromBackendFormat(uploadResponse);
+            syncAuthorAvatars(synced);
+            author.avatarFile = null;
+          } catch (uploadErr) {
+            console.error('Avatar upload failed for author:', author.id, uploadErr);
+          }
+        }
+      }
+    }
+
+    // 2. Handle pending poster file upload
+    if (projectData.value.poster?.file instanceof File) {
+      try {
+        const uploadResponse = await formService.uploadPoster(
+          props.formId,
+          projectData.value.poster.file,
+          projectData.value.poster.title
+        );
+        // Sync full form state from response
+        const synced = formService.fromBackendFormat(uploadResponse);
+        if (synced.poster) {
+          projectData.value.poster.url = synced.poster.url;
+          projectData.value.poster.type = synced.poster.type;
+        }
+        projectData.value.poster.file = null;
+      } catch (uploadErr) {
+        console.error('Poster upload failed:', uploadErr);
+      }
+    }
+
+    // 3. PATCH content fields (without file objects and server-managed fields)
+    const response = await formService.update(props.formId, projectData.value);
+
+    // 4. Sync backend-generated _id values back into local state
+    const synced = formService.fromBackendFormat(response);
+    syncBackendIds(synced);
 
     saveStatus.value = 'saved';
     hasUnsavedChanges.value = false;
   } catch (error) {
     console.error('Auto-save failed:', error);
     saveStatus.value = 'error';
+  } finally {
+    isAutoSaving = false;
   }
+}
+
+/**
+ * Sync avatar URLs from a backend response into local project data
+ * without overwriting local edits to other fields.
+ */
+function syncAuthorAvatars(synced) {
+  if (!synced.authors || !projectData.value.authors) return;
+  for (const syncedAuthor of synced.authors) {
+    const local = projectData.value.authors.find(a => a.id === syncedAuthor.id);
+    if (local && syncedAuthor.avatarUrl) {
+      local.avatarUrl = syncedAuthor.avatarUrl;
+    }
+  }
+}
+
+/**
+ * Sync backend-generated _id values back into local state.
+ * This ensures new items (created without an _id) get their server-assigned IDs.
+ */
+function syncBackendIds(synced) {
+  if (!projectData.value || !synced) return;
+
+  // Sync array item IDs by index (backend preserves order)
+  const arrayFields = [
+    { local: 'authors', remote: 'authors' },
+    { local: 'tags', remote: 'tags' },
+    { local: 'findings', remote: 'findings' },
+    { local: 'partners', remote: 'partners' },
+    { local: 'milestones', remote: 'milestones' },
+    { local: 'impactItems', remote: 'impactItems' },
+  ];
+
+  for (const { local, remote } of arrayFields) {
+    const localArr = projectData.value[local];
+    const remoteArr = synced[remote];
+    if (localArr && remoteArr) {
+      for (let i = 0; i < Math.min(localArr.length, remoteArr.length); i++) {
+        if (remoteArr[i].id && localArr[i].id !== remoteArr[i].id) {
+          localArr[i].id = remoteArr[i].id;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Called by parent to sync full form state from a backend response.
+ */
+function syncFromBackend(synced) {
+  if (!synced || !projectData.value) return;
+  syncBackendIds(synced);
+  syncAuthorAvatars(synced);
+  if (synced.poster && projectData.value.poster) {
+    if (synced.poster.url) projectData.value.poster.url = synced.poster.url;
+    if (synced.poster.type) projectData.value.poster.type = synced.poster.type;
+  }
+  if (synced.metadata) {
+    projectData.value.metadata = { ...projectData.value.metadata, ...synced.metadata };
+  }
+  isSubmitting.value = false;
+}
+
+/**
+ * Called by parent to reset submitting state on error.
+ */
+function resetSubmitting() {
+  isSubmitting.value = false;
 }
 
 async function saveDraft() {
@@ -452,69 +585,36 @@ async function saveDraft() {
 }
 
 async function submitProject() {
+  if (isSubmitting.value) return; // Prevent double-click
+
   showValidation.value = true;
   validationErrors.value = validateProject(projectData.value);
 
   if (validationErrors.value.length > 0) {
+    const errorList = validationSummary.value.slice(0, 5);
+    const moreCount = validationSummary.value.length - 5;
+    let message = errorList.map(e => `• ${e}`).join('\n');
+    if (moreCount > 0) {
+      message += `\n• +${moreCount} more...`;
+    }
+    toast.error(message, {
+      position: 'top-right',
+      toastClassName: 'Toastify__toast--delete',
+      multiple: false
+    });
     return;
   }
 
+  // Cancel any pending auto-save to avoid racing with publish
+  if (autoSaveTimeout) {
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = null;
+  }
+
   isSubmitting.value = true;
-  try {
-    // Clear draft on successful submit
-    localStorage.removeItem('projectDraft');
-    emit('submit', cloneProject(projectData.value));
-  } finally {
-    isSubmitting.value = false;
-  }
-}
-
-// Load draft from localStorage
-function loadDraft() {
-  try {
-    const draft = localStorage.getItem('projectDraft');
-    if (draft) {
-      const parsed = JSON.parse(draft);
-
-      // Validate parsed data has expected structure
-      if (!parsed.data || typeof parsed.data !== 'object') {
-        console.warn('Invalid draft data structure, clearing localStorage');
-        localStorage.removeItem('projectDraft');
-        return false;
-      }
-
-      // Migrate if needed (handles old template-based format)
-      const migratedData = migrateProject(parsed.data);
-
-      // Clean up any non-serializable data that may have been corrupted
-      // File objects become null/empty when JSON serialized
-      if (migratedData.authors) {
-        migratedData.authors = migratedData.authors.map(a => ({
-          ...a,
-          avatarFile: null // File objects can't survive localStorage
-        }));
-      }
-      if (migratedData.poster) {
-        migratedData.poster = { ...migratedData.poster, file: null };
-      }
-
-      enabledSections.value = parsed.enabledSections || migratedData.enabledSections || [];
-      projectData.value = migratedData;
-
-      // Initialize section data for all enabled sections (fixes missing poster/etc when loading draft)
-      enabledSections.value.forEach(sectionId => {
-        projectData.value = initializeSectionData(projectData.value, sectionId);
-      });
-
-      currentStep.value = Math.min(parsed.step || 1, 2); // Don't auto-advance to preview
-      return true;
-    }
-  } catch (error) {
-    console.error('Failed to load draft, clearing localStorage:', error);
-    // Clear corrupted localStorage data to prevent recurring errors
-    localStorage.removeItem('projectDraft');
-  }
-  return false;
+  // Note: isSubmitting is reset by parent after publish completes via syncFromBackend,
+  // or on error. Emit carries the data to parent's handleSubmit.
+  emit('submit', cloneProject(projectData.value));
 }
 
 // Unsaved changes warning
@@ -551,15 +651,25 @@ watch(enabledSections, (newVal) => {
 onMounted(() => {
   window.addEventListener('beforeunload', handleBeforeUnload);
 
-  // Load initial project or draft
+  // Load initial project from API response (passed by parent page)
   if (props.initialProject) {
-    // Migrate old format if needed
-    const migratedProject = migrateProject(cloneProject(props.initialProject));
+    let migratedProject = migrateProject(cloneProject(props.initialProject));
+
+    // Initialize section data for all enabled sections so optional sections
+    // (e.g. poster) have their default data structures even when the backend
+    // returned null for them.
+    const sections = migratedProject.enabledSections || [];
+    sections.forEach(sectionId => {
+      migratedProject = initializeSectionData(migratedProject, sectionId);
+    });
+
     projectData.value = migratedProject;
-    enabledSections.value = migratedProject.enabledSections || [];
-    currentStep.value = 2;
-  } else {
-    loadDraft();
+    enabledSections.value = sections;
+
+    // Determine starting step: form with content → Step 2, empty → Step 1
+    const hasContent = migratedProject.title || migratedProject.description ||
+      (migratedProject.authors && migratedProject.authors.some(a => a.name));
+    currentStep.value = hasContent ? 2 : 1;
   }
 });
 
@@ -574,6 +684,8 @@ onBeforeUnmount(() => {
 defineExpose({
   saveDraft,
   submitProject,
+  syncFromBackend,
+  resetSubmitting,
   hasUnsavedChanges: () => hasUnsavedChanges.value
 });
 </script>

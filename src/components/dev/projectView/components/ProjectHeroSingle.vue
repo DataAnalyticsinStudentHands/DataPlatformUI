@@ -27,10 +27,10 @@
       <!-- Author Card -->
       <div class="hero-author">
         <img
+          v-if="authorAvatarSrc"
           class="author-avatar"
           :src="authorAvatarSrc"
           :alt="`${author.name} headshot`"
-          @error="handleImageError"
         />
         <div class="author-details">
           <div class="author-info">
@@ -47,7 +47,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch, onBeforeUnmount } from 'vue';
+import axios from 'axios';
+import { buildFileUrl } from '../services/projectViewFormService.js';
 
 const props = defineProps({
   label: {
@@ -75,33 +77,50 @@ const props = defineProps({
   },
 });
 
-const imageError = ref(false);
+// Track blob URL for avatar display.
+// Persists after auto-save clears avatarFile (same pattern as poster in ProjectPreview).
+const avatarObjectUrl = ref('');
 
-const authorAvatarSrc = computed(() => {
-  // Check for uploaded file first (from cropper)
-  if (props.author.avatarFile) {
-    return URL.createObjectURL(props.author.avatarFile);
+watch(
+  () => props.author.avatarFile,
+  (newFile) => {
+    if (newFile instanceof File) {
+      if (avatarObjectUrl.value) URL.revokeObjectURL(avatarObjectUrl.value);
+      avatarObjectUrl.value = URL.createObjectURL(newFile);
+    }
+  },
+  { immediate: true }
+);
+
+// Fetch from backend when no blob URL exists (page reload scenario).
+watch(
+  () => props.author.avatarUrl,
+  async (url) => {
+    if (avatarObjectUrl.value || !url) return;
+    try {
+      const { data } = await axios.get(buildFileUrl(url), { responseType: 'blob' });
+      avatarObjectUrl.value = URL.createObjectURL(data);
+    } catch { /* placeholder shown */ }
+  },
+  { immediate: true }
+);
+
+// Clear blob URL when avatar is removed (both file and URL cleared).
+watch(
+  () => [props.author.avatarFile, props.author.avatarUrl],
+  ([file, url]) => {
+    if (!file && !url && avatarObjectUrl.value) {
+      URL.revokeObjectURL(avatarObjectUrl.value);
+      avatarObjectUrl.value = '';
+    }
   }
+);
 
-  // Fall back to URL
-  if (!imageError.value && props.author.avatarUrl) {
-    return props.author.avatarUrl;
-  }
-
-  // Return placeholder/default avatar
-  return 'data:image/svg+xml,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-      <rect fill="#6366f1" width="100" height="100"/>
-      <text x="50" y="55" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">
-        ${props.author.name ? props.author.name.charAt(0).toUpperCase() : '?'}
-      </text>
-    </svg>
-  `);
+onBeforeUnmount(() => {
+  if (avatarObjectUrl.value) URL.revokeObjectURL(avatarObjectUrl.value);
 });
 
-function handleImageError() {
-  imageError.value = true;
-}
+const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
 </script>
 
 <style scoped>

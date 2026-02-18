@@ -92,6 +92,7 @@
             :show-remove="formData.authors.length > 1"
             :remove-disabled="formData.authors.length <= 1"
             @remove="removeAuthor(index)"
+            @remove-avatar="handleRemoveAvatar(index)"
           />
         </div>
 
@@ -341,7 +342,7 @@
             :existing-url="formData.poster.url"
             :accept-pdf="true"
             :accept-images="true"
-            :max-size-mb="10"
+            :max-size-mb="32"
             :show-error="showValidation && !formData.poster.file && !formData.poster.url"
             title-placeholder="e.g., Research Poster"
             @remove="clearPosterUrl"
@@ -374,12 +375,13 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, watchEffect } from 'vue';
 import { AuthorInput, TagsInput, FindingsInput, PartnersInput, MilestonesInput, ImpactInput, FileUploader } from './shared';
 import SectionAddMenu from '../SectionAddMenu.vue';
 import {
   createEmptyProject,
   createEmptyAuthor,
+  createEmptyPoster,
   validateProject,
   cloneProject,
   initializeSectionData,
@@ -402,19 +404,40 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:modelValue', 'submit', 'validation-change']);
+const emit = defineEmits(['update:modelValue', 'submit', 'validation-change', 'remove-avatar']);
 
 const form = ref(null);
 
 // Flag to prevent circular updates
 let isInternalUpdate = false;
 
+// Ensure all enabled sections have their data structures initialized
+function ensureSectionData(project) {
+  const sections = project.enabledSections || [];
+  let result = project;
+  for (const sectionId of sections) {
+    result = initializeSectionData(result, sectionId);
+  }
+  return result;
+}
+
 // Initialize form data
 const formData = ref(
-  props.modelValue
-    ? cloneProject(props.modelValue)
-    : createEmptyProject()
+  ensureSectionData(
+    props.modelValue
+      ? cloneProject(props.modelValue)
+      : createEmptyProject()
+  )
 );
+
+// Reactive guard: ensure poster data exists whenever the poster section is enabled.
+// This covers all cases — initial mount, parent v-model sync, section toggling — regardless
+// of watcher ordering or the isInternalUpdate flag.
+watchEffect(() => {
+  if (formData.value.enabledSections?.includes('poster') && !formData.value.poster) {
+    formData.value.poster = createEmptyPoster('pdf');
+  }
+});
 
 // Suggested tags
 const suggestedTags = [
@@ -481,6 +504,13 @@ function updateAuthor(index, updatedAuthor) {
   formData.value.authors[index] = updatedAuthor;
 }
 
+function handleRemoveAvatar(index) {
+  const author = formData.value.authors[index];
+  if (author?.id) {
+    emit('remove-avatar', author.id);
+  }
+}
+
 // Add a section
 function addSection(sectionId) {
   if (!formData.value.enabledSections.includes(sectionId)) {
@@ -514,7 +544,7 @@ watch(() => props.modelValue, (newVal) => {
     return;
   }
   if (newVal) {
-    formData.value = cloneProject(newVal);
+    formData.value = ensureSectionData(cloneProject(newVal));
   }
 }, { deep: true });
 

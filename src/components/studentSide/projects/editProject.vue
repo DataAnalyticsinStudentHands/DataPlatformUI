@@ -262,6 +262,41 @@ project information and leave the project.
 
               <v-divider></v-divider>
 
+              <!-- Section 4: Project Page -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">4</div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-center justify-space-between">
+                      <div>
+                        <h2 class="section-title">{{ $t('Project Page') }}</h2>
+                        <p class="section-subtitle">{{ $t('Create a public-facing page to showcase your project') }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <div class="project-page-card">
+                    <v-icon size="40" color="#c8102e" class="mb-3">mdi-presentation</v-icon>
+                    <p class="text-body-2 text-medium-emphasis mb-4">
+                      {{ $t('Design a project page with your team information, key findings, timeline, and more. Once published, you can share it with a public link.') }}
+                    </p>
+                    <v-btn
+                      class="project-page-btn"
+                      variant="flat"
+                      :disabled="projectData.projectStatus === 'Archived'"
+                      @click="openProjectEditor"
+                      prepend-icon="mdi-pencil-ruler"
+                    >
+                      {{ $t('Open Project Page Editor') }}
+                    </v-btn>
+                  </div>
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
               <!-- Form Actions -->
               <div class="form-actions">
                 <v-btn 
@@ -988,6 +1023,15 @@ export default {
       }
     },
 
+    // Navigate to the Project Page editor
+    openProjectEditor() {
+      if (!this.projectData._id) return;
+      this.$router.push({
+        name: 'projectEditorEdit',
+        params: { projectId: this.projectData._id }
+      });
+    },
+
     // Open archive project confirmation dialog
     openArchiveConfirmDialog() {
       if (!this.isProjectOwner) return;
@@ -1274,6 +1318,24 @@ export default {
 }
 
 .got-it-btn:hover {
+  background-color: #a00d24 !important;
+}
+
+/* Project Page Card */
+.project-page-card {
+  text-align: center;
+  padding: 32px 16px;
+  background-color: #fafafa;
+  border: 1px dashed #e0e0e0;
+  border-radius: 8px;
+}
+
+.project-page-btn {
+  background-color: #c8102e !important;
+  color: white !important;
+}
+
+.project-page-btn:hover {
   background-color: #a00d24 !important;
 }
 

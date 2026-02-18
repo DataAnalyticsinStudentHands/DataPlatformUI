@@ -57,7 +57,7 @@
           <div v-if="user.isLoggedIn && user.getRole === 'Student'">
             <v-list-item 
               :active="activeLink === 'studentDashboard'"
-              to="studentDashboard"
+              :to="{ name: 'studentDashboard' }"
               prepend-icon="mdi-view-dashboard"
               value="studentDashboard"
               class=" tracking-wider "
@@ -65,7 +65,7 @@
             <v-list-item 
               :active="activeLink === 'studentEntryForm'"
               v-if="!user.hasCompletedEntryForm"
-              to="studentEntryForm"
+              :to="{ name: 'studentEntryForm' }"
               prepend-icon="mdi-file-document"
               value="studentEntryForm"
               class=" tracking-wider "
@@ -73,7 +73,7 @@
             <v-list-item 
               :active="activeLink === 'goalSettingForm'"
               v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasGoalFormsToComplete"
-              to="goalSettingForm"
+              :to="{ name: 'goalSettingForm' }"
               prepend-icon="mdi-file-document"
               value="goalSettingForm"
               class=" tracking-wider "
@@ -81,7 +81,7 @@
             <v-list-item 
               :active="activeLink === 'exitForm'"
               v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasExitFormsToComplete"
-              to="exitForm"
+              :to="{ name: 'exitForm' }"
               prepend-icon="mdi-file-document"
               value="exitForm"
               class=" tracking-wider "
@@ -95,7 +95,7 @@
                 <div v-bind="props">
                   <v-list-item 
                     :active="activeLink === 'projects' || activeLink === 'studentProjects'"
-                    :to="user.hasRegisteredExperiences ? 'projects' : undefined"
+                    :to="user.hasRegisteredExperiences ? { name: 'projects' } : undefined"
                     :disabled="!user.hasRegisteredExperiences"
                     prepend-icon="mdi-account-group"
                     class="tracking-wider"
@@ -206,7 +206,7 @@
             <v-list-item 
               :active="activeLink === 'profile'"
               v-if="user.getRole === 'Student'"
-              to="profile"
+              :to="{ name: 'profile' }"
               prepend-icon="mdi-account"
               value="profile"
               class=" tracking-wider "

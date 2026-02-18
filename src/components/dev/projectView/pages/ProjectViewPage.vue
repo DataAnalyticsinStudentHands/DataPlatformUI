@@ -107,7 +107,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ProjectTemplateRenderer } from '../templates';
-import { SAMPLE_RESEARCH_PROJECT, SAMPLE_DEVELOPMENT_PROJECT } from '../types/projectTypes.js';
+import formService from '../services/projectViewFormService.js';
+import { mergeWithDefaults } from '../types/projectTypes.js';
 
 // Props for optional configuration
 const props = defineProps({
@@ -132,20 +133,44 @@ const isLoading = ref(true);
 const error = ref(null);
 const showShareSnackbar = ref(false);
 
-// Get project ID from route params
+// Get project ID from route params (this is the form _id)
 const projectId = computed(() => route.params.projectId);
 
 // Check if current user can edit this project
 const canEdit = computed(() => {
-  // TODO: Implement actual ownership check
-  // For now, return false for public view
+  // Public view — editing not available
   return false;
 });
 
-// Fetch project data
+/**
+ * Build display-ready project data from backend response.
+ * Converts avatar/poster relative paths to full URLs.
+ */
+function buildDisplayProject(frontendData) {
+  const display = { ...frontendData };
+
+  // Build full URLs for author avatars
+  if (display.authors) {
+    display.authors = display.authors.map(author => ({
+      ...author,
+      avatarUrl: formService.buildFileUrl(author.avatarUrl),
+    }));
+  }
+
+  // Build full URL for poster
+  if (display.poster && display.poster.url) {
+    display.poster = {
+      ...display.poster,
+      url: formService.buildFileUrl(display.poster.url),
+    };
+  }
+
+  return display;
+}
+
+// Fetch project data from public API
 async function fetchProject() {
   if (props.projectData) {
-    // Use provided project data
     project.value = props.projectData;
     isLoading.value = false;
     return;
@@ -161,30 +186,17 @@ async function fetchProject() {
     isLoading.value = true;
     error.value = null;
 
-    // TODO: Replace with actual API call
-    // const response = await projectViewApi.getProject(projectId.value);
-    // project.value = response.data;
-
-    // For development: Load sample data based on ID pattern
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-
-    if (projectId.value === 'sample-research' || projectId.value.includes('research')) {
-      project.value = SAMPLE_RESEARCH_PROJECT;
-    } else if (projectId.value === 'sample-development' || projectId.value.includes('dev')) {
-      project.value = SAMPLE_DEVELOPMENT_PROJECT;
-    } else {
-      // Try to load from localStorage (for draft previews)
-      const draft = localStorage.getItem('projectDraft');
-      if (draft) {
-        const parsed = JSON.parse(draft);
-        project.value = parsed.data;
-      } else {
-        error.value = 'Project not found. It may have been deleted or the link is invalid.';
-      }
-    }
+    const response = await formService.getPublic(projectId.value);
+    const frontendData = formService.fromBackendFormat(response);
+    const merged = mergeWithDefaults(frontendData);
+    project.value = buildDisplayProject(merged);
   } catch (err) {
     console.error('Failed to fetch project:', err);
-    error.value = 'Failed to load project. Please try again later.';
+    if (err.response && err.response.status === 404) {
+      error.value = 'Project not found. It may have been deleted or the link is invalid.';
+    } else {
+      error.value = 'Failed to load project. Please try again later.';
+    }
   } finally {
     isLoading.value = false;
   }
@@ -213,13 +225,12 @@ function editProject() {
 // Share functionality
 async function copyShareLink() {
   const shareUrl = window.location.href;
-  
+
   try {
     await navigator.clipboard.writeText(shareUrl);
     showShareSnackbar.value = true;
   } catch (err) {
     console.error('Failed to copy link:', err);
-    // Fallback for older browsers
     const textArea = document.createElement('textarea');
     textArea.value = shareUrl;
     document.body.appendChild(textArea);

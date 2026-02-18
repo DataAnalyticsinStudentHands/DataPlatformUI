@@ -32,10 +32,10 @@
           class="author-card"
         >
           <img
+            v-if="avatarBlobUrls[author.id]"
             class="author-avatar"
-            :src="getAvatarSrc(author)"
+            :src="avatarBlobUrls[author.id]"
             :alt="`${author.name} headshot`"
-            @error="(e) => handleImageError(e, author.id)"
           />
           <div class="author-details">
             <div class="author-info">
@@ -53,7 +53,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive, watch, onBeforeUnmount } from 'vue';
+import axios from 'axios';
+import { buildFileUrl } from '../services/projectViewFormService.js';
 
 const props = defineProps({
   label: {
@@ -76,33 +78,40 @@ const props = defineProps({
   },
 });
 
-const imageErrors = ref(new Set());
+// Track blob URLs per author (persists after auto-save clears avatarFile).
+const avatarBlobUrls = reactive({});
 
-function getAvatarSrc(author) {
-  // Check for uploaded file first (from cropper)
-  if (author.avatarFile) {
-    return URL.createObjectURL(author.avatarFile);
-  }
+watch(
+  () => props.authors,
+  (authors) => {
+    if (!authors) return;
+    for (const author of authors) {
+      if (author.avatarFile instanceof File) {
+        if (avatarBlobUrls[author.id]) URL.revokeObjectURL(avatarBlobUrls[author.id]);
+        avatarBlobUrls[author.id] = URL.createObjectURL(author.avatarFile);
+      } else if (!author.avatarFile && !author.avatarUrl) {
+        // No avatar — revoke any stale blob URL and ensure key exists as empty
+        if (avatarBlobUrls[author.id]) URL.revokeObjectURL(avatarBlobUrls[author.id]);
+        avatarBlobUrls[author.id] = '';
+      } else if (!avatarBlobUrls[author.id] && author.avatarUrl) {
+        fetchAvatar(author.id, author.avatarUrl);
+      }
+    }
+  },
+  { deep: true, immediate: true }
+);
 
-  // Fall back to URL
-  if (!imageErrors.value.has(author.id) && author.avatarUrl) {
-    return author.avatarUrl;
-  }
-
-  // Return placeholder/default avatar
-  return 'data:image/svg+xml,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 90 90">
-      <rect fill="#6366f1" width="90" height="90"/>
-      <text x="45" y="50" font-family="Arial" font-size="36" fill="white" text-anchor="middle" dominant-baseline="middle">
-        ${author.name ? author.name.charAt(0).toUpperCase() : '?'}
-      </text>
-    </svg>
-  `);
+async function fetchAvatar(id, relativePath) {
+  try {
+    const { data } = await axios.get(buildFileUrl(relativePath), { responseType: 'blob' });
+    avatarBlobUrls[id] = URL.createObjectURL(data);
+  } catch { /* placeholder shown */ }
 }
 
-function handleImageError(event, authorId) {
-  imageErrors.value.add(authorId);
-}
+onBeforeUnmount(() => {
+  Object.values(avatarBlobUrls).forEach(url => { if (url) URL.revokeObjectURL(url); });
+});
+
 </script>
 
 <style scoped>

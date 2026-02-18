@@ -185,6 +185,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { ProjectTemplate } from './templates';
+import formService from './services/projectViewFormService.js';
 
 const props = defineProps({
   project: {
@@ -222,19 +223,20 @@ const showErrors = ref(true);
 // Track object URL for poster file preview (to clean up on change)
 const posterObjectUrl = ref(null);
 
-// Watch for poster file changes and create object URL for preview
+// Watch for poster file changes and create object URL for preview.
+// When auto-save clears poster.file after upload, we keep the blob URL alive
+// so the preview continues working without a cross-origin request to the API.
 watch(
   () => props.project?.poster?.file,
   (newFile) => {
-    // Revoke old object URL to prevent memory leaks
-    if (posterObjectUrl.value) {
-      URL.revokeObjectURL(posterObjectUrl.value);
-      posterObjectUrl.value = null;
-    }
-    // Create new object URL if there's a file
     if (newFile instanceof File) {
+      // Revoke old URL only when replacing with a new file
+      if (posterObjectUrl.value) {
+        URL.revokeObjectURL(posterObjectUrl.value);
+      }
       posterObjectUrl.value = URL.createObjectURL(newFile);
     }
+    // When file is cleared (auto-save), keep existing blob URL for preview
   },
   { immediate: true }
 );
@@ -244,17 +246,22 @@ const posterWithPreviewUrl = computed(() => {
   const poster = props.project?.poster;
   if (!poster) return null;
 
-  // If there's an uploaded file, use the object URL for preview
-  if (poster.file instanceof File && posterObjectUrl.value) {
-    const isPdf = poster.file.type === 'application/pdf';
+  // Prefer local blob URL (works during current editing session)
+  if (posterObjectUrl.value) {
     return {
       ...poster,
       url: posterObjectUrl.value,
-      type: isPdf ? 'pdf' : 'image'
     };
   }
 
-  // Otherwise use existing URL
+  // Fallback: build full URL for relative paths from backend (e.g. after page reload)
+  if (poster.url) {
+    return {
+      ...poster,
+      url: formService.buildFileUrl(poster.url)
+    };
+  }
+
   return poster;
 });
 

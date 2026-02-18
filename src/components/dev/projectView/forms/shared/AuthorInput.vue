@@ -50,6 +50,17 @@
           <v-icon start size="16">mdi-camera</v-icon>
           {{ avatarPreviewUrl ? 'Change' : 'Upload' }}
         </v-btn>
+        <v-btn
+          v-if="avatarPreviewUrl"
+          size="small"
+          variant="text"
+          color="#666"
+          class="remove-avatar-btn"
+          @click="removeAvatar"
+        >
+          <v-icon start size="14">mdi-delete-outline</v-icon>
+          Remove
+        </v-btn>
         <input
           ref="fileInput"
           type="file"
@@ -119,8 +130,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onBeforeUnmount } from 'vue';
+import axios from 'axios';
 import AvatarCropperDialog from './AvatarCropperDialog.vue';
+import { buildFileUrl } from '../../services/projectViewFormService.js';
 
 const props = defineProps({
   modelValue: {
@@ -153,7 +166,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:modelValue', 'remove']);
+const emit = defineEmits(['update:modelValue', 'remove', 'remove-avatar']);
 
 const fileInput = ref(null);
 const showCropperDialog = ref(false);
@@ -170,13 +183,42 @@ const roleRules = [
   v => (v && v.length <= 100) || 'Role must be 100 characters or less'
 ];
 
-// Computed avatar preview URL
-const avatarPreviewUrl = computed(() => {
-  if (props.modelValue.avatarFile) {
-    return URL.createObjectURL(props.modelValue.avatarFile);
-  }
-  return props.modelValue.avatarUrl || '';
+// Track blob URL for avatar display.
+// Persists after auto-save clears avatarFile (same pattern as poster in ProjectPreview).
+const avatarObjectUrl = ref('');
+
+// When a File is set (from cropper), create a blob URL and keep it alive
+// even after auto-save clears avatarFile to null.
+watch(
+  () => props.modelValue.avatarFile,
+  (newFile) => {
+    if (newFile instanceof File) {
+      if (avatarObjectUrl.value) URL.revokeObjectURL(avatarObjectUrl.value);
+      avatarObjectUrl.value = URL.createObjectURL(newFile);
+    }
+  },
+  { immediate: true }
+);
+
+// Fetch avatar from backend for existing data (e.g. page reload).
+// <img> tags can't send the auth token header, so we fetch via axios.
+watch(
+  () => props.modelValue.avatarUrl,
+  async (url) => {
+    if (avatarObjectUrl.value || !url) return;
+    try {
+      const { data } = await axios.get(buildFileUrl(url), { responseType: 'blob' });
+      avatarObjectUrl.value = URL.createObjectURL(data);
+    } catch { /* placeholder/initials shown */ }
+  },
+  { immediate: true }
+);
+
+onBeforeUnmount(() => {
+  if (avatarObjectUrl.value) URL.revokeObjectURL(avatarObjectUrl.value);
 });
+
+const avatarPreviewUrl = computed(() => avatarObjectUrl.value);
 
 // Get initials from name
 function getInitials(name) {
@@ -225,6 +267,29 @@ function handleCroppedImage(croppedFile) {
 // Handle cropper cancel
 function handleCropperCancel() {
   pendingImageFile.value = null;
+}
+
+// Remove avatar (clear local state + notify parent for backend deletion)
+function removeAvatar() {
+  const hadBackendAvatar = !!props.modelValue.avatarUrl;
+
+  // Clear local blob URL
+  if (avatarObjectUrl.value) {
+    URL.revokeObjectURL(avatarObjectUrl.value);
+    avatarObjectUrl.value = '';
+  }
+
+  // Clear avatar data on the model
+  emit('update:modelValue', {
+    ...props.modelValue,
+    avatarFile: null,
+    avatarUrl: ''
+  });
+
+  // Notify parent to call delete API (only if there was a backend-stored avatar)
+  if (hadBackendAvatar) {
+    emit('remove-avatar');
+  }
 }
 </script>
 
@@ -307,6 +372,11 @@ function handleCropperCancel() {
 .upload-btn {
   text-transform: none;
   font-size: 0.75rem;
+}
+
+.remove-avatar-btn {
+  text-transform: none;
+  font-size: 0.7rem;
 }
 
 .fields-section {

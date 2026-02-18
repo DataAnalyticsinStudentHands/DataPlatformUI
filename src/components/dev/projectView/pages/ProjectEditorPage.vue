@@ -51,6 +51,7 @@
       ref="editorRef"
       :initial-project="existingProject"
       :project-id="projectId"
+      :form-id="formId"
       @save="handleSave"
       @submit="handleSubmit"
       @cancel="handleCancel"
@@ -128,14 +129,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
+import { toast } from 'vue3-toastify';
 import ProjectEditorMain from '../ProjectEditorMain.vue';
-import { 
-  SAMPLE_RESEARCH_PROJECT, 
-  SAMPLE_DEVELOPMENT_PROJECT,
-  cloneProject 
-} from '../types/projectTypes.js';
+import formService from '../services/projectViewFormService.js';
+import { mergeWithDefaults } from '../types/projectTypes.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -145,6 +144,7 @@ const editorRef = ref(null);
 
 // State
 const existingProject = ref(null);
+const formId = ref(null);
 const isLoadingProject = ref(false);
 const loadError = ref(null);
 const saveError = ref(null);
@@ -152,6 +152,7 @@ const showSuccessDialog = ref(false);
 const showErrorSnackbar = ref(false);
 const showLeaveDialog = ref(false);
 const pendingNavigation = ref(null);
+const confirmedLeave = ref(false);
 const savedProjectId = ref(null);
 const linkCopied = ref(false);
 
@@ -159,36 +160,119 @@ const linkCopied = ref(false);
 const projectId = computed(() => route.params.projectId || '');
 const isEditing = computed(() => !!projectId.value);
 
-// Load existing project for editing
-async function loadExistingProject() {
-  if (!projectId.value) {
-    return;
+// ============================================================================
+// FILE UPLOAD HELPER
+// ============================================================================
+
+/**
+ * Upload all pending files (author avatars + poster) for a saved form.
+ * 
+ * Must be called AFTER the form document is saved so that:
+ *   1. The form exists in the DB (required by upload endpoints)
+ *   2. Authors have backend-assigned _id values (needed for avatar endpoint URL)
+ * 
+ * Uses `syncedData` (the response from save/create) which has real backend IDs,
+ * cross-referenced with `originalData` (the editor state) which has pending File objects.
+ * 
+ * @param {string} currentFormId — The saved form's _id
+ * @param {Object} originalData — The editor's form data (has avatarFile / poster.file)
+ * @param {Object} syncedData — The fromBackendFormat() result (has real author IDs)
+ * @returns {Promise<Object>} syncedData with uploaded URLs merged in
+ */
+async function uploadPendingFiles(currentFormId, originalData, syncedData) {
+  const uploadErrors = [];
+
+  // 1. Upload pending author avatars
+  //    Match by index — author order is preserved through save
+  if (Array.isArray(originalData.authors) && Array.isArray(syncedData.authors)) {
+    for (let i = 0; i < originalData.authors.length; i++) {
+      const original = originalData.authors[i];
+      const synced = syncedData.authors[i];
+
+      // Check if this author has a pending file AND has a real backend ID
+      if (original?.avatarFile instanceof File && synced?.id) {
+        try {
+          const updatedForm = await formService.uploadAvatar(
+            currentFormId,
+            synced.id,        // Use backend-assigned ID from synced response
+            original.avatarFile
+          );
+
+          // Find this author in the returned form to get the new avatarUrl
+          const updatedAuthor = formService.fromBackendFormat(updatedForm)?.authors?.[i];
+          if (updatedAuthor?.avatarUrl) {
+            syncedData.authors[i].avatarUrl = updatedAuthor.avatarUrl;
+          }
+
+          // Clear the pending file reference
+          original.avatarFile = null;
+        } catch (err) {
+          console.error(`Failed to upload avatar for author ${synced.id}:`, err);
+          uploadErrors.push(`Avatar upload failed for ${original.name || 'author'}`);
+        }
+      }
+    }
   }
+
+  // 2. Upload pending poster file
+  if (originalData.poster?.file instanceof File) {
+    try {
+      const updatedForm = await formService.uploadPoster(
+        currentFormId,
+        originalData.poster.file,
+        originalData.poster.title
+      );
+
+      // Get the poster URL from the returned form
+      const updatedPoster = formService.fromBackendFormat(updatedForm)?.poster;
+      if (updatedPoster?.url) {
+        syncedData.poster = syncedData.poster || {};
+        syncedData.poster.url = updatedPoster.url;
+      }
+
+      // Clear the pending file reference
+      originalData.poster.file = null;
+    } catch (err) {
+      console.error('Failed to upload poster:', err);
+      uploadErrors.push('Poster upload failed');
+    }
+  }
+
+  // Show warning toast if some uploads failed (non-blocking)
+  if (uploadErrors.length > 0) {
+    console.warn('Some file uploads failed:', uploadErrors);
+    toast.warning(`Some files could not be uploaded: ${uploadErrors.join(', ')}. You can try again.`);
+  }
+
+  return syncedData;
+}
+
+// ============================================================================
+// LOAD / SAVE / PUBLISH
+// ============================================================================
+
+// Load existing project or create new form via API
+async function loadExistingProject() {
+  if (!projectId.value) return;
 
   try {
     isLoadingProject.value = true;
     loadError.value = null;
 
-    // TODO: Replace with actual API call
-    // const response = await projectViewApi.getProject(projectId.value);
-    // existingProject.value = response.data;
+    // Try to fetch existing form for this project
+    const result = await formService.getByProject(projectId.value);
 
-    // For development: Load sample data
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    if (projectId.value === 'sample-research' || projectId.value.includes('research')) {
-      existingProject.value = cloneProject(SAMPLE_RESEARCH_PROJECT);
-    } else if (projectId.value === 'sample-development' || projectId.value.includes('dev')) {
-      existingProject.value = cloneProject(SAMPLE_DEVELOPMENT_PROJECT);
+    if (result.formFound) {
+      // Existing form found — load it
+      formId.value = result.data._id;
+      const frontendData = formService.fromBackendFormat(result.data);
+      existingProject.value = mergeWithDefaults(frontendData);
     } else {
-      // Try localStorage
-      const draft = localStorage.getItem('projectDraft');
-      if (draft) {
-        const parsed = JSON.parse(draft);
-        existingProject.value = parsed.data;
-      } else {
-        loadError.value = 'Project not found or you do not have permission to edit it.';
-      }
+      // No form exists — create a new draft
+      const created = await formService.create(projectId.value);
+      formId.value = created._id;
+      const frontendData = formService.fromBackendFormat(created);
+      existingProject.value = mergeWithDefaults(frontendData);
     }
   } catch (err) {
     console.error('Failed to load project:', err);
@@ -198,22 +282,23 @@ async function loadExistingProject() {
   }
 }
 
-// Handle save (draft)
+// Handle save (draft) — called from EditorMain
 async function handleSave(projectData) {
+  if (!formId.value) return;
+
   try {
-    // TODO: Replace with actual API call
-    // const response = await projectViewApi.saveDraft(projectData);
-    // savedProjectId.value = response.data.id;
+    // 1. Save the form document (text fields, structure)
+    const response = await formService.update(formId.value, projectData);
+    let synced = formService.fromBackendFormat(response);
+    savedProjectId.value = formId.value;
 
-    console.log('Saving draft:', projectData);
-    
-    // For development: Save to localStorage
-    localStorage.setItem('projectDraft', JSON.stringify({
-      data: projectData,
-      timestamp: new Date().toISOString()
-    }));
+    // 2. Upload any pending files using backend-assigned IDs from response
+    synced = await uploadPendingFiles(formId.value, projectData, synced);
 
-    savedProjectId.value = projectData.id;
+    // 3. Sync everything back to editor (IDs + file URLs)
+    if (editorRef.value?.syncFromBackend) {
+      editorRef.value.syncFromBackend(synced);
+    }
   } catch (err) {
     console.error('Failed to save draft:', err);
     saveError.value = 'Failed to save draft. Please try again.';
@@ -221,25 +306,38 @@ async function handleSave(projectData) {
   }
 }
 
-// Handle submit (publish)
+// Handle submit (publish) — called from EditorMain step 3
 async function handleSubmit(projectData) {
+  if (!formId.value) return;
+
   try {
-    // TODO: Replace with actual API call
-    // const response = await projectViewApi.publishProject(projectData);
-    // savedProjectId.value = response.data.id;
+    // 1. Save as draft first to persist any unsaved changes + get real IDs
+    const saveResponse = await formService.update(formId.value, projectData);
+    let synced = formService.fromBackendFormat(saveResponse);
 
-    console.log('Publishing project:', projectData);
+    // 2. Upload pending files BEFORE publishing
+    //    (poster.url must exist in DB for publish validation to pass)
+    synced = await uploadPendingFiles(formId.value, projectData, synced);
 
-    // For development: Save to localStorage
-    localStorage.setItem(`project_${projectData.id}`, JSON.stringify(projectData));
-    localStorage.removeItem('projectDraft');
-
-    savedProjectId.value = projectData.id;
+    // 3. Now publish — the form doc already has file URLs from uploads
+    const publishResponse = await formService.publish(formId.value, synced);
+    savedProjectId.value = formId.value;
     showSuccessDialog.value = true;
+
+    // 4. Sync published state back to editor
+    const finalSynced = formService.fromBackendFormat(publishResponse);
+    if (editorRef.value?.syncFromBackend) {
+      editorRef.value.syncFromBackend(finalSynced);
+    }
   } catch (err) {
     console.error('Failed to publish project:', err);
-    saveError.value = 'Failed to publish project. Please try again.';
+    const message = err.response?.data?.message || 'Failed to publish project. Please try again.';
+    saveError.value = message;
     showErrorSnackbar.value = true;
+    // Reset submitting state so user can retry
+    if (editorRef.value?.resetSubmitting) {
+      editorRef.value.resetSubmitting();
+    }
   }
 }
 
@@ -263,8 +361,6 @@ function goBack() {
 }
 
 function createNew() {
-  // Clear any existing draft and reload without projectId
-  localStorage.removeItem('projectDraft');
   router.push({ name: 'projectEditor' });
 }
 
@@ -278,7 +374,7 @@ function viewProject() {
 
 async function copyShareLink() {
   const shareUrl = `${window.location.origin}/platform/project/${savedProjectId.value}`;
-  
+
   try {
     await navigator.clipboard.writeText(shareUrl);
     linkCopied.value = true;
@@ -292,26 +388,28 @@ async function copyShareLink() {
 
 function confirmLeave() {
   showLeaveDialog.value = false;
+  confirmedLeave.value = true;
   if (pendingNavigation.value) {
-    pendingNavigation.value();
+    const destination = pendingNavigation.value;
     pendingNavigation.value = null;
+    router.push(destination);
   }
 }
 
-// Route leave guard
-onBeforeRouteLeave((to, from, next) => {
+// Route leave guard (use return-value API to avoid calling next() twice)
+onBeforeRouteLeave((to) => {
+  if (confirmedLeave.value) return;
   if (editorRef.value?.hasUnsavedChanges?.() && !showSuccessDialog.value) {
     showLeaveDialog.value = true;
-    pendingNavigation.value = () => next();
-    next(false);
-  } else {
-    next();
+    pendingNavigation.value = to.fullPath;
+    return false;
   }
 });
 
 // Lifecycle
 onMounted(() => {
-  if (isEditing.value) {
+  // Always load via API — for new projects, projectId comes from route
+  if (projectId.value) {
     loadExistingProject();
   }
 });
