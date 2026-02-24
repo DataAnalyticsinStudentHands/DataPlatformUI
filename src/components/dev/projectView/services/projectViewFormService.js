@@ -432,7 +432,7 @@ export async function deletePoster(formID) {
  */
 export async function getPublic(formID) {
   const response = await axios.get(`${BASE}/public/${formID}`);
-  return response.data;
+  return response.data.projectViewForm || response.data;
 }
 
 /**

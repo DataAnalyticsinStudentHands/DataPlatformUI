@@ -795,6 +795,16 @@ const publicPathPatterns = [
   /^\/project\/[^/]+$/,  // Matches /project/:projectId
 ];
 
+// Public data routes — accessible to both authenticated and unauthenticated users.
+// Unlike auth routes (login, register), these should NOT redirect logged-in users to their dashboard.
+const publicDataPatterns = [
+  /^\/project\/[^/]+$/,  // /project/:projectId — shared project view links
+];
+
+function isPublicDataPath(path) {
+  return publicDataPatterns.some(pattern => pattern.test(path));
+}
+
 // const publicPaths = [
 //   "/login",
 //   "/register",
@@ -876,7 +886,10 @@ router.beforeEach(async (to, from, next) => {
         } else {
           // Redirect authenticated users away from public routes
           if (isPublicRoute) {
-            if (
+            // Public data routes (e.g. shared project links) — allow access for everyone
+            if (isPublicDataPath(to.path)) {
+              next();
+            } else if (
               [
                 "Instructor",
                 "Group Instructor",

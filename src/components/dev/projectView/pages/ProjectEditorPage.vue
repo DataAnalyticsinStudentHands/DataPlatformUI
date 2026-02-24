@@ -58,7 +58,7 @@
     />
 
     <!-- Save Success Dialog -->
-    <v-dialog v-model="showSuccessDialog" max-width="400" persistent>
+    <v-dialog v-model="showSuccessDialog" max-width="400">
       <v-card>
         <v-card-text class="text-center py-8">
           <v-icon size="64" color="#16a34a" class="mb-4">mdi-check-circle</v-icon>
@@ -320,7 +320,14 @@ async function handleSubmit(projectData) {
     synced = await uploadPendingFiles(formId.value, projectData, synced);
 
     // 3. Now publish — the form doc already has file URLs from uploads
-    const publishResponse = await formService.publish(formId.value, synced);
+    //    Skip publish() if already published (backend rejects published→published)
+    const currentStatus = synced.metadata?.status;
+    let publishResponse;
+    if (currentStatus === 'published') {
+      publishResponse = await formService.update(formId.value, synced);
+    } else {
+      publishResponse = await formService.publish(formId.value, synced);
+    }
     savedProjectId.value = formId.value;
     showSuccessDialog.value = true;
 

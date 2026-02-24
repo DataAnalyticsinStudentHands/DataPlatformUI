@@ -170,7 +170,7 @@ const showTimelineBelowGrid = computed(() => {
 .project-template {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 16px 24px;
   background: linear-gradient(180deg, #f8f9fc 0%, #eef1f8 100%);
   min-height: 100vh;
 }
@@ -208,7 +208,7 @@ const showTimelineBelowGrid = computed(() => {
 /* Responsive: Stack on smaller screens */
 @media (max-width: 1024px) {
   .project-template {
-    padding: 16px;
+    padding: 12px 16px;
   }
 
   .content-grid {
@@ -226,7 +226,7 @@ const showTimelineBelowGrid = computed(() => {
 
 @media (max-width: 768px) {
   .project-template {
-    padding: 12px;
+    padding: 8px 12px;
   }
 
   .poster-column {

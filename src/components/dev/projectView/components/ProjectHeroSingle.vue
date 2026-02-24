@@ -126,7 +126,7 @@ const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
 <style scoped>
 .hero {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  padding: 28px 32px 24px;
+  padding: 18px 24px;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
@@ -147,7 +147,7 @@ const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
 .hero-content {
   display: flex;
   align-items: stretch;
-  gap: 32px;
+  gap: 20px;
   position: relative;
   z-index: 1;
 }
@@ -166,25 +166,27 @@ const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  margin-bottom: 6px !important;
 }
 
 .hero h1 {
   color: white;
-  font-size: 26px;
+  font-size: 20px !important;
   font-weight: 700;
-  margin: 0 0 10px 0;
-  letter-spacing: -0.3px;
-  line-height: 1.25;
+  margin: 0 0 6px 0 !important;
+  padding: 0 !important;
+  letter-spacing: -0.3px !important;
+  line-height: 1.25 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
 .hero-description {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  line-height: 1.5;
-  margin: 0;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -192,31 +194,32 @@ const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
 .hero-author {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 20px 24px;
-  min-width: 340px;
-  max-width: 420px; /* Prevent excessive expansion */
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-width: 360px;
+  max-width: 500px;
+  flex: 1;
 }
 
 .author-avatar {
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   flex-shrink: 0;
 }
 
 .author-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-width: 0; /* Allow flexbox child to shrink below content size */
+  gap: 6px;
+  min-width: 0;
 }
 
 .author-info {
@@ -227,27 +230,28 @@ const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
 
 .author-name {
   color: white;
-  font-size: 18px;
+  font-size: 14px !important;
   font-weight: 600;
+  line-height: 1.3 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
 .author-role {
   color: #a5b4fc;
-  font-size: 13px;
+  font-size: 11px;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
 .author-quote {
-  font-size: 13px;
+  font-size: 11px;
   font-style: italic;
   color: rgba(255, 255, 255, 0.7);
-  margin: 0;
-  line-height: 1.5;
-  padding: 0;
-  border: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  line-height: 1.45 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -271,7 +275,7 @@ const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
   }
 
   .hero h1 {
-    font-size: 22px;
+    font-size: 22px !important;
   }
 
   .hero-author {

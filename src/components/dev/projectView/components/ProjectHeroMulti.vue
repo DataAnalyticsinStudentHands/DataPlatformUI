@@ -111,13 +111,12 @@ async function fetchAvatar(id, relativePath) {
 onBeforeUnmount(() => {
   Object.values(avatarBlobUrls).forEach(url => { if (url) URL.revokeObjectURL(url); });
 });
-
 </script>
 
 <style scoped>
 .hero {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  padding: 28px 32px;
+  padding: 18px 24px;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
@@ -137,7 +136,7 @@ onBeforeUnmount(() => {
 
 .hero-content {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   position: relative;
   z-index: 1;
 }
@@ -156,25 +155,27 @@ onBeforeUnmount(() => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 10px;
+  margin-bottom: 6px !important;
 }
 
 .hero h1 {
   color: white;
-  font-size: 24px;
+  font-size: 20px !important;
   font-weight: 700;
-  margin: 0 0 10px 0;
-  letter-spacing: -0.3px;
-  line-height: 1.25;
+  margin: 0 0 6px 0 !important;
+  padding: 0 !important;
+  letter-spacing: -0.3px !important;
+  line-height: 1.25 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
 .hero-description {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 0;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -182,29 +183,29 @@ onBeforeUnmount(() => {
 .hero-authors {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  flex-shrink: 0;
-  min-width: 420px;
+  gap: 10px;
+  flex: 1;
+  min-width: 400px;
 }
 
 .author-card {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 18px 22px;
-  min-width: 0; /* Allow flexbox child to shrink below content size */
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-width: 0;
 }
 
 .author-avatar {
-  width: 90px;
-  height: 90px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   flex-shrink: 0;
 }
 
@@ -223,28 +224,29 @@ onBeforeUnmount(() => {
 
 .author-name {
   color: white;
-  font-size: 18px;
+  font-size: 14px !important;
   font-weight: 600;
+  line-height: 1.3 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
 .author-role {
   color: #a5b4fc;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
 .author-quote {
-  font-size: 12px;
+  font-size: 11px;
   font-style: italic;
   color: rgba(255, 255, 255, 0.7);
-  margin: 0;
-  line-height: 1.45;
-  padding: 0;
-  border: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  line-height: 1.45 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -273,7 +275,7 @@ onBeforeUnmount(() => {
   }
 
   .hero h1 {
-    font-size: 20px;
+    font-size: 20px !important;
   }
 
   .hero-authors {

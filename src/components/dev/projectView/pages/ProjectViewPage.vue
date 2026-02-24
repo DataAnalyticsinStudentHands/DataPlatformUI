@@ -37,59 +37,8 @@
 
     <!-- Project Content -->
     <div v-else-if="project" class="project-content">
-      <!-- Optional: Back/Share Header for public view -->
-      <div class="view-header" v-if="showHeader">
-        <div class="header-content">
-          <v-btn
-            variant="text"
-            color="#666"
-            @click="goBack"
-          >
-            <v-icon start>mdi-arrow-left</v-icon>
-            {{ $t('Back') }}
-          </v-btn>
-
-          <div class="header-actions">
-            <v-btn
-              variant="outlined"
-              color="#666"
-              size="small"
-              @click="copyShareLink"
-            >
-              <v-icon start size="18">mdi-share-variant</v-icon>
-              {{ $t('Share') }}
-            </v-btn>
-
-            <v-btn
-              v-if="canEdit"
-              variant="outlined"
-              color="#c8102e"
-              size="small"
-              @click="editProject"
-            >
-              <v-icon start size="18">mdi-pencil</v-icon>
-              {{ $t('Edit') }}
-            </v-btn>
-          </div>
-        </div>
-      </div>
-
       <!-- Render the appropriate template -->
-      <ProjectTemplateRenderer :project="project" />
-
-      <!-- Share Link Snackbar -->
-      <v-snackbar
-        v-model="showShareSnackbar"
-        :timeout="3000"
-        color="success"
-      >
-        {{ $t('Link copied to clipboard!') }}
-        <template v-slot:actions>
-          <v-btn variant="text" @click="showShareSnackbar = false">
-            {{ $t('Close') }}
-          </v-btn>
-        </template>
-      </v-snackbar>
+      <ProjectTemplate :project="project" />
     </div>
 
     <!-- Access Revoked State -->
@@ -106,17 +55,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ProjectTemplateRenderer } from '../templates';
+import { ProjectTemplate } from '../templates';
 import formService from '../services/projectViewFormService.js';
 import { mergeWithDefaults } from '../types/projectTypes.js';
 
 // Props for optional configuration
 const props = defineProps({
-  // If true, shows back/share header
-  showHeader: {
-    type: Boolean,
-    default: true
-  },
   // If provided, use this project data instead of fetching
   projectData: {
     type: Object,
@@ -131,16 +75,9 @@ const router = useRouter();
 const project = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
-const showShareSnackbar = ref(false);
 
 // Get project ID from route params (this is the form _id)
 const projectId = computed(() => route.params.projectId);
-
-// Check if current user can edit this project
-const canEdit = computed(() => {
-  // Public view — editing not available
-  return false;
-});
 
 /**
  * Build display-ready project data from backend response.
@@ -186,10 +123,29 @@ async function fetchProject() {
     isLoading.value = true;
     error.value = null;
 
+    // 1. Fetch raw backend response
     const response = await formService.getPublic(projectId.value);
+    console.log('[ProjectViewPage] Raw backend response:', JSON.stringify(response, null, 2));
+
+    // 2. Convert backend field names to frontend format
     const frontendData = formService.fromBackendFormat(response);
+    console.log('[ProjectViewPage] After fromBackendFormat:', JSON.stringify(frontendData, null, 2));
+
+    // 3. Merge with defaults to fill any missing fields
     const merged = mergeWithDefaults(frontendData);
+    console.log('[ProjectViewPage] After mergeWithDefaults:', {
+      title: merged.title,
+      authorsCount: merged.authors?.length,
+      enabledSections: merged.enabledSections,
+      hasMilestones: merged.milestones?.length,
+      hasPoster: !!merged.poster,
+      posterType: merged.poster?.type,
+      posterUrl: merged.poster?.url,
+    });
+
+    // 4. Build display-ready URLs
     project.value = buildDisplayProject(merged);
+    console.log('[ProjectViewPage] Final project assigned to template');
   } catch (err) {
     console.error('Failed to fetch project:', err);
     if (err.response && err.response.status === 404) {
@@ -203,42 +159,8 @@ async function fetchProject() {
 }
 
 // Navigation
-function goBack() {
-  if (window.history.length > 1) {
-    router.back();
-  } else {
-    router.push('/');
-  }
-}
-
 function goHome() {
   router.push('/');
-}
-
-function editProject() {
-  router.push({
-    name: 'projectEditorEdit',
-    params: { projectId: projectId.value }
-  });
-}
-
-// Share functionality
-async function copyShareLink() {
-  const shareUrl = window.location.href;
-
-  try {
-    await navigator.clipboard.writeText(shareUrl);
-    showShareSnackbar.value = true;
-  } catch (err) {
-    console.error('Failed to copy link:', err);
-    const textArea = document.createElement('textarea');
-    textArea.value = shareUrl;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    showShareSnackbar.value = true;
-  }
 }
 
 // Lifecycle
@@ -322,30 +244,6 @@ defineExpose({
   max-width: 400px;
 }
 
-/* View Header */
-.view-header {
-  background: white;
-  border-bottom: 1px solid #e8e8e8;
-  padding: 12px 24px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 /* Project Content */
 .project-content {
   animation: fadeIn 0.3s ease;
@@ -358,15 +256,6 @@ defineExpose({
 
 /* Responsive */
 @media (max-width: 768px) {
-  .view-header {
-    padding: 12px 16px;
-  }
-
-  .header-content {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
   .error-title,
   .revoked-title {
     font-size: 1.5rem;
