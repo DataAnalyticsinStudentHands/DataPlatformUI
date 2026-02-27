@@ -227,7 +227,9 @@ export const FOOTER_VARIANTS = {
  * @property {string} type - 'pdf' or 'image'
  * @property {string} url - URL to the poster file
  * @property {string} title - Title shown above poster
- * @property {File|null} file - Local file for upload (not persisted)
+ * @property {File|null} file - DEPRECATED: always null (kept for compat)
+ * @property {string|null} clowderFileId - Clowder file ID of the selected poster
+ * @property {string|null} clowderFileName - Display name from Clowder
  */
 
 /**
@@ -388,6 +390,8 @@ export function createEmptyPoster(type = 'pdf', overrides = {}) {
     url: '',
     title: type === 'pdf' ? 'Research Poster' : 'Project Diagram',
     file: null,
+    clowderFileId: null,
+    clowderFileName: null,
     ...overrides,
   };
 }
@@ -624,6 +628,8 @@ export const SAMPLE_PROJECT = {
     url: '',
     title: 'Research Poster',
     file: null,
+    clowderFileId: null,
+    clowderFileName: null,
   },
   footer: {
     icon: 'ℹ️',
@@ -953,8 +959,8 @@ export function validateProject(project) {
     const posterTitleError = validateString(project.poster.title, 'Poster Title', { required: true, maxLength: 100 });
     if (posterTitleError) errors.push({ field: 'poster.title', message: posterTitleError });
 
-    // Must have either an uploaded file or an existing URL
-    if (!project.poster.file && !project.poster.url) {
+    // Must have a poster URL (set by Clowder selection)
+    if (!project.poster.url) {
       errors.push({ field: 'poster.file', message: 'A poster or diagram file is required' });
     }
   }

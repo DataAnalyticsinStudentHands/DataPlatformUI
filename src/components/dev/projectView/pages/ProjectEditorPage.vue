@@ -214,29 +214,8 @@ async function uploadPendingFiles(currentFormId, originalData, syncedData) {
     }
   }
 
-  // 2. Upload pending poster file
-  if (originalData.poster?.file instanceof File) {
-    try {
-      const updatedForm = await formService.uploadPoster(
-        currentFormId,
-        originalData.poster.file,
-        originalData.poster.title
-      );
-
-      // Get the poster URL from the returned form
-      const updatedPoster = formService.fromBackendFormat(updatedForm)?.poster;
-      if (updatedPoster?.url) {
-        syncedData.poster = syncedData.poster || {};
-        syncedData.poster.url = updatedPoster.url;
-      }
-
-      // Clear the pending file reference
-      originalData.poster.file = null;
-    } catch (err) {
-      console.error('Failed to upload poster:', err);
-      uploadErrors.push('Poster upload failed');
-    }
-  }
+  // Note: Poster file selection is handled immediately by ClowderFileSelector,
+  // not deferred to the save flow.
 
   // Show warning toast if some uploads failed (non-blocking)
   if (uploadErrors.length > 0) {

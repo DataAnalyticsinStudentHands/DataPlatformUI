@@ -207,13 +207,15 @@ export function fromBackendFormat(backendForm) {
     frontend.impactItems = backendForm.impactItems.map(mapIdToFrontend);
   }
 
-  // Poster: fileType → type, add file: null, preserve url
+  // Poster: fileType → type, add file: null, preserve url + clowder fields
   if (backendForm.poster) {
     frontend.poster = {
       type: backendForm.poster.fileType || 'pdf',
       url: backendForm.poster.url || '',
       title: backendForm.poster.title || '',
       file: null,
+      clowderFileId: backendForm.poster.clowderFileId || null,
+      clowderFileName: null,
     };
   } else {
     frontend.poster = null;
@@ -420,6 +422,38 @@ export async function deletePoster(formID) {
   return response.data.projectViewForm || response.data;
 }
 
+/**
+ * Get poster-compatible files from the project's Clowder dataset.
+ * Returns images and PDFs that can be used as posters.
+ * @param {string} formID
+ * @returns {Promise<Array<{id: string, filename: string, contentType: string, size: number, dateCreated: string}>>}
+ */
+export async function getClowderFiles(formID) {
+  const response = await axios.get(`${BASE}/${formID}/clowder-files`);
+  return response.data.files || [];
+}
+
+/**
+ * Select a Clowder file as the poster.
+ * Backend downloads it from Clowder, stores in GridFS, updates poster fields.
+ * Response includes the full projectViewForm.
+ * @param {string} formID
+ * @param {string} clowderFileId - The Clowder file ID to use
+ * @param {string} [title] - Optional poster title
+ * @returns {Promise<Object>} Full updated form in backend format
+ */
+export async function selectPosterFromClowder(formID, clowderFileId, title) {
+  const payload = { clowderFileId };
+  if (title) {
+    payload.title = title;
+  }
+  const response = await axios.post(
+    `${BASE}/${formID}/poster/from-clowder`,
+    payload
+  );
+  return response.data.projectViewForm || response.data;
+}
+
 // =============================================================================
 // PUBLIC + UTILITY
 // =============================================================================
@@ -476,6 +510,8 @@ export default {
   deleteAvatar,
   uploadPoster,
   deletePoster,
+  getClowderFiles,
+  selectPosterFromClowder,
 
   // Public + utility
   getPublic,

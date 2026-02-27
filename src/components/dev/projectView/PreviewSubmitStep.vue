@@ -183,7 +183,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { ProjectTemplate } from './templates';
 import formService from './services/projectViewFormService.js';
 
@@ -220,41 +220,11 @@ const previewKey = ref(0);
 const isFullscreen = ref(false);
 const showErrors = ref(true);
 
-// Track object URL for poster file preview (to clean up on change)
-const posterObjectUrl = ref(null);
-
-// Watch for poster file changes and create object URL for preview.
-// When auto-save clears poster.file after upload, we keep the blob URL alive
-// so the preview continues working without a cross-origin request to the API.
-watch(
-  () => props.project?.poster?.file,
-  (newFile) => {
-    if (newFile instanceof File) {
-      // Revoke old URL only when replacing with a new file
-      if (posterObjectUrl.value) {
-        URL.revokeObjectURL(posterObjectUrl.value);
-      }
-      posterObjectUrl.value = URL.createObjectURL(newFile);
-    }
-    // When file is cleared (auto-save), keep existing blob URL for preview
-  },
-  { immediate: true }
-);
-
-// Get poster with preview URL (handles both uploaded files and existing URLs)
+// Get poster with full URL for preview
 const posterWithPreviewUrl = computed(() => {
   const poster = props.project?.poster;
   if (!poster) return null;
 
-  // Prefer local blob URL (works during current editing session)
-  if (posterObjectUrl.value) {
-    return {
-      ...poster,
-      url: posterObjectUrl.value,
-    };
-  }
-
-  // Fallback: build full URL for relative paths from backend (e.g. after page reload)
   if (poster.url) {
     return {
       ...poster,
@@ -323,10 +293,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown);
   document.body.style.overflow = '';
-  // Clean up poster object URL to prevent memory leaks
-  if (posterObjectUrl.value) {
-    URL.revokeObjectURL(posterObjectUrl.value);
-  }
 });
 
 // Expose methods

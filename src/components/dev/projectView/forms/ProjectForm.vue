@@ -320,7 +320,7 @@
           <div class="section-number optional">{{ getSectionNumber('poster') }}</div>
           <div class="section-header-content">
             <h2 class="section-title">{{ $t('Poster / Diagram') }}</h2>
-            <p class="section-subtitle">{{ $t('Upload a research poster (PDF) or diagram (image)') }}</p>
+            <p class="section-subtitle">{{ $t('Select a research poster (PDF) or diagram (image) from Clowder') }}</p>
           </div>
           <v-btn
             icon
@@ -335,24 +335,25 @@
         </div>
 
         <div class="section-content">
-          <FileUploader
+          <ClowderFileSelector
             v-if="formData.poster"
-            v-model="formData.poster.file"
+            :form-id="formId"
             v-model:poster-title="formData.poster.title"
+            :selected-file-id="formData.poster.clowderFileId"
             :existing-url="formData.poster.url"
-            :accept-pdf="true"
-            :accept-images="true"
-            :max-size-mb="32"
-            :show-error="showValidation && !formData.poster.file && !formData.poster.url"
+            :existing-type="formData.poster.type"
+            :existing-file-name="formData.poster.clowderFileName"
+            :show-error="showValidation && !formData.poster.url"
             title-placeholder="e.g., Research Poster"
-            @remove="clearPosterUrl"
+            @poster-selected="handlePosterSelected"
+            @poster-removed="handlePosterRemoved"
           />
           <p
-            v-if="showValidation && formData.poster && !formData.poster.file && !formData.poster.url"
+            v-if="showValidation && formData.poster && !formData.poster.url"
             class="poster-error text-caption mt-2"
           >
             <v-icon size="14" color="error" class="mr-1">mdi-alert-circle</v-icon>
-            {{ $t('Please upload a poster or diagram file to continue') }}
+            {{ $t('Please select a poster or diagram file from Clowder to continue') }}
           </p>
         </div>
       </div>
@@ -376,7 +377,7 @@
 
 <script setup>
 import { ref, watch, computed, watchEffect } from 'vue';
-import { AuthorInput, TagsInput, FindingsInput, PartnersInput, MilestonesInput, ImpactInput, FileUploader } from './shared';
+import { AuthorInput, TagsInput, FindingsInput, PartnersInput, MilestonesInput, ImpactInput, ClowderFileSelector } from './shared';
 import SectionAddMenu from '../SectionAddMenu.vue';
 import {
   createEmptyProject,
@@ -401,6 +402,10 @@ const props = defineProps({
   showValidation: {
     type: Boolean,
     default: false
+  },
+  formId: {
+    type: String,
+    default: ''
   }
 });
 
@@ -530,10 +535,25 @@ function removeSection(sectionId) {
   }
 }
 
-// Clear poster URL when file is removed
-function clearPosterUrl() {
+// Handle poster selected from Clowder
+function handlePosterSelected({ url, type, clowderFileId, clowderFileName }) {
+  if (formData.value.poster) {
+    formData.value.poster.url = url;
+    formData.value.poster.type = type;
+    formData.value.poster.clowderFileId = clowderFileId;
+    formData.value.poster.clowderFileName = clowderFileName;
+    formData.value.poster.file = null;
+  }
+}
+
+// Handle poster removed
+function handlePosterRemoved() {
   if (formData.value.poster) {
     formData.value.poster.url = '';
+    formData.value.poster.type = 'pdf';
+    formData.value.poster.clowderFileId = null;
+    formData.value.poster.clowderFileName = null;
+    formData.value.poster.file = null;
   }
 }
 

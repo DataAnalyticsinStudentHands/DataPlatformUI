@@ -120,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { ProjectTemplate } from './templates';
 import { SAMPLE_PROJECT } from './types/projectTypes.js';
 import formService from './services/projectViewFormService.js';
@@ -143,27 +143,6 @@ const isFullscreen = ref(false);
 const isRefreshing = ref(false);
 const previewKey = ref(0);
 
-// Track object URL for poster file preview (to clean up on change)
-const posterObjectUrl = ref(null);
-
-// Watch for poster file changes and create object URL for preview.
-// When auto-save clears poster.file after upload, we keep the blob URL alive
-// so the preview continues working without a cross-origin request to the API.
-watch(
-  () => props.project?.poster?.file,
-  (newFile) => {
-    if (newFile instanceof File) {
-      // Revoke old URL only when replacing with a new file
-      if (posterObjectUrl.value) {
-        URL.revokeObjectURL(posterObjectUrl.value);
-      }
-      posterObjectUrl.value = URL.createObjectURL(newFile);
-    }
-    // When file is cleared (auto-save), keep existing blob URL for preview
-  },
-  { immediate: true }
-);
-
 // Check if we have valid project data to preview
 const hasValidProject = computed(() => {
   if (!props.project) return false;
@@ -185,20 +164,11 @@ const hasPoster = computed(() => {
   return enabledSections.includes('poster') && props.project.poster;
 });
 
-// Get poster with preview URL (handles both uploaded files and existing URLs)
+// Get poster with full URL for preview
 const posterWithPreviewUrl = computed(() => {
   const poster = props.project?.poster;
   if (!poster) return null;
 
-  // Prefer local blob URL (works during current editing session)
-  if (posterObjectUrl.value) {
-    return {
-      ...poster,
-      url: posterObjectUrl.value,
-    };
-  }
-
-  // Fallback: build full URL for relative paths from backend (e.g. after page reload)
   if (poster.url) {
     return {
       ...poster,
@@ -271,10 +241,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown);
   document.body.style.overflow = '';
-  // Clean up poster object URL
-  if (posterObjectUrl.value) {
-    URL.revokeObjectURL(posterObjectUrl.value);
-  }
 });
 
 // Expose methods to parent

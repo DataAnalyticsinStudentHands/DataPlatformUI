@@ -13,3 +13,4 @@ export { default as PartnersInput } from './PartnersInput.vue';
 export { default as MilestonesInput } from './MilestonesInput.vue';
 export { default as ImpactInput } from './ImpactInput.vue';
 export { default as FileUploader } from './FileUploader.vue';
+export { default as ClowderFileSelector } from './ClowderFileSelector.vue';

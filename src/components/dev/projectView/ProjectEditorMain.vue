@@ -99,6 +99,7 @@
               <ProjectForm
                 ref="formRef"
                 v-model="projectData"
+                :form-id="formId"
                 :show-validation="showValidation"
                 @validation-change="handleValidationChange"
                 @remove-avatar="handleRemoveAvatar"
@@ -469,30 +470,12 @@ async function autoSave() {
       }
     }
 
-    // 2. Handle pending poster file upload
-    if (projectData.value.poster?.file instanceof File) {
-      try {
-        const uploadResponse = await formService.uploadPoster(
-          props.formId,
-          projectData.value.poster.file,
-          projectData.value.poster.title
-        );
-        // Sync full form state from response
-        const synced = formService.fromBackendFormat(uploadResponse);
-        if (synced.poster) {
-          projectData.value.poster.url = synced.poster.url;
-          projectData.value.poster.type = synced.poster.type;
-        }
-        projectData.value.poster.file = null;
-      } catch (uploadErr) {
-        console.error('Poster upload failed:', uploadErr);
-      }
-    }
-
-    // 3. PATCH content fields (without file objects and server-managed fields)
+    // 2. PATCH content fields (without file objects and server-managed fields)
+    // Note: Poster file selection is handled immediately by ClowderFileSelector,
+    // not deferred to auto-save.
     const response = await formService.update(props.formId, projectData.value);
 
-    // 4. Sync backend-generated _id values back into local state
+    // 3. Sync backend-generated _id values back into local state
     const synced = formService.fromBackendFormat(response);
     syncBackendIds(synced);
 
@@ -560,6 +543,8 @@ function syncFromBackend(synced) {
   if (synced.poster && projectData.value.poster) {
     if (synced.poster.url) projectData.value.poster.url = synced.poster.url;
     if (synced.poster.type) projectData.value.poster.type = synced.poster.type;
+    if (synced.poster.clowderFileId) projectData.value.poster.clowderFileId = synced.poster.clowderFileId;
+    if (synced.poster.clowderFileName) projectData.value.poster.clowderFileName = synced.poster.clowderFileName;
   }
   if (synced.metadata) {
     projectData.value.metadata = { ...projectData.value.metadata, ...synced.metadata };
