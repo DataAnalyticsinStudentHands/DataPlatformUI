@@ -29,7 +29,7 @@
                 :label="$t('Milestone Title') + ' *'"
                 :placeholder="$t('e.g., JWT Authentication')"
                 variant="outlined"
-                :counter="100"
+                :counter="150"
               >
                 <template v-slot:prepend-inner>
                   <v-icon size="20" color="#666">mdi-flag-outline</v-icon>

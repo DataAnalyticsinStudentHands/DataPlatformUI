@@ -87,7 +87,7 @@
           :placeholder="$t('Full name')"
           variant="outlined"
           :rules="nameRules"
-          :counter="100"
+          :counter="150"
           class="mb-3"
         >
           <template v-slot:prepend-inner>
@@ -102,7 +102,7 @@
           :placeholder="$t('e.g., 2023 Pharis Fellow, Lead Developer')"
           variant="outlined"
           :rules="roleRules"
-          :counter="100"
+          :counter="150"
           class="mb-3"
         >
           <template v-slot:prepend-inner>
@@ -175,12 +175,12 @@ const pendingImageFile = ref(null);
 // Validation rules
 const nameRules = [
   v => !!v || 'Name is required',
-  v => (v && v.length <= 100) || 'Name must be 100 characters or less'
+  v => (v && v.length <= 150) || 'Name must be 150 characters or less'
 ];
 
 const roleRules = [
   v => !!v || 'Role is required',
-  v => (v && v.length <= 100) || 'Role must be 100 characters or less'
+  v => (v && v.length <= 150) || 'Role must be 150 characters or less'
 ];
 
 // Track blob URL for avatar display.

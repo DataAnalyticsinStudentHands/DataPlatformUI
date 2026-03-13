@@ -716,6 +716,20 @@ const routes = [
     beforeEnter: requireAuth(["Org Admin"]),
   },
 
+  // Dev Instructor Mailer (frontend-only demo)
+  {
+    path: "/dev/instructorMailer",
+    name: "devInstructorMailer",
+    component: () =>
+      import("@/components/dev/instructorMailer/DevMailerMain.vue"),
+    beforeEnter: requireAuth([
+      "Instructor",
+      "Group Instructor",
+      "Group Admin",
+      "Org Admin",
+    ]),
+  },
+
   // ==========================================================================
   // PROJECT VIEW ROUTES (Phase 6)
   // ==========================================================================
@@ -788,6 +802,9 @@ const publicPaths = [
   "/public6",
   // Project View public routes
   "/dev/projectPreview",
+  "publicGallery2",
+  "publicGallery",
+  "publicProjects",
 ];
 
 // Pattern-based public paths (for dynamic routes like /project/:projectId)

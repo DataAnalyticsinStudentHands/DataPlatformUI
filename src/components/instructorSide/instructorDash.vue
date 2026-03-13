@@ -33,13 +33,13 @@
         </v-col>
 
         <!-- Student Mailer -->
-        <!-- <v-col :cols="6">
+        <v-col :cols="6">
           <v-card @click="navigateToMailer" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
               Student Mailer
             </v-card-title>
           </v-card>
-        </v-col> -->
+        </v-col>
       </v-row>
 
 
@@ -113,7 +113,7 @@ mounted() {
 
     // Navigates to the Mailer tool.
     navigateToMailer() {
-      this.$router.push({ name: 'instructorMailer' });
+      this.$router.push({ name: 'devInstructorMailer' });
     }
 
   },

@@ -167,7 +167,7 @@
           :label="$t('Attribution')"
           :placeholder="$t('— Your Name')"
           variant="outlined"
-          :counter="100"
+          :counter="150"
         >
           <template v-slot:prepend-inner>
             <v-icon size="20" color="#666">mdi-account-voice</v-icon>

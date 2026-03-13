@@ -13,13 +13,13 @@
       <h3>{{ title }}</h3>
       <div class="expand-hint">
         <span>Click to enlarge</span>
-        <svg 
-          width="16" 
-          height="16" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          stroke-width="2" 
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
           class="expand-icon"
         >
           <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
@@ -29,13 +29,42 @@
 
     <!-- PDF Preview -->
     <div class="poster-embed-wrapper">
+      <!-- Loading state -->
+      <div v-if="isLoading" class="poster-placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="loading-spinner">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <p>Loading PDF...</p>
+      </div>
+      <!-- Rendered PDF -->
       <iframe
-        v-if="pdfUrl"
-        :src="pdfUrl + '#page=1&zoom=page-fit&toolbar=0&navpanes=0'"
+        v-else-if="blobUrl"
+        :src="blobUrl + '#page=1&zoom=page-fit&toolbar=0&navpanes=0'"
         class="poster-embed"
         frameborder="0"
         @click.stop
       ></iframe>
+      <!-- Error state -->
+      <div v-else-if="pdfUrl && pdfError" class="poster-placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <p>PDF preview unavailable</p>
+        <a
+          :href="pdfUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="pdf-download-link"
+          @click.stop
+        >
+          Download PDF
+        </a>
+      </div>
+      <!-- No PDF uploaded -->
       <div v-else class="poster-placeholder">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -52,14 +81,15 @@
     <ZoomModal
       v-model="isModalOpen"
       :title="title"
-      :src="pdfUrl"
+      :src="blobUrl"
       type="pdf"
     />
   </article>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, onUnmounted } from 'vue';
+import axios from 'axios';
 import ZoomModal from './ZoomModal.vue';
 
 const props = defineProps({
@@ -74,12 +104,45 @@ const props = defineProps({
 });
 
 const isModalOpen = ref(false);
+const blobUrl = ref('');
+const isLoading = ref(false);
+const pdfError = ref(false);
 
 function openModal() {
-  if (props.pdfUrl) {
+  if (blobUrl.value) {
     isModalOpen.value = true;
   }
 }
+
+// Fetch PDF via axios (sends auth token), convert to blob URL for iframe
+watch(() => props.pdfUrl, async (url) => {
+  // Clean up old blob
+  if (blobUrl.value) {
+    URL.revokeObjectURL(blobUrl.value);
+    blobUrl.value = '';
+  }
+  pdfError.value = false;
+
+  if (!url) return;
+
+  isLoading.value = true;
+  try {
+    const response = await axios.get(url, { responseType: 'blob' });
+    // Force correct MIME type — backend may return application/octet-stream
+    const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+    blobUrl.value = URL.createObjectURL(pdfBlob);
+  } catch {
+    pdfError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+}, { immediate: true });
+
+onUnmounted(() => {
+  if (blobUrl.value) {
+    URL.revokeObjectURL(blobUrl.value);
+  }
+});
 </script>
 
 <style scoped>
@@ -139,8 +202,7 @@ function openModal() {
 }
 
 .poster-embed-wrapper {
-  flex: 1;
-  min-height: 0;
+  aspect-ratio: 8.5 / 11;
   border-radius: 8px;
   overflow: hidden;
   background: #f8f8f8;
@@ -157,6 +219,22 @@ function openModal() {
   left: 0;
 }
 
+.pdf-download-link {
+  color: #6366f1;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.pdf-download-link:hover {
+  background: #6366f1;
+  color: #fff;
+}
+
 /* Placeholder */
 .poster-placeholder {
   display: flex;
@@ -171,6 +249,15 @@ function openModal() {
 
 .poster-placeholder svg {
   opacity: 0.5;
+}
+
+.loading-spinner {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .poster-placeholder p {
