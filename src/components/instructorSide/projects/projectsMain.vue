@@ -35,6 +35,14 @@ With state persistence via Pinia store. Updated to display document count and co
               </div>
               <p class="text-body-1 text-medium-emphasis mb-0">{{ $t('Review and manage student projects') }}</p>
             </div>
+            <v-btn
+              variant="outlined"
+              color="#c8102e"
+              prepend-icon="mdi-star-shooting"
+              @click="$router.push({ name: 'instructorFeaturedProjects' })"
+            >
+              Featured Projects
+            </v-btn>
           </div>
         </div>
 

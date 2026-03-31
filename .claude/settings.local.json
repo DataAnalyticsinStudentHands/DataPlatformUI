@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(find:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx vite:*)",
+      "Bash(find /c/Users/periksson.AUTOSOL/Documents/DP/DataPlatformUI -type f \\\\\\(-name *.vue -o -name *.js \\\\\\) ! -path */node_modules/*)"
     ]
   }
 }

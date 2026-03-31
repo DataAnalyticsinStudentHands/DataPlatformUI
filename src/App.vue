@@ -13,7 +13,7 @@
     <v-layout class="rounded">
       <!-- Navigation drawer with role-based menu items -->
       <v-navigation-drawer
-        v-if="isFullyAuthenticated"
+        v-if="showNavDrawer"
         v-model="drawer"
         color="#c8102e"
         :rail="rail"
@@ -245,7 +245,7 @@
         style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
       >
         <v-btn 
-          v-if="isFullyAuthenticated && !drawer"
+          v-if="showNavDrawer && !drawer"
           icon 
           @click="drawer = true; rail = false"
         >
@@ -326,6 +326,14 @@ export default {
     isFullyAuthenticated() {
       const store = useLoggedInUserStore();
       return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
+    },
+    // Check if current route is a public showcase page (no chrome needed)
+    isPublicShowcasePage() {
+      return this.$route.path === '/featured' || this.$route.name === 'publicProjectView';
+    },
+    // Show navigation drawer only for authenticated users not on public showcase pages
+    showNavDrawer() {
+      return this.isFullyAuthenticated && !this.isPublicShowcasePage;
     }
   },
   methods: {

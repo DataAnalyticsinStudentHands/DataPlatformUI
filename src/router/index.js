@@ -11,6 +11,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useLoggedInUserStore } from "../stored/loggedInUser";
 import { verifyJWT } from "../auth/jwtVerifier";
+import { getPublicFeatured } from "../components/dev/featuredProjects/services/featuredProjectsService.js";
 
 // Verify user authentication status
 async function isLoggedIn(to, from, next) {
@@ -196,6 +197,18 @@ const routes = [
     name: "instructorProjects",
     component: () =>
       import("../components/instructorSide/projects/projectsMain.vue"),
+    beforeEnter: requireAuth([
+      "Instructor",
+      "Group Instructor",
+      "Group Admin",
+      "Org Admin",
+    ]),
+  },
+  {
+    path: "/instructorFeaturedProjects",
+    name: "instructorFeaturedProjects",
+    component: () =>
+      import("@/components/dev/featuredProjects/FeaturedProjectsManager.vue"),
     beforeEnter: requireAuth([
       "Instructor",
       "Group Instructor",
@@ -679,9 +692,41 @@ const routes = [
   },
   // Public routes from develop_PublicView
   {
+    path: "/featured",
+    name: "featuredShowcase",
+    component: () => import("@/components/dev/FeaturedShowcase.vue"),
+    beforeEnter: async (to, from, next) => {
+      try {
+        const f = await getPublicFeatured();
+        const hasProjects =
+          (Array.isArray(f.hero) && f.hero.length > 0) ||
+          (Array.isArray(f.featured) && f.featured.length > 0);
+        if (hasProjects) {
+          next();
+        } else {
+          const userStore = useLoggedInUserStore();
+          if (userStore.isLoggedIn) {
+            if (
+              ["Instructor", "Group Instructor", "Group Admin", "Org Admin"].includes(
+                userStore.role
+              )
+            ) {
+              next("/instructorDash");
+            } else {
+              next("/studentDashboard");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      } catch {
+        next("/login");
+      }
+    },
+  },
+  {
     path: "/public1",
-    name: "public1",
-    component: () => import("@/components/dev/public1.vue"),
+    redirect: "/featured",
   },
   {
     path: "/public2",
@@ -767,6 +812,14 @@ const routes = [
     component: () =>
       import("@/components/dev/projectView/ProjectEditorMain.vue"),
   },
+
+  // Dev Speech-to-Text demo (public for dev purposes)
+  {
+    path: "/dev/speechToText",
+    name: "devSpeechToText",
+    component: () =>
+      import("@/components/dev/speechToText/SpeechToTextDemo.vue"),
+  },
 ];
 
 // Create router instance with base path
@@ -792,6 +845,7 @@ const publicPaths = [
   "/proposedprojects",
   "/viewproject",
   "/myprojects",
+  "/featured",
   "/public1",
   "/public2",
   "/public3",
@@ -802,9 +856,9 @@ const publicPaths = [
   "/public6",
   // Project View public routes
   "/dev/projectPreview",
-  "publicGallery2",
-  "publicGallery",
-  "publicProjects",
+  "/publicGallery2",
+  "/publicGallery",
+  "/publicProjects",
 ];
 
 // Pattern-based public paths (for dynamic routes like /project/:projectId)
@@ -816,6 +870,7 @@ const publicPathPatterns = [
 // Unlike auth routes (login, register), these should NOT redirect logged-in users to their dashboard.
 const publicDataPatterns = [
   /^\/project\/[^/]+$/,  // /project/:projectId — shared project view links
+  /^\/featured$/,        // /featured — public showcase page
 ];
 
 function isPublicDataPath(path) {
