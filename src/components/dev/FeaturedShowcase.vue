@@ -738,6 +738,10 @@ function viewProject(p) {
   router.push(`/project/${p.projectViewFormId}`);
 }
 
+function goToSignIn() {
+  router.push('/login');
+}
+
 function goToGallery() {
   router.push("/publicProjects");
 }

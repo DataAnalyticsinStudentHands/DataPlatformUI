@@ -480,6 +480,15 @@ export function buildFileUrl(relativePath) {
   if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
     return relativePath;
   }
+  // Already a full backend path — resolve against the API origin
+  if (relativePath.startsWith('/backend/')) {
+    try {
+      const origin = new URL(apiURL).origin;
+      return `${origin}${relativePath}`;
+    } catch {
+      return relativePath;
+    }
+  }
   return `${BASE}/files/${relativePath}`;
 }
 

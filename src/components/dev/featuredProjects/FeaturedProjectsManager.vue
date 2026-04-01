@@ -18,6 +18,15 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
         <!-- Page Header -->
         <div class="page-header mb-6">
           <div class="d-flex align-center mb-2">
+            <v-btn
+              icon
+              variant="text"
+              size="small"
+              class="mr-2"
+              @click="router.push({ name: 'instructorProjects' })"
+            >
+              <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
             <v-icon color="#c8102e" size="36" class="mr-3">mdi-star-shooting</v-icon>
             <div class="flex-grow-1">
               <div class="d-flex align-center flex-wrap">
@@ -37,8 +46,17 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
                 :href="publicPageUrl"
                 target="_blank"
                 prepend-icon="mdi-open-in-new"
+                :disabled="!hasSavedProjects"
               >
                 View Public Page
+              </v-btn>
+              <v-btn
+                variant="outlined"
+                :disabled="!hasChanges"
+                prepend-icon="mdi-undo"
+                @click="undoChanges"
+              >
+                Undo
               </v-btn>
               <v-btn
                 color="#c8102e"
@@ -63,62 +81,47 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
             lg="4"
           >
             <!-- Filled Slot -->
-            <v-card v-if="slot.projectId" class="slot-card filled-slot" elevation="2">
-              <!-- Slot Header -->
-              <div class="slot-header">
+            <v-card v-if="slot.projectId" class="slot-card filled-slot" elevation="0">
+              <!-- Card Header -->
+              <div class="slot-card-header">
                 <div class="slot-position">{{ slot.position }}</div>
-                <div class="text-subtitle-2 font-weight-bold text-truncate ml-3">
-                  {{ getProjectTitle(slot) }}
+                <div class="slot-title-group">
+                  <h3 class="slot-title">{{ getProjectTitle(slot) }}</h3>
+                  <div v-if="getProjectName(slot) && getProjectName(slot) !== getProjectTitle(slot)" class="slot-project-name">
+                    {{ getProjectName(slot) }}
+                  </div>
                 </div>
                 <v-spacer />
-                <v-chip
-                  v-if="slot.showInHero"
-                  size="x-small"
-                  color="amber-darken-2"
-                  variant="flat"
-                  prepend-icon="mdi-star"
-                >
-                  Hero
-                </v-chip>
-                <v-btn icon variant="text" size="small" @click="removeSlot(idx)">
-                  <v-icon size="18">mdi-close</v-icon>
+                <v-btn icon variant="text" size="x-small" class="remove-btn" @click="removeSlot(idx)">
+                  <v-icon size="16">mdi-close</v-icon>
                 </v-btn>
               </div>
 
-              <!-- Project Preview -->
-              <div class="slot-project-preview pa-4">
-                <div class="d-flex align-start">
-                  <v-avatar v-if="getProjectAvatar(slot)" size="48" class="mr-3 flex-shrink-0">
-                    <v-img :src="getProjectAvatar(slot)" />
-                  </v-avatar>
-                  <v-avatar v-else size="48" color="grey-lighten-3" class="mr-3 flex-shrink-0">
-                    <v-icon color="grey">mdi-account</v-icon>
-                  </v-avatar>
-                  <div class="flex-grow-1 overflow-hidden">
-                    <div class="text-caption text-medium-emphasis">
-                      {{ getProjectAuthor(slot) }}
-                    </div>
-                    <div class="text-caption text-medium-emphasis">
-                      {{ getProjectExperience(slot) }} &middot; {{ getProjectSession(slot) }}
-                    </div>
-                  </div>
+              <!-- Project Info -->
+              <div class="slot-project-info">
+                <div class="info-row">
+                  <v-icon size="16" color="#c8102e">mdi-account</v-icon>
+                  <span class="info-label">Author</span>
+                  <span class="info-value">{{ getProjectAuthor(slot) }}</span>
+                </div>
+                <div class="info-row">
+                  <v-icon size="16" color="#c8102e">mdi-school</v-icon>
+                  <span class="info-label">Experience</span>
+                  <span class="info-value">{{ getProjectExperience(slot) }}</span>
+                </div>
+                <div class="info-row">
+                  <v-icon size="16" color="#c8102e">mdi-calendar</v-icon>
+                  <span class="info-label">Session</span>
+                  <span class="info-value">{{ getProjectSession(slot) }}</span>
                 </div>
               </div>
 
-              <v-divider />
-
-              <!-- Slot Configuration -->
-              <v-card-text class="pa-4">
-                <!-- Show in Hero toggle -->
-                <v-switch
-                  v-model="slot.showInHero"
-                  label="Show in hero carousel"
-                  density="compact"
-                  color="#c8102e"
-                  hide-details
-                  class="mb-3"
-                  @update:model-value="markChanged"
-                />
+              <!-- Configuration -->
+              <div class="slot-config">
+                <div class="config-section-label">
+                  <v-icon size="14" color="#c8102e">mdi-cog-outline</v-icon>
+                  <span>Configuration</span>
+                </div>
 
                 <!-- Achievement Tag -->
                 <v-text-field
@@ -134,55 +137,37 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
                   @update:model-value="markChanged"
                 />
 
-                <!-- Hero Image -->
-                <div class="mb-3">
-                  <div class="text-caption font-weight-medium mb-1">Hero Background Image</div>
-                  <div class="d-flex align-center ga-2">
-                    <v-btn
-                      size="small"
-                      variant="outlined"
-                      prepend-icon="mdi-upload"
-                      @click="triggerHeroUpload(slot)"
-                    >
-                      Upload
-                    </v-btn>
-                    <v-chip v-if="slot.heroImageUrl" size="small" closable @click:close="clearHeroImage(slot)">
-                      Custom image set
-                    </v-chip>
-                    <span v-else class="text-caption text-medium-emphasis">Uses poster/avatar</span>
-                  </div>
-                </div>
-
                 <!-- Project Stats (auto-populated) -->
-                <div v-if="slot.showInHero" class="stats-display">
-                  <div class="text-caption font-weight-medium mb-2">Hero Stats</div>
-                  <div class="d-flex ga-3">
-                    <v-chip variant="tonal" prepend-icon="mdi-account-group" size="small">
+                <div class="stats-display">
+                  <div class="stats-label">Hero Stats</div>
+                  <div class="d-flex flex-wrap ga-2">
+                    <v-chip variant="tonal" color="#c8102e" prepend-icon="mdi-account-group" size="small">
                       {{ getProjectMemberCount(slot) }} Members
                     </v-chip>
-                    <v-chip variant="tonal" prepend-icon="mdi-school" size="small">
+                    <v-chip variant="tonal" color="#c8102e" prepend-icon="mdi-school" size="small">
                       {{ getProjectExperience(slot) }}
                     </v-chip>
-                    <v-chip variant="tonal" prepend-icon="mdi-calendar" size="small">
+                    <v-chip variant="tonal" color="#c8102e" prepend-icon="mdi-calendar" size="small">
                       {{ getProjectSession(slot) }}
                     </v-chip>
                   </div>
                 </div>
-              </v-card-text>
+              </div>
             </v-card>
 
             <!-- Empty Slot -->
             <v-card
               v-else
-              class="slot-card empty-slot d-flex align-center justify-center"
+              class="slot-card empty-slot"
               elevation="0"
               @click="openPicker(slot.position)"
             >
-              <div class="text-center pa-8">
-                <v-icon size="48" color="grey-lighten-1" class="mb-2">mdi-plus-circle-outline</v-icon>
-                <div class="text-body-2 text-medium-emphasis">
-                  Add Project to Slot {{ slot.position }}
+              <div class="empty-slot-content">
+                <div class="empty-slot-icon-wrapper">
+                  <v-icon size="32" color="#c8102e">mdi-plus</v-icon>
                 </div>
+                <div class="empty-slot-label">Add Project</div>
+                <div class="empty-slot-sublabel">Slot {{ slot.position }}</div>
               </div>
             </v-card>
           </v-col>
@@ -250,6 +235,9 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
               <v-list-item-title class="font-weight-medium">
                 {{ proj.projectViewForm?.title || proj.projectName }}
               </v-list-item-title>
+              <v-list-item-subtitle v-if="proj.projectName && proj.projectName !== proj.projectViewForm?.title" class="text-caption text-medium-emphasis">
+                {{ proj.projectName }}
+              </v-list-item-subtitle>
               <v-list-item-subtitle>
                 {{ proj.projectViewForm?.authors?.[0]?.name || 'Unknown author' }}
                 &middot; {{ proj.experienceName || '' }}
@@ -270,24 +258,31 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
       </v-card>
     </v-dialog>
 
-    <!-- Hidden file input for hero image upload -->
-    <input
-      ref="heroFileInput"
-      type="file"
-      accept="image/*"
-      style="display: none"
-      @change="handleHeroUpload"
-    />
+    <!-- Unsaved Changes Dialog -->
+    <v-dialog v-model="showLeaveDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h6">Unsaved Changes</v-card-title>
+        <v-card-text>
+          You have unsaved changes. Leaving this page will discard them.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="showLeaveDialog = false">Cancel</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmLeave">Leave</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </main>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter, onBeforeRouteLeave } from 'vue-router';
 import {
   getConfig,
   saveConfig,
   getEligibleProjects,
-  uploadHeroImage,
 } from './services/featuredProjectsService.js';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -296,11 +291,14 @@ import 'vue3-toastify/dist/index.css';
 // STATE
 // =============================================================================
 
+const router = useRouter();
 const loading = ref(true);
 const saving = ref(false);
 const hasChanges = ref(false);
 // The 5-slot array (always 5 entries, some may be empty placeholders)
 const slots = ref([]);
+// Snapshot of slots as last loaded/saved — used for undo
+const originalSlots = ref([]);
 
 // Picker state
 const pickerOpen = ref(false);
@@ -309,9 +307,11 @@ const pickerTargetPosition = ref(null);
 const eligibleProjects = ref([]);
 const loadingEligible = ref(false);
 
-// Hero image upload state
-const heroFileInput = ref(null);
-const uploadTargetSlot = ref(null);
+
+// Unsaved-changes guard state
+const showLeaveDialog = ref(false);
+const confirmedLeave = ref(false);
+const pendingNavigation = ref(null);
 
 // Lookup map: projectId -> eligible project data (for display)
 const eligibleLookup = ref({});
@@ -320,6 +320,10 @@ const publicPageUrl = computed(() => {
   const base = window.location.origin;
   return `${base}/platform/featured`;
 });
+
+const hasSavedProjects = computed(() =>
+  originalSlots.value.some(s => s.projectId)
+);
 
 // =============================================================================
 // COMPUTED
@@ -372,14 +376,14 @@ function getProjectTitle(slot) {
   return proj?.projectViewForm?.title || proj?.projectName || 'Unknown Project';
 }
 
+function getProjectName(slot) {
+  const proj = eligibleLookup.value[slot.projectId];
+  return proj?.projectName || '';
+}
+
 function getProjectAuthor(slot) {
   const proj = eligibleLookup.value[slot.projectId];
   return proj?.projectViewForm?.authors?.[0]?.name || 'Unknown Author';
-}
-
-function getProjectAvatar(slot) {
-  const proj = eligibleLookup.value[slot.projectId];
-  return proj?.projectViewForm?.authors?.[0]?.avatarUrl || '';
 }
 
 function getProjectExperience(slot) {
@@ -399,6 +403,15 @@ function getProjectMemberCount(slot) {
 
 function markChanged() {
   hasChanges.value = true;
+}
+
+function cloneSlots(src) {
+  return JSON.parse(JSON.stringify(src));
+}
+
+function undoChanges() {
+  slots.value = cloneSlots(originalSlots.value);
+  hasChanges.value = false;
 }
 
 
@@ -429,7 +442,6 @@ onMounted(async () => {
         position: s.position,
         projectId: s.projectId,
         projectViewFormId: s.projectViewFormId,
-        showInHero: s.showInHero ?? true,
         achievementTag: s.achievementTag || '',
         heroImageUrl: s.heroImageUrl || '',
         stats: Array.isArray(s.stats) && s.stats.length === 3
@@ -437,6 +449,8 @@ onMounted(async () => {
           : createDefaultStats(),
       }));
     }
+
+    originalSlots.value = cloneSlots(slots.value);
   } catch (err) {
     toast.error('Failed to load featured projects configuration.');
     console.error('FeaturedProjectsManager load error:', err);
@@ -470,7 +484,6 @@ function selectProject(proj) {
     position: pos,
     projectId: proj._id,
     projectViewFormId: proj.projectViewForm?._id || '',
-    showInHero: true,
     achievementTag: '',
     heroImageUrl: '',
     stats: createDefaultStats(proj),
@@ -493,6 +506,48 @@ function removeSlot(displayIdx) {
   }
 }
 
+// =============================================================================
+// UNSAVED CHANGES GUARD
+// =============================================================================
+
+function handleBeforeUnload(e) {
+  if (hasChanges.value) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+}
+
+function confirmLeave() {
+  showLeaveDialog.value = false;
+  confirmedLeave.value = true;
+  if (pendingNavigation.value) {
+    const destination = pendingNavigation.value;
+    pendingNavigation.value = null;
+    router.push(destination);
+  }
+}
+
+onBeforeRouteLeave((to) => {
+  if (confirmedLeave.value) return;
+  if (hasChanges.value) {
+    showLeaveDialog.value = true;
+    pendingNavigation.value = to.fullPath;
+    return false;
+  }
+});
+
+onMounted(() => {
+  window.addEventListener('beforeunload', handleBeforeUnload);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
+});
+
+// =============================================================================
+// SAVE
+// =============================================================================
+
 async function saveChanges() {
   saving.value = true;
 
@@ -504,10 +559,10 @@ async function saveChanges() {
         position: s.position,
         projectId: s.projectId,
         projectViewFormId: s.projectViewFormId,
-        showInHero: s.showInHero,
+        showInHero: true,
         achievementTag: s.achievementTag || '',
         heroImageUrl: s.heroImageUrl || '',
-        stats: s.showInHero ? s.stats : [],
+        stats: s.stats,
       }));
 
     const saved = await saveConfig(payload);
@@ -518,7 +573,6 @@ async function saveChanges() {
         position: s.position,
         projectId: s.projectId,
         projectViewFormId: s.projectViewFormId,
-        showInHero: s.showInHero ?? true,
         achievementTag: s.achievementTag || '',
         heroImageUrl: s.heroImageUrl || '',
         stats: Array.isArray(s.stats) && s.stats.length === 3
@@ -527,6 +581,7 @@ async function saveChanges() {
       }));
     }
 
+    originalSlots.value = cloneSlots(slots.value);
     hasChanges.value = false;
     toast.success('Featured projects saved successfully.',
         {
@@ -544,34 +599,6 @@ async function saveChanges() {
   }
 }
 
-// Hero image upload
-function triggerHeroUpload(slot) {
-  uploadTargetSlot.value = slot;
-  heroFileInput.value?.click();
-}
-
-async function handleHeroUpload(event) {
-  const file = event.target.files?.[0];
-  if (!file || !uploadTargetSlot.value) return;
-
-  try {
-    const url = await uploadHeroImage(uploadTargetSlot.value.position, file);
-    uploadTargetSlot.value.heroImageUrl = url;
-    hasChanges.value = true;
-  } catch (err) {
-    toast.error('Failed to upload hero image.');
-    console.error('Hero upload error:', err);
-  } finally {
-    // Reset file input
-    if (heroFileInput.value) heroFileInput.value.value = '';
-    uploadTargetSlot.value = null;
-  }
-}
-
-function clearHeroImage(slot) {
-  slot.heroImageUrl = '';
-  hasChanges.value = true;
-}
 </script>
 
 <style scoped>
@@ -580,43 +607,39 @@ function clearHeroImage(slot) {
   background-color: #f5f5f5;
 }
 
+/* ── Base Card ── */
 .slot-card {
   min-height: 200px;
-  border-radius: 12px;
-  transition: box-shadow 0.2s ease;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Filled Card ── */
 .filled-slot {
-  border: 2px solid transparent;
+  border: 1px solid #e8e8ee;
+  overflow: hidden;
 }
 
 .filled-slot:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: rgba(200, 16, 46, 0.3);
 }
 
-.empty-slot {
-  border: 2px dashed #ccc;
-  cursor: pointer;
-  background: #fafafa;
-}
-
-.empty-slot:hover {
-  border-color: #c8102e;
-  background: #fff5f5;
-}
-
-.slot-header {
+/* ── Card Header ── */
+.slot-card-header {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  background: #f8f8f8;
-  border-bottom: 1px solid #eee;
-  border-radius: 12px 12px 0 0;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .slot-position {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #c8102e;
   color: white;
@@ -624,19 +647,151 @@ function clearHeroImage(slot) {
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
-.slot-project-preview {
+.slot-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.slot-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.slot-project-name {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 400;
+}
+
+.remove-btn {
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.remove-btn:hover {
+  opacity: 1;
+  color: #c8102e;
+}
+
+/* ── Project Info ── */
+.slot-project-info {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   background: #fafafa;
 }
 
-.stat-row {
-  background: #f8f8f8;
-  border-radius: 8px;
-  padding: 6px;
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
 }
 
+.info-label {
+  font-weight: 600;
+  color: #4a5568;
+  min-width: 72px;
+  font-size: 12px;
+}
+
+.info-value {
+  color: #1a1a2e;
+  font-size: 13px;
+}
+
+/* ── Configuration Section ── */
+.slot-config {
+  padding: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.config-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c8102e;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-display {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.stats-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 8px;
+}
+
+/* ── Empty Slot ── */
+.empty-slot {
+  border: 2px dashed #d4d4d8;
+  cursor: pointer;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-slot:hover {
+  border-color: #c8102e;
+  background: rgba(200, 16, 46, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 16, 46, 0.1);
+}
+
+.empty-slot-content {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.empty-slot-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(200, 16, 46, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  transition: all 0.3s ease;
+}
+
+.empty-slot:hover .empty-slot-icon-wrapper {
+  background: rgba(200, 16, 46, 0.15);
+  transform: scale(1.1);
+}
+
+.empty-slot-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 2px;
+}
+
+.empty-slot-sublabel {
+  font-size: 12px;
+  color: #4a5568;
+}
+
+/* ── Picker Dialog ── */
 .eligible-item {
   border-radius: 8px;
   margin-bottom: 4px;
@@ -644,5 +799,11 @@ function clearHeroImage(slot) {
 
 .eligible-item:hover {
   background: #f5f5f5;
+}
+
+.eligible-list :deep(.v-list-item-title) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }
 </style>
