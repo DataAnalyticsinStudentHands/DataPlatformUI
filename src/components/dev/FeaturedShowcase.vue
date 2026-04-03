@@ -1,5 +1,11 @@
 <template>
   <v-container fluid class="pa-0 engaged-public">
+    <!-- Full-page loader while data is fetching -->
+    <div v-if="loading" class="page-loader">
+      <v-progress-circular indeterminate color="primary" size="64" width="5" />
+    </div>
+
+    <template v-else>
     <!-- Top Nav (simple + translucent) -->
     <header class="public-nav">
       <v-container class="py-2">
@@ -173,11 +179,11 @@
     </section>
 
     <!-- COMBINED EXPLAINER + SCALE SECTION (Side by Side) -->
-    <section id="explainer" class="combined-section py-16">
+    <section id="explainer" class="combined-section py-16 scroll-reveal">
       <v-container>
         <v-row>
           <!-- LEFT: What is Engaged Data -->
-          <v-col cols="12" lg="6" class="mb-8 mb-lg-0">
+          <v-col cols="12" lg="6" class="mb-8 mb-lg-0 reveal-child">
             <div class="section-content">
               <h2 class="section-title mb-4">
                 What is <span class="brand-gradient">Engaged Data</span>?
@@ -255,7 +261,7 @@
           </v-col>
 
           <!-- RIGHT: Who is Using it -->
-          <v-col cols="12" lg="6">
+          <v-col cols="12" lg="6" class="reveal-child">
             <div class="section-content">
               <div class="scale-header mb-6">
                 <h2 class="section-title mb-2">Who is using it?</h2>
@@ -319,7 +325,7 @@
     </section>
 
     <!-- 3) CELEBRATION: Featured Projects -->
-    <section v-if="featuredCards.length" id="featured" class="featured-section py-16">
+    <section v-if="featuredCards.length" id="featured" class="featured-section py-16 scroll-reveal">
       <v-container>
         <v-row class="mb-10" justify="center">
           <v-col cols="12" md="10" class="text-center">
@@ -471,7 +477,7 @@
     </section>
 
     <!-- CTA -->
-    <section class="cta-section py-14">
+    <section class="cta-section py-14 scroll-reveal">
       <v-container>
         <v-row justify="center">
           <v-col cols="12" md="10" class="cta-card">
@@ -500,6 +506,7 @@
         </v-row>
       </v-container>
     </section>
+    </template>
   </v-container>
 
 </template>
@@ -512,6 +519,9 @@ import { buildFileUrl } from "./projectView/services/projectViewFormService.js";
 
 const router = useRouter();
 
+// Page loading state
+const loading = ref(true);
+
 // HERO / celebration slides — populated from API in loadLive()
 const heroSlides = ref([]);
 
@@ -520,10 +530,10 @@ const featuredCards = ref([]);
 
 // SCALE metrics (animated)
 const metrics = reactive({
-  participants: 0,
-  experiences: 0,
-  sessions: 0,
-  projects: 0,
+  participants: 1128,
+  experiences: 56,
+  sessions: 15,
+  projects: 29,
   categories: [],
 });
 
@@ -554,15 +564,18 @@ const isHoveringRight = ref(false);
 
 // Animation on scroll
 let observer = null;
+let revealObserver = null;
 let animatedOnce = false;
 
-onMounted(() => {
-  loadLive();
+onMounted(async () => {
+  await loadLive();
   setupObserver();
+  setupRevealObserver();
 });
 
 onUnmounted(() => {
   if (observer) observer.disconnect();
+  if (revealObserver) revealObserver.disconnect();
 });
 
 // ----- Data loading -----
@@ -594,8 +607,9 @@ async function loadLive() {
       metrics.categories = f.metrics.categories || [];
     }
   } catch (e) {
-    // API error — router guard should have prevented reaching here with no data
     console.error("Failed to load featured projects:", e);
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -638,6 +652,36 @@ function setupObserver() {
 
   const kpi = document.querySelector(".combined-section");
   if (kpi) observer.observe(kpi);
+}
+
+function setupRevealObserver() {
+  const prefersReduced = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  if (prefersReduced) {
+    // Show everything immediately
+    document.querySelectorAll(".scroll-reveal").forEach((el) => {
+      el.classList.add("revealed");
+    });
+    return;
+  }
+
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((ent) => {
+        if (ent.isIntersecting) {
+          ent.target.classList.add("revealed");
+          revealObserver.unobserve(ent.target);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+
+  document.querySelectorAll(".scroll-reveal").forEach((el) => {
+    revealObserver.observe(el);
+  });
 }
 
 function animateNumber(key, end, duration = 1500) {
@@ -752,6 +796,14 @@ function goToContact() {
 </script>
 
 <style scoped>
+/* --- Page Loader --- */
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
 /* --- Layout & Nav --- */
 .public-nav {
   position: sticky;
@@ -1183,6 +1235,47 @@ function goToContact() {
   border-radius: 16px;
   padding: 32px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Scroll Reveal Animations --- */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children within a revealed section */
+.scroll-reveal .reveal-child {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-reveal.revealed .reveal-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal.revealed .reveal-child:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.scroll-reveal.revealed .reveal-child:nth-child(3) {
+  transition-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .scroll-reveal .reveal-child {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* --- Responsive --- */

@@ -25,7 +25,7 @@
         class="finding"
         :style="getFindingStyle(finding.color)"
       >
-        <div class="finding-stat" :style="{ color: finding.color }">{{ finding.stat }}</div>
+        <div class="finding-stat" :style="getStatStyle(finding)">{{ finding.stat }}</div>
         <p>{{ finding.description }}</p>
       </div>
     </div>
@@ -63,9 +63,27 @@ const props = defineProps({
   },
 });
 
+// Check if any stat has a long unbreakable word (no spaces, > 7 chars)
+const hasLongWord = computed(() => {
+  return props.findings.some((f) => {
+    const words = (f.stat || '').split(/\s+/);
+    return words.some((w) => w.length > 7);
+  });
+});
+
+// Switch to vertical list layout when stats have long words or 3+ findings with wordy stats
+const useVerticalLayout = computed(() => {
+  if (hasLongWord.value) return true;
+  if (props.findings.length >= 3) {
+    return props.findings.some((f) => (f.stat || '').length > 10);
+  }
+  return false;
+});
+
 const gridClass = computed(() => ({
   'compact': props.compact,
-  [`grid-${props.findings.length}`]: true,
+  'vertical': useVerticalLayout.value,
+  [`grid-${props.findings.length}`]: !useVerticalLayout.value,
 }));
 
 // Legacy variant to color mapping for backwards compatibility
@@ -98,6 +116,28 @@ const normalizedFindings = computed(() => {
     };
   });
 });
+
+// Adaptive font size based on stat text length
+function getStatStyle(finding) {
+  const len = (finding.stat || '').length;
+  const base = props.compact ? 20 : 22;
+  const mid = props.compact ? 16 : 18;
+  const small = props.compact ? 14 : 15;
+
+  let fontSize = base;
+  if (useVerticalLayout.value) {
+    // Vertical layout: toned-down sizes since stat sits inline with description
+    fontSize = props.compact ? 14 : 15;
+  } else {
+    if (len > 10) fontSize = small;
+    else if (len > 5) fontSize = mid;
+  }
+
+  return {
+    color: finding.color,
+    fontSize: `${fontSize}px`,
+  };
+}
 
 // Generate finding card styles based on color
 function getFindingStyle(color) {
@@ -218,6 +258,7 @@ function hexToRgb(hex) {
   font-weight: 800;
   line-height: 1;
   margin-bottom: 6px;
+  word-break: break-word;
 }
 
 .finding p {
@@ -256,6 +297,35 @@ function hexToRgb(hex) {
 
 .findings-grid.compact + .conclusion-text .attribution {
   font-size: 12px;
+}
+
+/* Vertical list layout — stat as title, description underneath */
+.findings-grid.vertical {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.findings-grid.vertical .finding {
+  text-align: left;
+  padding: 10px 14px;
+}
+
+.findings-grid.vertical .finding-stat {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.findings-grid.vertical .finding p {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.findings-grid.vertical.compact .finding {
+  padding: 8px 12px;
+}
+
+.findings-grid.vertical.compact .finding p {
+  font-size: 11px;
 }
 
 /* Responsive */

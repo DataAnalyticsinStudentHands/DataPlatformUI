@@ -486,6 +486,21 @@ defineExpose({
   word-wrap: break-word;
 }
 
+/* Inline author overrides for preview */
+.template-wrapper :deep(.hero-author-inline),
+.template-wrapper :deep(.hero-authors-inline) {
+  margin-top: 8px;
+  gap: 4px;
+}
+
+.template-wrapper :deep(.inline-author-name) {
+  font-size: 11px;
+}
+
+.template-wrapper :deep(.inline-author-role) {
+  font-size: 10px;
+}
+
 .fullscreen-close-btn {
   position: fixed;
   top: 16px;

@@ -203,11 +203,32 @@
         {{ $t("Don't worry about getting it perfect now. You can add or remove sections at any time while editing your project.") }}
       </span>
     </div>
+
+    <!-- Confirmation Dialog -->
+    <v-dialog v-model="showConfirmDialog" max-width="450">
+      <v-card>
+        <v-card-title class="text-h6">
+          {{ $t('Remove Section?') }}
+        </v-card-title>
+        <v-card-text>
+          {{ confirmDialogMessage }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="cancelAction">
+            {{ $t('Cancel') }}
+          </v-btn>
+          <v-btn color="#c8102e" variant="flat" @click="confirmAction">
+            {{ $t('Remove') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import {
   getMandatorySections,
   getOptionalSections,
@@ -217,6 +238,10 @@ import {
 
 const props = defineProps({
   modelValue: {
+    type: Array,
+    default: () => []
+  },
+  sectionsWithData: {
     type: Array,
     default: () => []
   }
@@ -249,12 +274,37 @@ function isRecommended(sectionId) {
   return RECOMMENDED_SECTIONS.includes(sectionId);
 }
 
+// Confirmation dialog state
+const showConfirmDialog = ref(false);
+const pendingAction = ref(null);
+
+function hasData(sectionId) {
+  return props.sectionsWithData.includes(sectionId);
+}
+
+const confirmDialogMessage = computed(() => {
+  if (!pendingAction.value) return '';
+  if (pendingAction.value.type === 'toggle') {
+    const section = optionalSections.value.find(s => s.id === pendingAction.value.sectionId);
+    const name = section ? section.name : pendingAction.value.sectionId;
+    return `The "${name}" section contains data you have entered. Removing it will hide this section, but your data will be preserved if you re-enable it later.`;
+  }
+  const names = pendingAction.value.sectionIds
+    .map(id => optionalSections.value.find(s => s.id === id)?.name || id);
+  return `The following sections contain data you have entered: ${names.join(', ')}. Removing them will hide these sections, but your data will be preserved if you re-enable them later.`;
+});
+
 // Toggle a section
 function toggleSection(sectionId) {
   const current = [...selectedSections.value];
   const index = current.indexOf(sectionId);
 
   if (index >= 0) {
+    if (hasData(sectionId)) {
+      pendingAction.value = { type: 'toggle', sectionId };
+      showConfirmDialog.value = true;
+      return;
+    }
     current.splice(index, 1);
   } else {
     current.push(sectionId);
@@ -270,7 +320,34 @@ function selectAll() {
 
 // Clear all optional sections
 function clearAll() {
+  const sectionsToRemove = selectedSections.value.filter(id => hasData(id));
+  if (sectionsToRemove.length > 0) {
+    pendingAction.value = { type: 'clearAll', sectionIds: sectionsToRemove };
+    showConfirmDialog.value = true;
+    return;
+  }
   selectedSections.value = [];
+}
+
+function confirmAction() {
+  if (!pendingAction.value) return;
+
+  if (pendingAction.value.type === 'toggle') {
+    const current = [...selectedSections.value];
+    const index = current.indexOf(pendingAction.value.sectionId);
+    if (index >= 0) current.splice(index, 1);
+    selectedSections.value = current;
+  } else if (pendingAction.value.type === 'clearAll') {
+    selectedSections.value = [];
+  }
+
+  showConfirmDialog.value = false;
+  pendingAction.value = null;
+}
+
+function cancelAction() {
+  showConfirmDialog.value = false;
+  pendingAction.value = null;
 }
 
 // Get enabled sidebar sections for preview

@@ -22,10 +22,17 @@
 
         <!-- Description -->
         <p class="hero-description">{{ description }}</p>
+
+        <!-- Inline Author (minimal: name + role only) -->
+        <div v-if="minimal" class="hero-author-inline">
+          <span class="inline-author-name">{{ author.name }}</span>
+          <span v-if="author.role" class="inline-author-separator">&mdash;</span>
+          <span v-if="author.role" class="inline-author-role">{{ author.role }}</span>
+        </div>
       </div>
 
-      <!-- Author Card -->
-      <div class="hero-author">
+      <!-- Author Card (full layout with avatar/quote) -->
+      <div v-if="!minimal" class="hero-author">
         <img
           v-if="authorAvatarSrc"
           class="author-avatar"
@@ -50,6 +57,7 @@
 import { computed, ref, watch, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { buildFileUrl } from '../services/projectViewFormService.js';
+import { isMinimalAuthor } from '../utils/authorUtils.js';
 
 const props = defineProps({
   label: {
@@ -121,6 +129,8 @@ onBeforeUnmount(() => {
 });
 
 const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
+
+const minimal = computed(() => isMinimalAuthor(props.author));
 </script>
 
 <style scoped>
@@ -254,6 +264,32 @@ const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
   line-height: 1.45 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
+}
+
+/* Inline author (minimal layout) */
+.hero-author-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.inline-author-name {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.inline-author-separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
+
+.inline-author-role {
+  color: #a5b4fc;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 /* Responsive */

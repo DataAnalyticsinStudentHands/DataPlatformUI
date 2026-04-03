@@ -27,7 +27,7 @@
     <!-- Main Content Grid -->
     <div class="content-grid" :class="{ 'no-poster': !hasPoster }">
       <!-- Left Column: Info Cards -->
-      <div class="info-column">
+      <div ref="infoColumnRef" class="info-column">
         <!-- Tags (always rendered) -->
         <TagsCard
           v-if="project.tags && project.tags.length > 0"
@@ -43,9 +43,9 @@
           :compact="hasManyOptionalSections"
         />
 
-        <!-- Partners (optional, order: 30) -->
+        <!-- Partners (optional, order: 30) — may overflow below grid -->
         <PartnersCard
-          v-if="isSectionEnabled('partners') && project.partners && project.partners.length > 0"
+          v-if="isSectionEnabled('partners') && !overflowSections.has('partners') && project.partners && project.partners.length > 0"
           :partners="project.partners"
           :columns="hasManyOptionalSections ? 2 : 3"
           :compact="hasManyOptionalSections"
@@ -59,17 +59,17 @@
           :layout="project.timelineLayout || 'vertical'"
         />
 
-        <!-- Impact (optional, order: 50) -->
+        <!-- Impact (optional, order: 50) — may overflow below grid -->
         <ImpactCard
-          v-if="isSectionEnabled('impact') && project.impactItems && project.impactItems.length > 0"
+          v-if="isSectionEnabled('impact') && !overflowSections.has('impact') && project.impactItems && project.impactItems.length > 0"
           title="Impact Summary"
           :impact-items="project.impactItems"
           :columns="2"
         />
       </div>
 
-      <!-- Right Column: Poster (optional, order: 60) -->
-      <div v-if="hasPoster" class="poster-column">
+      <!-- Right Column: Poster + overflow cards (optional, order: 60) -->
+      <div ref="posterColumnRef" v-if="hasPoster" class="poster-column">
         <PosterCardPdf
           v-if="project.poster?.type === 'pdf'"
           :title="project.poster?.title || 'Research Poster'"
@@ -79,6 +79,20 @@
           v-else
           :title="project.poster?.title || 'Project Diagram'"
           :image-url="project.poster?.url"
+        />
+
+        <!-- Cards that overflow from sidebar when columns are imbalanced -->
+        <PartnersCard
+          v-if="overflowSections.has('partners') && isSectionEnabled('partners') && project.partners?.length > 0"
+          :partners="project.partners"
+          :columns="3"
+          :compact="false"
+        />
+        <ImpactCard
+          v-if="overflowSections.has('impact') && isSectionEnabled('impact') && project.impactItems?.length > 0"
+          title="Impact Summary"
+          :impact-items="project.impactItems"
+          :columns="3"
         />
       </div>
     </div>
@@ -117,6 +131,7 @@ import {
   FooterBanner
 } from '../components';
 import { isSectionEnabled as checkSectionEnabled } from '../types/sectionTypes.js';
+import { useAdaptiveLayout } from '@/composables/useAdaptiveLayout.js';
 
 const props = defineProps({
   project: {
@@ -138,7 +153,12 @@ const hasPoster = computed(() => {
   return isSectionEnabled('poster') && props.project.poster;
 });
 
-// Count enabled optional sidebar sections for compact mode
+// Adaptive layout: move sections below grid when poster is much taller than sidebar
+const { infoColumnRef, posterColumnRef, overflowSections, isOverflowing } = useAdaptiveLayout({
+  enabled: hasPoster,
+});
+
+// Count enabled optional sidebar sections for compact mode (exclude overflowed sections)
 const hasManyOptionalSections = computed(() => {
   const sidebarSections = ['partners', 'timeline', 'impact'];
   const enabledCount = sidebarSections.filter(s => isSectionEnabled(s)).length;
@@ -178,6 +198,7 @@ const showTimelineBelowGrid = computed(() => {
 .content-grid {
   display: grid;
   grid-template-columns: minmax(280px, 400px) 1fr;
+  align-items: start;
   gap: 16px;
   margin-top: 8px;
 }
@@ -197,6 +218,7 @@ const showTimelineBelowGrid = computed(() => {
 .poster-column {
   display: flex;
   flex-direction: column;
+  gap: 12px;
   min-height: 0;
 }
 

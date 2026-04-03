@@ -12,7 +12,6 @@
       <div class="header-content">
         <div class="header-title-section">
           <v-btn
-            v-if="currentStep > 1"
             icon
             variant="text"
             size="small"
@@ -76,9 +75,18 @@
       <div v-show="currentStep === 1" class="step-content">
         <SectionConfigurator
           v-model="enabledSections"
+          :sections-with-data="sectionsWithData"
         />
 
         <div class="step-actions centered">
+          <v-btn
+            variant="outlined"
+            color="#666"
+            size="large"
+            @click="emit('cancel')"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
           <v-btn
             color="#c8102e"
             size="large"
@@ -207,9 +215,10 @@ import {
   validateProject,
   cloneProject,
   migrateProject,
-  initializeSectionData
+  initializeSectionData,
+  sectionHasData
 } from './types/projectTypes.js';
-import { DEFAULT_ENABLED_SECTIONS } from './types/sectionTypes.js';
+import { DEFAULT_ENABLED_SECTIONS, getOptionalSections } from './types/sectionTypes.js';
 
 const props = defineProps({
   // Existing project data for editing mode
@@ -259,6 +268,13 @@ const isPreviewFullscreen = ref(false);
 
 // Computed
 const isEditing = computed(() => !!props.projectId || !!props.initialProject);
+
+const sectionsWithData = computed(() => {
+  if (!projectData.value) return [];
+  return getOptionalSections()
+    .map(s => s.id)
+    .filter(id => sectionHasData(projectData.value, id));
+});
 
 const steps = computed(() => [
   'Configure',
@@ -387,6 +403,8 @@ function proceedToPreview() {
 function goBack() {
   if (currentStep.value > 1) {
     currentStep.value--;
+  } else {
+    emit('cancel');
   }
 }
 

@@ -378,7 +378,11 @@ function confirmLeave() {
   if (pendingNavigation.value) {
     const destination = pendingNavigation.value;
     pendingNavigation.value = null;
-    router.push(destination);
+    if (typeof destination === 'function') {
+      destination();
+    } else {
+      router.push(destination);
+    }
   }
 }
 

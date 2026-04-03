@@ -128,11 +128,11 @@ const gridClass = computed(() => ({
 }
 
 .partners-grid.cols-2 {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(max(180px, calc(50% - 4px)), 1fr));
 }
 
 .partners-grid.cols-3 {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(max(180px, calc(33.4% - 6px)), 1fr));
 }
 
 /* Partner Card */
@@ -191,6 +191,7 @@ const gridClass = computed(() => ({
   font-size: 10px;
   color: #718096;
   line-height: 1.3;
+  overflow-wrap: break-word;
 }
 
 /* Compact info */
@@ -202,17 +203,12 @@ const gridClass = computed(() => ({
   font-size: 9px;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .partners-grid.cols-3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Compact variants use a smaller minimum card width */
+.partners-grid.compact.cols-2 {
+  grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(50% - 4px)), 1fr));
 }
 
-@media (max-width: 768px) {
-  .partners-grid.cols-3,
-  .partners-grid.cols-2 {
-    grid-template-columns: 1fr;
-  }
+.partners-grid.compact.cols-3 {
+  grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(33.4% - 6px)), 1fr));
 }
 </style>

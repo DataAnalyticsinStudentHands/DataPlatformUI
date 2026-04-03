@@ -550,6 +550,49 @@ export function clearSectionData(project, sectionId, clearData = false) {
   return updated;
 }
 
+/**
+ * Checks whether an optional section contains user-entered data
+ * (beyond the default/empty state created by initializeSectionData).
+ *
+ * @param {Project} project - The project object
+ * @param {string} sectionId - The section to check
+ * @returns {boolean} True if the section has meaningful user data
+ */
+export function sectionHasData(project, sectionId) {
+  if (!project) return false;
+
+  switch (sectionId) {
+    case 'findings': {
+      const hasFindings = (project.findings || []).some(
+        f => (f.stat && f.stat.trim()) || (f.description && f.description.trim())
+      );
+      const hasConclusion = project.conclusion &&
+        ((project.conclusion.text && project.conclusion.text.trim()) ||
+         (project.conclusion.attribution && project.conclusion.attribution.trim()));
+      return hasFindings || !!hasConclusion;
+    }
+    case 'partners':
+      return (project.partners || []).some(
+        p => (p.acronym && p.acronym.trim()) || (p.name && p.name.trim())
+      );
+    case 'timeline':
+      return (project.milestones || []).some(
+        m => (m.title && m.title.trim()) || (m.description && m.description.trim()) || m.dateStart
+      );
+    case 'impact':
+      return (project.impactItems || []).some(
+        item => item.text && item.text.trim()
+      );
+    case 'poster':
+      return !!project.poster && (
+        (project.poster.url && project.poster.url.trim()) ||
+        !!project.poster.clowderFileId
+      );
+    default:
+      return false;
+  }
+}
+
 // =============================================================================
 // SAMPLE DATA
 // =============================================================================
@@ -1222,6 +1265,7 @@ export default {
   createEmptyProject,
   initializeSectionData,
   clearSectionData,
+  sectionHasData,
 
   // Sample data
   SAMPLE_PROJECT,

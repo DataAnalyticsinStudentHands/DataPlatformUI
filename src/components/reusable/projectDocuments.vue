@@ -49,7 +49,7 @@
       >
         <template v-slot:prepend>
           <v-avatar color="grey-lighten-2" class="mr-3">
-            <v-icon :icon="getFileIcon(document.extension)" color="grey-darken-2"></v-icon>
+            <v-icon :icon="getFileIcon(getDocumentExtension(document))" :color="getFileIconColor(getDocumentExtension(document))"></v-icon>
           </v-avatar>
         </template>
         
@@ -60,7 +60,7 @@
               color="grey-lighten-1"
               class="text-uppercase mr-2"
             >
-              {{ document.extension }}
+              {{ getDocumentExtension(document) }}
             </v-chip>
             <v-menu>
               <template v-slot:activator="{ props }">
@@ -234,13 +234,13 @@
           <!-- Document info display -->
           <div class="mb-4 pa-3 bg-grey-lighten-5 rounded">
             <div class="d-flex align-center">
-              <v-icon :icon="getFileIcon(documentToEdit?.extension)" size="40" color="grey-darken-1" class="mr-3"></v-icon>
+              <v-icon :icon="getFileIcon(getDocumentExtension(documentToEdit))" size="40" :color="getFileIconColor(getDocumentExtension(documentToEdit))" class="mr-3"></v-icon>
               <div>
                 <p class="text-subtitle-2 mb-0">{{ $t('Current file') }}</p>
                 <p class="text-caption text-grey-darken-1">
                   {{ documentToEdit?.name }}
                   <v-chip size="x-small" color="grey-lighten-1" class="text-uppercase ml-2">
-                    {{ documentToEdit?.extension }}
+                    {{ getDocumentExtension(documentToEdit) }}
                   </v-chip>
                 </p>
               </div>
@@ -407,6 +407,14 @@ export default {
     this.fetchDocuments();
   },
   methods: {
+    getDocumentExtension(document) {
+      if (document?.extension) return document.extension;
+      if (document?.name) {
+        const parts = document.name.split('.');
+        if (parts.length > 1) return parts.pop();
+      }
+      return '';
+    },
     getFileIcon(extension) {
       switch(extension?.toLowerCase()) {
         case 'pdf':
@@ -423,13 +431,34 @@ export default {
         case 'txt':
         case 'csv':
         case 'tsv':
-          return 'mdi-file-document-outline';
+          return 'mdi-file-document';
         case 'jpg':
         case 'jpeg':
         case 'png':
-          return 'mdi-file-image-box';
+          return 'mdi-file-image';
         default:
-          return 'mdi-file-document-outline';
+          return 'mdi-file-document';
+      }
+    },
+    getFileIconColor(extension) {
+      switch(extension?.toLowerCase()) {
+        case 'pdf':
+          return 'red-darken-1';
+        case 'doc':
+        case 'docx':
+          return 'blue-darken-2';
+        case 'xls':
+        case 'xlsx':
+          return 'green-darken-2';
+        case 'ppt':
+        case 'pptx':
+          return 'deep-orange-darken-1';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+          return 'purple-darken-1';
+        default:
+          return 'grey-darken-2';
       }
     },
     formatDate(dateString) {
@@ -462,6 +491,16 @@ export default {
         
         if (response.data.success) {
           this.projectDocuments = response.data.documents;
+          console.log('[ProjectDocuments] Raw documents from API:', JSON.stringify(response.data.documents, null, 2));
+          this.projectDocuments.forEach((doc, i) => {
+            console.log(`[ProjectDocuments] doc[${i}]:`, {
+              name: doc.name,
+              extension: doc.extension,
+              resolvedExt: this.getDocumentExtension(doc),
+              icon: this.getFileIcon(this.getDocumentExtension(doc)),
+              allKeys: Object.keys(doc)
+            });
+          });
         }
       } catch (error) {
         console.error('Error fetching documents:', error);

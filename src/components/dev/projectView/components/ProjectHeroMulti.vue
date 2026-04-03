@@ -22,13 +22,27 @@
 
         <!-- Description -->
         <p class="hero-description">{{ description }}</p>
+
+        <!-- Inline Authors (all minimal: name + role only) -->
+        <div v-if="minimal" class="hero-authors-inline">
+          <span
+            v-for="(author, index) in authors"
+            :key="author.id"
+            class="inline-author-item"
+          >
+            <span class="inline-author-name">{{ author.name }}</span>
+            <span v-if="author.role" class="inline-author-separator">&mdash;</span>
+            <span v-if="author.role" class="inline-author-role">{{ author.role }}</span>
+            <span v-if="index < authors.length - 1" class="inline-author-divider">&bull;</span>
+          </span>
+        </div>
       </div>
 
-      <!-- Authors Cards -->
-      <div class="hero-authors">
-        <div 
-          v-for="author in authors" 
-          :key="author.id" 
+      <!-- Authors Cards (full layout with avatar/quote) -->
+      <div v-if="!minimal" class="hero-authors">
+        <div
+          v-for="author in authors"
+          :key="author.id"
           class="author-card"
         >
           <img
@@ -53,9 +67,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onBeforeUnmount } from 'vue';
+import { computed, ref, reactive, watch, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { buildFileUrl } from '../services/projectViewFormService.js';
+import { allAuthorsMinimal } from '../utils/authorUtils.js';
 
 const props = defineProps({
   label: {
@@ -77,6 +92,8 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const minimal = computed(() => allAuthorsMinimal(props.authors));
 
 // Track blob URLs per author (persists after auto-save clears avatarFile).
 const avatarBlobUrls = reactive({});
@@ -249,6 +266,44 @@ onBeforeUnmount(() => {
   line-height: 1.45 !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
+}
+
+/* Inline authors (minimal layout) */
+.hero-authors-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.inline-author-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.inline-author-name {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.inline-author-separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
+
+.inline-author-role {
+  color: #a5b4fc;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.inline-author-divider {
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0 4px;
+  font-size: 10px;
 }
 
 /* Responsive */

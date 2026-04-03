@@ -52,7 +52,7 @@
     <!-- HORIZONTAL TIMELINE      -->
     <!-- ======================== -->
     <div v-else-if="layout === 'horizontal'" class="timeline-horizontal">
-      <div class="h-timeline-track">
+      <div class="h-timeline-track" :style="{ gridTemplateColumns: `repeat(${milestones.length}, 1fr)` }">
         <!-- Milestone columns -->
         <div
           v-for="(milestone, index) in milestones"
@@ -262,25 +262,24 @@ function formatDateShort(isoString) {
 }
 
 .h-timeline-track {
-  display: flex;
-  align-items: stretch;
+  display: grid;
+  grid-template-rows: auto auto auto auto auto;
   min-width: max-content;
   position: relative;
   z-index: 1;
 }
 
 .h-timeline-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-row: 1 / -1;
+  grid-template-rows: subgrid;
+  justify-items: center;
   min-width: 120px;
-  flex: 1 1 0;
   padding: 0 8px;
 }
 
 /* Labels (top & bottom) */
 .h-label {
-  min-height: 58px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
