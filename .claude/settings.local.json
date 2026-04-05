@@ -5,7 +5,9 @@
       "WebSearch",
       "Bash(npx vite:*)",
       "Bash(find /c/Users/periksson.AUTOSOL/Documents/DP/DataPlatformUI -type f \\\\\\(-name *.vue -o -name *.js \\\\\\) ! -path */node_modules/*)",
-      "Bash(find /c/Users/periksson.AUTOSOL/Documents/DP/DataPlatformUI -type f \\\\\\(-name *.js -o -name *.ts \\\\\\) -path *backend* -o -name *api*)"
+      "Bash(find /c/Users/periksson.AUTOSOL/Documents/DP/DataPlatformUI -type f \\\\\\(-name *.js -o -name *.ts \\\\\\) -path *backend* -o -name *api*)",
+      "Bash(npm audit:*)",
+      "Bash(wait)"
     ]
   }
 }
