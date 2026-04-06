@@ -483,7 +483,7 @@ import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
 
 export default {
     name: 'DevManualMailerExitForms',
@@ -642,12 +642,10 @@ export default {
     methods: {
 
         async fetchExperienceInstances() {
-            const user = useLoggedInUserStore();
-            const token = user.token;
             const url = import.meta.env.VITE_ROOT_API + '/instructorSideData/experience-instances/active/';
 
             try {
-                const response = await axios.get(url, { headers: { token } });
+                const response = await axios.get(url);
                 this.expInstances = response.data.map(instance => ({
                     expInstanceID: instance._id,
                     sessionName: instance.session.name,
@@ -666,12 +664,10 @@ export default {
             this.selectedStudents = [];
             this.selectedEmailRecipients = [];
 
-            const user = useLoggedInUserStore();
-            const token = user.token;
             const url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-exit-form/${this.selectedExperience}`;
 
             try {
-                const response = await axios.get(url, { headers: { token } });
+                const response = await axios.get(url);
                 this.studentsWithoutExitForms = response.data;
             } catch (error) {
                 toast.error('Failed to fetch students.', {
@@ -805,8 +801,6 @@ export default {
         },
 
         sendEmail() {
-            const user = useLoggedInUserStore();
-            const token = user.token;
             let apiURL;
             let emailData;
 
@@ -849,7 +843,7 @@ export default {
             this.setTab('overview');
 
             // Fire the POST in the background — don't block the UI
-            axios.post(apiURL, emailData, { headers: { token } })
+            axios.post(apiURL, emailData)
                 .catch((error) => {
                     console.error('Send email error:', error);
                     toast.error('Failed to send emails.', {

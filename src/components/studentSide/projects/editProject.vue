@@ -970,14 +970,12 @@ export default {
     async fetchProjectData(projectId) {
       this.loading = true;
       try {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         if (!projectId) {
           this.$router.push({ name: 'studentProjects' });
           return;
         }
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         if (response.data) {
           const project = response.data;
           this.projectData = {
@@ -1036,7 +1034,6 @@ export default {
       this.updateLoading = true;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/update`;
         const projectPayload = {
           projectId: this.projectData._id,
@@ -1046,7 +1043,7 @@ export default {
           consentToFeature: this.projectData.consentToFeature,
           notes: 'Updated via web interface by student'
         };
-        await axios.put(apiURL, projectPayload, { headers: { token } });
+        await axios.put(apiURL, projectPayload);
         user.navigationData = {
           toastType: 'info', toastMessage: this.$t('Project updated successfully!'),
           toastPosition: 'top-right', toastCSS: 'Toastify__toast--update'
@@ -1137,9 +1134,8 @@ export default {
       this.leavingProject = true;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/leave`;
-        await axios.post(apiURL, { projectId: this.projectData._id }, { headers: { token } });
+        await axios.post(apiURL, { projectId: this.projectData._id });
         this.leaveProjectDialog = false;
         user.navigationData = {
           toastType: 'info', toastMessage: this.$t('You have successfully left the project.'),
@@ -1177,9 +1173,8 @@ export default {
       this.archiveConfirmDialog = false;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/archive/${this.projectData._id}`;
-        await axios.patch(apiURL, {}, { headers: { token } });
+        await axios.patch(apiURL, {});
         user.navigationData = {
           toastType: 'info',
           toastMessage: this.$t('Project archived!'),
@@ -1210,9 +1205,8 @@ export default {
       this.restoreConfirmDialog = false;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/restore/${this.projectData._id}`;
-        await axios.patch(apiURL, {}, { headers: { token } });
+        await axios.patch(apiURL, {});
         user.navigationData = {
           toastType: 'info',
           toastMessage: this.$t('Project restored!'),

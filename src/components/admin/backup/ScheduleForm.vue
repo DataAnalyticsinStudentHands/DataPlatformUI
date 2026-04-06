@@ -44,8 +44,6 @@
 <script>
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
-
 export default {
   name: 'ScheduleForm',
   emits: ['schedule-updated'],
@@ -66,14 +64,10 @@ export default {
   async mounted() {
     this.loading = true;
     const API = import.meta.env.VITE_ROOT_API;
-    const userStore = useLoggedInUserStore();
-    const headers = { token: userStore.token }; 
-
     try {
       const url = `${API}/backup/config`;
         const { data } = await axios.get(
-          url,
-          { headers }
+          url
         );
       this.recurrence = data.recurrence || 'biweekly';
     } catch (err) {
@@ -87,13 +81,11 @@ export default {
       // Persists the updated recurrence to the server.
       this.saving = true;
       const API        = import.meta.env.VITE_ROOT_API;
-      const userStore  = useLoggedInUserStore();
-      const headers    = { token: userStore.token };
       const url        = `${API}/backup/config`;
       const payload    = { recurrence: this.recurrence };
-        
+
       try {
-        await axios.put(url, payload, { headers });
+        await axios.put(url, payload);
         toast.success('Schedule updated!');
         this.$emit('schedule-updated');
       } catch (err) {

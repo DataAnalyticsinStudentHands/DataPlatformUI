@@ -1,11 +1,12 @@
+/*
+ * Speech-to-text service — DISABLED for production.
+ * OpenAI Whisper integration was dev-only. Do not re-enable without a backend proxy.
+ *
+
 import axios from 'axios';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/audio/transcriptions';
 
-/**
- * Send an audio chunk to OpenAI Whisper for transcription.
- * Requires VITE_OPENAI_API_KEY in .env — swap for a backend proxy in production.
- */
 export async function transcribeAudioChunk(audioBlob, language = 'en') {
   const formData = new FormData();
   formData.append('file', audioBlob, 'audio.webm');
@@ -21,3 +22,5 @@ export async function transcribeAudioChunk(audioBlob, language = 'en') {
   });
   return response.data.text;
 }
+
+*/

@@ -270,7 +270,7 @@
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import 'vue3-toastify/dist/index.css';
-import { useSSENotifications } from '@/composables/useSSENotifications';
+import { useNotificationPolling } from '@/composables/useNotificationPolling';
 
 export default {
   name: "App",
@@ -282,8 +282,7 @@ export default {
       activeLink: this.$route.name,
       rail: this.isMdAndUp,
       drawer: null,
-      invitationCheckInterval: null,
-      sseNotifications: null,
+      notificationPolling: null,
     };
   },
   watch: {
@@ -298,11 +297,9 @@ export default {
 
     isFullyAuthenticated(newVal) {
       if (newVal && this.user.getRole === 'Student') {
-        // Establish SSE connection when user logs in
-        this.sseNotifications.connect();
-      } else if (!newVal && this.sseNotifications) {
-        // Disconnect when user logs out
-        this.sseNotifications.disconnect();
+        this.notificationPolling.startPolling();
+      } else if (!newVal) {
+        this.notificationPolling.stopPolling();
       }
     }
     
@@ -341,16 +338,8 @@ export default {
     async handleLogout() {
       const store = useLoggedInUserStore();
 
-      // Clean up SSE connection
-      if (this.sseNotifications) {
-        this.sseNotifications.disconnect();
-      }
-      
-      // Clear invitation check interval
-      if (this.invitationCheckInterval) {
-        clearInterval(this.invitationCheckInterval);
-        this.invitationCheckInterval = null;
-      }
+      // Stop notification polling
+      this.notificationPolling.stopPolling();
       
       await store.logout();
       let logoutMessage = "";
@@ -389,15 +378,6 @@ export default {
         this.drawer = !this.drawer;
       }
     },
-    // Set up periodic invitation checking for students
-    setupInvitationChecking() {
-      if (this.user.getRole === 'Student') {
-        // Check invitations every 5 minutes
-        this.invitationCheckInterval = setInterval(() => {
-          this.user.fetchProjectInvitationCount();
-        }, 5 * 60 * 1000); // 5 minutes
-      }
-    },
   },
   
   mounted() {
@@ -405,14 +385,9 @@ export default {
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.addEventListener('scroll', this.handleScroll);
     
-    // Set up invitation checking if user is a student
-    if (this.isFullyAuthenticated) {
-      this.setupInvitationChecking();
-    }
-
-    // Set up SSE connection for real-time notifications
+    // Start notification polling if user is an authenticated student
     if (this.isFullyAuthenticated && this.user.getRole === 'Student') {
-      this.sseNotifications.connect();
+      this.notificationPolling.startPolling();
     }
   },
 
@@ -421,21 +396,14 @@ export default {
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.removeEventListener('scroll', this.handleScroll);
     
-    // Clear invitation check interval
-    if (this.invitationCheckInterval) {
-      clearInterval(this.invitationCheckInterval);
-    }
-
-    // Clean up SSE connection
-    if (this.sseNotifications) {
-      this.sseNotifications.disconnect();
-    }
+    // Stop notification polling
+    this.notificationPolling.stopPolling();
   },
 
   setup() {
     const user = useLoggedInUserStore();
-    const sseNotifications = useSSENotifications();
-    return { user, sseNotifications };
+    const notificationPolling = useNotificationPolling();
+    return { user, notificationPolling };
   },
 
   created() {
@@ -443,9 +411,7 @@ export default {
     const user = useLoggedInUserStore();
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
     axios
-      .get(apiURL, {
-        headers: { token: user.token },
-      })
+      .get(apiURL)
       .then((resp) => {
         user.setOrgName(resp.data);
       });

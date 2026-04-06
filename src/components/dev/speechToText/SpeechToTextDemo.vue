@@ -161,7 +161,7 @@
 <script setup>
 import { ref, computed, onUnmounted, nextTick } from 'vue';
 import { toast } from 'vue3-toastify';
-import { transcribeAudioChunk } from './speechToTextService.js';
+// import { transcribeAudioChunk } from './speechToTextService.js'; // DISABLED for production
 
 // ── State ──────────────────────────────────────────────
 const isRecording = ref(false);
@@ -349,7 +349,7 @@ async function processChunk(blob) {
   const timestamp = new Date().toLocaleTimeString();
 
   try {
-    const text = await transcribeAudioChunk(blob, selectedLanguage.value);
+    const text = ''; // await transcribeAudioChunk(blob, selectedLanguage.value); // DISABLED for production
     if (text && text.trim()) {
       transcript.value += (transcript.value ? ' ' : '') + text.trim();
       chunkLog.value.push({ time: timestamp, ok: true, text: text.trim() });

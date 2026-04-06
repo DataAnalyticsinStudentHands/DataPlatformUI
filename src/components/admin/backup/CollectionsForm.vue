@@ -79,8 +79,6 @@
 <script>
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
-import { useLoggedInUserStore } from '@/stored/loggedInUser';
-
 export default {
   name: 'CollectionsForm',
   emits: ['collections-changed'],
@@ -96,10 +94,8 @@ export default {
     this.loading = true;
     try {
       const API   = import.meta.env.VITE_ROOT_API;
-      const token = useLoggedInUserStore().token;
       const { data } = await axios.get(
-        `${API}/backup/collections`,
-        { headers: { token } }
+        `${API}/backup/collections`
       );
       this.collections = data.allCollections;
 
@@ -125,12 +121,10 @@ export default {
       this.saving = true;
       try {
         const API   = import.meta.env.VITE_ROOT_API;
-        const token = useLoggedInUserStore().token;
         const payload = { collections: this.selected };
         await axios.put(
           `${API}/backup/collections`,
-          payload,
-          { headers: { token } }
+          payload
         );
         this.$emit('collections-changed', payload.collections);
         toast.success('Collections saved!');

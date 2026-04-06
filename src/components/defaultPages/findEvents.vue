@@ -104,7 +104,6 @@
 <script>
 import { DateTime } from "luxon";
 import axios from "axios";
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
@@ -116,14 +115,10 @@ export default {
     };
   },
   mounted() {
-    const user = useLoggedInUserStore()
-    let token = user.token
     let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
     this.queryData = [];
     axios
-      .get(apiURL, {
-        headers: { token },
-      })
+      .get(apiURL)
       .then(
         (resp) => {
           this.queryData = resp.data;
@@ -141,8 +136,6 @@ export default {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
     },
     handleSubmitForm() {
-      const user = useLoggedInUserStore()
-      let token = user.token
       let apiURL = "";
       if (this.searchBy === "Event Name") {
         apiURL =
@@ -154,16 +147,12 @@ export default {
           `/eventdata/search/?eventDate=${this.eventDate}&searchBy=date`;
       }
       axios
-        .get(apiURL, {
-          headers: { token },
-        })
+        .get(apiURL)
         .then((resp) => {
           this.queryData = resp.data;
         });
     },
     clearSearch() {
-      const user = useLoggedInUserStore()
-      let token = user.token
       //Resets all the variables
       this.searchBy = "";
       this.eventName = "";
@@ -172,9 +161,7 @@ export default {
       //get all entries
       let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
       this.queryData = [];
-      axios.get(apiURL, {
-          headers: { token },
-        }).then((resp) => {
+      axios.get(apiURL).then((resp) => {
         this.queryData = resp.data;
       });
     },

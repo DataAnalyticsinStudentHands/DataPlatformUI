@@ -14,10 +14,12 @@ import handleErrorMixin from './mixins/handleErrorMixin';
 import { i18n } from './plugins/i18n';
 import { useLoggedInUserStore } from './stored/loggedInUser';
 
-// Configure axios default headers with authentication token if available
-if (localStorage.getItem('token')) {
-  axios.defaults.headers['token'] = localStorage.getItem('token');
-}
+// Send cookies automatically on every request (HttpOnly cookie auth)
+axios.defaults.withCredentials = true;
+
+// Set up proactive token refresh before expiry
+import { setupTokenRefreshInterceptor } from './auth/tokenRefresh';
+setupTokenRefreshInterceptor();
 
 import router from './router';
 import App from './App.vue';

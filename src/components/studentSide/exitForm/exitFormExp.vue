@@ -204,12 +204,10 @@ computed: {
 methods: {
     // Fetch available experiences from API
     async fetchExperiences() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experiences-available-for-forms/exit-forms/';
 
         try {
-            const response = await axios.get(apiURL, { headers: { token } });
+            const response = await axios.get(apiURL);
             
             let tempExitForm = JSON.parse(JSON.stringify(this.exitForm));
             
@@ -258,16 +256,10 @@ methods: {
         tempExitForm.expInstanceID = selectedExperienceInfo.expInstanceID;
         tempExitForm.instructor = selectedExperienceInfo.instructor;
 
-        const user = useLoggedInUserStore();
-        const token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-EF-for-registration/';
-        
+
         try {
-            const response = await axios.get(apiURL + `${expRegistrationID}`, {
-                headers: {
-                    token: token
-                }
-            });
+            const response = await axios.get(apiURL + `${expRegistrationID}`);
 
             // Check if experience is Data & Society related
             // Note: We check the base text without instructor to avoid false negatives
@@ -388,18 +380,15 @@ methods: {
 
     // Fetch existing exit form data and emit for pre-population
     async fetchAndEmitExistingForm(expRegistrationID) {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        
         if (!expRegistrationID) {
             console.error('Could not find registration ID for selected experience');
             return;
         }
-        
+
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/by-registration/${expRegistrationID}`;
-        
+
         try {
-            const response = await axios.get(apiURL, { headers: { token } });
+            const response = await axios.get(apiURL);
             
             if (response.data.formFound) {
                 // Emit the complete form data to parent for pre-population

@@ -277,12 +277,10 @@ computed: {
 methods: {
     // Fetch available experiences from API
     async fetchExperiences() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experiences-available-for-forms/goal-forms/';
 
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.localExperiences = response.data.map(experience => ({
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
@@ -300,16 +298,10 @@ methods: {
 
     // Check if user has previously filled goal setting form
     async fetchHasFilledForm() {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-filled-goal-setting-form/';
 
         try {
-        const response = await axios.get(apiURL, {
-            headers: {
-            token: token
-            }
-        });
+        const response = await axios.get(apiURL);
         this.hasFilledForm = response.data.hasFilled;
         if (this.hasFilledForm) {
             this.goalForm.communityEngagement = response.data.communityEngagement;
@@ -334,14 +326,10 @@ methods: {
         }
         
         const experienceID = selectedExp.experienceID;
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
 
         try {
-            const response = await axios.get(apiURL + `${experienceID}`, {
-                headers: { token: token }
-            });
+            const response = await axios.get(apiURL + `${experienceID}`);
 
             if (response.data.documentFound === false) {
                 this.$emit('update-found-document-id', null);
@@ -368,9 +356,6 @@ methods: {
 
     // Fetch existing form data and emit for pre-population
     async fetchAndEmitExistingForm(expRegistrationID) {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        
         // expRegistrationID is now directly passed as the selectedExperience value
         if (!expRegistrationID) {
             console.error('Could not find registration ID for selected experience');
@@ -380,8 +365,8 @@ methods: {
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/by-registration/${expRegistrationID}`;
         
         try {
-            const response = await axios.get(apiURL, { headers: { token } });
-            
+            const response = await axios.get(apiURL);
+
             if (response.data.formFound) {
                 // Emit the complete form data to parent for pre-population
                 this.$emit('populate-existing-form', response.data.goalForm);
@@ -512,10 +497,8 @@ methods: {
         const selectedExperienceObject = this.localExperiences.find(exp => exp.expRegistrationID === this.selectedExperience);
         if (this.incompleteFormID && selectedExperienceObject) {
             try {
-                const user = useLoggedInUserStore();
-                const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`
-                await axios.patch(apiURL, {expRegistrationID: selectedExperienceObject.expRegistrationID}, { headers: { token } });
+                await axios.patch(apiURL, {expRegistrationID: selectedExperienceObject.expRegistrationID});
             } catch (error) {
                 this.handleError(error);
             } finally {

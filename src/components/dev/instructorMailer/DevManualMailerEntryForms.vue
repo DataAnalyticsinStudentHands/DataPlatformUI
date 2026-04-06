@@ -451,7 +451,7 @@ import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
 
 export default {
     name: "DevManualMailerEntryForms",
@@ -714,12 +714,10 @@ export default {
         },
 
         async fetchStudentsWithoutEntryForm() {
-            const user = useLoggedInUserStore();
-            const token = user.token;
             const url = import.meta.env.VITE_ROOT_API + '/instructorSideData/students-without-entry-form';
 
             try {
-                const response = await axios.get(url, { headers: { token } });
+                const response = await axios.get(url);
                 this.studentsWithoutEntryForm = response.data;
             } catch (error) {
                 toast.error('Failed to fetch students.', {
@@ -730,8 +728,6 @@ export default {
         },
 
         sendEmail() {
-            const user = useLoggedInUserStore();
-            const token = user.token;
             let apiURL;
             let emailData;
 
@@ -774,7 +770,7 @@ export default {
             this.setTab('overview');
 
             // Fire the POST in the background — don't block the UI
-            axios.post(apiURL, emailData, { headers: { token } })
+            axios.post(apiURL, emailData)
                 .catch((error) => {
                     console.error('Send email error:', error);
                     toast.error('Failed to send emails.', {

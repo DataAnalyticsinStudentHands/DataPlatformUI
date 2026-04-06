@@ -611,8 +611,7 @@ export default {
     async fetchProjectData() {
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
-        
+
         if (!user.navigationData || !user.navigationData.projectID) {
           console.error('No project ID found in navigation data');
           toast.error(this.$t("Project ID not found, returning to projects list"), {
@@ -627,8 +626,8 @@ export default {
         const projectId = user.navigationData.projectID;
         
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`;
-        const response = await axios.get(apiURL, { headers: { token } });
-        
+        const response = await axios.get(apiURL);
+
         if (response.data && response.data.projects) {
           // Find the specific project by ID
           const project = response.data.projects.find(p => p._id === projectId);
@@ -678,14 +677,12 @@ export default {
     
     // Fetch available experience instances for the student
     async fetchStudentExperienceInstances() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/registered-experiences`;
-      
+
       this.isLoadingExperiences = true;
-      
+
       try {
-        const resp = await axios.get(apiURL, { headers: { token } });
+        const resp = await axios.get(apiURL);
         
         // Map the response data to dropdown format
         this.experienceInstances = resp.data.map(registration => ({
@@ -755,9 +752,8 @@ export default {
       
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/update`;
-        
+
         const projectPayload = {
           projectId: this.projectData._id,
           name: this.projectData.name,
@@ -766,8 +762,8 @@ export default {
           consentToFeature: this.projectData.consentToFeature,
           notes: 'Updated via web interface'
         };
-        
-        await axios.put(apiURL, projectPayload, { headers: { token } });
+
+        await axios.put(apiURL, projectPayload);
 
         user.navigationData = {
           toastType: 'info',
@@ -809,14 +805,13 @@ export default {
       
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/cancel`;
-        
+
         const projectPayload = {
           projectId: this.projectData._id
         };
-        
-        await axios.post(apiURL, projectPayload, { headers: { token } });
+
+        await axios.post(apiURL, projectPayload);
 
         user.navigationData = {
           toastType: 'success',

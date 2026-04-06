@@ -602,13 +602,11 @@ export default {
 
     // Fetch available experience instances for the student
     fetchStudentExperienceInstances() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/registered-experiences`;
-      
+
       this.isLoadingExperiences = true;
-      
-      axios.get(apiURL, { headers: { token } })
+
+      axios.get(apiURL)
         .then((resp) => {
           // Map response data to dropdown format
           this.experienceInstances = resp.data.map(registration => ({
@@ -674,9 +672,8 @@ export default {
     // Submit project proposal to API
     async submitProjectProposal() {
       const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/proposal`;
-      
+
       const projectPayload = {
         name: this.projectData.name,
         description: this.projectData.description,
@@ -684,9 +681,9 @@ export default {
         tags: this.selectedTags,
         consentToFeature: this.projectData.consentToFeature
       };
-      
+
       try {
-        await axios.post(apiURL, projectPayload, { headers: { token } });
+        await axios.post(apiURL, projectPayload);
 
         user.navigationData = {
           toastType: 'success',

@@ -643,11 +643,9 @@ export default {
     async fetchActivityData() {
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
         const userId = user.userId;
         let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/activities/";
-        const response = await axios.get(apiURL, { 
-          headers: { token },
+        const response = await axios.get(apiURL, {
           params: { userId }
         });
         this.activityData = response.data;
@@ -770,13 +768,11 @@ export default {
 
     async handleArchiveActivities() {
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const updateStatus = { activityStatus: this.viewsStore.isViewingArchived('activities') };
 
         for (const activity of this.selectedActivities) {
           const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${activity._id}`;
-          await axios.put(apiURL, updateStatus, { headers: { token } });
+          await axios.put(apiURL, updateStatus);
         }
 
         toast.success(
@@ -810,11 +806,8 @@ export default {
 
     async fetchExperienceData() {
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-
         const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/`;
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.experienceData = response.data.sort((a, b) => {
           return a.experienceCategory.localeCompare(b.experienceCategory);
         });
@@ -870,14 +863,10 @@ export default {
       const experienceIDs = this.selectedExperienceNames.map(experience => experience._id);
 
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/by-experience`;
 
         const response = await axios.post(apiURL, {
           experienceIDs: experienceIDs
-        }, {
-          headers: { token }
         });
 
         this.experienceBasedActivities = response.data;

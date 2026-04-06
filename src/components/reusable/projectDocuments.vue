@@ -336,6 +336,11 @@
 import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import { useLoggedInUserStore } from '@/stored/loggedInUser';
+import {
+  UPLOAD_CONSTRAINTS,
+  validateImageSignature,
+  parseUploadError,
+} from '@/utils/fileValidation';
 const API = import.meta.env.VITE_ROOT_API;
 
 export default {
@@ -542,40 +547,37 @@ export default {
       }
     },
     
-    processSelectedFile(file) {
-      // Check allowed file types
-      const allowedExtensions = [
-        // Office files
-        '.doc', '.docx',        // Word documents
-        '.xls', '.xlsx',        // Excel spreadsheets
-        '.ppt', '.pptx',        // PowerPoint presentations
-        // PDF
-        '.pdf',
-        // Images
-        '.jpg', '.jpeg', '.png',
-        // Text files
-        '.txt', '.csv', '.tsv'
-      ];
-        
+    async processSelectedFile(file) {
+      const { extensions, maxSizeMb } = UPLOAD_CONSTRAINTS.clowder;
+
       const fileExt = '.' + file.name.split('.').pop().toLowerCase();
-      
-      if (!allowedExtensions.includes(fileExt)) {
+
+      if (!extensions.includes(fileExt)) {
         this.fileError = this.$t('File type not allowed. Allowed types: Word, Excel, PowerPoint, PDF, Images (JPG, PNG), and Text files (TXT, CSV, TSV)');
         return;
       }
-      
-      // Check file size - backend allows up to 100MB
-      if (file.size > 100 * 1024 * 1024) { // 100MB limit
-        this.fileError = this.$t('File size cannot exceed 100MB');
+
+      if (file.size > maxSizeMb * 1024 * 1024) {
+        this.fileError = this.$t(`File size cannot exceed ${maxSizeMb}MB`);
         return;
       }
-          
+
+      // Magic-number validation for image files
+      const imageExts = ['.jpg', '.jpeg', '.png'];
+      if (imageExts.includes(fileExt)) {
+        const detected = await validateImageSignature(file);
+        if (detected === null) {
+          this.fileError = this.$t('File content does not match the expected image type. The file may be corrupted or renamed.');
+          return;
+        }
+      }
+
       this.selectedFile = file;
       this.selectedFileName = file.name;
       this.selectedFileExt = file.name.split('.').pop();
       this.selectedFileSize = this.formatFileSize(file.size);
       this.fileError = '';
-      
+
       // Set document name from filename (without extension)
       if (!this.documentName) {
         this.documentName = file.name.split('.').slice(0, -1).join('.');
@@ -755,7 +757,7 @@ export default {
         }
       } catch (error) {
         console.error('Error uploading document:', error);
-        this.fileError = error.response?.data?.message || this.$t('Failed to upload document');
+        this.fileError = parseUploadError(error, this.$t('Failed to upload document'));
       } finally {
         this.uploading = false;
         this.uploadProgress = 0;

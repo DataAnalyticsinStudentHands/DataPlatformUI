@@ -850,11 +850,9 @@ export default {
     async fetchProjects() {
       this.tableLoading = true;
       try {
-        const user = this.loggedInUserStore;
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects`;
-        
-        const response = await axios.get(apiURL, { headers: { token } });
+
+        const response = await axios.get(apiURL);
         
         if (response.data && response.data.projects) {
           const allFetchedProjects = response.data.projects.map(project => {
@@ -904,10 +902,8 @@ export default {
     // Fetch available experiences for template dialog
     async fetchExperiencesForTemplateDialog() {
       try {
-        const user = this.loggedInUserStore;
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences`;
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         if (response.data && response.data.experiences) {
           this.templateExperienceOptions = [
             ...response.data.experiences.map(exp => ({

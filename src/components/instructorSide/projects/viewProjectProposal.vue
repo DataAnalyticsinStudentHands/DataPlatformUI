@@ -390,8 +390,7 @@ export default {
     async fetchProjectData(projectId) {
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
-        
+
         if (!projectId) {
           console.error('No project ID provided');
           toast.error(this.$t("Project ID not found, returning to projects list"), {
@@ -402,9 +401,9 @@ export default {
           this.$router.push({ name: 'instructorProjects' });
           return;
         }
-        
+
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         
         if (response.data) {
           const project = response.data;
@@ -516,13 +515,12 @@ export default {
       
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
-        
+
         let apiURL = `${import.meta.env.VITE_ROOT_API}/clowder/projects/update-status`;
         await axios.post(apiURL, {
           projectId: this.projectData._id,
           status: 'Active'
-        }, { headers: { token } });
+        });
         
         user.navigationData = {
           toastType: 'success',
@@ -554,7 +552,6 @@ export default {
 
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
 
         const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
 
@@ -563,8 +560,7 @@ export default {
           {
             projectId: this.projectData._id,
             status: "Rejected"
-          },
-          { headers: { token } }
+          }
         );
 
         user.navigationData = {

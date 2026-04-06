@@ -522,14 +522,13 @@ export default {
         submitForm() {
             // Assuming `formID` holds the ID of the form being updated
             const user = useLoggedInUserStore();
-            const token = user.token;
             const userID = user.userId;
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
 
             // Set completed to true
             const formData = { ...this.studentInformation, completed: true, userID: userID };
 
-            axios.patch(apiURL, formData, { headers: { token } })
+            axios.patch(apiURL, formData)
                 .then(response => {
                     this.formSubmitSuccess = true;
                     // Update form completion status in the user store or wherever it's needed
@@ -682,11 +681,9 @@ export default {
                     };
 
                     try {
-                        const user = useLoggedInUserStore();
-                        const token = user.token;
                         const apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
 
-                        const response = await axios.post(apiURL, formData, { headers: { token } })
+                        const response = await axios.post(apiURL, formData)
 
                         this.formID = response.data.entryForm._id;
                     } catch (error) {
@@ -698,13 +695,12 @@ export default {
                 // Your update logic here
                 const user = useLoggedInUserStore();
                 const userID = user.userId;
-                const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.formID}`;
 
-                axios.patch(apiURL, { 
+                axios.patch(apiURL, {
                     studentInformation: this.studentInformation,
                     userID: userID
-                 }, { headers: { token }})
+                 })
                     .then(response => {
                     })
                     .catch(error => {
@@ -718,11 +714,9 @@ export default {
             },
 
             async checkIncompleteForm() {
-                const user = useLoggedInUserStore();
-                const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-form-incomplete/`;
                 try {
-                    const response = await axios.get(apiURL, { headers: { token } });
+                    const response = await axios.get(apiURL);
                     if (!response.data.entryForm) {
                         this.showNewUserDialog = true; // Open the dialog if the condition is met
                     } else {
@@ -735,12 +729,10 @@ export default {
             },
 
             async startNew() {
-                const user = useLoggedInUserStore();
-                const token = user.token;
                 const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/entry-forms/${this.tempIncompleteForm.entryForm._id}`;
 
                 try {
-                    await axios.delete(apiURL, { headers: { token } });
+                    await axios.delete(apiURL);
                     this.tempIncompleteForm = {};
                     this.showIncompleteFormFoundDialog = false;
                 } catch (error) {

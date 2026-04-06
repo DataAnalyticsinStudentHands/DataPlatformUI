@@ -102,8 +102,6 @@ export default {
             await this.$refs.passForm.validate();
             const passFormInvalid = this.$refs.passForm.errors.length > 0;
 
-            const loggedInUserStore = useLoggedInUserStore();
-
             if (!passFormInvalid) {
                 this.loading = true;
                 
@@ -118,9 +116,6 @@ export default {
                     const response = await axios.post(apiURL, requestData);
 
                     if (response.status === 200) {
-                        // Set authentication token for password reset
-                        loggedInUserStore.setTokenHeader(response.data.token);
-
                         // Prepare success notification for next page
                         useLoggedInUserStore().navigationData = {
                             userID: this.userID,

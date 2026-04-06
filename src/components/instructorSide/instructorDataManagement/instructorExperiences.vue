@@ -667,10 +667,8 @@ export default {
 
     async fetchExperienceData() {
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experiences/";
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.experienceData = response.data;
         this.filteredExperienceData = [...this.experienceData];
         this.performFilter();
@@ -808,13 +806,11 @@ export default {
 
     async handleArchiveExperiences() {
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const updateStatus = { experienceStatus: this.viewsStore.isViewingArchived('experiences') };
 
         for (const experience of this.selectedExperiences) {
           const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experience._id}`;
-          await axios.put(apiURL, updateStatus, { headers: { token } });
+          await axios.put(apiURL, updateStatus);
         }
 
         toast.success(
@@ -844,11 +840,9 @@ export default {
 
     async fetchActivityData() {
       try {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
 
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.activityData = response.data.sort((a, b) => {
           return a.activityName.localeCompare(b.activityName);
         });
@@ -921,14 +915,11 @@ export default {
       }
 
       try {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/by-activity`;
 
         const response = await axios.post(
           apiURL,
-          { activityIDs },
-          { headers: { token } }
+          { activityIDs }
         );
 
         this.activityBasedExperiences = Array.isArray(response.data) ? response.data : [];

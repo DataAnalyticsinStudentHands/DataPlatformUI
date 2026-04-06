@@ -97,7 +97,6 @@
 </template>
 
 <script>
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
@@ -106,14 +105,10 @@ export default {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
   mounted() {
-    const user = useLoggedInUserStore()
-    let token = user.token
     let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
     this.queryData = [];
     axios
-      .get(apiURL, {
-        headers: { token },
-      })
+      .get(apiURL)
       .then(
         (resp) => {
           this.queryData = resp.data;
@@ -178,21 +173,17 @@ export default {
       return Array.from({ length: daysInMonth[month] }, (_, i) => i + 1);
     },
     async handleSubmitForm() {
-      const user = useLoggedInUserStore()
-      let token = user.token
       // Checks to see if there are any errors in validation
       const isFormCorrect = true;
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
         let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata`;
         axios
-          .post(apiURL, this.client, {
-            headers: { token },
-          })
+          .post(apiURL, this.client)
           .then((response) => {
             // alert("Client has been succesfully added.");
             // Handle response and redirect to desired component or route
-            if (response.data.redirectTo) {
+            if (response.data.redirectTo && response.data.redirectTo.startsWith('/')) {
               this.$router.push(response.data.redirectTo);
             }
           })

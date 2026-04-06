@@ -1564,12 +1564,10 @@ export default {
 
   methods: {
     async fetchExperiences() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/current-sessions-experiences/';
 
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.goalForm.experiences = response.data.map(experience => ({
           experienceID: experience._id,
           experienceCategory: experience.experienceCategory,
@@ -1582,16 +1580,10 @@ export default {
     },
 
   async fetchHasFilledForm() {
-    const user = useLoggedInUserStore();
-    let token = user.token;
     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-filled-goal-setting-form/';
 
     try {
-      const response = await axios.get(apiURL, {
-        headers: {
-          token: token
-        }
-      });
+      const response = await axios.get(apiURL);
       this.hasFilledForm = response.data.hasFilled;
       if (this.hasFilledForm) {
           this.goalForm.communityEngagement = response.data.communityEngagement;
@@ -1606,16 +1598,10 @@ export default {
   async checkExistingForm() {
       this.isLoadingExpCheck = true;
       const experienceID = this.selectedExperience;
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/has-completed-GSF-for-experience/';
 
       try {
-        const response = await axios.get(apiURL + `${experienceID}`, {
-          headers: {
-            token: token
-          }
-        });
+        const response = await axios.get(apiURL + `${experienceID}`);
 
         // If the document wasn't found
         if (response.data.documentFound === false) {
@@ -1802,8 +1788,6 @@ export default {
     }
   },
   async handleUpdateForm() {    
-    const user = useLoggedInUserStore();
-    let token = user.token;
     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goalForms/' + this.foundDocumentId;
 
     const updatedGoalForm = {
@@ -1815,7 +1799,7 @@ export default {
     };
 
   axios
-    .put(apiURL, updatedGoalForm, { headers: { token } })
+    .put(apiURL, updatedGoalForm)
     .then(() => {
       const motivatingMessages = [
         "Goals updated successfully! Keep pushing forward!",
@@ -1845,8 +1829,6 @@ export default {
 },
 
   async handleSubmitForm() {
-    const user = useLoggedInUserStore();
-    let token = user.token;
     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/';
 
   // Find the expRegistrationID corresponding to the selected experience
@@ -1900,7 +1882,7 @@ export default {
     };    
 
     axios
-      .post(apiURL, goalForm, { headers: { token } })
+      .post(apiURL, goalForm)
       .then(() => {
         const motivatingMessages = [
           "Goals successfully set! You're on the right track!",
