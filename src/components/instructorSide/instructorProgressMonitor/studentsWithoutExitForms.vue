@@ -388,12 +388,10 @@ export default {
   methods: {
     // Fetches active experience instances for the instructor from the backend API.
     async fetchExperiences() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/instructorSideData/experience-instances/active/';
 
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.expInstances = response.data.map(instance => ({
           expInstanceID: instance._id,
           sessionName: instance.session.name,
@@ -434,12 +432,10 @@ export default {
 
     // Fetches students who have not completed an Exit form for a specific experience.
     async fetchStudentsWithoutExitForm() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-exit-form/${this.selectedExperience}`;
-      
+
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.studentsWithoutExitForm = response.data;
       } catch (error) {
         this.handleError(error);
@@ -448,12 +444,10 @@ export default {
 
     // Fetches students who have completed an Exit form for a specific experience.
     async fetchStudentsWithExitForm() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-exit-form/${this.selectedExperience}`;
-      
+
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.studentsWithExitForm = response.data;
       } catch (error) {
         this.handleError(error);

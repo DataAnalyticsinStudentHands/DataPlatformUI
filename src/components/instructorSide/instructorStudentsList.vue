@@ -614,10 +614,8 @@ export default {
     async fetchStudentData() {
       try {
         useLoggedInUserStore().startLoading();
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/studentInformation/`;
-        const resp = await axios.get(apiURL, { headers: { token } });
+        const resp = await axios.get(apiURL);
         this.studentData = resp.data.data;
 
         this.studentData.sort((a, b) => {

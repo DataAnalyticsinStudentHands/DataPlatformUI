@@ -4,8 +4,7 @@ passResetNewEntry.vue - Password Reset Entry Component
 This component provides the final step in the password reset process where users create
 a new password. It features password strength validation, matching password confirmation,
 and real-time validation feedback. Upon successful password update, users are automatically
-redirected to the login page with a success notification. The component includes secure
-token handling that clears authentication headers when the user navigates away.
+redirected to the login page with a success notification.
 -->
 
 <template>
@@ -134,11 +133,6 @@ export default {
             });
         }
     },
-    beforeDestroy() {
-        // Clear temporary authentication token when leaving the component
-        const loggedInUserStore = useLoggedInUserStore();
-        loggedInUserStore.removeTokenHeader();
-    },
     watch: {
         // Trigger validation when passwords change to ensure they match
         newPassword(newVal, oldVal) {
@@ -159,8 +153,6 @@ export default {
             await this.$refs.passForm.validate();
             const passFormInvalid = this.$refs.passForm.errors.length > 0;
 
-            const loggedInUserStore = useLoggedInUserStore();
-
             if (!passFormInvalid) {
                 this.loading = true;
                 
@@ -171,11 +163,7 @@ export default {
                 let apiURL = import.meta.env.VITE_ROOT_API + `/userData/password-reset/update`;
 
                 try {
-                    const response = await axios.put(apiURL, dataToSend, {
-                        headers: {
-                            'token': loggedInUserStore.token
-                        }
-                    });
+                    const response = await axios.put(apiURL, dataToSend);
 
                     if (response.status === 200) {
                         // Prepare success notification and redirect to login

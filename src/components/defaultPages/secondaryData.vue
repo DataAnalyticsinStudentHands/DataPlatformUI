@@ -144,6 +144,7 @@ import useVuelidate from "@vuelidate/core";
 // import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
 import { toast } from 'vue3-toastify';
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   setup() {
     // return { v$: useVuelidate({ $autoDirty: true }) };
@@ -161,9 +162,7 @@ export default {
     let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
     this.queryData = [];
     axios
-      .get(apiURL, {
-        headers: { token: localStorage.getItem("token") },
-      })
+      .get(apiURL)
       .then(
         (resp) => {
           this.queryData = resp.data;
@@ -177,7 +176,8 @@ export default {
     window.scrollTo(0, 0);
   },
   created() {
-    if (localStorage.getItem("token") === null) {
+    const store = useLoggedInUserStore();
+    if (!store.isLoggedIn) {
       this.$router.push("/login");
     }
     // // Retrieve the ID from the URL
@@ -213,9 +213,7 @@ export default {
       if (isFormCorrect) {
         let apiURL = import.meta.env.VITE_ROOT_API + `/secondarydata/address`;
         axios
-          .post(apiURL, this.client, {
-            headers: { token: localStorage.getItem("token") },
-          })
+          .post(apiURL, this.client)
           .then(() => {
             toast.success("Client has been succesfully added.");
             this.$router.push("/findclient");

@@ -117,13 +117,12 @@ notification message in their preferred language.
     mounted() {
       // Fetch current user data and populate form fields
       const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/user/`;
 
       try {
         useLoggedInUserStore().startLoading();
 
-        axios.get(apiURL, { headers: { token } })
+        axios.get(apiURL)
           .then((resp) => {
             this.userData = resp.data.user;
             this.firstName = this.userData.firstName;
@@ -191,7 +190,6 @@ notification message in their preferred language.
         this.showErrors = true;
 
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/update-user-data`;
 
         // Validate form before submission
@@ -203,8 +201,6 @@ notification message in their preferred language.
               email: this.email,
               languagePreference: this.languagePreference,
               password: this.confirmPassword,
-            }, {
-              headers: { token }
             });
 
             // Update store with new user information

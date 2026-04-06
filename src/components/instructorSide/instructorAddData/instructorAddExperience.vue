@@ -176,11 +176,9 @@ export default {
   },
   methods: {
     fetchActivityData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
       axios
-        .get(apiURL, { headers: { token } })
+        .get(apiURL)
         .then((resp) => {
           const activities = resp.data;
           this.activities = activities.filter((activity) => activity.activityStatus === true);
@@ -197,15 +195,12 @@ export default {
 
       this.submitting = true;
       const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/`;
       axios
         .post(apiURL, {
           experienceCategory: this.experience.experienceCategory,
           experienceName: this.experience.experienceName,
           activities: this.selectedActivities.map(activity => activity._id),
-        }, {
-          headers: { token },
         })
         .then(() => {
           user.navigationData = {

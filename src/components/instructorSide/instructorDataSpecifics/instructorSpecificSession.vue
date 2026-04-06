@@ -351,12 +351,9 @@ export default {
   methods: {
     fetchSessionData() {
       const user = useLoggedInUserStore();
-      let token = user.token;
       let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;
       axios
-        .get(`${url}/${user.navigationData.id}`, {
-          headers: { token },
-        })
+        .get(`${url}/${user.navigationData.id}`)
         .then((resp) => {
           let data = resp.data;
           this.session.originalSessionName = data.sessionName;
@@ -372,10 +369,9 @@ export default {
     async checkIfSessionCanBeDeleted() {
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
         const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/session/can-be-deleted/${user.navigationData.id}`;
 
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.canSessionBeDeleted = response.data.canBeDeleted;
       } catch (error) {
         this.handleError(error);
@@ -391,9 +387,8 @@ export default {
 
       try {
         const store = useLoggedInUserStore();
-        const token = store.token;
         const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/session/${store.navigationData.id}`;
-        const checkResponse = await axios.get(checkURL, { headers: { token } });
+        const checkResponse = await axios.get(checkURL);
 
         if (action === "update") {
           if (checkResponse.data.expInstancesFound) {
@@ -431,10 +426,9 @@ export default {
     async deleteSession() {
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
         let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/session/delete/${user.navigationData.id}`;
 
-        await axios.delete(deleteURL, { headers: { token } });
+        await axios.delete(deleteURL);
 
         user.navigationData = {
           activeTab: 0,
@@ -453,7 +447,6 @@ export default {
 
     proceedWithUpdate() {
       const user = useLoggedInUserStore();
-      let token = user.token;
       const updatedSession = {
         sessionName: this.session.sessionName,
         sessionPeriod: {
@@ -462,9 +455,7 @@ export default {
         },
       };
       let url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions`;
-      axios.put(`${url}/${user.navigationData.id}`, updatedSession, {
-        headers: { token },
-      }).then(() => {
+      axios.put(`${url}/${user.navigationData.id}`, updatedSession).then(() => {
         user.navigationData = {
           activeTab: 0,
           toastType: 'info',

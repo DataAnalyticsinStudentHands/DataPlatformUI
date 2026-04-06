@@ -314,10 +314,9 @@ export default {
   methods: {
     async fetchExperienceData(experienceID) {
       const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
       try {
-        const resp = await axios.get(apiURL, { headers: { token } });
+        const resp = await axios.get(apiURL);
         const experienceData = resp.data;
         this.experience = {
           experienceCategory: experienceData.experienceCategory,
@@ -342,10 +341,8 @@ export default {
 
     async checkIfExperienceCanBeDeleted(experienceID) {
       try {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/can-be-deleted/${experienceID}`;
-        const response = await axios.get(apiURL, { headers: { token }});
+        const response = await axios.get(apiURL);
         this.canExperienceBeDeleted = response.data.canBeDeleted;
       } catch (error) {
         this.handleError(error);
@@ -361,9 +358,8 @@ export default {
 
       try {
         const store = useLoggedInUserStore();
-        const token = store.token;
         const checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/experience/${store.navigationData.experienceID}`;
-        const checkResponse = await axios.get(checkURL, { headers: { token } });
+        const checkResponse = await axios.get(checkURL);
 
         if (action === "update") {
           if (checkResponse.data.expInstancesFound) {
@@ -396,10 +392,9 @@ export default {
     async deleteExperience() {
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
         let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience/delete/${user.navigationData.experienceID}`;
 
-        await axios.delete(deleteURL, { headers: { token } });
+        await axios.delete(deleteURL);
 
         user.navigationData = {
           activeTab: 1,
@@ -418,7 +413,6 @@ export default {
 
     proceedWithUpdate() {
       const user = useLoggedInUserStore();
-      let token = user.token;
 
       const experienceID = user.navigationData.experienceID;
       let experienceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${experienceID}`;
@@ -428,7 +422,7 @@ export default {
         .put(experienceUpdateURL, {
           experienceCategory: this.experience.experienceCategory,
           experienceName: this.experience.experienceName,
-        }, { headers: { token } })
+        })
         .then(() => {
           const updateData = {
             experience: {
@@ -437,7 +431,7 @@ export default {
             },
           };
 
-          return axios.put(experienceInstanceUpdateURL, updateData, { headers: { token } });
+          return axios.put(experienceInstanceUpdateURL, updateData);
         })
         .then((response) => {
           let toastMessage = 'Experience updated!';

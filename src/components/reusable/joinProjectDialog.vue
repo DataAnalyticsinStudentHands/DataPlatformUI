@@ -798,19 +798,11 @@ export default {
       this.isLoading = true;
       
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        
-        if (!token) {
-          throw new Error(this.$t('Authentication required'));
-        }
-        
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-info`;
         const inviteCodeParam = this.invitationCode.trim();
-        
-        const response = await axios.get(apiURL, { 
-          params: { inviteCode: inviteCodeParam },
-          headers: { token }
+
+        const response = await axios.get(apiURL, {
+          params: { inviteCode: inviteCodeParam }
         });
         
         // Process successful response
@@ -958,20 +950,12 @@ export default {
       this.isJoining = true;
       
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        
-        if (!token) {
-          throw new Error(this.$t('Authentication required'));
-        }
-        
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/join`;
-        
+
         // Submit join request with invitation code
         const response = await axios.post(
-          apiURL, 
-          { inviteCode: this.invitationCode.trim() }, 
-          { headers: { token } }
+          apiURL,
+          { inviteCode: this.invitationCode.trim() }
         );
         
         // Handle successful join

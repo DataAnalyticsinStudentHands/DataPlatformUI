@@ -39,31 +39,6 @@ export default {
     },
   },
   methods: {
-  // Initiates listening to email progress updates. Creates an EventSource to establish a connection with the server-sent events endpoint. Handles incoming messages to update the component's state with the number of emails sent and the total number of emails to be sent. Closes the EventSource connection in case of errors.
-    listenToEmailProgress() {
-      const user = useLoggedInUserStore();
-      const token = user.token;
-      // const token = import.meta.env.VITE_TOKEN;
-
-      const evtSource = new EventSource(`${import.meta.env.VITE_ROOT_API}/instructorSideData/email-progress?token=${encodeURIComponent(token)}`);
-
-      evtSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        this.emailsSent = data.sent;
-        this.totalEmails = data.total;
-      };
-
-      evtSource.onerror = (error) => {
-        console.error("EventSource failed:", error);
-        evtSource.close();
-      };
-    }
-
   },
-  beforeUnmount() {
-    if (this.evtSource) {
-      this.evtSource.close();
-    }
-  }
 };
 </script>

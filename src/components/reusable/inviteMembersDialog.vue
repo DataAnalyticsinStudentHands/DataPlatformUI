@@ -585,10 +585,8 @@ export default {
     // Fetch users with pending invitations for this project
     async fetchPendingInvitations() {
       try {
-        const token = this.loggedInUserStore.token;
         const response = await axios.get(
-          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${this.projectId}/pending-invitations`,
-          { headers: { token } }
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${this.projectId}/pending-invitations`
         );
         
         this.pendingInvitations = response.data.pendingInvitations || [];
@@ -601,13 +599,9 @@ export default {
     // Fetch current invite code for the project
     async fetchInviteCode() {
       try {
-        const token = this.loggedInUserStore.token;
-        if (!token) throw new Error('missing auth token');
-
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
         const { data } = await axios.get(apiURL, {
-          params: { projectId: this.projectId },
-          headers: { token }
+          params: { projectId: this.projectId }
         });
 
         this.inviteCode = data.inviteCode ?? '';
@@ -637,11 +631,8 @@ export default {
           return;
         }
 
-        const token = this.loggedInUserStore.token;
-        
         const response = await axios.get(
-          `${import.meta.env.VITE_ROOT_API}/studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`,
-          { headers: { token } }
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`
         );
         
         this.registeredUsers = response.data.users || [];
@@ -724,17 +715,15 @@ export default {
       this.invitingUsers = true;
       
       try {
-        const token = this.loggedInUserStore.token;
         const payload = {
           projectId: this.projectId,
           userIds: this.selectedUsers.map(user => user.userID),
           notificationType: 'in-app'
         };
-        
+
         const response = await axios.post(
-          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`, 
-          payload,
-          { headers: { token } }
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`,
+          payload
         );
         
         // Handle detailed response from backend
@@ -811,16 +800,14 @@ export default {
       this.showRetractConfirmation = false;
       
       try {
-        const token = this.loggedInUserStore.token;
         const payload = {
           projectId: this.projectId,
           userIdToRetract: userID
         };
-        
+
         await axios.delete(
           `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/retract-invitation`,
-          { 
-            headers: { token },
+          {
             data: payload
           }
         );
@@ -886,15 +873,11 @@ export default {
       this.showRegenerateConfirmation = false;
 
       try {
-        const token = this.loggedInUserStore.token;
-        if (!token) throw new Error('missing auth token');
-
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
-        
+
         const { data } = await axios.patch(
           apiURL,
-          { projectId: this.projectId },
-          { headers: { token } }
+          { projectId: this.projectId }
         );
 
         this.inviteCode = data.inviteCode ?? '';

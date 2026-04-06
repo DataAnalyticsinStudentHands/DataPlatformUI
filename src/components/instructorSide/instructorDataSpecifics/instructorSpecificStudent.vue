@@ -279,16 +279,15 @@ created() {
   (async () => {
     try {
       const user = useLoggedInUserStore();
-      let token = user.token;
 
       // Retrieve the student ID from the user's navigation data
       const userID = user.navigationData.userID;
 
       // Construct the API URL for fetching student information
       let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
-      
+
       // Make an API request to fetch student information using the userID
-      const resp = await axios.get(url + `/${userID}`, { headers: { token }});
+      const resp = await axios.get(url + `/${userID}`);
       
       // Store the retrieved user data and student data
       this.userData = resp.data.userData;

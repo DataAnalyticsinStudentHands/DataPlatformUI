@@ -13,7 +13,7 @@
     <v-layout class="rounded">
       <!-- Navigation drawer with role-based menu items -->
       <v-navigation-drawer
-        v-if="isFullyAuthenticated"
+        v-if="showNavDrawer"
         v-model="drawer"
         color="#c8102e"
         :rail="rail"
@@ -57,7 +57,7 @@
           <div v-if="user.isLoggedIn && user.getRole === 'Student'">
             <v-list-item 
               :active="activeLink === 'studentDashboard'"
-              to="studentDashboard"
+              :to="{ name: 'studentDashboard' }"
               prepend-icon="mdi-view-dashboard"
               value="studentDashboard"
               class=" tracking-wider "
@@ -65,7 +65,7 @@
             <v-list-item 
               :active="activeLink === 'studentEntryForm'"
               v-if="!user.hasCompletedEntryForm"
-              to="studentEntryForm"
+              :to="{ name: 'studentEntryForm' }"
               prepend-icon="mdi-file-document"
               value="studentEntryForm"
               class=" tracking-wider "
@@ -73,7 +73,7 @@
             <v-list-item 
               :active="activeLink === 'goalSettingForm'"
               v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasGoalFormsToComplete"
-              to="goalSettingForm"
+              :to="{ name: 'goalSettingForm' }"
               prepend-icon="mdi-file-document"
               value="goalSettingForm"
               class=" tracking-wider "
@@ -81,7 +81,7 @@
             <v-list-item 
               :active="activeLink === 'exitForm'"
               v-if="user.hasCompletedEntryForm && user.hasRegisteredExperiences && user.hasExitFormsToComplete"
-              to="exitForm"
+              :to="{ name: 'exitForm' }"
               prepend-icon="mdi-file-document"
               value="exitForm"
               class=" tracking-wider "
@@ -95,7 +95,7 @@
                 <div v-bind="props">
                   <v-list-item 
                     :active="activeLink === 'projects' || activeLink === 'studentProjects'"
-                    :to="user.hasRegisteredExperiences ? 'projects' : undefined"
+                    :to="user.hasRegisteredExperiences ? { name: 'projects' } : undefined"
                     :disabled="!user.hasRegisteredExperiences"
                     prepend-icon="mdi-account-group"
                     class="tracking-wider"
@@ -206,7 +206,7 @@
             <v-list-item 
               :active="activeLink === 'profile'"
               v-if="user.getRole === 'Student'"
-              to="profile"
+              :to="{ name: 'profile' }"
               prepend-icon="mdi-account"
               value="profile"
               class=" tracking-wider "
@@ -245,7 +245,7 @@
         style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
       >
         <v-btn 
-          v-if="isFullyAuthenticated && !drawer"
+          v-if="showNavDrawer && !drawer"
           icon 
           @click="drawer = true; rail = false"
         >
@@ -270,7 +270,7 @@
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import 'vue3-toastify/dist/index.css';
-import { useSSENotifications } from '@/composables/useSSENotifications';
+import { useNotificationPolling } from '@/composables/useNotificationPolling';
 
 export default {
   name: "App",
@@ -282,8 +282,7 @@ export default {
       activeLink: this.$route.name,
       rail: this.isMdAndUp,
       drawer: null,
-      invitationCheckInterval: null,
-      sseNotifications: null,
+      notificationPolling: null,
     };
   },
   watch: {
@@ -298,11 +297,9 @@ export default {
 
     isFullyAuthenticated(newVal) {
       if (newVal && this.user.getRole === 'Student') {
-        // Establish SSE connection when user logs in
-        this.sseNotifications.connect();
-      } else if (!newVal && this.sseNotifications) {
-        // Disconnect when user logs out
-        this.sseNotifications.disconnect();
+        this.notificationPolling.startPolling();
+      } else if (!newVal) {
+        this.notificationPolling.stopPolling();
       }
     }
     
@@ -326,6 +323,14 @@ export default {
     isFullyAuthenticated() {
       const store = useLoggedInUserStore();
       return store.isLoggedIn && store.getRole && store.getRole !== 'Temporary';
+    },
+    // Check if current route is a public showcase page (no chrome needed)
+    isPublicShowcasePage() {
+      return this.$route.path === '/featured' || this.$route.name === 'publicProjectView';
+    },
+    // Show navigation drawer only for authenticated users not on public showcase pages
+    showNavDrawer() {
+      return this.isFullyAuthenticated && !this.isPublicShowcasePage;
     }
   },
   methods: {
@@ -333,16 +338,8 @@ export default {
     async handleLogout() {
       const store = useLoggedInUserStore();
 
-      // Clean up SSE connection
-      if (this.sseNotifications) {
-        this.sseNotifications.disconnect();
-      }
-      
-      // Clear invitation check interval
-      if (this.invitationCheckInterval) {
-        clearInterval(this.invitationCheckInterval);
-        this.invitationCheckInterval = null;
-      }
+      // Stop notification polling
+      this.notificationPolling.stopPolling();
       
       await store.logout();
       let logoutMessage = "";
@@ -381,15 +378,6 @@ export default {
         this.drawer = !this.drawer;
       }
     },
-    // Set up periodic invitation checking for students
-    setupInvitationChecking() {
-      if (this.user.getRole === 'Student') {
-        // Check invitations every 5 minutes
-        this.invitationCheckInterval = setInterval(() => {
-          this.user.fetchProjectInvitationCount();
-        }, 5 * 60 * 1000); // 5 minutes
-      }
-    },
   },
   
   mounted() {
@@ -397,14 +385,9 @@ export default {
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.addEventListener('scroll', this.handleScroll);
     
-    // Set up invitation checking if user is a student
-    if (this.isFullyAuthenticated) {
-      this.setupInvitationChecking();
-    }
-
-    // Set up SSE connection for real-time notifications
+    // Start notification polling if user is an authenticated student
     if (this.isFullyAuthenticated && this.user.getRole === 'Student') {
-      this.sseNotifications.connect();
+      this.notificationPolling.startPolling();
     }
   },
 
@@ -413,21 +396,14 @@ export default {
     const mainContentEl = this.$refs.mainContent.$el;
     mainContentEl.removeEventListener('scroll', this.handleScroll);
     
-    // Clear invitation check interval
-    if (this.invitationCheckInterval) {
-      clearInterval(this.invitationCheckInterval);
-    }
-
-    // Clean up SSE connection
-    if (this.sseNotifications) {
-      this.sseNotifications.disconnect();
-    }
+    // Stop notification polling
+    this.notificationPolling.stopPolling();
   },
 
   setup() {
     const user = useLoggedInUserStore();
-    const sseNotifications = useSSENotifications();
-    return { user, sseNotifications };
+    const notificationPolling = useNotificationPolling();
+    return { user, notificationPolling };
   },
 
   created() {
@@ -435,9 +411,7 @@ export default {
     const user = useLoggedInUserStore();
     let apiURL = import.meta.env.VITE_ROOT_API + `/orgdata/`;
     axios
-      .get(apiURL, {
-        headers: { token: user.token },
-      })
+      .get(apiURL)
       .then((resp) => {
         user.setOrgName(resp.data);
       });

@@ -63,13 +63,11 @@
 </template>
 
 <script>
-import axios from "axios";
-import { toast } from "vue3-toastify";
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
-
-import ScheduleForm from "./backup/ScheduleForm.vue";
-import CollectionsForm from "./backup/CollectionsForm.vue";
-import HistoryTable from "./backup/HistoryTable.vue";
+import axios from 'axios';
+import { toast } from 'vue3-toastify';
+import ScheduleForm    from './backup/ScheduleForm.vue';
+import CollectionsForm from './backup/CollectionsForm.vue';
+import HistoryTable    from './backup/HistoryTable.vue';
 
 export default {
   name: "BackupDashboard",
@@ -110,21 +108,13 @@ export default {
       this.selectedCollections = list;
     },
     async fetchNextRun() {
-      // Retrieves the nextRun timestamp from /backup/config
-      this.isLoadingNextRun = true;
-
-      const API = import.meta.env.VITE_ROOT_API;
-      const userStore = useLoggedInUserStore();
-      const headers = { token: userStore.token };
-      const url = `${API}/backup/config`;
+      //Retrieves the nextRun timestamp, then updates this.nextRun 
+      const API       = import.meta.env.VITE_ROOT_API;
+      const url       = `${API}/backup/config`;
 
       try {
-        const { data } = await axios.get(url, { headers });
-
-        // Backend now returns nextRun in the config response
-        this.nextRun = data.nextRun || null;
-
-        console.log("[BackupDashboard] Next run loaded:", this.nextRun);
+        const { data } = await axios.get(url);
+        this.nextRun = data.nextRun;
       } catch (err) {
         console.error("[BackupDashboard] Could not load schedule:", err);
         toast.error("Failed to load backup schedule.");
@@ -136,16 +126,11 @@ export default {
     async runNow() {
       // Triggers an ad-hoc backup
       this.running = true;
-      const API = import.meta.env.VITE_ROOT_API;
-      const userStore = useLoggedInUserStore();
-      const headers = { token: userStore.token };
-      const url = `${API}/backup/run`;
-
+      const API       = import.meta.env.VITE_ROOT_API;
+      const url       = `${API}/backup/run`;
       try {
-        await axios.post(url, null, { headers });
-        toast.success("Backup completed!");
-
-        // Refresh next run time and history
+        await axios.post(url, null);
+        toast.success('Backup completed!');
         await this.fetchNextRun();
         if (this.$refs.historyTable) {
           await this.$refs.historyTable.loadHistory();

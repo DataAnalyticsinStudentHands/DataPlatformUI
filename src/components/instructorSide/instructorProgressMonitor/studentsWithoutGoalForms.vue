@@ -425,12 +425,10 @@ export default {
     // Upon receiving the response, it maps the instance data to a structured format 
     // and stores it in the component's state.
     async fetchExperiences() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + '/instructorSideData/experience-instances/active/';
 
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.expInstances = response.data.map(instance => ({
           expInstanceID: instance._id,
           sessionName: instance.session.name,
@@ -476,12 +474,10 @@ export default {
     // Upon receiving the response, it stores the data of students without a goal form 
     // for the specified experience in the component's state.
     async fetchStudentsWithoutGoalForm() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${this.selectedExperience}`;
-      
+
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.studentsWithoutGoalForm = response.data;
       } catch (error) {
         this.handleError(error);
@@ -493,12 +489,10 @@ export default {
     // Upon receiving the response, it stores the data of students with a goal form 
     // for the specified experience in the component's state.
     async fetchStudentsWithGoalForm() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-goal-form/${this.selectedExperience}`;
-      
+
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.studentsWithGoalForm = response.data;
       } catch (error) {
         this.handleError(error);

@@ -401,13 +401,9 @@ export default {
 
     async fetchInviteCode() {
       try {
-        const token = this.loggedInUserStore.token;
-        if (!token) throw new Error('missing auth token');
-
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
         const { data } = await axios.get(apiURL, {
-          params: { projectId: this.projectId },
-          headers: { token }
+          params: { projectId: this.projectId }
         });
 
         this.inviteCode = data.inviteCode ?? '';
@@ -435,11 +431,8 @@ export default {
           return;
         }
 
-        const token = this.loggedInUserStore.token;
-        
         const response = await axios.get(
-          `${import.meta.env.VITE_ROOT_API}/studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`,
-          { headers: { token } }
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/experience-instances/${this.experienceInstanceId}/registered-users`
         );
         
         this.registeredUsers = response.data.users || [];
@@ -495,18 +488,15 @@ export default {
       this.invitingUsers = true;
       
       try {
-        const token = this.loggedInUserStore.token;
         const payload = {
           projectId: this.projectId,
           userIds: this.selectedUsers.map(user => user.userID),
           notificationType: 'in-app' // Specify in-app notification
         };
-        
-        
+
         await axios.post(
-          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`, 
-          payload,
-          { headers: { token } }
+          `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-members`,
+          payload
         );
         
         // Show success dialog
@@ -559,15 +549,11 @@ export default {
       this.showRegenerateConfirmation = false;
 
       try {
-        const token = this.loggedInUserStore.token;
-        if (!token) throw new Error('missing auth token');
-
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/invite-code`;
-        
+
         const { data } = await axios.patch(
           apiURL,
-          { projectId: this.projectId },
-          { headers: { token } }
+          { projectId: this.projectId }
         );
 
         this.inviteCode = data.inviteCode ?? '';

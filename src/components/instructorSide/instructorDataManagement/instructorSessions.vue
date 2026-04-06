@@ -1045,10 +1045,8 @@ export default {
 
     async fetchSessionData() {
       try {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/`;
-        const resp = await axios.get(apiURL, { headers: { token } });
+        const resp = await axios.get(apiURL);
         this.sessionData = resp.data;
         this.sessionData.forEach(session => {
           session.instances = this.instancesData.filter(instance => instance.session.id === session._id);
@@ -1062,11 +1060,9 @@ export default {
 
     async fetchInstances() {
       useLoggedInUserStore().startLoading();
-      const user = useLoggedInUserStore();
-      const token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + "/instructorSideData/experience-instances";
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.instancesData = response.data;
       } catch (error) {
         this.handleError(error);
@@ -1478,18 +1474,16 @@ export default {
 
     async handleArchiveSessions() {
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const updateStatus = { sessionStatus: this.viewsStore.isViewingArchived('sessions') };
 
         for (const session of this.selectedSessions) {
           const sessionApiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${session._id}`;
           const expInstanceApiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-status-by-session`;
 
-          await axios.put(sessionApiURL, updateStatus, { headers: { token }});
+          await axios.put(sessionApiURL, updateStatus);
 
           const expInstanceUpdateStatus = { sessionID: session._id, status: this.viewsStore.isViewingArchived('sessions') };
-          const expInstanceResponse = await axios.put(expInstanceApiURL, expInstanceUpdateStatus, { headers: { token }});
+          const expInstanceResponse = await axios.put(expInstanceApiURL, expInstanceUpdateStatus);
 
           const message = (this.selectedSessions.length === 1 ? this.$t("Session") + " " : this.$t("Sessions") + " ") +
                           (this.viewsStore.isViewingArchived('sessions') ? this.$t("Restored") : this.$t("Archived")) +

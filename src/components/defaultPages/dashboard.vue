@@ -33,7 +33,6 @@
   </main>
 </template>
 <script>
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { DateTime } from "luxon";
 import axios from "axios";
 export default {
@@ -45,13 +44,9 @@ export default {
     };
   },
   mounted() {
-    const user = useLoggedInUserStore()
-    let token = user.token
     let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
     axios
-      .get(url, {
-        headers: {token},
-      })
+      .get(url)
       .then(
         (res) => {
           this.firstName = res.data.user.firstName;
@@ -65,9 +60,7 @@ export default {
       )
     let apiURL = import.meta.env.VITE_ROOT_API + `/dashboarddata/recentEvent/`;
     this.queryData = [];
-    axios.get(apiURL,{
-        headers: { token },
-      }).then((resp) => {
+    axios.get(apiURL).then((resp) => {
       this.queryData = resp.data;
     });
   },

@@ -104,9 +104,8 @@ export default {
                     const response = await axios.put(apiURL, user);
 
                     if (response.status === 200) {
-                        // Store user ID and token from response
+                        // Store user ID from response
                         this.userID = response.data.userID;
-                        this.token = response.data.token;
                     } else {
                         toast.error(this.$t('An error occurred. Please try again.'), {
                             position: 'top-right',

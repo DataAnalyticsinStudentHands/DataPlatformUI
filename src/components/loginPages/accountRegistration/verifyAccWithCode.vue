@@ -107,37 +107,22 @@ export default {
         };
         let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/verify`;
         const store = useLoggedInUserStore();
-        let token = store.token;
 
         try {
-            const res = await axios.put(apiURL, user, {
-                headers: {
-                    'token': token
-                }
-            });
+            const res = await axios.put(apiURL, user);
 
             if (res.status === 200) {
                 if (res.data.action && res.data.action === 'password-reset') {
                     // Handle password reset flow
-                    store.$patch({
-                        token: res.data.token
-                    });
-                    localStorage.setItem("token", res.data.token);
-                    store.setTokenHeader(res.data.token);
-
                     this.$router.push("/passResetNewEntry");
                 } else {
                     // Handle regular account activation
                     store.$patch({
                         role: res.data.userRole,
                         userId: res.data.userID,
-                        token: res.data.token,
                         languagePreference: res.data.languagePreference,
                         permissions: res.data.permissions
                     });
-
-                    localStorage.setItem("token", res.data.token);
-                    store.setTokenHeader(res.data.token);
 
                     await store.getFullName();
                     store.isLoggedIn = true;

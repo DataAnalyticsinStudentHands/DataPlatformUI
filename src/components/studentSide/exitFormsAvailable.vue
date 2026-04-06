@@ -40,7 +40,6 @@
 </template>
 
 <script>
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -55,8 +54,9 @@ export default {
   mounted() {
     this.fetchExperiences();
     window.scrollTo(0, 0);
-    if (this.$route.params.toastType) {
-      toast[this.$route.params.toastType](this.$route.params.toastMessage, { 
+    const allowedToastTypes = ['success', 'error', 'warning', 'info'];
+    if (allowedToastTypes.includes(this.$route.params.toastType)) {
+      toast[this.$route.params.toastType](this.$route.params.toastMessage, {
         position: this.$route.params.toastPosition,
         toastClassName: this.$route.params.toastCSS
       });
@@ -64,12 +64,10 @@ export default {
   },
   methods: {
     fetchExperiences() {
-      const user = useLoggedInUserStore();
-      const token = user.token;
       const apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/completedExperiences";
 
       axios
-        .get(apiURL, { headers: { token } })
+        .get(apiURL)
         .then((resp) => {
           this.experiences = resp.data;
         })
