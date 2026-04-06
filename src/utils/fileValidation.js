@@ -27,7 +27,7 @@ export const UPLOAD_CONSTRAINTS = {
   },
   avatar: {
     extensions: ['.jpg', '.jpeg', '.png', '.webp'],
-    maxSizeMb: 2,
+    maxSizeMb: 5,
   },
   poster: {
     extensions: ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.pdf'],

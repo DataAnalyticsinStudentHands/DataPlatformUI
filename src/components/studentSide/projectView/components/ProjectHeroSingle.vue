@@ -55,7 +55,6 @@
 
 <script setup>
 import { computed, ref, watch, onBeforeUnmount } from 'vue';
-import axios from 'axios';
 import { buildFileUrl } from '../services/projectViewFormService.js';
 import { isMinimalAuthor } from '../utils/authorUtils.js';
 
@@ -100,19 +99,6 @@ watch(
   { immediate: true }
 );
 
-// Fetch from backend when no blob URL exists (page reload scenario).
-watch(
-  () => props.author.avatarUrl,
-  async (url) => {
-    if (avatarObjectUrl.value || !url) return;
-    try {
-      const { data } = await axios.get(buildFileUrl(url), { responseType: 'blob' });
-      avatarObjectUrl.value = URL.createObjectURL(data);
-    } catch { /* placeholder shown */ }
-  },
-  { immediate: true }
-);
-
 // Clear blob URL when avatar is removed (both file and URL cleared).
 watch(
   () => [props.author.avatarFile, props.author.avatarUrl],
@@ -128,7 +114,9 @@ onBeforeUnmount(() => {
   if (avatarObjectUrl.value) URL.revokeObjectURL(avatarObjectUrl.value);
 });
 
-const authorAvatarSrc = computed(() => avatarObjectUrl.value || '');
+const authorAvatarSrc = computed(() =>
+  avatarObjectUrl.value || (props.author.avatarUrl ? buildFileUrl(props.author.avatarUrl) : '')
+);
 
 const minimal = computed(() => isMinimalAuthor(props.author));
 </script>

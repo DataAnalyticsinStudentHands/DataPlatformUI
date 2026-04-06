@@ -67,8 +67,7 @@
 </template>
 
 <script setup>
-import { computed, ref, reactive, watch, onBeforeUnmount } from 'vue';
-import axios from 'axios';
+import { computed, reactive, watch, onBeforeUnmount } from 'vue';
 import { buildFileUrl } from '../services/projectViewFormService.js';
 import { allAuthorsMinimal } from '../utils/authorUtils.js';
 
@@ -111,19 +110,12 @@ watch(
         if (avatarBlobUrls[author.id]) URL.revokeObjectURL(avatarBlobUrls[author.id]);
         avatarBlobUrls[author.id] = '';
       } else if (!avatarBlobUrls[author.id] && author.avatarUrl) {
-        fetchAvatar(author.id, author.avatarUrl);
+        avatarBlobUrls[author.id] = buildFileUrl(author.avatarUrl);
       }
     }
   },
   { deep: true, immediate: true }
 );
-
-async function fetchAvatar(id, relativePath) {
-  try {
-    const { data } = await axios.get(buildFileUrl(relativePath), { responseType: 'blob' });
-    avatarBlobUrls[id] = URL.createObjectURL(data);
-  } catch { /* placeholder shown */ }
-}
 
 onBeforeUnmount(() => {
   Object.values(avatarBlobUrls).forEach(url => { if (url) URL.revokeObjectURL(url); });
