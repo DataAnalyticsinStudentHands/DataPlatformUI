@@ -220,7 +220,7 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
               let apiURL = import.meta.env.VITE_ROOT_API + `/userdata/register`;
 
               axios.post(apiURL, this.user).then(
-                  async (response) => {
+                  (response) => {
                       // Clear the form
                       this.user = {
                           firstName: "",
@@ -234,9 +234,6 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
                       const userID = response.data.userID;
                       const store = useLoggedInUserStore();
 
-                      // Update Pinia store with the received data
-                      await store.verifyExistingAcc(response.data);
-
                       // Set navigation data to pass user ID to the verification view
                       store.navigationData = {
                           id: userID
@@ -248,7 +245,11 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
                       });
                   },
                   (err) => {
-                      this.handleError(err);
+                      const message = err.response?.data?.message || "Registration failed. Please try again.";
+                      toast.error(this.$t(message), {
+                          position: 'top-right',
+                          toastClassName: 'Toastify__toast--delete',
+                      });
                   }
               ).finally(() => {
                   this.loading = false;

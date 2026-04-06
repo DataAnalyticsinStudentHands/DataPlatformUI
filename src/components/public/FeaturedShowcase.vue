@@ -476,7 +476,7 @@
       </v-container>
     </section>
 
-    <!-- CTA -->
+    <!-- CTA (commented out)
     <section class="cta-section py-14 scroll-reveal">
       <v-container>
         <v-row justify="center">
@@ -506,6 +506,7 @@
         </v-row>
       </v-container>
     </section>
+    -->
     </template>
   </v-container>
 
@@ -824,6 +825,10 @@ function goToContact() {
 
 .hero-content {
   padding-bottom: 140px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
 }
 
 .slide {
@@ -859,7 +864,7 @@ function goToContact() {
   font-weight: 800;
   text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   line-height: 1.1;
-  max-width: 900px;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -868,6 +873,24 @@ function goToContact() {
   max-width: 760px;
   margin: 0 auto;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  max-height: 7.5em;
+  overflow-y: auto;
+  scrollbar-width: none;
+  transition: scrollbar-color 0.3s ease;
+}
+.hero-subtitle::-webkit-scrollbar {
+  width: 6px;
+}
+.hero-subtitle::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+}
+.hero-subtitle:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+.hero-subtitle:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Student Attribution in Hero */
