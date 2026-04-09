@@ -145,7 +145,7 @@ export const useLoggedInUserStore = defineStore({
     async initializeStore() {
       try {
         // Validate session by calling the server (cookie sent automatically)
-        const res = await axios.get(`${apiURL}/userdata/user`);
+        const res = await axios.get(`${apiURL}/userdata/user`, { _skipRefreshCheck: true });
 
         // Cookie is valid — restore session from response
         this.$patch({

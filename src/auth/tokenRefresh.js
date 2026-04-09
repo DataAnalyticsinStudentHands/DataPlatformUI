@@ -31,7 +31,9 @@ function refreshToken() {
       if (err.response?.status === 401) {
         const { useLoggedInUserStore } = await import('@/stored/loggedInUser');
         const store = useLoggedInUserStore();
-        store.logout();
+        if (store.isLoggedIn) {
+          store.logout();
+        }
       }
       throw err;
     })
