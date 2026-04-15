@@ -507,8 +507,7 @@ export const useLoggedInUserStore = defineStore({
       'instructorDataManagementActiveTab',
       'group',
       'projectInvitationCount',
-      'lastInvitationCheck',
-      'tokenExp'
+      'lastInvitationCheck'
     ],
   },
 });

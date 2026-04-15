@@ -57,7 +57,7 @@ export function setupTokenRefreshInterceptor() {
     const { useLoggedInUserStore } = await import('@/stored/loggedInUser');
     const store = useLoggedInUserStore();
 
-    if (!store.isLoggedIn || !store.tokenExp) return config;
+    if (!store.isLoggedIn || !store.tokenExp || typeof store.tokenExp !== 'number') return config;
 
     const now = Math.floor(Date.now() / 1000);
     if (store.tokenExp - now < 300) {

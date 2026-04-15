@@ -17,6 +17,10 @@ import { useLoggedInUserStore } from './stored/loggedInUser';
 // Send cookies automatically on every request (HttpOnly cookie auth)
 axios.defaults.withCredentials = true;
 
+// Clean up legacy token from pre-security-update localStorage
+// (old auth stored JWT via localStorage.setItem('token', ...))
+localStorage.removeItem('token');
+
 // Set up proactive token refresh before expiry
 import { setupTokenRefreshInterceptor } from './auth/tokenRefresh';
 setupTokenRefreshInterceptor();
