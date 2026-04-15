@@ -715,6 +715,12 @@ const routes = [
     component: () => import("@/components/admin/BackupDashboard.vue"),
     beforeEnter: requireAuth(["Org Admin"]),
   },
+  {
+    path: "/generateReports",
+    name: "generateReports",
+    component: () => import("@/components/instructorSide/GenerateReports.vue"),
+    beforeEnter: requireAuth(["Org Admin", "Group Admin", "Group Instructor", "Instructor"]),
+  },
 ];
 
 // Create router instance with base path
