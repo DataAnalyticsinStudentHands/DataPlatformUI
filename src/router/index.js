@@ -10,82 +10,36 @@
 
 import { createRouter, createWebHistory } from "vue-router";
 import { useLoggedInUserStore } from "../stored/loggedInUser";
-import { verifyJWT } from "../auth/jwtVerifier";
+import { getPublicFeatured } from "../components/instructorSide/featuredProjects/services/featuredProjectsService.js";
 
 // Verify user authentication status
-async function isLoggedIn(to, from, next) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    next("/error");
-    return;
-  }
-
-  try {
-    const payload = await verifyJWT(token);
-    if (!payload) {
-      next("/error");
-      return;
-    }
-
-    next();
-  } catch (error) {
-    next("/error");
-  }
+function isLoggedIn(to, from, next) {
+  const store = useLoggedInUserStore();
+  store.isLoggedIn ? next() : next("/error");
 }
 
 // Create role-based authentication guard
 function requireAuth(allowedRoles) {
-  return async (to, from, next) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+  return (to, from, next) => {
+    const store = useLoggedInUserStore();
+    if (store.isLoggedIn && allowedRoles.includes(store.role)) {
+      next();
+    } else {
       next("/error");
-      return;
     }
-
-    const payload = await verifyJWT(token);
-    if (!payload) {
-      next("/error");
-      return;
-    }
-
-    if (!allowedRoles.includes(payload.userRole)) {
-      next("/error");
-      return;
-    }
-
-    next();
   };
 }
 
 // Guard for student routes that require registered experiences
-async function requireStudentWithExperiences(to, from, next) {
-  const token = localStorage.getItem("token");
-  if (!token) {
+function requireStudentWithExperiences(to, from, next) {
+  const store = useLoggedInUserStore();
+  if (!store.isLoggedIn || store.role !== "Student") {
     next("/error");
-    return;
-  }
-
-  const payload = await verifyJWT(token);
-  if (!payload) {
-    next("/error");
-    return;
-  }
-
-  if (payload.userRole !== "Student") {
-    next("/error");
-    return;
-  }
-
-  const userStore = useLoggedInUserStore();
-
-  // Check if user has registered experiences
-  if (!userStore.hasRegisteredExperiences) {
-    // Redirect to student dashboard with a message
+  } else if (!store.hasRegisteredExperiences) {
     next("/studentDashboard");
-    return;
+  } else {
+    next();
   }
-
-  next();
 }
 
 // Route definitions
@@ -196,6 +150,18 @@ const routes = [
     name: "instructorProjects",
     component: () =>
       import("../components/instructorSide/projects/projectsMain.vue"),
+    beforeEnter: requireAuth([
+      "Instructor",
+      "Group Instructor",
+      "Group Admin",
+      "Org Admin",
+    ]),
+  },
+  {
+    path: "/instructorFeaturedProjects",
+    name: "instructorFeaturedProjects",
+    component: () =>
+      import("@/components/instructorSide/featuredProjects/FeaturedProjectsManager.vue"),
     beforeEnter: requireAuth([
       "Instructor",
       "Group Instructor",
@@ -566,20 +532,21 @@ const routes = [
       "Org Admin",
     ]),
   },
-  {
-    path: "/instructorMailer",
-    name: "instructorMailer",
-    component: () =>
-      import(
-        "../components/instructorSide/instructorMailer/instructorMailerMain.vue"
-      ),
-    beforeEnter: requireAuth([
-      "Instructor",
-      "Group Instructor",
-      "Group Admin",
-      "Org Admin",
-    ]),
-  },
+  // instructorMailer disabled for this release — re-enable when H2 security fixes are implemented
+  // {
+  //   path: "/instructorMailer",
+  //   name: "instructorMailer",
+  //   component: () =>
+  //     import(
+  //       "../components/instructorSide/instructorMailer/instructorMailerMain.vue"
+  //     ),
+  //   beforeEnter: requireAuth([
+  //     "Instructor",
+  //     "Group Instructor",
+  //     "Group Admin",
+  //     "Org Admin",
+  //   ]),
+  // },
   {
     path: "/studentsWithoutGoalForms",
     name: "studentsWithoutGoalForms",
@@ -657,57 +624,89 @@ const routes = [
     component: () => import("../components/error/errorView.vue"),
   },
   // Public routes from develop_Project_Documents
-  // {
-  //   path: "/publicProjects",
-  //   name: "publicProjects",
-  //   component: () => import("../components/dev/publicProjects.vue"),
-  // },
-  // {
-  //   path: "/publicGallery",
-  //   name: "publicGallery",
-  //   component: () => import("../components/dev/publicGallery.vue"),
-  // },
-  // {
-  //   path: "/publicGallery2",
-  //   name: "publicGallery2",
-  //   component: () => import("../components/dev/publicGallery2.vue"),
-  // },
-  // {
-  //   path: "/kpis",
-  //   name: "kpis",
-  //   component: () => import("../components/dev/kpis.vue"),
-  // },
-  // // Public routes from develop_PublicView
-  // {
-  //   path: "/public1",
-  //   name: "public1",
-  //   component: () => import("@/components/dev/public1.vue"),
-  // },
-  // {
-  //   path: "/public2",
-  //   name: "public2",
-  //   component: () => import("@/components/dev/indProjectPage1.vue"),
-  // },
-  // {
-  //   path: "/public3",
-  //   name: "public3",
-  //   component: () => import("@/components/dev/indProjectPage2.vue"),
-  // },
-  // {
-  //   path: "/public4",
-  //   name: "public4",
-  //   component: () => import("@/components/dev/indProjectPage1-2.vue"),
-  // },
-  // {
-  //   path: "/public5",
-  //   name: "public5",
-  //   component: () => import("@/components/dev/indProjectPage2-2.vue"),
-  // },
-  // {
-  //   path: "/public6",
-  //   name: "public6",
-  //   component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
-  // },
+  {
+    path: "/publicProjects",
+    name: "publicProjects",
+    component: () => import("../components/dev/publicProjects.vue"),
+  },
+  {
+    path: "/publicGallery",
+    name: "publicGallery",
+    component: () => import("../components/dev/publicGallery.vue"),
+  },
+  {
+    path: "/publicGallery2",
+    name: "publicGallery2",
+    component: () => import("../components/dev/publicGallery2.vue"),
+  },
+  {
+    path: "/kpis",
+    name: "kpis",
+    component: () => import("../components/dev/kpis.vue"),
+  },
+  // Public routes from develop_PublicView
+  {
+    path: "/featured",
+    name: "featuredShowcase",
+    component: () => import("@/components/public/FeaturedShowcase.vue"),
+    beforeEnter: async (to, from, next) => {
+      try {
+        const f = await getPublicFeatured();
+        const hasProjects =
+          (Array.isArray(f.hero) && f.hero.length > 0) ||
+          (Array.isArray(f.featured) && f.featured.length > 0);
+        if (hasProjects) {
+          next();
+        } else {
+          const userStore = useLoggedInUserStore();
+          if (userStore.isLoggedIn) {
+            if (
+              ["Instructor", "Group Instructor", "Group Admin", "Org Admin"].includes(
+                userStore.role
+              )
+            ) {
+              next("/instructorDash");
+            } else {
+              next("/studentDashboard");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      } catch {
+        next("/login");
+      }
+    },
+  },
+  {
+    path: "/public1",
+    redirect: "/featured",
+  },
+  {
+    path: "/public2",
+    name: "public2",
+    component: () => import("@/components/dev/indProjectPage1.vue"),
+  },
+  {
+    path: "/public3",
+    name: "public3",
+    component: () => import("@/components/dev/indProjectPage2.vue"),
+  },
+  {
+    path: "/public4",
+    name: "public4",
+    component: () => import("@/components/dev/indProjectPage1-2.vue"),
+  },
+  {
+    path: "/public5",
+    name: "public5",
+    component: () => import("@/components/dev/indProjectPage2-2.vue"),
+  },
+  {
+    path: "/public6",
+    name: "public6",
+    component: () => import("@/components/dev/indProjectPage_engaged_data.vue"),
+  },
   // Admin routes
   {
     path: "/admin/backup",
@@ -715,12 +714,66 @@ const routes = [
     component: () => import("@/components/admin/BackupDashboard.vue"),
     beforeEnter: requireAuth(["Org Admin"]),
   },
+
+  // Dev Instructor Mailer (frontend-only demo) — disabled for this release
+  // {
+  //   path: "/dev/instructorMailer",
+  //   name: "devInstructorMailer",
+  //   component: () =>
+  //     import("@/components/dev/instructorMailer/DevMailerMain.vue"),
+  //   beforeEnter: requireAuth([
+  //     "Instructor",
+  //     "Group Instructor",
+  //     "Group Admin",
+  //     "Org Admin",
+  //   ]),
+  // },
+
+  // ==========================================================================
+  // PROJECT VIEW ROUTES (Phase 6)
+  // ==========================================================================
+
+  // Project Editor - Create new project (authenticated, requires experiences)
   {
-    path: "/generateReports",
-    name: "generateReports",
-    component: () => import("@/components/instructorSide/GenerateReports.vue"),
-    beforeEnter: requireAuth(["Org Admin", "Group Admin", "Group Instructor", "Instructor"]),
+    path: "/projectEditor",
+    name: "projectEditor",
+    component: () =>
+      import("@/components/studentSide/projectView/pages/ProjectEditorPage.vue"),
+    beforeEnter: requireStudentWithExperiences,
   },
+
+  // Project Editor - Edit existing project (authenticated, requires experiences)
+  {
+    path: "/projectEditor/:projectId",
+    name: "projectEditorEdit",
+    component: () =>
+      import("@/components/studentSide/projectView/pages/ProjectEditorPage.vue"),
+    beforeEnter: requireStudentWithExperiences,
+  },
+
+  // Public Project View - View published project (public, no auth required)
+  {
+    path: "/project/:projectId",
+    name: "publicProjectView",
+    component: () =>
+      import("@/components/studentSide/projectView/pages/ProjectViewPage.vue"),
+  },
+
+  // Dev Preview - Direct access to editor for testing (public for dev purposes)
+  {
+    path: "/dev/projectPreview",
+    name: "devProjectPreview",
+    component: () =>
+      import("@/components/studentSide/projectView/ProjectEditorMain.vue"),
+  },
+
+  // Dev Speech-to-Text demo — DISABLED for production
+  // {
+  //   path: "/dev/speechToText",
+  //   name: "devSpeechToText",
+  //   component: () =>
+  //     import("@/components/dev/speechToText/SpeechToTextDemo.vue"),
+  // },
 ];
 
 // Create router instance with base path
@@ -745,8 +798,38 @@ const publicPaths = [
   "/updateproject",
   "/proposedprojects",
   "/viewproject",
-  "/myprojects"
+  "/myprojects",
+  "/featured",
+  "/public1",
+  "/public2",
+  "/public3",
+  "/public4",
+  // Carlos
+  "/public5",
+  // Phil Navya
+  "/public6",
+  // Project View public routes
+  "/dev/projectPreview",
+  "/publicGallery2",
+  "/publicGallery",
+  "/publicProjects",
 ];
+
+// Pattern-based public paths (for dynamic routes like /project/:projectId)
+const publicPathPatterns = [
+  /^\/project\/[^/]+$/,  // Matches /project/:projectId
+];
+
+// Public data routes — accessible to both authenticated and unauthenticated users.
+// Unlike auth routes (login, register), these should NOT redirect logged-in users to their dashboard.
+const publicDataPatterns = [
+  /^\/project\/[^/]+$/,  // /project/:projectId — shared project view links
+  /^\/featured$/,        // /featured — public showcase page
+];
+
+function isPublicDataPath(path) {
+  return publicDataPatterns.some(pattern => pattern.test(path));
+}
 
 // const publicPaths = [
 //   "/login",
@@ -782,74 +865,54 @@ const publicPaths = [
 //   "/public6",
 // ];
 
+/**
+ * Check if a path is public (no authentication required)
+ * @param {string} path - The route path to check
+ * @returns {boolean} - True if the path is public
+ */
+function isPublicPath(path) {
+  // Check exact matches
+  if (publicPaths.includes(path)) {
+    return true;
+  }
+  
+  // Check pattern matches (for dynamic routes)
+  return publicPathPatterns.some(pattern => pattern.test(path));
+}
+
 // Global navigation guard for authentication and role-based routing
 router.beforeEach(async (to, from, next) => {
   const userStore = useLoggedInUserStore();
-  const token = localStorage.getItem("token");
-  const currentTime = Math.floor(Date.now() / 1000);
+  const isPublicRoute = isPublicPath(to.path);
 
-  const isPublicRoute = publicPaths.includes(to.path);
-
-  if (token) {
-    try {
-      // Validate token and extract user information
-      const payload = await verifyJWT(token);
-
-      if (payload && payload.exp && payload.exp > currentTime) {
-        // Update store with valid token data
-        userStore.$patch({
-          isLoggedIn: true,
-          role: payload.userRole,
-          userId: payload.userID,
-          token: token,
-        });
-
-        // Handle temporary role users
-        if (payload.userRole === "Temporary") {
-          if (isPublicRoute) {
-            next();
-          } else {
-            next("/verifyAccWithCode");
-          }
-        } else {
-          // Redirect authenticated users away from public routes
-          if (isPublicRoute) {
-            if (
-              [
-                "Instructor",
-                "Group Instructor",
-                "Group Admin",
-                "Org Admin",
-              ].includes(userStore.role)
-            ) {
-              next("/instructorDash");
-            } else if (userStore.role === "Student") {
-              next("/studentDashboard");
-            } else {
-              next("/");
-            }
-          } else {
-            next();
-          }
-        }
+  if (userStore.isLoggedIn) {
+    // Handle temporary role users
+    if (userStore.role === "Temporary") {
+      isPublicRoute ? next() : next("/verifyAccWithCode");
+    } else if (isPublicRoute) {
+      // Public data routes (e.g. shared project links) — allow access for everyone
+      if (isPublicDataPath(to.path)) {
+        next();
+      } else if (
+        [
+          "Instructor",
+          "Group Instructor",
+          "Group Admin",
+          "Org Admin",
+        ].includes(userStore.role)
+      ) {
+        next("/instructorDash");
+      } else if (userStore.role === "Student") {
+        next("/studentDashboard");
       } else {
-        // Handle expired token
-        userStore.logout();
-        next("/login");
+        next("/");
       }
-    } catch (error) {
-      // Handle token verification errors
-      console.error("Token verification failed in router:", error);
-      userStore.logout();
-      next("/login");
+    } else {
+      next();
     }
   } else {
     // Handle unauthenticated access
-    if (isPublicRoute) {
-      next();
-    } else {
-      next("/login");
-    }
+    isPublicRoute ? next() : next("/login");
   }
 });
 

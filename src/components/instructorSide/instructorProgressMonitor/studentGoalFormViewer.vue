@@ -699,13 +699,10 @@ export default {
   methods: {
     // Fetches the goal form for a specific student and experience instance
     async fetchGoalForm(studentID, expInstanceID) {
-      const user = useLoggedInUserStore();
-      const token = user.token;
       const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/goal-form`;
 
       try {
         const response = await axios.get(url, {
-          headers: { token },
           params: { userID: studentID, expInstanceID }
         });
         this.firstName = response.data.firstName;

@@ -1561,13 +1561,11 @@ export default {
     },
 
     fetchGoalSettingFormData() {
-      const user = useLoggedInUserStore();
-      const token = user.token;
       const experienceID = this.$route.params.id; // Use experienceID from route params
 
       const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goalForm/${experienceID}`;
 
-      axios.get(apiURL, { headers: { token } })
+      axios.get(apiURL)
         .then((resp) => {
           this.goalFormExists = resp.data.goalFormExists;
 
@@ -1595,12 +1593,10 @@ export default {
     },
 
     async fetchSemester() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goalForms/semester";
 
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         this.exitForm.semester = response.data.semesterName;
       } catch (error) {
         this.handleError(error);
@@ -1611,8 +1607,6 @@ export default {
       const validationResponse = await this.$refs.exitForm.validate();
       if (validationResponse.valid) {
         // return;
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exitForms/";
 
         const exitFormData = {
@@ -1674,9 +1668,7 @@ export default {
         };
 
         try {
-          await axios.post(apiURL, exitFormData, {
-            headers: { token }
-          });
+          await axios.post(apiURL, exitFormData);
           const store = useLoggedInUserStore();
           store.checkFormCompletion();
           this.$router.push({ 

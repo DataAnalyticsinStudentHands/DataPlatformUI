@@ -112,7 +112,8 @@ export default {
   name: "VerifyAccount",
   created() {
     // Redirect to login if user is not authenticated
-    if (localStorage.getItem("token") === null) {
+    const store = useLoggedInUserStore();
+    if (!store.isLoggedIn) {
       this.$router.push("/login");
     }
   },
@@ -164,9 +165,7 @@ export default {
         let apiURL = import.meta.env.VITE_ROOT_API + "/userdata/password-reset/logged-in";
 
         axios
-          .put(apiURL, user, {
-            headers: { token: store.token },
-          })
+          .put(apiURL, user)
           .then(
             (res) => {
               if (res.status == 200) {

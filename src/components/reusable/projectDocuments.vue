@@ -49,7 +49,7 @@
       >
         <template v-slot:prepend>
           <v-avatar color="grey-lighten-2" class="mr-3">
-            <v-icon :icon="getFileIcon(document.extension)" color="grey-darken-2"></v-icon>
+            <v-icon :icon="getFileIcon(getDocumentExtension(document))" :color="getFileIconColor(getDocumentExtension(document))"></v-icon>
           </v-avatar>
         </template>
         
@@ -60,7 +60,7 @@
               color="grey-lighten-1"
               class="text-uppercase mr-2"
             >
-              {{ document.extension }}
+              {{ getDocumentExtension(document) }}
             </v-chip>
             <v-menu>
               <template v-slot:activator="{ props }">
@@ -234,13 +234,13 @@
           <!-- Document info display -->
           <div class="mb-4 pa-3 bg-grey-lighten-5 rounded">
             <div class="d-flex align-center">
-              <v-icon :icon="getFileIcon(documentToEdit?.extension)" size="40" color="grey-darken-1" class="mr-3"></v-icon>
+              <v-icon :icon="getFileIcon(getDocumentExtension(documentToEdit))" size="40" :color="getFileIconColor(getDocumentExtension(documentToEdit))" class="mr-3"></v-icon>
               <div>
                 <p class="text-subtitle-2 mb-0">{{ $t('Current file') }}</p>
                 <p class="text-caption text-grey-darken-1">
                   {{ documentToEdit?.name }}
                   <v-chip size="x-small" color="grey-lighten-1" class="text-uppercase ml-2">
-                    {{ documentToEdit?.extension }}
+                    {{ getDocumentExtension(documentToEdit) }}
                   </v-chip>
                 </p>
               </div>
@@ -336,6 +336,11 @@
 import { toast } from 'vue3-toastify';
 import axios from 'axios';
 import { useLoggedInUserStore } from '@/stored/loggedInUser';
+import {
+  UPLOAD_CONSTRAINTS,
+  validateImageSignature,
+  parseUploadError,
+} from '@/utils/fileValidation';
 const API = import.meta.env.VITE_ROOT_API;
 
 export default {
@@ -407,6 +412,14 @@ export default {
     this.fetchDocuments();
   },
   methods: {
+    getDocumentExtension(document) {
+      if (document?.extension) return document.extension;
+      if (document?.name) {
+        const parts = document.name.split('.');
+        if (parts.length > 1) return parts.pop();
+      }
+      return '';
+    },
     getFileIcon(extension) {
       switch(extension?.toLowerCase()) {
         case 'pdf':
@@ -423,13 +436,34 @@ export default {
         case 'txt':
         case 'csv':
         case 'tsv':
-          return 'mdi-file-document-outline';
+          return 'mdi-file-document';
         case 'jpg':
         case 'jpeg':
         case 'png':
-          return 'mdi-file-image-box';
+          return 'mdi-file-image';
         default:
-          return 'mdi-file-document-outline';
+          return 'mdi-file-document';
+      }
+    },
+    getFileIconColor(extension) {
+      switch(extension?.toLowerCase()) {
+        case 'pdf':
+          return 'red-darken-1';
+        case 'doc':
+        case 'docx':
+          return 'blue-darken-2';
+        case 'xls':
+        case 'xlsx':
+          return 'green-darken-2';
+        case 'ppt':
+        case 'pptx':
+          return 'deep-orange-darken-1';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+          return 'purple-darken-1';
+        default:
+          return 'grey-darken-2';
       }
     },
     formatDate(dateString) {
@@ -462,6 +496,16 @@ export default {
         
         if (response.data.success) {
           this.projectDocuments = response.data.documents;
+          console.log('[ProjectDocuments] Raw documents from API:', JSON.stringify(response.data.documents, null, 2));
+          this.projectDocuments.forEach((doc, i) => {
+            console.log(`[ProjectDocuments] doc[${i}]:`, {
+              name: doc.name,
+              extension: doc.extension,
+              resolvedExt: this.getDocumentExtension(doc),
+              icon: this.getFileIcon(this.getDocumentExtension(doc)),
+              allKeys: Object.keys(doc)
+            });
+          });
         }
       } catch (error) {
         console.error('Error fetching documents:', error);
@@ -503,40 +547,37 @@ export default {
       }
     },
     
-    processSelectedFile(file) {
-      // Check allowed file types
-      const allowedExtensions = [
-        // Office files
-        '.doc', '.docx',        // Word documents
-        '.xls', '.xlsx',        // Excel spreadsheets
-        '.ppt', '.pptx',        // PowerPoint presentations
-        // PDF
-        '.pdf',
-        // Images
-        '.jpg', '.jpeg', '.png',
-        // Text files
-        '.txt', '.csv', '.tsv'
-      ];
-        
+    async processSelectedFile(file) {
+      const { extensions, maxSizeMb } = UPLOAD_CONSTRAINTS.clowder;
+
       const fileExt = '.' + file.name.split('.').pop().toLowerCase();
-      
-      if (!allowedExtensions.includes(fileExt)) {
+
+      if (!extensions.includes(fileExt)) {
         this.fileError = this.$t('File type not allowed. Allowed types: Word, Excel, PowerPoint, PDF, Images (JPG, PNG), and Text files (TXT, CSV, TSV)');
         return;
       }
-      
-      // Check file size - backend allows up to 100MB
-      if (file.size > 100 * 1024 * 1024) { // 100MB limit
-        this.fileError = this.$t('File size cannot exceed 100MB');
+
+      if (file.size > maxSizeMb * 1024 * 1024) {
+        this.fileError = this.$t(`File size cannot exceed ${maxSizeMb}MB`);
         return;
       }
-          
+
+      // Magic-number validation for image files
+      const imageExts = ['.jpg', '.jpeg', '.png'];
+      if (imageExts.includes(fileExt)) {
+        const detected = await validateImageSignature(file);
+        if (detected === null) {
+          this.fileError = this.$t('File content does not match the expected image type. The file may be corrupted or renamed.');
+          return;
+        }
+      }
+
       this.selectedFile = file;
       this.selectedFileName = file.name;
       this.selectedFileExt = file.name.split('.').pop();
       this.selectedFileSize = this.formatFileSize(file.size);
       this.fileError = '';
-      
+
       // Set document name from filename (without extension)
       if (!this.documentName) {
         this.documentName = file.name.split('.').slice(0, -1).join('.');
@@ -716,7 +757,7 @@ export default {
         }
       } catch (error) {
         console.error('Error uploading document:', error);
-        this.fileError = error.response?.data?.message || this.$t('Failed to upload document');
+        this.fileError = parseUploadError(error, this.$t('Failed to upload document'));
       } finally {
         this.uploading = false;
         this.uploadProgress = 0;

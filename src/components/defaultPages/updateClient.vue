@@ -5,10 +5,12 @@ import VueMultiselect from "vue-multiselect";
 import axios from "axios";
 import { DateTime } from "luxon";
 import { toast } from 'vue3-toastify';
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
   created() {
-    if (localStorage.getItem("token") === null) {
+    const store = useLoggedInUserStore();
+    if (!store.isLoggedIn) {
       this.$router.push("/login");
     }
   },
@@ -54,10 +56,7 @@ export default {
     axios
       .get(
         import.meta.env.VITE_ROOT_API +
-          `/primarydata/id/${this.$route.params.id}`,
-        {
-          headers: { token: localStorage.getItem("token") },
-        }
+          `/primarydata/id/${this.$route.params.id}`
       )
       .then((resp) => {
         let data = resp.data[0];
@@ -78,10 +77,7 @@ export default {
     axios
       .get(
         import.meta.env.VITE_ROOT_API +
-          `/eventdata/client/${this.$route.params.id}`,
-        {
-          headers: { token: localStorage.getItem("token") },
-        }
+          `/eventdata/client/${this.$route.params.id}`
       )
       .then((resp) => {
         let data = resp.data;
@@ -93,9 +89,7 @@ export default {
         });
       });
     axios
-      .get(import.meta.env.VITE_ROOT_API + `/eventdata`, {
-        headers: { token: localStorage.getItem("token") },
-      })
+      .get(import.meta.env.VITE_ROOT_API + `/eventdata`)
       .then((resp) => {
         let data = resp.data;
         for (let i = 0; i < data.length; i++) {
@@ -114,9 +108,7 @@ export default {
     handleClientUpdate() {
       let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/${this.id}`;
       axios
-        .put(apiURL, this.client, {
-          headers: { token: localStorage.getItem("token") },
-        })
+        .put(apiURL, this.client)
         .then(() => {
           toast.success("Update has been saved.");
           this.$router.back().catch((error) => {
@@ -131,10 +123,7 @@ export default {
         axios
           .put(
             apiURL,
-            { attendee: this.$route.params.id },
-            {
-              headers: { token: localStorage.getItem("token") },
-            }
+            { attendee: this.$route.params.id }
           )
           .then(() => {
             this.clientEvents = [];

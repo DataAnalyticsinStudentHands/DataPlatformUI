@@ -261,7 +261,6 @@
 
 <script>
 import axios from 'axios';
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -384,13 +383,10 @@ export default {
         // Fetches the list of students without entry forms by sending a GET request to the backend API. Upon receiving the response, it stores the list of students in the component's state. Finally, it updates the loading state to indicate that the fetching process is complete.
         async fetchStudentsWithoutEntryForm() {
             this.entryFormLoading = true;
-            const user = useLoggedInUserStore();
-            let token = user.token;
-            // const token = import.meta.env.VITE_TOKEN;
             let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/students-without-entry-form';
-    
+
             try {
-            const response = await axios.get(url, { headers: { token } });
+            const response = await axios.get(url);
             this.studentsWithoutEntryForm = response.data;
             } catch (error) {
                 this.handleError(error);
@@ -532,9 +528,6 @@ export default {
         async sendEmail() {
             if (!this.includeSpanish) {
                 try {
-                    const user = useLoggedInUserStore();
-                    let token = user.token;
-                    // const token = import.meta.env.VITE_TOKEN;
                     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer`;
 
                     // Prepare the email data
@@ -548,9 +541,7 @@ export default {
                     };
 2
                     // Use axios.post to send the email data
-                    const response = axios.post(apiURL, emailData, {
-                        headers: { token }
-                    });
+                    const response = axios.post(apiURL, emailData);
                     
                     this.setTab('overview');
                 } catch (error) {
@@ -560,8 +551,6 @@ export default {
                 }
             } else {
                 try {
-                    const user = useLoggedInUserStore(); // Assuming this exists from your previous code
-                    const token = import.meta.env.VITE_TOKEN;
                     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer/multi-language`;
 
                     const emailData = {
@@ -576,9 +565,7 @@ export default {
                         htmlContentSpanish: this.editorDataSpanish
                     };
 
-                    const response = await axios.post(apiURL, emailData, {
-                        headers: { token }
-                    });
+                    const response = await axios.post(apiURL, emailData);
 
                     this.setTab('overview');
                 } catch (error) {

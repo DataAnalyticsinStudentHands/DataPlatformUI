@@ -13,15 +13,12 @@ const apiURL = import.meta.env.VITE_ROOT_API
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { i18n } from '@/plugins/i18n';
-import { verifyJWT } from '@/auth/jwtVerifier';
-
 export const useLoggedInUserStore = defineStore({
   id: 'loggedInUser',
   state: () => {
     return {
       userId: "",
       role: "",
-      token: "",
       firstName: "",
       lastName: "",
       isLoggedIn: false,
@@ -42,6 +39,7 @@ export const useLoggedInUserStore = defineStore({
       group: null,
       navigationData: null,
       logoutTimer: null,
+      tokenExp: null,
       // New invitation tracking
       projectInvitationCount: 0,
       lastInvitationCheck: null,
@@ -63,35 +61,22 @@ export const useLoggedInUserStore = defineStore({
       try {
         const response = await axios.post(`${apiURL}/userdata/login`, { email, password });
         if (response) {
-          const token = response.data.token;
+          const data = response.data;
 
-          // Verify token validity on frontend
-          const payload = await verifyJWT(token);
-          if (!payload) {
-            this.handleError(new Error('Invalid token received from backend.'));
-            return;
-          }
-
-          // Update store with user information from JWT payload
+          // Update store with user information from response
           this.$patch({
-            role: payload.userRole,
-            userId: payload.userID,
-            token: token,
-            languagePreference: payload.languagePreference || response.data.languagePreference,
-            group: payload.group || response.data.group || null,
+            role: data.userRole,
+            userId: data.userID,
+            languagePreference: data.languagePreference,
+            group: data.group || null,
+            tokenExp: data.expiresAt,
           });
 
-          // Persist token and set axios headers
-          localStorage.setItem('token', token);
-          this.token = token;
-          this.setTokenHeader(token);
-
           // Handle pending user verification
-          if (payload.userStatus === 'Pending') {
+          if (data.userStatus === 'Pending') {
             this.$patch({
               isLoggedIn: false,
               unverified: true,
-              token: token,
             });
             return;
           }
@@ -99,20 +84,20 @@ export const useLoggedInUserStore = defineStore({
           await this.getFullName();
 
           // Load student-specific data
-          if (payload.userRole === 'Student') {
+          if (data.userRole === 'Student') {
             await this.checkFormCompletion();
             await this.fetchRegisteredExperiences();
-            await this.fetchProjectInvitationCount(); // Fetch invitation count on login
+            await this.fetchProjectInvitationCount();
           }
 
           // Complete login for non-temporary users
-          if (payload.userRole !== 'Temporary') {
+          if (data.userRole !== 'Temporary') {
             this.$patch({
               isLoggedIn: true,
             });
           }
 
-          this.setAutoLogout(payload.exp);
+          this.setAutoLogout(data.expiresAt);
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -127,87 +112,68 @@ export const useLoggedInUserStore = defineStore({
       }
     },
     // Clear user session and redirect to login
-    logout(reset = false) {
+    async logout(reset = false) {
+      // Clear server-side cookie
+      try {
+        await axios.post(`${apiURL}/userData/logout`);
+      } catch (e) {
+        // Best-effort; continue with local cleanup
+      }
+
       // Preserve organization name across logout
       const orgName = this.orgName;
-    
+
       // Clear session timer
       if (this.logoutTimer) {
         clearTimeout(this.logoutTimer);
         this.logoutTimer = null;
       }
-    
+
       // Reset store state
       this.$reset();
-    
+
       // Restore organization name
       this.orgName = orgName;
-    
-      // Clean up authentication data
-      localStorage.removeItem('token');
+
+      // Clean up persisted state
       localStorage.removeItem('pinia-loggedInUser');
-      this.removeTokenHeader();
-    
+
       this.$router.push('/login');
     },    
 
     // Initialize store from saved session on app load
     async initializeStore() {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        // Clear any remaining session data
-        this.$reset();
-      
-        localStorage.removeItem('token');
-        localStorage.removeItem('pinia-loggedInUser');
-        this.removeTokenHeader();
-        return;
-      }
-      
       try {
-        // Validate existing token
-        const payload = await verifyJWT(token);
-    
-        if (!payload) {
-          // Invalid token requires re-authentication
-          this.logout();
-          this.$router.push('/login');
-          return;
-        }
-    
-        // Check token expiration
-        const currentTime = Math.floor(Date.now() / 1000);
-        if (payload.exp && payload.exp < currentTime) {
-          this.logout();
-          this.$router.push('/login');
-          return;
-        }
-    
-        // Restore user session from token
+        // Validate session by calling the server (cookie sent automatically)
+        const res = await axios.get(`${apiURL}/userdata/user`, { _skipRefreshCheck: true });
+
+        // Cookie is valid — restore session from response
         this.$patch({
-          userId: payload.userID,
-          role: payload.userRole,
-          token: token
+          userId: res.data.user.userID,
+          role: res.data.user.userRole || this.role,
+          firstName: res.data.user.firstName,
+          lastName: res.data.user.lastName,
         });
-    
+
         // Complete login for non-temporary users
-        if (payload.userRole !== 'Temporary') {
-          this.$patch({ isLoggedIn: true });
+        if (this.role !== 'Temporary') {
+          this.isLoggedIn = true;
         }
-    
-        this.setTokenHeader(token);
-        this.setAutoLogout(payload.exp);
-        
+
+        // Restore auto-logout timer from persisted tokenExp
+        if (this.tokenExp && this.tokenExp > Math.floor(Date.now() / 1000)) {
+          this.setAutoLogout(this.tokenExp);
+        }
+
         // Fetch invitation count for students
-        if (payload.userRole === 'Student') {
+        if (this.role === 'Student') {
           await this.fetchProjectInvitationCount();
         }
-    
+
       } catch (error) {
-        console.error('Token verification failed:', error);
-        this.logout();
-        this.$router.push('/login');
+        // 401 or network error — not authenticated
+        this.$reset();
+        localStorage.removeItem('pinia-loggedInUser');
       }
     },    
     
@@ -241,11 +207,10 @@ export const useLoggedInUserStore = defineStore({
 
     // Fetch user's full name from API
     async getFullName() {
-      let token = localStorage.getItem("token");
       let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
 
       try {
-        let fullName = await axios.get(url, { headers: { token } });
+        let fullName = await axios.get(url);
         if (fullName) {
           this.$patch({
             firstName: fullName.data.user.firstName,
@@ -254,22 +219,19 @@ export const useLoggedInUserStore = defineStore({
         }
       } catch (error) {
         this.handleError(error);
-    }
+      }
     },
     // Complete account verification process
     async verifyExistingAcc(responseData) {
-      const { token, userID, userRole, languagePreference } = responseData;
+      const { userID, userRole, languagePreference, expiresAt } = responseData;
 
       // Update store with verified user data
       this.$patch({
         role: userRole,
         userId: userID,
-        token: token,
-        languagePreference: languagePreference
+        languagePreference: languagePreference,
+        tokenExp: expiresAt,
       });
-
-      localStorage.setItem("token", token);
-      this.setTokenHeader(token);
 
       // Complete login for non-temporary users
       if (userRole !== 'Temporary') {
@@ -277,7 +239,11 @@ export const useLoggedInUserStore = defineStore({
           isLoggedIn: true,
         });
       }
-      
+
+      if (expiresAt) {
+        this.setAutoLogout(expiresAt);
+      }
+
       // Fetch invitation count for students
       if (userRole === 'Student') {
         await this.fetchProjectInvitationCount();
@@ -290,9 +256,7 @@ export const useLoggedInUserStore = defineStore({
     // Check student's form completion status
     async checkFormCompletion() {
       try {
-        const response = await axios.get(`${apiURL}/studentSideData/student-checklist`, {
-          headers: { token: this.token }
-        });
+        const response = await axios.get(`${apiURL}/studentSideData/student-checklist`);
     
         if (response && response.data) {
           // Update all form completion states
@@ -313,9 +277,7 @@ export const useLoggedInUserStore = defineStore({
     // Fetch project invitation count
     async fetchProjectInvitationCount() {
       try {
-        const response = await axios.get(`${apiURL}/studentSideData/user/notification-count`, {
-          headers: { token: this.token }
-        });
+        const response = await axios.get(`${apiURL}/studentSideData/user/notification-count`);
         
         if (response && response.data) {
           this.projectInvitationCount = response.data.counts.projectInvitations || 0;
@@ -338,18 +300,6 @@ export const useLoggedInUserStore = defineStore({
         this.lastInvitationCheck = null;
       }
     },
-    // Set authorization header for all axios requests
-    setTokenHeader(token) {
-      if (token) {
-        axios.defaults.headers['token'] = token;
-        this.token = token;
-      }
-    },
-    // Remove authorization header from axios
-    removeTokenHeader() {
-      delete axios.defaults.headers['token'];
-      this.token = "";
-    },     
     // Set loading state to true
     startLoading() {
       this.loading = true;
@@ -360,11 +310,10 @@ export const useLoggedInUserStore = defineStore({
     },
     // Fetch student's registered experiences
     async fetchRegisteredExperiences() {
-      const token = localStorage.getItem("token");
       const url = `${apiURL}/studentSideData/registered-experiences`;
-    
+
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         if (response.data && response.data.length > 0) {
           this.registeredExperiences = response.data;
           this.hasRegisteredExperiences = true;
@@ -378,7 +327,6 @@ export const useLoggedInUserStore = defineStore({
     },     
     // Update student's experience registrations
     async updateRegisteredExperiences(selectedExperiences) {
-      const token = this.token;
       const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
       const deregisterUrl = `${apiURL}/studentSideData/registered-experiences`;
 
@@ -396,14 +344,13 @@ export const useLoggedInUserStore = defineStore({
         if (experiencesToRegister.length > 0) {
           await axios.post(registerUrl, {
             expInstanceIDs: experiencesToRegister.map(e => e._id)
-          }, { headers: { token } });
+          });
         }
 
         // Process deregistrations with constraint handling
         if (experiencesToDeregister.length > 0) {
           try {
             const response = await axios.delete(deregisterUrl, {
-              headers: { token },
               data: { expRegistrationIDs: experiencesToDeregister.map(e => e._id) }
             });
 
@@ -491,13 +438,12 @@ export const useLoggedInUserStore = defineStore({
 
     // Register a single experience for the student
     async registerSingleExperience(experienceInstanceId) {
-      const token = this.token;
       const registerUrl = `${apiURL}/studentSideData/experience-instances/register`;
 
       try {
         await axios.post(registerUrl, {
           expInstanceIDs: [experienceInstanceId]
-        }, { headers: { token } });
+        });
 
         await this.fetchRegisteredExperiences();
         await this.checkFormCompletion();

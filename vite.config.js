@@ -8,7 +8,8 @@ export default defineConfig({
   plugins: [vue({ template: { transformAssetUrls } }), vuetify()],
   base: '/platform/',
   build: {
-    outDir: "build"
+    outDir: "build",
+    sourcemap: false
   },
   resolve: {
     alias: {

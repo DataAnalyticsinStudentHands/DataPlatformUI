@@ -837,10 +837,9 @@
     },
     created() {
       const user = useLoggedInUserStore();
-      let token = user.token;
       let userGivenID = user.userId;
       let url = import.meta.env.VITE_ROOT_API + `/studentSideData/studentInformation`;
-      axios.get(url + `/${userGivenID}`, { headers: { token },})
+      axios.get(url + `/${userGivenID}`)
         .then((resp) => {
           this.studentInformation = resp.data.studentData.studentInformation;
         });
@@ -1190,12 +1189,11 @@
   
       async submitCompletedForm() {
         const user = useLoggedInUserStore()
-        let token = user.token
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/entry-forms/';
-        
+
         try {
           // Submit the entry form
-          await axios.post(apiURL, this.studentInformation, { headers: { token } });
+          await axios.post(apiURL, this.studentInformation);
   
           // After form submission, call the checkFormCompletion action to update the hasCompletedEntryForm state
           await user.checkFormCompletion();

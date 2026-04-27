@@ -268,9 +268,56 @@ archive/restore projects. Includes comprehensive project review capabilities.
 
               <v-divider></v-divider>
 
+              <!-- Section 4: Visibility & Consent -->
+              <div class="form-section">
+                <div class="section-header">
+                  <div class="section-number">4</div>
+                  <div>
+                    <h2 class="section-title">{{ $t('Visibility Settings') }}</h2>
+                    <p class="section-subtitle">{{ $t('Choose how this project may be shared') }}</p>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <div class="consent-option">
+                    <div class="d-flex align-start">
+                      <v-checkbox
+                        v-model="projectData.consentToFeature"
+                        color="#c8102e"
+                        hide-details
+                        class="mt-0 pt-0 mr-2"
+                        :disabled="projectData.projectStatus === 'Archived'"
+                      ></v-checkbox>
+
+                      <div class="consent-text flex-grow-1">
+                        <div class="d-flex align-center">
+                          <span class="consent-label">
+                            {{ $t('I consent to having my project considered for the public showcase') }}
+                          </span>
+                          <v-btn
+                            icon
+                            variant="text"
+                            size="x-small"
+                            @click="featureInfoDialog = true"
+                            class="ml-1"
+                          >
+                            <v-icon size="18" color="#c8102e">mdi-help-circle-outline</v-icon>
+                          </v-btn>
+                        </div>
+                        <p class="text-caption text-medium-emphasis mt-1 mb-0">
+                          {{ $t('Optional. Your project may be featured on our public projects page to celebrate student work.') }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
               <!-- Form Actions -->
               <div class="form-actions">
-                <v-btn 
+                <v-btn
                   variant="outlined"
                   size="large"
                   @click="$router.back()"
@@ -495,7 +542,7 @@ archive/restore projects. Includes comprehensive project review capabilities.
           <v-card-actions class="pa-4 pt-0">
             <v-spacer></v-spacer>
             <v-btn 
-              class="got-it-btn px-6"
+              class="submit-btn px-6"
               variant="flat"
               @click="mobileInfoDialog = false"
             >
@@ -669,7 +716,88 @@ archive/restore projects. Includes comprehensive project review capabilities.
           </v-card-text>
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
-            <v-btn class="got-it-btn px-6" variant="flat" @click="inviteSuccessDialog = false">
+            <v-btn class="submit-btn px-6" variant="flat" @click="inviteSuccessDialog = false">
+              {{ $t('Got it') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Featured Project Info Dialog -->
+      <v-dialog v-model="featureInfoDialog" max-width="600px">
+        <v-card class="info-dialog-card">
+          <v-card-title class="d-flex align-center dialog-title-bar pa-4">
+            <v-icon color="#c8102e" class="mr-3" size="28">mdi-star-circle</v-icon>
+            <span class="text-h6 font-weight-bold">{{ $t('About the Public Project Showcase') }}</span>
+          </v-card-title>
+
+          <v-card-text class="pa-5">
+            <p class="text-body-1 mb-5">
+              {{ $t('The Engaged Data platform features student projects on our public showcase page to celebrate student achievements and inspire others.') }}
+            </p>
+
+            <div class="consent-notice mb-5 pa-4">
+              <div class="d-flex align-start">
+                <v-icon color="#c8102e" class="mr-3 mt-1" size="22">mdi-information</v-icon>
+                <div>
+                  <p class="font-weight-bold mb-1" style="color: #c8102e;">{{ $t('Consent does not guarantee featuring.') }}</p>
+                  <p class="text-body-2 mb-0">{{ $t('Program administrators curate which projects appear on the public page.') }}</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="font-weight-bold mb-3">{{ $t('If your project is selected, the following may be displayed:') }}</p>
+
+            <div class="info-list mb-5">
+              <div class="info-list-item">
+                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <span>{{ $t('Project name and description') }}</span>
+              </div>
+              <div class="info-list-item">
+                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <span>{{ $t('Your name (as project author)') }}</span>
+              </div>
+              <div class="info-list-item">
+                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <span>{{ $t('Experience/program name and session') }}</span>
+              </div>
+              <div class="info-list-item">
+                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <span>{{ $t('Project tags and categories') }}</span>
+              </div>
+              <div class="info-list-item">
+                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <span>{{ $t('Any uploaded poster or presentation materials') }}</span>
+              </div>
+            </div>
+
+            <v-divider class="mb-5"></v-divider>
+
+            <p class="font-weight-bold mb-3">{{ $t('Your rights:') }}</p>
+
+            <div class="info-list">
+              <div class="info-list-item">
+                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <span>{{ $t('You can withdraw consent at any time through your project settings') }}</span>
+              </div>
+              <div class="info-list-item">
+                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <span>{{ $t('Your project will be removed from the public page upon withdrawal') }}</span>
+              </div>
+              <div class="info-list-item">
+                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <span>{{ $t('You retain full ownership of your work') }}</span>
+              </div>
+            </div>
+          </v-card-text>
+
+          <v-card-actions class="pa-4 pt-0">
+            <v-spacer></v-spacer>
+            <v-btn
+              class="submit-btn px-6"
+              variant="flat"
+              @click="featureInfoDialog = false"
+            >
               {{ $t('Got it') }}
             </v-btn>
           </v-card-actions>
@@ -707,6 +835,7 @@ export default {
       inviteDialog: false,
       inviteSuccessDialog: false,
       mobileInfoDialog: false,
+      featureInfoDialog: false,
       
       // Feedback for approve/reject
       approvalFeedback: '',
@@ -736,7 +865,8 @@ export default {
         instructorId: null,
         instructorName: '',
         instructorEmail: '',
-        projectStatus: 'Proposed'
+        projectStatus: 'Proposed',
+        consentToFeature: false
       },
       
       // Project members array
@@ -841,8 +971,7 @@ export default {
       this.loading = true;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
-        
+
         if (!projectId) {
           console.error('No project ID provided');
           toast.error(this.$t("Project ID not found, returning to projects list"), {
@@ -853,9 +982,9 @@ export default {
           this.$router.push({ name: 'instructorProjects' });
           return;
         }
-        
+
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/${projectId}`;
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         
         if (response.data) {
           const project = response.data;
@@ -869,7 +998,8 @@ export default {
             sessionData: project.experience ? project.experience.session : null,
             instructorId: project.instructor ? project.instructor.id : null,
             instructorName: project.instructor ? project.instructor.name : this.$t('Not assigned'),
-            instructorEmail: project.instructor ? project.instructor.email : ''
+            instructorEmail: project.instructor ? project.instructor.email : '',
+            consentToFeature: project.consentToFeature || false
           };
           this.selectedTags = project.tags || [];
           this.projectMembers = project.members || [];
@@ -990,15 +1120,15 @@ export default {
       this.updateLoading = true;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/update`;
         const projectPayload = {
           projectId: this.projectData._id,
           name: this.projectData.name,
           description: this.projectData.description,
-          tags: this.selectedTags
+          tags: this.selectedTags,
+          consentToFeature: this.projectData.consentToFeature
         };
-        await axios.put(apiURL, projectPayload, { headers: { token } });
+        await axios.put(apiURL, projectPayload);
         user.navigationData = {
           toastType: 'info',
           toastMessage: this.$t('Project updated successfully!'),
@@ -1041,8 +1171,7 @@ export default {
       this.approvingProject = true;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
-        
+
         // Try the update-status endpoint first, fall back to approve-project
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
         try {
@@ -1050,14 +1179,14 @@ export default {
             projectId: this.projectData._id,
             status: 'Active',
             feedback: this.approvalFeedback || undefined
-          }, { headers: { token } });
+          });
         } catch (statusError) {
           // Fallback to legacy approve-project endpoint
           apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/approve-project`;
-          await axios.post(apiURL, { 
+          await axios.post(apiURL, {
             projectId: this.projectData._id,
             feedback: this.approvalFeedback || undefined
-          }, { headers: { token } });
+          });
         }
         
         this.approveDialog = false;
@@ -1092,7 +1221,6 @@ export default {
       this.rejectingProject = true;
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
 
         // Try the update-status endpoint first, fall back to archive
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/projects/update-status`;
@@ -1101,13 +1229,13 @@ export default {
             projectId: this.projectData._id,
             status: 'Rejected',
             feedback: this.rejectionFeedback || undefined
-          }, { headers: { token } });
+          });
         } catch (statusError) {
           // Fallback to archive endpoint
           apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/archive/${this.projectData._id}`;
           await axios.patch(apiURL, {
             feedback: this.rejectionFeedback || undefined
-          }, { headers: { token } });
+          });
         }
 
         this.rejectDialog = false;
@@ -1142,9 +1270,8 @@ export default {
       this.archiveConfirmDialog = false;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/archive/${this.projectData._id}`;
-        await axios.patch(apiURL, {}, { headers: { token } });
+        await axios.patch(apiURL, {});
         user.navigationData = {
           toastType: 'info',
           toastMessage: this.$t('Project archived!'),
@@ -1176,9 +1303,8 @@ export default {
       this.restoreConfirmDialog = false;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/restore/${this.projectData._id}`; 
-        await axios.patch(apiURL, {}, { headers: { token } });
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/projects/restore/${this.projectData._id}`;
+        await axios.patch(apiURL, {});
         user.navigationData = {
           toastType: 'info', 
           toastMessage: this.$t('Project restored!'),
@@ -1476,6 +1602,54 @@ export default {
 
 .got-it-btn:hover {
   background-color: #a00d24 !important;
+}
+
+/* Consent Option */
+.consent-option {
+  background-color: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.consent-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+/* Info Dialog */
+.info-dialog-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dialog-title-bar {
+  background-color: rgba(200, 16, 46, 0.04);
+  border-bottom: 1px solid rgba(200, 16, 46, 0.12);
+}
+
+.consent-notice {
+  background-color: rgba(200, 16, 46, 0.06);
+  border-left: 4px solid #c8102e;
+  border-radius: 0 8px 8px 0;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-list-item {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.info-list-item span {
+  flex: 1;
+  word-wrap: break-word;
 }
 
 /* Responsive */

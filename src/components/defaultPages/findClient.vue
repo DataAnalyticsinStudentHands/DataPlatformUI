@@ -118,7 +118,6 @@
 </template>
 <script>
 import axios from "axios";
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 export default {
   data() {
     return {
@@ -131,11 +130,9 @@ export default {
     };
   },
   mounted() {
-    const user = useLoggedInUserStore()
-    let token = user.token
     let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
     axios
-      .get(apiURL, { headers: { token },})
+      .get(apiURL)
       .then(
         (resp) => {
           this.queryData = resp.data;
@@ -150,21 +147,17 @@ export default {
   },
   methods: {
     handleSubmitForm() {
-      const user = useLoggedInUserStore()
-      let token = user.token
       let apiURL = "";
       if (this.searchBy === "Client Name") {
         apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/search/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
       } else if (this.searchBy === "Client Number") {
         apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/search/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
       }
-      axios.get(apiURL, {headers: {token}}).then((resp) => {
+      axios.get(apiURL).then((resp) => {
         this.queryData = resp.data;
       });
     },
     clearSearch() {
-      const user = useLoggedInUserStore()
-      let token = user.token
       //Resets all the variables
       this.searchBy = "";
       this.firstName = "";
@@ -173,7 +166,7 @@ export default {
 
       //get all entries
       let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/`;
-      axios.get(apiURL, {headers: {token}}).then((resp) => {
+      axios.get(apiURL).then((resp) => {
         this.queryData = resp.data;
       });
     },

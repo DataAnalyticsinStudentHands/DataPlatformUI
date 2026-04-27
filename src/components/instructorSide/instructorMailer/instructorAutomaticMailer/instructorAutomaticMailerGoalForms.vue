@@ -177,7 +177,6 @@
 
 <script>
 import axios from 'axios';
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { toast } from 'vue3-toastify';
@@ -247,14 +246,11 @@ methods: {
     // Fetches the auto-mailer configurations for goal setting forms by sending a GET request to the backend API. Upon receiving the response, it extracts the configuration data, excluding the `_id` field, and assigns the modified configuration to the component's state.
     async fetchAutoMailerConfigGoalSettingForms() {
         this.configLoading = true;
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        // const token = import.meta.env.VITE_TOKEN;
         const type = 'goalSettingForm';
         let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/auto-mailer-config/${type}`;
 
         try {
-            const response = await axios.get(url, { headers: { token } });
+            const response = await axios.get(url);
             // Create a new object excluding the _id field
             const { _id, ...configWithoutId } = response.data;
             
@@ -362,12 +358,9 @@ methods: {
 
     // Applies the email configurations for goal setting forms by sending a PUT request to the backend API with the updated configuration data. Upon successful update, it displays a toast message confirming the update and sets the tab to 'overview'.
     applyEmailConfigs() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        // const token = import.meta.env.VITE_TOKEN;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/auto-mailer-config/goalSettingForm`;
         try {
-            const response = axios.put(apiURL, this.goalSettingFormEmail, { headers: { token }});
+            const response = axios.put(apiURL, this.goalSettingFormEmail);
             
             // Display the toast message
             toast.info('Goal Form Automatic Mailer Updated!', {

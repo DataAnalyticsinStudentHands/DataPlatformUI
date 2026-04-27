@@ -30,8 +30,6 @@
 
 <script>
 import axios from 'axios';
-import { useLoggedInUserStore } from '@/stored/loggedInUser';
-
 export default {
   name: 'HistoryTable',
   data() {
@@ -50,10 +48,7 @@ export default {
       this.loading = true;
       try {
         const API = import.meta.env.VITE_ROOT_API;
-        const token = useLoggedInUserStore().token;
-        const { data } = await axios.get(`${API}/backup/history`, {
-          headers: { token }
-        });
+        const { data } = await axios.get(`${API}/backup/history`);
         this.records = data;
       } catch (e) {
         console.error('Failed to load history:', e);

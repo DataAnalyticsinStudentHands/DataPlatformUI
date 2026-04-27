@@ -122,10 +122,9 @@ export default {
       this.submitting = true;
       try {
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/activities/`;
-        
-        const response = await axios.post(apiURL, this.activity, { headers: { token } });
+
+        const response = await axios.post(apiURL, this.activity);
         
         if (response.status === 201) {
           user.navigationData = {

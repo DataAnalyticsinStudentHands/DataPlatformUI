@@ -41,10 +41,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import { toast } from "vue3-toastify";
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
-
+import axios from 'axios';
+import { toast } from 'vue3-toastify';
 export default {
   name: "ScheduleForm",
   emits: ["schedule-updated"],
@@ -65,15 +63,12 @@ export default {
   async mounted() {
     this.loading = true;
     const API = import.meta.env.VITE_ROOT_API;
-    const userStore = useLoggedInUserStore();
-    const headers = { token: userStore.token };
-
     try {
       const url = `${API}/backup/config`;
-      const { data } = await axios.get(url, { headers });
-      // CHANGE 1
-      // this.recurrence = data.recurrence || 'biweekly';
-      this.recurrence = data?.schedule?.type || "biweekly";
+        const { data } = await axios.get(
+          url
+        );
+      this.recurrence = data.recurrence || 'biweekly';
     } catch (err) {
       console.error("Failed to load config:", err);
     } finally {
@@ -83,32 +78,14 @@ export default {
   methods: {
     async save() {
       this.saving = true;
-      const API = import.meta.env.VITE_ROOT_API;
-      const userStore = useLoggedInUserStore();
-      const headers = { token: userStore.token };
-      const url = `${API}/backup/config`;
-
-      const map = {
-        daily: "0 0 * * *",
-        weekly: "0 0 * * 0",
-        biweekly: "0 0 */14 * *", // ← ADD THIS
-        monthly: "0 0 1 * *",
-      };
-
-      let payload;
-      if (this.recurrence === "none") {
-        payload = { enabled: false };
-      } else {
-        payload = {
-          enabled: true,
-          schedule: { type: this.recurrence, value: map[this.recurrence] },
-        };
-      }
+      const API        = import.meta.env.VITE_ROOT_API;
+      const url        = `${API}/backup/config`;
+      const payload    = { recurrence: this.recurrence };
 
       try {
-        await axios.put(url, payload, { headers });
-        toast.success("Schedule updated!");
-        this.$emit("schedule-updated");
+        await axios.put(url, payload);
+        toast.success('Schedule updated!');
+        this.$emit('schedule-updated');
       } catch (err) {
         console.error(err);
         toast.error("Could not update schedule");

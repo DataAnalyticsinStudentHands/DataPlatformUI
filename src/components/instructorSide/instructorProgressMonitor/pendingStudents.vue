@@ -221,12 +221,10 @@ export default {
   methods: {
     async fetchPendingStudents() {
       this.loading = true;
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/user/check-status';
 
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.pendingStudents = response.data;
       } catch (error) {
         this.handleError(error);

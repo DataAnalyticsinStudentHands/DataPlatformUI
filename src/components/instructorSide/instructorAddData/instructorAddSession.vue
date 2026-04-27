@@ -196,13 +196,12 @@ export default {
         this.submitting = true;
         // Form is valid, submit the data
         const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/`;
 
         axios.post(apiURL, {
           sessionName: this.session.sessionName,
           sessionPeriod: this.session.sessionPeriod
-        }, { headers: { token } })
+        })
         .then(() => {
           user.navigationData = {
               activeTab: 0,

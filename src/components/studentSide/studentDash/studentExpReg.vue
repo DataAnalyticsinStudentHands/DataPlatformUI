@@ -504,12 +504,10 @@ export default {
 
       // API and initialization
       async fetchAvailableExperiencesForRegistration() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/experience-instances/available-for-registration';
 
         try {
-          const response = await axios.get(apiURL, { headers: { token } });
+          const response = await axios.get(apiURL);
           if (response.data && response.data.length > 0) {
             response.data.sort((a, b) => a.session.name.localeCompare(b.session.name));
 

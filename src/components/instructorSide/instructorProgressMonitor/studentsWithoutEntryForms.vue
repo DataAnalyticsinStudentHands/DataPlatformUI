@@ -264,12 +264,10 @@ export default {
   methods: {
     async fetchStudentsWithoutEntryForm() {
       this.loading = true;
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let url = import.meta.env.VITE_ROOT_API + '/instructorSideData/students-without-entry-form';
 
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.studentsWithoutEntryForm = response.data;
       } catch (error) {
         this.handleError(error);

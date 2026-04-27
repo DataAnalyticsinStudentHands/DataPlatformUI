@@ -706,12 +706,10 @@ computed: {
 methods: {
     // Fetch the latest completed goal setting form for background data
     async fetchLatestGoalSettingForm() {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/latest-goal-setting-form';
 
         try {
-            const response = await axios.get(apiURL, { headers: { token } });
+            const response = await axios.get(apiURL);
 
             if (response.data.formFound) {
                 this.hasCompletedGoalForm = true;
@@ -1080,10 +1078,9 @@ methods: {
     async handleSubmitForm() {
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
             const userID = user.userId;
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.incompleteFormID}`;
-            await axios.patch(apiURL, { completed: true, userID: userID,  }, { headers: { token }});
+            await axios.patch(apiURL, { completed: true, userID: userID,  });
             this.formSubmitSuccess = true;
             const motivatingMessages = [
                 "Goals successfully set! You're on the right track!",
@@ -1121,8 +1118,6 @@ methods: {
 
     // Update existing goal form
     async handleUpdateForm() {
-        const user = useLoggedInUserStore();
-        let token = user.token;
         let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/goal-forms/' + this.foundDocumentId;
 
         let updatedGoalForm = {
@@ -1131,7 +1126,7 @@ methods: {
             tempIncompleteFormID: this.incompleteFormID
         };
 
-        axios.put(apiURL, updatedGoalForm, { headers: { token } })
+        axios.put(apiURL, updatedGoalForm)
             .then(() => {
                 this.formSubmitSuccess = true;
                 const motivatingMessages = [
@@ -1192,8 +1187,6 @@ methods: {
             this.isFirstInput = false;
 
             try {
-                const user = useLoggedInUserStore();
-                const token = user.token;
                 let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/goal-forms";
                 
                 // selectedExperience.value is now expRegistrationID
@@ -1253,7 +1246,7 @@ methods: {
                     goalFormSubmission.hichProject = this.goalForm.hichProject;
                 }
 
-                const response = await axios.post(apiURL, goalFormSubmission, { headers: { token } });
+                const response = await axios.post(apiURL, goalFormSubmission);
                 this.incompleteFormID = response.data.goalForm._id;
             } catch (error) {
                     this.handleError(error);
@@ -1272,13 +1265,11 @@ methods: {
             return;
         }
         
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${formId}`;
-        
+
         // Extract hichProject and chwGrowthGoals from goalForm
         const { hichProject, chwGrowthGoals, ...restOfGoalForm } = this.goalForm;
-        
+
         const payload = {
             goalForm: {
                 ...restOfGoalForm,
@@ -1288,8 +1279,8 @@ methods: {
             // Send hichProject as a SEPARATE field, not inside goalForm
             hichProject: hichProject
         };
-        
-        axios.patch(apiURL, payload, { headers: { token }})
+
+        axios.patch(apiURL, payload)
             .then(response => {
                 console.log('Auto-save successful');
             })
@@ -1306,11 +1297,9 @@ methods: {
 
     // Check for existing incomplete forms
     async checkIncompleteForm() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-form-incomplete/`;
         try {
-            const response = await axios.get(apiURL, { headers: { token } });
+            const response = await axios.get(apiURL);
             if (response.data.incompleteForm) {
                 this.tempIncompleteForm = response.data;
                 this.showIncompleteFormFoundDialog = true;
@@ -1322,12 +1311,10 @@ methods: {
 
     // Delete incomplete form and start fresh
     async startNew() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/${this.tempIncompleteForm.incompleteForm._id}`;
 
         try {
-            await axios.delete(apiURL, { headers: { token } });
+            await axios.delete(apiURL);
             this.tempIncompleteForm = {};
             this.showIncompleteFormFoundDialog = false;
         } catch (error) {
@@ -1354,12 +1341,10 @@ methods: {
     },
 
   async fetchExistingGoalForm(expRegistrationID) {
-    const user = useLoggedInUserStore();
-    const token = user.token;
     const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/goal-forms/by-registration/${expRegistrationID}`;
-    
+
     try {
-      const response = await axios.get(apiURL, { headers: { token } });
+      const response = await axios.get(apiURL);
       
       if (response.data.formFound) {
         const existingForm = response.data.goalForm;

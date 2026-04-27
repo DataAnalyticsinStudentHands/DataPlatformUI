@@ -315,7 +315,6 @@
 
 <script>
 import axios from 'axios';
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -444,13 +443,10 @@ export default {
         // Fetches the active experience instances for the current instructor. Retrieves the data from the backend API by sending a GET request with the instructor's authentication token. Upon receiving the response, it maps the instance data to a more structured format and stores it in the component's state.
         async fetchExperiences() {
             this.viewLoading = true;
-            const user = useLoggedInUserStore();
-            let token = user.token;
-            // const token = import.meta.env.VITE_TOKEN;
             let apiURL = import.meta.env.VITE_ROOT_API + '/instructorSideData/experience-instances/active/';
-    
+
             try {
-                const response = await axios.get(apiURL, { headers: { token } });
+                const response = await axios.get(apiURL);
                 this.expInstances = response.data.map(instance => ({
                     expInstanceID: instance._id,
                     sessionName: instance.session.name,
@@ -475,13 +471,10 @@ export default {
         // Initiates the process of fetching students without goal forms associated with the selected experience. Retrieves the data from the backend API by sending a GET request with the instructor's authentication token and the selected experience ID. Upon receiving the response, it stores the student data in the component's state.
         async fetchStudentsWithoutGoalForm() {
             this.studentsLoading = true;
-            const user = useLoggedInUserStore();
-            let token = user.token;
-            // const token = import.meta.env.VITE_TOKEN;
             let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${this.selectedExperience}`;
-            
+
             try {
-                const response = await axios.get(url, { headers: { token } });
+                const response = await axios.get(url);
                 this.studentsWithoutGoalForms = response.data;
             } catch (error) {
                 this.handleError(error);
@@ -623,9 +616,6 @@ export default {
         async sendEmail() {
             if (!this.includeSpanish) {
                 try {
-                    const user = useLoggedInUserStore();
-                    let token = user.token;
-                    // const token = import.meta.env.VITE_TOKEN;
                     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer`;
 
                     // Prepare the email data
@@ -639,9 +629,7 @@ export default {
                     };
 
                     // Use axios.post to send the email data
-                    const response = await axios.post(apiURL, emailData, {
-                        headers: { token }
-                    });
+                    const response = await axios.post(apiURL, emailData);
 
                     this.setTab('overview');
                 } catch (error) {
@@ -651,9 +639,6 @@ export default {
                 }
             } else {
                 try {
-                    const user = useLoggedInUserStore();
-                    const token = user.token;
-                    // const token = import.meta.env.VITE_TOKEN;
                     let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer/multi-language`;
 
                     const emailData = {
@@ -668,9 +653,7 @@ export default {
                         htmlContentSpanish: this.editorDataSpanish
                     };
 
-                    const response = await axios.post(apiURL, emailData, {
-                        headers: { token }
-                    });
+                    const response = await axios.post(apiURL, emailData);
 
                     this.setTab('overview');
                 } catch (error) {

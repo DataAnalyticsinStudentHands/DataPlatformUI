@@ -168,7 +168,6 @@
 
 <script>
 import axios from 'axios';
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { toast } from 'vue3-toastify';
@@ -238,14 +237,11 @@ methods: {
     // Fetches auto-mailer configuration settings for entry forms from the backend API. Sets the loading state to true before making the request. Upon receiving the response, extracts the configuration data and assigns it to the `entryFormEmail` property.
     async fetchAutoMailerConfigEntryForms() {
         this.configLoading = true;
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        // const token = import.meta.env.VITE_TOKEN;
         const type = 'entryForm';
         let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/auto-mailer-config/${type}`;
 
         try {
-            const response = await axios.get(url, { headers: { token } });
+            const response = await axios.get(url);
             // Create a new object excluding the _id field
             const { _id, ...configWithoutId } = response.data;
             
@@ -316,12 +312,9 @@ methods: {
 
     // Applies the email configurations by sending a PUT request to the backend API with the updated entry form email settings. Upon successful update, displays a toast message confirming the update and sets the tab to 'overview'.
     applyEmailConfigs() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        // const token = import.meta.env.VITE_TOKEN;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/auto-mailer-config/entryForm`;
         try {
-            const response = axios.put(apiURL, this.entryFormEmail, { headers: { token }});
+            const response = axios.put(apiURL, this.entryFormEmail);
 
             // Display the toast message
             toast.info('Entry Form Automatic Mailer Updated!', {

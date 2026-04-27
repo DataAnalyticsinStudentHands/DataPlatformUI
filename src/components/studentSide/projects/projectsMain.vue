@@ -816,10 +816,8 @@ export default {
       this.allMyProjects = [];
       this.proposedProjects = [];
       try {
-        const user = this.loggedInUserStore;
-        let token = user.token;
-        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`; 
-        const response = await axios.get(apiURL, { headers: { token } });
+        let apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/student/projects`;
+        const response = await axios.get(apiURL);
         if (response.data && response.data.projects) {
           const projects = response.data.projects.map(project => {
             let experienceInfo = this.$t('Not assigned');
@@ -1109,10 +1107,9 @@ export default {
     async fetchPendingInvitations() {
       this.loadingInvitations = true;
       try {
-        const token = this.loggedInUserStore.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations`;
-        
-        const response = await axios.get(apiURL, { headers: { token } });
+
+        const response = await axios.get(apiURL);
         
         if (response.data && response.data.invitations) {
           this.pendingInvitations = response.data.invitations;
@@ -1144,12 +1141,10 @@ export default {
     // Accepting invitations
     async handleAcceptInvitation(invitationId) {
       try {
-        const token = this.loggedInUserStore.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations/${invitationId}/respond`;
-        
-        const response = await axios.post(apiURL, 
-          { accept: true }, 
-          { headers: { token } }
+
+        const response = await axios.post(apiURL,
+          { accept: true }
         );
         
         if (response.data) {
@@ -1179,12 +1174,10 @@ export default {
     // Declining invitations
     async handleDeclineInvitation(invitationId) {
       try {
-        const token = this.loggedInUserStore.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/user/project-invitations/${invitationId}/respond`;
-        
-        const response = await axios.post(apiURL, 
-          { accept: false }, 
-          { headers: { token } }
+
+        const response = await axios.post(apiURL,
+          { accept: false }
         );
         
         if (response.data) {

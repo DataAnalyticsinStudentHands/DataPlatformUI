@@ -243,7 +243,6 @@
   </main>
 </template>
 <script>
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import axios from "axios";
@@ -276,13 +275,9 @@ export default {
     };
   },
   beforeMount() {
-    const user = useLoggedInUserStore()
-    let token = user.token
     let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
     axios
-      .get(url + `/eventdata/id/${this.$route.params.id}`, {
-          headers: { token },
-        })
+      .get(url + `/eventdata/id/${this.$route.params.id}`)
       .then((resp) => {
         let data = resp.data[0];
         this.event.eventName = data.eventName;
@@ -293,9 +288,7 @@ export default {
         this.attendeeIDs = data.attendees;
         for (let i = 0; i < this.attendeeIDs.length; i++) {
           axios
-            .get( url + `/primarydata/id/${this.attendeeIDs[i]}`, {
-          headers: { token },
-        })
+            .get( url + `/primarydata/id/${this.attendeeIDs[i]}`)
             .then((resp) => {
               let data = resp.data[0];
               this.attendeeData.push({
@@ -311,13 +304,9 @@ export default {
   },
   methods: {
     handleEventUpdate() {
-      const user = useLoggedInUserStore()
-      let token = user.token
       let url = import.meta.env.VITE_ROOT_API + `/userdata/user`;
       this.event.services = this.checkedServices;
-      axios.put(url + `/eventdata/${this.id}`, this.event, {
-          headers: { token },
-        }).then(() => {
+      axios.put(url + `/eventdata/${this.id}`, this.event).then(() => {
         toast.success("Update has been saved.");
         this.$router.back().catch((error) => {
           this.handleError(error);

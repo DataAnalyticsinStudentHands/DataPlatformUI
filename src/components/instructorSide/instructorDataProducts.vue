@@ -50,7 +50,7 @@
   
   <script>
   import axios from 'axios';
-  import { useLoggedInUserStore } from "@/stored/loggedInUser";
+
   
   export default {
     data(){
@@ -64,10 +64,8 @@
         // Downloads entry data as a CSV file. Fetches JSON data from the API endpoint and converts it to CSV format. Then, triggers the download of the CSV file.
         async downloadEntryDataAsCSV() {
             try {
-                const user = useLoggedInUserStore();
-                let token = user.token;
                 // Fetch JSON data from the API endpoint
-                const response = await axios.get(import.meta.env.VITE_ROOT_API + '/instructorSideData/data-product/entry-forms', { headers: { token } });
+                const response = await axios.get(import.meta.env.VITE_ROOT_API + '/instructorSideData/data-product/entry-forms');
                 const jsonData = response.data.data;
 
                 // Convert JSON to CSV format using the renamed headers
@@ -98,10 +96,8 @@
         // Downloads all goal data as a CSV file. Fetches JSON data from the API endpoint and converts it to CSV format. Then, triggers the download of the CSV file.
         async downloadAllGoalDataAsCSV() {
             try {
-            const user = useLoggedInUserStore();
-            let token = user.token;
             // Fetch JSON data from the API endpoint
-            const response = await axios.get(import.meta.env.VITE_ROOT_API +'/instructorSideData/data-product/goal-forms/', { headers: { token } });
+            const response = await axios.get(import.meta.env.VITE_ROOT_API +'/instructorSideData/data-product/goal-forms/');
             const jsonData = response.data;
     
             // Convert JSON to CSV format
@@ -132,10 +128,8 @@
       // Downloads all exit data as a CSV file. Fetches JSON data from the API endpoint and converts it to CSV format. Then, triggers the download of the CSV file.
       async downloadAllExitDataAsCSV() {
         try {
-          const user = useLoggedInUserStore();
-          let token = user.token;
           // Fetch JSON data from the API endpoint
-          const response = await axios.get(import.meta.env.VITE_ROOT_API +'/instructorSideData/data-product/exit-forms', { headers: { token } });
+          const response = await axios.get(import.meta.env.VITE_ROOT_API +'/instructorSideData/data-product/exit-forms');
           const jsonData = response.data;
   
           // Convert JSON to CSV format

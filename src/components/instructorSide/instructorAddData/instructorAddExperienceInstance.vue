@@ -786,11 +786,8 @@ export default {
     async fetchActiveSessions() {
       useLoggedInUserStore().startLoading();
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-        
         const apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/sessions/active`;
-        const resp = await axios.get(apiURL, { headers: { token } });
+        const resp = await axios.get(apiURL);
         this.sessionData = resp.data;
       } catch (error) {
         this.handleError(error);
@@ -800,12 +797,9 @@ export default {
     },
 
     async fetchActivityData() {
-      const user = useLoggedInUserStore();
-      const token = user.token;
-
       const apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
       try {
-        const resp = await axios.get(apiURL, { headers: { token } });
+        const resp = await axios.get(apiURL);
         this.activityData = resp.data.filter(activity => activity.activityStatus === true);
       } catch (error) {
         this.handleError(error);
@@ -815,12 +809,9 @@ export default {
     async fetchActiveExperiences(sessionID) {
       useLoggedInUserStore().startLoading();
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
-
-        const apiURL = import.meta.env.VITE_ROOT_API + 
+        const apiURL = import.meta.env.VITE_ROOT_API +
           `/instructorSideData/experiences/available-experiences-for-instance?sessionID=${sessionID}`;
-        const resp = await axios.get(apiURL, { headers: { token } });
+        const resp = await axios.get(apiURL);
         this.experienceData = resp.data;
         
         // Add first instance automatically after loading experiences
@@ -900,14 +891,13 @@ export default {
       // API call
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
 
         const apiURL = import.meta.env.VITE_ROOT_API + `/instructorSideData/experience-instances/multiple`;
 
         await axios.post(apiURL, {
           sessionID: this.selectedSession._id,
           experienceData
-        }, { headers: { token } });
+        });
 
         // Handle success
         user.navigationData = {

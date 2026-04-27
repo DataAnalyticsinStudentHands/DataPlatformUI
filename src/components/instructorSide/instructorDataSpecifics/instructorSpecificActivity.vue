@@ -321,9 +321,8 @@ export default {
     async fetchActivityData() {
       try {
         const store = useLoggedInUserStore();
-        let token = store.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/${store.navigationData.activityID}`;
-        const response = await axios.get(apiURL, { headers: { token }});
+        const response = await axios.get(apiURL);
         
         this.activity = {
           ...this.activity,
@@ -347,9 +346,8 @@ export default {
       
       try {
         const store = useLoggedInUserStore();
-        let token = store.token;
         let checkURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity/${store.navigationData.activityID}`;
-        const checkResponse = await axios.get(checkURL, { headers: { token } });
+        const checkResponse = await axios.get(checkURL);
 
         if (action === "update") {
           if (checkResponse.data.expInstancesFound === true) {
@@ -376,7 +374,6 @@ export default {
 
     async proceedWithUpdate() {
       const user = useLoggedInUserStore();
-      const token = user.token;
 
       const updatedActivity = {
         activityName: this.activity.activityName,
@@ -387,8 +384,8 @@ export default {
       let experienceInstanceUpdateURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/activity-update/${user.navigationData.activityID}`;
 
       try {
-        await axios.put(activityUpdateURL, updatedActivity, { headers: { token } });
-        const instanceUpdateResponse = await axios.put(experienceInstanceUpdateURL, { activityName: this.activity.activityName }, { headers: { token } });
+        await axios.put(activityUpdateURL, updatedActivity);
+        const instanceUpdateResponse = await axios.put(experienceInstanceUpdateURL, { activityName: this.activity.activityName });
 
         let toastMessage = 'Activity updated!';
         if (instanceUpdateResponse.data && instanceUpdateResponse.data.updatedInstances && instanceUpdateResponse.data.updatedInstances.length > 0) {
@@ -404,9 +401,8 @@ export default {
     async checkIfActivityCanBeDeleted() {
       try {
         const store = useLoggedInUserStore();
-        let token = store.token;
         let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/can-be-deleted/${store.navigationData.activityID}`;
-        const response = await axios.get(apiURL, { headers: { token }});
+        const response = await axios.get(apiURL);
         this.canActivityBeDeleted = response.data.canBeDeleted;
       } catch (error) {
         this.handleError(error);
@@ -434,10 +430,9 @@ export default {
     async deleteActivity() {
       try {
         const user = useLoggedInUserStore();
-        const token = user.token;
         let deleteURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activity/delete/${user.navigationData.activityID}`;
 
-        await axios.delete(deleteURL, { headers: { token } });
+        await axios.delete(deleteURL);
 
         user.navigationData = {
           activeTab: 2,

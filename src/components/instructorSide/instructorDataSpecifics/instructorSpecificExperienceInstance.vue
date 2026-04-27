@@ -481,12 +481,10 @@ export default {
   methods: {
     async fetchExperienceInstance() {
       const instanceID = useLoggedInUserStore().navigationData.id;
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/${instanceID}`;
 
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         const instanceData = response.data;
         this.selectedSessionID = instanceData.sessionID;
         this.selectedExperienceID = instanceData.experience.id;
@@ -513,12 +511,10 @@ export default {
     },
 
     async fetchSessionDetails() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let sessionAPIURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/${this.selectedSessionID}`;
-      
+
       try {
-        const sessionResponse = await axios.get(sessionAPIURL, { headers: { token } });
+        const sessionResponse = await axios.get(sessionAPIURL);
         this.sessionData = sessionResponse.data;
       } catch (error) {
         this.handleError(error);
@@ -526,12 +522,10 @@ export default {
     },
 
     async fetchExperienceDetails() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let experienceAPIURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/${this.selectedExperienceID}`;
 
       try {
-        const experienceResponse = await axios.get(experienceAPIURL, { headers: { token } });
+        const experienceResponse = await axios.get(experienceAPIURL);
         this.experienceData = experienceResponse.data;
       } catch (error) {
         this.handleError(error);
@@ -539,12 +533,10 @@ export default {
     },
 
     async fetchActivityData() {
-      const user = useLoggedInUserStore();
-      let token = user.token;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/activities/`;
 
       try {
-        const response = await axios.get(apiURL, { headers: { token } });
+        const response = await axios.get(apiURL);
         const activities = response.data;
         this.activityData = activities.filter(activity => activity.activityStatus === true);
         this.originalActivityData = [...this.activityData];
@@ -556,12 +548,11 @@ export default {
     // Checks if activities can be updated for this experience instance
     async checkIfActivitiesCanBeUpdated() {
       const user = useLoggedInUserStore();
-      const token = user.token;
       const instanceID = user.navigationData.id;
       const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/can-update-activities/${instanceID}`;
 
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.canUpdateActivities = response.data.canUpdateActivities;
         if (!this.canUpdateActivities) {
           this.activitiesLockMessage = `${response.data.completedExitFormCount} exit form(s) submitted`;
@@ -575,12 +566,11 @@ export default {
 
     async checkIfExpInstanceCanBeDeleted() {
       const user = useLoggedInUserStore();
-      const token = user.token;
       const instanceID = user.navigationData.id;
       const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instance/can-be-deleted/${instanceID}`;
 
       try {
-        const response = await axios.get(url, { headers: { token } });
+        const response = await axios.get(url);
         this.canExpInstanceBeDeleted = response.data.canBeDeleted;
       } catch (error) {
         this.handleError(error);
@@ -595,11 +585,10 @@ export default {
     async deleteExpInstance() {
       const user = useLoggedInUserStore();
       const instanceID = user.navigationData.id;
-      const token = user.token;
       const url = `${import.meta.env.VITE_ROOT_API}/instructorSideData/exp-instance/delete/${instanceID}`;
 
       try {
-        await axios.delete(url, { headers: { token } });
+        await axios.delete(url);
 
         user.navigationData = {
           activeTab: 0,
@@ -635,7 +624,6 @@ export default {
       this.isSubmitting = true;
 
       const user = useLoggedInUserStore();
-      let token = user.token;
       const instanceID = user.navigationData.id;
       let apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/update-single-instance/${instanceID}`;
 
@@ -645,7 +633,7 @@ export default {
           activities: this.selectedActivities,
           registrationCode: this.registrationCode,
           instructor: this.instructor.trim() || null
-        }, { headers: { token } });
+        });
 
         useLoggedInUserStore().navigationData = {
           activeTab: 0,

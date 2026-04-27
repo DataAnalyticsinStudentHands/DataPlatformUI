@@ -1466,10 +1466,9 @@ methods: {
     async handleSubmitForm() {
         try {
             const user = useLoggedInUserStore();
-            const token = user.token;
             const userID = user.userId;
             const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.incompleteFormID}`;
-            await axios.patch(apiURL, { completed: true, userID: userID,  }, { headers: { token }});
+            await axios.patch(apiURL, { completed: true, userID: userID,  });
             this.formSubmitSuccess = true;
             
             // Randomized success messages
@@ -1509,8 +1508,6 @@ methods: {
 
     // Update existing exit form
 async handleUpdateForm() {
-    const user = useLoggedInUserStore();
-    let token = user.token;
     let apiURL = import.meta.env.VITE_ROOT_API + '/studentSideData/exit-forms/' + this.foundDocumentId;
 
     const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
@@ -1623,7 +1620,7 @@ async handleUpdateForm() {
         tempIncompleteFormID: this.incompleteFormID
     };
 
-    axios.put(apiURL, updatedExitForm, { headers: { token } })
+    axios.put(apiURL, updatedExitForm)
         .then(() => {
             this.formSubmitSuccess = true;
             const motivatingMessages = [
@@ -1686,8 +1683,6 @@ async handleFirstInput() {
         this.isFirstInput = false;
 
         try {
-            const user = useLoggedInUserStore();
-            const token = user.token;
             let apiURL = import.meta.env.VITE_ROOT_API + "/studentSideData/exit-forms";
 
             const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || this.tempIncompleteForm.incompleteForm.expRegistrationID;
@@ -1796,9 +1791,7 @@ async handleFirstInput() {
             }
 
             try {
-                const response = await axios.post(apiURL, exitFormData, {
-                    headers: { token }
-                });
+                const response = await axios.post(apiURL, exitFormData);
                 this.incompleteFormID = response.data.exitForm._id;
             } catch (error) {
                 this.handleError(error);
@@ -1821,11 +1814,9 @@ async handleFirstInput() {
 
     // Check for incomplete forms on mount
     async checkIncompleteForm() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-form-incomplete/`;
         try {
-            const response = await axios.get(apiURL, { headers: { token } });
+            const response = await axios.get(apiURL);
             if (response.data.incompleteForm) {
                 this.tempIncompleteForm = response.data;
                 this.expRegistrationIDFromIncompleteBackup = this.tempIncompleteForm.incompleteForm.expRegistrationID;
@@ -1839,12 +1830,10 @@ async handleFirstInput() {
 
     // Start new form, deleting incomplete one
     async startNew() {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${this.tempIncompleteForm.incompleteForm._id}`;
 
         try {
-            await axios.delete(apiURL, { headers: { token } });
+            await axios.delete(apiURL);
             this.tempIncompleteForm = {};
             this.showIncompleteFormFoundDialog = false;
             this.startNewSelected = true;
@@ -2087,12 +2076,9 @@ updateExitForm() {
         return;
     }
     
-    const user = useLoggedInUserStore();
-    const token = user.token;
-    const userID = user.userId;
     const apiURL = `${import.meta.env.VITE_ROOT_API}/studentSideData/exit-forms/${formId}`;
 
-    const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) || 
+    const expRegistrationID = (this.selectedExperience && this.selectedExperience.expRegistrationID) ||
         (this.tempIncompleteForm?.incompleteForm?.expRegistrationID);
 
     // Prepare autosave data
@@ -2198,7 +2184,7 @@ updateExitForm() {
         };
     }
 
-    axios.patch(apiURL, exitFormData, { headers: { token }})
+    axios.patch(apiURL, exitFormData)
         .then(response => {
         })
         .catch(error => {
