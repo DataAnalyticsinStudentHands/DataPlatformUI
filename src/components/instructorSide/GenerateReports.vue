@@ -233,6 +233,12 @@ export default {
           },
         );
 
+        const contentType = response?.headers?.["content-type"] || "";
+        if (!contentType.includes("application/pdf")) {
+          toast.error("Report generation returned a non-PDF response.");
+          return;
+        }
+
         const sessionLabel = selectedSession?.name || this.selectedSessionId;
         const experienceLabel = selectedExperience?.label || this.selectedExperienceId;
         const safeSession = String(sessionLabel || "session")
@@ -243,15 +249,16 @@ export default {
           .toLowerCase();
         const fileName = `${this.selectedReportType}_${safeSession}_${safeExperience}.pdf`;
 
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        const url = window.URL.createObjectURL(blob);
+        // responseType: "blob" already returns a Blob. Reuse it directly.
+        const url = window.URL.createObjectURL(response.data);
         const link = document.createElement("a");
         link.href = url;
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
-        window.URL.revokeObjectURL(url);
         document.body.removeChild(link);
+        // Avoid revoking immediately; some browsers may fail to read large blobs in time.
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 30000);
 
         toast.success("Report generated successfully. Download started.");
       } catch (error) {
