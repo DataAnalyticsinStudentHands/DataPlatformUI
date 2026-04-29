@@ -2,7 +2,7 @@
  * src/router/index.js
  *
  * Vue Router configuration defining all application routes with role-based access control.
- * Implements JWT token verification for protected routes and manages navigation guards for
+//  * Implements JWT token verification for protected routes and manages navigation guards for
  * authentication. Routes are organized by user roles (Student, Instructor, Admin) with
  * appropriate middleware checks. Handles automatic redirects based on authentication status
  * and user roles.
@@ -768,12 +768,12 @@ const routes = [
   },
 
   // Dev Story Collector Form — public for quick development access
-  {
-    path: "/dev/storyCollectorForm",
-    name: "devStoryCollectorForm",
-    component: () =>
-      import("@/components/dev/storyCollectorForm/storyFormMain.vue"),
-  },
+  // {
+  //   path: "/dev/storyCollectorForm",
+  //   name: "devStoryCollectorForm",
+  //   component: () =>
+  //     import("@/components/dev/storyCollectorForm/storyFormMain.vue"),
+  // },
 
   // Dev Speech-to-Text demo — DISABLED for production
   // {
@@ -822,7 +822,7 @@ const publicPaths = [
   "/publicGallery",
   "/publicProjects",
   // Dev Story Collector Form
-  "/dev/storyCollectorForm",
+  // "/dev/storyCollectorForm",
 ];
 
 // Pattern-based public paths (for dynamic routes like /project/:projectId)
