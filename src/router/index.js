@@ -767,6 +767,14 @@ const routes = [
       import("@/components/studentSide/projectView/ProjectEditorMain.vue"),
   },
 
+  // Dev Story Collector Form — public for quick development access
+  {
+    path: "/dev/storyCollectorForm",
+    name: "devStoryCollectorForm",
+    component: () =>
+      import("@/components/dev/storyCollectorForm/storyFormMain.vue"),
+  },
+
   // Dev Speech-to-Text demo — DISABLED for production
   // {
   //   path: "/dev/speechToText",
@@ -813,6 +821,8 @@ const publicPaths = [
   "/publicGallery2",
   "/publicGallery",
   "/publicProjects",
+  // Dev Story Collector Form
+  "/dev/storyCollectorForm",
 ];
 
 // Pattern-based public paths (for dynamic routes like /project/:projectId)
