@@ -1,18 +1,14 @@
 <!--
-/**
- * src/components/admin/backup/HistoryTable.vue
- *
- * Displays a history of database backup operations in a table. This component fetches 
- * backup records from the server, showing the timestamp and file size for each. It includes 
- * methods for formatting data for display and can be programmatically refreshed by its 
- * parent component to show the latest history.
- */
+ historyTable.vue
+ 
+ Displays a history of database backups 
 -->
 <template>
   <div>
     <v-data-table
       :headers="headers"
       :items="records"
+      :items-per-page="5"
       :loading="loading"
       loading-text="Loading history…"
       class="elevation-1"
@@ -44,19 +40,25 @@ export default {
       ]
     };
   },
+  computed: {
+    apiBase() {
+      return import.meta.env.VITE_ROOT_API;
+    }
+  },
   methods: {
+    getHeaders() {
+      return { token: useLoggedInUserStore().token };
+    },
     async loadHistory() {
-      // Fetches the backup history from the server and updates `records`.
+      // Fetches backup history from the server and updates records.
       this.loading = true;
       try {
-        const API = import.meta.env.VITE_ROOT_API;
-        const token = useLoggedInUserStore().token;
-        const { data } = await axios.get(`${API}/backup/history`, {
-          headers: { token }
+        const { data } = await axios.get(`${this.apiBase}/backup/history`, {
+          headers: this.getHeaders()
         });
         this.records = data;
       } catch (e) {
-        console.error('Failed to load history:', e);
+        console.error('[Backup] load history failed:', e.message);
       } finally {
         this.loading = false;
       }

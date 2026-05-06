@@ -1,12 +1,7 @@
 <!--
-/**
- * src/components/admin/backup/HistoryTable.vue
- *
- * Displays a history of database backup operations in a table. This component fetches 
- * backup records from the server, showing the timestamp and file size for each. It includes 
- * methods for formatting data for display and can be programmatically refreshed by its 
- * parent component to show the latest history.
- */
+ collectionsForm.vue
+ 
+ Fetches available collections from serverand allows the user to select which collections should be included in backups.
 -->
 <template>
   <div>
@@ -83,7 +78,6 @@ import { useLoggedInUserStore } from '@/stored/loggedInUser';
 
 export default {
   name: 'CollectionsForm',
-  emits: ['collections-changed'],
   data() {
     return {
       collections: [],      // all collection names from the database
@@ -92,28 +86,34 @@ export default {
       saving: false
     };
   },
+  computed: {
+    apiBase() {
+      return import.meta.env.VITE_ROOT_API;
+    }
+  },
   async mounted() {
     this.loading = true;
     try {
-      const API   = import.meta.env.VITE_ROOT_API;
-      const token = useLoggedInUserStore().token;
       const { data } = await axios.get(
-        `${API}/backup/collections`,
-        { headers: { token } }
+        `${this.apiBase}/backup/collections`,
+        { headers: this.getHeaders() }
       );
-      this.collections = data.allCollections;
+      this.collections = Array.isArray(data?.allCollections) ? data.allCollections : [];
 
       // If no explicit selection saved, default to all
-      this.selected    = data.selectedCollections.length
+      this.selected    = Array.isArray(data?.selectedCollections) && data.selectedCollections.length
         ? data.selectedCollections
         : [...this.collections];
     } catch (err) {
-      console.error('Failed to load collections:', err);
+      console.error('[Backup] load collections failed:', err.message);
     } finally {
       this.loading = false;
     }
   },
   methods: {
+    getHeaders() {
+      return { token: useLoggedInUserStore().token };
+    },
     selectAll() {
       this.selected = [...this.collections];
     },
@@ -124,18 +124,15 @@ export default {
       // Persists the current selection to the server and notifies parent.
       this.saving = true;
       try {
-        const API   = import.meta.env.VITE_ROOT_API;
-        const token = useLoggedInUserStore().token;
         const payload = { collections: this.selected };
         await axios.put(
-          `${API}/backup/collections`,
+          `${this.apiBase}/backup/config`,
           payload,
-          { headers: { token } }
+          { headers: this.getHeaders() }
         );
-        this.$emit('collections-changed', payload.collections);
         toast.success('Collections saved!');
       } catch (err) {
-        console.error('Failed to save collections:', err);
+        console.error('[Backup] save collections failed:', err.message);
         toast.error('Could not save collections.');
       } finally {
         this.saving = false;

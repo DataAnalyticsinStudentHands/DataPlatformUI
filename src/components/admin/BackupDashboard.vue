@@ -1,11 +1,7 @@
 <!--
-/**
- * src/components/admin/BackupDashboard.vue
- * 
- * Main dashboard component for managing database backups. It integrates ScheduleForm, 
- * CollectionsForm, and HistoryTable to provide a comprehensive UI for scheduling, 
- * configuring, and viewing backup history.
- */
+ backupDashboard.vue
+
+Main dashboard component for managing database backups. 
 -->
 <template>
   <v-container class="py-4">
@@ -16,7 +12,6 @@
       <strong>Next scheduled run:</strong>
       {{ nextRunDisplay }}
     </p>
-
     <v-row>
       <v-col cols="12" md="6">
         <!-- Recurrence configuration -->
@@ -31,7 +26,7 @@
         <v-card class="pa-3 mt-4">
           <v-card-title>Collections</v-card-title>
           <v-card-text>
-            <CollectionsForm @collections-changed="onCollectionsChanged" />
+            <CollectionsForm />
           </v-card-text>
         </v-card>
 
@@ -67,9 +62,9 @@ import axios from "axios";
 import { toast } from "vue3-toastify";
 import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
-import ScheduleForm from "./backup/ScheduleForm.vue";
-import CollectionsForm from "./backup/CollectionsForm.vue";
-import HistoryTable from "./backup/HistoryTable.vue";
+import ScheduleForm from "./backup/scheduleForm.vue";
+import CollectionsForm from "./backup/collectionsForm.vue";
+import HistoryTable from "./backup/historyTable.vue";
 
 export default {
   name: "BackupDashboard",
@@ -78,9 +73,12 @@ export default {
   data() {
     return {
       nextRun: null, // ISO string for the next scheduled backup
+      lastBackup: null,
+      lastBackupStatus: null,
+      serverTimezone: null,
       running: false,
-      selectedCollections: [],
-      isLoadingNextRun: true, // Track loading state
+      isLoadingNextRun: true,
+      refreshTimer: null,
     };
   },
   computed: {
@@ -96,71 +94,115 @@ export default {
       try {
         return new Date(this.nextRun).toLocaleString();
       } catch (err) {
-        console.error("Error formatting date:", err);
+        console.warn(
+          "[Backup] bad nextRun: " + String(this.nextRun) + " — " + err.message,
+        );
         return "Invalid date";
       }
     },
+    lastBackupDisplay() {
+      if (!this.lastBackup) {
+        return "Never";
+      }
+      return new Date(this.lastBackup).toLocaleString();
+    },
+    lastBackupStatusDisplay() {
+      if (!this.lastBackupStatus) {
+        return "Not available";
+      }
+      const normalized = String(this.lastBackupStatus).toLowerCase();
+      return normalized === "success" ? "Success" : "Failed";
+    },
+    lastBackupStatusClass() {
+      if (!this.lastBackupStatus) {
+        return "status-muted";
+      }
+      const normalized = String(this.lastBackupStatus).toLowerCase();
+      return normalized === "success" ? "status-success" : "status-failed";
+    },
+    timezoneDisplay() {
+      return (
+        this.serverTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+      );
+    },
+    apiBase(){
+      return import.meta.env.VITE_ROOT_API;
+    }
   },
   async mounted() {
     await this.fetchNextRun();
+    this.refreshTimer = setInterval(() => {
+      this.fetchNextRun({ quiet: true });
+    }, 60000);
+    document.addEventListener("visibilitychange", this.handleVisibilityChange);
+  },
+  beforeUnmount() {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+    }
+    document.removeEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange,
+    );
   },
   methods: {
-    onCollectionsChanged(list) {
-      // Receives updated collection list from CollectionsForm.
-      this.selectedCollections = list;
-    },
-    async fetchNextRun() {
-      // Retrieves the nextRun timestamp from /backup/config
-      this.isLoadingNextRun = true;
-
-      const API = import.meta.env.VITE_ROOT_API;
-      const userStore = useLoggedInUserStore();
-      const headers = { token: userStore.token };
-      const url = `${API}/backup/config`;
+    async fetchNextRun({ quiet = false } = {}) {
+      // Retrieves the nextRun timestamp from the API
+      if (!quiet) {
+        this.isLoadingNextRun = true;
+      }
 
       try {
-        const { data } = await axios.get(url, { headers });
+        const { data } = await axios.get(`${this.apiBase}/backup/config`, {
+          headers: this.getHeaders(),
+        });
 
-        // Backend now returns nextRun in the config response
         this.nextRun = data.nextRun || null;
-
-        console.log("[BackupDashboard] Next run loaded:", this.nextRun);
+        this.lastBackup = data.lastBackup || null;
+        this.lastBackupStatus = data.lastBackupStatus || null;
+        this.serverTimezone = data.serverTimezone || null;
       } catch (err) {
-        console.error("[BackupDashboard] Could not load schedule:", err);
-        toast.error("Failed to load backup schedule.");
+        console.error("[Backup] load next run failed:", err.message);
+        if (!quiet) {
+          toast.error("Failed to load backup schedule.");
+        }
         this.nextRun = null;
       } finally {
-        this.isLoadingNextRun = false;
+        if (!quiet) {
+          this.isLoadingNextRun = false;
+        }
+      }
+    },
+    async handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        await this.fetchNextRun({ quiet: true });
       }
     },
     async runNow() {
-      // Triggers an ad-hoc backup
+      // Runs ad-hoc backup
       this.running = true;
-      const API = import.meta.env.VITE_ROOT_API;
-      const userStore = useLoggedInUserStore();
-      const headers = { token: userStore.token };
-      const url = `${API}/backup/run`;
 
       try {
-        await axios.post(url, null, { headers });
+        await axios.post(`${this.apiBase}/backup/run`, null, {
+          headers: this.getHeaders(),
+        });
         toast.success("Backup completed!");
 
-        // Refresh next run time and history
+        // Fetches next run time and history
         await this.fetchNextRun();
         if (this.$refs.historyTable) {
           await this.$refs.historyTable.loadHistory();
         }
       } catch (err) {
-        console.error("[BackupDashboard] Backup failed:", err);
-        toast.error("Backup failed. Check console for details.");
+        const msg = err?.response?.data?.message || err?.message || "request failed";
+        console.error("[Backup] POST /run failed:", msg);
+        toast.error("Backup failed");
       } finally {
         this.running = false;
       }
     },
-    onScheduleUpdated(newNextRun) {
-      // Handler for ScheduleForm's update event
-      console.log("[BackupDashboard] Schedule updated, refreshing...");
-      this.fetchNextRun();
+    getHeaders(){
+      return { token: useLoggedInUserStore().token };
     },
   },
 };
@@ -170,5 +212,16 @@ export default {
 .v-card-title {
   padding-left: 0;
   padding-top: 0;
+}
+.status-success {
+  color: #2e7d32;
+  font-weight: 600;
+}
+.status-failed {
+  color: #c62828;
+  font-weight: 600;
+}
+.status-muted {
+  color: #666;
 }
 </style>

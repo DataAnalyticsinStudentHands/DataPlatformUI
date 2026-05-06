@@ -432,7 +432,7 @@ const routes = [
     {
     path: '/admin/backup',
     name: 'AdminBackupManager',
-    component: () => import('@/components/admin/BackupDashboard.vue'),
+    component: () => import('@/components/admin/backupDashboard.vue'),
     beforeEnter: requireAuth(['Org Admin']),
   }
 ]
