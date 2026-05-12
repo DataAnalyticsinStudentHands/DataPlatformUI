@@ -9,7 +9,7 @@
       v-model:items-per-page="itemsPerPage"
       :headers="headers"
       :items="records"
-      :items-per-page-options="itemsPerPageOptions"
+      :items-per-page="5"
       :loading="loading"
       loading-text="Loading history…"
       class="elevation-1"

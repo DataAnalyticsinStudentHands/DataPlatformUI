@@ -1,12 +1,7 @@
 <!--
-/**
- * src/components/admin/backup/scheduleForm.vue
- * 
- * A form component for configuring the recurrence schedule for automatic database backups.
- * It fetches the current schedule, allows the user to select a new recurrence pattern 
- * (e.g., daily, weekly), and saves the updated configuration. On a successful update, it 
- * emits an event to notify the parent component.
- */
+ scheduleForm.vue
+ 
+ Form component for configuring the recurrence schedule for automatic database backups.
 -->
 <template>
   <div>
@@ -17,6 +12,7 @@
 
     <!-- Schedule form -->
     <form v-else @submit.prevent="save">
+      <!-- Recurrence select -->
       <v-select
         label="Recurrence"
         v-model="recurrence"
@@ -25,19 +21,17 @@
         item-value="value"
         variant="outlined"
         density="compact"
-        class="mb-3"
       ></v-select>
 
+      <!-- Backup time -->
       <v-text-field
+        label="Backup time"
         v-model="backupTime"
         type="time"
-        label="Backup time"
         variant="outlined"
         density="compact"
-        hide-details="auto"
-        class="mb-3"
         :disabled="recurrence === 'none'"
-        :hint="backupTimeHint"
+        hint="Default: 12:00 AM"
         persistent-hint
       ></v-text-field>
 
@@ -55,9 +49,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { toast } from 'vue3-toastify';
-import { useLoggedInUserStore } from '@/stored/loggedInUser';
+import axios from "axios";
+import { toast } from "vue3-toastify";
+import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
   name: "ScheduleForm",
@@ -66,7 +60,6 @@ export default {
     return {
       recurrence: "biweekly",
       backupTime: "00:00",
-      serverTimezone: "",
       recurrenceOptions: [
         { text: "Every day", value: "daily" },
         { text: "Every week", value: "weekly" },
@@ -78,68 +71,89 @@ export default {
       saving: false,
     };
   },
+  computed: {
+    apiBase() {
+      return import.meta.env.VITE_ROOT_API;
+    },
+  },
   async mounted() {
     this.loading = true;
-    const API = import.meta.env.VITE_ROOT_API;
     try {
-      const url = `${API}/backup/config`;
-      const { data } = await axios.get(url, {
-        headers: { token: useLoggedInUserStore().token },
+      const { data } = await axios.get(`${this.apiBase}/backup/config`, {
+        headers: this.getHeaders(),
       });
-      this.recurrence =
-        data.recurrence || data.schedule?.type || 'biweekly';
-      this.backupTime =
-        data.backupTime ||
-        this.cronExprToHHMM(data.schedule?.value) ||
-        '00:00';
-      this.serverTimezone =
-        data.serverTimezone ||
-        Intl.DateTimeFormat().resolvedOptions().timeZone;
+      this.recurrence = data?.schedule?.type || "biweekly";
+      this.backupTime = this.extractTimeFromSchedule(data?.schedule?.value);
     } catch (err) {
-      console.error("Failed to load config:", err);
+      console.error("[Backup] load schedule form failed:", err.message);
     } finally {
       this.loading = false;
     }
   },
-  computed: {
-    backupTimeHint() {
-      if (this.recurrence === 'none') {
-        return 'Not used when no automatic schedule is selected.';
-      }
-      const tz =
-        this.serverTimezone ||
-        Intl.DateTimeFormat().resolvedOptions().timeZone;
-      return `Runs at this clock time on the server (${tz}).`;
-    },
-  },
   methods: {
-    /** First two fields of cron: minute hour ... → HH:mm for <input type="time"> */
-    cronExprToHHMM(cronExpr) {
-      if (!cronExpr || typeof cronExpr !== 'string') return '00:00';
+    getHeaders() {
+      return { token: useLoggedInUserStore().token };
+    },
+    extractTimeFromSchedule(cronExpr) {
+      if (!cronExpr || typeof cronExpr !== "string") return "00:00";
       const parts = cronExpr.trim().split(/\s+/);
-      if (parts.length < 2) return '00:00';
+      if (parts.length < 2) return "00:00";
+
       const minute = Number(parts[0]);
       const hour = Number(parts[1]);
-      if (!Number.isFinite(minute) || !Number.isFinite(hour)) return '00:00';
-      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      const isValid =
+        Number.isInteger(minute) &&
+        Number.isInteger(hour) &&
+        minute >= 0 &&
+        minute <= 59 &&
+        hour >= 0 &&
+        hour <= 23;
+
+      if (!isValid) return "00:00";
+
+      return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+    },
+    toCron(recurrence, time) {
+      const [hourStr = "00", minuteStr = "00"] = (time || "00:00").split(":");
+      const hour = Number(hourStr);
+      const minute = Number(minuteStr);
+      const safeHour = Number.isInteger(hour) && hour >= 0 && hour <= 23 ? hour : 0;
+      const safeMinute =
+        Number.isInteger(minute) && minute >= 0 && minute <= 59 ? minute : 0;
+
+      const map = {
+        daily: `${safeMinute} ${safeHour} * * *`,
+        weekly: `${safeMinute} ${safeHour} * * 0`,
+        biweekly: `${safeMinute} ${safeHour} */14 * *`,
+        monthly: `${safeMinute} ${safeHour} 1 * *`,
+      };
+
+      return map[recurrence];
     },
     async save() {
       this.saving = true;
-      const API        = import.meta.env.VITE_ROOT_API;
-      const url        = `${API}/backup/config`;
-      const payload    = {
-        recurrence: this.recurrence,
-        backupTime: this.recurrence === 'none' ? undefined : this.backupTime,
-      };
+
+      let payload;
+      if (this.recurrence === "none") {
+        payload = { enabled: false };
+      } else {
+        payload = {
+          enabled: true,
+          schedule: {
+            type: this.recurrence,
+            value: this.toCron(this.recurrence, this.backupTime),
+          },
+        };
+      }
 
       try {
-        await axios.put(url, payload, {
-          headers: { token: useLoggedInUserStore().token },
+        await axios.put(`${this.apiBase}/backup/config`, payload, {
+          headers: this.getHeaders(),
         });
-        toast.success('Schedule updated!');
-        this.$emit('schedule-updated');
+        toast.success("Schedule updated!");
+        this.$emit("schedule-updated");
       } catch (err) {
-        console.error(err);
+        console.error("[Backup] save schedule failed:", err.message);
         toast.error("Could not update schedule");
       } finally {
         this.saving = false;

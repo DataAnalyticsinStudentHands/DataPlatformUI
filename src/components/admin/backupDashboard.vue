@@ -146,29 +146,21 @@ export default {
     );
   },
   methods: {
-    onCollectionsChanged(list) {
-      // Receives updated collection list from CollectionsForm.
-      this.selectedCollections = list;
-    },
-    async fetchNextRun(options = {}) {
-      // Retrieves the nextRun timestamp from /backup/config
-      const quiet = !!options.quiet;
+    async fetchNextRun({ quiet = false } = {}) {
+      // Retrieves the nextRun timestamp from the API
       if (!quiet) {
         this.isLoadingNextRun = true;
       }
 
-      const API = import.meta.env.VITE_ROOT_API;
-      const userStore = useLoggedInUserStore();
-      const headers = { token: userStore.token };
-      const url = `${API}/backup/config`;
-
       try {
-        const { data } = await axios.get(url, { headers });
+        const { data } = await axios.get(`${this.apiBase}/backup/config`, {
+          headers: this.getHeaders(),
+        });
 
-        // Backend now returns nextRun in the config response
         this.nextRun = data.nextRun || null;
-
-        console.log("[BackupDashboard] Next run loaded:", this.nextRun);
+        this.lastBackup = data.lastBackup || null;
+        this.lastBackupStatus = data.lastBackupStatus || null;
+        this.serverTimezone = data.serverTimezone || null;
       } catch (err) {
         console.error("[Backup] load next run failed:", err.message);
         if (!quiet) {
@@ -189,16 +181,14 @@ export default {
     async runNow() {
       // Runs ad-hoc backup
       this.running = true;
-      const API = import.meta.env.VITE_ROOT_API;
-      const userStore = useLoggedInUserStore();
-      const headers = { token: userStore.token };
-      const url = `${API}/backup/run`;
 
       try {
-        await axios.post(url, null, { headers });
+        await axios.post(`${this.apiBase}/backup/run`, null, {
+          headers: this.getHeaders(),
+        });
         toast.success("Backup completed!");
 
-        // Refresh next run time and history
+        // Fetches next run time and history
         await this.fetchNextRun();
         if (this.$refs.historyTable) {
           await this.$refs.historyTable.loadHistory();
