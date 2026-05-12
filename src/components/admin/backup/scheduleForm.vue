@@ -1,6 +1,6 @@
 <!--
 /**
- * src/components/admin/backup/ScheduleForm.vue
+ * src/components/admin/backup/scheduleForm.vue
  * 
  * A form component for configuring the recurrence schedule for automatic database backups.
  * It fetches the current schedule, allows the user to select a new recurrence pattern 
@@ -25,7 +25,21 @@
         item-value="value"
         variant="outlined"
         density="compact"
+        class="mb-3"
       ></v-select>
+
+      <v-text-field
+        v-model="backupTime"
+        type="time"
+        label="Backup time"
+        variant="outlined"
+        density="compact"
+        hide-details="auto"
+        class="mb-3"
+        :disabled="recurrence === 'none'"
+        :hint="backupTimeHint"
+        persistent-hint
+      ></v-text-field>
 
       <v-btn
         type="submit"
@@ -43,12 +57,16 @@
 <script>
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
+import { useLoggedInUserStore } from '@/stored/loggedInUser';
+
 export default {
   name: "ScheduleForm",
   emits: ["schedule-updated"],
   data() {
     return {
       recurrence: "biweekly",
+      backupTime: "00:00",
+      serverTimezone: "",
       recurrenceOptions: [
         { text: "Every day", value: "daily" },
         { text: "Every week", value: "weekly" },
@@ -65,25 +83,59 @@ export default {
     const API = import.meta.env.VITE_ROOT_API;
     try {
       const url = `${API}/backup/config`;
-        const { data } = await axios.get(
-          url
-        );
-      this.recurrence = data.recurrence || 'biweekly';
+      const { data } = await axios.get(url, {
+        headers: { token: useLoggedInUserStore().token },
+      });
+      this.recurrence =
+        data.recurrence || data.schedule?.type || 'biweekly';
+      this.backupTime =
+        data.backupTime ||
+        this.cronExprToHHMM(data.schedule?.value) ||
+        '00:00';
+      this.serverTimezone =
+        data.serverTimezone ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
     } catch (err) {
       console.error("Failed to load config:", err);
     } finally {
       this.loading = false;
     }
   },
+  computed: {
+    backupTimeHint() {
+      if (this.recurrence === 'none') {
+        return 'Not used when no automatic schedule is selected.';
+      }
+      const tz =
+        this.serverTimezone ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return `Runs at this clock time on the server (${tz}).`;
+    },
+  },
   methods: {
+    /** First two fields of cron: minute hour ... → HH:mm for <input type="time"> */
+    cronExprToHHMM(cronExpr) {
+      if (!cronExpr || typeof cronExpr !== 'string') return '00:00';
+      const parts = cronExpr.trim().split(/\s+/);
+      if (parts.length < 2) return '00:00';
+      const minute = Number(parts[0]);
+      const hour = Number(parts[1]);
+      if (!Number.isFinite(minute) || !Number.isFinite(hour)) return '00:00';
+      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    },
     async save() {
       this.saving = true;
       const API        = import.meta.env.VITE_ROOT_API;
       const url        = `${API}/backup/config`;
-      const payload    = { recurrence: this.recurrence };
+      const payload    = {
+        recurrence: this.recurrence,
+        backupTime: this.recurrence === 'none' ? undefined : this.backupTime,
+      };
 
       try {
-        await axios.put(url, payload);
+        await axios.put(url, payload, {
+          headers: { token: useLoggedInUserStore().token },
+        });
         toast.success('Schedule updated!');
         this.$emit('schedule-updated');
       } catch (err) {

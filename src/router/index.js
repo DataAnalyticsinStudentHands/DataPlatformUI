@@ -711,7 +711,7 @@ const routes = [
   {
     path: "/admin/backup",
     name: "AdminBackupManager",
-    component: () => import("@/components/admin/BackupDashboard.vue"),
+    component: () => import("@/components/admin/backupDashboard.vue"),
     beforeEnter: requireAuth(["Org Admin"]),
   },
 
@@ -783,6 +783,187 @@ const routes = [
   //     import("@/components/dev/speechToText/SpeechToTextDemo.vue"),
   // },
 ];
+/*
+ * Leftover duplicate route objects from a bad merge (same paths exist earlier in `routes`).
+    {
+      path: '/instructorDash',
+      name: 'instructorDash',
+      component: () => import('../components/instructorSide/instructorDash.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/studentGoalFormViewer',
+      name: 'StudentGoalFormViewer',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentGoalFormViewer.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorDataProducts',
+      name: 'instructorDataProducts',
+      component: () => import('../components/instructorSide/instructorDataProducts.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorStudentsList',
+      name: 'instructorStudentsList',
+      component: () => import('../components/instructorSide/instructorStudentsList.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorSpecificStudent',
+      name: 'instructorSpecificStudent',
+      component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificStudent.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+        path: '/instructorDataManagement',
+        name: 'instructorDataManagement',
+        component: () => import('../components/instructorSide/instructorDataManagement/instructorDataManagementMain.vue'),
+        beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorSessions',
+      name: 'instructorSessions',
+      props: true,
+      component: () => import('../components/instructorSide/instructorDataManagement/instructorSessions.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorAddSession',
+      name: 'instructorAddSession',
+      component: () => import('../components/instructorSide/instructorAddData/instructorAddSession.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorSpecificSession',
+      name: 'instructorSpecificSession',
+      component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificSession.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorAddExperienceInstance',
+      name: 'instructorAddExperienceInstance',
+      component: () => import('../components/instructorSide/instructorAddData/instructorAddExperienceInstance.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorSpecificExperienceInstance',
+      name: 'instructorSpecificExperienceInstance',
+      component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificExperienceInstance.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorExperiences',
+      name: 'instructorExperiences',
+      component: () => import('../components/instructorSide/instructorDataManagement/instructorExperiences.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorAddExperience',
+      name: 'instructorAddExperience',
+      component: () => import('../components/instructorSide/instructorAddData/instructorAddExperience.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorSpecificExperience',
+      name: 'instructorSpecificExperience',
+      component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificExperience.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorAddActivity',
+      name: 'instructorAddActivity',
+      component: () => import('../components/instructorSide/instructorAddData/instructorAddActivity.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },    
+    {
+      path: '/instructorSpecificActivity',
+      name: 'instructorSpecificActivity',
+      component: () => import('../components/instructorSide/instructorDataSpecifics/instructorSpecificActivity.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorProgressMonitorContainer',
+      name: 'instructorProgressMonitorContainer',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/instructorProgressMonitorContainer.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/instructorMailer',
+      name: 'instructorMailer',
+      component: () => import('../components/instructorSide/instructorMailer/instructorMailerMain.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/studentsWithoutGoalForms',
+      name: 'studentsWithoutGoalForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutGoalForms.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/studentsWithoutEntryForms',
+      name: 'studentsWithoutEntryForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutEntryForms.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/studentsWithoutExitForms',
+      name: 'studentsWithoutExitForms',
+      component: () => import('../components/instructorSide/instructorProgressMonitor/studentsWithoutExitForms.vue'),
+      beforeEnter: requireAuth(['Instructor', 'Group Instructor', 'Group Admin', 'Org Admin']),
+    },
+    {
+      path: '/studentEntryForm',
+      name: 'studentEntryForm',
+      props: true,
+      component: () => import('../components/studentSide/studentEntryForm/entryFormMain.vue'),
+      beforeEnter: requireAuth(['Student']),
+    },
+    {
+      path: '/goalSettingForm',
+      name: 'goalSettingForm',
+      component: () => import('../components/studentSide/goalSettingForm/goalFormMain.vue'),
+      beforeEnter: requireAuth(['Student']),
+    },
+    {
+      path: '/exitForm',
+      name: 'exitForm',
+      component: () => import('../components/studentSide/exitForm/exitFormMain.vue'),
+      beforeEnter: requireAuth(['Student']),
+    },    
+    // {
+    //   path: '/exitFormsAvailable',
+    //   name: 'exitFormsAvailable',
+    //   component: () => import('../components/studentSide/exitFormsAvailable.vue'),
+    //   beforeEnter: (to, from, next) => {
+    //     // Use the Pinia store
+    //     const userStore = useLoggedInUserStore();
+    //     if (!userStore.isLoggedIn || userStore.role !== 'Student') {
+    //       next('/error');
+    //     } else {
+    //       next();
+    //     }
+    //   }
+    // },
+    {
+      path: '/studentDashboard',
+      name: 'studentDashboard',
+      component: () => import('../components/studentSide/studentDash/studentDashboard.vue'),
+      beforeEnter: requireAuth(['Student']),
+    },    
+    {
+      path: '/error',
+      name: 'errorView',
+      component: () => import('../components/error/errorView.vue')
+    },
+    {
+    path: '/admin/backup',
+    name: 'AdminBackupManager',
+    component: () => import('@/components/admin/backupDashboard.vue'),
+    beforeEnter: requireAuth(['Org Admin']),
+  }
+]
+*/
 
 // Create router instance with base path
 const router = createRouter({
