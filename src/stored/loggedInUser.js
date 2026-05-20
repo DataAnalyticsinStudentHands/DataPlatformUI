@@ -153,6 +153,7 @@ export const useLoggedInUserStore = defineStore({
           role: res.data.user.userRole || this.role,
           firstName: res.data.user.firstName,
           lastName: res.data.user.lastName,
+          tokenExp: res.data.expiresAt,
         });
 
         // Complete login for non-temporary users
@@ -160,9 +161,9 @@ export const useLoggedInUserStore = defineStore({
           this.isLoggedIn = true;
         }
 
-        // Restore auto-logout timer from persisted tokenExp
-        if (this.tokenExp && this.tokenExp > Math.floor(Date.now() / 1000)) {
-          this.setAutoLogout(this.tokenExp);
+        // Arm auto-logout from the fresh server-truth expiry
+        if (res.data.expiresAt && res.data.expiresAt > Math.floor(Date.now() / 1000)) {
+          this.setAutoLogout(res.data.expiresAt);
         }
 
         // Fetch invitation count for students
@@ -507,7 +508,8 @@ export const useLoggedInUserStore = defineStore({
       'instructorDataManagementActiveTab',
       'group',
       'projectInvitationCount',
-      'lastInvitationCheck'
+      'lastInvitationCheck',
+      'tokenExp'
     ],
   },
 });

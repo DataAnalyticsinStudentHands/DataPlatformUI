@@ -1,18 +1,15 @@
 <!--
-/**
- * src/components/admin/backup/HistoryTable.vue
- *
- * Displays a history of database backup operations in a table. This component fetches 
- * backup records from the server, showing the timestamp and file size for each. It includes 
- * methods for formatting data for display and can be programmatically refreshed by its 
- * parent component to show the latest history.
- */
+ historyTable.vue
+ 
+ Displays a history of database backups 
 -->
 <template>
   <div>
     <v-data-table
+      v-model:items-per-page="itemsPerPage"
       :headers="headers"
       :items="records"
+      :items-per-page="5"
       :loading="loading"
       loading-text="Loading history…"
       class="elevation-1"
@@ -30,28 +27,48 @@
 
 <script>
 import axios from 'axios';
+import { useLoggedInUserStore } from '@/stored/loggedInUser';
+
 export default {
   name: 'HistoryTable',
   data() {
     return {
       records: [],        // Array of { timestamp: ISO, size: bytes }
       loading: false,
+      itemsPerPage: 5,
+      itemsPerPageOptions: [
+        { value: 5, title: '5' },
+        { value: 10, title: '10' },
+        { value: 25, title: '25' },
+        { value: 50, title: '50' },
+        { value: 100, title: '100' },
+        { value: -1, title: '$vuetify.dataFooter.itemsPerPageAll' },
+      ],
       headers: [
         { title: 'Timestamp', key: 'timestamp', sortable: true },
         { title: 'Size', key: 'size', sortable: false }
       ]
     };
   },
+  computed: {
+    apiBase() {
+      return import.meta.env.VITE_ROOT_API;
+    }
+  },
   methods: {
+    getHeaders() {
+      return { token: useLoggedInUserStore().token };
+    },
     async loadHistory() {
-      // Fetches the backup history from the server and updates `records`.
+      // Fetches backup history from the server and updates records.
       this.loading = true;
       try {
-        const API = import.meta.env.VITE_ROOT_API;
-        const { data } = await axios.get(`${API}/backup/history`);
+        const { data } = await axios.get(`${this.apiBase}/backup/history`, {
+          headers: this.getHeaders()
+        });
         this.records = data;
       } catch (e) {
-        console.error('Failed to load history:', e);
+        console.error('[Backup] load history failed:', e.message);
       } finally {
         this.loading = false;
       }

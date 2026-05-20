@@ -9,7 +9,15 @@
       "Bash(npm audit:*)",
       "Bash(wait)",
       "Read(//tmp/**)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Read(//c/Users/PERIKS~1.AUT/AppData/Local/Temp/claude/c--Users-periksson-AUTOSOL-Documents-DP-DataPlatformUI/4f252a39-ca01-431a-b3c9-437890e2f96f/tasks/**)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5173/platform/dev/storyCollectorForm)",
+      "Bash(curl -s -o /dev/null -w \"MAIN=%{http_code} \" \"http://localhost:5173/platform/src/components/dev/storyCollectorForm/storyFormMain.vue\")",
+      "Bash(curl -s -o /dev/null -w \"SECT=%{http_code} \" \"http://localhost:5173/platform/src/components/dev/storyCollectorForm/storyFormSection1.vue\")",
+      "Bash(curl -s -o /dev/null -w \"REV=%{http_code}\\\\n\" \"http://localhost:5173/platform/src/components/dev/storyCollectorForm/storyFormReview.vue\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5173/platform/)",
+      "Bash(curl -s -o /dev/null -w \"re-fetch route=%{http_code}\\\\n\" http://localhost:5173/platform/dev/storyCollectorForm)",
+      "Bash(curl -s -o /dev/null -w \"route=%{http_code}\\\\n\" http://localhost:5173/platform/dev/storyCollectorForm)"
     ]
   }
 }
