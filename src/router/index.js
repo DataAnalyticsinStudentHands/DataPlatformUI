@@ -312,6 +312,18 @@ const routes = [
     ]),
   },
   {
+    path: "/generateReports",
+    name: "generateReports",
+    component: () =>
+      import("../components/instructorSide/GenerateReports.vue"),
+    beforeEnter: requireAuth([
+      "Instructor",
+      "Group Instructor",
+      "Group Admin",
+      "Org Admin",
+    ]),
+  },
+  {
     path: "/studentGoalFormViewer",
     name: "StudentGoalFormViewer",
     component: () =>
