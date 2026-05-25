@@ -42,10 +42,12 @@
 
     <v-row>
       <v-col cols="12" md="6">
-        <v-select
-          v-model="selectedInstructorName"
-          :items="instructorOptions"
-          label="Select Instructor"
+        <v-text-field
+          v-model="instructorNamesText"
+          label="Instructor name(s)"
+          placeholder="e.g. Dr. Jane Doe"
+          hint="Separate multiple instructors with commas"
+          persistent-hint
           variant="outlined"
           density="comfortable"
           :disabled="isGenerating"
@@ -109,7 +111,7 @@ export default {
       experienceOptions: [],
       selectedSessionId: "",
       selectedExperienceId: "",
-      selectedInstructorName: "",
+      instructorNamesText: "",
       selectedReportType: "",
       totalRegisteredStudents: null,
       loadingSessions: false,
@@ -119,17 +121,28 @@ export default {
         { label: "Profile Report", value: "profile" },
         { label: "Growth Report", value: "growth" },
       ],
-      instructorOptions: [
-        "Dr. Ioannis Konstantinidis",
-        "Dr. Jane Doe",
-        "Dr. John Smith",
-      ],
     };
+  },
+  computed: {
+    parsedInstructorNames() {
+      return String(this.instructorNamesText || "")
+        .split(",")
+        .map((name) => name.trim())
+        .filter(Boolean);
+    },
   },
   async mounted() {
     await this.loadSessions();
   },
   methods: {
+    toTitleCase(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    },
     async loadSessions() {
       this.loadingSessions = true;
       try {
@@ -169,7 +182,7 @@ export default {
         );
         this.experienceOptions = (response?.data || []).map((experience) => ({
           id: experience._id,
-          label: `${experience.experienceCategory}: ${experience.experienceName}`,
+          label: `${this.toTitleCase(experience.experienceCategory)}: ${this.toTitleCase(experience.experienceName)}`,
         }));
       } catch (error) {
         this.experienceOptions = [];
@@ -182,7 +195,9 @@ export default {
     validateInputs() {
       if (!this.selectedSessionId) return "Please select a session first.";
       if (!this.selectedExperienceId) return "Please select an experience first.";
-      if (!this.selectedInstructorName) return "Please select an instructor.";
+      if (!this.parsedInstructorNames.length) {
+        return "Please enter at least one instructor name.";
+      }
       if (!this.selectedReportType) return "Please select a report type.";
 
       if (this.selectedReportType === "profile") {
@@ -221,7 +236,7 @@ export default {
             sessionLabel: selectedSession?.name || "",
             experienceId: this.selectedExperienceId,
             experienceLabel: selectedExperience?.label || "",
-            instructorName: this.selectedInstructorName,
+            instructorNames: this.parsedInstructorNames,
             totalRegisteredStudents:
               this.selectedReportType === "profile"
                 ? Number(this.totalRegisteredStudents)
