@@ -130,10 +130,18 @@ export default {
           payload,
           { headers: this.getHeaders() }
         );
-        toast.success('Collections saved!');
+        toast.success('Collections saved!', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--create',
+          multiple: false,
+        });
       } catch (err) {
         console.error('[Backup] save collections failed:', err.message);
-        toast.error('Could not save collections.');
+        toast.error('Could not save collections.', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false,
+        });
       } finally {
         this.saving = false;
       }

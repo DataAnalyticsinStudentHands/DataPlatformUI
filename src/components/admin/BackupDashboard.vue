@@ -166,7 +166,11 @@ export default {
       } catch (err) {
         console.error("[Backup] load next run failed:", err.message);
         if (!quiet) {
-          toast.error("Failed to load backup schedule.");
+          toast.error("Failed to load backup schedule.", {
+            position: "top-right",
+            toastClassName: "Toastify__toast--delete",
+            multiple: false,
+          });
         }
         this.nextRun = null;
       } finally {
@@ -188,7 +192,11 @@ export default {
         await axios.post(`${this.apiBase}/backup/run`, null, {
           headers: this.getHeaders(),
         });
-        toast.success("Backup completed!");
+        toast.success("Backup completed!", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--create",
+          multiple: false,
+        });
 
         // Fetches next run time and history
         await this.fetchNextRun();
@@ -198,7 +206,11 @@ export default {
       } catch (err) {
         const msg = err?.response?.data?.message || err?.message || "request failed";
         console.error("[Backup] POST /run failed:", msg);
-        toast.error("Backup failed");
+        toast.error("Backup failed", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--delete",
+          multiple: false,
+        });
       } finally {
         this.running = false;
       }

@@ -175,11 +175,19 @@ export default {
         await axios.put(`${this.apiBase}/backup/config`, payload, {
           headers: this.getHeaders(),
         });
-        toast.success("Schedule updated!");
+        toast.success("Schedule updated!", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--create",
+          multiple: false,
+        });
         this.$emit("schedule-updated");
       } catch (err) {
         console.error("[Backup] save schedule failed:", err.message);
-        toast.error("Could not update schedule");
+        toast.error("Could not update schedule", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--delete",
+          multiple: false,
+        });
       } finally {
         this.saving = false;
       }
