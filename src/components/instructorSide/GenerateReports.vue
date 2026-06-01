@@ -36,6 +36,7 @@
           density="comfortable"
           :loading="loadingExperiences"
           :disabled="!selectedSessionId || loadingExperiences || isGenerating"
+          @update:model-value="onExperienceChange"
         />
       </v-col>
     </v-row>
@@ -183,6 +184,9 @@ export default {
         this.experienceOptions = (response?.data || []).map((experience) => ({
           id: experience._id,
           label: `${this.toTitleCase(experience.experienceCategory)}: ${this.toTitleCase(experience.experienceName)}`,
+          instructors: (experience.existingInstructors || [])
+            .map((entry) => (entry?.instructor || "").trim())
+            .filter(Boolean),
         }));
       } catch (error) {
         this.experienceOptions = [];
@@ -190,6 +194,15 @@ export default {
       } finally {
         this.loadingExperiences = false;
       }
+    },
+
+    onExperienceChange() {
+      const selectedExperience = this.experienceOptions.find(
+        (experience) => experience.id === this.selectedExperienceId,
+      );
+      const instructors = [...new Set(selectedExperience?.instructors || [])];
+      // Prefill instructor name(s) if stored in the DB; otherwise allow free input.
+      this.instructorNamesText = instructors.join(", ");
     },
 
     validateInputs() {
