@@ -39,8 +39,6 @@
         variant="outlined"
         density="compact"
         :disabled="recurrence === 'none'"
-        hint="Default: 12:00 AM"
-        persistent-hint
         append-inner-icon="mdi-clock-outline"
         @click:append-inner="openTimePicker"
       ></v-text-field>
@@ -167,6 +165,9 @@ export default {
             type: this.recurrence,
             value: this.toCron(this.recurrence, this.backupTime),
           },
+          // Send the user's local timezone so the backend interprets the
+          // chosen backup time as their local wall-clock time.
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         };
       }
 
