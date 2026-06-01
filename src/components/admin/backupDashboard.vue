@@ -8,9 +8,12 @@ Main dashboard component for managing database backups.
     <h1 class="text-h4 font-weight-bold">{{ $t("Database Backup") }}</h1>
 
     <!-- Display next scheduled run time -->
-    <p class="mb-3">
+    <p class="mb-1">
       <strong>Next scheduled run:</strong>
       {{ nextRunDisplay }}
+    </p>
+    <p class="text-caption text-medium-emphasis mb-3">
+      All times shown in your local timezone ({{ timezoneDisplay }})
     </p>
     <v-row>
       <v-col cols="12" md="6">
@@ -66,6 +69,12 @@ import ScheduleForm from "./backup/scheduleForm.vue";
 import CollectionsForm from "./backup/collectionsForm.vue";
 import HistoryTable from "./backup/historyTable.vue";
 
+function formatLocalDateTime(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString();
+}
+
 export default {
   name: "BackupDashboard",
   components: { ScheduleForm, CollectionsForm, HistoryTable },
@@ -91,20 +100,14 @@ export default {
         return "Not scheduled";
       }
 
-      try {
-        return new Date(this.nextRun).toLocaleString();
-      } catch (err) {
-        console.warn(
-          "[Backup] bad nextRun: " + String(this.nextRun) + " — " + err.message,
-        );
-        return "Invalid date";
-      }
+      const formatted = formatLocalDateTime(this.nextRun);
+      return formatted === "—" ? "Invalid date" : formatted;
     },
     lastBackupDisplay() {
       if (!this.lastBackup) {
         return "Never";
       }
-      return new Date(this.lastBackup).toLocaleString();
+      return formatLocalDateTime(this.lastBackup);
     },
     lastBackupStatusDisplay() {
       if (!this.lastBackupStatus) {
@@ -121,9 +124,8 @@ export default {
       return normalized === "success" ? "status-success" : "status-failed";
     },
     timezoneDisplay() {
-      return (
-        this.serverTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone
-      );
+      // Always the viewer's own timezone; server time is never shown.
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
     },
     apiBase(){
       return import.meta.env.VITE_ROOT_API;
@@ -164,7 +166,11 @@ export default {
       } catch (err) {
         console.error("[Backup] load next run failed:", err.message);
         if (!quiet) {
-          toast.error("Failed to load backup schedule.");
+          toast.error("Failed to load backup schedule.", {
+            position: "top-right",
+            toastClassName: "Toastify__toast--delete",
+            multiple: false,
+          });
         }
         this.nextRun = null;
       } finally {
@@ -186,7 +192,11 @@ export default {
         await axios.post(`${this.apiBase}/backup/run`, null, {
           headers: this.getHeaders(),
         });
-        toast.success("Backup completed!");
+        toast.success("Backup completed!", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--create",
+          multiple: false,
+        });
 
         // Fetches next run time and history
         await this.fetchNextRun();
@@ -196,7 +206,11 @@ export default {
       } catch (err) {
         const msg = err?.response?.data?.message || err?.message || "request failed";
         console.error("[Backup] POST /run failed:", msg);
-        toast.error("Backup failed");
+        toast.error("Backup failed", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--delete",
+          multiple: false,
+        });
       } finally {
         this.running = false;
       }

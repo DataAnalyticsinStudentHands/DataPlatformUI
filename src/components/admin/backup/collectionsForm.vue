@@ -37,26 +37,6 @@
         ></v-checkbox>
       </v-card>
 
-      <!-- Summary of selection -->
-      <div class="mb-3">
-        <small class="text-muted">
-          Selected:
-          <template v-if="selected.length === 0">
-            none
-          </template>
-          <template v-else-if="selected.length <= 3">
-            {{ selected.join(', ') }}
-          </template>
-          <template v-else>
-            {{ selected.slice(0,3).join(', ') }}
-            <v-chip size="small" class="ms-1">
-              +{{ selected.length - 3 }} more
-              <v-tooltip activator="parent" location="top">{{ selected.join(', ') }}</v-tooltip>
-            </v-chip>
-          </template>
-        </small>
-      </div>
-
       <!-- Save Collections button -->
       <v-btn
         variant="outlined"
@@ -130,10 +110,18 @@ export default {
           payload,
           { headers: this.getHeaders() }
         );
-        toast.success('Collections saved!');
+        toast.success('Collections saved!', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--create',
+          multiple: false,
+        });
       } catch (err) {
         console.error('[Backup] save collections failed:', err.message);
-        toast.error('Could not save collections.');
+        toast.error('Could not save collections.', {
+          position: 'top-right',
+          toastClassName: 'Toastify__toast--delete',
+          multiple: false,
+        });
       } finally {
         this.saving = false;
       }

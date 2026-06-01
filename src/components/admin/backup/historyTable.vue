@@ -74,7 +74,9 @@ export default {
       }
     },
     formatDate(ts) {
-      return new Date(ts).toLocaleString();
+      const d = new Date(ts);
+      if (Number.isNaN(d.getTime())) return "—";
+      return d.toLocaleString();
     },
     formatSize(bytes) {
       const kb = bytes / 1024;

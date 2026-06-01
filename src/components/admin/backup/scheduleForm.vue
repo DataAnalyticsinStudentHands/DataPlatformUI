@@ -24,15 +24,23 @@
       ></v-select>
 
       <!-- Backup time -->
+      <!--
+        A custom clock icon is appended so the picker affordance looks and
+        behaves the same across browsers. Firefox's native time input does not
+        render a clock indicator (unlike Chrome/Edge), so we supply our own and
+        open the picker via the standard showPicker() API.
+      -->
       <v-text-field
+        ref="timeField"
+        class="backup-time-field"
         label="Backup time"
         v-model="backupTime"
         type="time"
         variant="outlined"
         density="compact"
         :disabled="recurrence === 'none'"
-        hint="Default: 12:00 AM"
-        persistent-hint
+        append-inner-icon="mdi-clock-outline"
+        @click:append-inner="openTimePicker"
       ></v-text-field>
 
       <v-btn
@@ -94,6 +102,20 @@ export default {
     getHeaders() {
       return { token: useLoggedInUserStore().token };
     },
+    openTimePicker() {
+      if (this.recurrence === "none") return;
+      const input = this.$refs.timeField?.$el?.querySelector('input[type="time"]');
+      if (!input) return;
+      if (typeof input.showPicker === "function") {
+        try {
+          input.showPicker();
+          return;
+        } catch (e) {
+          // showPicker can throw if the input is not user-activated; fall back.
+        }
+      }
+      input.focus();
+    },
     extractTimeFromSchedule(cronExpr) {
       if (!cronExpr || typeof cronExpr !== "string") return "00:00";
       const parts = cronExpr.trim().split(/\s+/);
@@ -143,6 +165,9 @@ export default {
             type: this.recurrence,
             value: this.toCron(this.recurrence, this.backupTime),
           },
+          // Send the user's local timezone so the backend interprets the
+          // chosen backup time as their local wall-clock time.
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         };
       }
 
@@ -150,11 +175,19 @@ export default {
         await axios.put(`${this.apiBase}/backup/config`, payload, {
           headers: this.getHeaders(),
         });
-        toast.success("Schedule updated!");
+        toast.success("Schedule updated!", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--create",
+          multiple: false,
+        });
         this.$emit("schedule-updated");
       } catch (err) {
         console.error("[Backup] save schedule failed:", err.message);
-        toast.error("Could not update schedule");
+        toast.error("Could not update schedule", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--delete",
+          multiple: false,
+        });
       } finally {
         this.saving = false;
       }
@@ -162,3 +195,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Hide the browser's built-in time picker indicator (Chrome/Edge) so we only
+   ever show our own appended clock icon, keeping the field identical in every
+   browser. */
+.backup-time-field :deep(input[type="time"])::-webkit-calendar-picker-indicator {
+  display: none;
+}
+</style>
