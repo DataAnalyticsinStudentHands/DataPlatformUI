@@ -288,7 +288,11 @@ export default {
         // Avoid revoking immediately; some browsers may fail to read large blobs in time.
         window.setTimeout(() => window.URL.revokeObjectURL(url), 30000);
 
-        toast.success("Report generated successfully. Download started.");
+        toast.success("Report generated successfully. Download started.", {
+          position: "top-right",
+          toastClassName: "Toastify__toast--create",
+          multiple: false,
+        });
       } catch (error) {
         toast.error("Error generating report.");
       } finally {
