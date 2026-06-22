@@ -160,7 +160,7 @@
             <v-list-item
               :active="activeLink === 'generateReports'"
               to='/generateReports'
-              prepend-icon="mdi-file-chart-bar"
+              prepend-icon="mdi-file-chart-outline"
               value="generateReports"
               class="tracking-wider"
             >Generate Reports</v-list-item>
