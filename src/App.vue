@@ -156,9 +156,15 @@
               prepend-icon="mdi-database"
               value="AdminBackupManager"
               class="tracking-wider"
-            >
-              Database Backup
-            </v-list-item>
+            >Database Backup</v-list-item>
+            <v-list-item
+              :active="activeLink === 'generateReports'"
+              to='/generateReports'
+              prepend-icon="mdi-file-chart-outline"
+              value="generateReports"
+              class="tracking-wider"
+            >Generate Reports</v-list-item>
+
           </div>
           <!-- Basic role navigation items -->
           <div v-if="user.isLoggedIn && user.getRole === 'Basic'">
