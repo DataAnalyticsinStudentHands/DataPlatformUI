@@ -84,7 +84,6 @@ export default {
       nextRun: null, // ISO string for the next scheduled backup
       lastBackup: null,
       lastBackupStatus: null,
-      serverTimezone: null,
       running: false,
       isLoadingNextRun: true,
       refreshTimer: null,
@@ -162,7 +161,6 @@ export default {
         this.nextRun = data.nextRun || null;
         this.lastBackup = data.lastBackup || null;
         this.lastBackupStatus = data.lastBackupStatus || null;
-        this.serverTimezone = data.serverTimezone || null;
       } catch (err) {
         console.error("[Backup] load next run failed:", err.message);
         if (!quiet) {
