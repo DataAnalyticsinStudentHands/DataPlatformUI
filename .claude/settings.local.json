@@ -17,7 +17,10 @@
       "Bash(curl -s -o /dev/null -w \"REV=%{http_code}\\\\n\" \"http://localhost:5173/platform/src/components/dev/storyCollectorForm/storyFormReview.vue\")",
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5173/platform/)",
       "Bash(curl -s -o /dev/null -w \"re-fetch route=%{http_code}\\\\n\" http://localhost:5173/platform/dev/storyCollectorForm)",
-      "Bash(curl -s -o /dev/null -w \"route=%{http_code}\\\\n\" http://localhost:5173/platform/dev/storyCollectorForm)"
+      "Bash(curl -s -o /dev/null -w \"route=%{http_code}\\\\n\" http://localhost:5173/platform/dev/storyCollectorForm)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\periksson.AUTOSOL\\\\Documents\\\\DP\\\\DataPlatformUI\" -Force)",
+      "Bash(xargs grep -l \"v-if.*permission\\\\|hasPermission\\\\|checkPermission\\\\|role ==\\\\|role ===\\\\|requireAuth\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\periksson.AUTOSOL\\\\Documents\\\\DP\\\\DataPlatformUI\" -Directory)"
     ]
   }
 }
