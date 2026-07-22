@@ -1,0 +1,15 @@
+
+
+  VITE v5.4.19  ready in 319 ms
+
+  ➜  Local:   http://localhost:5173/platform/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+Browserslist: browsers data (caniuse-lite) is 13 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+1:46:58 PM [vite] hmr update /src/components/instructorSide/GenerateReports.vue, /src/index.css
+1:46:59 PM [vite] hmr update /src/components/instructorSide/GenerateReports.vue, /src/index.css (x2)
+^C
+
+

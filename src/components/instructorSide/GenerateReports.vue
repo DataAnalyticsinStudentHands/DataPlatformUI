@@ -213,11 +213,9 @@ export default {
       }
       if (!this.selectedReportType) return "Please select a report type.";
 
-      if (this.selectedReportType === "profile") {
-        const total = Number(this.totalRegisteredStudents);
-        if (!Number.isInteger(total) || total <= 0) {
-          return "Please enter a valid total number of registered students (positive whole number).";
-        }
+      const total = Number(this.totalRegisteredStudents);
+      if (!Number.isInteger(total) || total <= 0) {
+        return "Please enter a valid total number of registered students (positive whole number).";
       }
 
       return null;
@@ -250,10 +248,7 @@ export default {
             experienceId: this.selectedExperienceId,
             experienceLabel: selectedExperience?.label || "",
             instructorNames: this.parsedInstructorNames,
-            totalRegisteredStudents:
-              this.selectedReportType === "profile"
-                ? Number(this.totalRegisteredStudents)
-                : undefined,
+            totalRegisteredStudents: Number(this.totalRegisteredStudents),
           },
           {
             headers: { token },
