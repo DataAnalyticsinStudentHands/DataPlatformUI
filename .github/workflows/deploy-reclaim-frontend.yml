@@ -1,0 +1,126 @@
+name: Build and deploy frontend to Reclaim
+
+on:
+  push:
+    branches:
+      - true_main
+
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Reclaim environment
+        required: true
+        default: envtest
+        type: choice
+        options:
+          - envtest
+          - edsprod
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reclaim-frontend-${{ github.event_name == 'push' && 'envtest' || inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.event_name == 'push' && 'envtest' || inputs.target }}
+
+    steps:
+      - name: Check out frontend repository
+        uses: actions/checkout@v6
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.8.0"
+          cache: npm
+
+      - name: Install dependencies on GitHub
+        run: npm ci --no-audit --no-fund
+
+      - name: Build frontend on GitHub
+        env:
+          VITE_ROOT_API: ${{ vars.VITE_ROOT_API }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$VITE_ROOT_API" ]; then
+            echo "VITE_ROOT_API is not configured"
+            exit 1
+          fi
+
+          npm run build
+          test -f build/index.html
+
+      - name: Configure SSH
+        env:
+          PRIVATE_KEY: ${{ secrets.RECLAIM_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.RECLAIM_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          test -n "$PRIVATE_KEY"
+          test -n "$KNOWN_HOSTS"
+
+          install -m 700 -d "$RUNNER_TEMP/reclaim-ssh"
+          printf '%s\n' "$PRIVATE_KEY" > "$RUNNER_TEMP/reclaim-ssh/key"
+          chmod 600 "$RUNNER_TEMP/reclaim-ssh/key"
+
+          printf '%s\n' "$KNOWN_HOSTS" \
+            > "$RUNNER_TEMP/reclaim-ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/reclaim-ssh/known_hosts"
+
+      - name: Upload build to Reclaim
+        env:
+          RECLAIM_HOST: ${{ vars.RECLAIM_HOST }}
+          RECLAIM_PORT: ${{ vars.RECLAIM_PORT }}
+          RECLAIM_USER: ${{ vars.RECLAIM_USER }}
+          RECLAIM_FRONTEND_DIR: ${{ vars.RECLAIM_FRONTEND_DIR }}
+        run: |
+          set -euo pipefail
+
+          : "${RECLAIM_HOST:?RECLAIM_HOST is missing}"
+          : "${RECLAIM_PORT:?RECLAIM_PORT is missing}"
+          : "${RECLAIM_USER:?RECLAIM_USER is missing}"
+          : "${RECLAIM_FRONTEND_DIR:?RECLAIM_FRONTEND_DIR is missing}"
+
+          if [ "$RECLAIM_FRONTEND_DIR" != "/home/jelastic/ROOT/DataPlatformUI" ]; then
+            echo "Refusing unexpected deployment path: $RECLAIM_FRONTEND_DIR"
+            exit 1
+          fi
+
+          SSH_KEY="$RUNNER_TEMP/reclaim-ssh/key"
+          KNOWN_HOSTS="$RUNNER_TEMP/reclaim-ssh/known_hosts"
+
+          ssh \
+            -i "$SSH_KEY" \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+            -p "$RECLAIM_PORT" \
+            "$RECLAIM_USER@$RECLAIM_HOST" \
+            "command -v rsync >/dev/null &&
+             mkdir -p '$RECLAIM_FRONTEND_DIR/build'"
+
+          rsync \
+            -az \
+            --delete \
+            -e "ssh -i $SSH_KEY -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$KNOWN_HOSTS -p $RECLAIM_PORT" \
+            build/ \
+            "$RECLAIM_USER@$RECLAIM_HOST:$RECLAIM_FRONTEND_DIR/build/"
+
+          ssh \
+            -i "$SSH_KEY" \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+            -p "$RECLAIM_PORT" \
+            "$RECLAIM_USER@$RECLAIM_HOST" \
+            "test -f '$RECLAIM_FRONTEND_DIR/build/index.html'"
+
+          echo "Frontend deployment completed successfully"
