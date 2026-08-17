@@ -20,6 +20,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "caniuse-lite": "^1.0.30001709",
+    "dompurify": "^3.4.13",
     "jose": "^5.10.0",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",

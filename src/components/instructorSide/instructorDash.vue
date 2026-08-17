@@ -32,14 +32,14 @@
           </v-card>
         </v-col>
 
-        <!-- Student Mailer — disabled for this release, re-enable when H2 security fixes are implemented -->
-        <!-- <v-col :cols="6">
+        <!-- Student Mailer — manual form-reminder emails -->
+        <v-col :cols="6">
           <v-card @click="navigateToMailer" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
               Student Mailer
             </v-card-title>
           </v-card>
-        </v-col> -->
+        </v-col>
       </v-row>
 
 
@@ -106,10 +106,10 @@ mounted() {
       this.$router.push({ name: 'instructorProgressMonitorContainer' });
     },
 
-    // Navigates to the Mailer tool — disabled for this release
-    // navigateToMailer() {
-    //   this.$router.push({ name: 'devInstructorMailer' });
-    // }
+    // Navigates to the Mailer tool.
+    navigateToMailer() {
+      this.$router.push({ name: 'devInstructorMailer' });
+    }
 
   },
 };

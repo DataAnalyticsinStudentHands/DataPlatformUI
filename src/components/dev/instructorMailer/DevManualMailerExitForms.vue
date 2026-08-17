@@ -50,7 +50,7 @@ Redesigned UI matching the instructor pages aesthetic.
       <div class="section-content">
         <v-row>
           <!-- Left Table: Students Without Exit Form -->
-          <v-col cols="12" md="5">
+          <v-col cols="12" md>
             <v-card variant="outlined" class="table-card">
               <v-card-title class="table-card-title">
                 <v-icon start size="20" color="#c8102e">mdi-account-group-outline</v-icon>
@@ -101,7 +101,7 @@ Redesigned UI matching the instructor pages aesthetic.
           </v-col>
 
           <!-- Transfer Buttons -->
-          <v-col cols="12" md="1" class="d-flex align-center justify-center px-0">
+          <v-col cols="12" md="auto" class="d-flex align-center justify-center px-1">
             <div class="transfer-buttons">
               <v-btn
                 color="#c8102e"
@@ -125,7 +125,7 @@ Redesigned UI matching the instructor pages aesthetic.
           </v-col>
 
           <!-- Right Table: Email Recipients -->
-          <v-col cols="12" md="5">
+          <v-col cols="12" md>
             <v-card variant="outlined" class="table-card">
               <v-card-title class="table-card-title">
                 <v-icon start size="20" color="#c8102e">mdi-email-check-outline</v-icon>
@@ -221,6 +221,10 @@ Redesigned UI matching the instructor pages aesthetic.
             prepend-inner-icon="mdi-email-outline"
           ></v-text-field>
           <div class="subject-placeholders">
+            <v-btn variant="text" size="x-small" @click="addSubjectPlaceholder('subjectField', 'emailHeader', '{{STUDENT_NAME}}')">
+              <v-icon start size="16">mdi-account-outline</v-icon>
+              Student Name
+            </v-btn>
             <v-btn variant="text" size="x-small" @click="addSubjectPlaceholder('subjectField', 'emailHeader', '{{FIRST_NAME}}')">
               <v-icon start size="16">mdi-account-outline</v-icon>
               First Name
@@ -234,6 +238,15 @@ Redesigned UI matching the instructor pages aesthetic.
           <div class="editor-wrapper">
             <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @ready="onEditorReady"></ckeditor>
           </div>
+          <v-btn
+            variant="text"
+            size="small"
+            class="mt-2 mr-2"
+            @click="addStudentName"
+          >
+            <v-icon start size="18">mdi-account-outline</v-icon>
+            Add Student Name
+          </v-btn>
           <v-btn
             variant="text"
             size="small"
@@ -270,6 +283,10 @@ Redesigned UI matching the instructor pages aesthetic.
                 prepend-inner-icon="mdi-email-outline"
               ></v-text-field>
               <div class="subject-placeholders">
+                <v-btn variant="text" size="x-small" @click="addSubjectPlaceholder('subjectFieldEnglish', 'emailHeaderEnglish', '{{STUDENT_NAME}}')">
+                  <v-icon start size="16">mdi-account-outline</v-icon>
+                  Student Name
+                </v-btn>
                 <v-btn variant="text" size="x-small" @click="addSubjectPlaceholder('subjectFieldEnglish', 'emailHeaderEnglish', '{{FIRST_NAME}}')">
                   <v-icon start size="16">mdi-account-outline</v-icon>
                   First Name
@@ -283,6 +300,15 @@ Redesigned UI matching the instructor pages aesthetic.
               <div class="editor-wrapper">
                 <ckeditor :editor="editor" v-model="editorDataEnglish" :config="editorConfig" @ready="onEditorEnglishReady"></ckeditor>
               </div>
+              <v-btn
+                variant="text"
+                size="small"
+                class="mt-2 mr-2"
+                @click="addStudentNameEnglish"
+              >
+                <v-icon start size="18">mdi-account-outline</v-icon>
+                Add Student Name
+              </v-btn>
               <v-btn
                 variant="text"
                 size="small"
@@ -317,6 +343,10 @@ Redesigned UI matching the instructor pages aesthetic.
                 prepend-inner-icon="mdi-email-outline"
               ></v-text-field>
               <div class="subject-placeholders">
+                <v-btn variant="text" size="x-small" @click="addSubjectPlaceholder('subjectFieldSpanish', 'emailHeaderSpanish', '{{STUDENT_NAME}}')">
+                  <v-icon start size="16">mdi-account-outline</v-icon>
+                  Student Name
+                </v-btn>
                 <v-btn variant="text" size="x-small" @click="addSubjectPlaceholder('subjectFieldSpanish', 'emailHeaderSpanish', '{{FIRST_NAME}}')">
                   <v-icon start size="16">mdi-account-outline</v-icon>
                   First Name
@@ -330,6 +360,15 @@ Redesigned UI matching the instructor pages aesthetic.
               <div class="editor-wrapper">
                 <ckeditor :editor="editor" v-model="editorDataSpanish" :config="editorConfig" @ready="onEditorSpanishReady"></ckeditor>
               </div>
+              <v-btn
+                variant="text"
+                size="small"
+                class="mt-2 mr-2"
+                @click="addStudentNameSpanish"
+              >
+                <v-icon start size="18">mdi-account-outline</v-icon>
+                Add Student Name
+              </v-btn>
               <v-btn
                 variant="text"
                 size="small"
@@ -440,14 +479,25 @@ Redesigned UI matching the instructor pages aesthetic.
     </div>
 
     <!-- Form Actions -->
+    <v-alert
+      v-if="unknownTokens.length"
+      type="warning"
+      density="compact"
+      variant="tonal"
+      class="mb-2"
+    >
+      {{ unknownTokens.join(', ') }}
+      {{ unknownTokens.length === 1 ? 'is not a supported placeholder' : 'are not supported placeholders' }}
+      and will appear in the email as literal text.
+    </v-alert>
     <div class="form-actions">
       <v-spacer></v-spacer>
       <v-btn
         size="large"
         color="#c8102e"
         class="action-btn submit-btn"
-        :disabled="emailDisabled"
-        @click="sendEmailDialog = true"
+        :disabled="emailDisabled || globalSending"
+        @click="openSendDialog"
       >
         <v-icon start size="18">mdi-send</v-icon>
         Send
@@ -456,26 +506,17 @@ Redesigned UI matching the instructor pages aesthetic.
   </template>
 </div>
 
-<!-- Send Confirmation Dialog -->
-<v-dialog v-model="sendEmailDialog" persistent max-width="500px">
-  <v-card class="dialog-card">
-    <v-card-title class="text-h5 pa-6 pb-2">
-      Confirm Email
-    </v-card-title>
-    <v-card-text class="pa-6 pt-2">
-      <p>Are you sure you want to send emails to <strong>{{ this.emailRecipients.length }}</strong> students?</p>
-    </v-card-text>
-    <v-card-actions class="pa-6 pt-0">
-      <v-spacer></v-spacer>
-      <v-btn variant="outlined" @click="cancelEmail" class="action-btn">
-        Cancel
-      </v-btn>
-      <v-btn color="#c8102e" variant="flat" @click="sendEmail" class="action-btn submit-btn">
-        Yes, Send
-      </v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+<!-- Send Dialog: confirm → live progress → delivery report -->
+<mailer-send-dialog
+  v-model="sendEmailDialog"
+  :phase="sendPhase"
+  :recipient-count="emailRecipients.length"
+  :progress="sendProgress"
+  :result="sendResult"
+  :unknown-tokens="unknownTokens"
+  @confirm="sendEmail"
+  @done="onSendDialogDone"
+/>
 </template>
 
 <script>
@@ -483,14 +524,17 @@ import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { sendManualMail, findUnknownTokens, mailerState } from './services/manualMailerService';
+import { sanitizeHtml, escapeHtml } from '@/utils/sanitizeHtml';
+import MailerSendDialog from './MailerSendDialog.vue';
 
 
 export default {
     name: 'DevManualMailerExitForms',
     components: {
-        ckeditor: Ckeditor
+        ckeditor: Ckeditor,
+        MailerSendDialog
     },
-    inject: ['setTab', 'emailProgress'],
     data() {
         return {
             selectedExperience: null,
@@ -531,6 +575,10 @@ export default {
             emailHeaderEnglish: '',
             emailHeaderSpanish: '',
             sendEmailDialog: false,
+            sendPhase: 'confirm',
+            sending: false,
+            sendProgress: null,
+            sendResult: null,
         }
     },
     created() {
@@ -601,7 +649,7 @@ export default {
 
         previewBody() {
             if (!this.previewRecipient) return '';
-            return this.replacePlaceholders(this.editorData);
+            return sanitizeHtml(this.replacePlaceholders(this.editorData, true));
         },
 
         previewSubjectEnglish() {
@@ -611,7 +659,7 @@ export default {
 
         previewBodyEnglish() {
             if (!this.previewRecipient) return '';
-            return this.replacePlaceholders(this.editorDataEnglish);
+            return sanitizeHtml(this.replacePlaceholders(this.editorDataEnglish, true));
         },
 
         previewSubjectSpanish() {
@@ -621,7 +669,7 @@ export default {
 
         previewBodySpanish() {
             if (!this.previewRecipient) return '';
-            return this.replacePlaceholders(this.editorDataSpanish);
+            return sanitizeHtml(this.replacePlaceholders(this.editorDataSpanish, true));
         },
 
         emailDisabled() {
@@ -637,6 +685,18 @@ export default {
                     this.editorDataEnglish.length === 0 || this.editorDataSpanish.length === 0 ||
                     this.emailHeaderEnglish.length === 0 || this.emailHeaderSpanish.length === 0;
             }
+        },
+
+        globalSending() {
+            return mailerState.sending;
+        },
+
+        unknownTokens() {
+            return findUnknownTokens(
+                this.includeSpanish
+                    ? [this.emailHeaderEnglish, this.editorDataEnglish, this.emailHeaderSpanish, this.editorDataSpanish]
+                    : [this.emailHeader, this.editorData]
+            );
         },
     },
     methods: {
@@ -776,12 +836,20 @@ export default {
             }
         },
 
+        addStudentName() {
+            this.insertPlaceholder(this.editorInstance, '{{STUDENT_NAME}}');
+        },
+
         addFirstName() {
             this.insertPlaceholder(this.editorInstance, '{{FIRST_NAME}}');
         },
 
         addLastName() {
             this.insertPlaceholder(this.editorInstance, '{{LAST_NAME}}');
+        },
+
+        addStudentNameEnglish() {
+            this.insertPlaceholder(this.editorEnglishInstance, '{{STUDENT_NAME}}');
         },
 
         addFirstNameEnglish() {
@@ -792,6 +860,10 @@ export default {
             this.insertPlaceholder(this.editorEnglishInstance, '{{LAST_NAME}}');
         },
 
+        addStudentNameSpanish() {
+            this.insertPlaceholder(this.editorSpanishInstance, '{{STUDENT_NAME}}');
+        },
+
         addFirstNameSpanish() {
             this.insertPlaceholder(this.editorSpanishInstance, '{{FIRST_NAME}}');
         },
@@ -800,68 +872,80 @@ export default {
             this.insertPlaceholder(this.editorSpanishInstance, '{{LAST_NAME}}');
         },
 
-        sendEmail() {
-            let apiURL;
-            let emailData;
+        // Sends the batch through the mailer service: the service opens the SSE
+        // progress stream first, then fires the blocking POST. The dialog stays
+        // open through confirm → sending → report; the POST response (or the
+        // stream's 'complete' event as a backup) is the delivery report.
+        async sendEmail() {
+            if (this.sending) return;
+            this.sending = true;
+            this.sendPhase = 'sending';
+            this.sendProgress = null;
+            this.sendResult = null;
 
-            if (!this.includeSpanish) {
-                apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer`;
-                emailData = {
-                    recipients: this.emailRecipients.map(recipient => ({
-                        email: recipient.email,
-                        fullName: `${recipient.firstName} ${recipient.lastName}`,
-                        firstName: recipient.firstName,
-                        lastName: recipient.lastName
-                    })),
-                    subject: this.emailHeader,
-                    htmlContent: this.editorData
-                };
-            } else {
-                apiURL = `${import.meta.env.VITE_ROOT_API}/instructorSideData/manual-mailer/multi-language`;
-                emailData = {
-                    recipients: this.emailRecipients.map(recipient => ({
-                        email: recipient.email,
-                        fullName: `${recipient.firstName} ${recipient.lastName}`,
-                        firstName: recipient.firstName,
-                        lastName: recipient.lastName,
-                        languagePreference: recipient.languagePreference
-                    })),
-                    subjectEnglish: this.emailHeaderEnglish,
-                    htmlContentEnglish: this.editorDataEnglish,
-                    subjectSpanish: this.emailHeaderSpanish,
-                    htmlContentSpanish: this.editorDataSpanish
-                };
+            const result = await sendManualMail({
+                mode: this.includeSpanish ? 'multi' : 'single',
+                // Recipients pass through verbatim — the backend reads email/
+                // firstName/lastName/languagePreference and ignores extra keys,
+                // deriving {{STUDENT_NAME}} from firstName + lastName itself
+                recipients: this.emailRecipients,
+                content: this.includeSpanish
+                    ? {
+                        subjectEnglish: this.emailHeaderEnglish,
+                        htmlContentEnglish: this.editorDataEnglish,
+                        subjectSpanish: this.emailHeaderSpanish,
+                        htmlContentSpanish: this.editorDataSpanish
+                    }
+                    : {
+                        subject: this.emailHeader,
+                        htmlContent: this.editorData
+                    },
+                onProgress: (snapshot) => { this.sendProgress = snapshot; }
+            });
+
+            this.sendResult = result;
+            this.sendPhase = 'report';
+            this.sending = false;
+        },
+
+        replacePlaceholders(text, escapeValues = false) {
+            if (!text || !this.previewRecipient) return text;
+            const recipient = this.previewRecipient;
+            // Mirror the server: substituted values are HTML-escaped in HTML contexts
+            const value = (v) => (escapeValues ? escapeHtml(v) : v);
+            return text
+                .replace(/\{\{STUDENT_NAME\}\}/g, value(`${recipient.firstName} ${recipient.lastName}`))
+                .replace(/\{\{FIRST_NAME\}\}/g, value(recipient.firstName))
+                .replace(/\{\{LAST_NAME\}\}/g, value(recipient.lastName));
+        },
+
+        openSendDialog() {
+            this.sendPhase = 'confirm';
+            this.sendProgress = null;
+            this.sendResult = null;
+            this.sendEmailDialog = true;
+        },
+
+        onSendDialogDone() {
+            const status = this.sendResult?.status;
+            this.sendEmailDialog = false;
+
+            if (status === 'success') {
+                // Everyone was emailed — clear the recipient list so an accidental
+                // re-send can't duplicate. They reappear in the left table (they're
+                // still non-completers until they submit the form).
+                this.emailRecipients = [];
+                this.selectedEmailRecipients = [];
+                this.selectedStudents = [];
+            } else if (status === 'partial' && this.sendResult.failed?.length) {
+                // Keep only the failed recipients for a one-click retry
+                const failedEmails = new Set(this.sendResult.failed.map(f => f.email));
+                this.emailRecipients = this.emailRecipients.filter(r => failedEmails.has(r.email));
             }
 
-            // Close dialog and switch to overview immediately
-            this.sendEmailDialog = false;
-            toast.success('Emails are being sent!', {
-                position: "top-right",
-                toastClassName: "Toastify__toast--create",
-                multiple: true,
-            });
-            this.setTab('overview');
-
-            // Fire the POST in the background — don't block the UI
-            axios.post(apiURL, emailData)
-                .catch((error) => {
-                    console.error('Send email error:', error);
-                    toast.error('Failed to send emails.', {
-                        position: 'top-right',
-                        toastClassName: 'Toastify__toast--delete'
-                    });
-                });
-        },
-
-        replacePlaceholders(text) {
-            if (!text || !this.previewRecipient) return text;
-            return text
-                .replace(/\{\{FIRST_NAME\}\}/g, this.previewRecipient.firstName)
-                .replace(/\{\{LAST_NAME\}\}/g, this.previewRecipient.lastName);
-        },
-
-        cancelEmail() {
-            this.sendEmailDialog = false;
+            this.sendPhase = 'confirm';
+            this.sendProgress = null;
+            this.sendResult = null;
         }
     }
 }

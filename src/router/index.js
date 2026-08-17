@@ -727,19 +727,20 @@ const routes = [
     beforeEnter: requireAuth(["Org Admin"]),
   },
 
-  // Dev Instructor Mailer (frontend-only demo) — disabled for this release
-  // {
-  //   path: "/dev/instructorMailer",
-  //   name: "devInstructorMailer",
-  //   component: () =>
-  //     import("@/components/dev/instructorMailer/DevMailerMain.vue"),
-  //   beforeEnter: requireAuth([
-  //     "Instructor",
-  //     "Group Instructor",
-  //     "Group Admin",
-  //     "Org Admin",
-  //   ]),
-  // },
+  // Instructor Mailer — manual reminder emails for entry/goal/exit forms
+  // (previews sanitized via DOMPurify; delivery reporting per the manual-mailer spec)
+  {
+    path: "/dev/instructorMailer",
+    name: "devInstructorMailer",
+    component: () =>
+      import("@/components/dev/instructorMailer/DevMailerMain.vue"),
+    beforeEnter: requireAuth([
+      "Instructor",
+      "Group Instructor",
+      "Group Admin",
+      "Org Admin",
+    ]),
+  },
 
   // ==========================================================================
   // PROJECT VIEW ROUTES (Phase 6)
