@@ -107,11 +107,12 @@ Redesigned UI matching the project pages aesthetic.
 
         <v-spacer></v-spacer>
 
-        <!-- CSV Download Button -->
+        <!-- CSV Download Button - exports the full roster (completed + incomplete) with a status column, whichever toggle is active -->
         <v-col cols="auto">
           <progress-monitor-csv-downloader
-            v-if="selectedExperience && displayedStudents.length"
-            :data="displayedStudents"
+            v-if="selectedExperience && listsLoaded && csvStudents.length"
+            :data="csvStudents"
+            :columns="csvColumns"
             :file-name="csvFileName"
           />
         </v-col>
@@ -127,6 +128,24 @@ Redesigned UI matching the project pages aesthetic.
         >
           <v-icon start size="18">mdi-account-group</v-icon>
           {{ $t('Total Students:') }} <strong class="ml-1">{{ totalStudentsCount }}</strong>
+        </v-chip>
+        <v-chip
+          color="success"
+          variant="tonal"
+          size="large"
+          class="stats-chip ml-2"
+        >
+          <v-icon start size="18">mdi-check-circle-outline</v-icon>
+          {{ $t('Completed:') }} <strong class="ml-1">{{ studentsWithGoalForm.length }}</strong>
+        </v-chip>
+        <v-chip
+          color="grey"
+          variant="tonal"
+          size="large"
+          class="stats-chip ml-2"
+        >
+          <v-icon start size="18">mdi-close-circle-outline</v-icon>
+          {{ $t('Incomplete:') }} <strong class="ml-1">{{ studentsWithoutGoalForm.length }}</strong>
         </v-chip>
       </div>
     </div>
@@ -266,6 +285,7 @@ export default {
       studentsWithoutGoalForm: [],
       studentsWithGoalForm: [],
       loading: false,
+      listsLoaded: false,
       selectedSession: null,
       hoverId: null,
       itemsPerPageOptions: [
@@ -282,11 +302,6 @@ export default {
   watch: {
     selectedExperience(newVal) {
       if (newVal !== null && this.completed !== null) {
-        this.fetchStudents();
-      }
-    },
-    completed(newVal, oldVal) {
-      if (newVal !== null && this.selectedExperience !== null) {
         this.fetchStudents();
       }
     },
@@ -380,8 +395,9 @@ export default {
       return [];
     },
 
+    // Full roster size for the selected experience (completed + incomplete)
     totalStudentsCount() {
-      return this.displayedStudents.length;
+      return this.studentsWithGoalForm.length + this.studentsWithoutGoalForm.length;
     },
 
     // Pagination length for manual pagination (preserved from original)
@@ -413,10 +429,38 @@ export default {
         const selectedObj = this.expInstances.find(
           (instance) => instance.expInstanceID === this.selectedExperience
         );
-        const prefix = this.completed === true ? 'completed_goal_forms' : 'no_goal_form';
-        return `${prefix}_${selectedObj?.experienceName || 'export'}.csv`;
+        return `goal_forms_${selectedObj?.experienceName || 'export'}.csv`;
       }
-      return this.completed === true ? 'completed_goal_forms.csv' : 'no_goal_form.csv';
+      return 'goal_forms.csv';
+    },
+
+    // Full roster for the CSV export: every student for the selected experience tagged with
+    // their goal form status, sorted by name. The two lists come from separate requests, so
+    // dedupe by _id as a precaution (a student found in both counts as completed).
+    csvStudents() {
+      const seen = new Set();
+      return [
+        ...this.studentsWithGoalForm.map(student => ({ ...student, formStatus: 'Completed' })),
+        ...this.studentsWithoutGoalForm.map(student => ({ ...student, formStatus: 'Incomplete' })),
+      ]
+        .filter(student => {
+          if (seen.has(student._id)) return false;
+          seen.add(student._id);
+          return true;
+        })
+        .sort((a, b) =>
+          (a.lastName || '').localeCompare(b.lastName || '') ||
+          (a.firstName || '').localeCompare(b.firstName || '')
+        );
+    },
+
+    // Columns for the CSV export: the default Full Name / Email plus the goal form status
+    csvColumns() {
+      return [
+        { header: 'Full Name', value: student => this.formatFullName(student.firstName, student.lastName) },
+        { header: 'Email', value: student => student.email },
+        { header: 'Goal Form Status', value: student => student.formStatus },
+      ];
     },
   },
 
@@ -449,53 +493,60 @@ export default {
       }
     },
 
-    // Initiates the process of fetching students based on whether they have completed 
-    // goal forms or not. It calls different methods to fetch students with goal forms 
-    // or without goal forms based on the value of the `completed` property.
+    // Fetches both the students with and without a goal form for the selected experience.
+    // The table shows whichever list matches the toggle, but the CSV export needs both, so
+    // they are always loaded together.
     async fetchStudents() {
-      if (this.selectedExperience === null || this.completed === null) return;
+      const expInstanceID = this.selectedExperience;
+      if (expInstanceID === null) return;
       this.loading = true;
+      this.listsLoaded = false;
       this.studentsWithGoalForm = [];
       this.studentsWithoutGoalForm = [];
       
       try {
-        if (this.completed === true) {
-          await this.fetchStudentsWithGoalForm();
-        } else {
-          await this.fetchStudentsWithoutGoalForm();
-        }
+        const [withForm, withoutForm] = await Promise.all([
+          this.fetchStudentsWithGoalForm(expInstanceID),
+          this.fetchStudentsWithoutGoalForm(expInstanceID)
+        ]);
+
+        // A newer selection has superseded this request; leave the lists to that one
+        if (expInstanceID !== this.selectedExperience) return;
+
+        this.studentsWithGoalForm = withForm || [];
+        this.studentsWithoutGoalForm = withoutForm || [];
+        // The export is only offered when both requests succeeded, so it can never be a partial roster
+        this.listsLoaded = withForm !== null && withoutForm !== null;
       } finally {
         this.loading = false;
       }
     },
 
-    // Fetches students who have not completed a goal form for a specific experience.
-    // It sends a GET request to the backend API with the selected experience ID.
-    // Upon receiving the response, it stores the data of students without a goal form 
-    // for the specified experience in the component's state.
-    async fetchStudentsWithoutGoalForm() {
-      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${this.selectedExperience}`;
+    // Fetches students who have not completed a goal form for the given experience instance.
+    // Returns the list, or null if the request failed (the error is reported via handleError).
+    async fetchStudentsWithoutGoalForm(expInstanceID) {
+      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-goal-form/${expInstanceID}`;
 
       try {
         const response = await axios.get(url);
-        this.studentsWithoutGoalForm = response.data;
+        return response.data;
       } catch (error) {
         this.handleError(error);
+        return null;
       }
     },
 
-    // Fetches students who have completed a goal form for a specific experience.
-    // It sends a GET request to the backend API with the selected experience ID.
-    // Upon receiving the response, it stores the data of students with a goal form 
-    // for the specified experience in the component's state.
-    async fetchStudentsWithGoalForm() {
-      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-goal-form/${this.selectedExperience}`;
+    // Fetches students who have completed a goal form for the given experience instance.
+    // Returns the list, or null if the request failed (the error is reported via handleError).
+    async fetchStudentsWithGoalForm(expInstanceID) {
+      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-goal-form/${expInstanceID}`;
 
       try {
         const response = await axios.get(url);
-        this.studentsWithGoalForm = response.data;
+        return response.data;
       } catch (error) {
         this.handleError(error);
+        return null;
       }
     },
 

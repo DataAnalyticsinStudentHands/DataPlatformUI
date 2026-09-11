@@ -107,11 +107,12 @@ Redesigned UI matching the project pages aesthetic.
 
         <v-spacer></v-spacer>
 
-        <!-- CSV Download Button -->
+        <!-- CSV Download Button - exports the full roster (completed + incomplete) with a status column, whichever toggle is active -->
         <v-col cols="auto">
           <progress-monitor-csv-downloader
-            v-if="selectedExperience && displayedStudents.length"
-            :data="displayedStudents"
+            v-if="selectedExperience && listsLoaded && csvStudents.length"
+            :data="csvStudents"
+            :columns="csvColumns"
             :file-name="csvFileName"
           />
         </v-col>
@@ -127,6 +128,24 @@ Redesigned UI matching the project pages aesthetic.
         >
           <v-icon start size="18">mdi-account-group</v-icon>
           {{ $t('Total Students:') }} <strong class="ml-1">{{ totalStudentsCount }}</strong>
+        </v-chip>
+        <v-chip
+          color="success"
+          variant="tonal"
+          size="large"
+          class="stats-chip ml-2"
+        >
+          <v-icon start size="18">mdi-check-circle-outline</v-icon>
+          {{ $t('Completed:') }} <strong class="ml-1">{{ studentsWithExitForm.length }}</strong>
+        </v-chip>
+        <v-chip
+          color="grey"
+          variant="tonal"
+          size="large"
+          class="stats-chip ml-2"
+        >
+          <v-icon start size="18">mdi-close-circle-outline</v-icon>
+          {{ $t('Incomplete:') }} <strong class="ml-1">{{ studentsWithoutExitForm.length }}</strong>
         </v-chip>
       </div>
     </div>
@@ -248,6 +267,7 @@ export default {
       studentsWithoutExitForm: [],
       studentsWithExitForm: [],
       loading: false,
+      listsLoaded: false,
       selectedSession: null,
       itemsPerPageOptions: [
         { value: 10, title: "10" },
@@ -263,11 +283,6 @@ export default {
   watch: {
     selectedExperience(newVal) {
       if (newVal !== null && this.completed !== null) {
-        this.fetchStudents();
-      }
-    },
-    completed(newVal) {
-      if (newVal !== null && this.selectedExperience !== null) {
         this.fetchStudents();
       }
     },
@@ -361,8 +376,9 @@ export default {
       return [];
     },
 
+    // Full roster size for the selected experience (completed + incomplete)
     totalStudentsCount() {
-      return this.displayedStudents.length;
+      return this.studentsWithExitForm.length + this.studentsWithoutExitForm.length;
     },
 
     tableHeaders() {
@@ -378,10 +394,38 @@ export default {
         const selectedObj = this.expInstances.find(
           (instance) => instance.expInstanceID === this.selectedExperience
         );
-        const prefix = this.completed === true ? 'completed_exit_forms' : 'no_exit_form';
-        return `${prefix}_${selectedObj?.experienceName || 'export'}.csv`;
+        return `exit_forms_${selectedObj?.experienceName || 'export'}.csv`;
       }
-      return this.completed === true ? 'completed_exit_forms.csv' : 'no_exit_form.csv';
+      return 'exit_forms.csv';
+    },
+
+    // Full roster for the CSV export: every student for the selected experience tagged with
+    // their exit form status, sorted by name. The two lists come from separate requests, so
+    // dedupe by _id as a precaution (a student found in both counts as completed).
+    csvStudents() {
+      const seen = new Set();
+      return [
+        ...this.studentsWithExitForm.map(student => ({ ...student, formStatus: 'Completed' })),
+        ...this.studentsWithoutExitForm.map(student => ({ ...student, formStatus: 'Incomplete' })),
+      ]
+        .filter(student => {
+          if (seen.has(student._id)) return false;
+          seen.add(student._id);
+          return true;
+        })
+        .sort((a, b) =>
+          (a.lastName || '').localeCompare(b.lastName || '') ||
+          (a.firstName || '').localeCompare(b.firstName || '')
+        );
+    },
+
+    // Columns for the CSV export: the default Full Name / Email plus the exit form status
+    csvColumns() {
+      return [
+        { header: 'Full Name', value: student => this.formatFullName(student.firstName, student.lastName) },
+        { header: 'Email', value: student => student.email },
+        { header: 'Exit Form Status', value: student => student.formStatus },
+      ];
     },
   },
 
@@ -412,45 +456,60 @@ export default {
       }
     },
 
-    // Initiates the process of fetching students based on completion status.
+    // Fetches both the students with and without an exit form for the selected experience.
+    // The table shows whichever list matches the toggle, but the CSV export needs both, so
+    // they are always loaded together.
     async fetchStudents() {
-      if (this.selectedExperience === null || this.completed === null) return;
+      const expInstanceID = this.selectedExperience;
+      if (expInstanceID === null) return;
       this.loading = true;
+      this.listsLoaded = false;
       this.studentsWithExitForm = [];
       this.studentsWithoutExitForm = [];
       
       try {
-        if (this.completed === true) {
-          await this.fetchStudentsWithExitForm();
-        } else {
-          await this.fetchStudentsWithoutExitForm();
-        }
+        const [withForm, withoutForm] = await Promise.all([
+          this.fetchStudentsWithExitForm(expInstanceID),
+          this.fetchStudentsWithoutExitForm(expInstanceID)
+        ]);
+
+        // A newer selection has superseded this request; leave the lists to that one
+        if (expInstanceID !== this.selectedExperience) return;
+
+        this.studentsWithExitForm = withForm || [];
+        this.studentsWithoutExitForm = withoutForm || [];
+        // The export is only offered when both requests succeeded, so it can never be a partial roster
+        this.listsLoaded = withForm !== null && withoutForm !== null;
       } finally {
         this.loading = false;
       }
     },
 
-    // Fetches students who have not completed an Exit form for a specific experience.
-    async fetchStudentsWithoutExitForm() {
-      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-exit-form/${this.selectedExperience}`;
+    // Fetches students who have not completed an exit form for the given experience instance.
+    // Returns the list, or null if the request failed (the error is reported via handleError).
+    async fetchStudentsWithoutExitForm(expInstanceID) {
+      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-without-exit-form/${expInstanceID}`;
 
       try {
         const response = await axios.get(url);
-        this.studentsWithoutExitForm = response.data;
+        return response.data;
       } catch (error) {
         this.handleError(error);
+        return null;
       }
     },
 
-    // Fetches students who have completed an Exit form for a specific experience.
-    async fetchStudentsWithExitForm() {
-      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-exit-form/${this.selectedExperience}`;
+    // Fetches students who have completed an exit form for the given experience instance.
+    // Returns the list, or null if the request failed (the error is reported via handleError).
+    async fetchStudentsWithExitForm(expInstanceID) {
+      let url = import.meta.env.VITE_ROOT_API + `/instructorSideData/students-with-exit-form/${expInstanceID}`;
 
       try {
         const response = await axios.get(url);
-        this.studentsWithExitForm = response.data;
+        return response.data;
       } catch (error) {
         this.handleError(error);
+        return null;
       }
     },
 

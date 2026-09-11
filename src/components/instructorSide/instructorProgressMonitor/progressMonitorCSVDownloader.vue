@@ -7,6 +7,12 @@
   </template>
   
   <script>
+  // Default columns - the original "Full Name,Email" export used by every tab that does not pass its own `columns`.
+  const DEFAULT_COLUMNS = [
+    { header: 'Full Name', value: student => `${student.firstName} ${student.lastName}` },
+    { header: 'Email', value: student => student.email },
+  ];
+
   export default {
     name: "ProgressMonitorCSVDownloader",
     props: {
@@ -14,6 +20,12 @@
       fileName: {
         type: String,
         default: 'export.csv'
+      },
+      // Optional column definitions: [{ header: 'Column Label', value: student => cellValue }, ...].
+      // Tabs that omit this get the default Full Name / Email export.
+      columns: {
+        type: Array,
+        default: () => DEFAULT_COLUMNS
       }
     },
     methods: {
@@ -41,23 +53,31 @@
         document.body.removeChild(link);
       },
 
-      // Converts the provided data array into CSV format. It adds a header row with "Full Name" and "Email" columns, then iterates over each student in the data array, extracting their first name, last name, and email address, and formats them into CSV rows. Finally, it combines all rows into a single CSV string and returns it.
+      // Converts the provided data array into CSV format using the `columns` prop. It adds a header row built from each column's `header`, then iterates over each student in the data array, building one row from each column's `value` accessor. Finally, it combines all rows into a single CSV string and returns it.
       convertDataToCSV(data) {
         const csvRows = [];
   
         // Add header
-        csvRows.push('Full Name,Email');
+        csvRows.push(this.columns.map(column => this.formatCsvCell(column.header)).join(','));
   
         // Add rows
         data.forEach(student => {
-          csvRows.push(`"${student.firstName} ${student.lastName}",${student.email}`);
+          csvRows.push(this.columns.map(column => this.formatCsvCell(column.value(student))).join(','));
         });
   
         // Combine rows and return
         return csvRows.join('\n');
       },
 
+      // Formats a single cell value for CSV. Values containing a comma, double quote or line break are wrapped in double quotes with any embedded double quotes doubled (RFC 4180), so a name like "Doe, Jane" cannot split a row.
+      formatCsvCell(value) {
+        const text = value === null || value === undefined ? '' : String(value);
+        if (/[",\r\n]/.test(text)) {
+          return `"${text.replace(/"/g, '""')}"`;
+        }
+        return text;
+      },
+
     }
   };
   </script>
-  
