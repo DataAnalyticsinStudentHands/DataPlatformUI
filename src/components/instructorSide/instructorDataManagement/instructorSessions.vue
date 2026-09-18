@@ -721,6 +721,11 @@ export default {
     const viewsStore = useInstructorViewsStore();
     const userStore = useLoggedInUserStore();
 
+    // Default to newest Start Date first when no sort has been saved
+    if (!viewsStore.sessions.sortBy?.length) {
+      viewsStore.updateSorting('sessions', [{ key: 'sessionPeriod.startDate', order: 'desc' }]);
+    }
+
     const showCheckboxColumn = computed(() => {
       const allowedRoles = ['Global Admin', 'Org Admin', 'Group Admin', 'Instructor'];
       return allowedRoles.includes(userStore.role);
