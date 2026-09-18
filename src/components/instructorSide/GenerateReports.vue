@@ -34,6 +34,7 @@
           label="Select Experience"
           variant="outlined"
           density="comfortable"
+          no-data-text="No active experience instances found for this session."
           :loading="loadingExperiences"
           :disabled="!selectedSessionId || loadingExperiences || isGenerating"
           @update:model-value="onExperienceChange"
@@ -102,7 +103,6 @@
 <script>
 import axios from "axios";
 import { toast } from "vue3-toastify";
-import { useLoggedInUserStore } from "@/stored/loggedInUser";
 
 export default {
   name: "GenerateReports",
@@ -117,6 +117,7 @@ export default {
       totalRegisteredStudents: null,
       loadingSessions: false,
       loadingExperiences: false,
+      experienceRequestId: 0,
       isGenerating: false,
       reportTypeOptions: [
         { label: "Profile Report", value: "profile" },
@@ -147,11 +148,8 @@ export default {
     async loadSessions() {
       this.loadingSessions = true;
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const response = await axios.get(
           `${import.meta.env.VITE_ROOT_API}/instructorSideData/sessions/active`,
-          { headers: { token } },
         );
         this.sessionOptions = (response?.data || []).map((session) => ({
           id: session._id,
@@ -166,33 +164,49 @@ export default {
     },
 
     async onSessionChange() {
+      const requestId = ++this.experienceRequestId;
+      const sessionId = this.selectedSessionId;
       this.selectedExperienceId = "";
       this.experienceOptions = [];
-      if (!this.selectedSessionId) return;
+      this.instructorNamesText = "";
+      this.loadingExperiences = false;
+      if (!sessionId) return;
 
       this.loadingExperiences = true;
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const response = await axios.get(
-          `${import.meta.env.VITE_ROOT_API}/instructorSideData/experiences/available-experiences-for-instance`,
-          {
-            params: { sessionID: this.selectedSessionId },
-            headers: { token },
-          },
+          `${import.meta.env.VITE_ROOT_API}/instructorSideData/experience-instances/session/${encodeURIComponent(sessionId)}`,
         );
-        this.experienceOptions = (response?.data || []).map((experience) => ({
-          id: experience._id,
-          label: `${this.toTitleCase(experience.experienceCategory)}: ${this.toTitleCase(experience.experienceName)}`,
-          instructors: (experience.existingInstructors || [])
-            .map((entry) => (entry?.instructor || "").trim())
-            .filter(Boolean),
-        }));
+        if (requestId !== this.experienceRequestId) return;
+
+        const experiences = new Map();
+        for (const instance of response?.data?.instancesForSession || []) {
+          const experience = instance.experience;
+          if (!experience?.id) continue;
+          if (!experiences.has(experience.id)) {
+            experiences.set(experience.id, {
+              id: experience.id,
+              label: `${this.toTitleCase(experience.category)}: ${this.toTitleCase(experience.name)}`,
+              instructors: [],
+            });
+          }
+          const instructor = (instance.instructor || "").trim();
+          const option = experiences.get(experience.id);
+          if (instructor && !option.instructors.includes(instructor)) {
+            option.instructors.push(instructor);
+          }
+        }
+        this.experienceOptions = [...experiences.values()].sort((a, b) =>
+          a.label.localeCompare(b.label),
+        );
       } catch (error) {
+        if (requestId !== this.experienceRequestId) return;
         this.experienceOptions = [];
         toast.error("Failed to load experiences.");
       } finally {
-        this.loadingExperiences = false;
+        if (requestId === this.experienceRequestId) {
+          this.loadingExperiences = false;
+        }
       }
     },
 
@@ -237,8 +251,6 @@ export default {
 
       this.isGenerating = true;
       try {
-        const user = useLoggedInUserStore();
-        const token = user.token;
         const response = await axios.post(
           `${import.meta.env.VITE_ROOT_API}/instructorSideData/reports/generate`,
           {
@@ -251,7 +263,6 @@ export default {
             totalRegisteredStudents: Number(this.totalRegisteredStudents),
           },
           {
-            headers: { token },
             responseType: "blob",
           },
         );
