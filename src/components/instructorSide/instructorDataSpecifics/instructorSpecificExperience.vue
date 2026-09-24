@@ -473,6 +473,10 @@ export default {
 };
 </script>
 
+<!-- Shared add/edit form layout (.page-header, .form-card, .form-section, .section-*, .form-actions,
+     .action-btn, .submit-btn and their 960px overrides); keep this block before the local one -->
+<style scoped src="@/styles/instructor-add-edit-form.css"></style>
+
 <style scoped>
 /* Page Background */
 .edit-experience-page {
@@ -480,81 +484,7 @@ export default {
   min-height: 100vh;
 }
 
-/* Page Header */
-.page-header {
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-}
-
-/* Main Form Card */
-.form-card {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* Form Sections */
-.form-section {
-  padding: 28px 32px;
-}
-
-.section-header {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 24px;
-}
-
-.section-number {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: rgb(var(--v-theme-primary));
-  color: rgb(var(--v-theme-on-primary));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 14px;
-  margin-right: 16px;
-  flex-shrink: 0;
-}
-
-.section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-}
-
-.section-subtitle {
-  font-size: 0.875rem;
-  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-  margin-bottom: 0;
-}
-
-.section-content {
-  padding-left: 48px;
-}
-
-/* Form Actions */
-.form-actions {
-  display: flex;
-  align-items: center;
-  padding: 20px 32px;
-  background-color: rgb(var(--v-theme-panel));
-  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-}
-
-.action-btn {
-  min-width: 120px;
-  text-transform: none;
-  font-weight: 500;
-  letter-spacing: 0.25px;
-}
-
-.submit-btn {
-  color: rgb(var(--v-theme-on-primary)) !important;
-}
-
+/* Dialog confirm button (white label on the primary fill) */
 .confirm-btn {
   color: rgb(var(--v-theme-on-primary)) !important;
 }
@@ -594,31 +524,5 @@ export default {
 
 .instance-item:last-child {
   border-bottom: none;
-}
-
-/* Responsive */
-@media (max-width: 960px) {
-  .form-section {
-    padding: 24px 20px;
-  }
-  
-  .section-content {
-    padding-left: 0;
-    margin-top: 16px;
-  }
-  
-  .form-actions {
-    padding: 16px 20px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  
-  .form-actions .v-spacer {
-    display: none;
-  }
-  
-  .action-btn {
-    flex: 1 1 auto;
-  }
 }
 </style>
