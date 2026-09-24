@@ -1,13 +1,13 @@
 <template>
   <v-card :class="{ 'mb-6': !embedded, 'embedded-card': embedded }">
     <!-- Header - hidden when embedded -->
-    <v-card-title v-if="!embedded" class="bg-grey-lighten-4 py-3 px-4">
+    <v-card-title v-if="!embedded" class="bg-panel-strong py-3 px-4">
       <v-icon start icon="mdi-file-document-multiple" class="mr-2"></v-icon>
       {{ $t('Project Documents') }}
       <v-spacer></v-spacer>
       <v-btn
         size="small"
-        color="#c8102e"
+        color="primary"
         variant="flat"
         @click="openUploadDialog"
         prepend-icon="mdi-upload"
@@ -17,17 +17,17 @@
     </v-card-title>
     
     <div v-if="loading" class="text-center my-6 pa-6">
-      <v-progress-circular indeterminate color="#c8102e"></v-progress-circular>
-      <p class="text-grey mt-3">{{ $t('Loading documents...') }}</p>
+      <v-progress-circular indeterminate color="brand-fg"></v-progress-circular>
+      <p class="text-disabled mt-3">{{ $t('Loading documents...') }}</p>
     </div>
     
     <div v-else-if="projectDocuments.length === 0" class="text-center my-6 pa-6">
-      <v-icon icon="mdi-file-document-outline" size="x-large" color="grey" class="mb-2"></v-icon>
-      <p class="text-grey">{{ $t('No documents have been uploaded to this project yet.') }}</p>
+      <v-icon icon="mdi-file-document-outline" size="x-large" class="mb-2 text-disabled"></v-icon>
+      <p class="text-disabled">{{ $t('No documents have been uploaded to this project yet.') }}</p>
       <v-btn
         v-if="canUpload"
         variant="tonal"
-        color="#c8102e"
+        color="brand-fg"
         class="mt-3"
         @click="openUploadDialog"
         prepend-icon="mdi-upload"
@@ -48,7 +48,7 @@
         @click="canEdit(document) ? openEditDialog(document) : downloadDocument(document)"
       >
         <template v-slot:prepend>
-          <v-avatar color="grey-lighten-2" class="mr-3">
+          <v-avatar color="surface-light" class="mr-3">
             <v-icon :icon="getFileIcon(getDocumentExtension(document))" :color="getFileIconColor(getDocumentExtension(document))"></v-icon>
           </v-avatar>
         </template>
@@ -57,7 +57,7 @@
           <div class="d-flex align-center">
             <v-chip
               size="small"
-              color="grey-lighten-1"
+              color="muted"
               class="text-uppercase mr-2"
             >
               {{ getDocumentExtension(document) }}
@@ -69,7 +69,7 @@
                   icon="mdi-dots-vertical"
                   variant="text"
                   size="small"
-                  color="grey-darken-1"
+                  class="text-medium-emphasis"
                 ></v-btn>
               </template>
               <v-list density="compact">
@@ -101,7 +101,7 @@
     <!-- File Upload Dialog -->
     <v-dialog v-model="uploadDialog" max-width="500px">
       <v-card>
-        <v-card-title class="bg-grey-lighten-4 py-4">
+        <v-card-title class="bg-panel-strong py-4">
           <v-icon start icon="mdi-upload" class="mr-2"></v-icon>
           {{ $t('Upload Document') }}
         </v-card-title>
@@ -118,10 +118,10 @@
               @drop.prevent="onFileDrop"
             >
               <div v-if="!selectedFileName" class="text-center">
-                <v-icon icon="mdi-cloud-upload-outline" size="56" color="grey-darken-1" class="mb-3"></v-icon>
+                <v-icon icon="mdi-cloud-upload-outline" size="56" class="mb-3 text-medium-emphasis"></v-icon>
                 <p class="mb-1">{{ $t('Drag and drop a file here or') }}</p>
                 <v-btn
-                  color="#c8102e"
+                  color="brand-fg"
                   variant="tonal"
                   size="small"
                   class="mt-2"
@@ -131,22 +131,21 @@
               </div>
               
               <div v-else class="text-center w-100">
-                <v-icon :icon="getFileIcon(selectedFileExt)" size="48" color="#c8102e" class="mb-3"></v-icon>
+                <v-icon :icon="getFileIcon(selectedFileExt)" size="48" color="brand-fg" class="mb-3"></v-icon>
                 <p class="text-truncate file-name">{{ selectedFileName }}</p>
                 <div class="d-flex align-center justify-center mt-2">
-                  <v-chip size="small" color="grey-lighten-1" class="text-uppercase mr-2">
+                  <v-chip size="small" color="muted" class="text-uppercase mr-2">
                     {{ selectedFileExt }}
                   </v-chip>
-                  <span v-if="selectedFileSize" class="text-caption text-grey-darken-1">
+                  <span v-if="selectedFileSize" class="text-caption text-medium-emphasis">
                     {{ selectedFileSize }}
                   </span>
                 </div>
                 <v-btn
-                  color="grey"
                   variant="text"
                   size="small"
                   prepend-icon="mdi-close"
-                  class="mt-3"
+                  class="mt-3 text-disabled"
                   @click.stop="clearSelectedFile"
                 >
                   {{ $t('Remove') }}
@@ -193,12 +192,12 @@
           <div v-if="uploading" class="flex-grow-1 mr-4">
             <v-progress-linear
               :model-value="uploadProgress"
-              color="#c8102e"
+              color="brand-fg"
               height="6"
               rounded
               class="mb-1"
             ></v-progress-linear>
-            <p class="text-caption text-grey-darken-1 mb-0">
+            <p class="text-caption text-medium-emphasis mb-0">
               {{ uploadStatusText }}
             </p>
           </div>
@@ -210,7 +209,7 @@
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn
-            color="#c8102e"
+            color="primary"
             variant="flat"
             @click="uploadDocument()"
             :loading="uploading"
@@ -225,21 +224,21 @@
     <!-- Edit Document Dialog -->
     <v-dialog v-model="editDialog" max-width="500px">
       <v-card>
-        <v-card-title class="bg-grey-lighten-4 py-4">
+        <v-card-title class="bg-panel-strong py-4">
           <v-icon start icon="mdi-pencil" class="mr-2"></v-icon>
           {{ $t('Edit Document') }}
         </v-card-title>
         
         <v-card-text class="pa-4">
           <!-- Document info display -->
-          <div class="mb-4 pa-3 bg-grey-lighten-5 rounded">
+          <div class="mb-4 pa-3 bg-panel rounded">
             <div class="d-flex align-center">
               <v-icon :icon="getFileIcon(getDocumentExtension(documentToEdit))" size="40" :color="getFileIconColor(getDocumentExtension(documentToEdit))" class="mr-3"></v-icon>
               <div>
                 <p class="text-subtitle-2 mb-0">{{ $t('Current file') }}</p>
-                <p class="text-caption text-grey-darken-1">
+                <p class="text-caption text-medium-emphasis">
                   {{ documentToEdit?.name }}
-                  <v-chip size="x-small" color="grey-lighten-1" class="text-uppercase ml-2">
+                  <v-chip size="x-small" color="muted" class="text-uppercase ml-2">
                     {{ getDocumentExtension(documentToEdit) }}
                   </v-chip>
                 </p>
@@ -270,7 +269,7 @@
         <v-card-actions class="pa-4">
           <!-- Add Download button on the left -->
           <v-btn
-            color="grey-darken-1"
+            class="text-medium-emphasis"
             variant="text"
             prepend-icon="mdi-download"
             @click="downloadDocument(documentToEdit)"
@@ -285,7 +284,7 @@
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn
-            color="#c8102e"
+            color="primary"
             variant="flat"
             @click="updateDocument"
             :loading="updating"
@@ -872,7 +871,7 @@ export default {
 }
 
 .document-list-item:hover {
-  background-color: rgba(200, 16, 46, 0.05);
+  background-color: rgba(var(--v-theme-primary), 0.05);
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
 }
@@ -889,7 +888,7 @@ export default {
 }
 
 .file-upload-zone {
-  border: 2px dashed rgba(0, 0, 0, 0.12);
+  border: 2px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -897,20 +896,20 @@ export default {
 }
 
 .file-upload-zone:hover {
-  border-color: #c8102e;
-  background-color: rgba(200, 16, 46, 0.02);
+  border-color: rgb(var(--v-theme-brand-fg));
+  background-color: rgba(var(--v-theme-primary), 0.02);
 }
 
 .file-drag-over {
-  border-color: #c8102e;
-  background-color: rgba(200, 16, 46, 0.05);
+  border-color: rgb(var(--v-theme-brand-fg));
+  background-color: rgba(var(--v-theme-primary), 0.05);
   transform: scale(1.01);
 }
 
 .file-selected {
   border-style: solid;
-  border-color: rgba(200, 16, 46, 0.3);
-  background-color: rgba(200, 16, 46, 0.03);
+  border-color: rgba(var(--v-theme-primary), 0.3);
+  background-color: rgba(var(--v-theme-primary), 0.03);
 }
 
 .file-name {

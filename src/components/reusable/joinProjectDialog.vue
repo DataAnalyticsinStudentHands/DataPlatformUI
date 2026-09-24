@@ -13,7 +13,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
   >
     <v-card>
       <!-- Dialog header with dynamic title -->
-      <v-toolbar flat color="#c8102e" dark>
+      <v-toolbar flat color="primary">
         <v-toolbar-title>
           {{ dialogTitle }}
         </v-toolbar-title>
@@ -27,14 +27,14 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
       <v-tabs
         v-if="shouldShowTabs"
         v-model="activeTab"
-        color="#c8102e"
+        color="brand-fg"
         align-tabs="center"
       >
         <v-tab value="invitations">
           {{ $t('Pending Invitations') }}
           <v-badge
             :content="pendingInvitations.length"
-            color="blue"
+            color="info"
             inline
             class="ml-2"
           />
@@ -44,8 +44,8 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
 
       <!-- Loading state -->
       <div v-if="isLoading" class="text-center py-8">
-        <v-progress-circular indeterminate color="#c8102e"></v-progress-circular>
-        <p class="mt-4 text-grey-darken-1">{{ loadingText }}</p>
+        <v-progress-circular indeterminate color="brand-fg"></v-progress-circular>
+        <p class="mt-4 text-medium-emphasis">{{ loadingText }}</p>
       </div>
 
       <!-- Main content area -->
@@ -56,7 +56,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
           <div v-if="pendingInvitations.length === 1" class="py-4 px-6">
             <!-- Welcome message -->
             <div class="text-center mb-4">
-              <v-icon size="48" color="#c8102e" class="mb-2">mdi-party-popper</v-icon>
+              <v-icon size="48" color="brand-fg" class="mb-2">mdi-party-popper</v-icon>
               <p class="text-h6 font-weight-medium">{{ $t('You have been invited to join a project!') }}</p>
             </div>
             
@@ -66,7 +66,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
             
             <!-- Invited by section -->
             <p class="text-subtitle-2 font-weight-bold mb-1">{{ $t('Invited by') }}</p>
-            <v-card variant="flat" class="bg-grey-lighten-5 pa-3 mb-3">
+            <v-card variant="flat" class="bg-panel pa-3 mb-3">
               <div class="d-flex align-center">
                 <v-icon size="small" class="mr-2">mdi-account</v-icon>
                 <span class="text-body-1">{{ pendingInvitations[0].invitedBy.name }}</span>
@@ -75,12 +75,12 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
             
             <!-- Experience section -->
             <p class="text-subtitle-2 font-weight-bold mb-1">{{ $t('Experience') }}</p>
-            <v-card variant="flat" class="bg-grey-lighten-5 pa-3 mb-3">
+            <v-card variant="flat" class="bg-panel pa-3 mb-3">
               <div class="text-body-1">{{ pendingInvitations[0].experienceInstance.name }}</div>
             </v-card>
             
             <!-- Invitation date -->
-            <div class="text-caption text-grey-darken-1">
+            <div class="text-caption text-medium-emphasis">
               <v-icon size="small" class="mr-1">mdi-clock-outline</v-icon>
               {{ $t('Invited') }} {{ formatRelativeTime(pendingInvitations[0].invitedAt) }}
             </div>
@@ -96,7 +96,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                 {{ $t('Decline') }}
               </v-btn>
               <v-btn
-                color="#c8102e"
+                color="primary"
                 variant="elevated"
                 @click="handleAcceptInvitation(pendingInvitations[0]._id)"
                 :loading="processingInvitations[pendingInvitations[0]._id]"
@@ -110,9 +110,9 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
           <div v-else>
             <!-- Welcome message -->
             <div class="text-center py-4 px-6">
-              <v-icon size="48" color="#c8102e" class="mb-2">mdi-email-multiple</v-icon>
+              <v-icon size="48" color="brand-fg" class="mb-2">mdi-email-multiple</v-icon>
               <p class="text-h6 font-weight-medium">{{ $t('You have') }} {{ pendingInvitations.length }} {{ $t('project invitations!') }}</p>
-              <p class="text-body-2 text-grey-darken-1">{{ $t('Review and respond to each invitation below') }}</p>
+              <p class="text-body-2 text-medium-emphasis">{{ $t('Review and respond to each invitation below') }}</p>
             </div>
             
             <v-divider></v-divider>
@@ -125,7 +125,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                     <!-- Left side: Avatar and invitation details -->
                     <v-col cols="12" sm="8">
                       <div class="d-flex align-start">
-                        <v-avatar color="#c8102e" size="40" class="mr-3">
+                        <v-avatar color="primary" size="40" class="mr-3">
                           <v-icon color="white">mdi-folder-account</v-icon>
                         </v-avatar>
                         
@@ -133,14 +133,14 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                           <div class="font-weight-medium text-body-1">
                             {{ invitation.projectName }}
                           </div>
-                          <div class="text-caption text-grey-darken-1">
+                          <div class="text-caption text-medium-emphasis">
                             {{ $t('Invited by') }} {{ invitation.invitedBy.name }}
                           </div>
-                          <div class="text-caption text-grey-darken-1">
+                          <div class="text-caption text-medium-emphasis">
                             <v-icon size="x-small" class="mr-1">mdi-school</v-icon>
                             {{ invitation.experienceInstance.name }}
                           </div>
-                          <div class="text-caption text-grey-darken-2">
+                          <div class="text-caption text-medium-emphasis">
                             <v-icon size="x-small" class="mr-1">mdi-clock-outline</v-icon>
                             {{ formatRelativeTime(invitation.invitedAt) }}
                           </div>
@@ -163,7 +163,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                         </v-btn>
                         <v-btn
                           size="small"
-                          color="#c8102e"
+                          color="primary"
                           variant="elevated"
                           @click="handleAcceptInvitation(invitation._id)"
                           :loading="processingInvitations[invitation._id]"
@@ -196,7 +196,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
             <v-card-actions class="justify-end pa-4">
               <v-btn
                 variant="text"
-                color="grey-darken-1"
+                class="text-medium-emphasis"
                 @click="close"
               >
                 {{ allInvitationsProcessed ? $t('Close') : $t('Cancel') }}
@@ -214,7 +214,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
               <div v-if="pendingInvitations.length === 1" class="py-4 px-6">
                 <!-- Welcome message -->
                 <div class="text-center mb-4">
-                  <v-icon size="48" color="#c8102e" class="mb-2">mdi-party-popper</v-icon>
+                  <v-icon size="48" color="brand-fg" class="mb-2">mdi-party-popper</v-icon>
                   <p class="text-h6 font-weight-medium">{{ $t('You have been invited to join a project!') }}</p>
                 </div>
                 
@@ -224,7 +224,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                 
                 <!-- Invited by section -->
                 <p class="text-subtitle-2 font-weight-bold mb-1">{{ $t('Invited by') }}</p>
-                <v-card variant="flat" class="bg-grey-lighten-5 pa-3 mb-3">
+                <v-card variant="flat" class="bg-panel pa-3 mb-3">
                   <div class="d-flex align-center">
                     <v-icon size="small" class="mr-2">mdi-account</v-icon>
                     <span class="text-body-1">{{ pendingInvitations[0].invitedBy.name }}</span>
@@ -233,12 +233,12 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                 
                 <!-- Experience section -->
                 <p class="text-subtitle-2 font-weight-bold mb-1">{{ $t('Experience') }}</p>
-                <v-card variant="flat" class="bg-grey-lighten-5 pa-3 mb-3">
+                <v-card variant="flat" class="bg-panel pa-3 mb-3">
                   <div class="text-body-1">{{ pendingInvitations[0].experienceInstance.name }}</div>
                 </v-card>
                 
                 <!-- Invitation date -->
-                <div class="text-caption text-grey-darken-1">
+                <div class="text-caption text-medium-emphasis">
                   <v-icon size="small" class="mr-1">mdi-clock-outline</v-icon>
                   {{ $t('Invited') }} {{ formatRelativeTime(pendingInvitations[0].invitedAt) }}
                 </div>
@@ -254,7 +254,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                     {{ $t('Decline') }}
                   </v-btn>
                   <v-btn
-                    color="#c8102e"
+                    color="primary"
                     variant="elevated"
                     @click="handleAcceptInvitation(pendingInvitations[0]._id)"
                     :loading="processingInvitations[pendingInvitations[0]._id]"
@@ -268,9 +268,9 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
               <div v-else>
                 <!-- Welcome message -->
                 <div class="text-center py-4 px-6">
-                  <v-icon size="48" color="#c8102e" class="mb-2">mdi-email-multiple</v-icon>
+                  <v-icon size="48" color="brand-fg" class="mb-2">mdi-email-multiple</v-icon>
                   <p class="text-h6 font-weight-medium">{{ $t('You have') }} {{ pendingInvitations.length }} {{ $t('project invitations!') }}</p>
-                  <p class="text-body-2 text-grey-darken-1">{{ $t('Review and respond to each invitation below') }}</p>
+                  <p class="text-body-2 text-medium-emphasis">{{ $t('Review and respond to each invitation below') }}</p>
                 </div>
                 
                 <v-divider></v-divider>
@@ -283,7 +283,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                         <!-- Left side: Avatar and invitation details -->
                         <v-col cols="12" sm="8">
                           <div class="d-flex align-start">
-                            <v-avatar color="#c8102e" size="40" class="mr-3">
+                            <v-avatar color="primary" size="40" class="mr-3">
                               <v-icon color="white">mdi-folder-account</v-icon>
                             </v-avatar>
                             
@@ -291,14 +291,14 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                               <div class="font-weight-medium text-body-1">
                                 {{ invitation.projectName }}
                               </div>
-                              <div class="text-caption text-grey-darken-1">
+                              <div class="text-caption text-medium-emphasis">
                                 {{ $t('Invited by') }} {{ invitation.invitedBy.name }}
                               </div>
-                              <div class="text-caption text-grey-darken-1">
+                              <div class="text-caption text-medium-emphasis">
                                 <v-icon size="x-small" class="mr-1">mdi-school</v-icon>
                                 {{ invitation.experienceInstance.name }}
                               </div>
-                              <div class="text-caption text-grey-darken-2">
+                              <div class="text-caption text-medium-emphasis">
                                 <v-icon size="x-small" class="mr-1">mdi-clock-outline</v-icon>
                                 {{ formatRelativeTime(invitation.invitedAt) }}
                               </div>
@@ -321,7 +321,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                             </v-btn>
                             <v-btn
                               size="small"
-                              color="#c8102e"
+                              color="primary"
                               variant="elevated"
                               @click="handleAcceptInvitation(invitation._id)"
                               :loading="processingInvitations[invitation._id]"
@@ -375,11 +375,11 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
 
             <!-- Code input action buttons -->
             <v-card-actions class="justify-end pa-4">
-              <v-btn variant="text" color="grey-darken-1" @click="close">
+              <v-btn variant="text" class="text-medium-emphasis" @click="close">
                 {{ $t('Cancel') }}
               </v-btn>
               <v-btn
-                color="#c8102e"
+                color="primary"
                 variant="elevated"
                 @click="submit"
                 :disabled="!invitationCode"
@@ -412,11 +412,11 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
           <v-divider />
 
           <v-card-actions class="justify-end pa-4">
-            <v-btn variant="text" color="grey-darken-1" @click="close">
+            <v-btn variant="text" class="text-medium-emphasis" @click="close">
               {{ $t('Cancel') }}
             </v-btn>
             <v-btn
-              color="#c8102e"
+              color="primary"
               variant="elevated"
               @click="submit"
               :disabled="!invitationCode"
@@ -436,9 +436,9 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
           
           <!-- Associated experience details -->
           <p class="text-subtitle-2 font-weight-bold mb-1">{{ $t('Experience') }}</p>
-          <v-card variant="flat" class="bg-grey-lighten-5 pa-3 mb-3">
+          <v-card variant="flat" class="bg-panel pa-3 mb-3">
             <div class="text-body-1">{{ projectData.experience }}</div>
-            <div class="text-caption text-grey-darken-1">{{ projectData.session }}</div>
+            <div class="text-caption text-medium-emphasis">{{ projectData.session }}</div>
           </v-card>
           
           <!-- Project description -->
@@ -452,28 +452,28 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
             variant="outlined"
             class="mb-4 registration-alert"
             border="start"
-            border-color="#5C6BC0"
+            border-color="alert-accent-border"
             icon="mdi-information"
             density="comfortable"
           >
             <div class="d-flex flex-column">
-              <span class="text-subtitle-2 font-weight-medium text-primary-darken-1 mb-1">
+              <span class="text-subtitle-2 font-weight-medium text-brand-fg-strong mb-1">
                 {{ $t('Registration Required') }}
               </span>
-              <p class="mb-2 text-body-2 text-blue-darken-3">
+              <p class="mb-2 text-body-2 text-notice-info-fg">
                 {{ $t('You need to be registered for this experience to join this project.') }}
               </p>
               <div>
-                <p class="text-body-2 font-weight-medium mb-1 text-blue-darken-3">{{ $t('Required Experience:') }}</p>
-                <div class="bg-grey-lighten-5 rounded pa-2 mb-3">
+                <p class="text-body-2 font-weight-medium mb-1 text-notice-info-fg">{{ $t('Required Experience:') }}</p>
+                <div class="bg-panel rounded pa-2 mb-3">
                   <div class="d-flex align-center py-1">
-                    <v-icon size="small" color="primary" class="me-2">mdi-school-outline</v-icon>
-                    <span class="text-body-2">{{ projectData.experience }} <span class="text-caption text-grey-darken-1">({{ projectData.session }})</span></span>
+                    <v-icon size="small" color="brand-fg" class="me-2">mdi-school-outline</v-icon>
+                    <span class="text-body-2">{{ projectData.experience }} <span class="text-caption text-medium-emphasis">({{ projectData.session }})</span></span>
                   </div>
                 </div>
                 <div class="d-flex justify-center">
                   <v-btn 
-                    color="primary" 
+                    color="brand-fg" 
                     variant="outlined"
                     size="small"
                     prepend-icon="mdi-account-school"
@@ -490,7 +490,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
           
           <!-- Project members list -->
           <p class="text-subtitle-2 font-weight-bold mb-2">{{ $t('Project Members') }}</p>
-          <v-list density="compact" class="bg-grey-lighten-5 mb-4 rounded">
+          <v-list density="compact" class="bg-panel mb-4 rounded">
             <v-list-item
               v-for="member in projectData.members"
               :key="member.id"
@@ -500,7 +500,7 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
               class="mb-1"
             >
               <template v-slot:prepend>
-                <v-avatar color="grey-lighten-2" size="36">
+                <v-avatar color="surface-light" size="36">
                   {{ member.name.charAt(0).toUpperCase() + (member.name.indexOf(' ') > -1 ? member.name.charAt(member.name.indexOf(' ') + 1).toUpperCase() : '') }}
                 </v-avatar>
               </template>
@@ -509,12 +509,12 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                 <div class="d-flex flex-column align-end">
                   <v-chip
                     size="small"
-                    :color="member.isOwner ? '#c8102e' : 'success'"
+                    :color="member.isOwner ? 'brand-fg' : 'success'"
                     class="mb-1"
                   >
                     {{ member.isOwner ? 'Owner' : 'Member' }}
                   </v-chip>
-                  <span class="text-caption text-grey">
+                  <span class="text-caption text-disabled">
                     {{ $t('Joined') }} {{ formatDate(member.joinDate) }}
                   </span>
                 </div>
@@ -527,11 +527,11 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
 
         <!-- Project details action buttons -->
         <v-card-actions class="justify-end pa-4">
-          <v-btn variant="text" color="grey-darken-1" @click="backToCode">
+          <v-btn variant="text" class="text-medium-emphasis" @click="backToCode">
             {{ $t('Back') }}
           </v-btn>
           <v-btn
-            color="#c8102e"
+            color="primary"
             variant="elevated"
             @click="confirmJoin"
             :loading="isJoining"
@@ -1010,12 +1010,12 @@ export default {
 
 <style scoped>
 .registration-alert .v-alert__content {
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity)) !important;
 }
 
 .registration-alert :deep(.v-alert__title),
 .registration-alert :deep(.v-alert__prepend) {
-  color: #5C6BC0 !important;
+  color: rgb(var(--v-theme-alert-accent-fg)) !important;
 }
 
 .invitations-list {
@@ -1028,12 +1028,12 @@ export default {
 }
 
 .invitation-item:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(var(--v-theme-on-surface), 0.02);
 }
 
 .invitation-item.processed {
   opacity: 0.7;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(var(--v-theme-on-surface), 0.03);
 }
 
 .gap-2 {

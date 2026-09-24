@@ -9,7 +9,7 @@ with search and selection capabilities. Supports pending invitation tracking and
   <!-- Main invite members dialog -->
   <v-dialog v-model="localDialog" max-width="800px">
     <v-card>
-      <v-toolbar color="#c8102e" dark>
+      <v-toolbar color="primary">
         <v-toolbar-title>{{ $t('Invite Members to Project') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="closeDialog">
@@ -38,7 +38,7 @@ with search and selection capabilities. Supports pending invitation tracking and
             <v-row class="d-flex">
               <v-col cols="12" sm="7">
                 <span class="text-subtitle-2 font-weight-medium">{{ $t('Share this invite code') }}</span>
-                <div class="text-caption text-grey-darken-1 mt-1">
+                <div class="text-caption text-medium-emphasis mt-1">
                   {{ $t('Anyone with this code can join your project') }}
                 </div>
               </v-col>
@@ -50,13 +50,13 @@ with search and selection capabilities. Supports pending invitation tracking and
                     readonly
                     variant="outlined"
                     density="compact"
-                    bg-color="grey-lighten-4"
+                    bg-color="panel-strong"
                     hide-details
                     class="flex-grow-1 mr-2"
                   ></v-text-field>
                   <!-- Copy code button -->
                   <v-btn
-                    color="#c8102e"
+                    color="brand-fg"
                     variant="tonal"
                     size="small"
                     @click="copyInviteCode"
@@ -69,7 +69,7 @@ with search and selection capabilities. Supports pending invitation tracking and
                   <!-- Regenerate code button (conditional) -->
                   <v-btn
                     v-if="canRegenerateCode"
-                    color="grey-darken-1"
+                    color="muted-strong"
                     variant="tonal"
                     size="small"
                     @click="showRegenerateConfirmation = true"
@@ -91,15 +91,15 @@ with search and selection capabilities. Supports pending invitation tracking and
         
         <!-- Loading State -->
         <div v-if="loadingRegisteredUsers" class="text-center py-8">
-          <v-progress-circular indeterminate color="#c8102e" size="48"></v-progress-circular>
-          <p class="text-grey mt-3 mb-0">{{ $t('Loading registered students...') }}</p>
+          <v-progress-circular indeterminate color="brand-fg" size="48"></v-progress-circular>
+          <p class="text-disabled mt-3 mb-0">{{ $t('Loading registered students...') }}</p>
         </div>
 
         <!-- Empty State - No other students registered -->
         <div v-else-if="availableUsers.length === 0 && !searchQuery" class="text-center py-8">
-          <v-icon size="56" color="grey-lighten-1">mdi-account-group-outline</v-icon>
-          <p class="text-body-1 text-grey-darken-1 mt-3 mb-1">{{ $t('No other students available') }}</p>
-          <p class="text-body-2 text-grey mb-0">
+          <v-icon size="56" class="text-disabled">mdi-account-group-outline</v-icon>
+          <p class="text-body-1 text-medium-emphasis mt-3 mb-1">{{ $t('No other students available') }}</p>
+          <p class="text-body-2 text-disabled mb-0">
             {{ $t('There are no other students enrolled in this experience yet. Share your invite code instead.') }}
           </p>
         </div>
@@ -121,7 +121,7 @@ with search and selection capabilities. Supports pending invitation tracking and
             </v-col>
             <v-col cols="12" md="4" class="d-flex align-center">
               <v-chip
-                :color="selectedUsers.length > 0 ? '#c8102e' : 'grey'"
+                :color="selectedUsers.length > 0 ? 'brand-fg' : 'muted'"
                 variant="tonal"
                 class="w-100 justify-center"
                 size="large"
@@ -144,7 +144,7 @@ with search and selection capabilities. Supports pending invitation tracking and
                   <v-hover v-slot:default="{ isHovering, props }">
                     <v-list-item
                       v-bind="props"
-                      :class="{ 'bg-grey-lighten-4': isHovering }"
+                      :class="{ 'bg-panel-strong': isHovering }"
                       class="px-4"
                       density="compact"
                     >
@@ -154,14 +154,14 @@ with search and selection capabilities. Supports pending invitation tracking and
                           v-if="!isAlreadyMember(item.userID) && !isAlreadyInvited(item.userID)"
                           :model-value="isUserSelected(item.userID)"
                           @update:model-value="toggleUserSelection(item)"
-                          color="#c8102e"
+                          color="brand-fg"
                           hide-details
                           class="mr-2"
                         ></v-checkbox>
                         <!-- Show icon for members and invited users -->
                         <div v-else class="mr-2" style="width: 40px; display: flex; justify-content: center;">
                           <v-icon
-                            :color="isAlreadyMember(item.userID) ? 'success' : 'orange'"
+                            :color="isAlreadyMember(item.userID) ? 'success' : 'caution-fg'"
                             size="small"
                           >
                             {{ isAlreadyMember(item.userID) ? 'mdi-check-circle' : 'mdi-clock-outline' }}
@@ -192,7 +192,7 @@ with search and selection capabilities. Supports pending invitation tracking and
                         <div v-else-if="isAlreadyInvited(item.userID)" class="d-flex align-center">
                           <v-chip
                             size="small"
-                            color="orange"
+                            color="caution-fg"
                             variant="tonal"
                             class="mr-2"
                           >
@@ -203,7 +203,7 @@ with search and selection capabilities. Supports pending invitation tracking and
                           <!-- Retract invitation button -->
                           <v-btn
                             size="small"
-                            color="grey-darken-1"
+                            color="muted-strong"
                             variant="tonal"
                             @click="confirmRetractInvitation(item)"
                             :loading="retractingUsers.has(item.userID)"
@@ -220,8 +220,8 @@ with search and selection capabilities. Supports pending invitation tracking and
               
               <!-- Empty search results -->
               <div v-if="filteredRegisteredUsers.length === 0" class="text-center py-8">
-                <v-icon size="48" color="grey-lighten-1">mdi-account-search-outline</v-icon>
-                <p class="text-grey mt-2 mb-0">
+                <v-icon size="48" class="text-disabled">mdi-account-search-outline</v-icon>
+                <p class="text-disabled mt-2 mb-0">
                   {{ searchQuery 
                     ? $t('No students found matching your search') 
                     : $t('All registered students are already members of this project') 
@@ -239,7 +239,7 @@ with search and selection capabilities. Supports pending invitation tracking and
       <v-card-actions class="pa-4">
         <v-btn
           variant="text"
-          color="grey-darken-1"
+          class="text-medium-emphasis"
           @click="closeDialog"
         >
           {{ $t('Cancel') }}
@@ -248,7 +248,7 @@ with search and selection capabilities. Supports pending invitation tracking and
         <v-btn
           v-if="selectedUsers.length > 0"
           variant="text"
-          color="#c8102e"
+          color="brand-fg"
           @click="clearSelection"
           class="mr-2"
         >
@@ -258,7 +258,7 @@ with search and selection capabilities. Supports pending invitation tracking and
         <v-btn
           :disabled="selectedUsers.length === 0"
           :loading="invitingUsers"
-          color="#c8102e"
+          color="primary"
           variant="elevated"
           @click="openSendInviteConfirmation"
           prepend-icon="mdi-send"
@@ -268,7 +268,6 @@ with search and selection capabilities. Supports pending invitation tracking and
             v-if="selectedUsers.length > 0"
             :content="selectedUsers.length"
             color="white"
-            text-color="#c8102e"
             inline
             class="ml-2"
           ></v-badge>
@@ -281,7 +280,7 @@ with search and selection capabilities. Supports pending invitation tracking and
   <v-dialog v-model="showSendInviteConfirmation" max-width="500px">
     <v-card>
       <v-card-title class="d-flex align-center pa-4">
-        <v-icon color="#c8102e" size="28" class="mr-2">mdi-account-multiple-plus</v-icon>
+        <v-icon color="brand-fg" size="28" class="mr-2">mdi-account-multiple-plus</v-icon>
         <span>{{ $t('Confirm Invitations') }}</span>
       </v-card-title>
       <v-card-text class="px-4 pb-2">
@@ -290,7 +289,7 @@ with search and selection capabilities. Supports pending invitation tracking and
           <strong>{{ selectedUsers.length }}</strong> 
           {{ selectedUsers.length === 1 ? $t('student') : $t('students') }}.
         </p>
-        <p class="text-grey-darken-1">
+        <p class="text-medium-emphasis">
           {{ $t('They will receive an in-app notification and can accept or decline the invitation to join') }} 
           <strong>{{ projectName || $t('your project') }}</strong>.
         </p>
@@ -299,13 +298,13 @@ with search and selection capabilities. Supports pending invitation tracking and
         <v-spacer></v-spacer>
         <v-btn
           variant="text"
-          color="grey-darken-1"
+          class="text-medium-emphasis"
           @click="showSendInviteConfirmation = false"
         >
           {{ $t('Cancel') }}
         </v-btn>
         <v-btn
-          color="#c8102e"
+          color="primary"
           variant="elevated"
           @click="sendInvitations"
           :loading="invitingUsers"
@@ -321,7 +320,7 @@ with search and selection capabilities. Supports pending invitation tracking and
   <v-dialog v-model="showRetractConfirmation" max-width="450px">
     <v-card>
       <v-card-title class="d-flex align-center pa-4">
-        <v-icon color="orange" size="28" class="mr-2">mdi-cancel</v-icon>
+        <v-icon color="caution-fg" size="28" class="mr-2">mdi-cancel</v-icon>
         <span>{{ $t('Retract Invitation') }}</span>
       </v-card-title>
       <v-card-text class="px-4 pb-2">
@@ -329,7 +328,7 @@ with search and selection capabilities. Supports pending invitation tracking and
           {{ $t('Are you sure you want to retract the invitation for') }}
           <strong>{{ userToRetract.firstName }} {{ userToRetract.lastName }}</strong>?
         </p>
-        <p class="text-grey-darken-1">
+        <p class="text-medium-emphasis">
           {{ $t('They will no longer be able to join the project using their current invitation.') }}
         </p>
       </v-card-text>
@@ -337,13 +336,13 @@ with search and selection capabilities. Supports pending invitation tracking and
         <v-spacer></v-spacer>
         <v-btn
           variant="text"
-          color="grey-darken-1"
+          class="text-medium-emphasis"
           @click="showRetractConfirmation = false"
         >
           {{ $t('Cancel') }}
         </v-btn>
         <v-btn
-          color="orange"
+          color="caution-fg"
           variant="elevated"
           @click="retractInvitation"
           :loading="retractingUsers.has(userToRetract?.userID)"
@@ -368,13 +367,13 @@ with search and selection capabilities. Supports pending invitation tracking and
         <v-spacer></v-spacer>
         <v-btn
           variant="text"
-          color="grey-darken-1"
+          class="text-medium-emphasis"
           @click="showRegenerateConfirmation = false"
         >
           {{ $t('Cancel') }}
         </v-btn>
         <v-btn
-          color="#c8102e"
+          color="brand-fg"
           variant="tonal"
           @click="regenerateInviteCode"
         >
@@ -400,14 +399,14 @@ with search and selection capabilities. Supports pending invitation tracking and
         <p class="mb-2" v-else>
           {{ $t('All selected users have already been invited or are already project members.') }}
         </p>
-        <p class="text-grey-darken-1" v-if="invitedUsersCount > 0">
+        <p class="text-medium-emphasis" v-if="invitedUsersCount > 0">
           {{ $t('They will receive an in-app notification and can accept or decline the invitation.') }}
         </p>
       </v-card-text>
       <v-card-actions class="px-4 pb-4">
         <v-spacer></v-spacer>
         <v-btn
-          color="#c8102e"
+          color="brand-fg"
           variant="tonal"
           @click="closeSuccessDialog"
         >

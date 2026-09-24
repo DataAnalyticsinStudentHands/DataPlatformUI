@@ -10,7 +10,7 @@
   <v-container fluid>
     <v-row align="center" justify="center" class="fill-height">
       <v-col cols="12" class="text-center mt-10">
-        <h1 :class="fontSizeClass" class="font-bold text-red-700 tracking-widest">
+        <h1 :class="fontSizeClass" class="font-bold text-brand-fg tracking-widest">
           Oops! Page Not Found
         </h1>
         <v-btn @click="navigateToLogin" :class="buttonClass" class="mt-5">
