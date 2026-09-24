@@ -625,12 +625,14 @@ const routes = [
     path: "/publicProjects",
     name: "publicProjects",
     component: () => import("../components/dev/publicProjects.vue"),
+    meta: { forceLight: true },
   },
   // Public routes from develop_PublicView
   {
     path: "/featured",
     name: "featuredShowcase",
     component: () => import("@/components/public/FeaturedShowcase.vue"),
+    meta: { forceLight: true },
     beforeEnter: async (to, from, next) => {
       try {
         const f = await getPublicFeatured();
@@ -715,6 +717,7 @@ const routes = [
     name: "publicProjectView",
     component: () =>
       import("@/components/studentSide/projectView/pages/ProjectViewPage.vue"),
+    meta: { forceLight: true },
   },
 
   // Dev Preview - Direct access to editor for testing (public for dev purposes)

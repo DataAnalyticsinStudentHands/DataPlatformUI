@@ -180,7 +180,7 @@ Redesigned UI matching the instructor pages aesthetic.
       </div>
 
       <!-- Single Language Email -->
-      <div v-if="!includeSpanish" class="email-editor-card">
+      <v-theme-provider v-if="!includeSpanish" theme="light" with-background class="email-editor-card dp-force-light">
         <v-text-field
           ref="subjectField"
           v-model="emailHeader"
@@ -234,12 +234,12 @@ Redesigned UI matching the instructor pages aesthetic.
           <v-icon start size="18">mdi-account-outline</v-icon>
           Add Last Name
         </v-btn>
-      </div>
+      </v-theme-provider>
 
       <!-- Bilingual Email -->
       <v-row v-else>
         <v-col cols="12" md="6">
-          <div class="email-editor-card">
+          <v-theme-provider theme="light" with-background class="email-editor-card dp-force-light">
             <div class="language-badge">
               English
             </div>
@@ -296,10 +296,10 @@ Redesigned UI matching the instructor pages aesthetic.
               <v-icon start size="18">mdi-account-outline</v-icon>
               Add Last Name
             </v-btn>
-          </div>
+          </v-theme-provider>
         </v-col>
         <v-col cols="12" md="6">
-          <div class="email-editor-card">
+          <v-theme-provider theme="light" with-background class="email-editor-card dp-force-light">
             <div class="language-badge">
               Spanish
             </div>
@@ -356,7 +356,7 @@ Redesigned UI matching the instructor pages aesthetic.
               <v-icon start size="18">mdi-account-outline</v-icon>
               Add Last Name
             </v-btn>
-          </div>
+          </v-theme-provider>
         </v-col>
       </v-row>
     </div>
@@ -382,7 +382,7 @@ Redesigned UI matching the instructor pages aesthetic.
 
       <template v-else>
         <!-- Single Language Preview -->
-        <div v-if="!includeSpanish" class="email-preview">
+        <v-theme-provider v-if="!includeSpanish" theme="light" with-background class="email-preview dp-force-light">
           <div class="email-preview-header">
             <div class="email-preview-row">
               <span class="email-preview-label">From:</span>
@@ -398,12 +398,12 @@ Redesigned UI matching the instructor pages aesthetic.
             </div>
           </div>
           <div class="email-preview-body" v-html="previewBody"></div>
-        </div>
+        </v-theme-provider>
 
         <!-- Bilingual Preview -->
         <v-row v-else>
           <v-col cols="12" md="6">
-            <div class="email-preview">
+            <v-theme-provider theme="light" with-background class="email-preview dp-force-light">
               <div class="language-badge mb-3">English</div>
               <div class="email-preview-header">
                 <div class="email-preview-row">
@@ -420,10 +420,10 @@ Redesigned UI matching the instructor pages aesthetic.
                 </div>
               </div>
               <div class="email-preview-body" v-html="previewBodyEnglish"></div>
-            </div>
+            </v-theme-provider>
           </v-col>
           <v-col cols="12" md="6">
-            <div class="email-preview">
+            <v-theme-provider theme="light" with-background class="email-preview dp-force-light">
               <div class="language-badge mb-3">Spanish</div>
               <div class="email-preview-header">
                 <div class="email-preview-row">
@@ -440,7 +440,7 @@ Redesigned UI matching the instructor pages aesthetic.
                 </div>
               </div>
               <div class="email-preview-body" v-html="previewBodySpanish"></div>
-            </div>
+            </v-theme-provider>
           </v-col>
         </v-row>
       </template>
@@ -1168,6 +1168,13 @@ export default {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* The editor cards and previews are forced-light providers (dark-mode plan §6.1, §7). Keep their own
+   height: the global .dp-force-light min-height would stretch a bilingual pair to one height. */
+.email-editor-card.dp-force-light,
+.email-preview.dp-force-light {
+  min-height: auto;
 }
 
 .email-preview-header {

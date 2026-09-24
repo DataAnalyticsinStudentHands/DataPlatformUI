@@ -41,7 +41,12 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
-// Initialize Vuetify with Material Design Icons
+// Dark mode (Design_Plan_Dark_Mode.md section 5.2): theme definitions and the start-up theme policy
+import { themes } from './theme/themes';
+import { resolveInitialTheme, attachOsListener, PREPAINT_CLASS } from './theme/initialTheme';
+
+// Initialize Vuetify with Material Design Icons and the light/dark themes.
+// resolveInitialTheme(): a stored 'dp-theme' choice, else light (see src/theme/initialTheme.js).
 const vuetify = createVuetify({
     components,
     directives,
@@ -51,6 +56,10 @@ const vuetify = createVuetify({
       sets: {
         mdi,
       }
+    },
+    theme: {
+      defaultTheme: resolveInitialTheme(),
+      themes,
     },
 });
 
@@ -91,6 +100,10 @@ async function initApp() {
   const userStore = useLoggedInUserStore();
   await userStore.initializeStore();
   app.mount('#app');
+  // Follow OS color-scheme changes while nothing is stored (a no-op while FOLLOW_OS_WHEN_UNSET is false)
+  attachOsListener((t) => vuetify.theme.change(t));
+  // Vuetify's theme paints the page now; drop the pre-paint class public/theme-init.js may have set
+  document.documentElement.classList.remove(PREPAINT_CLASS);
 }
 
 initApp();

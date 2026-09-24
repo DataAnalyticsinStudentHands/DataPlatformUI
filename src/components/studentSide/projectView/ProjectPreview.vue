@@ -75,46 +75,54 @@
 
       <!-- Direct Template Render - fills container height -->
       <div v-else class="template-wrapper" :class="{ 'has-poster': hasPoster }">
-        <ProjectTemplate
-          :key="previewKey"
-          :project="previewProject"
-        />
+        <!-- The project page stays light in both themes (dark-mode plan §6.1, §7) -->
+        <v-theme-provider theme="light" with-background class="dp-force-light">
+          <ProjectTemplate
+            :key="previewKey"
+            :project="previewProject"
+          />
+        </v-theme-provider>
       </div>
     </div>
 
     <!-- Fullscreen Content (teleported to body to escape Vuetify layout) -->
     <Teleport to="body">
-      <div
+      <!-- Teleported content escapes outer providers, so the light provider is the Teleport's first child (§7) -->
+      <v-theme-provider
         v-if="isFullscreen"
-        class="fullscreen-overlay"
+        theme="light"
+        with-background
+        class="dp-force-light fullscreen-theme-provider"
       >
-        <!-- Close Button -->
-        <v-btn
-          icon
-          variant="elevated"
-          color="white"
-          class="fullscreen-close-btn"
-          @click="toggleFullscreen"
-        >
-          <v-icon color="#333">mdi-close</v-icon>
-        </v-btn>
+        <div class="fullscreen-overlay">
+          <!-- Close Button -->
+          <v-btn
+            icon
+            variant="elevated"
+            color="white"
+            class="fullscreen-close-btn"
+            @click="toggleFullscreen"
+          >
+            <v-icon color="#333">mdi-close</v-icon>
+          </v-btn>
 
-        <!-- Fullscreen Template Content -->
-        <div class="fullscreen-content">
-          <div v-if="!hasValidProject" class="empty-preview">
-            <v-icon size="64" color="#ccc">mdi-file-document-outline</v-icon>
-            <p class="empty-title">{{ $t('No Preview Available') }}</p>
-            <p class="empty-subtitle">{{ $t('Fill out the form to see a live preview of your project page.') }}</p>
-          </div>
+          <!-- Fullscreen Template Content -->
+          <div class="fullscreen-content">
+            <div v-if="!hasValidProject" class="empty-preview">
+              <v-icon size="64" color="#ccc">mdi-file-document-outline</v-icon>
+              <p class="empty-title">{{ $t('No Preview Available') }}</p>
+              <p class="empty-subtitle">{{ $t('Fill out the form to see a live preview of your project page.') }}</p>
+            </div>
 
-          <div v-else class="template-wrapper-fullscreen">
-            <ProjectTemplate
-              :key="previewKey + '-fullscreen'"
-              :project="previewProject"
-            />
+            <div v-else class="template-wrapper-fullscreen">
+              <ProjectTemplate
+                :key="previewKey + '-fullscreen'"
+                :project="previewProject"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </v-theme-provider>
     </Teleport>
   </div>
 </template>
@@ -298,6 +306,13 @@ defineExpose({
   min-height: 0;
   overflow-x: auto;
   background: #f4f5f7;
+}
+
+/* Forced-light provider around the teleported overlay (dark-mode plan §7). The Teleport sits outside
+   .v-application, so the overlay inherited body's full-opacity text; keep that instead of
+   .dp-force-light's high-emphasis text so light mode is unchanged. */
+.v-theme-provider.fullscreen-theme-provider {
+  color: rgb(var(--v-theme-on-background));
 }
 
 /* Fullscreen overlay - teleported to body, sits above everything */

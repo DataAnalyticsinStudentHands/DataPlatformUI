@@ -15,7 +15,7 @@
       <v-navigation-drawer
         v-if="showNavDrawer"
         v-model="drawer"
-        color="#c8102e"
+        color="primary"
         :rail="rail"
         @click="rail = false"
         class="sidebar"
@@ -207,7 +207,7 @@
           <!-- Common navigation items for all authenticated users -->
           <div v-if="isFullyAuthenticated">
             <v-list-item>
-              <hr>
+              <hr class="drawer-divider">
             </v-list-item>
             <v-list-item 
               :active="activeLink === 'profile'"
@@ -248,7 +248,7 @@
       <!-- App bar with gradient background and organization name -->
       <v-app-bar 
         scroll-target="#main"
-        style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+        style="background: linear-gradient(250deg, rgb(var(--v-theme-primary)) 70%, rgb(var(--v-theme-appbar-slice)) 50.6%)"
       >
         <v-btn 
           v-if="showNavDrawer && !drawer"
@@ -261,11 +261,25 @@
         <v-spacer></v-spacer>
 
         <h1 class="text-2xl text-white mr-10">Engaged Data Science</h1>
+
+        <!-- Light/dark theme toggle (dev builds only until DARK_MODE_RELEASED) -->
+        <v-btn
+          v-if="showThemeToggle"
+          variant="text"
+          color="white"
+          class="ml-n6"
+          :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+          :aria-label="$t(isDark ? 'Switch to light mode' : 'Switch to dark mode')"
+          @click="toggle"
+        />
       </v-app-bar>
 
-      <!-- Main content area containing router view -->
-      <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content">
-        <router-view></router-view>
+      <!-- Main content area containing router view; forced-light routes (route meta) stay light -->
+      <v-main id="main" ref="mainContent" style="min-height: 300px;" class="main-content" :class="{ 'pb-0': forceLight, 'main-content--force-light': forceLight }">
+        <v-theme-provider v-if="forceLight" theme="light" with-background class="dp-force-light dp-force-light--route">
+          <router-view />
+        </v-theme-provider>
+        <router-view v-else />
       </v-main>
     </v-layout>
   </v-app>
@@ -277,6 +291,8 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
 import axios from "axios";
 import 'vue3-toastify/dist/index.css';
 import { useNotificationPolling } from '@/composables/useNotificationPolling';
+import { useColorScheme } from '@/composables/useColorScheme';
+import { DARK_MODE_RELEASED } from '@/theme/initialTheme';
 
 export default {
   name: "App",
@@ -337,6 +353,10 @@ export default {
     // Show navigation drawer only for authenticated users not on public showcase pages
     showNavDrawer() {
       return this.isFullyAuthenticated && !this.isPublicShowcasePage;
+    },
+    // Routes with meta.forceLight always render in the light theme (route meta only, never isDark)
+    forceLight() {
+      return this.$route.matched.some(r => r.meta && r.meta.forceLight);
     }
   },
   methods: {
@@ -409,7 +429,15 @@ export default {
   setup() {
     const user = useLoggedInUserStore();
     const notificationPolling = useNotificationPolling();
-    return { user, notificationPolling };
+    const { isDark, toggle } = useColorScheme();
+    return {
+      user,
+      notificationPolling,
+      isDark,
+      toggle,
+      // The toggle renders only in dev builds until dark mode is released
+      showThemeToggle: DARK_MODE_RELEASED || import.meta.env.DEV,
+    };
   },
 
   created() {
@@ -425,13 +453,6 @@ export default {
 };
 </script>
 <style scoped>
-/* Legacy container styling */
-#_container {
-  background-color: #c8102e;
-  color: white;
-  padding: 18px;
-}
-
 /* Fixed sidebar positioning */
 .sidebar {
   position: fixed;
@@ -439,6 +460,10 @@ export default {
   left: 0;
   height: 100vh;
   overflow-y: auto;
+  /* color="primary" adds Vuetify's .bg-primary, which sets this to primary's overlay multiplier
+     (2 in light, since #c8102e is dark). Pin it to 1 so the nav items' hover/active overlays
+     match the old hex color="#c8102e" (inline style, multiplier 1). Dark is already 1. */
+  --v-theme-overlay-multiplier: 1;
 }
 
 /* Main content scrollable area */
@@ -446,6 +471,12 @@ export default {
   overflow-y: auto;
   height: 100vh;
   padding-bottom: 5vh;
+}
+
+/* Forced-light routes: v-main is the scroll container and sits outside the light provider,
+   so keep its scrollbar light while the app is dark (light mode already resolves to light) */
+.main-content--force-light {
+  color-scheme: light;
 }
 
 /* Projects notification dot - only affects this specific element */
@@ -457,6 +488,11 @@ export default {
   border-radius: 50%;
   margin-left: 8px;
   vertical-align: middle;
+}
+
+/* Drawer divider keeps Tailwind preflight's default border color on the always-red drawer */
+.drawer-divider {
+  border-color: #e5e7eb;
 }
 
 /* Position dot in rail mode */

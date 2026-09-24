@@ -3,7 +3,7 @@
  *
  * Preview & Submit step component for project creation.
  * Shows a full-screen preview with a floating submission panel.
- * Matches the styling of indProjectPage_engaged_data.vue.
+ * The ProjectTemplate preview stays light in both themes (forced-light provider, dark-mode plan §7).
  */
 
 <template>
@@ -26,7 +26,15 @@
 
       <!-- Project Template Preview -->
       <div class="template-preview-wrapper" :key="previewKey">
-        <ProjectTemplate v-if="previewProject" :project="previewProject" />
+        <!-- The project page stays light in both themes (dark-mode plan §6.1, §7) -->
+        <v-theme-provider
+          v-if="previewProject"
+          theme="light"
+          with-background
+          class="dp-force-light template-theme-provider"
+        >
+          <ProjectTemplate :project="previewProject" />
+        </v-theme-provider>
         <div v-else class="empty-preview">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -335,6 +343,14 @@ defineExpose({
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+/* Forced-light provider around ProjectTemplate (dark-mode plan §7). ProjectTemplate paints its own
+   light gradient, so the provider's paint shows only beside the template's 1400px max-width
+   (step-3 fullscreen on wide screens). .preview-area's own #f4f5f7 showed there before, so the
+   provider paints nothing and lets .preview-area show through, exactly as before. */
+.v-theme-provider.template-theme-provider {
+  background-color: transparent;
 }
 
 /* Empty Preview State */

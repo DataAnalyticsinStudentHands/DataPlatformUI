@@ -176,3 +176,26 @@ select.v-field__input {
   right: 0.2%;
   border-radius: 0 !important;
 }
+
+/* ---- Dark mode (Design_Plan_Dark_Mode.md sections 5.3 and 7) ---- */
+
+/* Paints the page from the current Vuetify theme, including the network wait before mount */
+html {
+  background-color: rgb(var(--v-theme-background));
+}
+
+/* Forced-light regions: <v-theme-provider theme="light" with-background class="dp-force-light ...">.
+   Two classes, so this beats VThemeProvider.css's single-class rule (full-opacity on-background
+   text) whichever order the two stylesheets load in. */
+.v-theme-provider.dp-force-light {
+  color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
+}
+
+.dp-force-light {
+  min-height: 100%;
+}
+
+/* Route-level provider: carries v-main's 5vh bottom padding (v-main gets pb-0 on forced-light routes) */
+.dp-force-light--route {
+  padding-bottom: 5vh;
+}
