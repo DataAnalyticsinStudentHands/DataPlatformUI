@@ -92,28 +92,3 @@ export default {
   },
 };
 </script>
-
-<style>
-/* Custom styling for list items and backgrounds */
-.list-item-no-padding {
-  padding-left: 0.5rem !important;
-  padding-right: 0.5rem !important;
-}
-.no-right-margin {
-  margin-right: 0.5rem !important;
-}
-.light-green-bg {
-  background-color: #e6f7e9;
-}
-.light-red-bg {
-  background-color: #ffe6e6;
-}
-.light-grey-bg {
-  background-color: #f5f5f5;
-}
-.unclickable {
-  cursor: default !important;
-  pointer-events: none !important;
-  user-select: none !important;
-}
-</style>

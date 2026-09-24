@@ -531,11 +531,6 @@ methods: {
 </script>
 
 <style scoped>
-/* Error text styling */
-.error-text {
-    color: rgb(176, 0, 32);
-}
-
 /* Section title styling */
 .section-title {
     font-size: 1.25rem;

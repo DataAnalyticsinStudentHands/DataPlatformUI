@@ -689,10 +689,6 @@
     }
     
     
-    .error-text {
-        color: #B00020;
-    }
-    
     .fixed-button {
       position: fixed;
       bottom: 20px; /* Adjust the bottom value as needed */

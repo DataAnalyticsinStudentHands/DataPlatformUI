@@ -1255,11 +1255,6 @@ with validation, checkbox groupings, and conditional "Other" text fields.
   </script>
   
   <style scoped>
-  /* Error text styling */
-  .error-text {
-      color: rgb(176, 0, 32);
-  }
-  
   /* Fixed error navigation button */
   .fixed-button {
       position: fixed;

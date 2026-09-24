@@ -498,10 +498,3 @@ methods: {
 },
 }
 </script>
-
-<style scoped>
-/* Error state styling for required fields */
-.error-text {
-    color: rgb(176, 0, 32);
-}
-</style>

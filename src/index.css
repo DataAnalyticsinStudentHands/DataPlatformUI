@@ -61,8 +61,8 @@ select:focus {
   outline: none !important;
   --tw-ring-offset-color: transparent !important;
   --tw-ring-color: transparent !important;
-  --tw-ring-offset-shadow: 0 0 #0000 !important;
-  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 transparent !important;
+  --tw-ring-shadow: 0 0 transparent !important;
   box-shadow: none !important;
   border-color: currentColor !important;
 }
@@ -162,10 +162,6 @@ select.v-field__input {
   border-radius: 0 !important; /* make it square */
 }
 
-.v-btn.icon:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important ;
-}
-
 .experiences-dialog .v-card-title {
   position: relative;
 }
@@ -198,4 +194,101 @@ html {
 /* Route-level provider: carries v-main's 5vh bottom padding (v-main gets pb-0 on forced-light routes) */
 .dp-force-light--route {
   padding-bottom: 5vh;
+}
+
+/* Validation error text for the entry, goal and exit forms: one global rule in place of the per-file
+   copies (Design_Plan_Dark_Mode.md section 8, Phase 2). Light result: the same #B00020 as before. */
+.error-text {
+  color: rgb(var(--v-theme-error));
+}
+
+/* Native checkboxes and radios (Basic pages: eventForm, eventDetails): @tailwindcss/forms paints the
+   unchecked box white, so only the fill changes here. These inputs have no visible border in either
+   theme: Vuetify's reset (button, input, select, textarea { border-style: none }) outranks preflight's
+   border-style: solid, and the forms plugin sets border-color and border-width but never border-style.
+   The :checked fill (currentColor) comes from the plugin's more specific rule and is unaffected.
+   In dark the fill is native-check-fill (neutral-500), because the box has no visible edge otherwise.
+   Light is unchanged: a white box on a white page, as before. */
+[type='checkbox'],
+[type='radio'] {
+  background-color: rgb(var(--v-theme-native-check-fill));
+}
+
+[type='checkbox']:focus,
+[type='radio']:focus {
+  --tw-ring-offset-color: rgb(var(--v-theme-surface));
+}
+
+/* ---- Dark-only rules. Section 6.3 allows .v-theme--dark CSS only for these two blocks (browser
+   autofill and vue-multiselect), because neither renders inside a forced-light region. */
+
+/* Browser autofill, ported from CHW Stories (frontend/src/index.css:194-222; section 5.2 item 5,
+   decision 12) and scoped to dark so light mode is unchanged. Saved-credential autofill paints the
+   field with the browser's own light highlight. Firefox tints input:autofill with a UA filter, so
+   filter: none is the lever there; Chromium/WebKit paint an !important UA background, which is
+   clipped to the text so Vuetify's own field fill shows through. Each pseudo-class family is its own
+   rule on purpose: one unknown pseudo-class invalidates a whole selector list. */
+
+/* Standard selector - Firefox 86+, Chrome 94+, Safari 15+. */
+.v-theme--dark input:autofill {
+  filter: none;
+  background-image: none;
+  background-color: transparent;
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* Firefox's ghost-preview state, before the user commits the fill. */
+.v-theme--dark input:-moz-autofill-preview {
+  filter: none;
+  background-image: none;
+  background-color: transparent;
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* Chromium/WebKit, where the UA background must be clipped away rather than
+   overridden. The long transition delay is belt-and-braces so nothing flashes
+   before the clip takes effect. */
+.v-theme--dark input:-webkit-autofill,
+.v-theme--dark input:-webkit-autofill:hover,
+.v-theme--dark input:-webkit-autofill:focus,
+.v-theme--dark input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: rgb(var(--v-theme-on-surface));
+  caret-color: rgb(var(--v-theme-on-surface));
+  transition: background-color 0s 600000s;
+}
+
+/* vue-multiselect: the Basic role's event picker on /updateclient/:id (defaultPages/updateClient.vue).
+   The library's stylesheet is white with dark text; these rules repaint it from the theme. Each
+   selector has two or three classes, so it outranks the library's one-class rules even though the
+   library's CSS loads later (lazy route CSS, section 10c); no !important is needed. */
+.v-theme--dark .multiselect {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.v-theme--dark .multiselect .multiselect__tags,
+.v-theme--dark .multiselect .multiselect__single,
+.v-theme--dark .multiselect .multiselect__input,
+.v-theme--dark .multiselect .multiselect__spinner,
+.v-theme--dark .multiselect .multiselect__content-wrapper {
+  background: rgb(var(--v-theme-surface));
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+.v-theme--dark .multiselect .multiselect__input::placeholder {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+}
+
+/* Selected rows: the library's pale grey stripe becomes the panel fill */
+.v-theme--dark .multiselect__option--selected:not(.multiselect__option--highlight) {
+  background: rgb(var(--v-theme-panel));
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* The highlighted row keeps the library's green fill; dark text reads on it (8.4:1, white is 2.5:1).
+   The red "deselect" highlight on a selected row keeps the library's look, as in light mode. */
+.v-theme--dark .multiselect__option--highlight:not(.multiselect__option--selected, .multiselect__option--group),
+.v-theme--dark .multiselect__option--highlight:not(.multiselect__option--selected, .multiselect__option--group)::after {
+  color: rgb(var(--v-theme-on-success));
 }

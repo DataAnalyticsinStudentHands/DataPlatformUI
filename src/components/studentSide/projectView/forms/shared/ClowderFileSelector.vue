@@ -505,6 +505,8 @@ watch(() => props.formId, (newVal) => {
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid #e8e8e8;
+  /* Fixed light backdrop in both themes: transparent user PNGs must stay visible. */
+  background: #fafafa;
 }
 
 .image-preview img {

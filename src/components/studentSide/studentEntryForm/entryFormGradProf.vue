@@ -62,7 +62,7 @@
                 </v-col>
               </v-row>
             </div>
-            <div v-if="isProgramGradProTypeInvalid" :key="isProgramGradProTypeInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
+            <div v-if="isProgramGradProTypeInvalid" :key="isProgramGradProTypeInvalid" class="text-error text-caption">{{$t('Information is required.')}}</div>
           </div>
         </v-col> 
       </transition>
@@ -106,7 +106,7 @@
                 </v-col>
               </v-row>
             </div>
-            <div v-if="isSpecializedDegCertTypeInvalid" class="styled-error-text">{{$t('Information is required.')}}</div>
+            <div v-if="isSpecializedDegCertTypeInvalid" class="text-error text-caption">{{$t('Information is required.')}}</div>
           </div>
         </v-col>
       </transition>
@@ -379,140 +379,3 @@ export default {
     }
 }
 </script>
-
-<style>
-
-.error-text {
-    color: #B00020;
-}
-
-
-
-.styled-error-text {
-  -webkit-text-size-adjust: 100%;
-    tab-size: 4;
-    font-family: "Roboto", sans-serif;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    --v-theme-overlay-multiplier: 1;
-    --v-scrollbar-offset: 0px;
-    --v-theme-background: 255,255,255;
-    --v-theme-background-overlay-multiplier: 1;
-    --v-theme-surface: 255,255,255;
-    --v-theme-surface-overlay-multiplier: 1;
-    --v-theme-surface-variant: 66,66,66;
-    --v-theme-surface-variant-overlay-multiplier: 2;
-    --v-theme-on-surface-variant: 238,238,238;
-    --v-theme-primary: 98,0,238;
-    --v-theme-primary-overlay-multiplier: 2;
-    --v-theme-primary-darken-1: 55,0,179;
-    --v-theme-primary-darken-1-overlay-multiplier: 2;
-    --v-theme-secondary: 3,218,198;
-    --v-theme-secondary-overlay-multiplier: 1;
-    --v-theme-secondary-darken-1: 1,135,134;
-    --v-theme-secondary-darken-1-overlay-multiplier: 1;
-    --v-theme-error: 176,0,32;
-    --v-theme-error-overlay-multiplier: 2;
-    --v-theme-info: 33,150,243;
-    --v-theme-info-overlay-multiplier: 1;
-    --v-theme-success: 76,175,80;
-    --v-theme-success-overlay-multiplier: 1;
-    --v-theme-warning: 251,140,0;
-    --v-theme-warning-overlay-multiplier: 1;
-    --v-theme-on-background: 0,0,0;
-    --v-theme-on-surface: 0,0,0;
-    --v-theme-on-primary: 255,255,255;
-    --v-theme-on-primary-darken-1: 255,255,255;
-    --v-theme-on-secondary: 0,0,0;
-    --v-theme-on-secondary-darken-1: 255,255,255;
-    --v-theme-on-error: 255,255,255;
-    --v-theme-on-info: 255,255,255;
-    --v-theme-on-success: 255,255,255;
-    --v-theme-on-warning: 255,255,255;
-    --v-border-color: 0, 0, 0;
-    --v-border-opacity: 0.12;
-    --v-high-emphasis-opacity: 0.87;
-    --v-medium-emphasis-opacity: 0.6;
-    --v-disabled-opacity: 0.38;
-    --v-idle-opacity: 0.04;
-    --v-hover-opacity: 0.04;
-    --v-focus-opacity: 0.12;
-    --v-selected-opacity: 0.08;
-    --v-activated-opacity: 0.12;
-    --v-pressed-opacity: 0.12;
-    --v-dragged-opacity: 0.08;
-    --v-theme-kbd: 33, 37, 41;
-    --v-theme-on-kbd: 255, 255, 255;
-    --v-theme-code: 245, 245, 245;
-    --v-theme-on-code: 0, 0, 0;
-    --v-input-control-height: 56px;
-    --v-input-padding-top: 16px;
-    --select-chips-margin-bottom: 0px;
-    --autocomplete-chips-margin-bottom: 0px;
-    --combobox-chips-margin-bottom: 0px;
-    --file-input-chips-margin-bottom: 0px;
-    font-weight: 400;
-    letter-spacing: 0.0333333333em;
-    font-size: 12px;
-    color: rgb(var(--v-theme-error));
-    border-width: 0;
-    border-style: solid;
-    border-color: #e5e7eb;
-    --tw-border-spacing-x: 0;
-    --tw-border-spacing-y: 0;
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    --tw-rotate: 0;
-    --tw-skew-x: 0;
-    --tw-skew-y: 0;
-    --tw-scale-x: 1;
-    --tw-scale-y: 1;
-    --tw-pan-x: ;
-    --tw-pan-y: ;
-    --tw-pinch-zoom: ;
-    --tw-scroll-snap-strictness: proximity;
-    --tw-ordinal: ;
-    --tw-slashed-zero: ;
-    --tw-numeric-figure: ;
-    --tw-numeric-spacing: ;
-    --tw-numeric-fraction: ;
-    --tw-ring-inset: ;
-    --tw-ring-offset-width: 0px;
-    --tw-ring-offset-color: #fff;
-    --tw-ring-color: rgb(59 130 246 / 0.5);
-    --tw-ring-offset-shadow: 0 0 #0000;
-    --tw-ring-shadow: 0 0 #0000;
-    --tw-shadow: 0 0 #0000;
-    --tw-shadow-colored: 0 0 #0000;
-    --tw-blur: ;
-    --tw-brightness: ;
-    --tw-contrast: ;
-    --tw-grayscale: ;
-    --tw-hue-rotate: ;
-    --tw-invert: ;
-    --tw-saturate: ;
-    --tw-sepia: ;
-    --tw-drop-shadow: ;
-    --tw-backdrop-blur: ;
-    --tw-backdrop-brightness: ;
-    --tw-backdrop-contrast: ;
-    --tw-backdrop-grayscale: ;
-    --tw-backdrop-hue-rotate: ;
-    --tw-backdrop-invert: ;
-    --tw-backdrop-opacity: ;
-    --tw-backdrop-saturate: ;
-    --tw-backdrop-sepia: ;
-    background-repeat: no-repeat;
-    box-sizing: inherit;
-    padding: 0;
-    margin: 0;
-    line-height: 12px;
-    word-break: break-word;
-    word-wrap: break-word;
-    hyphens: auto;
-    transition-duration: 150ms;
-    transform-origin: center center;
-}
-
-</style>

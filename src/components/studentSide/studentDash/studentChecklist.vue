@@ -259,6 +259,22 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+/* Row spacing and status tints (moved from studentDashboard.vue's global block) */
+/* :where() stops scoping from raising this rule's specificity, so Vuetify's
+   `.v-list-group__items .v-list-item` indent (padding-inline-start, !important) keeps beating
+   padding-left here, exactly as it did while the rule was global. */
+:where(.list-item-no-padding) {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+.no-right-margin {
+  margin-right: 0.5rem !important;
+}
+.light-green-bg {
+  background-color: rgb(var(--v-theme-tint-success));
+}
+.light-red-bg {
+  background-color: rgb(var(--v-theme-tint-error));
+}
 </style>

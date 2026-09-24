@@ -145,11 +145,6 @@ methods: {
 </script>
 
 <style scoped>
-/* Error text styling */
-.error-text {
-    color: rgb(176, 0, 32);
-}
-
 /* Fixed positioning for buttons (if needed) */
 .fixed-button {
     position: fixed;
