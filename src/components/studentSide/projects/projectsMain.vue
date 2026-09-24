@@ -13,7 +13,7 @@ With state persistence via Pinia store.
       <!-- Loading state while fetching projects -->
       <v-row v-if="loading" class="fill-height" align="center" justify="center" style="min-height: 60vh;">
         <v-col cols="auto">
-          <v-progress-circular indeterminate color="#c8102e" size="72"></v-progress-circular>
+          <v-progress-circular indeterminate color="brand-fg" size="72"></v-progress-circular>
         </v-col>
       </v-row>
 
@@ -31,7 +31,7 @@ With state persistence via Pinia store.
               <div class="welcome-actions">
                 <v-btn
                   @click="proposeNewProject" 
-                  color="#c8102e"
+                  color="primary"
                   size="x-large"
                   class="welcome-btn mb-4"
                   prepend-icon="mdi-lightbulb-outline"
@@ -65,7 +65,7 @@ With state persistence via Pinia store.
           <!-- Page Header -->
           <div class="page-header mb-6">
             <div class="d-flex align-center mb-2">
-              <v-icon color="#c8102e" size="36" class="mr-3">mdi-folder-multiple-outline</v-icon>
+              <v-icon color="brand-fg" size="36" class="mr-3">mdi-folder-multiple-outline</v-icon>
               <div class="flex-grow-1">
                 <div class="d-flex align-center flex-wrap">
                   <h1 class="text-h4 font-weight-bold mr-3">{{ $t('My Projects') }}</h1>
@@ -81,7 +81,7 @@ With state persistence via Pinia store.
             <div class="tabs-section">
               <v-tabs
                 v-model="activeTab"
-                color="#c8102e"
+                color="brand-fg"
                 class="custom-tabs"
               >
                 <v-tab value="my-projects" class="custom-tab">
@@ -96,7 +96,7 @@ With state persistence via Pinia store.
                     v-if="myProjects.length > 0" 
                     size="small" 
                     class="ml-2"
-                    :color="viewingArchivedProjects ? 'grey' : '#c8102e'"
+                    :color="viewingArchivedProjects ? 'muted' : 'brand-fg'"
                     variant="tonal"
                   >
                     {{ myProjects.length }}
@@ -110,7 +110,7 @@ With state persistence via Pinia store.
                     v-if="proposedProjects.length > 0" 
                     size="small" 
                     class="ml-2"
-                    color="deep-orange"
+                    color="proposed-fg"
                     variant="tonal"
                   >
                     {{ proposedProjects.length }}
@@ -141,8 +141,8 @@ With state persistence via Pinia store.
                       <v-menu location="bottom start">
                         <template v-slot:activator="{ props }">
                           <div v-bind="props" class="search-menu-trigger">
-                            <v-icon size="22" color="#666">mdi-magnify</v-icon>
-                            <v-icon size="16" color="#999">mdi-chevron-down</v-icon>
+                            <v-icon size="22" class="text-medium-emphasis">mdi-magnify</v-icon>
+                            <v-icon size="16" class="text-disabled">mdi-chevron-down</v-icon>
                           </div>
                         </template>
                         <v-list density="comfortable" class="search-menu-list">
@@ -184,19 +184,19 @@ With state persistence via Pinia store.
                     v-if="activeTab === 'my-projects'"
                     @click="toggleArchivedProjectsView"
                     variant="tonal"
-                    :color="viewingArchivedProjects ? '#c8102e' : 'grey-darken-4'"
+                    :color="viewingArchivedProjects ? 'brand-fg' : undefined"
                     size="default"
                     class="action-btn mr-2"
                   >
                     <v-icon start size="20">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
-                    <span class="d-none d-md-inline grey-darken-4">{{ viewingArchivedProjects ? $t('View Active') : $t('View Archived') }}</span>
+                    <span class="d-none d-md-inline">{{ viewingArchivedProjects ? $t('View Active') : $t('View Archived') }}</span>
                     <span class="d-inline d-md-none">{{ viewingArchivedProjects ? $t('Active') : $t('Archive') }}</span>
                   </v-btn>
                   
                   <!-- Propose New Project Button -->
                   <v-btn
                     @click="proposeNewProject"
-                    color="#c8102e"
+                    color="primary"
                     size="default"
                     class="action-btn mr-2"
                   >
@@ -209,7 +209,7 @@ With state persistence via Pinia store.
                   <v-btn
                     @click="joinProject"
                     variant="outlined"
-                    color="#c8102e"
+                    color="brand-fg"
                     size="default"
                     class="action-btn"
                   >
@@ -238,7 +238,7 @@ With state persistence via Pinia store.
                     size="default"
                     @click="toggleArchivedProjectsView"
                     class="mobile-action-btn"
-                    :color="viewingArchivedProjects ? '#c8102e' : undefined"
+                    :color="viewingArchivedProjects ? 'brand-fg' : undefined"
                   >
                     <v-icon size="24">{{ viewingArchivedProjects ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
                   </v-btn>
@@ -248,7 +248,7 @@ With state persistence via Pinia store.
                   
                   <v-btn 
                     icon
-                    color="#c8102e" 
+                    color="primary" 
                     size="default"
                     @click="proposeNewProject"
                     class="mobile-action-btn"
@@ -275,7 +275,7 @@ With state persistence via Pinia store.
                   <v-chip
                     v-for="(criteria, index) in searchChips"
                     :key="index"
-                    :color="selectedSearchChips.includes(index) ? '#c8102e' : 'grey'"
+                    :color="selectedSearchChips.includes(index) ? 'primary' : 'muted'"
                     :variant="selectedSearchChips.includes(index) ? 'flat' : 'outlined'"
                     size="default"
                     class="search-chip mr-2 mb-1"
@@ -290,7 +290,7 @@ With state persistence via Pinia store.
                     v-if="searchChips.length > 1"
                     variant="text" 
                     size="small" 
-                    color="#c8102e"
+                    color="brand-fg"
                     @click="clearAllFilters"
                     class="mb-1"
                   >
@@ -352,7 +352,7 @@ With state persistence via Pinia store.
                         <tr>
                           <td :colspan="projectHeaders.length" class="empty-state-cell">
                             <div class="empty-state">
-                              <v-icon size="56" color="#ccc" class="mb-3">
+                              <v-icon size="56" class="mb-3 text-disabled">
                                 {{ viewingArchivedProjects ? 'mdi-archive-off-outline' : 'mdi-folder-open-outline' }}
                               </v-icon>
                               <p class="text-h6 text-medium-emphasis mb-1">
@@ -422,11 +422,11 @@ With state persistence via Pinia store.
                         <tr>
                           <td :colspan="projectHeaders.length" class="empty-state-cell">
                             <div class="empty-state">
-                              <v-icon size="56" color="#ccc" class="mb-3">mdi-file-document-plus-outline</v-icon>
+                              <v-icon size="56" class="mb-3 text-disabled">mdi-file-document-plus-outline</v-icon>
                               <p class="text-h6 text-medium-emphasis mb-1">{{ $t('No proposed projects') }}</p>
                               <p class="text-body-2 text-disabled mb-4">{{ $t('Submit a project proposal to get started') }}</p>
                               <v-btn 
-                                color="#c8102e" 
+                                color="primary" 
                                 size="default"
                                 @click.stop="proposeNewProject"
                               >
@@ -473,7 +473,7 @@ With state persistence via Pinia store.
       <v-dialog v-model="xsdialogSearch" max-width="420px">
         <v-card class="mobile-search-dialog">
           <v-card-title class="d-flex align-center pa-5">
-            <v-icon color="#c8102e" size="26" class="mr-2">mdi-magnify</v-icon>
+            <v-icon color="brand-fg" size="26" class="mr-2">mdi-magnify</v-icon>
             <span class="text-h5 font-weight-bold">{{ $t('Search Projects') }}</span>
             <v-spacer></v-spacer>
             <v-btn icon variant="text" size="default" @click="xsCancelSearchDialog">
@@ -532,7 +532,7 @@ With state persistence via Pinia store.
           <v-card-actions class="pa-5 pt-0">
             <v-btn variant="text" size="default" @click="xsCancelSearchDialog">{{ $t('Cancel') }}</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="#c8102e" size="default" @click="xsApplySearchFilters">
+            <v-btn color="brand-fg" size="default" @click="xsApplySearchFilters">
               <v-icon start size="20">mdi-check</v-icon>
               {{ $t('Apply Filter') }}
             </v-btn>
@@ -1223,14 +1223,14 @@ export default {
 <style scoped>
 /* Page Background */
 .projects-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Welcome Screen */
@@ -1247,13 +1247,13 @@ export default {
 }
 
 .welcome-header {
-  background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgb(var(--v-theme-primary-darken-1)) 100%);
   padding: 56px 40px;
   text-align: center;
 }
 
 .welcome-subtitle {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(var(--v-theme-on-primary), 0.85);
   font-size: 1.1rem;
 }
 
@@ -1270,8 +1270,8 @@ export default {
 }
 
 .welcome-btn-outlined {
-  border-color: #c8102e;
-  color: #c8102e;
+  border-color: rgb(var(--v-theme-brand-fg));
+  color: rgb(var(--v-theme-brand-fg));
   text-transform: none;
   font-weight: 600;
   font-size: 1.05rem;
@@ -1287,11 +1287,11 @@ export default {
 
 /* Tabs Section */
 .tabs-section {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .custom-tabs {
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .custom-tab {
@@ -1306,7 +1306,7 @@ export default {
 /* Toolbar Section */
 .toolbar-section {
   padding: 18px 24px;
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .search-field {
@@ -1323,7 +1323,7 @@ export default {
 }
 
 .search-menu-trigger:hover {
-  background-color: #f5f5f5;
+  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 
 .search-menu-list {
@@ -1354,7 +1354,7 @@ export default {
 /* Search Chips */
 .search-chips-container {
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .search-chip {
@@ -1372,7 +1372,7 @@ export default {
 
 /* Table Container */
 .table-container {
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .projects-table {
@@ -1396,7 +1396,7 @@ export default {
 }
 
 .table-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-cell {
@@ -1441,25 +1441,25 @@ export default {
 
 @keyframes highlight-pulse {
   0% { 
-    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.4);
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.4);
     transform: scale(1);
   }
   25% { 
-    box-shadow: 0 0 0 10px rgba(200, 16, 46, 0.0);
+    box-shadow: 0 0 0 10px rgba(var(--v-theme-primary), 0.0);
     transform: scale(1.02);
-    background-color: rgba(200, 16, 46, 0.1);
+    background-color: rgba(var(--v-theme-primary), 0.1);
   }
   50% { 
-    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.0);
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.0);
     transform: scale(1);
   }
   75% { 
-    box-shadow: 0 0 0 5px rgba(200, 16, 46, 0.0);
+    box-shadow: 0 0 0 5px rgba(var(--v-theme-primary), 0.0);
     transform: scale(1.01);
-    background-color: rgba(200, 16, 46, 0.05);
+    background-color: rgba(var(--v-theme-primary), 0.05);
   }
   100% { 
-    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.0);
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.0);
     transform: scale(1);
     background-color: transparent;
   }

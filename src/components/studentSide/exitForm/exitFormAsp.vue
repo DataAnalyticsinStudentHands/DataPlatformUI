@@ -43,7 +43,7 @@
           <v-col cols="12">
             <p
               ref="aspirationProgressField" 
-              :class="{'text-custom-red': isAspirationProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
+              :class="{'text-brand-fg': isAspirationProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
           </v-col>
       </v-row>
 
@@ -131,7 +131,7 @@
     <!-- Course Connection Assessment Section -->
     <v-row>
       <v-col cols="12">
-          <p ref="aspirationConnectionField" :class="{'text-custom-red': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
+          <p ref="aspirationConnectionField" :class="{'text-brand-fg': isAspirationConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each aspiration listed, please pick the option that best describes the progress you made.')}}</p>
       </v-col>
     </v-row>
 

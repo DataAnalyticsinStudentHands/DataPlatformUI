@@ -18,7 +18,7 @@
       class="mb-4"
     >
       <template v-slot:prepend-inner>
-        <v-icon size="20" color="#666">mdi-format-title</v-icon>
+        <v-icon size="20" class="text-medium-emphasis">mdi-format-title</v-icon>
       </template>
     </v-text-field>
 
@@ -34,7 +34,7 @@
       <div v-if="hasSelection" class="file-preview">
         <!-- PDF Preview -->
         <div v-if="selectedType === 'pdf'" class="pdf-preview">
-          <v-icon size="48" color="#c8102e">mdi-file-pdf-box</v-icon>
+          <v-icon size="48" color="brand-fg">mdi-file-pdf-box</v-icon>
           <p class="file-name">{{ displayFileName }}</p>
         </div>
 
@@ -54,7 +54,7 @@
 
         <!-- File Info -->
         <div class="file-info">
-          <v-chip size="small" color="#c8102e" variant="tonal">
+          <v-chip size="small" color="brand-fg" variant="tonal">
             {{ (selectedType || 'file').toUpperCase() }}
           </v-chip>
           <span v-if="displayFileName" class="file-name-label">{{ displayFileName }}</span>
@@ -65,7 +65,7 @@
           <v-btn
             size="small"
             variant="outlined"
-            color="#c8102e"
+            color="brand-fg"
             @click="changeSelection"
           >
             <v-icon start size="16">mdi-swap-horizontal</v-icon>
@@ -89,7 +89,7 @@
         <div v-if="isLoadingFiles" class="selector-state">
           <v-progress-circular
             indeterminate
-            color="#c8102e"
+            color="brand-fg"
             size="40"
             width="3"
           />
@@ -98,12 +98,12 @@
 
         <!-- Error State -->
         <div v-else-if="loadError" class="selector-state">
-          <v-icon size="40" color="#999">mdi-alert-circle-outline</v-icon>
+          <v-icon size="40" class="text-disabled">mdi-alert-circle-outline</v-icon>
           <p class="state-text">{{ loadError }}</p>
           <v-btn
             size="small"
             variant="tonal"
-            color="#c8102e"
+            color="brand-fg"
             class="mt-2"
             @click="fetchFiles"
           >
@@ -114,14 +114,14 @@
 
         <!-- No Compatible Files -->
         <div v-else-if="clowderFiles.length === 0" class="selector-state">
-          <v-icon size="40" color="#999">mdi-file-hidden</v-icon>
+          <v-icon size="40" class="text-disabled">mdi-file-hidden</v-icon>
           <p class="state-text">{{ $t('No poster-compatible files found in Clowder') }}</p>
           <p class="state-hint">{{ $t('Upload PDF or image files to your Clowder dataset first') }}</p>
         </div>
 
         <!-- File Dropdown -->
         <div v-else class="dropdown-container">
-          <v-icon size="40" :color="pendingFile ? '#c8102e' : '#999'" class="mb-3">
+          <v-icon size="40" :color="pendingFile ? 'brand-fg' : 'muted'" class="mb-3">
             mdi-cloud-download-outline
           </v-icon>
           <p class="selector-title">{{ $t('Select a file from your Clowder dataset') }}</p>
@@ -180,7 +180,7 @@
           </v-select>
 
           <v-btn
-            color="#c8102e"
+            color="primary"
             variant="flat"
             size="small"
             class="mt-3"
@@ -365,10 +365,10 @@ function getFileIcon(file) {
 
 // Helper: file icon color
 function getFileIconColor(file) {
-  if (!file?.contentType) return '#666';
-  if (file.contentType === 'application/pdf') return '#c8102e';
-  if (file.contentType.startsWith('image/')) return '#2563eb';
-  return '#666';
+  if (!file?.contentType) return 'muted-strong';
+  if (file.contentType === 'application/pdf') return 'brand-fg';
+  if (file.contentType.startsWith('image/')) return 'link-fg';
+  return 'muted-strong';
 }
 
 // Helper: format content type for display
@@ -413,22 +413,22 @@ watch(() => props.formId, (newVal) => {
 }
 
 .selector-area {
-  border: 2px dashed #e0e0e0;
+  border: 2px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 12px;
   padding: 24px;
   text-align: center;
   transition: all 0.2s ease;
-  background: #fafafa;
+  background: rgb(var(--v-theme-panel));
 }
 
 .selector-area.has-file {
   border-style: solid;
-  border-color: #e0e0e0;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
   padding: 20px;
 }
 
 .selector-area.error {
-  border-color: #c8102e;
+  border-color: rgb(var(--v-theme-brand-fg));
 }
 
 /* States (loading, error, empty) */
@@ -441,14 +441,14 @@ watch(() => props.formId, (newVal) => {
 
 .state-text {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin: 12px 0 0 0;
   max-width: 300px;
 }
 
 .state-hint {
   font-size: 0.8rem;
-  color: #999;
+  color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity));
   margin: 4px 0 0 0;
 }
 
@@ -462,7 +462,7 @@ watch(() => props.formId, (newVal) => {
 .selector-title {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin: 0;
 }
 
@@ -484,16 +484,16 @@ watch(() => props.formId, (newVal) => {
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  background: #fff;
+  background: rgb(var(--v-theme-surface));
   border-radius: 8px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   min-width: 200px;
 }
 
 .file-name {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin: 8px 0 0 0;
   word-break: break-all;
   max-width: 300px;
@@ -504,7 +504,7 @@ watch(() => props.formId, (newVal) => {
   max-height: 300px;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   /* Fixed light backdrop in both themes: transparent user PNGs must stay visible. */
   background: #fafafa;
 }
@@ -530,7 +530,7 @@ watch(() => props.formId, (newVal) => {
 
 .file-name-label {
   font-size: 0.8rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -548,7 +548,7 @@ watch(() => props.formId, (newVal) => {
 }
 
 .error-message {
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
   display: flex;
   align-items: center;
 }

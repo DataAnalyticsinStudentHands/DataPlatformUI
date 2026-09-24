@@ -8,7 +8,7 @@ Handles experience selection, registration codes, and session-based grouping of 
   <!-- Main experience registration card -->
   <v-card
       class="mx-auto elevation-12"
-      color="#385F73"
+      color="checklist-frame-fill"
       width="100%"
     >
       <v-list>
@@ -87,7 +87,7 @@ Handles experience selection, registration codes, and session-based grouping of 
               >
                   <template v-slot:activator="{ props }">
                       <v-btn
-                          color="grey-lighten-2"
+                          color="quiet-fill"
                           v-bind="props"
                           @click="openDialog"
                       >
@@ -111,7 +111,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                     style="position: relative; padding: 20px 16px 12px;"
                   >
                     <span
-                      class="dialog-title text-black"
+                      class="dialog-title text-high-emphasis"
                     >
                       {{ $t('Add / Remove Experiences') }}  {{ semesterName }}
                     </span>
@@ -141,7 +141,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                       <!-- Available experiences column -->
                       <v-col cols="12" md="6" class="pr-4 d-flex flex-column">                       
                         <v-list density="compact" class="flex-grow-1 overflow-auto body-text">
-                          <v-list-subheader class="pane-title text-black">
+                          <v-list-subheader class="pane-title text-high-emphasis">
                             {{ $t('Available Experiences') }}
                           </v-list-subheader>
 
@@ -181,8 +181,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                         </v-list>
                         
                         <v-btn
-                            color="primary lighten-2"
-                            dark
+                            color="primary"
                             class="mt-4 mx-auto"
                             style="opacity: .85;"
                             :disabled="!selectedExperienceIDs.length"
@@ -195,7 +194,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                       <!-- My experiences column -->
                       <v-col cols="12" md="6" class="pl-4 d-flex flex-column">
                         <v-list density="compact" class="flex-grow-1 overflow-auto body-text">
-                          <v-list-subheader class="pane-title text-black">
+                          <v-list-subheader class="pane-title text-high-emphasis">
                             {{ $t('My Experiences') }}
                           </v-list-subheader>
 
@@ -246,7 +245,6 @@ Handles experience selection, registration codes, and session-based grouping of 
                     <v-btn
                       variant="elevated"
                       color="error"
-                      dark
                       class="ml-4  btn-save"
                       @click="saveExperiences"
                     >
@@ -278,8 +276,8 @@ Handles experience selection, registration codes, and session-based grouping of 
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="blue darken-1" text @click="closeRegistrationDialog">Cancel</v-btn>
-      <v-btn color="blue darken-1" text @click="confirmRegistrationCode">Confirm</v-btn>
+      <v-btn color="info" text @click="closeRegistrationDialog">Cancel</v-btn>
+      <v-btn color="info" text @click="confirmRegistrationCode">Confirm</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
@@ -565,8 +563,8 @@ export default {
 
 <style scoped>
 .inline-tip {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(var(--v-theme-on-surface), 0.05);
+  color: rgba(var(--v-theme-on-surface), 0.7);
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 14px;
@@ -598,11 +596,11 @@ export default {
 }
 
 .close-btn:hover {
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .custom-tooltip {
-    border: 1px solid #ccc;
+    border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
     border-radius: 4px;
     padding: 10px;
     font-style: italic;
@@ -613,8 +611,8 @@ export default {
 }
 
 .subgroup-header {
-  background-color: #F5F5F5;       
-  border-bottom: 1px solid #E0E0E0;
+  background-color: rgb(var(--v-theme-panel-strong));       
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   padding: 8px 12px;
   margin-bottom: 8px;
 }
@@ -627,20 +625,20 @@ export default {
 }
 
 .selection-add {
-  background-color: rgba(33, 150, 243, 0.2);
-  border: 1px solid #2196F3;
+  background-color: rgba(var(--v-theme-info), 0.2);
+  border: 1px solid rgb(var(--v-theme-info));
   border-radius: 4px;
 }
 
 .selection-highlight {
-  background-color: rgba(33, 150, 243, 0.1);
-  border: 1px solid #2196F3;
+  background-color: rgba(var(--v-theme-info), 0.1);
+  border: 1px solid rgb(var(--v-theme-info));
   border-radius: 4px;
 }
 
 .selection-remove {
-  background-color: rgba(158, 158, 158, 0.2);
-  border: 1px solid #9E9E9E;
+  background-color: rgba(var(--v-theme-muted), 0.2);
+  border: 1px solid rgb(var(--v-theme-muted));
   border-radius: 4px;
 }
 
@@ -659,21 +657,21 @@ export default {
 }
 
 .btn-save {
-  background-color: #C8102E !important;
-  color: #FFFFFF !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .btn-save:hover {
-  background-color: #A00B26 !important;
+  background-color: rgb(var(--v-theme-btn-save-hover-fill)) !important;
 }
 
 .callout-text {
   font-style: italic;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .session-card {
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity)) !important;
   display: block;
   width: 100%;
   margin-bottom: 16px;

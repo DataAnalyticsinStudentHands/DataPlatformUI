@@ -1282,12 +1282,12 @@ with validation, checkbox groupings, and conditional "Other" text fields.
     font-weight: 500;
     margin-bottom: 5px;
     font-size: 0.75rem;
-    color: grey;
+    color: rgb(var(--v-theme-field-label-fg));
   }
   
   /* Info text styling */
   .info-text {
-    color: #0f5db0;
+    color: rgb(var(--v-theme-hint-info-fg));
     font-weight: 500;
   }
   </style>

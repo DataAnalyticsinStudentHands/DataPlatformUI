@@ -18,9 +18,9 @@
         <!-- Goals Progress Assessment Section -->
         <v-row>
             <v-col cols="12">
-                <p ref="goalProgressField" :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('At the beginning of the semester, we asked you to share three goals for your participation in this course. Now we would like to know about your progress towards these goals and which activities from the course contributed to your progress.')}}</p>
+                <p ref="goalProgressField" :class="{'text-brand-fg': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('At the beginning of the semester, we asked you to share three goals for your participation in this course. Now we would like to know about your progress towards these goals and which activities from the course contributed to your progress.')}}</p>
 
-                <p :class="{'text-custom-red': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
+                <p :class="{'text-brand-fg': isGoalProgressInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
             </v-col>
         </v-row>
 
@@ -146,7 +146,7 @@
         <!-- Course Connection Assessment Section -->
         <v-row>
             <v-col cols="12">
-                <p ref="goalConnectionField" :class="{'text-custom-red': isGoalConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
+                <p ref="goalConnectionField" :class="{'text-brand-fg': isGoalConnectionInvalid && formSubmitted, 'font-weight-black': true, 'text-h8': true}">{{$t('For each goal listed below, please pick the option that best describes the progress you made.')}}</p>
             </v-col>
         </v-row>
 
@@ -284,7 +284,7 @@
         <!-- Goal Barriers Selection -->
         <v-row>
             <v-col cols="12">
-                <p ref="goalIssuesField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGoalIssuesInvalid }">{{$t('Please select which goal(s) you faced barriers to achieving this semester.')}}</p>
+                <p ref="goalIssuesField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isGoalIssuesInvalid }">{{$t('Please select which goal(s) you faced barriers to achieving this semester.')}}</p>
                 <v-list density="compact">
                     <v-list-item
                         v-for="(goal, index) in existingGoals"

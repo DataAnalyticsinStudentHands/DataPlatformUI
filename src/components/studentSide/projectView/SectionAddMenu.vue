@@ -16,7 +16,7 @@
       <v-btn
         v-bind="props"
         variant="outlined"
-        color="#6366f1"
+        color="accent-fg"
         class="add-section-btn"
         :disabled="availableSections.length === 0"
       >
@@ -28,7 +28,7 @@
 
     <v-card min-width="300" class="section-menu-card">
       <v-card-title class="menu-header">
-        <v-icon size="20" color="#6366f1" class="mr-2">mdi-view-grid-plus-outline</v-icon>
+        <v-icon size="20" color="accent-fg" class="mr-2">mdi-view-grid-plus-outline</v-icon>
         {{ $t('Add Optional Section') }}
       </v-card-title>
 
@@ -56,7 +56,7 @@
           </v-list-item-subtitle>
 
           <template v-slot:append>
-            <v-icon size="18" color="#16a34a">mdi-plus</v-icon>
+            <v-icon size="18" color="complete-fg">mdi-plus</v-icon>
           </template>
         </v-list-item>
 
@@ -73,7 +73,7 @@
         <v-btn
           variant="text"
           size="small"
-          color="#666"
+          class="text-medium-emphasis"
           @click="menuOpen = false"
         >
           {{ $t('Cancel') }}
@@ -149,18 +149,18 @@ function addSection(sectionId) {
 }
 
 .section-item:hover {
-  background-color: #f0fdf4;
+  background-color: rgb(var(--v-theme-tint-success-soft));
 }
 
 .section-name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-desc {
   font-size: 0.75rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-top: 2px;
 }
 

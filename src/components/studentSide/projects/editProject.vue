@@ -20,7 +20,7 @@ project information and leave the project.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-folder-edit-outline</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-folder-edit-outline</v-icon>
           <div class="flex-grow-1">
             <div class="d-flex align-center">
               <h1 class="text-h5 font-weight-bold">{{ $t('Edit Project') }}</h1>
@@ -40,7 +40,7 @@ project information and leave the project.
                 class="ml-2 d-lg-none"
                 @click="mobileInfoDialog = true"
               >
-                <v-icon color="#c8102e" size="22">mdi-help-circle</v-icon>
+                <v-icon color="brand-fg" size="22">mdi-help-circle</v-icon>
               </v-btn>
             </div>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ projectData.name || $t('Loading...') }}</p>
@@ -53,7 +53,7 @@ project information and leave the project.
         <v-col cols="12" class="text-center">
           <v-progress-circular 
             indeterminate 
-            color="#c8102e" 
+            color="brand-fg" 
             size="48"
             width="4"
           ></v-progress-circular>
@@ -176,12 +176,12 @@ project information and leave the project.
                 <div class="section-content">
                   <!-- Empty state for no members -->
                   <div v-if="projectMembers.length === 0" class="empty-members-state">
-                    <v-icon icon="mdi-account-group-outline" size="48" color="grey-lighten-1" class="mb-3"></v-icon>
+                    <v-icon icon="mdi-account-group-outline" size="48" class="mb-3 text-disabled"></v-icon>
                     <p class="text-body-1 text-medium-emphasis mb-3">{{ $t('No members have been added to this project yet.') }}</p>
                     <v-btn
                       v-if="projectData.projectStatus !== 'Archived'"
                       variant="tonal"
-                      color="#c8102e"
+                      color="brand-fg"
                       @click="openInviteDialog"
                       prepend-icon="mdi-account-plus"
                     >
@@ -197,7 +197,7 @@ project information and leave the project.
                       class="member-item"
                     >
                       <div class="d-flex align-center">
-                        <v-avatar color="grey-lighten-2" size="40" class="mr-3">
+                        <v-avatar color="surface-light" size="40" class="mr-3">
                           <span class="text-body-2 font-weight-medium">
                             {{ member.name.charAt(0).toUpperCase() + (member.name.indexOf(' ') > -1 ? member.name.charAt(member.name.indexOf(' ') + 1).toUpperCase() : '') }}
                           </span>
@@ -209,7 +209,7 @@ project information and leave the project.
                         <div class="d-flex flex-column align-end">
                           <v-chip
                             size="small"
-                            :color="member.isOwner ? '#c8102e' : 'success'"
+                            :color="member.isOwner ? 'brand-fg' : 'success'"
                             class="mb-1"
                           >
                             {{ member.isOwner ? $t('Owner') : $t('Member') }}
@@ -278,7 +278,7 @@ project information and leave the project.
 
                 <div class="section-content">
                   <div class="project-page-card">
-                    <v-icon size="40" color="#c8102e" class="mb-3">mdi-presentation</v-icon>
+                    <v-icon size="40" color="brand-fg" class="mb-3">mdi-presentation</v-icon>
                     <p class="text-body-2 text-medium-emphasis mb-4">
                       {{ $t('Design a project page with your team information, key findings, timeline, and more. Once published, you can share it with a public link.') }}
                     </p>
@@ -312,7 +312,7 @@ project information and leave the project.
                     <div class="d-flex align-start">
                       <v-checkbox
                         v-model="projectData.consentToFeature"
-                        color="#c8102e"
+                        color="brand-fg"
                         hide-details
                         class="mt-0 pt-0 mr-2"
                         :disabled="!isProjectOwner || projectData.projectStatus === 'Archived'"
@@ -330,7 +330,7 @@ project information and leave the project.
                             @click="featureInfoDialog = true"
                             class="ml-1"
                           >
-                            <v-icon size="18" color="#c8102e">mdi-help-circle-outline</v-icon>
+                            <v-icon size="18" color="brand-fg">mdi-help-circle-outline</v-icon>
                           </v-btn>
                         </div>
                         <p class="text-caption text-medium-emphasis mt-1 mb-0">
@@ -375,10 +375,9 @@ project information and leave the project.
                   v-if="isProjectOwner && projectData.projectStatus === 'Active'"
                   variant="outlined"
                   size="large"
-                  color="grey"
                   @click="openArchiveConfirmDialog"
                   :loading="archivingProject"
-                  class="action-btn mr-3"
+                  class="action-btn mr-3 text-disabled"
                 >
                   <v-icon start size="18">mdi-archive</v-icon>
                   {{ $t('Archive') }}
@@ -388,7 +387,7 @@ project information and leave the project.
                   v-if="isProjectOwner && projectData.projectStatus === 'Archived'"
                   variant="outlined"
                   size="large"
-                  color="orange"
+                  color="caution-fg"
                   @click="openRestoreConfirmDialog"
                   :loading="restoringProject"
                   class="action-btn mr-3"
@@ -418,7 +417,7 @@ project information and leave the project.
               <!-- Status Card -->
               <v-card class="sidebar-card mb-4" variant="outlined">
                 <v-card-title class="sidebar-header">
-                  <v-icon color="#c8102e" class="mr-2">mdi-information-outline</v-icon>
+                  <v-icon color="brand-fg" class="mr-2">mdi-information-outline</v-icon>
                   {{ $t('Project Status') }}
                 </v-card-title>
                 <v-card-text class="pt-0">
@@ -441,14 +440,14 @@ project information and leave the project.
               <!-- Course Information Card -->
               <v-card class="sidebar-card mb-4" variant="outlined">
                 <v-card-title class="sidebar-header">
-                  <v-icon color="#c8102e" class="mr-2">mdi-school</v-icon>
+                  <v-icon color="brand-fg" class="mr-2">mdi-school</v-icon>
                   {{ $t('Course Information') }}
                 </v-card-title>
                 <v-card-text class="pt-0">
                   <!-- Associated Experience -->
                   <div class="sidebar-info-item mb-4">
                     <div class="d-flex align-center mb-2">
-                      <v-icon color="#c8102e" size="18" class="mr-2">mdi-book-open-variant</v-icon>
+                      <v-icon color="brand-fg" size="18" class="mr-2">mdi-book-open-variant</v-icon>
                       <span class="text-caption font-weight-medium text-medium-emphasis">{{ $t('Associated Experience') }}</span>
                     </div>
                     <div class="text-body-2 font-weight-medium">
@@ -463,7 +462,7 @@ project information and leave the project.
                   <!-- Associated Instructor -->
                   <div class="sidebar-info-item">
                     <div class="d-flex align-center mb-2">
-                      <v-icon color="#c8102e" size="18" class="mr-2">mdi-account-tie-outline</v-icon>
+                      <v-icon color="brand-fg" size="18" class="mr-2">mdi-account-tie-outline</v-icon>
                       <span class="text-caption font-weight-medium text-medium-emphasis">{{ $t('Associated Instructor') }}</span>
                     </div>
                     <div class="text-body-2 font-weight-medium">
@@ -480,12 +479,12 @@ project information and leave the project.
               <!-- Your Role Card -->
               <v-card class="sidebar-card mb-4" variant="outlined">
                 <v-card-title class="sidebar-header">
-                  <v-icon color="#c8102e" class="mr-2">mdi-account-star</v-icon>
+                  <v-icon color="brand-fg" class="mr-2">mdi-account-star</v-icon>
                   {{ $t('Your Role') }}
                 </v-card-title>
                 <v-card-text class="pt-0">
                   <v-chip
-                    :color="isProjectOwner ? '#c8102e' : 'success'"
+                    :color="isProjectOwner ? 'brand-fg' : 'success'"
                     size="large"
                     class="font-weight-medium mb-3"
                   >
@@ -522,7 +521,7 @@ project information and leave the project.
             <!-- Status Section -->
             <div class="mobile-info-section mb-5">
               <h3 class="text-subtitle-1 font-weight-bold mb-3">
-                <v-icon color="#c8102e" size="20" class="mr-2">mdi-information-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-2">mdi-information-outline</v-icon>
                 {{ $t('Project Status') }}
               </h3>
               <div class="d-flex align-center mb-3">
@@ -545,7 +544,7 @@ project information and leave the project.
             <!-- Course Information Section -->
             <div class="mobile-info-section mb-5">
               <h3 class="text-subtitle-1 font-weight-bold mb-3">
-                <v-icon color="#c8102e" size="20" class="mr-2">mdi-school</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-2">mdi-school</v-icon>
                 {{ $t('Course Information') }}
               </h3>
               <div class="mobile-info-item mb-3">
@@ -565,11 +564,11 @@ project information and leave the project.
             <!-- Role Section -->
             <div class="mobile-info-section">
               <h3 class="text-subtitle-1 font-weight-bold mb-3">
-                <v-icon color="#c8102e" size="20" class="mr-2">mdi-account-star</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-2">mdi-account-star</v-icon>
                 {{ $t('Your Role') }}
               </h3>
               <v-chip
-                :color="isProjectOwner ? '#c8102e' : 'success'"
+                :color="isProjectOwner ? 'brand-fg' : 'success'"
                 size="large"
                 class="font-weight-medium mb-3"
               >
@@ -602,7 +601,7 @@ project information and leave the project.
       <v-dialog v-model="submitDialog" persistent max-width="450px">
         <v-card class="confirm-dialog">
           <v-card-title class="d-flex align-center pa-5">
-            <v-icon color="#c8102e" size="28" class="mr-3">mdi-content-save-check-outline</v-icon>
+            <v-icon color="brand-fg" size="28" class="mr-3">mdi-content-save-check-outline</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('Update Project?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
@@ -625,7 +624,7 @@ project information and leave the project.
       <v-dialog v-model="archiveConfirmDialog" persistent max-width="500px">
         <v-card class="confirm-dialog">
           <v-card-title class="d-flex align-center pa-5 warning-dialog-header">
-            <v-icon color="grey-darken-4" size="28" class="mr-3">mdi-archive-alert-outline</v-icon>
+            <v-icon size="28" class="mr-3">mdi-archive-alert-outline</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('Archive Project?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
@@ -639,7 +638,7 @@ project information and leave the project.
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="archiveConfirmDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-            <v-btn color="grey-darken-4" variant="flat" @click="confirmArchiveProject" :loading="archivingProject">
+            <v-btn color="archive-fill-strong" variant="flat" @click="confirmArchiveProject" :loading="archivingProject">
               <v-icon start size="18">mdi-archive</v-icon>
               {{ $t('Archive') }}
             </v-btn>
@@ -651,7 +650,7 @@ project information and leave the project.
       <v-dialog v-model="restoreConfirmDialog" persistent max-width="450px">
         <v-card class="confirm-dialog">
           <v-card-title class="d-flex align-center pa-5">
-            <v-icon color="orange" size="28" class="mr-3">mdi-restore</v-icon>
+            <v-icon color="caution-fg" size="28" class="mr-3">mdi-restore</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('Restore Project?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
@@ -662,7 +661,7 @@ project information and leave the project.
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="restoreConfirmDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-            <v-btn color="orange" variant="flat" @click="confirmRestoreProject" :loading="restoringProject">
+            <v-btn color="caution-fg" variant="flat" @click="confirmRestoreProject" :loading="restoringProject">
               <v-icon start size="18">mdi-restore</v-icon>
               {{ $t('Restore') }}
             </v-btn>
@@ -734,7 +733,7 @@ project information and leave the project.
       <v-dialog v-model="featureInfoDialog" max-width="600px">
         <v-card class="info-dialog-card">
           <v-card-title class="d-flex align-center dialog-title-bar pa-4">
-            <v-icon color="#c8102e" class="mr-3" size="28">mdi-star-circle</v-icon>
+            <v-icon color="brand-fg" class="mr-3" size="28">mdi-star-circle</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('About the Public Project Showcase') }}</span>
           </v-card-title>
 
@@ -745,9 +744,9 @@ project information and leave the project.
 
             <div class="consent-notice mb-5 pa-4">
               <div class="d-flex align-start">
-                <v-icon color="#c8102e" class="mr-3 mt-1" size="22">mdi-information</v-icon>
+                <v-icon color="brand-fg" class="mr-3 mt-1" size="22">mdi-information</v-icon>
                 <div>
-                  <p class="font-weight-bold mb-1" style="color: #c8102e;">{{ $t('Consent does not guarantee featuring.') }}</p>
+                  <p class="font-weight-bold mb-1 text-brand-fg">{{ $t('Consent does not guarantee featuring.') }}</p>
                   <p class="text-body-2 mb-0">{{ $t('Program administrators curate which projects appear on the public page.') }}</p>
                 </div>
               </div>
@@ -757,23 +756,23 @@ project information and leave the project.
 
             <div class="info-list mb-5">
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Project name and description') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Your name (as project author)') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Experience/program name and session') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Project tags and categories') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Any uploaded poster or presentation materials') }}</span>
               </div>
             </div>
@@ -784,15 +783,15 @@ project information and leave the project.
 
             <div class="info-list">
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('You can withdraw consent at any time through your project settings') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('Your project will be removed from the public page upon withdrawal') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('You retain full ownership of your work') }}</span>
               </div>
             </div>
@@ -1063,8 +1062,8 @@ export default {
       switch (status) {
         case 'Active': return 'success';
         case 'Proposed': return 'warning';
-        case 'Archived': return 'grey';
-        default: return 'grey';
+        case 'Archived': return 'muted';
+        default: return 'muted';
       }
     },
 
@@ -1230,14 +1229,14 @@ export default {
 <style scoped>
 /* Page Background */
 .edit-project-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -1255,9 +1254,9 @@ export default {
 }
 
 .status-banner.archived {
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0;
-  color: #666;
+  background-color: rgb(var(--v-theme-panel-strong));
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 /* Form Sections */
@@ -1275,8 +1274,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1290,12 +1289,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -1307,8 +1306,8 @@ export default {
 .empty-members-state {
   text-align: center;
   padding: 32px 16px;
-  background-color: #fafafa;
-  border: 1px dashed #e0e0e0;
+  background-color: rgb(var(--v-theme-panel));
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
 }
 
@@ -1320,34 +1319,34 @@ export default {
 
 .member-item {
   padding: 16px;
-  background-color: #fafafa;
-  border: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   transition: background-color 0.2s;
 }
 
 .member-item:hover {
-  background-color: #f5f5f5;
+  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 
 /* Invite Button */
 .invite-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .invite-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Upload Button */
 .upload-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .upload-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Form Actions */
@@ -1355,8 +1354,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -1364,12 +1363,12 @@ export default {
 }
 
 .submit-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .submit-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Sidebar */
@@ -1380,19 +1379,19 @@ export default {
 
 .sidebar-card {
   border-radius: 12px;
-  border-color: #e0e0e0;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .sidebar-header {
   font-size: 1rem;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .sidebar-info-item {
   padding: 12px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
 }
 
@@ -1402,15 +1401,15 @@ export default {
 }
 
 .warning-dialog-header {
-  background-color: #fff8e1;
+  background-color: rgb(var(--v-theme-tint-warning));
 }
 
 .error-dialog-header {
-  background-color: #ffebee;
+  background-color: rgb(var(--v-theme-tint-error));
 }
 
 .success-dialog-header {
-  background-color: #e8f5e9;
+  background-color: rgb(var(--v-theme-tint-success));
 }
 
 .mobile-info-dialog {
@@ -1431,51 +1430,51 @@ export default {
 
 .mobile-info-item {
   padding: 10px 12px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 6px;
 }
 
 .got-it-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.25px;
 }
 
 .got-it-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Project Page Card */
 .project-page-card {
   text-align: center;
   padding: 32px 16px;
-  background-color: #fafafa;
-  border: 1px dashed #e0e0e0;
+  background-color: rgb(var(--v-theme-panel));
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
 }
 
 .project-page-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .project-page-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Red chip for tags (preserved for future use) */
 :deep(.red-chip) {
-  background-color: rgba(200, 16, 46, 0.80) !important; 
-  color: white !important;
-  border-color: #c8102e !important;
+  background-color: rgba(var(--v-theme-primary), 0.80) !important; 
+  color: rgb(var(--v-theme-on-primary)) !important;
+  border-color: rgb(var(--v-theme-primary)) !important;
 }
 
 /* Consent Option */
 .consent-option {
-  background-color: #fafafa;
-  border: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 16px;
 }
@@ -1483,7 +1482,7 @@ export default {
 .consent-label {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 /* Info Dialog */
@@ -1493,13 +1492,13 @@ export default {
 }
 
 .dialog-title-bar {
-  background-color: rgba(200, 16, 46, 0.04);
-  border-bottom: 1px solid rgba(200, 16, 46, 0.12);
+  background-color: rgba(var(--v-theme-primary), 0.04);
+  border-bottom: 1px solid rgba(var(--v-theme-primary), 0.12);
 }
 
 .consent-notice {
-  background-color: rgba(200, 16, 46, 0.06);
-  border-left: 4px solid #c8102e;
+  background-color: rgba(var(--v-theme-primary), 0.06);
+  border-left: 4px solid rgb(var(--v-theme-brand-fg));
   border-radius: 0 8px 8px 0;
 }
 

@@ -45,7 +45,7 @@
                 :counter="50"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="20" color="#666">mdi-pound</v-icon>
+                  <v-icon size="20" class="text-medium-emphasis">mdi-pound</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -61,7 +61,7 @@
                 :counter="200"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="20" color="#666">mdi-text</v-icon>
+                  <v-icon size="20" class="text-medium-emphasis">mdi-text</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -129,7 +129,7 @@
     <v-btn
       v-if="modelValue.length < maxItems"
       variant="outlined"
-      color="#c8102e"
+      color="brand-fg"
       class="add-finding-btn mt-3"
       @click="addFinding"
     >
@@ -232,11 +232,11 @@ function removeFinding(index) {
 }
 
 .finding-item {
-  background: #fafafa;
-  border: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 16px;
-  border-left: 4px solid #e8e8e8;
+  border-left: 4px solid rgba(var(--v-border-color), var(--v-border-opacity));
   transition: border-color 0.2s ease;
 }
 
@@ -250,7 +250,7 @@ function removeFinding(index) {
 .finding-index {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .finding-fields {
@@ -261,7 +261,7 @@ function removeFinding(index) {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(var(--v-border-color), 0.1);
 }
 
 .color-picker-card {
@@ -291,8 +291,8 @@ function removeFinding(index) {
 }
 
 .color-preset-btn.active {
-  border-color: #333;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+  border-color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-surface)), 0 0 0 4px rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .add-finding-btn {

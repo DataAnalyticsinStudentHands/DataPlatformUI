@@ -252,7 +252,7 @@
                     <v-btn text @click="cancelLeave">
                         Cancel
                     </v-btn>
-                    <v-btn color="red darken-2" text @click="confirmLeave">
+                    <v-btn color="brand-fg" text @click="confirmLeave">
                         Yes, Leave
                     </v-btn>
                 </v-card-actions>
@@ -273,7 +273,7 @@
                     <v-btn text @click="startNew">
                         Start New
                     </v-btn>
-                    <v-btn color="red darken-2" text @click="resumeProgress">
+                    <v-btn color="brand-fg" text @click="resumeProgress">
                         Continue
                     </v-btn>
                 </v-card-actions>
@@ -846,7 +846,7 @@ export default {
 <style scoped>
 #progress-bar {
   height: 4px;
-  background-color: #c8102e;
+  background-color: rgb(var(--v-theme-brand-fg));
   transition: width 0.3s ease;
 }
 

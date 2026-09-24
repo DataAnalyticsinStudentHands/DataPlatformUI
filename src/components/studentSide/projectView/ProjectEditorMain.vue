@@ -33,7 +33,7 @@
         <div v-if="currentStep === 2" class="autosave-indicator">
           <v-icon
             size="16"
-            :color="saveStatus === 'saved' ? '#16a34a' : '#666'"
+            :color="saveStatus === 'saved' ? 'complete-fg' : 'muted-strong'"
             class="mr-1"
           >
             {{ saveStatusIcon }}
@@ -81,14 +81,14 @@
         <div class="step-actions centered">
           <v-btn
             variant="outlined"
-            color="#666"
+            class="text-medium-emphasis"
             size="large"
             @click="emit('cancel')"
           >
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn
-            color="#c8102e"
+            color="primary"
             size="large"
             @click="proceedToForm"
           >
@@ -141,7 +141,7 @@
           <div class="actions-center">
             <v-btn
               variant="text"
-              :color="showPreview ? '#c8102e' : '#666'"
+              :color="showPreview ? 'brand-fg' : 'muted-strong'"
               @click="togglePreview"
             >
               <v-icon start>{{ showPreview ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
@@ -151,7 +151,7 @@
 
           <div class="actions-right">
             <v-btn
-              color="#c8102e"
+              color="primary"
               size="large"
               @click="proceedToPreview"
             >
@@ -703,12 +703,12 @@ defineExpose({
 <style scoped>
 .project-editor {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: rgb(var(--v-theme-panel-strong));
 }
 
 .editor-header {
-  background: white;
-  border-bottom: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   padding: 16px 24px;
   position: sticky;
   top: 0;
@@ -732,13 +732,13 @@ defineExpose({
 .editor-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin: 0;
 }
 
 .editor-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin: 0;
 }
 
@@ -747,7 +747,7 @@ defineExpose({
   align-items: center;
   font-size: 0.75rem;
   padding: 6px 12px;
-  background: #f5f5f5;
+  background: rgb(var(--v-theme-panel-strong));
   border-radius: 16px;
 }
 
@@ -784,36 +784,36 @@ defineExpose({
   justify-content: center;
   font-weight: 600;
   font-size: 14px;
-  background: #e8e8e8;
-  color: #666;
+  background: rgb(var(--v-theme-quiet-fill-soft));
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   transition: all 0.3s ease;
 }
 
 .step.active .step-indicator {
-  background: #c8102e;
-  color: white;
-  box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.2);
+  background: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
+  box-shadow: 0 0 0 4px rgba(var(--v-theme-primary), 0.2);
 }
 
 .step.completed .step-indicator {
-  background: #16a34a;
-  color: white;
+  background: rgb(var(--v-theme-complete-fill));
+  color: rgb(var(--v-theme-on-primary));
 }
 
 .step-label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   white-space: nowrap;
 }
 
 .step.active .step-label {
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
   font-weight: 600;
 }
 
 .step.completed .step-label {
-  color: #16a34a;
+  color: rgb(var(--v-theme-complete-fg));
 }
 
 .step-connector {
@@ -822,7 +822,7 @@ defineExpose({
   left: 16px;
   right: 16px;
   height: 2px;
-  background: #e8e8e8;
+  background: rgba(var(--v-border-color), var(--v-border-opacity));
   z-index: 0;
 }
 
@@ -832,7 +832,7 @@ defineExpose({
   top: 0;
   left: 0;
   height: 100%;
-  background: #16a34a;
+  background: rgb(var(--v-theme-complete-fill));
   transition: width 0.3s ease;
   width: inherit;
 }
@@ -858,7 +858,7 @@ defineExpose({
   justify-content: space-between;
   padding: 20px 0;
   margin-top: 16px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .step-actions.centered {
@@ -904,9 +904,9 @@ defineExpose({
 }
 
 .form-card {
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 12px;
-  background: white;
+  background: rgb(var(--v-theme-surface));
 }
 
 .preview-panel {

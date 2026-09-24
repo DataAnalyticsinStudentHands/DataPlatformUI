@@ -30,7 +30,7 @@
           class="mb-4"
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-label-outline</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-label-outline</v-icon>
           </template>
         </v-text-field>
 
@@ -45,7 +45,7 @@
           class="mb-4"
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-format-title</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-format-title</v-icon>
           </template>
         </v-text-field>
 
@@ -61,7 +61,7 @@
           auto-grow
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-text</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-text</v-icon>
           </template>
         </v-textarea>
       </div>
@@ -100,7 +100,7 @@
         <v-btn
           v-if="formData.authors.length < 6"
           variant="outlined"
-          color="#6366f1"
+          color="accent-fg"
           class="add-author-btn mt-4"
           @click="addAuthor"
         >
@@ -171,7 +171,7 @@
           class="mb-4"
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-text-box-check-outline</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-text-box-check-outline</v-icon>
           </template>
         </v-textarea>
 
@@ -183,7 +183,7 @@
           :counter="150"
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-account-voice</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-account-voice</v-icon>
           </template>
         </v-text-field>
       </div>
@@ -207,8 +207,7 @@
             icon
             variant="text"
             size="small"
-            color="#999"
-            class="remove-section-btn"
+            class="remove-section-btn text-disabled"
             @click="removeSection('partners')"
           >
             <v-icon size="20">mdi-close</v-icon>
@@ -238,8 +237,7 @@
             icon
             variant="text"
             size="small"
-            color="#999"
-            class="remove-section-btn"
+            class="remove-section-btn text-disabled"
             @click="removeSection('timeline')"
           >
             <v-icon size="20">mdi-close</v-icon>
@@ -256,7 +254,7 @@
               v-model="formData.timelineLayout"
               mandatory
               density="compact"
-              color="#6366f1"
+              color="accent-fg"
               variant="outlined"
               class="layout-toggle"
             >
@@ -294,8 +292,7 @@
             icon
             variant="text"
             size="small"
-            color="#999"
-            class="remove-section-btn"
+            class="remove-section-btn text-disabled"
             @click="removeSection('impact')"
           >
             <v-icon size="20">mdi-close</v-icon>
@@ -326,8 +323,7 @@
             icon
             variant="text"
             size="small"
-            color="#999"
-            class="remove-section-btn"
+            class="remove-section-btn text-disabled"
             @click="removeSection('poster')"
           >
             <v-icon size="20">mdi-close</v-icon>
@@ -608,7 +604,7 @@ defineExpose({
 }
 
 .form-section.optional {
-  background: #fafbfc;
+  background: rgb(var(--v-theme-panel-optional));
 }
 
 .section-header {
@@ -625,8 +621,8 @@ defineExpose({
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -637,19 +633,19 @@ defineExpose({
 }
 
 .section-number.optional {
-  background-color: #6366f1;
+  background-color: rgb(var(--v-theme-accent-fill));
 }
 
 .section-title {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -660,7 +656,7 @@ defineExpose({
 .subsection-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin-bottom: 16px;
 }
 
@@ -699,7 +695,7 @@ defineExpose({
 }
 
 .poster-error {
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
   display: flex;
   align-items: center;
 }

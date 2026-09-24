@@ -383,7 +383,7 @@
                 <v-btn text @click="cancelLeave">
                     {{ $t('Cancel') }}
                 </v-btn>
-                <v-btn color="red darken-2" text @click="confirmLeave">
+                <v-btn color="brand-fg" text @click="confirmLeave">
                     {{ $t('Yes, Leave') }}
                 </v-btn>
             </v-card-actions>
@@ -404,7 +404,7 @@
                 <v-btn text @click="startNew">
                     {{ $t('Start New') }}
                 </v-btn>
-                <v-btn color="red darken-2" text @click="continueProgress">
+                <v-btn color="brand-fg" text @click="continueProgress">
                     {{ $t('Continue') }}
                 </v-btn>
             </v-card-actions>
@@ -2227,7 +2227,7 @@ beforeRouteLeave(to, from, next) {
 /* Progress bar styling for stepper component */
 #progress-bar {
     height: 4px;
-    background-color: #c8102e;
+    background-color: rgb(var(--v-theme-brand-fg));
     transition: width 0.3s ease;
 }
 </style>

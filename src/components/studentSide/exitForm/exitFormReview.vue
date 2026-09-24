@@ -882,11 +882,11 @@ export default {
 <style scoped>
 /* Review section container styling */
 .review-section {
-  border: 1px solid #ddd;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: rgb(var(--v-theme-panel-review));
 }
 
 /* Review section title styling */
@@ -914,7 +914,7 @@ export default {
   font-weight: 500;
   margin-bottom: 5px;
   font-size: 0.75rem;
-  color: grey;
+  color: rgb(var(--v-theme-field-label-fg));
 }
 
 /* List item styling for responsive layout */

@@ -10,7 +10,7 @@
     <!-- Header with index and remove button -->
     <div v-if="showHeader" class="author-header">
       <div class="author-index">
-        <v-icon size="18" color="#c8102e">mdi-account</v-icon>
+        <v-icon size="18" color="brand-fg">mdi-account</v-icon>
         <span class="font-weight-medium">{{ headerLabel }}</span>
       </div>
       <v-btn
@@ -37,13 +37,13 @@
           />
           <div v-else class="avatar-placeholder">
             <span v-if="modelValue.name">{{ getInitials(modelValue.name) }}</span>
-            <v-icon v-else size="32" color="#999">mdi-account</v-icon>
+            <v-icon v-else size="32" color="muted">mdi-account</v-icon>
           </div>
         </div>
         <v-btn
           size="small"
           variant="outlined"
-          color="#c8102e"
+          color="brand-fg"
           class="upload-btn"
           @click="triggerFileInput"
         >
@@ -54,8 +54,7 @@
           v-if="avatarPreviewUrl"
           size="small"
           variant="text"
-          color="#666"
-          class="remove-avatar-btn"
+          class="remove-avatar-btn text-medium-emphasis"
           @click="removeAvatar"
         >
           <v-icon start size="14">mdi-delete-outline</v-icon>
@@ -94,7 +93,7 @@
           class="mb-3"
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-account-outline</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-account-outline</v-icon>
           </template>
         </v-text-field>
 
@@ -109,7 +108,7 @@
           class="mb-3"
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-briefcase-outline</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-briefcase-outline</v-icon>
           </template>
         </v-text-field>
 
@@ -124,7 +123,7 @@
           auto-grow
         >
           <template v-slot:prepend-inner>
-            <v-icon size="20" color="#666">mdi-format-quote-close</v-icon>
+            <v-icon size="20" class="text-medium-emphasis">mdi-format-quote-close</v-icon>
           </template>
         </v-textarea>
       </div>
@@ -328,19 +327,19 @@ function removeAvatar() {
 
 <style scoped>
 .author-input-card {
-  background: #fafafa;
-  border: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 16px;
   transition: border-color 0.2s ease;
 }
 
 .author-input-card:hover {
-  border-color: #c8102e40;
+  border-color: rgba(var(--v-theme-primary), .25);
 }
 
 .author-input-card.removable {
-  border-left: 3px solid #c8102e;
+  border-left: 3px solid rgb(var(--v-theme-brand-fg));
 }
 
 .author-header {
@@ -349,14 +348,14 @@ function removeAvatar() {
   justify-content: space-between;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .author-index {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .author-content {
@@ -377,11 +376,11 @@ function removeAvatar() {
   height: 80px;
   border-radius: 50%;
   overflow: hidden;
-  background: #e8e8e8;
+  background: rgb(var(--v-theme-quiet-fill-soft));
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ddd;
+  border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .avatar-preview img {
@@ -396,8 +395,8 @@ function removeAvatar() {
   justify-content: center;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #c8102e 0%, #e85a4f 100%);
-  color: white;
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgb(var(--v-theme-avatar-gradient-end)) 100%);
+  color: rgb(var(--v-theme-on-primary));
   font-size: 24px;
   font-weight: 600;
 }
@@ -413,7 +412,7 @@ function removeAvatar() {
 }
 
 .avatar-error {
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
   text-align: center;
   max-width: 120px;
   word-wrap: break-word;

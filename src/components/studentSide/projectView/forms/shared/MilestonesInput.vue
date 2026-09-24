@@ -32,7 +32,7 @@
                 :counter="150"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="20" color="#666">mdi-flag-outline</v-icon>
+                  <v-icon size="20" class="text-medium-emphasis">mdi-flag-outline</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -47,7 +47,7 @@
                 :counter="200"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="20" color="#666">mdi-text</v-icon>
+                  <v-icon size="20" class="text-medium-emphasis">mdi-text</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -116,7 +116,7 @@
                 @update:model-value="handleDateTypeChange(index, $event)"
                 mandatory
                 density="compact"
-                color="#c8102e"
+                color="brand-fg"
                 variant="outlined"
                 class="date-type-toggle"
               >
@@ -154,14 +154,14 @@
                     @click:clear.stop="updateMilestone(index, 'dateStart', null)"
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon size="20" color="#666">mdi-calendar</v-icon>
+                      <v-icon size="20" class="text-medium-emphasis">mdi-calendar</v-icon>
                     </template>
                   </v-text-field>
                 </template>
                 <v-date-picker
                   :model-value="parseDate(milestone.dateStart)"
                   @update:model-value="(val) => handleDateSelect(index, 'dateStart', val)"
-                  color="#c8102e"
+                  color="primary"
                   show-adjacent-months
                 />
               </v-menu>
@@ -191,14 +191,14 @@
                     @click:clear.stop="updateMilestone(index, 'dateEnd', null)"
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon size="20" color="#666">mdi-calendar-arrow-right</v-icon>
+                      <v-icon size="20" class="text-medium-emphasis">mdi-calendar-arrow-right</v-icon>
                     </template>
                   </v-text-field>
                 </template>
                 <v-date-picker
                   :model-value="parseDate(milestone.dateEnd)"
                   @update:model-value="(val) => handleDateSelect(index, 'dateEnd', val)"
-                  color="#c8102e"
+                  color="primary"
                   :min="milestone.dateStart ? parseDate(milestone.dateStart) : undefined"
                   show-adjacent-months
                 />
@@ -208,7 +208,7 @@
 
           <!-- Date summary display -->
           <div v-if="milestone.dateStart" class="date-summary">
-            <v-icon size="14" color="#666" class="mr-1">mdi-clock-outline</v-icon>
+            <v-icon size="14" class="mr-1 text-medium-emphasis">mdi-clock-outline</v-icon>
             <span>{{ getDateSummary(milestone) }}</span>
           </div>
         </div>
@@ -234,7 +234,7 @@
 
     <!-- Empty State -->
     <div v-else class="empty-state">
-      <v-icon size="32" color="#ccc" class="mb-2">mdi-timeline-outline</v-icon>
+      <v-icon size="32" class="mb-2 text-disabled">mdi-timeline-outline</v-icon>
       <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('No milestones added yet') }}</p>
       <p class="text-caption text-medium-emphasis">{{ $t('Add milestones to show your project timeline') }}</p>
     </div>
@@ -243,7 +243,7 @@
     <v-btn
       v-if="modelValue.length < maxMilestones"
       variant="outlined"
-      color="#c8102e"
+      color="brand-fg"
       class="add-milestone-btn mt-3"
       @click="addMilestone"
     >
@@ -400,8 +400,8 @@ function removeMilestone(index) {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: #fafafa;
-  border: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 12px;
 }
@@ -413,7 +413,7 @@ function removeMilestone(index) {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: rgb(var(--v-theme-on-primary));
   font-weight: 700;
   font-size: 12px;
   flex-shrink: 0;
@@ -447,7 +447,7 @@ function removeMilestone(index) {
   display: flex;
   align-items: center;
   font-size: 0.75rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   padding: 4px 0 0 0;
   margin-top: -4px;
 }
@@ -457,7 +457,7 @@ function removeMilestone(index) {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(var(--v-border-color), 0.1);
 }
 
 .color-picker-card {
@@ -487,8 +487,8 @@ function removeMilestone(index) {
 }
 
 .color-preset-btn.active {
-  border-color: #333;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+  border-color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-surface)), 0 0 0 4px rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .empty-state {
@@ -496,8 +496,8 @@ function removeMilestone(index) {
   flex-direction: column;
   align-items: center;
   padding: 24px;
-  background: #fafafa;
-  border: 1px dashed #e0e0e0;
+  background: rgb(var(--v-theme-panel));
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   text-align: center;
 }

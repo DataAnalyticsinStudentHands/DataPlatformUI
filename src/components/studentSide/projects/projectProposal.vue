@@ -20,7 +20,7 @@ and categorizing the project with tags.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-lightbulb-outline</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-lightbulb-outline</v-icon>
           <div>
             <div class="d-flex align-center">
               <h1 class="text-h5 font-weight-bold">{{ $t('Project Proposal') }}</h1>
@@ -31,7 +31,7 @@ and categorizing the project with tags.
                 class="ml-2 d-lg-none"
                 @click.stop="openMobileInfoDialog"
               >
-                <v-icon color="#c8102e" size="22">mdi-help-circle</v-icon>
+                <v-icon color="brand-fg" size="22">mdi-help-circle</v-icon>
               </v-btn>
             </div>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('Submit your project idea for review') }}</p>
@@ -110,7 +110,7 @@ and categorizing the project with tags.
                     required
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon color="#c8102e" size="20">mdi-school-outline</v-icon>
+                      <v-icon color="brand-fg" size="20">mdi-school-outline</v-icon>
                     </template>
                   </v-select>
 
@@ -145,7 +145,7 @@ and categorizing the project with tags.
                     <div class="d-flex align-start">
                       <v-checkbox
                         v-model="projectData.consentToFeature"
-                        color="#c8102e"
+                        color="brand-fg"
                         hide-details
                         class="mt-0 pt-0 mr-2"
                       ></v-checkbox>
@@ -162,7 +162,7 @@ and categorizing the project with tags.
                             @click="featureInfoDialog = true"
                             class="ml-1"
                           >
-                            <v-icon size="18" color="#c8102e">mdi-help-circle-outline</v-icon>
+                            <v-icon size="18" color="brand-fg">mdi-help-circle-outline</v-icon>
                           </v-btn>
                         </div>
                         <p class="text-caption text-medium-emphasis mt-1 mb-0">
@@ -204,28 +204,28 @@ and categorizing the project with tags.
               <!-- Tips Card -->
               <v-card class="tips-card mb-4" variant="outlined">
                 <v-card-title class="tips-header">
-                  <v-icon color="#c8102e" class="mr-2">mdi-lightbulb-on-outline</v-icon>
+                  <v-icon color="brand-fg" class="mr-2">mdi-lightbulb-on-outline</v-icon>
                   {{ $t('Tips for a Strong Proposal') }}
                 </v-card-title>
                 <v-card-text class="pt-0">
                   <div class="tip-item">
-                    <v-icon size="18" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                    <v-icon size="18" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                     <span>{{ $t('Be specific about your goals and what you hope to achieve') }}</span>
                   </div>
                   <div class="tip-item">
-                    <v-icon size="18" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                    <v-icon size="18" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                     <span>{{ $t('Explain the problem you are trying to solve') }}</span>
                   </div>
                   <div class="tip-item">
-                    <v-icon size="18" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                    <v-icon size="18" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                     <span>{{ $t('Describe your approach or methodology') }}</span>
                   </div>
                   <div class="tip-item">
-                    <v-icon size="18" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                    <v-icon size="18" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                     <span>{{ $t('Mention any data sources or tools you plan to use') }}</span>
                   </div>
                   <div class="tip-item">
-                    <v-icon size="18" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                    <v-icon size="18" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                     <span>{{ $t('Outline expected outcomes or deliverables') }}</span>
                   </div>
                 </v-card-text>
@@ -234,7 +234,7 @@ and categorizing the project with tags.
               <!-- Process Card -->
               <v-card class="process-card" variant="outlined">
                 <v-card-title class="tips-header">
-                  <v-icon color="#c8102e" class="mr-2">mdi-clipboard-flow-outline</v-icon>
+                  <v-icon color="brand-fg" class="mr-2">mdi-clipboard-flow-outline</v-icon>
                   {{ $t('What Happens Next?') }}
                 </v-card-title>
                 <v-card-text class="pt-0">
@@ -290,27 +290,27 @@ and categorizing the project with tags.
             <!-- Tips Section -->
             <div class="mobile-info-section mb-5">
               <h3 class="text-subtitle-1 font-weight-bold mb-3">
-                <v-icon color="#c8102e" size="20" class="mr-2">mdi-lightbulb-on-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-2">mdi-lightbulb-on-outline</v-icon>
                 {{ $t('Tips for a Strong Proposal') }}
               </h3>
               <div class="mobile-tip-item">
-                <v-icon size="16" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                <v-icon size="16" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                 <span>{{ $t('Be specific about your goals and what you hope to achieve') }}</span>
               </div>
               <div class="mobile-tip-item">
-                <v-icon size="16" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                <v-icon size="16" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                 <span>{{ $t('Explain the problem you are trying to solve') }}</span>
               </div>
               <div class="mobile-tip-item">
-                <v-icon size="16" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                <v-icon size="16" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                 <span>{{ $t('Describe your approach or methodology') }}</span>
               </div>
               <div class="mobile-tip-item">
-                <v-icon size="16" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                <v-icon size="16" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                 <span>{{ $t('Mention any data sources or tools you plan to use') }}</span>
               </div>
               <div class="mobile-tip-item">
-                <v-icon size="16" color="#c8102e" class="mr-2">mdi-check-circle</v-icon>
+                <v-icon size="16" color="brand-fg" class="mr-2">mdi-check-circle</v-icon>
                 <span>{{ $t('Outline expected outcomes or deliverables') }}</span>
               </div>
             </div>
@@ -320,7 +320,7 @@ and categorizing the project with tags.
             <!-- Process Section -->
             <div class="mobile-info-section">
               <h3 class="text-subtitle-1 font-weight-bold mb-3">
-                <v-icon color="#c8102e" size="20" class="mr-2">mdi-clipboard-flow-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-2">mdi-clipboard-flow-outline</v-icon>
                 {{ $t('What Happens Next?') }}
               </h3>
               <div class="mobile-process-step">
@@ -371,7 +371,7 @@ and categorizing the project with tags.
       <v-dialog v-model="submitDialog" persistent max-width="450px">
         <v-card class="confirm-dialog">
           <v-card-title class="d-flex align-center pa-5">
-            <v-icon color="#c8102e" size="28" class="mr-3">mdi-file-document-check-outline</v-icon>
+            <v-icon color="brand-fg" size="28" class="mr-3">mdi-file-document-check-outline</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('Submit Project Proposal?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
@@ -394,7 +394,7 @@ and categorizing the project with tags.
       <v-dialog v-model="featureInfoDialog" max-width="600px">
         <v-card class="info-dialog-card">
           <v-card-title class="d-flex align-center dialog-title-bar pa-4">
-            <v-icon color="#c8102e" class="mr-3" size="28">mdi-star-circle</v-icon>
+            <v-icon color="brand-fg" class="mr-3" size="28">mdi-star-circle</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('About the Public Project Showcase') }}</span>
           </v-card-title>
           
@@ -405,9 +405,9 @@ and categorizing the project with tags.
 
             <div class="consent-notice mb-5 pa-4">
               <div class="d-flex align-start">
-                <v-icon color="#c8102e" class="mr-3 mt-1" size="22">mdi-information</v-icon>
+                <v-icon color="brand-fg" class="mr-3 mt-1" size="22">mdi-information</v-icon>
                 <div>
-                  <p class="font-weight-bold mb-1" style="color: #c8102e;">{{ $t('Consent does not guarantee featuring.') }}</p>
+                  <p class="font-weight-bold mb-1 text-brand-fg">{{ $t('Consent does not guarantee featuring.') }}</p>
                   <p class="text-body-2 mb-0">{{ $t('Program administrators curate which projects appear on the public page.') }}</p>
                 </div>
               </div>
@@ -417,23 +417,23 @@ and categorizing the project with tags.
             
             <div class="info-list mb-5">
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Project name and description') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Your name (as project author)') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Experience/program name and session') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Project tags and categories') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Any uploaded poster or presentation materials') }}</span>
               </div>
             </div>
@@ -444,15 +444,15 @@ and categorizing the project with tags.
             
             <div class="info-list">
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('You can withdraw consent at any time through your project settings') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('Your project will be removed from the public page upon withdrawal') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('You retain full ownership of your work') }}</span>
               </div>
             </div>
@@ -733,14 +733,14 @@ export default {
 <style scoped>
 /* Page Background */
 .proposal-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -764,8 +764,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -779,12 +779,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -794,8 +794,8 @@ export default {
 
 /* Consent Option */
 .consent-option {
-  background-color: #fafafa;
-  border: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 16px;
 }
@@ -803,7 +803,7 @@ export default {
 .consent-label {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 /* Form Actions */
@@ -812,8 +812,8 @@ export default {
   justify-content: flex-end;
   gap: 12px;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -821,12 +821,12 @@ export default {
 }
 
 .submit-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .submit-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Sidebar */
@@ -838,14 +838,14 @@ export default {
 .tips-card,
 .process-card {
   border-radius: 12px;
-  border-color: #e0e0e0;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .tips-header {
   font-size: 1rem;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .tip-item {
@@ -853,12 +853,12 @@ export default {
   align-items: flex-start;
   padding: 10px 0;
   font-size: 0.875rem;
-  color: #444;
+  color: rgb(var(--v-theme-tip-fg));
   line-height: 1.5;
 }
 
 .tip-item:not(:last-child) {
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid rgb(var(--v-theme-divider-faint));
 }
 
 /* Process Steps */
@@ -876,15 +876,15 @@ export default {
   top: 40px;
   bottom: -12px;
   width: 2px;
-  background-color: #e0e0e0;
+  background-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .step-number {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background-color: rgba(200, 16, 46, 0.1);
-  color: #c8102e;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  color: rgb(var(--v-theme-brand-fg));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -897,12 +897,12 @@ export default {
 .step-title {
   font-weight: 600;
   font-size: 0.875rem;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .step-desc {
   font-size: 0.8rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 /* Dialogs */
@@ -931,12 +931,12 @@ export default {
   align-items: flex-start;
   padding: 8px 0;
   font-size: 0.875rem;
-  color: #444;
+  color: rgb(var(--v-theme-tip-fg));
   line-height: 1.5;
 }
 
 .mobile-tip-item:not(:last-child) {
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid rgb(var(--v-theme-divider-faint));
 }
 
 .mobile-process-step {
@@ -953,15 +953,15 @@ export default {
   top: 36px;
   bottom: -10px;
   width: 2px;
-  background-color: #e0e0e0;
+  background-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .mobile-step-number {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: rgba(200, 16, 46, 0.1);
-  color: #c8102e;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  color: rgb(var(--v-theme-brand-fg));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -974,12 +974,12 @@ export default {
 .mobile-step-title {
   font-weight: 600;
   font-size: 0.875rem;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .mobile-step-desc {
   font-size: 0.8rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .info-dialog-card {
@@ -988,13 +988,13 @@ export default {
 }
 
 .dialog-title-bar {
-  background-color: rgba(200, 16, 46, 0.04);
-  border-bottom: 1px solid rgba(200, 16, 46, 0.12);
+  background-color: rgba(var(--v-theme-primary), 0.04);
+  border-bottom: 1px solid rgba(var(--v-theme-primary), 0.12);
 }
 
 .consent-notice {
-  background-color: rgba(200, 16, 46, 0.06);
-  border-left: 4px solid #c8102e;
+  background-color: rgba(var(--v-theme-primary), 0.06);
+  border-left: 4px solid rgb(var(--v-theme-brand-fg));
   border-radius: 0 8px 8px 0;
 }
 
@@ -1016,15 +1016,15 @@ export default {
 }
 
 .got-it-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.25px;
 }
 
 .got-it-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Responsive */

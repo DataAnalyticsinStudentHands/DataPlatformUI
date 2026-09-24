@@ -23,7 +23,7 @@
         <!-- Mandatory Sections -->
         <div class="section-group">
           <div class="group-header">
-            <v-icon size="18" color="#16a34a" class="mr-2">mdi-check-circle</v-icon>
+            <v-icon size="18" color="complete-fg" class="mr-2">mdi-check-circle</v-icon>
             <span class="group-title">{{ $t('Default Sections') }}</span>
           </div>
           <div class="section-list mandatory">
@@ -33,13 +33,13 @@
               class="section-item mandatory"
             >
               <div class="section-icon">
-                <v-icon size="20" color="#16a34a">{{ section.icon }}</v-icon>
+                <v-icon size="20" color="complete-fg">{{ section.icon }}</v-icon>
               </div>
               <div class="section-info">
                 <span class="section-name">{{ section.name }}</span>
                 <span class="section-desc">{{ section.description }}</span>
               </div>
-              <v-icon size="18" color="#16a34a" class="check-icon">mdi-check</v-icon>
+              <v-icon size="18" color="complete-fg" class="check-icon">mdi-check</v-icon>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
         <!-- Optional Sections -->
         <div class="section-group">
           <div class="group-header">
-            <v-icon size="18" color="#c8102e" class="mr-2">mdi-plus-circle-outline</v-icon>
+            <v-icon size="18" color="brand-fg" class="mr-2">mdi-plus-circle-outline</v-icon>
             <span class="group-title">{{ $t('Add Optional Sections') }}</span>
           </div>
           <div class="section-list optional">
@@ -63,13 +63,13 @@
                   :model-value="isSelected(section.id)"
                   hide-details
                   density="compact"
-                  color="#c8102e"
+                  color="brand-fg"
                   @click.stop
                   @update:model-value="toggleSection(section.id)"
                 />
               </div>
               <div class="section-icon" :class="{ 'active': isSelected(section.id) }">
-                <v-icon size="20" :color="isSelected(section.id) ? '#c8102e' : '#666'">
+                <v-icon size="20" :color="isSelected(section.id) ? 'brand-fg' : 'muted-strong'">
                   {{ section.icon }}
                 </v-icon>
               </div>
@@ -80,7 +80,7 @@
               <v-chip
                 v-if="isRecommended(section.id)"
                 size="x-small"
-                color="#c8102e"
+                color="brand-fg"
                 variant="tonal"
                 class="recommended-badge"
               >
@@ -95,7 +95,7 @@
           <v-btn
             variant="text"
             size="small"
-            color="#666"
+            class="text-medium-emphasis"
             @click="selectAll"
           >
             <v-icon start size="16">mdi-checkbox-multiple-marked</v-icon>
@@ -104,7 +104,7 @@
           <v-btn
             variant="text"
             size="small"
-            color="#666"
+            class="text-medium-emphasis"
             @click="clearAll"
           >
             <v-icon start size="16">mdi-checkbox-multiple-blank-outline</v-icon>
@@ -116,7 +116,7 @@
       <!-- Right: Layout Preview -->
       <div class="preview-panel">
         <div class="preview-header">
-          <v-icon size="18" color="#c8102e" class="mr-2">mdi-eye-outline</v-icon>
+          <v-icon size="18" color="brand-fg" class="mr-2">mdi-eye-outline</v-icon>
           <span class="preview-title">{{ $t('Layout Preview') }}</span>
         </div>
         <div class="preview-container">
@@ -171,7 +171,7 @@
                 <div class="zone-label">{{ $t('Main Content') }}</div>
                 <div class="preview-block poster enabled">
                   <div class="block-title">{{ $t('Poster / Diagram') }}</div>
-                  <v-icon size="24" color="#c8102e">mdi-file-document-outline</v-icon>
+                  <v-icon size="24" color="brand-fg">mdi-file-document-outline</v-icon>
                 </div>
               </div>
             </div>
@@ -188,7 +188,7 @@
 
         <!-- Selection Summary -->
         <div class="selection-summary">
-          <v-icon size="16" color="#666" class="mr-2">mdi-information-outline</v-icon>
+          <v-icon size="16" class="mr-2 text-medium-emphasis">mdi-information-outline</v-icon>
           <span>
             {{ selectedCount }} {{ $t('optional section(s) selected') }}
           </span>
@@ -198,7 +198,7 @@
 
     <!-- Help Text -->
     <div class="configurator-help">
-      <v-icon size="18" color="#666" class="mr-2">mdi-lightbulb-outline</v-icon>
+      <v-icon size="18" class="mr-2 text-medium-emphasis">mdi-lightbulb-outline</v-icon>
       <span>
         {{ $t("Don't worry about getting it perfect now. You can add or remove sections at any time while editing your project.") }}
       </span>
@@ -218,7 +218,7 @@
           <v-btn variant="text" @click="cancelAction">
             {{ $t('Cancel') }}
           </v-btn>
-          <v-btn color="#c8102e" variant="flat" @click="confirmAction">
+          <v-btn color="primary" variant="flat" @click="confirmAction">
             {{ $t('Remove') }}
           </v-btn>
         </v-card-actions>
@@ -376,13 +376,13 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 .configurator-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin-bottom: 8px;
 }
 
 .configurator-subtitle {
   font-size: 1rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   max-width: 500px;
   margin: 0 auto;
 }
@@ -402,8 +402,8 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 }
 
 .section-group {
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 12px;
   padding: 20px;
 }
@@ -413,13 +413,13 @@ const isPosterEnabled = computed(() => isSelected('poster'));
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .group-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-list {
@@ -433,13 +433,13 @@ const isPosterEnabled = computed(() => isSelected('poster'));
   align-items: center;
   padding: 12px 16px;
   border-radius: 8px;
-  background: #f8f9fc;
+  background: rgb(var(--v-theme-panel-cool-soft));
   transition: all 0.2s ease;
 }
 
 .section-item.mandatory {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: rgb(var(--v-theme-tint-success-soft));
+  border: 1px solid rgb(var(--v-theme-success-soft-border));
 }
 
 .section-item.optional {
@@ -448,13 +448,13 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 }
 
 .section-item.optional:hover {
-  background: #f0f4ff;
-  border-color: #c8102e30;
+  background: rgb(var(--v-theme-tint-info-hover));
+  border-color: rgba(var(--v-theme-primary), .19);
 }
 
 .section-item.optional.selected {
-  background: #fef2f2;
-  border-color: #c8102e50;
+  background: rgb(var(--v-theme-tint-error-soft));
+  border-color: rgba(var(--v-theme-primary), .31);
 }
 
 .section-checkbox {
@@ -466,7 +466,7 @@ const isPosterEnabled = computed(() => isSelected('poster'));
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: white;
+  background: rgb(var(--v-theme-surface));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -475,7 +475,7 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 }
 
 .section-icon.active {
-  background: #fef2f2;
+  background: rgb(var(--v-theme-tint-error-soft));
 }
 
 .section-info {
@@ -487,14 +487,14 @@ const isPosterEnabled = computed(() => isSelected('poster'));
   display: block;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin-bottom: 2px;
 }
 
 .section-desc {
   display: block;
   font-size: 0.75rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -517,8 +517,8 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 
 /* Preview Panel */
 .preview-panel {
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -530,25 +530,25 @@ const isPosterEnabled = computed(() => isSelected('poster'));
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .preview-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .preview-container {
   flex: 1;
-  background: #f4f5f7;
+  background: rgb(var(--v-theme-panel-preview));
   border-radius: 8px;
   padding: 24px;
   overflow: hidden;
 }
 
 .layout-preview {
-  background: white;
+  background: rgb(var(--v-theme-surface));
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -565,14 +565,14 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 .zone-label {
   font-size: 0.65rem;
   font-weight: 600;
-  color: #999;
+  color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity));
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 6px;
 }
 
 .preview-block {
-  background: #f5f5f5;
+  background: rgb(var(--v-theme-panel-strong));
   border-radius: 4px;
   padding: 8px;
   position: relative;
@@ -644,7 +644,7 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 
 .line {
   height: 8px;
-  background: #e0e0e0;
+  background: rgb(var(--v-theme-quiet-fill));
   border-radius: 4px;
   margin-bottom: 6px;
 }
@@ -689,19 +689,19 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 .block-title {
   font-size: 0.7rem;
   font-weight: 500;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .optional-block {
-  background: #fef2f2;
-  border: 1px dashed #fecaca;
+  background: rgb(var(--v-theme-tint-error-soft));
+  border: 1px dashed rgb(var(--v-theme-error-soft-border));
 }
 
 .optional-icon {
   position: absolute;
   top: 4px;
   right: 4px;
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
 }
 
 .preview-block.poster {
@@ -715,13 +715,13 @@ const isPosterEnabled = computed(() => isSelected('poster'));
 }
 
 .preview-block.poster.enabled {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  border: 1px solid #fecaca;
+  background: linear-gradient(135deg, rgb(var(--v-theme-tint-error-soft)) 0%, rgb(var(--v-theme-tint-error-strong)) 100%);
+  border: 1px solid rgb(var(--v-theme-error-soft-border));
 }
 
 .preview-block.poster.disabled {
-  background: #f8f8f8;
-  border: 1px dashed #ddd;
+  background: rgb(var(--v-theme-panel-soft));
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .preview-block.footer {
@@ -734,9 +734,9 @@ const isPosterEnabled = computed(() => isSelected('poster'));
   justify-content: center;
   padding-top: 12px;
   margin-top: 12px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   font-size: 0.8rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 /* Help Text */
@@ -744,11 +744,11 @@ const isPosterEnabled = computed(() => isSelected('poster'));
   display: flex;
   align-items: flex-start;
   padding: 16px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: rgb(var(--v-theme-tint-warning-soft));
+  border: 1px solid rgb(var(--v-theme-warning-soft-border));
   border-radius: 8px;
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   line-height: 1.5;
 }
 

@@ -18,7 +18,7 @@
         <div class="d-sm-none">
             <v-row>
                 <v-col cols="12">
-                    <p ref="goalActivityProgressMobileField" class="font-weight-black text-h8 mb-2" :class="{'text-custom-red': isGoalActivityProgressMobileInvalidTitle && formSubmitted}">
+                    <p ref="goalActivityProgressMobileField" class="font-weight-black text-h8 mb-2" :class="{'text-brand-fg': isGoalActivityProgressMobileInvalidTitle && formSubmitted}">
                     {{$t("For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select 'no goals'.")}}
                     </p>
                 </v-col>
@@ -96,7 +96,7 @@
                             v-show="false"
                             :rules="[() => validateGoalActivityProgress(activity)]"
                         ></v-text-field>
-                        <p class="text-sm text-custom-red mb-3 pt-0" v-if="!isGoalActivityProgressMobileInvalid[activity.activityID] && formSubmitted">{{$t('At least one checkbox must be selected for each activity.')}}</p>
+                        <p class="text-sm text-brand-fg mb-3 pt-0" v-if="!isGoalActivityProgressMobileInvalid[activity.activityID] && formSubmitted">{{$t('At least one checkbox must be selected for each activity.')}}</p>
                     </div>
                 </v-col>
             </v-row>
@@ -127,7 +127,7 @@
     
             <v-row>
                 <v-col cols="12">
-                    <p ref="goalActivityProgressField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isGoalActivityProgressInvalid && formSubmitted }">
+                    <p ref="goalActivityProgressField" class="font-weight-black text-h8 mb-2" :class="{ 'text-brand-fg': isGoalActivityProgressInvalid && formSubmitted }">
                     {{$t("For each activity listed, if you believe the activity helped you make progress towards your goals, check the boxes for those goals. If the activity did not contribute to any of your goals, select 'no goals'.")}}
                     </p>
                 </v-col>
@@ -225,7 +225,7 @@
                             </tr>
                         </tbody>
                     </v-table>
-                    <p class="text-sm text-custom-red" v-if="isGoalActivityProgressInvalid && formSubmitted">{{$t('At least one checkbox must be selected for each activity.')}}</p>
+                    <p class="text-sm text-brand-fg" v-if="isGoalActivityProgressInvalid && formSubmitted">{{$t('At least one checkbox must be selected for each activity.')}}</p>
                 </v-col>
             </v-row>
         </div>

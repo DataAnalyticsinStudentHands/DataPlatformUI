@@ -10,12 +10,12 @@
     <!-- Preview Header -->
     <div class="preview-header">
       <div class="preview-title-section">
-        <v-icon size="20" color="#c8102e" class="mr-2">mdi-eye-outline</v-icon>
+        <v-icon size="20" color="brand-fg" class="mr-2">mdi-eye-outline</v-icon>
         <h3 class="preview-title">{{ $t('Live Preview') }}</h3>
         <v-chip
           v-if="sectionCount > 0"
           size="x-small"
-          color="#6366f1"
+          color="accent-fg"
           variant="tonal"
           class="ml-2"
         >
@@ -68,7 +68,7 @@
     >
       <!-- Empty State -->
       <div v-if="!hasValidProject" class="empty-preview">
-        <v-icon size="64" color="#ccc">mdi-file-document-outline</v-icon>
+        <v-icon size="64" class="text-disabled">mdi-file-document-outline</v-icon>
         <p class="empty-title">{{ $t('No Preview Available') }}</p>
         <p class="empty-subtitle">{{ $t('Fill out the form to see a live preview of your project page.') }}</p>
       </div>
@@ -103,13 +103,13 @@
             class="fullscreen-close-btn"
             @click="toggleFullscreen"
           >
-            <v-icon color="#333">mdi-close</v-icon>
+            <v-icon class="text-high-emphasis">mdi-close</v-icon>
           </v-btn>
 
           <!-- Fullscreen Template Content -->
           <div class="fullscreen-content">
             <div v-if="!hasValidProject" class="empty-preview">
-              <v-icon size="64" color="#ccc">mdi-file-document-outline</v-icon>
+              <v-icon size="64" class="text-disabled">mdi-file-document-outline</v-icon>
               <p class="empty-title">{{ $t('No Preview Available') }}</p>
               <p class="empty-subtitle">{{ $t('Fill out the form to see a live preview of your project page.') }}</p>
             </div>
@@ -263,11 +263,11 @@ defineExpose({
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: white;
+  background: rgb(var(--v-theme-surface));
   border-radius: 12px;
   overflow-y: auto;
   overflow-x: hidden;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .preview-header {
@@ -275,8 +275,8 @@ defineExpose({
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: white;
-  border-bottom: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   flex-shrink: 0;
   position: sticky;
   top: 0;
@@ -291,7 +291,7 @@ defineExpose({
 .preview-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin: 0;
 }
 
@@ -305,7 +305,7 @@ defineExpose({
   flex: 1 0 auto;
   min-height: 0;
   overflow-x: auto;
-  background: #f4f5f7;
+  background: rgb(var(--v-theme-panel-preview));
 }
 
 /* Forced-light provider around the teleported overlay (dark-mode plan §7). The Teleport sits outside
@@ -323,7 +323,7 @@ defineExpose({
   right: 0;
   bottom: 0;
   z-index: 99999;
-  background: #f4f5f7;
+  background: rgb(var(--v-theme-panel-preview));
 }
 
 .fullscreen-content {
@@ -352,13 +352,13 @@ defineExpose({
 .empty-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin: 16px 0 8px;
 }
 
 .empty-subtitle {
   font-size: 0.875rem;
-  color: #999;
+  color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity));
   max-width: 300px;
 }
 
@@ -522,7 +522,7 @@ defineExpose({
   right: 16px;
   z-index: 100000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Rotating animation for refresh icon */

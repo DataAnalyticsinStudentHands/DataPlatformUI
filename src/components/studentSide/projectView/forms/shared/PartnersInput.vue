@@ -27,7 +27,7 @@
                 :counter="20"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="20" color="#666">mdi-alphabetical</v-icon>
+                  <v-icon size="20" class="text-medium-emphasis">mdi-alphabetical</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -43,7 +43,7 @@
                 :counter="150"
               >
                 <template v-slot:prepend-inner>
-                  <v-icon size="20" color="#666">mdi-office-building-outline</v-icon>
+                  <v-icon size="20" class="text-medium-emphasis">mdi-office-building-outline</v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -120,7 +120,7 @@
 
     <!-- Empty State -->
     <div v-else class="empty-state">
-      <v-icon size="32" color="#ccc" class="mb-2">mdi-office-building-outline</v-icon>
+      <v-icon size="32" class="mb-2 text-disabled">mdi-office-building-outline</v-icon>
       <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('No partners added yet') }}</p>
     </div>
 
@@ -128,7 +128,7 @@
     <v-btn
       v-if="modelValue.length < maxPartners"
       variant="outlined"
-      color="#c8102e"
+      color="brand-fg"
       class="add-partner-btn mt-3"
       @click="addPartner"
     >
@@ -199,8 +199,8 @@ function removePartner(index) {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: #fafafa;
-  border: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 12px;
 }
@@ -219,7 +219,7 @@ function removePartner(index) {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(var(--v-border-color), 0.1);
 }
 
 .color-picker-card {
@@ -249,8 +249,8 @@ function removePartner(index) {
 }
 
 .color-preset-btn.active {
-  border-color: #333;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+  border-color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-surface)), 0 0 0 4px rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .empty-state {
@@ -258,8 +258,8 @@ function removePartner(index) {
   flex-direction: column;
   align-items: center;
   padding: 24px;
-  background: #fafafa;
-  border: 1px dashed #e0e0e0;
+  background: rgb(var(--v-theme-panel));
+  border: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   text-align: center;
 }

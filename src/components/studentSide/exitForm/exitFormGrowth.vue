@@ -18,7 +18,7 @@
     <!-- Experience Contribution Section -->
     <v-row class="mt-5">
         <v-col cols="12">
-            <p ref="experienceContributionGradProfField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red' : isExperienceContributionGradProfInvalid && formSubmitted}">
+            <p ref="experienceContributionGradProfField" class="font-weight-black text-h8 mb-2" :class="{ 'text-brand-fg' : isExperienceContributionGradProfInvalid && formSubmitted}">
             {{$t('How did this experience contribute to your graduate/professional goals?')}}
             </p>
         </v-col>
@@ -44,7 +44,7 @@
     <div class="d-sm-none">
     <v-row>
         <v-col cols="12">
-        <p ref="likelihoodFieldMobile" class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
+        <p ref="likelihoodFieldMobile" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
         </v-col>
     </v-row>
     <v-row>
@@ -102,7 +102,7 @@
     <div class="d-none d-sm-block">
         <v-row>
         <v-col cols="12">
-            <p ref="likelihoodFieldDesktop" class="font-weight-black text-h8" :class="{ 'text-custom-red': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
+            <p ref="likelihoodFieldDesktop" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isLikelihoodInvalid && formSubmitted}"> {{$t('Use the scale provided to rate your likelihood of taking the actions listed:')}}</p>
         </v-col>
         </v-row>
         <v-row>
@@ -162,7 +162,7 @@
         <div class="d-sm-none">
             <v-row>
                 <v-col cols="12">
-                    <p ref="hichRecommendFieldMobile" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
+                    <p ref="hichRecommendFieldMobile" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isHICHInvalid && formSubmitted}"> 
                         {{$t('How likely are you to recommend the following to a friend?')}}
                     </p>
                 </v-col>
@@ -221,7 +221,7 @@
         <div class="d-none d-sm-block">
             <v-row>
                 <v-col cols="12">
-                    <p ref="hichRecommendFieldDesktop" class="font-weight-black text-h8" :class="{ 'text-custom-red': isHICHInvalid && formSubmitted}"> 
+                    <p ref="hichRecommendFieldDesktop" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isHICHInvalid && formSubmitted}"> 
                         {{$t('How likely are you to recommend the following to a friend?')}}
                     </p>
                 </v-col>
@@ -280,7 +280,7 @@
     <!-- Growth Assessment Section -->
     <v-row>
         <v-col cols="12">
-            <p ref="growthProblemSolvingField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProblemSolvingInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('problem solving')}}</u>.</p>
+            <p ref="growthProblemSolvingField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isGrowthProblemSolvingInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('problem solving')}}</u>.</p>
             <v-radio-group v-model="exitForm.generalGrowth.problemSolving" :rules="[requiredRule]">
                 <v-radio :label="$t('No growth')" value="No growth"></v-radio>
                 <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -291,7 +291,7 @@
     </v-row>
     <v-row>
         <v-col cols="12">
-            <p ref="growthEffCommField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEffCommInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('effective communication')}}</u>.</p>
+            <p ref="growthEffCommField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isGrowthEffCommInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('effective communication')}}</u>.</p>
             <v-radio-group v-model="exitForm.generalGrowth.effectiveCommunication" :rules="[requiredRule]">
                 <v-radio :label="$t('No growth')" value="No growth"></v-radio>
                 <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -302,7 +302,7 @@
     </v-row>
     <v-row>
         <v-col cols="12">
-            <p ref="growthTeamworkField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthTeamworkInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('teamwork')}}</u>.</p>
+            <p ref="growthTeamworkField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isGrowthTeamworkInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('teamwork')}}</u>.</p>
             <v-radio-group v-model="exitForm.generalGrowth.teamwork" :rules="[requiredRule]">
                 <v-radio :label="$t('No growth')" value="No growth"></v-radio>
                 <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -313,7 +313,7 @@
     </v-row>
     <v-row>
         <v-col cols="12">
-            <p ref="growthCulHumField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthCulHumInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('cultural humility')}}</u>.</p>
+            <p ref="growthCulHumField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isGrowthCulHumInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('cultural humility')}}</u>.</p>
             <v-radio-group v-model="exitForm.generalGrowth.culturalHumility" :rules="[requiredRule]">
                 <v-radio :label="$t('No growth')" value="No growth"></v-radio>
                 <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -324,7 +324,7 @@
     </v-row>
     <v-row>
         <v-col cols="12">
-            <p ref="growthEthicsField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthEthicsInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('ethical decision making')}}</u>.</p>
+            <p ref="growthEthicsField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isGrowthEthicsInvalid && formSubmitted }">{{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('ethical decision making')}}</u>.</p>
             <v-radio-group v-model="exitForm.generalGrowth.ethicalDecisionMaking" :rules="[requiredRule]">
                 <v-radio :label="$t('No growth')" value="No growth"></v-radio>
                 <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -335,7 +335,7 @@
     </v-row>
     <v-row>
         <v-col cols="12">
-            <p ref="growthProfResField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isGrowthProfResInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
+            <p ref="growthProfResField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isGrowthProfResInvalid && formSubmitted }">Please indicate how much growth you experienced during your program in the area of <u>professional responsibility</u>.</p>
             <v-radio-group v-model="exitForm.generalGrowth.professionalResponsibility" :rules="[requiredRule]">
                 <v-radio :label="$t('No growth')" value="No growth"></v-radio>
                 <v-radio :label="$t('A little growth')" value="A little growth"></v-radio>
@@ -350,7 +350,7 @@
         
         <v-row>
             <v-col cols="12">
-                <p ref="chwInterpersonalField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isCHWInterpersonalInvalid && formSubmitted }">
+                <p ref="chwInterpersonalField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isCHWInterpersonalInvalid && formSubmitted }">
                     {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('interpersonal and relationship building')}}</u>.
                 </p>
                 <v-radio-group v-model="exitForm.chwGrowth.interpersonalRelationshipBuilding" :rules="[chwRequiredRule]">
@@ -364,7 +364,7 @@
         
         <v-row>
             <v-col cols="12">
-                <p ref="chwServiceCoordField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isCHWServiceCoordInvalid && formSubmitted }">
+                <p ref="chwServiceCoordField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isCHWServiceCoordInvalid && formSubmitted }">
                     {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('service coordination and navigation')}}</u>.
                 </p>
                 <v-radio-group v-model="exitForm.chwGrowth.serviceCoordinationNavigation" :rules="[chwRequiredRule]">
@@ -378,7 +378,7 @@
         
         <v-row>
             <v-col cols="12">
-                <p ref="chwEvaluationField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isCHWEvaluationInvalid && formSubmitted }">
+                <p ref="chwEvaluationField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isCHWEvaluationInvalid && formSubmitted }">
                     {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('evaluation and research')}}</u>.
                 </p>
                 <v-radio-group v-model="exitForm.chwGrowth.evaluationResearch" :rules="[chwRequiredRule]">
@@ -392,7 +392,7 @@
         
         <v-row>
             <v-col cols="12">
-                <p ref="chwKnowledgeField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isCHWKnowledgeInvalid && formSubmitted }">
+                <p ref="chwKnowledgeField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isCHWKnowledgeInvalid && formSubmitted }">
                     {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('knowledge base on specific health issues')}}</u>.
                 </p>
                 <v-radio-group v-model="exitForm.chwGrowth.knowledgeBaseHealthIssues" :rules="[chwRequiredRule]">
@@ -406,7 +406,7 @@
         
         <v-row>
             <v-col cols="12">
-                <p ref="chwTeachingField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isCHWTeachingInvalid && formSubmitted }">
+                <p ref="chwTeachingField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isCHWTeachingInvalid && formSubmitted }">
                     {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('teaching and education')}}</u>.
                 </p>
                 <v-radio-group v-model="exitForm.chwGrowth.teachingEducation" :rules="[chwRequiredRule]">
@@ -420,7 +420,7 @@
         
         <v-row>
             <v-col cols="12">
-                <p ref="chwAdvocacyField" class="font-weight-black text-h8" :class="{ 'text-custom-red': isCHWAdvocacyInvalid && formSubmitted }">
+                <p ref="chwAdvocacyField" class="font-weight-black text-h8" :class="{ 'text-brand-fg': isCHWAdvocacyInvalid && formSubmitted }">
                     {{$t('Please indicate how much growth you experienced during your program in the area of')}} <u>{{$t('advocacy')}}</u>.
                 </p>
                 <v-radio-group v-model="exitForm.chwGrowth.advocacy" :rules="[chwRequiredRule]">
@@ -436,7 +436,7 @@
     <!-- Key Lessons Reflection -->
     <v-row>
         <v-col cols="12">
-            <p ref="biggestLessonsField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isBiggestLessonsInvalid && formSubmitted }">
+            <p ref="biggestLessonsField" class="font-weight-black text-h8 mb-2" :class="{ 'text-brand-fg': isBiggestLessonsInvalid && formSubmitted }">
             {{$t('What are the biggest lessons and key takeaways you gained from this class and will carry with you moving forward?')}}
             </p>
         </v-col>
@@ -458,7 +458,7 @@
     <!-- Pay It Forward Section -->
     <v-row>
         <v-col cols="12">
-            <p ref="supportOthersField" class="font-weight-black text-h8 mb-2" :class="{ 'text-custom-red': isSupportOthersInvalid && formSubmitted }">
+            <p ref="supportOthersField" class="font-weight-black text-h8 mb-2" :class="{ 'text-brand-fg': isSupportOthersInvalid && formSubmitted }">
             {{$t('Considering your answer to the previous question, how do you plan to engage with and support others (pay it forward)?')}}
             </p>
         </v-col>

@@ -20,7 +20,7 @@ before they are approved by instructors.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-pencil-outline</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-pencil-outline</v-icon>
           <div>
             <div class="d-flex align-center">
               <h1 class="text-h5 font-weight-bold">{{ $t('Edit Project Proposal') }}</h1>
@@ -31,7 +31,7 @@ before they are approved by instructors.
                 @click="mobileInfoDialog = true"
                 class="ml-2 d-lg-none"
               >
-                <v-icon color="#c8102e" size="22">mdi-help-circle</v-icon>
+                <v-icon color="brand-fg" size="22">mdi-help-circle</v-icon>
               </v-btn>
             </div>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('Update your proposal before it is reviewed') }}</p>
@@ -44,7 +44,7 @@ before they are approved by instructors.
         <v-col cols="12" class="text-center">
           <v-progress-circular 
             indeterminate 
-            color="#c8102e" 
+            color="brand-fg" 
             size="48"
             width="4"
           ></v-progress-circular>
@@ -129,7 +129,7 @@ before they are approved by instructors.
                     disabled
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon color="#c8102e" size="20">mdi-school-outline</v-icon>
+                      <v-icon color="brand-fg" size="20">mdi-school-outline</v-icon>
                     </template>
                   </v-select>
 
@@ -157,7 +157,7 @@ before they are approved by instructors.
                     <div class="d-flex align-start">
                       <v-checkbox
                         v-model="projectData.consentToFeature"
-                        color="#c8102e"
+                        color="brand-fg"
                         hide-details
                         class="mt-0 pt-0 mr-2"
                       ></v-checkbox>
@@ -174,7 +174,7 @@ before they are approved by instructors.
                             @click="featureInfoDialog = true"
                             class="ml-1"
                           >
-                            <v-icon size="18" color="#c8102e">mdi-help-circle-outline</v-icon>
+                            <v-icon size="18" color="brand-fg">mdi-help-circle-outline</v-icon>
                           </v-btn>
                         </div>
                         <p class="text-caption text-medium-emphasis mt-1 mb-0">
@@ -231,7 +231,7 @@ before they are approved by instructors.
               <!-- Status Card -->
               <v-card class="status-card mb-4" variant="outlined">
                 <v-card-title class="tips-header">
-                  <v-icon color="#c8102e" class="mr-2">mdi-information-outline</v-icon>
+                  <v-icon color="brand-fg" class="mr-2">mdi-information-outline</v-icon>
                   {{ $t('Proposal Status') }}
                 </v-card-title>
                 <v-card-text class="pt-0">
@@ -285,7 +285,7 @@ before they are approved by instructors.
             <!-- Status Section -->
             <div class="mobile-info-section mb-5">
               <h3 class="text-subtitle-1 font-weight-bold mb-3">
-                <v-icon color="#c8102e" size="20" class="mr-2">mdi-clipboard-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-2">mdi-clipboard-outline</v-icon>
                 {{ $t('Proposal Status') }}
               </h3>
               <div class="d-flex align-center mb-3">
@@ -334,7 +334,7 @@ before they are approved by instructors.
       <v-dialog v-model="submitDialog" persistent max-width="450px">
         <v-card class="confirm-dialog">
           <v-card-title class="d-flex align-center pa-5">
-            <v-icon color="#c8102e" size="28" class="mr-3">mdi-file-document-edit-outline</v-icon>
+            <v-icon color="brand-fg" size="28" class="mr-3">mdi-file-document-edit-outline</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('Update Proposal?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
@@ -383,7 +383,7 @@ before they are approved by instructors.
       <v-dialog v-model="featureInfoDialog" max-width="600px">
         <v-card class="info-dialog-card">
           <v-card-title class="d-flex align-center dialog-title-bar pa-4">
-            <v-icon color="#c8102e" class="mr-3" size="28">mdi-star-circle</v-icon>
+            <v-icon color="brand-fg" class="mr-3" size="28">mdi-star-circle</v-icon>
             <span class="text-h6 font-weight-bold">{{ $t('About the Public Project Showcase') }}</span>
           </v-card-title>
           
@@ -394,9 +394,9 @@ before they are approved by instructors.
 
             <div class="consent-notice mb-5 pa-4">
               <div class="d-flex align-start">
-                <v-icon color="#c8102e" class="mr-3 mt-1" size="22">mdi-information</v-icon>
+                <v-icon color="brand-fg" class="mr-3 mt-1" size="22">mdi-information</v-icon>
                 <div>
-                  <p class="font-weight-bold mb-1" style="color: #c8102e;">{{ $t('Consent does not guarantee featuring.') }}</p>
+                  <p class="font-weight-bold mb-1 text-brand-fg">{{ $t('Consent does not guarantee featuring.') }}</p>
                   <p class="text-body-2 mb-0">{{ $t('Program administrators curate which projects appear on the public page.') }}</p>
                 </div>
               </div>
@@ -406,23 +406,23 @@ before they are approved by instructors.
             
             <div class="info-list mb-5">
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Project name and description') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Your name (as project author)') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Experience/program name and session') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Project tags and categories') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#c8102e" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-3">mdi-checkbox-marked-circle-outline</v-icon>
                 <span>{{ $t('Any uploaded poster or presentation materials') }}</span>
               </div>
             </div>
@@ -433,15 +433,15 @@ before they are approved by instructors.
             
             <div class="info-list">
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('You can withdraw consent at any time through your project settings') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('Your project will be removed from the public page upon withdrawal') }}</span>
               </div>
               <div class="info-list-item">
-                <v-icon color="#a00d24" size="20" class="mr-3">mdi-shield-check</v-icon>
+                <v-icon color="brand-fg-strong" size="20" class="mr-3">mdi-shield-check</v-icon>
                 <span>{{ $t('You retain full ownership of your work') }}</span>
               </div>
             </div>
@@ -848,10 +848,10 @@ export default {
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'success';
-        case 'In Progress': return '#c8102e';
+        case 'In Progress': return 'brand-fg';
         case 'Proposed': return 'warning';
-        case 'Archived': return 'grey';
-        default: return 'grey';
+        case 'Archived': return 'muted';
+        default: return 'muted';
       }
     },
 
@@ -888,14 +888,14 @@ export default {
 <style scoped>
 /* Page Background */
 .proposal-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -906,13 +906,13 @@ export default {
 
 /* Status Banner */
 .status-banner {
-  background-color: #fff3cd;
-  border-bottom: 1px solid #ffc107;
+  background-color: rgb(var(--v-theme-tint-warning-banner));
+  border-bottom: 1px solid rgb(var(--v-theme-status-banner-warning-border));
   padding: 12px 24px;
   display: flex;
   align-items: center;
   font-size: 0.9rem;
-  color: #856404;
+  color: rgb(var(--v-theme-status-banner-warning-fg));
 }
 
 /* Form Sections */
@@ -930,8 +930,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -945,12 +945,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -960,8 +960,8 @@ export default {
 
 /* Consent Option */
 .consent-option {
-  background-color: #fafafa;
-  border: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 16px;
 }
@@ -969,7 +969,7 @@ export default {
 .consent-label {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 /* Experience Notice */
@@ -977,9 +977,9 @@ export default {
   display: flex;
   align-items: center;
   padding: 10px 14px;
-  background-color: #f5f5f5;
+  background-color: rgb(var(--v-theme-panel-strong));
   border-radius: 6px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Form Actions */
@@ -987,8 +987,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -996,12 +996,12 @@ export default {
 }
 
 .submit-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .submit-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Sidebar */
@@ -1013,7 +1013,7 @@ export default {
 .status-card,
 .warning-card {
   border-radius: 12px;
-  border-color: #e0e0e0;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .tips-header,
@@ -1021,16 +1021,16 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .warning-card {
-  border-color: #ffcc80;
-  background-color: #fff8e1;
+  border-color: rgb(var(--v-theme-warning-card-border));
+  background-color: rgb(var(--v-theme-tint-warning));
 }
 
 .warning-header {
-  border-bottom-color: #ffe0b2;
+  border-bottom-color: rgb(var(--v-theme-warning-header-border));
 }
 
 /* Dialogs */
@@ -1039,7 +1039,7 @@ export default {
 }
 
 .cancel-dialog-header {
-  background-color: #ffebee;
+  background-color: rgb(var(--v-theme-tint-error));
 }
 
 .mobile-info-dialog {
@@ -1064,13 +1064,13 @@ export default {
 }
 
 .dialog-title-bar {
-  background-color: rgba(200, 16, 46, 0.04);
-  border-bottom: 1px solid rgba(200, 16, 46, 0.12);
+  background-color: rgba(var(--v-theme-primary), 0.04);
+  border-bottom: 1px solid rgba(var(--v-theme-primary), 0.12);
 }
 
 .consent-notice {
-  background-color: rgba(200, 16, 46, 0.06);
-  border-left: 4px solid #c8102e;
+  background-color: rgba(var(--v-theme-primary), 0.06);
+  border-left: 4px solid rgb(var(--v-theme-brand-fg));
   border-radius: 0 8px 8px 0;
 }
 
@@ -1092,15 +1092,15 @@ export default {
 }
 
 .got-it-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.25px;
 }
 
 .got-it-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Responsive */

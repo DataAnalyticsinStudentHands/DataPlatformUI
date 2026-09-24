@@ -21,7 +21,7 @@
       </v-card-title>
 
       <v-card-text class="cropper-container">
-        <p class="text-body-2 text-grey-darken-1 mb-4 text-center">
+        <p class="text-body-2 text-medium-emphasis mb-4 text-center">
           {{ $t('Drag to reposition. Use scroll or buttons to zoom.') }}
         </p>
 
@@ -53,7 +53,7 @@
             :step="0.1"
             hide-details
             class="mx-4 zoom-slider"
-            color="#c8102e"
+            color="brand-fg"
             :disabled="!cropperReady"
             @update:model-value="applyZoom"
           />
@@ -68,7 +68,7 @@
           {{ $t('Cancel') }}
         </v-btn>
         <v-spacer />
-        <v-btn color="#c8102e" variant="flat" @click="confirm" :disabled="!cropperReady">
+        <v-btn color="primary" variant="flat" @click="confirm" :disabled="!cropperReady">
           {{ $t('Apply') }}
         </v-btn>
       </v-card-actions>
@@ -255,6 +255,6 @@ async function confirm() {
 }
 
 :deep(.vue-circle-stencil__preview) {
-  border: 2px solid #c8102e;
+  border: 2px solid rgb(var(--v-theme-primary));
 }
 </style>

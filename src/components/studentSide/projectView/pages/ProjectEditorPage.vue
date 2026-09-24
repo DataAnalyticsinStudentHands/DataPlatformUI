@@ -12,7 +12,7 @@
     <div v-if="isLoadingProject" class="loading-container">
       <v-progress-circular
         indeterminate
-        color="#c8102e"
+        color="brand-fg"
         size="64"
         width="4"
       />
@@ -21,21 +21,20 @@
 
     <!-- Error State -->
     <div v-else-if="loadError" class="error-container">
-      <v-icon size="80" color="#dc2626" class="mb-4">mdi-alert-circle-outline</v-icon>
+      <v-icon size="80" color="validation-error-fg" class="mb-4">mdi-alert-circle-outline</v-icon>
       <h1 class="error-title">{{ $t('Failed to Load Project') }}</h1>
       <p class="error-message">{{ loadError }}</p>
       <div class="error-actions">
         <v-btn
           variant="outlined"
-          color="#666"
-          class="mr-3"
+          class="mr-3 text-medium-emphasis"
           @click="goBack"
         >
           <v-icon start>mdi-arrow-left</v-icon>
           {{ $t('Go Back') }}
         </v-btn>
         <v-btn
-          color="#c8102e"
+          color="primary"
           variant="flat"
           @click="createNew"
         >
@@ -61,7 +60,7 @@
     <v-dialog v-model="showSuccessDialog" max-width="400">
       <v-card>
         <v-card-text class="text-center py-8">
-          <v-icon size="64" color="#16a34a" class="mb-4">mdi-check-circle</v-icon>
+          <v-icon size="64" color="complete-fg" class="mb-4">mdi-check-circle</v-icon>
           <h2 class="text-h5 font-weight-bold mb-2">
             {{ isEditing ? $t('Project Updated!') : $t('Project Published!') }}
           </h2>
@@ -72,15 +71,14 @@
         <v-card-actions class="justify-center pb-6">
           <v-btn
             variant="outlined"
-            color="#666"
-            class="mr-3"
+            class="mr-3 text-medium-emphasis"
             @click="viewProject"
           >
             <v-icon start>mdi-eye</v-icon>
             {{ $t('View Project') }}
           </v-btn>
           <v-btn
-            color="#c8102e"
+            color="primary"
             variant="flat"
             @click="copyShareLink"
           >
@@ -415,7 +413,7 @@ defineExpose({
 <style scoped>
 .project-editor-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: rgb(var(--v-theme-panel-strong));
 }
 
 /* Loading State */
@@ -430,7 +428,7 @@ defineExpose({
 
 .loading-text {
   font-size: 1rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-top: 8px;
 }
 
@@ -448,13 +446,13 @@ defineExpose({
 .error-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin-bottom: 8px;
 }
 
 .error-message {
   font-size: 1rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   max-width: 400px;
   margin-bottom: 24px;
 }

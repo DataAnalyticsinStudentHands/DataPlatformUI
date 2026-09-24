@@ -12,7 +12,7 @@ Handles loading states, toast notifications, and language preferences.
   <div v-else>
   <main>
       <!-- Welcome header with student name -->
-      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">
+      <h1 class="font-bold text-4xl text-brand-fg tracking-widest text-center mt-10">
         {{$t('Welcome')}} {{ fullName }}
       </h1>
     <v-container fluid style="width: 90%; margin: 0 auto;">

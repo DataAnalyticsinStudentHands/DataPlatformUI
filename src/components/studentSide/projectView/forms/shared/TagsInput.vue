@@ -20,14 +20,14 @@
       @keyup.,="addTag"
     >
       <template v-slot:prepend-inner>
-        <v-icon size="20" color="#666">mdi-tag-outline</v-icon>
+        <v-icon size="20" class="text-medium-emphasis">mdi-tag-outline</v-icon>
       </template>
       <template v-slot:append-inner>
         <v-btn
           icon
           variant="text"
           size="small"
-          color="#c8102e"
+          color="brand-fg"
           :disabled="!canAddTag"
           @click="addTag"
         >
@@ -107,7 +107,7 @@
 
       <!-- Empty State -->
       <div v-if="modelValue.length === 0" class="empty-tags">
-        <v-icon size="20" color="#ccc" class="mr-2">mdi-tag-off-outline</v-icon>
+        <v-icon size="20" class="mr-2 text-disabled">mdi-tag-off-outline</v-icon>
         <span class="text-medium-emphasis">{{ $t('No tags added yet') }}</span>
       </div>
     </div>
@@ -275,8 +275,8 @@ function addSuggestion(suggestion) {
   gap: 8px;
   min-height: 40px;
   padding: 12px;
-  background: #fafafa;
-  border: 1px solid #e8e8e8;
+  background: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
 }
 
@@ -301,7 +301,7 @@ function addSuggestion(suggestion) {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(var(--v-border-color), 0.1);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -342,8 +342,8 @@ function addSuggestion(suggestion) {
 }
 
 .color-preset-btn.active {
-  border-color: #333;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+  border-color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-surface)), 0 0 0 4px rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .empty-tags {
@@ -355,14 +355,14 @@ function addSuggestion(suggestion) {
 }
 
 .validation-error {
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
   display: flex;
   align-items: center;
 }
 
 .suggestions-section {
   padding: 12px;
-  background: #f5f5f5;
+  background: rgb(var(--v-theme-panel-strong));
   border-radius: 8px;
 }
 
@@ -378,8 +378,8 @@ function addSuggestion(suggestion) {
 }
 
 .suggestion-chip:hover {
-  background: #c8102e10;
-  border-color: #c8102e;
-  color: #c8102e;
+  background: rgba(var(--v-theme-primary), .06);
+  border-color: rgb(var(--v-theme-brand-fg));
+  color: rgb(var(--v-theme-brand-fg));
 }
 </style>
