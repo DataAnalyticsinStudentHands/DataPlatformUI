@@ -927,6 +927,10 @@ export default {
 };
 </script>
 
+<!-- Shared list-page rules (.toolbar-section, .search-menu-trigger:hover, .search-chips-container,
+     .table-row:hover); keep this block before the local one so the responsive overrides below still win -->
+<style scoped src="@/styles/instructor-list-page.css"></style>
+
 <style scoped>
 /* Content Container */
 .activities-content {
@@ -934,11 +938,6 @@ export default {
 }
 
 /* Toolbar Section */
-.toolbar-section {
-  padding: 20px 24px;
-  background-color: rgb(var(--v-theme-surface));
-}
-
 .search-field {
   max-width: 420px;
 }
@@ -950,10 +949,6 @@ export default {
   padding: 4px;
   border-radius: 4px;
   margin-right: 4px;
-}
-
-.search-menu-trigger:hover {
-  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 
 .search-menu-list {
@@ -994,11 +989,6 @@ export default {
 }
 
 /* Search Chips */
-.search-chips-container {
-  padding-top: 10px;
-  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-}
-
 .search-chip {
   font-weight: 500;
   font-size: 0.875rem;
@@ -1045,10 +1035,6 @@ export default {
 .table-row {
   cursor: pointer;
   transition: background-color 0.15s ease;
-}
-
-.table-row:hover {
-  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-cell {

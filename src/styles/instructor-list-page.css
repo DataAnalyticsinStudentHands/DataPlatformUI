@@ -1,0 +1,33 @@
+/*
+  instructor-list-page.css
+  Rules shared by the instructor list pages (Design_Plan_Dark_Mode.md §6.2, "Instructor list page"):
+  instructorDataManagement/instructor{Activities,Experiences,Sessions}.vue and instructorStudentsList.vue.
+
+  Include it only as <style scoped src="@/styles/instructor-list-page.css"></style>, placed before
+  the file's own <style scoped> block. Never import it from main.js or index.css: .toolbar-section and
+  .table-row are defined in other files with different bodies, and a global sheet would leak into them.
+
+  The responsive .toolbar-section padding overrides and every content/table rule stay in each
+  consumer's own scoped block, after this sheet, so they still win over the base rules here.
+*/
+
+/* Toolbar Section */
+.toolbar-section {
+  padding: 20px 24px;
+  background-color: rgb(var(--v-theme-surface));
+}
+
+.search-menu-trigger:hover {
+  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
+}
+
+/* Search Chips */
+.search-chips-container {
+  padding-top: 10px;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+/* Table rows */
+.table-row:hover {
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
+}
