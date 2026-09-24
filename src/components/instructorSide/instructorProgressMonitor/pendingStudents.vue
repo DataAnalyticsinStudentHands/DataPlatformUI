@@ -241,31 +241,13 @@ export default {
 };
 </script>
 
+<!-- Rules shared with the other progress-monitor tabs; keep this block before the local one. -->
+<style scoped src="@/styles/progress-monitor-tab.css"></style>
+
 <style scoped>
-/* Monitor Content */
-.monitor-content {
-  background-color: rgb(var(--v-theme-surface));
-}
-
 /* Toolbar Section */
-.toolbar-section {
-  padding: 20px 24px;
-  background-color: rgb(var(--v-theme-surface));
-}
-
 .search-field {
   max-width: 100%;
-}
-
-.action-buttons-group {
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.refresh-btn {
-  text-transform: none;
-  font-weight: 500;
-  letter-spacing: 0.25px;
 }
 
 .stats-row {
@@ -276,10 +258,6 @@ export default {
   gap: 8px;
 }
 
-.stats-chip {
-  font-size: 0.95rem;
-}
-
 /* Loading Container */
 .loading-container {
   display: flex;
@@ -287,77 +265,5 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 400px;
-}
-
-/* Table Container */
-.table-container {
-  min-height: 400px;
-}
-
-.students-table {
-  border-radius: 0;
-  font-size: 0.95rem;
-}
-
-.students-table :deep(.v-data-table-header) {
-  font-size: 0.9rem;
-}
-
-.students-table :deep(th) {
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  padding: 10px 16px !important;
-  background-color: rgb(var(--v-theme-panel));
-}
-
-.table-row {
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.table-row:hover {
-  background-color: rgba(var(--v-theme-primary), 0.04) !important;
-}
-
-.table-cell {
-  padding: 10px 16px !important;
-  font-size: 0.95rem;
-}
-
-/* Empty State */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 48px 24px;
-}
-
-.empty-state-cell {
-  padding: 0 !important;
-}
-
-/* Data table pagination styling */
-.students-table :deep(.v-data-table-footer) {
-  font-size: 0.9rem;
-  padding: 12px 16px;
-  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-}
-
-/* Responsive */
-@media (max-width: 960px) {
-  .toolbar-section {
-    padding: 16px 18px;
-  }
-}
-
-@media (max-width: 600px) {
-  .toolbar-section {
-    padding: 14px 16px;
-  }
-  
-  .table-cell {
-    padding: 8px 12px !important;
-  }
 }
 </style>
