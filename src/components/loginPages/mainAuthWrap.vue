@@ -21,13 +21,13 @@ The component uses a card-based layout with expandable transitions for smooth vi
             centered 
             grow
             density="comfortable"
-            slider-color="custom-red"
+            slider-color="brand-fg"
           >
             <v-tab @click="changeRoute('/login')" value="login">
-              <span class="font-semibold text-custom-red">{{ $t('Login') }}</span>
+              <span class="font-semibold text-brand-fg">{{ $t('Login') }}</span>
             </v-tab>
             <v-tab @click="changeRoute('/register')" value="register">
-              <span class="font-semibold text-custom-red">{{$t('Register')}}</span>
+              <span class="font-semibold text-brand-fg">{{$t('Register')}}</span>
             </v-tab>
           </v-tabs>
           <!-- Language Toggle Switch -->
@@ -39,7 +39,7 @@ The component uses a card-based layout with expandable transitions for smooth vi
                 v-model="language"
                 inset
                 hide-details
-                color="custom-red"
+                color="brand-fg"
                 @change="changeLanguage"
                 label="ES"
                 class="switch-container"

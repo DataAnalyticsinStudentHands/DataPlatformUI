@@ -13,7 +13,7 @@ users are automatically redirected to the account verification page to confirm t
       <!-- Title -->
         <v-row justify="center">
             <v-col cols="12" class="text-center">
-                <h1 class="font-bold text-2xl text-custom-red tracking-widest mt-3 mb-5">
+                <h1 class="font-bold text-2xl text-brand-fg tracking-widest mt-3 mb-5">
                     {{$t('Create Your Account')}}
                 </h1>
             </v-col>
@@ -28,7 +28,7 @@ users are automatically redirected to the account verification page to confirm t
                     type="text"
                     name="firstName"
                     id="firstName"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                     :placeholder="$t('First Name')"
                     required="" />
                 </v-col>
@@ -39,7 +39,7 @@ users are automatically redirected to the account verification page to confirm t
                     type="text"
                     name="lastName"
                     id="lastName"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                     :placeholder="$t('Last Name')"
                     required="" />
                 </v-col>
@@ -51,7 +51,7 @@ users are automatically redirected to the account verification page to confirm t
                     type="email"
                     name="email"
                     id="email"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                     placeholder="name@company.com"
                     required="" />
                 </v-col>
@@ -63,7 +63,7 @@ users are automatically redirected to the account verification page to confirm t
                     name="confirn_email"
                     id="confirn_email"
                     placeholder="name@company.com"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                     required="" />
                 </v-col>
                 <!-- Language Preference -->
@@ -104,13 +104,13 @@ users are automatically redirected to the account verification page to confirm t
                       name="password"
                       id="password"
                       placeholder="••••••••"
-                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                       required="" />
                       <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
                           <i @click="showPassword = !showPassword" class="mdi mdi-eye cursor-pointer"></i>
                       </span>
                     </div>
-                    <span class="text-custom-red" v-if="v$.user.password.$error">
+                    <span class="text-brand-fg" v-if="v$.user.password.$error">
                       <p v-for="error of v$.user.password.$errors" :key="error.$uid">{{ error.$message }}!</p>
                     </span>
                 </v-col>
@@ -123,7 +123,7 @@ users are automatically redirected to the account verification page to confirm t
                       name="confirm-password"
                       id="confirm-password"
                       placeholder="••••••••"
-                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                       required="" />
                       <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
                           <i @click="showConfirmPassword = !showConfirmPassword" class="mdi mdi-eye cursor-pointer"></i>
@@ -137,11 +137,11 @@ users are automatically redirected to the account verification page to confirm t
                   <v-btn 
                     :loading="loading"
                     type="submit" 
-                    class="bg-custom-red text-white rounded w-full py-2 hover:bg-red-600"
+                    class="bg-primary signin-btn text-white rounded w-full py-2"
                   >{{$t('Create an account')}}</v-btn>
                   <p class="text-sm font-medium text-gray-500 mt-4 text-center">
                   {{$t('Already have an account?')}}
-                  <span class="font-bold text-custom-red hover:underline cursor-pointer" @click="$router.push('/login')">{{$t('Login here')}}</span>
+                  <span class="font-bold text-brand-fg hover:underline cursor-pointer" @click="$router.push('/login')">{{$t('Login here')}}</span>
                   </p>
               </v-col>
           </v-row>
@@ -289,20 +289,30 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
   /* Custom radio button styling */
   input[type="radio"] {
       appearance: none;
-      border: 1px solid black;
+      border: 1px solid rgb(var(--v-theme-on-surface));
       width: 16px;
       height: 16px;
       border-radius: 50%;
       outline: none;
       margin-right: 4px;
       position: relative;
-      background-color: white;
+      background-color: rgb(var(--v-theme-surface));
       transition: background 0.3s, border-color 0.3s;
   }
   
   /* Radio button checked state */
   input[type="radio"]:checked {
-      border: 2px solid #333;
-      background-color: gray;
+      border: 2px solid rgb(var(--v-theme-radio-checked-border));
+      background-color: rgb(var(--v-theme-radio-checked-fill));
+  }
+
+  /* Sign-in button: keep the hover/focus overlay strength of the old Tailwind red fill (.bg-primary doubles it in light) */
+  .signin-btn.bg-primary {
+      --v-theme-overlay-multiplier: 1;
+  }
+
+  /* Sign-in hover: primary-darken-1 (.bg-primary is !important, so a hover:bg-* utility cannot win) */
+  .signin-btn.bg-primary:hover {
+      background-color: rgb(var(--v-theme-primary-darken-1)) !important;
   }
   </style>

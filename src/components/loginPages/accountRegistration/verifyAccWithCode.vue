@@ -13,7 +13,7 @@ for invalid codes. The component supports both account activation and password r
         <v-row>
             <v-col cols="12" class="pb-0">
                 <!-- Title asking the user to verify their email -->
-                <h2 class="font-bold text-2xl text-custom-red tracking-widest">
+                <h2 class="font-bold text-2xl text-brand-fg tracking-widest">
                     {{$t('Please Verify Your Email')}}
                 </h2>
             </v-col>
@@ -45,7 +45,7 @@ for invalid codes. The component supports both account activation and password r
                                     :loading="loading"
                                     type="submit" 
                                     block 
-                                    class="mt-3 bg-custom-red text-white rounded"
+                                    class="mt-3 bg-primary signin-btn text-white rounded"
                                 >{{$t('Submit')}}</v-btn>
                             </v-col>
                        </v-row>
@@ -203,3 +203,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* Sign-in button: keep the hover/focus overlay strength of the old Tailwind red fill (.bg-primary doubles it in light) */
+.signin-btn.bg-primary {
+  --v-theme-overlay-multiplier: 1;
+}
+</style>

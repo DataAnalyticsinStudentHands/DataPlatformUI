@@ -11,7 +11,7 @@ the Pinia store for state management and uses Vue3-Toastify for notifications.
   <div>
     <!-- Main Title -->
     <v-card-text>
-      <h2 class="font-bold text-2xl text-custom-red tracking-widest text-center mt-3 mb-5">
+      <h2 class="font-bold text-2xl text-brand-fg tracking-widest text-center mt-3 mb-5">
           {{$t('Welcome to')}} {{ appName }}
       </h2>
 
@@ -50,7 +50,7 @@ the Pinia store for state management and uses Vue3-Toastify for notifications.
       <v-row>
         <v-col cols="12" class="pl-0 pt-6">
           <span
-            class="font-semibold text-base text-custom-red cursor-pointer no-select"
+            class="font-semibold text-base text-brand-fg cursor-pointer no-select"
             @click="$emit('navigateTo', '/passResetRequest')"
           >
             {{$t('Forgot Your Password?')}}
@@ -62,7 +62,7 @@ the Pinia store for state management and uses Vue3-Toastify for notifications.
       <v-row class="mt-0">
         <v-col cols="12" class="pl-0">
           <span
-            class="font-bold text-base text-custom-red cursor-pointer no-select"
+            class="font-bold text-base text-brand-fg cursor-pointer no-select"
             @click="$emit('navigateTo', '/verifyAccWithEmailCode')"
           >
             {{$t('Have a Confirmation Code?')}}
@@ -76,7 +76,7 @@ the Pinia store for state management and uses Vue3-Toastify for notifications.
           <v-btn
             :loading="loading"
             block
-            class="mt-3 bg-custom-red text-white rounded"
+            class="mt-3 bg-primary signin-btn text-white rounded"
             @click="login"
           >{{$t('Login')}}</v-btn>
         </v-col>
@@ -269,6 +269,11 @@ select:focus {
     --tw-ring-shadow: 0 0 #0000 !important;
     box-shadow: none !important;
     border-color: currentColor !important;
+}
+
+/* Sign-in button: keep the hover/focus overlay strength of the old Tailwind red fill (.bg-primary doubles it in light) */
+.signin-btn.bg-primary {
+    --v-theme-overlay-multiplier: 1;
 }
 
 </style>

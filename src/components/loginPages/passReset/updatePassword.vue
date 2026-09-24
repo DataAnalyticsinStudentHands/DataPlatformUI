@@ -93,7 +93,7 @@ their appropriate dashboard upon successful password update with a success notif
         <v-btn
           @click="passReset"
           :disabled="(!isConfirmPasswordValid && v$.newPassword.$error)"
-          class="bg-custom-red text-white rounded"
+          class="bg-primary signin-btn text-white rounded"
         >
           {{$t('Reset Password')}}
         </v-btn>
@@ -227,3 +227,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Sign-in button: keep the hover/focus overlay strength of the old Tailwind red fill (.bg-primary doubles it in light) */
+.signin-btn.bg-primary {
+  --v-theme-overlay-multiplier: 1;
+}
+</style>

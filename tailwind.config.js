@@ -9,7 +9,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'custom-red': '#c8102e', // removed at the end of Phase 4 (Design_Plan_Dark_Mode.md section 8)
         // Gray shades the app uses read the theme's tw-gray-* keys (src/theme/themes.js), so they follow
         // light/dark. Comma form and string values only: Vuetify's variables are "r,g,b" triplets, and the
         // forms plugin calls .replace() on these. Other gray shades stay at Tailwind's defaults.

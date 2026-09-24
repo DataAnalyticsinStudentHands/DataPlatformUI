@@ -31,7 +31,7 @@ response and uses conditional styling to show/hide feedback messages.
                   type="email"
                   name="secretToken"
                   id="secretToken"
-                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                   placeholder="example@email.com"
                 />
               </div>
@@ -41,7 +41,7 @@ response and uses conditional styling to show/hide feedback messages.
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
             >
               <div
-                class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+                class="errorMessage bg-tint-caution border-l-4 border-orange-500 text-banner-caution-fg p-4"
                 role="alert"
               >
                 {{ error }}
@@ -53,7 +53,7 @@ response and uses conditional styling to show/hide feedback messages.
               class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
             >
               <div
-                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4"
+                class="bg-tint-success-strong border-l-4 border-green-500 text-banner-success-fg p-4"
                 role="alert"
               >
                 {{ success }}
@@ -63,7 +63,7 @@ response and uses conditional styling to show/hide feedback messages.
             <button
               @click="activateAccount"
               type="submit"
-              class="bg-red-700 text-white rounded"
+              class="bg-primary text-white rounded"
             >
               Submit
             </button>

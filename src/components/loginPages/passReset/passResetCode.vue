@@ -13,7 +13,7 @@ if users haven't received the reset email.
             <v-row>
                 <v-col cols="12" class="pb-0">
                     <!-- Title asking the user to input the reset code -->
-                    <h2 class="font-bold text-2xl text-custom-red tracking-widest">
+                    <h2 class="font-bold text-2xl text-brand-fg tracking-widest">
                         {{$t('Password Reset Code')}}
                     </h2>
                 </v-col>
@@ -25,7 +25,7 @@ if users haven't received the reset email.
                     <br>
                     {{$t('If you do not see an email, please check your Spam folder, or ')}}
                     <span 
-                        class="font-semibold text-custom-red cursor-pointer"
+                        class="font-semibold text-brand-fg cursor-pointer"
                         @click="$router.push('/register')"
                     >{{$t('Register for an Account.')}}</span>
                 </v-col>
@@ -54,7 +54,7 @@ if users haven't received the reset email.
                                     <v-btn 
                                         :loading="loading"
                                         type="submit" 
-                                        class="mt-3 bg-custom-red text-white rounded"
+                                        class="mt-3 bg-primary signin-btn text-white rounded"
                                     >{{$t('Submit')}}</v-btn>
                                 </div>
                             </v-form>
@@ -154,3 +154,10 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+/* Sign-in button: keep the hover/focus overlay strength of the old Tailwind red fill (.bg-primary doubles it in light) */
+.signin-btn.bg-primary {
+  --v-theme-overlay-multiplier: 1;
+}
+</style>

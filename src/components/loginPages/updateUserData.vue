@@ -58,8 +58,8 @@ notification message in their preferred language.
         <!-- Radio group for selecting language preference -->
         <v-col cols="12" md="6">
           <v-radio-group v-model="languagePreference" :label="$t('New Language Preference')" row>
-            <v-radio :label="$t('English')" value="English" color="black"></v-radio>
-            <v-radio :label="$t('Spanish')" value="Spanish" color="black"></v-radio>
+            <v-radio :label="$t('English')" value="English"></v-radio>
+            <v-radio :label="$t('Spanish')" value="Spanish"></v-radio>
           </v-radio-group>
         </v-col>
 

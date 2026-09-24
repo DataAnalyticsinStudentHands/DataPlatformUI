@@ -13,7 +13,7 @@ users are redirected to login with a success message.
         <v-row>
             <v-col cols="12" class="pb-0">
                 <!-- Title asking the user to verify their email -->
-                <h2 class="font-bold text-2xl text-custom-red tracking-widest">
+                <h2 class="font-bold text-2xl text-brand-fg tracking-widest">
                     {{$t('Verify Your Email')}}
                 </h2>
             </v-col>
@@ -63,7 +63,7 @@ users are redirected to login with a success message.
                             <v-btn 
                                 :loading="loading"
                                 type="submit" 
-                                class="mt-3 bg-custom-red text-white rounded"
+                                class="mt-3 bg-primary signin-btn text-white rounded"
                             >{{$t('Submit')}}</v-btn>
                         </div>
                 </v-sheet>
@@ -201,3 +201,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* Sign-in button: keep the hover/focus overlay strength of the old Tailwind red fill (.bg-primary doubles it in light) */
+.signin-btn.bg-primary {
+  --v-theme-overlay-multiplier: 1;
+}
+</style>
