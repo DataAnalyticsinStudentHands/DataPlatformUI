@@ -265,8 +265,8 @@ textarea:focus,
 select:focus {
     outline: none !important;
     --tw-ring-color: transparent !important;
-    --tw-ring-offset-shadow: 0 0 #0000 !important;
-    --tw-ring-shadow: 0 0 #0000 !important;
+    --tw-ring-offset-shadow: 0 0 transparent !important;
+    --tw-ring-shadow: 0 0 transparent !important;
     box-shadow: none !important;
     border-color: currentColor !important;
 }

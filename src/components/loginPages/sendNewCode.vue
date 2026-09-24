@@ -41,7 +41,7 @@ response and uses conditional styling to show/hide feedback messages.
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
             >
               <div
-                class="errorMessage bg-tint-caution border-l-4 border-orange-500 text-banner-caution-fg p-4"
+                class="errorMessage bg-tint-caution border-l-4 banner-accent--caution text-banner-caution-fg p-4"
                 role="alert"
               >
                 {{ error }}
@@ -53,7 +53,7 @@ response and uses conditional styling to show/hide feedback messages.
               class="hide grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
             >
               <div
-                class="bg-tint-success-strong border-l-4 border-green-500 text-banner-success-fg p-4"
+                class="bg-tint-success-strong border-l-4 banner-accent--success text-banner-success-fg p-4"
                 role="alert"
               >
                 {{ success }}
@@ -119,3 +119,27 @@ response and uses conditional styling to show/hide feedback messages.
     },
   };
   </script>
+
+  <style scoped>
+  /* Banner left accents (border-l-4): Vuetify's .border-KEY only sets --v-border-color, so read the keys here */
+  .banner-accent--caution {
+    border-left-color: rgb(var(--v-theme-banner-caution-border));
+  }
+
+  .banner-accent--success {
+    border-left-color: rgb(var(--v-theme-banner-success-border));
+  }
+
+  /* Native email input: no border (Vuetify's reset sets border-style: none on input) and a transparent
+     background (index.css), so shadow-sm's faint shadow is its only edge, which is invisible on the dark page.
+     A 1px native-input-edge ring, listed after the shadow so it paints below it: white on the white page in
+     light (pixels unchanged), a neutral edge in dark. */
+  input.shadow-sm {
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow), 0 0 0 1px rgb(var(--v-theme-native-input-edge));
+  }
+
+  /* index.css drops every input box-shadow on focus (!important); keep the edge so a focused field keeps its outline */
+  input.shadow-sm:focus {
+    box-shadow: 0 0 0 1px rgb(var(--v-theme-native-input-edge)) !important;
+  }
+  </style>

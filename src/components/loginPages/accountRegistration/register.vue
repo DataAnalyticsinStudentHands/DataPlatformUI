@@ -315,4 +315,17 @@ import { useLoggedInUserStore } from "@/stored/loggedInUser";
   .signin-btn.bg-primary:hover {
       background-color: rgb(var(--v-theme-primary-darken-1)) !important;
   }
+
+  /* Native text inputs have no border (Vuetify's reset sets border-style: none on input) and a transparent
+     background (index.css), so shadow-sm's faint shadow is their only edge, which is invisible on the dark card.
+     A 1px native-input-edge ring, listed after the shadow so it paints below it: white on the white card in
+     light (pixels unchanged), a neutral edge in dark. */
+  input.shadow-sm {
+      box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow), 0 0 0 1px rgb(var(--v-theme-native-input-edge));
+  }
+
+  /* index.css drops every input box-shadow on focus (!important); keep the edge so a focused field keeps its outline */
+  input.shadow-sm:focus {
+      box-shadow: 0 0 0 1px rgb(var(--v-theme-native-input-edge)) !important;
+  }
   </style>

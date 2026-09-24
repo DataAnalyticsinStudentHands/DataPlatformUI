@@ -122,7 +122,7 @@ export default {
         case 'partial':
           return { icon: 'mdi-alert', color: 'warning' };
         case 'unknownOutcome':
-          return { icon: 'mdi-help-circle', color: 'grey-darken-1' };
+          return { icon: 'mdi-help-circle', color: 'muted-strong' };
         default: // 'allFailed' | 'error'
           return { icon: 'mdi-close-circle', color: 'error' };
       }
