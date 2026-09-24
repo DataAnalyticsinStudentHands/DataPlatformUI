@@ -88,6 +88,7 @@
       <v-col cols="12">
         <v-btn
           color="primary"
+          class="dp-overlay-native"
           :loading="isGenerating"
           :disabled="isGenerating"
           @click="generateReport"

@@ -37,6 +37,7 @@ Main dashboard component for managing database backups.
         <v-card class="pa-3 mt-4 text-center">
           <v-btn
             color="primary"
+            class="dp-overlay-native"
             block
             :loading="running"
             :disabled="running"
