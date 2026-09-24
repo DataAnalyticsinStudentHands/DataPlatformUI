@@ -20,7 +20,7 @@ Redesigned UI matching the instructor pages aesthetic.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="36" class="mr-3">mdi-email-outline</v-icon>
+          <v-icon color="brand-fg" size="36" class="mr-3">mdi-email-outline</v-icon>
           <div class="flex-grow-1">
             <h1 class="text-h4 font-weight-bold">Mailer</h1>
             <p class="text-body-1 text-medium-emphasis mb-0">Send emails to students based on form completion status</p>
@@ -50,7 +50,7 @@ export default {
 <style scoped>
 /* Page Background */
 .mailer-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
@@ -62,7 +62,7 @@ export default {
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Card */

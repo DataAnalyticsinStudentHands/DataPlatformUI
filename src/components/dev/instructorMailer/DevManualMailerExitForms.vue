@@ -53,7 +53,7 @@ Redesigned UI matching the instructor pages aesthetic.
           <v-col cols="12" md>
             <v-card variant="outlined" class="table-card">
               <v-card-title class="table-card-title">
-                <v-icon start size="20" color="#c8102e">mdi-account-group-outline</v-icon>
+                <v-icon start size="20" color="brand-fg">mdi-account-group-outline</v-icon>
                 Students Without Exit Forms
               </v-card-title>
               <template v-slot:text>
@@ -104,7 +104,7 @@ Redesigned UI matching the instructor pages aesthetic.
           <v-col cols="12" md="auto" class="d-flex align-center justify-center px-1">
             <div class="transfer-buttons">
               <v-btn
-                color="#c8102e"
+                color="brand-fg"
                 variant="tonal"
                 icon
                 size="small"
@@ -128,7 +128,7 @@ Redesigned UI matching the instructor pages aesthetic.
           <v-col cols="12" md>
             <v-card variant="outlined" class="table-card">
               <v-card-title class="table-card-title">
-                <v-icon start size="20" color="#c8102e">mdi-email-check-outline</v-icon>
+                <v-icon start size="20" color="brand-fg">mdi-email-check-outline</v-icon>
                 Email Recipients
               </v-card-title>
               <template v-slot:text>
@@ -193,7 +193,7 @@ Redesigned UI matching the instructor pages aesthetic.
       <div class="section-content">
         <div class="translation-toggle">
           <div class="translation-toggle-left">
-            <v-icon size="20" color="#c8102e" class="mr-3">mdi-translate</v-icon>
+            <v-icon size="20" color="brand-fg" class="mr-3">mdi-translate</v-icon>
             <div>
               <span class="translation-toggle-label">Include Translation</span>
               <p class="translation-toggle-hint">
@@ -203,7 +203,7 @@ Redesigned UI matching the instructor pages aesthetic.
           </div>
           <v-switch
             v-model="includeSpanish"
-            color="#c8102e"
+            color="brand-fg"
             hide-details
             inset
             density="compact"
@@ -407,7 +407,7 @@ Redesigned UI matching the instructor pages aesthetic.
 
       <div class="section-content">
         <div v-if="!previewRecipient" class="preview-empty">
-          <v-icon size="48" color="#ccc">mdi-email-outline</v-icon>
+          <v-icon size="48" class="text-disabled">mdi-email-outline</v-icon>
           <p>Add at least one recipient to the <strong>Email Recipients</strong> list to see a live preview</p>
         </div>
 
@@ -494,7 +494,7 @@ Redesigned UI matching the instructor pages aesthetic.
       <v-spacer></v-spacer>
       <v-btn
         size="large"
-        color="#c8102e"
+        color="primary"
         class="action-btn submit-btn"
         :disabled="emailDisabled || globalSending"
         @click="openSendDialog"
@@ -954,7 +954,7 @@ export default {
 <style scoped>
 /* Form Content */
 .form-content {
-  background-color: #fff;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 /* Form Sections */
@@ -972,8 +972,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -987,12 +987,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -1009,8 +1009,8 @@ export default {
   font-size: 0.9rem;
   font-weight: 600;
   padding: 12px 16px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Transfer Buttons */
@@ -1025,8 +1025,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -1037,7 +1037,7 @@ export default {
 }
 
 .submit-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 /* Table Styles */
@@ -1068,7 +1068,7 @@ export default {
 }
 
 .selected-row {
-  background-color: #fce4ec;
+  background-color: rgb(var(--v-theme-tint-brand-soft));
 }
 
 /* Translation Toggle */
@@ -1076,8 +1076,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fafafa;
-  border: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 10px;
   padding: 14px 20px;
   margin-bottom: 24px;
@@ -1091,12 +1091,12 @@ export default {
 .translation-toggle-label {
   font-weight: 600;
   font-size: 0.925rem;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .translation-toggle-hint {
   font-size: 0.8rem;
-  color: #888;
+  color: rgb(var(--v-theme-hint-fg));
   margin: 2px 0 0 0;
 }
 
@@ -1113,8 +1113,8 @@ export default {
   align-items: center;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #c8102e;
-  background-color: #fce4ec;
+  color: rgb(var(--v-theme-brand-fg));
+  background-color: rgb(var(--v-theme-tint-brand-soft));
   border-radius: 6px;
   padding: 4px 10px;
   margin-bottom: 16px;
@@ -1128,7 +1128,7 @@ export default {
   display: block;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 6px;
 }
 
@@ -1225,7 +1225,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 48px 24px;
-  color: #999;
+  color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity));
   text-align: center;
 }
 

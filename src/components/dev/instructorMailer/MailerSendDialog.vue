@@ -38,7 +38,7 @@ Purely presentational: the parent owns all send state.
           <v-btn variant="outlined" class="action-btn" @click="close">
             Cancel
           </v-btn>
-          <v-btn color="#c8102e" variant="flat" class="action-btn submit-btn" @click="$emit('confirm')">
+          <v-btn color="primary" variant="flat" class="action-btn submit-btn" @click="$emit('confirm')">
             Yes, Send
           </v-btn>
         </v-card-actions>
@@ -53,7 +53,7 @@ Purely presentational: the parent owns all send state.
           <template v-if="progress">
             <v-progress-linear
               :model-value="progress.total ? (progress.attempted / progress.total) * 100 : 0"
-              color="#c8102e"
+              color="brand-fg"
               height="10"
               rounded
             ></v-progress-linear>
@@ -64,7 +64,7 @@ Purely presentational: the parent owns all send state.
             </p>
           </template>
           <template v-else>
-            <v-progress-linear indeterminate color="#c8102e" height="10" rounded></v-progress-linear>
+            <v-progress-linear indeterminate color="brand-fg" height="10" rounded></v-progress-linear>
             <p class="text-body-2 text-medium-emphasis mt-3 mb-0">
               Sending&hellip; live progress is unavailable. This can take several minutes &mdash;
               keep this page open.
@@ -93,7 +93,7 @@ Purely presentational: the parent owns all send state.
         </v-card-text>
         <v-card-actions class="pa-6 pt-0">
           <v-spacer></v-spacer>
-          <v-btn color="#c8102e" variant="flat" class="action-btn submit-btn" @click="$emit('done')">
+          <v-btn color="primary" variant="flat" class="action-btn submit-btn" @click="$emit('done')">
             Close
           </v-btn>
         </v-card-actions>
@@ -184,17 +184,17 @@ export default {
 }
 
 .submit-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 /* Failed-recipient list: raw SMTP diagnostics rendered as plain text */
 .failed-list {
   max-height: 240px;
   overflow-y: auto;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   padding: 12px 16px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .failed-item {
@@ -204,6 +204,6 @@ export default {
 }
 
 .failed-item + .failed-item {
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgb(var(--v-theme-divider-soft));
 }
 </style>

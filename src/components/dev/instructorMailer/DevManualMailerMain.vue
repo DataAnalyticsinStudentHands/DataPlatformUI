@@ -9,7 +9,7 @@ Redesigned UI matching the instructor pages aesthetic.
     <div class="tabs-section">
       <v-tabs
         v-model="selection"
-        color="#c8102e"
+        color="brand-fg"
         class="custom-tabs"
       >
         <v-tab :value="1" class="custom-tab">
@@ -66,11 +66,11 @@ export default {
 <style scoped>
 /* Tabs Section */
 .tabs-section {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .custom-tabs {
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .custom-tab {
