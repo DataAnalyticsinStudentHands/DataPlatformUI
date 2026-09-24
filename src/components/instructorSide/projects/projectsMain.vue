@@ -467,6 +467,7 @@ With state persistence via Pinia store. Updated to display document count and co
             <v-alert
               v-else
               type="info"
+              color="info-fg"
               variant="tonal"
               density="compact"
             >

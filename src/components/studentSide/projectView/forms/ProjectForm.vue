@@ -675,7 +675,7 @@ defineExpose({
 
 .remove-section-btn {
   margin-left: 8px;
-  opacity: 0.6;
+  opacity: var(--v-medium-emphasis-opacity); /* 0.6 in light, as before; 0.7 in dark (3:1 icon contrast) */
   transition: opacity 0.2s;
 }
 

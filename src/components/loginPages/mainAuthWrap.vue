@@ -153,6 +153,22 @@ export default {
   transform: scale(0.7);
 }
 
+/* ON track: color="brand-fg" adds .bg-brand-fg (!important) to the track. The old Tailwind
+   .bg-custom-red lost to VSwitch.css, so the track was surface-variant in both states; keep that.
+   Vuetify omits the class in forced-colors mode, so its highlight rule still applies there. */
+.switch-container :deep(.v-switch__track.bg-brand-fg) {
+  background-color: rgb(var(--v-theme-surface-variant)) !important;
+}
+
+/* Thumb: surface (#fff in light, as surface-bright was) so it shows on the grey track in dark:
+   #171717 on #818181 is 4.60:1, where Vuetify's dark surface-bright #CCBFD6 was 2.22:1.
+   Skipped in forced-colors mode, where Vuetify paints the thumb with system colors. */
+@media (forced-colors: none) {
+  .switch-container :deep(.v-switch__thumb) {
+    background-color: rgb(var(--v-theme-surface));
+  }
+}
+
 /* Position adjustment for translation icon */
 .v-input__prepend .mdi-translate {
     top: 0; 

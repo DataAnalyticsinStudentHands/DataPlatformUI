@@ -179,8 +179,8 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                           <v-icon size="small" color="success">mdi-check-circle</v-icon>
                           {{ $t('Accepted') }}
                         </span>
-                        <span v-else-if="processedInvitations[invitation._id] === 'declined'" class="text-caption text-error">
-                          <v-icon size="small" color="error">mdi-close-circle</v-icon>
+                        <span v-else-if="processedInvitations[invitation._id] === 'declined'" class="text-caption text-error-fg">
+                          <v-icon size="small" color="error-fg">mdi-close-circle</v-icon>
                           {{ $t('Declined') }}
                         </span>
                       </div>
@@ -337,8 +337,8 @@ Supports two modes: invitations-only (for initial page load) and full mode (with
                               <v-icon size="small" color="success">mdi-check-circle</v-icon>
                               {{ $t('Accepted') }}
                             </span>
-                            <span v-else-if="processedInvitations[invitation._id] === 'declined'" class="text-caption text-error">
-                              <v-icon size="small" color="error">mdi-close-circle</v-icon>
+                            <span v-else-if="processedInvitations[invitation._id] === 'declined'" class="text-caption text-error-fg">
+                              <v-icon size="small" color="error-fg">mdi-close-circle</v-icon>
                               {{ $t('Declined') }}
                             </span>
                           </div>

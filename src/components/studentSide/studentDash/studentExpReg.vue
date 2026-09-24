@@ -221,7 +221,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                         </v-list>
                         
                         <v-btn
-                          color="secondary"
+                          color="remove-fill"
                           outlined
                           class="mt-4 mx-auto"
                           :disabled="!markedForRemovalIDs.length"

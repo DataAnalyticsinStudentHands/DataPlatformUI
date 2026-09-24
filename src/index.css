@@ -197,9 +197,13 @@ html {
 }
 
 /* Validation error text for the entry, goal and exit forms: one global rule in place of the per-file
-   copies (Design_Plan_Dark_Mode.md section 8, Phase 2). Light result: the same #B00020 as before. */
+   copies (Design_Plan_Dark_Mode.md section 8, Phase 2). Light result: the same #B00020 as before.
+   error-fg rather than error: the class also sits on v-radio-group / v-checkbox roots, whose
+   unselected icons inherit it at medium-emphasis opacity (.70 in dark; the radio group never passes its
+   validation state down, so Vuetify's opacity-1 error rule never applies). Dark error #EF4444 there was
+   2.90:1 on surface; red-400 is about 3.8:1 (icons) and 6.5:1 (text). */
 .error-text {
-  color: rgb(var(--v-theme-error));
+  color: rgb(var(--v-theme-error-fg));
 }
 
 /* Native checkboxes and radios (Basic pages: eventForm, eventDetails): @tailwindcss/forms paints the
@@ -224,14 +228,21 @@ html {
    which sets --v-theme-overlay-multiplier from the key: 2 in light for these dark keys (luma <= 0.18), so
    hover, focus and activated overlays (the open checklist rows, for example) would double. The old inline
    hex styles and color-pack classes left the inherited 1. Pinning 1 keeps light as before; dark is already
-   1 for all four keys. The few fills that were color="primary" before the conversion (backupDashboard,
-   GenerateReports, FeaturedShowcase) move from 2 to 1. !important because Vuetify's theme stylesheet loads
-   last with the same specificity. */
+   1 for all four keys. !important because Vuetify's theme stylesheet loads last with the same specificity. */
 .bg-primary,
 .bg-checklist-frame-fill,
 .bg-archive-fill,
 .bg-archive-fill-strong {
   --v-theme-overlay-multiplier: 1 !important;
+}
+
+/* The fills that were already color="primary" at 43c07af keep Vuetify's own multiplier (2 in light, as
+   before; 1 in dark). Inside the route-level forced-light provider every .bg-primary comes from the
+   unchanged stay-light pages (FeaturedShowcase's two buttons); elsewhere a fill opts back in with the
+   dp-overlay-native class. Two classes outrank the pin's one; both are !important. */
+.dp-force-light--route .bg-primary,
+.bg-primary.dp-overlay-native {
+  --v-theme-overlay-multiplier: var(--v-theme-primary-overlay-multiplier) !important;
 }
 
 /* ---- Dark-only rules. Section 6.3 allows .v-theme--dark CSS only for these two blocks (browser
@@ -262,11 +273,14 @@ html {
 
 /* Chromium/WebKit, where the UA background must be clipped away rather than
    overridden. The long transition delay is belt-and-braces so nothing flashes
-   before the clip takes effect. */
-.v-theme--dark input:-webkit-autofill,
-.v-theme--dark input:-webkit-autofill:hover,
-.v-theme--dark input:-webkit-autofill:focus,
-.v-theme--dark input:-webkit-autofill:active {
+   before the clip takes effect. Vuetify fields only (.v-field), whose fill is the
+   field overlay, not the input: the Basic pages' borderless native inputs are
+   marked only by their own fill, so clipping it would leave no box at all; they
+   keep Chrome's own dark-scheme autofill tint instead. */
+.v-theme--dark .v-field input:-webkit-autofill,
+.v-theme--dark .v-field input:-webkit-autofill:hover,
+.v-theme--dark .v-field input:-webkit-autofill:focus,
+.v-theme--dark .v-field input:-webkit-autofill:active {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: rgb(var(--v-theme-on-surface));

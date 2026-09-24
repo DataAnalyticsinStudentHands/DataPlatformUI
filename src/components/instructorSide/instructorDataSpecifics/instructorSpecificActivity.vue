@@ -72,7 +72,7 @@
                   v-if="canActivityBeDeleted && canDeleteActivity"
                   variant="outlined"
                   size="large"
-                  color="error"
+                  color="error-fg"
                   @click="checkAssociatedInstances('delete')"
                   :loading="deleteLoading"
                   class="action-btn ml-3"
@@ -135,7 +135,7 @@
         <v-card-actions class="pa-5 pt-0">
           <v-spacer></v-spacer>
           <v-btn variant="text" @click="showDeleteDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete">
+          <v-btn color="error-fill" variant="flat" @click="confirmDelete">
             <v-icon start size="18">mdi-delete</v-icon>
             {{ $t('Delete') }}
           </v-btn>
@@ -174,7 +174,7 @@
           <span class="text-h6 font-weight-bold">{{ $t('Confirm Update') }}</span>
         </v-card-title>
         <v-card-text class="px-5 pb-4">
-          <v-alert type="info" variant="tonal" class="mb-4">
+          <v-alert type="info" color="info-fg" variant="tonal" class="mb-4">
             {{ $t('The following Experience Instances will be updated:') }}
           </v-alert>
           <div class="instances-list">
@@ -236,7 +236,7 @@
         <v-card-actions class="pa-5 pt-0">
           <v-spacer></v-spacer>
           <v-btn variant="text" @click="deleteDialogWithInstances = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-          <v-btn color="error" variant="flat" @click="deleteActivity">
+          <v-btn color="error-fill" variant="flat" @click="deleteActivity">
             <v-icon start size="18">mdi-delete</v-icon>
             {{ $t('Delete') }}
           </v-btn>

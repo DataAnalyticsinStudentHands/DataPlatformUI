@@ -173,6 +173,7 @@
                         <v-alert
                           v-if="instance.duplicateWarning"
                           type="error"
+                          color="error-fg"
                           variant="tonal"
                           density="compact"
                           class="mt-2"

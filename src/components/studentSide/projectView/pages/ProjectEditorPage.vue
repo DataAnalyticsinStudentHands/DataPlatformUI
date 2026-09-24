@@ -93,7 +93,7 @@
     <v-snackbar
       v-model="showErrorSnackbar"
       :timeout="5000"
-      color="error"
+      color="error-fill"
     >
       {{ saveError }}
       <template v-slot:actions>
@@ -117,7 +117,7 @@
           <v-btn variant="text" @click="showLeaveDialog = false">
             {{ $t('Stay') }}
           </v-btn>
-          <v-btn color="error" variant="flat" @click="confirmLeave">
+          <v-btn color="error-fill" variant="flat" @click="confirmLeave">
             {{ $t('Leave') }}
           </v-btn>
         </v-card-actions>

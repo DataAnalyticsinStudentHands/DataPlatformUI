@@ -153,6 +153,13 @@ const light = {
     'on-muted': '#FFFFFF',                      // text on flat muted fills: Vuetify's computed value, pinned
     'native-field-fill': '#FFFFFF',             // native text/date/textarea fill on the Basic pages (the white page they sit on)
     'native-input-edge': '#FFFFFF',             // 1px ring on borderless native inputs: white on their white card
+    // Phase 6 (dark-legibility audit): light values are the colors these spots render today
+    'error-fill': '#B00020',                    // = Vuetify's light error, so flat error buttons look the same
+    'error-fg': '#B00020',                      // = Vuetify's light error, for error text/icons and .error-text
+    'info-fg': '#2196F3',                       // = Vuetify's light info
+    'raised-fill': '#FFFFFF',                   // = the surface Vuetify paints elevated buttons with today
+    'remove-fill': '#48A9A6',                   // = Vuetify's light secondary
+    'on-remove-fill': '#FFFFFF',                // = Vuetify's computed on-color for #48A9A6, pinned
   },
 };
 
@@ -290,6 +297,13 @@ const dark = {
     'on-muted': '#000000',                      // black on #A3A3A3 is 8.33:1 (white was 2.52:1)
     'native-field-fill': '#262626',             // native text/date/textarea fill on the Basic pages (neutral near-white row)
     'native-input-edge': '#737373',             // 1px ring on borderless native inputs (register, sendNewCode): 3:1 non-text
+    // Phase 6 (dark-legibility audit): error/info roles whose built-in dark values fall short as fills or text
+    'error-fill': '#B00020',                    // flat error buttons and snackbars: white on it 7.33:1 (dark error #EF4444 was 3.76:1)
+    'error-fg': '#F87171',                      // error text/icons/outlined buttons and .error-text: red-400, 6.48:1 on surface, 5.47:1 on panel
+    'info-fg': '#60A5FA',                       // tonal info alerts: blue-400, 5.85:1 on its own underlay
+    'raised-fill': '#262626',                   // elevated stepper nav buttons (were #171717 on the #171717 stepper)
+    'remove-fill': '#48A9A6',                   // studentExpReg 'Remove' button (was color=secondary), same fill in both themes
+    'on-remove-fill': '#000000',                // black on #48A9A6 is 7.50:1 (white was 2.80:1)
   },
 };
 

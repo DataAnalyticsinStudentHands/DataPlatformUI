@@ -193,7 +193,7 @@
           <v-btn variant="text" @click="showUnsavedDialog = false">
             {{ $t('Cancel') }}
           </v-btn>
-          <v-btn color="error" variant="flat" @click="confirmLeave">
+          <v-btn color="error-fill" variant="flat" @click="confirmLeave">
             {{ $t('Leave') }}
           </v-btn>
         </v-card-actions>

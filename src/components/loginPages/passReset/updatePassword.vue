@@ -233,4 +233,10 @@ export default {
 .signin-btn.bg-primary {
   --v-theme-overlay-multiplier: 1;
 }
+
+/* Disabled: .bg-primary (!important) would keep the red fill; the old Tailwind red lost to
+   Vuetify's disabled rule, which paints surface. Keep that look (light: #fff, as before). */
+.signin-btn.bg-primary.v-btn--disabled {
+  background-color: rgb(var(--v-theme-surface)) !important;
+}
 </style>

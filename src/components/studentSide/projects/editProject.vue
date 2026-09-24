@@ -362,7 +362,7 @@ project information and leave the project.
                   v-if="!isProjectOwner && projectData.projectStatus !== 'Archived'"
                   variant="outlined"
                   size="large"
-                  color="error"
+                  color="error-fg"
                   @click="openLeaveProjectDialog"
                   class="action-btn mr-3"
                 >
@@ -677,7 +677,7 @@ project information and leave the project.
             <span class="text-h6 font-weight-bold">{{ $t('Leave Project?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
-            <v-alert type="error" variant="tonal" class="mb-4">
+            <v-alert type="error" color="error-fg" variant="tonal" class="mb-4">
               <strong>{{ $t('You will lose access to this project.') }}</strong>
             </v-alert>
             <p class="text-body-1 mb-0">
@@ -687,7 +687,7 @@ project information and leave the project.
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="leaveProjectDialog = false" class="mr-2">{{ $t('Stay') }}</v-btn>
-            <v-btn color="error" variant="flat" @click="leaveProject" :loading="leavingProject">
+            <v-btn color="error-fill" variant="flat" @click="leaveProject" :loading="leavingProject">
               <v-icon start size="18">mdi-exit-to-app</v-icon>
               {{ $t('Leave') }}
             </v-btn>
@@ -1274,7 +1274,8 @@ export default {
 }
 
 .member-item:hover {
-  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
+  background-color: rgb(var(--v-theme-panel));
+  background-image: linear-gradient(rgba(var(--v-theme-on-surface), calc(var(--v-hover-opacity) / 2)), rgba(var(--v-theme-on-surface), calc(var(--v-hover-opacity) / 2)));
 }
 
 /* Invite Button */

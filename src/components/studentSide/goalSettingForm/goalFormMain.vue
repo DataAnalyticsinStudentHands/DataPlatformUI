@@ -1462,4 +1462,9 @@ beforeRouteLeave(to, from, next) {
     background-color: rgb(var(--v-theme-brand-fg));
     transition: width 0.3s ease;
 }
+
+/* Stepper navigation buttons: Vuetify paints elevated buttons with the stepper's own surface */
+.v-stepper .v-btn--variant-elevated:not(.v-btn--disabled) {
+    background-color: rgb(var(--v-theme-raised-fill));
+}
 </style>

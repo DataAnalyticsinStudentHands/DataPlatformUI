@@ -110,6 +110,7 @@
                   <v-alert
                     v-if="errorMessage"
                     type="error"
+                    color="error-fg"
                     variant="tonal"
                     class="mt-2"
                     closable

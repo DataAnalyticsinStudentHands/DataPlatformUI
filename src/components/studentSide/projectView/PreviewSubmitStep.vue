@@ -347,10 +347,11 @@ defineExpose({
 
 /* Forced-light provider around ProjectTemplate (dark-mode plan §7). ProjectTemplate paints its own
    light gradient, so the provider's paint shows only beside the template's 1400px max-width
-   (step-3 fullscreen on wide screens). .preview-area's own #f4f5f7 showed there before, so the
-   provider paints nothing and lets .preview-area show through, exactly as before. */
+   (step-3 fullscreen on wide screens). The provider paints panel-preview, the same color as
+   .preview-area; the provider carries .v-theme--light, so the key resolves to its light value in
+   both themes and those gutters stay light, as in ProjectPreview's fullscreen overlay. */
 .v-theme-provider.template-theme-provider {
-  background-color: transparent;
+  background-color: rgb(var(--v-theme-panel-preview));
 }
 
 /* Empty Preview State */

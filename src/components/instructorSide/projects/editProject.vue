@@ -359,7 +359,7 @@ archive/restore projects. Includes comprehensive project review capabilities.
                   v-if="projectData.projectStatus === 'Proposed'"
                   variant="outlined"
                   size="large"
-                  color="error"
+                  color="error-fg"
                   @click="rejectProject"
                   :loading="rejectingProject"
                   :disabled="approvingProject"
@@ -680,7 +680,7 @@ archive/restore projects. Includes comprehensive project review capabilities.
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="rejectDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-            <v-btn color="error" variant="flat" @click="confirmReject" :loading="rejectingProject">
+            <v-btn color="error-fill" variant="flat" @click="confirmReject" :loading="rejectingProject">
               <v-icon start size="18">mdi-close-circle</v-icon>
               {{ $t('Reject') }}
             </v-btn>

@@ -74,7 +74,7 @@
           <v-btn
             size="small"
             variant="text"
-            color="error"
+            color="error-fg"
             @click="removeSelection"
           >
             <v-icon start size="16">mdi-delete</v-icon>

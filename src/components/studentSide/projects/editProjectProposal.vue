@@ -202,7 +202,7 @@ before they are approved by instructors.
                 <v-btn 
                   variant="outlined"
                   size="large"
-                  color="error"
+                  color="error-fg"
                   @click="openCancelDialog"
                   class="action-btn mr-3"
                   :disabled="updateLoading || cancelLoading"
@@ -361,7 +361,7 @@ before they are approved by instructors.
             <span class="text-h6 font-weight-bold">{{ $t('Cancel Project Proposal?') }}</span>
           </v-card-title>
           <v-card-text class="px-5 pb-4">
-            <v-alert type="error" variant="tonal" class="mb-4">
+            <v-alert type="error" color="error-fg" variant="tonal" class="mb-4">
               <strong>{{ $t('This action cannot be undone.') }}</strong>
             </v-alert>
             <p class="text-body-1 mb-0">
@@ -371,7 +371,7 @@ before they are approved by instructors.
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="cancelDialog = false" class="mr-2">{{ $t('No, Keep Proposal') }}</v-btn>
-            <v-btn color="error" variant="flat" @click="confirmCancel" :loading="cancelLoading">
+            <v-btn color="error-fill" variant="flat" @click="confirmCancel" :loading="cancelLoading">
               <v-icon start size="18">mdi-close-circle</v-icon>
               {{ $t('Yes, Cancel Proposal') }}
             </v-btn>

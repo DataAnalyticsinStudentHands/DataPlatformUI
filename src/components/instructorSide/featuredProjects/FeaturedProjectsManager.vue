@@ -204,7 +204,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
           </div>
 
           <!-- No eligible projects -->
-          <v-alert v-else-if="filteredEligible.length === 0" type="info" variant="tonal" class="mb-0">
+          <v-alert v-else-if="filteredEligible.length === 0" type="info" color="info-fg" variant="tonal" class="mb-0">
             {{ eligibleProjects.length === 0
               ? 'No eligible projects found. Projects must have consent to feature and a published Project View.'
               : 'No projects match your search.'
@@ -268,7 +268,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
         <v-card-actions>
           <v-spacer />
           <v-btn variant="text" @click="showLeaveDialog = false">Cancel</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmLeave">Leave</v-btn>
+          <v-btn color="error-fill" variant="flat" @click="confirmLeave">Leave</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

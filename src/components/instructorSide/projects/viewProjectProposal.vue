@@ -149,7 +149,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
                 <v-btn 
                   variant="outlined"
                   size="large"
-                  color="error"
+                  color="error-fg"
                   @click="openRejectDialog"
                   class="action-btn mr-3"
                   :loading="rejectLoading"
@@ -319,7 +319,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
           <v-card-actions class="pa-5 pt-0">
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="rejectDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-            <v-btn color="error" variant="flat" @click="rejectProject">
+            <v-btn color="error-fill" variant="flat" @click="rejectProject">
               <v-icon start size="18">mdi-close-circle</v-icon>
               {{ $t('Reject') }}
             </v-btn>

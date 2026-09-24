@@ -317,7 +317,7 @@
                   v-if="canExpInstanceBeDeleted"
                   variant="outlined"
                   size="large"
-                  color="error"
+                  color="error-fg"
                   @click="showDeleteDialog = true"
                   class="action-btn ml-3"
                 >
@@ -361,7 +361,7 @@
         <v-card-actions class="pa-5 pt-0">
           <v-spacer></v-spacer>
           <v-btn variant="text" @click="showDeleteDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete">
+          <v-btn color="error-fill" variant="flat" @click="confirmDelete">
             <v-icon start size="18">mdi-delete</v-icon>
             {{ $t('Delete') }}
           </v-btn>
