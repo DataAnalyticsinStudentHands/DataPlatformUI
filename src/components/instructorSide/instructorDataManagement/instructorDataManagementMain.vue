@@ -21,7 +21,7 @@ Redesigned UI matching the project pages aesthetic.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="36" class="mr-3">mdi-database-cog-outline</v-icon>
+          <v-icon color="brand-fg" size="36" class="mr-3">mdi-database-cog-outline</v-icon>
           <div class="flex-grow-1">
             <h1 class="text-h4 font-weight-bold">{{ $t('Data Management') }}</h1>
             <p class="text-body-1 text-medium-emphasis mb-0">{{ $t('Manage sessions, experiences, and activities') }}</p>
@@ -35,7 +35,7 @@ Redesigned UI matching the project pages aesthetic.
         <div class="tabs-section">
           <v-tabs
             v-model="tab"
-            color="#c8102e"
+            color="brand-fg"
             class="custom-tabs"
           >
             <v-tab :value="0" class="custom-tab" @click="selectTab(0)">
@@ -162,14 +162,14 @@ export default {
 <style scoped>
 /* Page Background */
 .data-management-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Card */
@@ -180,11 +180,11 @@ export default {
 
 /* Tabs Section */
 .tabs-section {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .custom-tabs {
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .custom-tab {

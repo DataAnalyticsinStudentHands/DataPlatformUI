@@ -21,7 +21,7 @@
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-calendar-plus</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-calendar-plus</v-icon>
           <div>
             <h1 class="text-h5 font-weight-bold">{{ $t('New Session') }}</h1>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('Create a new session for your organization') }}</p>
@@ -55,7 +55,7 @@
                     counter="100"
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon size="20" color="#666">mdi-calendar-text</v-icon>
+                      <v-icon size="20" class="text-medium-emphasis">mdi-calendar-text</v-icon>
                     </template>
                   </v-text-field>
                 </div>
@@ -85,7 +85,7 @@
                         required
                       >
                         <template v-slot:prepend-inner>
-                          <v-icon size="20" color="#666">mdi-calendar-start</v-icon>
+                          <v-icon size="20" class="text-medium-emphasis">mdi-calendar-start</v-icon>
                         </template>
                       </v-text-field>
                     </v-col>
@@ -100,7 +100,7 @@
                         required
                       >
                         <template v-slot:prepend-inner>
-                          <v-icon size="20" color="#666">mdi-calendar-end</v-icon>
+                          <v-icon size="20" class="text-medium-emphasis">mdi-calendar-end</v-icon>
                         </template>
                       </v-text-field>
                     </v-col>
@@ -136,7 +136,7 @@
                 <v-btn 
                   type="submit"
                   size="large"
-                  color="#c8102e"
+                  color="primary"
                   class="action-btn submit-btn"
                   :loading="submitting"
                   :disabled="!session.sessionName || !session.sessionPeriod.startDate || !session.sessionPeriod.endDate"
@@ -239,14 +239,14 @@ export default {
 <style scoped>
 /* Page Background */
 .add-session-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -270,8 +270,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -285,12 +285,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -303,8 +303,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -315,7 +315,7 @@ export default {
 }
 
 .submit-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 /* Responsive */

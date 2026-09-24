@@ -25,7 +25,7 @@ Redesigned UI matching the project pages aesthetic.
             class="session-select"
           >
             <template v-slot:prepend-inner>
-              <v-icon color="#c8102e" size="20">mdi-calendar-outline</v-icon>
+              <v-icon color="brand-fg" size="20">mdi-calendar-outline</v-icon>
             </template>
           </v-select>
         </v-col>
@@ -47,7 +47,7 @@ Redesigned UI matching the project pages aesthetic.
             class="experience-select"
           >
             <template v-slot:prepend-inner>
-              <v-icon color="#c8102e" size="20">mdi-school-outline</v-icon>
+              <v-icon color="brand-fg" size="20">mdi-school-outline</v-icon>
             </template>
             <template v-slot:item="{ props, item }">
               <v-list-item v-bind="props">
@@ -86,7 +86,7 @@ Redesigned UI matching the project pages aesthetic.
           >
             <v-btn 
               :value="false"
-              :color="completed === false ? '#c8102e' : undefined"
+              :color="completed === false ? 'primary' : undefined"
               :variant="completed === false ? 'flat' : 'outlined'"
               size="default"
             >
@@ -121,7 +121,7 @@ Redesigned UI matching the project pages aesthetic.
       <!-- Stats Row -->
       <div v-if="selectedExperience" class="stats-row mt-4">
         <v-chip
-          color="#c8102e"
+          color="brand-fg"
           variant="tonal"
           size="large"
           class="stats-chip"
@@ -139,7 +139,7 @@ Redesigned UI matching the project pages aesthetic.
           {{ $t('Completed:') }} <strong class="ml-1">{{ studentsWithGoalForm.length }}</strong>
         </v-chip>
         <v-chip
-          color="grey"
+          color="muted"
           variant="tonal"
           size="large"
           class="stats-chip ml-2"
@@ -156,7 +156,7 @@ Redesigned UI matching the project pages aesthetic.
     <div class="table-container">
       <!-- Empty State - No Experience Selected -->
       <div v-if="!selectedExperience" class="empty-state py-16">
-        <v-icon size="72" color="#ccc" class="mb-4">mdi-school-outline</v-icon>
+        <v-icon size="72" class="mb-4 text-disabled">mdi-school-outline</v-icon>
         <p class="text-h6 text-medium-emphasis mb-2">{{ $t('Select an Experience') }}</p>
         <p class="text-body-2 text-disabled mb-0">{{ $t('Choose a session and experience from the dropdowns above to view student progress') }}</p>
       </div>
@@ -197,7 +197,7 @@ Redesigned UI matching the project pages aesthetic.
             >
               <td class="table-cell">
                 <div class="d-flex align-center">
-                  <v-avatar color="grey-lighten-2" size="36" class="mr-3">
+                  <v-avatar color="surface-light" size="36" class="mr-3">
                     <span class="text-body-2 font-weight-medium">
                       {{ getInitials(student.firstName, student.lastName) }}
                     </span>
@@ -215,7 +215,7 @@ Redesigned UI matching the project pages aesthetic.
                 <v-btn
                   size="small"
                   variant="tonal"
-                  color="#c8102e"
+                  color="brand-fg"
                   @click.stop="viewStudentGoalForm(student._id)"
                   class="action-btn"
                 >
@@ -230,7 +230,7 @@ Redesigned UI matching the project pages aesthetic.
             <tr>
               <td :colspan="tableHeaders.length" class="empty-state-cell">
                 <div class="empty-state py-12">
-                  <v-icon size="56" color="#ccc" class="mb-3">
+                  <v-icon size="56" class="mb-3 text-disabled">
                     {{ completed ? 'mdi-file-document-check-outline' : 'mdi-file-document-remove-outline' }}
                   </v-icon>
                   <p class="text-h6 text-medium-emphasis mb-1">
@@ -255,7 +255,7 @@ Redesigned UI matching the project pages aesthetic.
       <v-btn
         size="small"
         :variant="isNavigationDisabled ? 'flat' : 'outlined'"
-        :color="isNavigationDisabled ? 'grey' : undefined"
+        :color="isNavigationDisabled ? 'muted' : undefined"
         @click="toggleNavigation"
         class="nav-toggle-btn"
       >
@@ -604,13 +604,13 @@ export default {
 <style scoped>
 /* Monitor Content */
 .monitor-content {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 /* Toolbar Section */
 .toolbar-section {
   padding: 20px 24px;
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .session-select,
@@ -642,7 +642,7 @@ export default {
 
 .stats-row {
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .stats-chip {
@@ -667,7 +667,7 @@ export default {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
   padding: 10px 16px !important;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .table-row {
@@ -676,7 +676,7 @@ export default {
 }
 
 .table-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-row.navigation-disabled {
@@ -689,7 +689,7 @@ export default {
 
 /* Hover row style from original version */
 .hoverRow {
-  background-color: #f0f0f0;
+  background-color: rgba(var(--v-theme-on-surface), 0.06);
   cursor: pointer;
 }
 
@@ -720,8 +720,8 @@ export default {
 /* Footer Toolbar */
 .footer-toolbar {
   padding: 16px 24px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   display: flex;
   justify-content: flex-end;
 }
@@ -736,7 +736,7 @@ export default {
 .students-table :deep(.v-data-table-footer) {
   font-size: 0.9rem;
   padding: 12px 16px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Autocomplete focus style from original */

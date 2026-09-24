@@ -23,7 +23,7 @@
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-book-plus-outline</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-book-plus-outline</v-icon>
           <div>
             <h1 class="text-h5 font-weight-bold">{{ $t('New Experience Instances') }}</h1>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('Create new experience instances for a session') }}</p>
@@ -59,7 +59,7 @@
                     variant="outlined"
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon size="20" color="#666">mdi-calendar-range</v-icon>
+                      <v-icon size="20" class="text-medium-emphasis">mdi-calendar-range</v-icon>
                     </template>
                   </v-autocomplete>
                 </div>
@@ -119,7 +119,7 @@
                               @update:modelValue="onExperienceChange(instance)"
                             >
                               <template v-slot:prepend-inner>
-                                <v-icon size="20" color="#666">mdi-school-outline</v-icon>
+                                <v-icon size="20" class="text-medium-emphasis">mdi-school-outline</v-icon>
                               </template>
                               <template v-slot:item="{ item, props }">
                                 <v-list-item v-bind="props">
@@ -127,7 +127,7 @@
                                     <v-chip 
                                       v-if="getExistingInstructorsForExperience(item.raw._id).length > 0"
                                       size="x-small" 
-                                      color="grey"
+                                      color="muted"
                                       variant="tonal"
                                     >
                                       {{ getExistingInstructorsForExperience(item.raw._id).length }} in session
@@ -149,7 +149,7 @@
                               @update:modelValue="validateDuplicates"
                             >
                               <template v-slot:prepend-inner>
-                                <v-icon size="20" color="#666">mdi-account-tie-outline</v-icon>
+                                <v-icon size="20" class="text-medium-emphasis">mdi-account-tie-outline</v-icon>
                               </template>
                             </v-text-field>
                             
@@ -158,7 +158,7 @@
                               v-if="instance.experience && getExistingInstructorsForExperience(instance.experience._id).length > 0"
                               class="existing-instructors-hint"
                             >
-                              <v-icon size="14" color="#666" class="mr-1">mdi-information-outline</v-icon>
+                              <v-icon size="14" class="mr-1 text-medium-emphasis">mdi-information-outline</v-icon>
                               <span class="text-caption text-medium-emphasis">
                                 {{ $t('Already in session:') }} 
                                 <span v-for="(existing, idx) in getExistingInstructorsForExperience(instance.experience._id)" :key="idx">
@@ -189,7 +189,7 @@
                   <!-- Add Experience Instance Button -->
                   <v-btn
                     variant="outlined"
-                    color="#c8102e"
+                    color="brand-fg"
                     @click="addExperienceInstance"
                     :disabled="!selectedSession"
                     class="add-instance-btn"
@@ -199,7 +199,7 @@
                   </v-btn>
 
                   <div v-if="!selectedSession" class="empty-state-inline mt-4">
-                    <v-icon color="#ccc" size="24" class="mr-2">mdi-information-outline</v-icon>
+                    <v-icon size="24" class="mr-2 text-disabled">mdi-information-outline</v-icon>
                     <span class="text-medium-emphasis font-italic">{{ $t('Please select a session first') }}</span>
                   </div>
                 </div>
@@ -221,7 +221,7 @@
                   <div v-if="validExperienceInstances.length > 0">
                     <v-card variant="outlined" class="activities-card">
                       <!-- Experience Instance Tabs -->
-                      <v-tabs v-model="activitiesTab" color="#c8102e" class="activities-tabs">
+                      <v-tabs v-model="activitiesTab" color="brand-fg" class="activities-tabs">
                         <v-tab 
                           v-for="instance in validExperienceInstances" 
                           :key="instance.uid" 
@@ -252,15 +252,15 @@
                                 <v-col cols="12" md="6">
                                   <div class="activities-panel">
                                     <div class="panel-header">
-                                      <v-icon color="#c8102e" size="20" class="mr-2">mdi-clipboard-check-outline</v-icon>
+                                      <v-icon color="brand-fg" size="20" class="mr-2">mdi-clipboard-check-outline</v-icon>
                                       <span class="font-weight-medium">{{ $t('Selected Activities') }}</span>
-                                      <v-chip size="small" class="ml-2" color="grey">
+                                      <v-chip size="small" class="ml-2" color="muted">
                                         {{ getSelectedActivitiesForInstance(instance).length }}
                                       </v-chip>
                                     </div>
                                     <div class="scrollable-list">
                                       <div v-if="getSelectedActivitiesForInstance(instance).length === 0" class="empty-activities">
-                                        <v-icon color="#ccc" size="32">mdi-clipboard-text-off-outline</v-icon>
+                                        <v-icon class="text-disabled" size="32">mdi-clipboard-text-off-outline</v-icon>
                                         <p class="text-body-2 text-medium-emphasis mt-2 mb-0">{{ $t('No activities selected') }}</p>
                                       </div>
                                       <v-list v-else density="compact">
@@ -270,7 +270,7 @@
                                           class="activity-list-item"
                                         >
                                           <template v-slot:prepend>
-                                            <v-icon size="18" color="#666">mdi-clipboard-text-outline</v-icon>
+                                            <v-icon size="18" class="text-medium-emphasis">mdi-clipboard-text-outline</v-icon>
                                           </template>
                                           <v-list-item-title>{{ activity.activityName }}</v-list-item-title>
                                           <template v-slot:append>
@@ -293,7 +293,7 @@
                                 <v-col cols="12" md="6">
                                   <div class="activities-panel">
                                     <div class="panel-header">
-                                      <v-icon color="#c8102e" size="20" class="mr-2">mdi-plus-circle-outline</v-icon>
+                                      <v-icon color="brand-fg" size="20" class="mr-2">mdi-plus-circle-outline</v-icon>
                                       <span class="font-weight-medium">{{ $t('Add Activities') }}</span>
                                     </div>
                                     <v-text-field
@@ -327,7 +327,7 @@
                                               <td>
                                                 <div class="activity-content">
                                                   <span>{{ item.activityName }}</span>
-                                                  <v-icon v-if="hoveredItem === item._id" color="#c8102e" size="18">
+                                                  <v-icon v-if="hoveredItem === item._id" color="brand-fg" size="18">
                                                     mdi-plus-circle
                                                   </v-icon>
                                                 </div>
@@ -349,7 +349,7 @@
                                   v-model="instance.includeRegistrationCode"
                                   :label="$t('Include Registration Code')"
                                   hide-details
-                                  color="#c8102e"
+                                  color="brand-fg"
                                 ></v-checkbox>
 
                                 <v-expand-transition>
@@ -362,7 +362,7 @@
                                       style="max-width: 400px;"
                                     >
                                       <template v-slot:prepend-inner>
-                                        <v-icon size="20" color="#666">mdi-key-outline</v-icon>
+                                        <v-icon size="20" class="text-medium-emphasis">mdi-key-outline</v-icon>
                                       </template>
                                     </v-text-field>
                                   </div>
@@ -376,7 +376,7 @@
                   </div>
 
                   <div v-else class="empty-state-inline">
-                    <v-icon color="#ccc" size="24" class="mr-2">mdi-information-outline</v-icon>
+                    <v-icon size="24" class="mr-2 text-disabled">mdi-information-outline</v-icon>
                     <span class="text-medium-emphasis font-italic">{{ $t('Please add and configure experience instances above') }}</span>
                   </div>
                 </div>
@@ -403,7 +403,7 @@
                         class="exit-form-date-item"
                       >
                         <div class="experience-info">
-                          <v-icon color="#c8102e" size="20" class="mr-2">mdi-school-outline</v-icon>
+                          <v-icon color="brand-fg" size="20" class="mr-2">mdi-school-outline</v-icon>
                           <div class="experience-label">
                             <span class="font-weight-medium">{{ instance.experience.experienceName }}</span>
                             <span v-if="instance.instructor" class="instructor-sublabel text-medium-emphasis">
@@ -423,7 +423,7 @@
                             @update:modelValue="updateExitFormReleaseDate(instance)"
                           >
                             <template v-slot:prepend-inner>
-                              <v-icon size="18" color="#666">mdi-calendar-clock</v-icon>
+                              <v-icon size="18" class="text-medium-emphasis">mdi-calendar-clock</v-icon>
                             </template>
                           </v-text-field>
                         </div>
@@ -434,7 +434,7 @@
                     <div class="set-all-dates mt-4">
                       <v-btn
                         variant="text"
-                        color="#c8102e"
+                        color="brand-fg"
                         size="small"
                         @click="openBulkDatePicker"
                         class="set-all-btn"
@@ -446,7 +446,7 @@
                   </div>
 
                   <div v-else class="empty-state-inline">
-                    <v-icon color="#ccc" size="24" class="mr-2">mdi-information-outline</v-icon>
+                    <v-icon size="24" class="mr-2 text-disabled">mdi-information-outline</v-icon>
                     <span class="text-medium-emphasis font-italic">{{ $t('Please add and configure experience instances above') }}</span>
                   </div>
                 </div>
@@ -468,7 +468,7 @@
                 <v-btn 
                   type="submit"
                   size="large"
-                  color="#c8102e"
+                  color="primary"
                   class="action-btn submit-btn"
                   :disabled="!canSubmit"
                 >
@@ -486,7 +486,7 @@
     <v-dialog v-model="showDatePicker" max-width="400px" persistent>
       <v-card class="date-picker-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-calendar-sync</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-calendar-sync</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Set Date for All Instances') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="showDatePicker = false">
@@ -500,7 +500,7 @@
           <v-date-picker 
             v-model="selectedDate" 
             show-adjacent-months
-            color="#c8102e"
+            color="primary"
             class="date-picker-full-width"
           ></v-date-picker>
         </v-card-text>
@@ -513,7 +513,7 @@
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn 
-            color="#c8102e" 
+            color="primary" 
             variant="flat"
             size="large" 
             @click="setAllExitFormReleaseDates"
@@ -952,14 +952,14 @@ export default {
 <style scoped>
 /* Page Background */
 .add-experience-instance-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -983,8 +983,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -998,12 +998,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -1022,8 +1022,8 @@ export default {
 }
 
 .experience-instance-card.has-error {
-  border-color: #c8102e !important;
-  background-color: rgba(200, 16, 46, 0.02);
+  border-color: rgb(var(--v-theme-brand-fg)) !important;
+  background-color: rgba(var(--v-theme-primary), 0.02);
 }
 
 .instance-header {
@@ -1036,8 +1036,8 @@ export default {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #e8e8e8;
-  color: #666;
+  background-color: rgb(var(--v-theme-quiet-fill-soft));
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1050,7 +1050,7 @@ export default {
   align-items: flex-start;
   margin-top: 4px;
   padding: 8px 12px;
-  background-color: #f5f5f5;
+  background-color: rgb(var(--v-theme-panel-strong));
   border-radius: 4px;
 }
 
@@ -1065,7 +1065,7 @@ export default {
 }
 
 .activities-tabs {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .tab-label {
@@ -1076,16 +1076,16 @@ export default {
 
 .instructor-badge {
   font-size: 0.75rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-weight: normal;
 }
 
 .activities-content {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .activities-panel {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
   padding: 16px;
   height: 100%;
@@ -1096,7 +1096,7 @@ export default {
   align-items: center;
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .empty-activities {
@@ -1109,7 +1109,7 @@ export default {
 }
 
 .activity-list-item {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
   margin-bottom: 4px;
   border-radius: 4px;
 }
@@ -1120,7 +1120,7 @@ export default {
 }
 
 .activity-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .activity-content {
@@ -1135,7 +1135,7 @@ export default {
 .scrollable-table {
   max-height: 250px;
   overflow-y: auto;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 4px;
 }
 
@@ -1182,9 +1182,9 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .experience-info {
@@ -1212,7 +1212,7 @@ export default {
 
 .set-all-dates {
   padding-top: 8px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .set-all-btn {
@@ -1226,7 +1226,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 16px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
 }
 
@@ -1235,8 +1235,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -1247,11 +1247,11 @@ export default {
 }
 
 .submit-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .confirm-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 /* Date Picker Dialog */

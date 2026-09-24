@@ -21,7 +21,7 @@
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-clipboard-plus-outline</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-clipboard-plus-outline</v-icon>
           <div>
             <h1 class="text-h5 font-weight-bold">{{ $t('New Activity') }}</h1>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('Create a new activity for your experiences') }}</p>
@@ -73,7 +73,7 @@
                 <v-btn 
                   type="submit"
                   size="large"
-                  color="#c8102e"
+                  color="primary"
                   class="action-btn submit-btn"
                   :loading="submitting"
                   :disabled="!activity.activityName"
@@ -151,14 +151,14 @@ export default {
 <style scoped>
 /* Page Background */
 .add-activity-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -182,8 +182,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,12 +197,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -215,8 +215,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -227,7 +227,7 @@ export default {
 }
 
 .submit-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 /* Sidebar */
@@ -238,21 +238,21 @@ export default {
 
 .sidebar-card {
   border-radius: 12px;
-  border-color: #e0e0e0;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .sidebar-header {
   font-size: 1rem;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .tip-item {
   display: flex;
   align-items: flex-start;
   padding: 10px 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid rgb(var(--v-theme-divider-faint));
 }
 
 .tip-item:last-child {

@@ -11,7 +11,7 @@ Redesigned UI matching the project pages aesthetic.
     <div class="context-banner">
       <div class="banner-content">
         <div class="banner-icon">
-          <v-icon color="#c8102e" size="22">mdi-file-document-alert-outline</v-icon>
+          <v-icon color="brand-fg" size="22">mdi-file-document-alert-outline</v-icon>
         </div>
         <div class="banner-text">
           <h3 class="banner-title">{{ $t('Missing Entry Forms') }}</h3>
@@ -37,7 +37,7 @@ Redesigned UI matching the project pages aesthetic.
             class="search-field"
           >
             <template v-slot:prepend-inner>
-              <v-icon color="#666" size="20">mdi-magnify</v-icon>
+              <v-icon class="text-medium-emphasis" size="20">mdi-magnify</v-icon>
             </template>
           </v-text-field>
         </v-col>
@@ -70,7 +70,7 @@ Redesigned UI matching the project pages aesthetic.
       <!-- Stats Row -->
       <div class="stats-row mt-4">
         <v-chip
-          color="#c8102e"
+          color="brand-fg"
           variant="tonal"
           size="large"
           class="stats-chip"
@@ -80,7 +80,7 @@ Redesigned UI matching the project pages aesthetic.
         </v-chip>
         <v-chip
           v-if="searchQuery"
-          color="grey"
+          color="muted"
           variant="tonal"
           size="large"
           class="stats-chip ml-2"
@@ -97,7 +97,7 @@ Redesigned UI matching the project pages aesthetic.
     <div v-if="loading" class="loading-container py-16">
       <v-progress-circular 
         indeterminate 
-        color="#c8102e" 
+        color="brand-fg" 
         size="48"
         width="4"
       ></v-progress-circular>
@@ -129,8 +129,8 @@ Redesigned UI matching the project pages aesthetic.
             >
               <td class="table-cell">
                 <div class="d-flex align-center">
-                  <v-avatar color="#c8102e" variant="tonal" size="36" class="mr-3">
-                    <span class="text-body-2 font-weight-medium" style="color: #c8102e;">
+                  <v-avatar color="brand-fg" variant="tonal" size="36" class="mr-3">
+                    <span class="text-body-2 font-weight-medium text-brand-fg">
                       {{ getInitials(student.firstName, student.lastName) }}
                     </span>
                   </v-avatar>
@@ -177,7 +177,7 @@ Redesigned UI matching the project pages aesthetic.
       <v-btn
         size="small"
         :variant="isNavigationDisabled ? 'flat' : 'outlined'"
-        :color="isNavigationDisabled ? 'grey' : undefined"
+        :color="isNavigationDisabled ? 'muted' : undefined"
         @click="toggleNavigation"
         class="nav-toggle-btn"
       >
@@ -305,13 +305,13 @@ export default {
 <style scoped>
 /* Monitor Content */
 .monitor-content {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 /* Context Banner */
 .context-banner {
-  background-color: rgba(200, 16, 46, 0.06);
-  border-bottom: 1px solid rgba(200, 16, 46, 0.12);
+  background-color: rgba(var(--v-theme-primary), 0.06);
+  border-bottom: 1px solid rgba(var(--v-theme-primary), 0.12);
   padding: 16px 24px;
 }
 
@@ -325,7 +325,7 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background-color: rgba(200, 16, 46, 0.1);
+  background-color: rgba(var(--v-theme-primary), 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -339,13 +339,13 @@ export default {
 .banner-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
   margin: 0 0 2px 0;
 }
 
 .banner-description {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin: 0;
   line-height: 1.5;
 }
@@ -353,7 +353,7 @@ export default {
 /* Toolbar Section */
 .toolbar-section {
   padding: 20px 24px;
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .search-field {
@@ -373,7 +373,7 @@ export default {
 
 .stats-row {
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -410,7 +410,7 @@ export default {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
   padding: 10px 16px !important;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .table-row {
@@ -419,7 +419,7 @@ export default {
 }
 
 .table-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-row.navigation-disabled {
@@ -451,8 +451,8 @@ export default {
 /* Footer Toolbar */
 .footer-toolbar {
   padding: 16px 24px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   display: flex;
   justify-content: flex-end;
 }
@@ -467,7 +467,7 @@ export default {
 .students-table :deep(.v-data-table-footer) {
   font-size: 0.9rem;
   padding: 12px 16px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Responsive */

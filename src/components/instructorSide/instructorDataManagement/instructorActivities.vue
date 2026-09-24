@@ -26,8 +26,8 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
               <v-menu location="bottom start">
                 <template v-slot:activator="{ props }">
                   <div v-bind="props" class="search-menu-trigger">
-                    <v-icon size="22" color="#666">mdi-magnify</v-icon>
-                    <v-icon size="16" color="#999">mdi-chevron-down</v-icon>
+                    <v-icon size="22" class="text-medium-emphasis">mdi-magnify</v-icon>
+                    <v-icon size="16" class="text-disabled">mdi-chevron-down</v-icon>
                   </div>
                 </template>
                 <v-list density="comfortable" class="search-menu-list">
@@ -68,7 +68,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             v-if="!selectedActivities.length"
             @click="toggleArchivedActivities"
             variant="tonal"
-            :color="viewsStore.isViewingArchived('activities') ? '#c8102e' : 'grey-darken-4'"
+            :color="viewsStore.isViewingArchived('activities') ? 'brand-fg' : undefined"
             size="default"
             class="action-btn mr-3"
           >
@@ -82,7 +82,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             v-if="selectedActivities.length && userStore.role !== 'Group Instructor'"
             @click="handleArchiveActivities"
             variant="tonal"
-            :color="viewsStore.isViewingArchived('activities') ? 'success' : 'grey-darken-4'"
+            :color="viewsStore.isViewingArchived('activities') ? 'success' : undefined"
             size="default"
             class="action-btn mr-3"
           >
@@ -99,7 +99,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
           <!-- Add New Activity Button -->
           <v-btn
             @click="handleAddNewActivity"
-            color="#c8102e"
+            color="primary"
             size="default"
             class="add-btn"
           >
@@ -128,7 +128,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             size="default"
             @click="toggleArchivedActivities"
             class="mobile-action-btn"
-            :color="viewsStore.isViewingArchived('activities') ? '#c8102e' : undefined"
+            :color="viewsStore.isViewingArchived('activities') ? 'brand-fg' : undefined"
           >
             <v-icon size="24">{{ viewsStore.isViewingArchived('activities') ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
           </v-btn>
@@ -137,7 +137,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
 
           <v-btn
             @click="handleAddNewActivity"
-            color="#c8102e"
+            color="primary"
             size="small"
             class="add-btn-mobile"
           >
@@ -154,7 +154,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
           <v-chip
             v-for="(criteria, index) in viewsStore.activities.searchChips"
             :key="index"
-            :color="viewsStore.activities.selectedSearchChips.includes(index) ? '#c8102e' : 'grey-darken-4'"
+            :color="viewsStore.activities.selectedSearchChips.includes(index) ? 'primary' : undefined"
             :variant="viewsStore.activities.selectedSearchChips.includes(index) ? 'flat' : 'outlined'"
             size="default"
             class="search-chip mr-2 mb-1"
@@ -169,7 +169,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             v-if="viewsStore.activities.searchChips.length > 1"
             variant="text" 
             size="small" 
-            color="#c8102e"
+            color="brand-fg"
             @click="clearAllFilters"
             class="mb-1"
           >
@@ -187,7 +187,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
       <div v-if="loading" class="loading-container py-16">
         <v-progress-circular 
           indeterminate 
-          color="#c8102e" 
+          color="brand-fg" 
           size="48"
           width="4"
         ></v-progress-circular>
@@ -251,7 +251,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
                       class="experience-item"
                     >
                       <div class="experience-header">
-                        <v-icon color="#c8102e" size="18" class="mr-2">mdi-school-outline</v-icon>
+                        <v-icon color="brand-fg" size="18" class="mr-2">mdi-school-outline</v-icon>
                         <strong>{{ experience.name }}</strong>
                       </div>
                       <div class="sessions-list">
@@ -260,7 +260,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
                           :key="session.sessionID"
                           size="small"
                           variant="tonal"
-                          color="grey"
+                          color="muted"
                           class="mr-2 mb-1"
                         >
                           <v-icon start size="14">mdi-calendar-outline</v-icon>
@@ -277,7 +277,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             <tr>
               <td :colspan="activityHeaders.length" class="empty-state-cell">
                 <div class="empty-state py-12">
-                  <v-icon size="56" color="#ccc" class="mb-3">
+                  <v-icon size="56" class="mb-3 text-disabled">
                     {{ viewsStore.isViewingArchived('activities') ? 'mdi-archive-off-outline' : 'mdi-clipboard-text-off-outline' }}
                   </v-icon>
                   <p class="text-h6 text-medium-emphasis mb-1">
@@ -301,7 +301,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="mobileSearchDialog" max-width="420px">
       <v-card class="mobile-search-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-magnify</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-magnify</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Search Activities') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="mobileSearchDialog = false">
@@ -340,7 +340,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
           <v-btn variant="text" size="default" @click="mobileSearchDialog = false">{{ $t('Cancel') }}</v-btn>
           <v-spacer></v-spacer>
           <v-btn 
-            color="#c8102e" 
+            color="brand-fg" 
             size="default" 
             @click="applyMobileSearch" 
             :disabled="!mobileSearchQuery"
@@ -356,7 +356,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="dialogExperienceName" max-width="900px" persistent>
       <v-card class="experience-search-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-school-outline</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-school-outline</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Search by Experience') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="cancelExperienceNameSearch">
@@ -385,7 +385,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             <v-chip
               v-for="(experience, index) in selectedExperienceNames"
               :key="experience._id"
-              color="#c8102e"
+              color="primary"
               variant="flat"
               size="default"
               class="experience-chip mr-2 mb-1"
@@ -419,7 +419,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
                   <td class="table-cell">
                     <div class="d-flex align-center justify-space-between">
                       <span class="font-weight-medium">{{ item.experienceName }}</span>
-                      <v-icon color="#c8102e" size="20">mdi-plus-circle-outline</v-icon>
+                      <v-icon color="brand-fg" size="20">mdi-plus-circle-outline</v-icon>
                     </div>
                   </td>
                 </tr>
@@ -437,7 +437,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn 
-            color="#c8102e"
+            color="brand-fg"
             size="large"
             @click="submitExperienceNameSearch"
             :disabled="!selectedExperienceNames.length"
@@ -930,13 +930,13 @@ export default {
 <style scoped>
 /* Content Container */
 .activities-content {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 /* Toolbar Section */
 .toolbar-section {
   padding: 20px 24px;
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .search-field {
@@ -953,7 +953,7 @@ export default {
 }
 
 .search-menu-trigger:hover {
-  background-color: #f5f5f5;
+  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 
 .search-menu-list {
@@ -996,7 +996,7 @@ export default {
 /* Search Chips */
 .search-chips-container {
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .search-chip {
@@ -1039,7 +1039,7 @@ export default {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
   padding: 10px 16px !important;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .table-row {
@@ -1048,7 +1048,7 @@ export default {
 }
 
 .table-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-cell {
@@ -1072,7 +1072,7 @@ export default {
 
 /* Expanded Row */
 .expanded-row {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .expanded-content {
@@ -1082,8 +1082,8 @@ export default {
 .experience-item {
   margin-bottom: 16px;
   padding: 12px 16px;
-  background-color: white;
-  border: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
 }
 
@@ -1122,7 +1122,7 @@ export default {
 
 .selected-experiences {
   padding: 12px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
 }
 
@@ -1135,7 +1135,7 @@ export default {
 }
 
 .experiences-table {
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
 }
 
@@ -1143,7 +1143,7 @@ export default {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
   padding: 10px 16px !important;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .experiences-table .table-row {
@@ -1164,7 +1164,7 @@ export default {
 .activities-table :deep(.v-data-table-footer) {
   font-size: 0.9rem;
   padding: 12px 16px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Responsive */

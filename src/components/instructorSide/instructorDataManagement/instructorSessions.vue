@@ -27,8 +27,8 @@ Redesigned UI matching the project pages aesthetic.
               <v-menu location="bottom start">
                 <template v-slot:activator="{ props }">
                   <div v-bind="props" class="search-menu-trigger">
-                    <v-icon size="22" color="#666">mdi-magnify</v-icon>
-                    <v-icon size="16" color="#999">mdi-chevron-down</v-icon>
+                    <v-icon size="22" class="text-medium-emphasis">mdi-magnify</v-icon>
+                    <v-icon size="16" class="text-disabled">mdi-chevron-down</v-icon>
                   </div>
                 </template>
                 <v-list density="comfortable" class="search-menu-list">
@@ -69,7 +69,7 @@ Redesigned UI matching the project pages aesthetic.
             v-if="!selectedSessions.length"
             @click="toggleArchivedSessions"
             variant="tonal"
-            :color="viewsStore.isViewingArchived('sessions') ? '#c8102e' : 'grey-darken-4'"
+            :color="viewsStore.isViewingArchived('sessions') ? 'brand-fg' : undefined"
             size="default"
             class="action-btn mr-3"
           >
@@ -83,7 +83,7 @@ Redesigned UI matching the project pages aesthetic.
             v-if="selectedSessions.length"
             @click="handleArchiveSessions"
             variant="tonal"
-            :color="viewsStore.isViewingArchived('sessions') ? 'success' : 'grey-darken-4'"
+            :color="viewsStore.isViewingArchived('sessions') ? 'success' : undefined"
             size="default"
             class="action-btn mr-3"
           >
@@ -101,7 +101,7 @@ Redesigned UI matching the project pages aesthetic.
           <v-btn
             v-if="canAddNewSession"
             @click="handleAddNewSession"
-            color="#c8102e"
+            color="primary"
             size="default"
             class="add-btn"
           >
@@ -130,7 +130,7 @@ Redesigned UI matching the project pages aesthetic.
             size="default"
             @click="toggleArchivedSessions"
             class="mobile-action-btn"
-            :color="viewsStore.isViewingArchived('sessions') ? '#c8102e' : undefined"
+            :color="viewsStore.isViewingArchived('sessions') ? 'brand-fg' : undefined"
           >
             <v-icon size="24">{{ viewsStore.isViewingArchived('sessions') ? 'mdi-folder-open-outline' : 'mdi-archive-outline' }}</v-icon>
           </v-btn>
@@ -151,7 +151,7 @@ Redesigned UI matching the project pages aesthetic.
           <v-btn
             v-if="canAddNewSession"
             @click="handleAddNewSession"
-            color="#c8102e"
+            color="primary"
             size="small"
             class="add-btn-mobile"
           >
@@ -168,7 +168,7 @@ Redesigned UI matching the project pages aesthetic.
           <v-chip
             v-for="(criteria, index) in viewsStore.sessions.searchChips"
             :key="index"
-            :color="viewsStore.sessions.selectedSearchChips.includes(index) ? '#c8102e' : 'grey-darken-4'"
+            :color="viewsStore.sessions.selectedSearchChips.includes(index) ? 'primary' : undefined"
             :variant="viewsStore.sessions.selectedSearchChips.includes(index) ? 'flat' : 'outlined'"
             size="default"
             class="search-chip mr-2 mb-1"
@@ -188,7 +188,7 @@ Redesigned UI matching the project pages aesthetic.
             v-if="viewsStore.sessions.searchChips.length > 1"
             variant="text" 
             size="small" 
-            color="#c8102e"
+            color="brand-fg"
             @click="clearAllFilters"
             class="mb-1"
           >
@@ -206,7 +206,7 @@ Redesigned UI matching the project pages aesthetic.
       <div v-if="loading" class="loading-container py-16">
         <v-progress-circular 
           indeterminate 
-          color="#c8102e" 
+          color="brand-fg" 
           size="48"
           width="4"
         ></v-progress-circular>
@@ -299,7 +299,7 @@ Redesigned UI matching the project pages aesthetic.
                                 <span class="text-medium-emphasis">{{ formatDate(item.exitFormReleaseDate) }}</span>
                                 </td>
                                 <td class="instance-cell">
-                                <v-chip size="small" variant="tonal" color="grey">
+                                <v-chip size="small" variant="tonal" color="muted">
                                     {{ getActivityCount(item.activities) }}
                                 </v-chip>
                                 </td>
@@ -311,7 +311,7 @@ Redesigned UI matching the project pages aesthetic.
                               v-if="canAddExpInstance"
                               @click="handleAddExperience(sessionItem._id)"
                               variant="tonal"
-                              color="#c8102e"
+                              color="brand-fg"
                               size="small"
                               class="add-experience-btn"
                             >
@@ -331,7 +331,7 @@ Redesigned UI matching the project pages aesthetic.
             <tr>
               <td :colspan="sessionHeaders.length" class="empty-state-cell">
                 <div class="empty-state py-12">
-                  <v-icon size="56" color="#ccc" class="mb-3">
+                  <v-icon size="56" class="mb-3 text-disabled">
                     {{ viewsStore.isViewingArchived('sessions') ? 'mdi-archive-off-outline' : 'mdi-calendar-blank-outline' }}
                   </v-icon>
                   <p class="text-h6 text-medium-emphasis mb-1">
@@ -355,7 +355,7 @@ Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="dialogStartDate" max-width="400px" persistent>
       <v-card class="date-picker-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-calendar-start</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-calendar-start</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Filter by Start Date') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="cancelSelectStartDate">
@@ -385,7 +385,7 @@ Redesigned UI matching the project pages aesthetic.
             elevation="0"
             :title="sessionStartDateTitle"
             show-adjacent-months
-            color="#c8102e"
+            color="primary"
             class="date-picker-full-width"
             @update:modelValue="handleStartDateSelection"
           >
@@ -409,7 +409,7 @@ Redesigned UI matching the project pages aesthetic.
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn 
-            color="#c8102e"
+            color="brand-fg"
             size="large"
             :disabled="!canApplyStartDates"
             @click="submitStartDate"
@@ -426,7 +426,7 @@ Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="dialogEndDate" max-width="400px" persistent>
       <v-card class="date-picker-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-calendar-end</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-calendar-end</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Filter by End Date') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="cancelSelectEndDate">
@@ -456,7 +456,7 @@ Redesigned UI matching the project pages aesthetic.
             elevation="0"
             :title="sessionEndDateTitle"
             show-adjacent-months
-            color="#c8102e"
+            color="primary"
             class="date-picker-full-width"
             @update:modelValue="handleEndDateSelection"
           >
@@ -480,7 +480,7 @@ Redesigned UI matching the project pages aesthetic.
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn 
-            color="#c8102e"
+            color="brand-fg"
             size="large"
             :disabled="!canApplyEndDates"
             @click="submitEndDate"
@@ -497,7 +497,7 @@ Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="dialogExitFormReleaseDate" max-width="400px" persistent>
       <v-card class="date-picker-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-calendar-check</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-calendar-check</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Filter by Release Date') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="cancelSelectExitFormReleaseDate">
@@ -527,7 +527,7 @@ Redesigned UI matching the project pages aesthetic.
             elevation="0"
             :title="instanceExitFormReleaseDateTitle"
             show-adjacent-months
-            color="#c8102e"
+            color="primary"
             class="date-picker-full-width"
             @update:modelValue="handleExitFormReleaseDateSelection"
           >
@@ -551,7 +551,7 @@ Redesigned UI matching the project pages aesthetic.
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn 
-            color="#c8102e"
+            color="brand-fg"
             size="large"
             :disabled="!canApplyExitFormReleaseDates"
             @click="submitExitFormReleaseDate"
@@ -568,7 +568,7 @@ Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="xsdialogSearch" max-width="420px" persistent>
       <v-card class="mobile-search-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-magnify</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-magnify</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Search Sessions') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="xsCancelSearchDialog">
@@ -692,7 +692,7 @@ Redesigned UI matching the project pages aesthetic.
           <v-btn variant="text" size="default" @click="xsCancelSearchDialog">{{ $t('Cancel') }}</v-btn>
           <v-spacer></v-spacer>
           <v-btn 
-            color="#c8102e" 
+            color="brand-fg" 
             size="default" 
             @click="xsApplySearchFilters"
             :disabled="xsSearchFilterSelection === 'Start Date' ? !canApplyStartDates : (xsSearchFilterSelection === 'End Date' ? !canApplyEndDates : !sessionSearch)"
@@ -1627,13 +1627,13 @@ export default {
 <style scoped>
 /* Content Container */
 .sessions-content {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 /* Toolbar Section */
 .toolbar-section {
   padding: 20px 24px;
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .search-field {
@@ -1650,7 +1650,7 @@ export default {
 }
 
 .search-menu-trigger:hover {
-  background-color: #f5f5f5;
+  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 
 .search-menu-list {
@@ -1693,7 +1693,7 @@ export default {
 /* Search Chips */
 .search-chips-container {
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .search-chip {
@@ -1736,7 +1736,7 @@ export default {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
   padding: 10px 16px !important;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .table-row {
@@ -1745,7 +1745,7 @@ export default {
 }
 
 .table-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-cell {
@@ -1769,7 +1769,7 @@ export default {
 
 /* Expanded Row */
 .expanded-row {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .expanded-content {
@@ -1777,8 +1777,8 @@ export default {
 }
 
 .instances-table-container {
-  background-color: white;
-  border: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   overflow: hidden;
 }
@@ -1791,7 +1791,7 @@ export default {
   font-size: 0.85rem !important;
   font-weight: 600 !important;
   padding: 8px 12px !important;
-  background-color: #f5f5f5;
+  background-color: rgb(var(--v-theme-panel-strong));
 }
 
 .instance-row {
@@ -1800,7 +1800,7 @@ export default {
 }
 
 .instance-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .instance-cell {
@@ -1812,8 +1812,8 @@ export default {
   display: flex;
   justify-content: flex-end;
   padding: 12px 16px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .add-experience-btn {
@@ -1859,7 +1859,7 @@ export default {
 .sessions-table :deep(.v-data-table-footer) {
   font-size: 0.9rem;
   padding: 12px 16px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Responsive */

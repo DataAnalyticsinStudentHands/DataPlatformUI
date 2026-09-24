@@ -14,7 +14,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
         <v-col cols="12" class="text-center">
           <v-progress-circular 
             indeterminate 
-            color="#c8102e" 
+            color="brand-fg" 
             size="48"
             width="4"
           ></v-progress-circular>
@@ -35,11 +35,11 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
             >
               <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
-            <v-icon color="#c8102e" size="32" class="mr-3">mdi-target</v-icon>
+            <v-icon color="brand-fg" size="32" class="mr-3">mdi-target</v-icon>
             <div class="flex-grow-1">
               <div class="d-flex align-center flex-wrap">
                 <h1 class="text-h5 font-weight-bold mr-3">{{ firstName }} {{ lastName }}</h1>
-                <v-chip color="#c8102e" size="small" variant="tonal">
+                <v-chip color="brand-fg" size="small" variant="tonal">
                   <v-icon start size="14">mdi-file-document-check</v-icon>
                   {{ $t('Goal Form') }}
                 </v-chip>
@@ -69,7 +69,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                   <v-chip
                     v-for="item in hichProject"
                     :key="item"
-                    color="#c8102e"
+                    color="brand-fg"
                     variant="tonal"
                     class="mr-2 mb-2"
                   >
@@ -101,7 +101,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                       <v-chip
                         v-for="exp in processedCommunityEngagementExperiences"
                         :key="exp.id"
-                        :color="exp.checked === 'Yes' ? 'success' : 'grey'"
+                        :color="exp.checked === 'Yes' ? 'success' : 'muted'"
                         :variant="exp.checked === 'Yes' ? 'flat' : 'outlined'"
                         size="small"
                         class="mr-2 mb-2"
@@ -123,7 +123,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                       <v-chip
                         v-for="exp in processedPreviousEngagementExperiences"
                         :key="exp.id"
-                        :color="exp.checked === 'Yes' ? 'success' : 'grey'"
+                        :color="exp.checked === 'Yes' ? 'success' : 'muted'"
                         :variant="exp.checked === 'Yes' ? 'flat' : 'outlined'"
                         size="small"
                         class="mr-2 mb-2"
@@ -145,7 +145,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                       <v-chip
                         v-for="tool in processedEngagementActivitiesTools"
                         :key="tool.id"
-                        :color="tool.checked === 'Yes' ? 'success' : 'grey'"
+                        :color="tool.checked === 'Yes' ? 'success' : 'muted'"
                         :variant="tool.checked === 'Yes' ? 'flat' : 'outlined'"
                         size="small"
                         class="mr-2 mb-2"
@@ -167,7 +167,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                       <v-chip
                         v-for="exp in processedCurrentResearchExperience"
                         :key="exp.id"
-                        :color="exp.checked === 'Yes' ? 'success' : 'grey'"
+                        :color="exp.checked === 'Yes' ? 'success' : 'muted'"
                         :variant="exp.checked === 'Yes' ? 'flat' : 'outlined'"
                         size="small"
                         class="mr-2 mb-2"
@@ -189,7 +189,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                       <v-chip
                         v-for="exp in processedPreviousResearchExperience"
                         :key="exp.id"
-                        :color="exp.checked === 'Yes' ? 'success' : 'grey'"
+                        :color="exp.checked === 'Yes' ? 'success' : 'muted'"
                         :variant="exp.checked === 'Yes' ? 'flat' : 'outlined'"
                         size="small"
                         class="mr-2 mb-2"
@@ -211,7 +211,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                       <v-chip
                         v-for="tool in processedFamiliarTools"
                         :key="tool.id"
-                        :color="tool.checked === 'Yes' ? 'success' : 'grey'"
+                        :color="tool.checked === 'Yes' ? 'success' : 'muted'"
                         :variant="tool.checked === 'Yes' ? 'flat' : 'outlined'"
                         size="small"
                         class="mr-2 mb-2"
@@ -233,7 +233,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                       <v-chip
                         v-for="interest in processedInterestResearchService"
                         :key="interest.id"
-                        :color="interest.checked === 'Yes' ? 'success' : 'grey'"
+                        :color="interest.checked === 'Yes' ? 'success' : 'muted'"
                         :variant="interest.checked === 'Yes' ? 'flat' : 'outlined'"
                         size="small"
                         class="mr-2 mb-2"
@@ -252,7 +252,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
                     <h4 class="subsection-title">{{ $t('Leadership Interest') }}</h4>
                     <p class="subsection-question">{{ $t('Are you interested in a leadership position?') }}</p>
                     <v-chip
-                      :color="goalForm.researchExperience.leadershipOption === 'Yes' ? 'success' : 'grey'"
+                      :color="goalForm.researchExperience.leadershipOption === 'Yes' ? 'success' : 'muted'"
                       variant="flat"
                     >
                       <v-icon start size="16">{{ goalForm.researchExperience.leadershipOption === 'Yes' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
@@ -270,7 +270,7 @@ CHW Growth Goals, Aspirations and Goals are intentionally not exposed to instruc
               <!-- Student Info Card -->
               <v-card class="sidebar-card" variant="outlined">
                 <v-card-title class="sidebar-header">
-                  <v-icon color="#c8102e" class="mr-2">mdi-account</v-icon>
+                  <v-icon color="brand-fg" class="mr-2">mdi-account</v-icon>
                   {{ $t('Student Information') }}
                 </v-card-title>
                 <v-card-text class="pt-0">
@@ -460,14 +460,14 @@ export default {
 <style scoped>
 /* Page Background */
 .goal-form-viewer-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -491,7 +491,7 @@ export default {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #c8102e;
+  background-color: rgb(var(--v-theme-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -503,12 +503,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -520,7 +520,7 @@ export default {
 .form-subsection {
   margin-bottom: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .form-subsection:last-child {
@@ -532,13 +532,13 @@ export default {
 .subsection-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin-bottom: 4px;
 }
 
 .subsection-question {
   font-size: 0.85rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 12px;
 }
 
@@ -550,7 +550,7 @@ export default {
 .other-response {
   margin-top: 12px;
   padding: 12px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
   font-size: 0.9rem;
 }
@@ -563,19 +563,19 @@ export default {
 
 .sidebar-card {
   border-radius: 12px;
-  border-color: #e0e0e0;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .sidebar-header {
   font-size: 1rem;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .sidebar-info-item {
   padding: 10px 12px;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
 }
 

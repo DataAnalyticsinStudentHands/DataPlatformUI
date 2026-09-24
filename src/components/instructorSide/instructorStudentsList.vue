@@ -18,7 +18,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="36" class="mr-3">mdi-account-group-outline</v-icon>
+          <v-icon color="brand-fg" size="36" class="mr-3">mdi-account-group-outline</v-icon>
           <div class="flex-grow-1">
             <h1 class="text-h4 font-weight-bold">{{ viewArchivedStudents ? $t('Archived Students') : $t('Students') }}</h1>
             <p class="text-body-1 text-medium-emphasis mb-0">{{ $t('View and manage student information') }}</p>
@@ -50,8 +50,8 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
               <v-menu location="bottom start">
                 <template v-slot:activator="{ props }">
                   <div v-bind="props" class="search-menu-trigger">
-                    <v-icon size="22" color="#666">mdi-magnify</v-icon>
-                    <v-icon size="16" color="#999">mdi-chevron-down</v-icon>
+                    <v-icon size="22" class="text-medium-emphasis">mdi-magnify</v-icon>
+                    <v-icon size="16" class="text-disabled">mdi-chevron-down</v-icon>
                   </div>
                 </template>
                 <v-list density="comfortable" class="search-menu-list">
@@ -157,7 +157,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
           <v-chip
             v-for="(criteria, index) in searchCriteria"
             :key="index"
-            :color="selectedSearchChips.includes(index) ? '#c8102e' : 'grey-darken-4'"
+            :color="selectedSearchChips.includes(index) ? 'primary' : undefined"
             :variant="selectedSearchChips.includes(index) ? 'flat' : 'outlined'"
             size="default"
             class="search-chip mr-2 mb-1"
@@ -172,7 +172,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             v-if="searchCriteria.length > 1"
             variant="text" 
             size="small" 
-            color="#c8102e"
+            color="brand-fg"
             @click="clearAllFilters"
             class="mb-1"
           >
@@ -190,7 +190,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
       <div v-if="loading" class="loading-container py-16">
         <v-progress-circular 
           indeterminate 
-          color="#c8102e" 
+          color="brand-fg" 
           size="48"
           width="4"
         ></v-progress-circular>
@@ -248,7 +248,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             <tr>
               <td :colspan="studentHeaders.length" class="empty-state-cell">
                 <div class="empty-state py-12">
-                  <v-icon size="56" color="#ccc" class="mb-3">
+                  <v-icon size="56" class="mb-3 text-disabled">
                     {{ viewArchivedStudents ? 'mdi-archive-off-outline' : 'mdi-account-off-outline' }}
                   </v-icon>
                   <p class="text-h6 text-medium-emphasis mb-1">
@@ -272,7 +272,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="mobileSearchDialog" max-width="420px">
       <v-card class="mobile-search-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-magnify</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-magnify</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Search Students') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="mobileSearchDialog = false">
@@ -354,7 +354,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
           <v-btn variant="text" size="default" @click="mobileSearchDialog = false">{{ $t('Cancel') }}</v-btn>
           <v-spacer></v-spacer>
           <v-btn 
-            color="#c8102e" 
+            color="brand-fg" 
             size="default" 
             @click="applyMobileSearch" 
             :disabled="mobileSearchCategory === 'Graduation Date' ? !canApplyGraduationDates : !mobileSearchQuery"
@@ -373,7 +373,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
     <v-dialog v-model="dialogGraduationDate" max-width="400px" persistent>
       <v-card class="date-picker-dialog">
         <v-card-title class="d-flex align-center pa-5">
-          <v-icon color="#c8102e" size="26" class="mr-2">mdi-school-outline</v-icon>
+          <v-icon color="brand-fg" size="26" class="mr-2">mdi-school-outline</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Filter by Graduation Date') }}</span>
           <v-spacer></v-spacer>
           <v-btn icon variant="text" size="default" @click="cancelSelectGraduationDate">
@@ -403,7 +403,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             elevation="0"
             :title="graduationDateTitle"
             show-adjacent-months
-            color="#c8102e"
+            color="primary"
             class="date-picker-full-width"
             @update:modelValue="handleGraduationDateSelection"
           >
@@ -427,7 +427,7 @@ and archive functionality. Redesigned UI matching the project pages aesthetic.
             {{ $t('Cancel') }}
           </v-btn>
           <v-btn 
-            color="#c8102e"
+            color="brand-fg"
             size="large"
             :disabled="!canApplyGraduationDates"
             @click="submitGraduationDate"
@@ -942,14 +942,14 @@ export default {
 <style scoped>
 /* Page Background */
 .students-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Card */
@@ -960,13 +960,13 @@ export default {
 
 /* Content Container */
 .students-content {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 /* Toolbar Section */
 .toolbar-section {
   padding: 20px 24px;
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .search-field {
@@ -983,7 +983,7 @@ export default {
 }
 
 .search-menu-trigger:hover {
-  background-color: #f5f5f5;
+  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 
 .search-menu-list {
@@ -1014,7 +1014,7 @@ export default {
 /* Search Chips */
 .search-chips-container {
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .search-chip {
@@ -1058,7 +1058,7 @@ export default {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
   padding: 10px 16px !important;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .table-row {
@@ -1067,7 +1067,7 @@ export default {
 }
 
 .table-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-cell {
@@ -1121,7 +1121,7 @@ export default {
 .students-table :deep(.v-data-table-footer) {
   font-size: 0.9rem;
   padding: 12px 16px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Responsive */

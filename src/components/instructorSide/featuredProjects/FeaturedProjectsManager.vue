@@ -10,7 +10,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
       <!-- Loading -->
       <v-row v-if="loading" class="fill-height" align="center" justify="center" style="min-height: 60vh;">
         <v-col cols="auto">
-          <v-progress-circular indeterminate color="#c8102e" size="72" />
+          <v-progress-circular indeterminate color="brand-fg" size="72" />
         </v-col>
       </v-row>
 
@@ -27,11 +27,11 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
             >
               <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
-            <v-icon color="#c8102e" size="36" class="mr-3">mdi-star-shooting</v-icon>
+            <v-icon color="brand-fg" size="36" class="mr-3">mdi-star-shooting</v-icon>
             <div class="flex-grow-1">
               <div class="d-flex align-center flex-wrap">
                 <h1 class="text-h4 font-weight-bold mr-3">Featured Projects</h1>
-                <v-chip v-if="slots.length > 0" color="#c8102e" size="small" class="font-weight-medium">
+                <v-chip v-if="slots.length > 0" color="brand-fg" size="small" class="font-weight-medium">
                   {{ slots.length }} / 5 slots
                 </v-chip>
               </div>
@@ -42,7 +42,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
             <div class="d-flex ga-2">
               <v-btn
                 variant="outlined"
-                color="primary"
+                color="brand-fg"
                 :href="publicPageUrl"
                 target="_blank"
                 prepend-icon="mdi-open-in-new"
@@ -59,7 +59,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
                 Undo
               </v-btn>
               <v-btn
-                color="#c8102e"
+                color="primary"
                 :loading="saving"
                 :disabled="!hasChanges"
                 prepend-icon="mdi-content-save"
@@ -100,17 +100,17 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
               <!-- Project Info -->
               <div class="slot-project-info">
                 <div class="info-row">
-                  <v-icon size="16" color="#c8102e">mdi-account</v-icon>
+                  <v-icon size="16" color="brand-fg">mdi-account</v-icon>
                   <span class="info-label">Author</span>
                   <span class="info-value">{{ getProjectAuthor(slot) }}</span>
                 </div>
                 <div class="info-row">
-                  <v-icon size="16" color="#c8102e">mdi-school</v-icon>
+                  <v-icon size="16" color="brand-fg">mdi-school</v-icon>
                   <span class="info-label">Experience</span>
                   <span class="info-value">{{ getProjectExperience(slot) }}</span>
                 </div>
                 <div class="info-row">
-                  <v-icon size="16" color="#c8102e">mdi-calendar</v-icon>
+                  <v-icon size="16" color="brand-fg">mdi-calendar</v-icon>
                   <span class="info-label">Session</span>
                   <span class="info-value">{{ getProjectSession(slot) }}</span>
                 </div>
@@ -119,7 +119,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
               <!-- Configuration -->
               <div class="slot-config">
                 <div class="config-section-label">
-                  <v-icon size="14" color="#c8102e">mdi-cog-outline</v-icon>
+                  <v-icon size="14" color="brand-fg">mdi-cog-outline</v-icon>
                   <span>Configuration</span>
                 </div>
 
@@ -141,13 +141,13 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
                 <div class="stats-display">
                   <div class="stats-label">Hero Stats</div>
                   <div class="d-flex flex-wrap ga-2">
-                    <v-chip variant="tonal" color="#c8102e" prepend-icon="mdi-account-group" size="small">
+                    <v-chip variant="tonal" color="brand-fg" prepend-icon="mdi-account-group" size="small">
                       {{ getProjectMemberCount(slot) }} Members
                     </v-chip>
-                    <v-chip variant="tonal" color="#c8102e" prepend-icon="mdi-school" size="small">
+                    <v-chip variant="tonal" color="brand-fg" prepend-icon="mdi-school" size="small">
                       {{ getProjectExperience(slot) }}
                     </v-chip>
-                    <v-chip variant="tonal" color="#c8102e" prepend-icon="mdi-calendar" size="small">
+                    <v-chip variant="tonal" color="brand-fg" prepend-icon="mdi-calendar" size="small">
                       {{ getProjectSession(slot) }}
                     </v-chip>
                   </div>
@@ -164,7 +164,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
             >
               <div class="empty-slot-content">
                 <div class="empty-slot-icon-wrapper">
-                  <v-icon size="32" color="#c8102e">mdi-plus</v-icon>
+                  <v-icon size="32" color="brand-fg">mdi-plus</v-icon>
                 </div>
                 <div class="empty-slot-label">Add Project</div>
                 <div class="empty-slot-sublabel">Slot {{ slot.position }}</div>
@@ -178,7 +178,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
     <!-- Project Picker Dialog -->
     <v-dialog v-model="pickerOpen" max-width="720" scrollable>
       <v-card>
-        <v-toolbar color="#c8102e" density="compact">
+        <v-toolbar color="primary" density="compact">
           <v-toolbar-title>Select a Project</v-toolbar-title>
           <v-spacer />
           <v-btn icon @click="pickerOpen = false">
@@ -200,7 +200,7 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
 
           <!-- Loading eligible projects -->
           <div v-if="loadingEligible" class="text-center py-8">
-            <v-progress-circular indeterminate color="#c8102e" />
+            <v-progress-circular indeterminate color="brand-fg" />
           </div>
 
           <!-- No eligible projects -->
@@ -227,8 +227,8 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
                 >
                   <v-img :src="proj.projectViewForm.authors[0].avatarUrl" />
                 </v-avatar>
-                <v-avatar v-else size="40" color="grey-lighten-3">
-                  <v-icon color="grey">mdi-account</v-icon>
+                <v-avatar v-else size="40" color="surface-light">
+                  <v-icon class="text-disabled">mdi-account</v-icon>
                 </v-avatar>
               </template>
 
@@ -244,11 +244,11 @@ Up to 5 project slots with configurable stats, achievement tags, and hero images
                 &middot; {{ proj.sessionName || '' }}
               </v-list-item-subtitle>
               <v-list-item-subtitle>
-                <v-chip size="x-small" color="green" variant="tonal" class="mr-1">Published</v-chip>
+                <v-chip size="x-small" color="success" variant="tonal" class="mr-1">Published</v-chip>
                 <v-chip size="x-small" variant="tonal" class="mr-1">
                   {{ proj.memberCount || 1 }} member{{ (proj.memberCount || 1) !== 1 ? 's' : '' }}
                 </v-chip>
-                <v-chip v-if="isAlreadyFeatured(proj._id)" size="x-small" color="orange" variant="tonal">
+                <v-chip v-if="isAlreadyFeatured(proj._id)" size="x-small" color="caution-fg" variant="tonal">
                   Already featured
                 </v-chip>
               </v-list-item-subtitle>
@@ -604,28 +604,28 @@ async function saveChanges() {
 <style scoped>
 .featured-manager {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: rgb(var(--v-theme-panel-strong));
 }
 
 /* ── Base Card ── */
 .slot-card {
   min-height: 200px;
   border-radius: 10px;
-  background: #fff;
+  background: rgb(var(--v-theme-surface));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Filled Card ── */
 .filled-slot {
-  border: 1px solid #e8e8ee;
+  border: 1px solid rgb(var(--v-theme-quiet-fill-cool));
   overflow: hidden;
 }
 
 .filled-slot:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  border-color: rgba(200, 16, 46, 0.3);
+  border-color: rgba(var(--v-theme-primary), 0.3);
 }
 
 /* ── Card Header ── */
@@ -634,15 +634,15 @@ async function saveChanges() {
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .slot-position {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #c8102e;
-  color: white;
+  background: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -662,12 +662,12 @@ async function saveChanges() {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .slot-project-name {
   font-size: 12px;
-  color: #718096;
+  color: rgb(var(--v-theme-label-soft-fg));
   font-weight: 400;
 }
 
@@ -678,7 +678,7 @@ async function saveChanges() {
 
 .remove-btn:hover {
   opacity: 1;
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
 }
 
 /* ── Project Info ── */
@@ -687,7 +687,7 @@ async function saveChanges() {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: #fafafa;
+  background: rgb(var(--v-theme-panel));
 }
 
 .info-row {
@@ -699,20 +699,20 @@ async function saveChanges() {
 
 .info-label {
   font-weight: 600;
-  color: #4a5568;
+  color: rgb(var(--v-theme-label-strong-fg));
   min-width: 72px;
   font-size: 12px;
 }
 
 .info-value {
-  color: #1a1a2e;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   font-size: 13px;
 }
 
 /* ── Configuration Section ── */
 .slot-config {
   padding: 14px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .config-section-label {
@@ -721,14 +721,14 @@ async function saveChanges() {
   gap: 6px;
   font-size: 11px;
   font-weight: 600;
-  color: #c8102e;
+  color: rgb(var(--v-theme-brand-fg));
   margin-bottom: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .stats-display {
-  background: #f8f8f8;
+  background: rgb(var(--v-theme-panel-soft));
   border-radius: 8px;
   padding: 10px;
 }
@@ -736,25 +736,25 @@ async function saveChanges() {
 .stats-label {
   font-size: 12px;
   font-weight: 500;
-  color: #4a5568;
+  color: rgb(var(--v-theme-label-strong-fg));
   margin-bottom: 8px;
 }
 
 /* ── Empty Slot ── */
 .empty-slot {
-  border: 2px dashed #d4d4d8;
+  border: 2px dashed rgb(var(--v-theme-slot-empty-border));
   cursor: pointer;
-  background: #fafafa;
+  background: rgb(var(--v-theme-panel));
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .empty-slot:hover {
-  border-color: #c8102e;
-  background: rgba(200, 16, 46, 0.04);
+  border-color: rgb(var(--v-theme-brand-fg));
+  background: rgba(var(--v-theme-primary), 0.04);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(200, 16, 46, 0.1);
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.1);
 }
 
 .empty-slot-content {
@@ -766,7 +766,7 @@ async function saveChanges() {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(200, 16, 46, 0.08);
+  background: rgba(var(--v-theme-primary), 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -775,20 +775,20 @@ async function saveChanges() {
 }
 
 .empty-slot:hover .empty-slot-icon-wrapper {
-  background: rgba(200, 16, 46, 0.15);
+  background: rgba(var(--v-theme-primary), 0.15);
   transform: scale(1.1);
 }
 
 .empty-slot-label {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   margin-bottom: 2px;
 }
 
 .empty-slot-sublabel {
   font-size: 12px;
-  color: #4a5568;
+  color: rgb(var(--v-theme-label-strong-fg));
 }
 
 /* ── Picker Dialog ── */
@@ -798,7 +798,7 @@ async function saveChanges() {
 }
 
 .eligible-item:hover {
-  background: #f5f5f5;
+  background: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 
 .eligible-list :deep(.v-list-item-title) {

@@ -20,7 +20,7 @@ Redesigned UI matching the project pages aesthetic.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="36" class="mr-3">mdi-chart-timeline-variant</v-icon>
+          <v-icon color="brand-fg" size="36" class="mr-3">mdi-chart-timeline-variant</v-icon>
           <div class="flex-grow-1">
             <div class="d-flex align-center flex-wrap">
               <h1 class="text-h4 font-weight-bold mr-3">{{ $t('Student Progress Monitor') }}</h1>
@@ -36,7 +36,7 @@ Redesigned UI matching the project pages aesthetic.
         <div class="tabs-section">
           <v-tabs
             v-model="activeTab"
-            color="#c8102e"
+            color="brand-fg"
             class="custom-tabs"
           >
             <v-tab v-if="showStudentsWithoutEntryForms" value="entryForms" class="custom-tab">
@@ -139,14 +139,14 @@ export default {
 <style scoped>
 /* Page Background */
 .progress-monitor-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Card */
@@ -157,11 +157,11 @@ export default {
 
 /* Tabs Section */
 .tabs-section {
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .custom-tabs {
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .custom-tab {

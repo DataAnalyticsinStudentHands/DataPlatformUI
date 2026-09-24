@@ -20,7 +20,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-clipboard-text-outline</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-clipboard-text-outline</v-icon>
           <div>
             <div class="d-flex align-center">
               <h1 class="text-h5 font-weight-bold">{{ $t('Review Project Proposal') }}</h1>
@@ -31,7 +31,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
                 class="ml-2 d-lg-none"
                 @click="mobileInfoDialog = true"
               >
-                <v-icon color="#c8102e" size="22">mdi-help-circle</v-icon>
+                <v-icon color="brand-fg" size="22">mdi-help-circle</v-icon>
               </v-btn>
             </div>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ $t('Review and take action on this student proposal') }}</p>
@@ -44,7 +44,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
         <v-col cols="12" class="text-center">
           <v-progress-circular 
             indeterminate 
-            color="#c8102e" 
+            color="brand-fg" 
             size="48"
             width="4"
           ></v-progress-circular>
@@ -93,7 +93,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
 
               <div class="section-content">
                 <div class="experience-badge">
-                  <v-icon color="#c8102e" size="20" class="mr-2">mdi-school-outline</v-icon>
+                  <v-icon color="brand-fg" size="20" class="mr-2">mdi-school-outline</v-icon>
                   <span>{{ experienceInstanceName }}</span>
                 </div>
               </div>
@@ -116,7 +116,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
                   <div class="detail-field">
                     <p class="detail-label">{{ $t('Submitted By') }}</p>
                     <div class="d-flex align-center">
-                      <v-icon size="18" color="#666" class="mr-2">mdi-account</v-icon>
+                      <v-icon size="18" class="mr-2 text-medium-emphasis">mdi-account</v-icon>
                       <span class="detail-value">{{ projectData.studentName || 'Unknown' }}</span>
                     </div>
                   </div>
@@ -124,7 +124,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
                   <div class="detail-field">
                     <p class="detail-label">{{ $t('Submission Date') }}</p>
                     <div class="d-flex align-center">
-                      <v-icon size="18" color="#666" class="mr-2">mdi-calendar</v-icon>
+                      <v-icon size="18" class="mr-2 text-medium-emphasis">mdi-calendar</v-icon>
                       <span class="detail-value">{{ formatDate(projectData.submittedDate) }}</span>
                     </div>
                   </div>
@@ -180,7 +180,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
             <!-- Status Card -->
             <v-card class="status-card mb-4" variant="outlined">
               <v-card-title class="tips-header">
-                <v-icon color="#c8102e" class="mr-2">mdi-information-outline</v-icon>
+                <v-icon color="brand-fg" class="mr-2">mdi-information-outline</v-icon>
                 {{ $t('Proposal Status') }}
               </v-card-title>
               <v-card-text class="pt-0">
@@ -233,7 +233,7 @@ Includes confirmation dialogs and navigation back to main projects dashboard.
             <!-- Status Section -->
             <div class="mobile-info-section mb-5">
               <h3 class="text-subtitle-1 font-weight-bold mb-3">
-                <v-icon color="#c8102e" size="20" class="mr-2">mdi-information-outline</v-icon>
+                <v-icon color="brand-fg" size="20" class="mr-2">mdi-information-outline</v-icon>
                 {{ $t('Proposal Status') }}
               </h3>
               <div class="d-flex align-center mb-3">
@@ -460,11 +460,11 @@ export default {
     getStatusColor(status) {
       switch (status) {
         case 'Active': return 'success';
-        case 'In Progress': return '#c8102e';
+        case 'In Progress': return 'brand-fg';
         case 'Proposed': return 'warning';
         case 'Rejected': return 'error';
-        case 'Archived': return 'grey';
-        default: return 'grey';
+        case 'Archived': return 'muted';
+        default: return 'muted';
       }
     },
 
@@ -593,14 +593,14 @@ export default {
 <style scoped>
 /* Page Background */
 .proposal-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -624,8 +624,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -639,12 +639,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -662,33 +662,33 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 6px;
 }
 
 .detail-value {
   font-size: 1rem;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   line-height: 1.5;
 }
 
 .description-text {
   white-space: pre-line;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Experience Badge */
 .experience-badge {
   display: inline-flex;
   align-items: center;
-  background-color: rgba(200, 16, 46, 0.08);
+  background-color: rgba(var(--v-theme-primary), 0.08);
   padding: 12px 16px;
   border-radius: 8px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 /* Form Actions */
@@ -696,8 +696,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -705,12 +705,12 @@ export default {
 }
 
 .approve-btn {
-  background-color: #2e7d32 !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-approve-fill)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .approve-btn:hover {
-  background-color: #1b5e20 !important;
+  background-color: rgb(var(--v-theme-approve-fill-hover)) !important;
 }
 
 /* Sidebar */
@@ -722,7 +722,7 @@ export default {
 .status-card,
 .warning-card {
   border-radius: 12px;
-  border-color: #e0e0e0;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .tips-header,
@@ -730,16 +730,16 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .warning-card {
-  border-color: #ffcc80;
-  background-color: #fff8e1;
+  border-color: rgb(var(--v-theme-warning-card-border));
+  background-color: rgb(var(--v-theme-tint-warning));
 }
 
 .warning-header {
-  border-bottom-color: #ffe0b2;
+  border-bottom-color: rgb(var(--v-theme-warning-header-border));
 }
 
 /* Dialogs */
@@ -748,11 +748,11 @@ export default {
 }
 
 .approve-dialog-header {
-  background-color: #e8f5e9;
+  background-color: rgb(var(--v-theme-tint-success));
 }
 
 .reject-dialog-header {
-  background-color: #ffebee;
+  background-color: rgb(var(--v-theme-tint-error));
 }
 
 .mobile-info-dialog {
@@ -772,15 +772,15 @@ export default {
 }
 
 .got-it-btn {
-  background-color: #c8102e !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.25px;
 }
 
 .got-it-btn:hover {
-  background-color: #a00d24 !important;
+  background-color: rgb(var(--v-theme-primary-darken-1)) !important;
 }
 
 /* Utilities */

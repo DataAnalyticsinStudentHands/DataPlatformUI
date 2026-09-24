@@ -22,7 +22,7 @@ Redesigned UI matching the project pages aesthetic.
             class="search-field"
           >
             <template v-slot:prepend-inner>
-              <v-icon color="#666" size="20">mdi-magnify</v-icon>
+              <v-icon class="text-medium-emphasis" size="20">mdi-magnify</v-icon>
             </template>
           </v-text-field>
         </v-col>
@@ -65,7 +65,7 @@ Redesigned UI matching the project pages aesthetic.
         </v-chip>
         <v-chip
           v-if="searchQuery"
-          color="grey"
+          color="muted"
           variant="tonal"
           size="large"
           class="stats-chip ml-2"
@@ -82,7 +82,7 @@ Redesigned UI matching the project pages aesthetic.
     <div v-if="loading" class="loading-container py-16">
       <v-progress-circular 
         indeterminate 
-        color="#c8102e" 
+        color="brand-fg" 
         size="48"
         width="4"
       ></v-progress-circular>
@@ -141,7 +141,7 @@ Redesigned UI matching the project pages aesthetic.
             <tr>
               <td :colspan="tableHeaders.length" class="empty-state-cell">
                 <div class="empty-state py-12">
-                  <v-icon size="56" color="#ccc" class="mb-3">
+                  <v-icon size="56" class="mb-3 text-disabled">
                     {{ searchQuery ? 'mdi-account-search-outline' : 'mdi-account-check-outline' }}
                   </v-icon>
                   <p class="text-h6 text-medium-emphasis mb-1">
@@ -244,13 +244,13 @@ export default {
 <style scoped>
 /* Monitor Content */
 .monitor-content {
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 /* Toolbar Section */
 .toolbar-section {
   padding: 20px 24px;
-  background-color: white;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .search-field {
@@ -270,7 +270,7 @@ export default {
 
 .stats-row {
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -307,7 +307,7 @@ export default {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
   padding: 10px 16px !important;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
 }
 
 .table-row {
@@ -316,7 +316,7 @@ export default {
 }
 
 .table-row:hover {
-  background-color: rgba(200, 16, 46, 0.04) !important;
+  background-color: rgba(var(--v-theme-primary), 0.04) !important;
 }
 
 .table-cell {
@@ -341,7 +341,7 @@ export default {
 .students-table :deep(.v-data-table-footer) {
   font-size: 0.9rem;
   padding: 12px 16px;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Responsive */

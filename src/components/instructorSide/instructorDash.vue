@@ -6,7 +6,7 @@
       <v-row>
         <v-col class="text-center">
           <h1
-            class="font-bold text-4xl text-red-700 tracking-widest mt-10"
+            class="font-bold text-4xl text-brand-fg tracking-widest mt-10"
           >
             Welcome {{ firstName }} {{ lastName }}
           </h1>
@@ -25,7 +25,7 @@
       <!-- Student Progress Monitor -->
       <v-row>
         <v-col>
-          <v-card @click="navigateToProgressMonitor" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
+          <v-card @click="navigateToProgressMonitor" class="mx-auto my-card" max-width="400" color="panel-strong" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
               Student Progress Monitor
             </v-card-title>
@@ -34,7 +34,7 @@
 
         <!-- Student Mailer — manual form-reminder emails -->
         <v-col :cols="6">
-          <v-card @click="navigateToMailer" class="mx-auto my-card" max-width="400" color="grey-lighten-4" elevation="24">
+          <v-card @click="navigateToMailer" class="mx-auto my-card" max-width="400" color="panel-strong" elevation="24">
             <v-card-title class="red darken-2 text-center py-6">
               Student Mailer
             </v-card-title>

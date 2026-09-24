@@ -20,7 +20,7 @@
           >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-icon color="#c8102e" size="32" class="mr-3">mdi-school-outline</v-icon>
+          <v-icon color="brand-fg" size="32" class="mr-3">mdi-school-outline</v-icon>
           <div>
             <h1 class="text-h5 font-weight-bold">{{ $t('Edit Experience') }}</h1>
             <p class="text-body-2 text-medium-emphasis mb-0">{{ originalExperienceName }}</p>
@@ -56,7 +56,7 @@
                     class="mb-4"
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon size="20" color="#666">mdi-shape-outline</v-icon>
+                      <v-icon size="20" class="text-medium-emphasis">mdi-shape-outline</v-icon>
                     </template>
                   </v-text-field>
 
@@ -71,7 +71,7 @@
                     counter="100"
                   >
                     <template v-slot:prepend-inner>
-                      <v-icon size="20" color="#666">mdi-school-outline</v-icon>
+                      <v-icon size="20" class="text-medium-emphasis">mdi-school-outline</v-icon>
                     </template>
                   </v-text-field>
                 </div>
@@ -109,7 +109,7 @@
                   v-if="canUpdateExperience"
                   type="submit"
                   size="large"
-                  color="#c8102e"
+                  color="primary"
                   class="action-btn submit-btn"
                   :loading="updateLoading"
                   :disabled="!experience.experienceCategory || !experience.experienceName"
@@ -151,7 +151,7 @@
     <v-dialog v-model="showUpdateDialog" persistent max-width="450px">
       <v-card class="confirm-dialog">
         <v-card-title class="d-flex align-center pa-5 info-dialog-header">
-          <v-icon color="#c8102e" size="28" class="mr-3">mdi-content-save-check-outline</v-icon>
+          <v-icon color="brand-fg" size="28" class="mr-3">mdi-content-save-check-outline</v-icon>
           <span class="text-h6 font-weight-bold">{{ $t('Confirm Update') }}</span>
         </v-card-title>
         <v-card-text class="px-5 pb-4">
@@ -162,7 +162,7 @@
         <v-card-actions class="pa-5 pt-0">
           <v-spacer></v-spacer>
           <v-btn variant="text" @click="showUpdateDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-          <v-btn color="#c8102e" variant="flat" @click="proceedWithUpdate" class="confirm-btn">
+          <v-btn color="primary" variant="flat" @click="proceedWithUpdate" class="confirm-btn">
             <v-icon start size="18">mdi-check</v-icon>
             {{ $t('Update') }}
           </v-btn>
@@ -187,7 +187,7 @@
               :key="instance._id"
               class="instance-item"
             >
-              <v-icon color="#c8102e" size="18" class="mr-2">mdi-calendar-outline</v-icon>
+              <v-icon color="brand-fg" size="18" class="mr-2">mdi-calendar-outline</v-icon>
               <span class="font-weight-medium">{{ instance.sessionName }}</span>
               <span class="text-medium-emphasis mx-1">-</span>
               <span>{{ instance.experienceName }}</span>
@@ -201,7 +201,7 @@
         <v-card-actions class="pa-5 pt-0">
           <v-spacer></v-spacer>
           <v-btn variant="text" @click="updateDialog = false" class="mr-2">{{ $t('Cancel') }}</v-btn>
-          <v-btn color="#c8102e" variant="flat" @click="proceedWithUpdate" class="confirm-btn">
+          <v-btn color="primary" variant="flat" @click="proceedWithUpdate" class="confirm-btn">
             <v-icon start size="18">mdi-check</v-icon>
             {{ $t('Update') }}
           </v-btn>
@@ -226,7 +226,7 @@
               :key="instance._id"
               class="instance-item"
             >
-              <v-icon color="#c8102e" size="18" class="mr-2">mdi-calendar-outline</v-icon>
+              <v-icon color="brand-fg" size="18" class="mr-2">mdi-calendar-outline</v-icon>
               <span class="font-weight-medium">{{ instance.sessionName }}</span>
               <span class="text-medium-emphasis mx-1">-</span>
               <span>{{ instance.experienceName }}</span>
@@ -476,14 +476,14 @@ export default {
 <style scoped>
 /* Page Background */
 .edit-experience-page {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--v-theme-page-bg));
   min-height: 100vh;
 }
 
 /* Page Header */
 .page-header {
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 /* Main Form Card */
@@ -507,8 +507,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #c8102e;
-  color: white;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -522,12 +522,12 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 
 .section-subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   margin-bottom: 0;
 }
 
@@ -540,8 +540,8 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px 32px;
-  background-color: #fafafa;
-  border-top: 1px solid #e8e8e8;
+  background-color: rgb(var(--v-theme-panel));
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .action-btn {
@@ -552,11 +552,11 @@ export default {
 }
 
 .submit-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 .confirm-btn {
-  color: white !important;
+  color: rgb(var(--v-theme-on-primary)) !important;
 }
 
 /* Dialogs */
@@ -565,22 +565,22 @@ export default {
 }
 
 .error-dialog-header {
-  background-color: #ffebee;
+  background-color: rgb(var(--v-theme-tint-error));
 }
 
 .warning-dialog-header {
-  background-color: #fff8e1;
+  background-color: rgb(var(--v-theme-tint-warning));
 }
 
 .info-dialog-header {
-  background-color: rgba(200, 16, 46, 0.08);
+  background-color: rgba(var(--v-theme-primary), 0.08);
 }
 
 /* Instances List in Dialogs */
 .instances-list {
   max-height: 200px;
   overflow-y: auto;
-  background-color: #fafafa;
+  background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
   padding: 8px 0;
 }
@@ -589,7 +589,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 10px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .instance-item:last-child {
