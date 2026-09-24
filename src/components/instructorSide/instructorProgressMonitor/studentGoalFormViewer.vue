@@ -464,29 +464,7 @@ export default {
   min-height: 100vh;
 }
 
-/* Page Header */
-.page-header {
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-}
-
-/* Main Form Card */
-.form-card {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
 /* Form Sections */
-.form-section {
-  padding: 28px 32px;
-}
-
-.section-header {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 24px;
-}
-
 .section-icon {
   width: 36px;
   height: 36px;
@@ -497,19 +475,6 @@ export default {
   justify-content: center;
   margin-right: 16px;
   flex-shrink: 0;
-}
-
-.section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-}
-
-.section-subtitle {
-  font-size: 0.875rem;
-  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-  margin-bottom: 0;
 }
 
 .section-content {
@@ -556,11 +521,6 @@ export default {
 }
 
 /* Sidebar */
-.sidebar-sticky {
-  position: sticky;
-  top: 24px;
-}
-
 .sidebar-card {
   border-radius: 12px;
   border-color: rgba(var(--v-border-color), var(--v-border-opacity));
@@ -578,22 +538,7 @@ export default {
   background-color: rgb(var(--v-theme-panel));
   border-radius: 8px;
 }
-
-/* Responsive */
-@media (max-width: 1280px) {
-  .sidebar-sticky {
-    position: static;
-  }
-}
-
-@media (max-width: 960px) {
-  .form-section {
-    padding: 24px 20px;
-  }
-  
-  .section-content {
-    padding-left: 0;
-    margin-top: 16px;
-  }
-}
 </style>
+
+<!-- Shared review-page layout (§6.2), including the 1280px / 960px responsive rules. Keep it after the block above: its 960px .section-content rule must follow this file's .section-content. -->
+<style scoped src="@/styles/review-page.css"></style>
