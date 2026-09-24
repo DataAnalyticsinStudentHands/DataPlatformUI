@@ -9,7 +9,7 @@
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 px-10"
     >
       <div
-        class="errorMessage bg-tint-caution border-l-4 border-orange-500 text-banner-caution-fg p-4"
+        class="errorMessage bg-tint-caution border-l-4 banner-accent--caution text-banner-caution-fg p-4"
         role="alert"
       >
         {{ error }}
@@ -218,3 +218,22 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Banner accent (was border-orange-500): the border-l-4 edge takes its color from border-left-color,
+   and Vuetify's .border-KEY only sets --v-border-color, so the key is read here. Light: #F97316 as before. */
+.banner-accent--caution {
+  border-left-color: rgb(var(--v-theme-banner-caution-border));
+}
+
+/* Native selects. They draw no border in either theme: Vuetify's reset sets border-style: none and the
+   forms plugin never sets it back, and index.css forces the fill transparent, so in dark only the chevron
+   and the "--Select--" text showed where a field was. native-field-fill is #FFFFFF in light (the white
+   page behind these fields, so light is unchanged) and #262626 in dark (§6.3 missing-key rule, neutral
+   near-white background). The form prefix plus the scoped attribute, (0,1,2), outranks index.css's
+   transparent rules, including select:focus at (0,1,1), so the fill also holds while a select has focus,
+   in any load order. Only background-color is set: the forms plugin's chevron (background-image) stays. */
+form select {
+  background-color: rgb(var(--v-theme-native-field-fill)) !important;
+}
+</style>

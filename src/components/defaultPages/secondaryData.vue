@@ -9,7 +9,7 @@
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 px-10"
     >
       <div
-        class="errorMessage bg-tint-caution border-l-4 border-orange-500 text-banner-caution-fg p-4"
+        class="errorMessage bg-tint-caution border-l-4 banner-accent--caution text-banner-caution-fg p-4"
         role="alert"
       >
         {{ error }}
@@ -249,3 +249,21 @@ export default {
   //   },
 };
 </script>
+
+<style scoped>
+/* Banner accent (was border-orange-500): the border-l-4 edge takes its color from border-left-color,
+   and Vuetify's .border-KEY only sets --v-border-color, so the key is read here. Light: #F97316 as before. */
+.banner-accent--caution {
+  border-left-color: rgb(var(--v-theme-banner-caution-border));
+}
+
+/* Native text fields. They draw no border in either theme: Vuetify's reset sets border-style: none and
+   the forms plugin never sets it back, and index.css forces the fill transparent, so in dark nothing
+   showed where a field was. native-field-fill is #FFFFFF in light (the white page behind these fields,
+   so light is unchanged) and #262626 in dark (§6.3 missing-key rule, neutral near-white background).
+   The form prefix plus the scoped attribute, (0,2,1), outranks index.css's transparent rules, including
+   [type="text"]:focus at (0,2,0), so the fill also holds while a field has focus, in any load order. */
+form [type="text"] {
+  background-color: rgb(var(--v-theme-native-field-fill)) !important;
+}
+</style>

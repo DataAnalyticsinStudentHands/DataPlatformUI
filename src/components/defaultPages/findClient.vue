@@ -7,7 +7,7 @@
         Find Client
       </h1>
     </div>
-    <div class="px-10 pt-20">
+    <div class="px-10 pt-20 native-fields">
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
       >
@@ -176,3 +176,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Native select and text fields. They draw no border in either theme (Vuetify's reset sets
+   border-style: none) and index.css forces their fill transparent, so in dark nothing showed where a
+   field was. native-field-fill is #FFFFFF in light (the white page behind them, so light is unchanged)
+   and #262626 in dark. The wrapper class plus the scoped attribute outranks index.css's transparent
+   rules, including their :focus versions. Same treatment as the other Basic pages. */
+.native-fields select,
+.native-fields [type="text"] {
+  background-color: rgb(var(--v-theme-native-field-fill)) !important;
+}
+</style>

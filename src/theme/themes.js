@@ -151,6 +151,8 @@ const light = {
     // Added by the orchestrator after the Phase 2 review (both recorded in reports/keys-extra.json)
     'native-check-fill': '#FFFFFF',             // unchecked native checkbox/radio fill (forms plugin's white)
     'on-muted': '#FFFFFF',                      // text on flat muted fills: Vuetify's computed value, pinned
+    'native-field-fill': '#FFFFFF',             // native text/date/textarea fill on the Basic pages (the white page they sit on)
+    'native-input-edge': '#FFFFFF',             // 1px ring on borderless native inputs: white on their white card
   },
 };
 
@@ -286,6 +288,8 @@ const dark = {
     // Added by the orchestrator after the Phase 2 review (both recorded in reports/keys-extra.json)
     'native-check-fill': '#737373',             // neutral-500: 3.78:1 on surface, 4.18:1 on background (non-text 3:1)
     'on-muted': '#000000',                      // black on #A3A3A3 is 8.33:1 (white was 2.52:1)
+    'native-field-fill': '#262626',             // native text/date/textarea fill on the Basic pages (neutral near-white row)
+    'native-input-edge': '#737373',             // 1px ring on borderless native inputs (register, sendNewCode): 3:1 non-text
   },
 };
 

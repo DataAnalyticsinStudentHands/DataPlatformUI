@@ -20,7 +20,7 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Event Name</span>
-              <span style="color: #ff0000">*</span>
+              <span class="text-required-fg">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
@@ -42,7 +42,7 @@
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Date</span>
-              <span style="color: #ff0000">*</span>
+              <span class="text-required-fg">*</span>
               <input
                 class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="event.date"
@@ -300,3 +300,19 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Native text, date and textarea fields. They draw no border in either theme: Vuetify's reset sets
+   border-style: none and the forms plugin never sets it back, and index.css forces the fill transparent,
+   so in dark nothing showed where a field was. native-field-fill is #FFFFFF in light (the white page
+   behind these fields, so light is unchanged) and #262626 in dark (§6.3 missing-key rule, neutral
+   near-white background). The form prefix plus the scoped attribute outranks index.css's transparent
+   rules, including their :focus versions ((0,2,1) over (0,2,0); textarea (0,1,2) over (0,1,1)), so the
+   fill also holds while a field has focus, in any load order. The checkboxes keep index.css's
+   native-check-fill. */
+form [type="text"],
+form [type="date"],
+form textarea {
+  background-color: rgb(var(--v-theme-native-field-fill)) !important;
+}
+</style>
