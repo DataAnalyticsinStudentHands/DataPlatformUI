@@ -7,8 +7,3 @@
 
 // Unified template (new)
 export { default as ProjectTemplate } from './ProjectTemplate.vue';
-
-// Legacy templates (kept for backwards compatibility, will be deprecated)
-export { default as ResearchTemplate } from './ResearchTemplate.vue';
-export { default as DevelopmentTemplate } from './DevelopmentTemplate.vue';
-export { default as ProjectTemplateRenderer } from './ProjectTemplateRenderer.vue';
