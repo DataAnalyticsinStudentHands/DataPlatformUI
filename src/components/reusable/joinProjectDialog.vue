@@ -1046,16 +1046,16 @@ export default {
 }
 
 .invitations-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 .invitations-list::-webkit-scrollbar-thumb {
-  background: #888;
+  background: rgba(var(--v-theme-on-surface), .3);
   border-radius: 4px;
 }
 
 .invitations-list::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: rgba(var(--v-theme-on-surface), .5);
 }
 
 /* Ensure dialog doesn't jump when switching between views */

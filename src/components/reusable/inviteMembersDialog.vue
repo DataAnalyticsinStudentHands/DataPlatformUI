@@ -908,7 +908,7 @@ export default {
 /* Custom scrollbar for virtual scroll */
 :deep(.v-virtual-scroll__container) {
   scrollbar-width: thin;
-  scrollbar-color: #c8102e20 transparent;
+  scrollbar-color: rgba(var(--v-theme-primary), .13) transparent;
 }
 
 :deep(.v-virtual-scroll__container::-webkit-scrollbar) {
@@ -920,12 +920,12 @@ export default {
 }
 
 :deep(.v-virtual-scroll__container::-webkit-scrollbar-thumb) {
-  background-color: #c8102e20;
+  background-color: rgba(var(--v-theme-primary), .13);
   border-radius: 4px;
 }
 
 :deep(.v-virtual-scroll__container::-webkit-scrollbar-thumb:hover) {
-  background-color: #c8102e40;
+  background-color: rgba(var(--v-theme-primary), .25);
 }
 
 /* Chip animations */

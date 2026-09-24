@@ -445,24 +445,25 @@ export default {
       }
     },
     getFileIconColor(extension) {
+      // Theme key names (src/theme/themes.js), so each icon color follows light/dark mode
       switch(extension?.toLowerCase()) {
         case 'pdf':
-          return 'red-darken-1';
+          return 'filetype-pdf-fg';
         case 'doc':
         case 'docx':
-          return 'blue-darken-2';
+          return 'filetype-doc-fg';
         case 'xls':
         case 'xlsx':
-          return 'green-darken-2';
+          return 'filetype-sheet-fg';
         case 'ppt':
         case 'pptx':
-          return 'deep-orange-darken-1';
+          return 'filetype-slides-fg';
         case 'jpg':
         case 'jpeg':
         case 'png':
-          return 'purple-darken-1';
+          return 'filetype-image-fg';
         default:
-          return 'grey-darken-2';
+          return 'muted-strong';
       }
     },
     formatDate(dateString) {
@@ -879,7 +880,6 @@ export default {
 /* Subtle indication that the entire row is clickable */
 .document-list-item:hover::before {
   opacity: 0.08;
-  background-color: var(--v-theme-primary, #c8102e);
 }
 
 /* Custom file upload styling */
