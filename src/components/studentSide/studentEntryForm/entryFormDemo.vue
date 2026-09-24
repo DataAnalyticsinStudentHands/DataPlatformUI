@@ -257,11 +257,6 @@
       position: relative;
     }
     
-    .btn-success {
-      background-color: green;
-      color: white;
-    }
-    
       .fixed-button {
       position: fixed;
       bottom: 20px; /* Adjust the bottom value as needed */

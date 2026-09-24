@@ -522,6 +522,12 @@ watch(() => props.formId, (newVal) => {
   padding: 24px;
 }
 
+/* The fallback sits on the fixed light .image-preview backdrop, so its file name keeps the light
+   high-emphasis text in both themes (today's light result; allowlisted). */
+.image-fallback .file-name {
+  color: rgba(0, 0, 0, 0.87);
+}
+
 .file-info {
   display: flex;
   align-items: center;

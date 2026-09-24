@@ -97,16 +97,16 @@ const emit = defineEmits(['add']);
 
 const menuOpen = ref(false);
 
-// Icon colors for different section types
+// Icon colors for different section types: theme key names for v-icon :color (dark-mode plan §6.3)
 const sectionColors = {
-  partners: '#059669',   // Green
-  timeline: '#2563eb',   // Blue
-  impact: '#ea580c',     // Orange
-  poster: '#7c3aed',     // Purple
+  partners: 'section-partners-fg',   // Green
+  timeline: 'link-fg',               // Blue
+  impact: 'section-impact-fg',       // Orange
+  poster: 'section-poster-fg',       // Purple
 };
 
 function getIconColor(sectionId) {
-  return sectionColors[sectionId] || '#666';
+  return sectionColors[sectionId] || 'muted-strong';
 }
 
 function addSection(sectionId) {

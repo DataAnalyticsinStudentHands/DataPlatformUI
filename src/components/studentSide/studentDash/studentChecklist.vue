@@ -94,7 +94,7 @@ Shows completion status for entry forms, experience registration, goal setting f
                     <a
                         v-if="!completed"
                         @click.prevent="navigateToGoalSettingForm(registrationId)"
-                        class="text-blue-600 underline hover:text-blue-800 cursor-pointer"
+                        class="text-link-fg checklist-link underline cursor-pointer"
                     >
                         {{ formatExperienceDisplay(registrationId) }}
                     </a>
@@ -134,7 +134,7 @@ Shows completion status for entry forms, experience registration, goal setting f
                     <a
                         v-if="!isExitFormCompleted(registrationId)"
                         @click.prevent="navigateToExitForm(registrationId)"
-                        class="text-blue-600 underline hover:text-blue-800 cursor-pointer"
+                        class="text-link-fg checklist-link underline cursor-pointer"
                     >
                         {{ formatExperienceDisplay(registrationId) }}
                     </a>
@@ -276,5 +276,10 @@ export default {
 }
 .light-red-bg {
   background-color: rgb(var(--v-theme-tint-error));
+}
+/* Link hover (was Tailwind hover:text-blue-800). !important is needed to beat the link's
+   .text-link-fg class, which Vuetify emits as !important. */
+.checklist-link:hover {
+  color: rgb(var(--v-theme-link-hover-fg)) !important;
 }
 </style>

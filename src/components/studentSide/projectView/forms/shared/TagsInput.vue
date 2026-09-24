@@ -51,7 +51,7 @@
         <v-chip
           closable
           :color="tag.color"
-          variant="tonal"
+          :variant="isDark ? 'flat' : 'tonal'"
           size="default"
           class="tag-chip"
           @click:close="removeTag(index)"
@@ -140,6 +140,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useColorScheme } from '@/composables/useColorScheme';
 import { TAG_COLOR_PRESETS, createEmptyTag } from '../../types/projectTypes.js';
 
 const props = defineProps({
@@ -186,6 +187,10 @@ const emit = defineEmits(['update:modelValue']);
 
 const newTag = ref('');
 const colorPresets = TAG_COLOR_PRESETS;
+
+// Tag chips: tonal in light; flat in dark, where tonal would put the student's color as text on
+// #171717 (the default Indigo is 2.1:1). Dark-mode plan §4, decision 7.
+const { isDark } = useColorScheme();
 
 // Error message for input
 const errorMessage = computed(() => {

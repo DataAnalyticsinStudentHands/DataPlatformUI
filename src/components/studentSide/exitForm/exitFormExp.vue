@@ -53,14 +53,14 @@
                 ></v-progress-circular>
 
                 <!-- Warning message for existing exit form -->
-                <div v-if="experienceFoundWarning" style="display: flex; align-items: center; color: #4A90E2; font-weight: bold;">
-                    <v-icon left small style="margin-right: 0.5rem; color: #4A90E2;">mdi-alert-circle</v-icon>
+                <div v-if="experienceFoundWarning" class="text-found-notice-fg" style="display: flex; align-items: center; font-weight: bold;">
+                    <v-icon left small class="text-found-notice-fg" style="margin-right: 0.5rem;">mdi-alert-circle</v-icon>
                     {{$t('Hi there! You have already filled out an Exit Form for this experience. Please note that submitting another form for the same experience will overwrite your previous responses.')}}
                 </div>
 
                 <!-- Success message for new exit form -->
-                <div v-if="experienceFoundWarning === false" style="display: flex; align-items: center; color: #4CAF50; font-weight: bold;">
-                    <v-icon left small style="margin-right: 0.5rem; color: #4CAF50;">mdi-check-circle</v-icon>
+                <div v-if="experienceFoundWarning === false" class="text-success" style="display: flex; align-items: center; font-weight: bold;">
+                    <v-icon left small class="text-success" style="margin-right: 0.5rem;">mdi-check-circle</v-icon>
                     {{$t("You haven't filled out an Exit Form for this experience. Complete this form to complete your experience!")}}
                 </div>
                 </div>

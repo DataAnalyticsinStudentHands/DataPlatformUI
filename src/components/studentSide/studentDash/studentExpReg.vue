@@ -127,7 +127,7 @@ Handles experience selection, registration codes, and session-based grouping of 
                   </v-btn>
                   </v-card-title>
 
-                 <v-divider class="mx-4" style="border-top: 2px solid black;" />
+                 <v-divider class="mx-4" style="border-top: 2px solid rgb(var(--v-theme-on-surface));" />
 
                   <v-card-text class="d-flex flex-column flex-grow-1 px-4">
                   <div
@@ -640,20 +640,6 @@ export default {
   background-color: rgba(var(--v-theme-muted), 0.2);
   border: 1px solid rgb(var(--v-theme-muted));
   border-radius: 4px;
-}
-
-.btn-primary {
-  min-height: 40px;         
-  padding: 0 16px;          
-  border-radius: 6px;       
-  color: #FFF;              
-}
-
-.btn-secondary {
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 6px;
-  color: #424242;           
 }
 
 .btn-save {

@@ -1051,10 +1051,10 @@ export default {
     // Get color for project status badges
     getStatusColor(status) {
       switch (status) {
-        case 'Active': return 'green';
-        case 'Proposed': return 'deep-orange';
-        case 'Archived': return 'grey';
-        default: return 'grey';
+        case 'Active': return 'success';
+        case 'Proposed': return 'proposed-fg';
+        case 'Archived': return 'muted';
+        default: return 'muted';
       }
     },
     

@@ -30,12 +30,12 @@
           <v-row>
 
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">First Name</label>
+              <label class="field-label">First Name</label>
               <p style="margin: 0;">{{ this.userData.firstName }}</p>
             </v-col>
             
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Last Name</label>
+              <label class="field-label">Last Name</label>
               <p style="margin: 0;">{{ this.userData.lastName }}</p>
             </v-col>
           </v-row>
@@ -44,11 +44,11 @@
           <!-- Row for displaying the email and language preference -->
           <v-row>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Email</label>
+              <label class="field-label">Email</label>
               <p style="margin: 0;">{{ this.userData.email }}</p>
             </v-col>
             <v-col cols="12" md="4">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Language Preference</label>
+              <label class="field-label">Language Preference</label>
               <p style="margin: 0;">{{ languagePreferenceValue }}</p>
             </v-col>
           </v-row>
@@ -59,41 +59,41 @@
         <br><p class="font-weight-black text-h6">Demographics Information</p>
         <v-row>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">City of Origin</label>
+              <label class="field-label">City of Origin</label>
               <p style="margin: 0;">{{ this.studentData.cityOrigin }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="4">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Primary Language</label>
+              <label class="field-label">Primary Language</label>
               <p style="margin: 0;">{{ this.studentData.primaryLanguage }}</p>
             </v-col>
             <v-col cols="12" md="4">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Languages</label>
+              <label class="field-label">Other Languages</label>
               <p style="margin: 0;">{{ this.studentData.otherLanguages }}</p>
             </v-col>
           </v-row>
           <!-- Pronouns -->
           <v-row>
             <v-col cols="11" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Pronouns</label>
+              <label class="field-label">Pronouns</label>
               <p style="margin: 0;">{{ checkedPronouns }}</p>
             </v-col>
             <v-col cols="11" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Pronouns</label>
+              <label class="field-label">Other Pronouns</label>
               <p style="margin: 0;">{{ this.studentData.otherPronouns }}</p>
             </v-col>
           </v-row>
           <!-- Comments by Staff -->
           <v-row>
             <v-col cols="12">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?</label>
+              <label class="field-label">Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?</label>
               <p style="margin: 0;">{{ this.studentData.commentsByStaff }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?</label>
+              <label class="field-label">Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?</label>
               <p style="margin: 0;">{{ this.studentData.issuesConcernsTriggers }}</p>
             </v-col>
           </v-row>
@@ -103,91 +103,91 @@
             <br><p class="font-weight-black text-h6">UH Student's Information</p>
             <v-row>
                 <v-col cols="12" md="6">
-                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">UH Email</label>
+                  <label class="field-label">UH Email</label>
                   <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.uhEmail }}</p>
                 </v-col>
               <v-col cols="12" md="3">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">PeopleSoft ID</label>
+                <label class="field-label">PeopleSoft ID</label>
                 <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.peopleSoftID }}</p>
               </v-col>
               <v-col cols="12" md="3">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Expected Graduation Date</label>
+                <label class="field-label">Expected Graduation Date</label>
                 <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.expectedGraduationYear }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Do you live on or off campus?</label>
+                <label class="field-label">Do you live on or off campus?</label>
                 <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.livingOnCampus }}</p>
               </v-col>
             </v-row>
             <br><p class="font-weight-black text-h7">Educational Background and Goals</p>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you currently enrolled in a degree program at the University of Houston?</label>
+                <label class="field-label">Are you currently enrolled in a degree program at the University of Houston?</label>
                 <p style="margin: 0;">{{ this.studentData.enrolledUHInfo.uhStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of the Honors College?</label>
+                <label class="field-label">Are you a member of the Honors College?</label>
                 <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.honorsCollegeStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="10">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?</label>
+                <label class="field-label">Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?</label>
                 <p style="margin: 0;">{{ honorsCollegeAffiliated }}</p>
               </v-col>
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Honors College Affiliation Information</label>
+                <label class="field-label">Other Honors College Affiliation Information</label>
                 <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.honorsCollegeAffiliatedOther }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">What is/are your current major(s)?</label>
+                <label class="field-label">What is/are your current major(s)?</label>
                 <p style="margin: 0;">{{ majors }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you pursuing, or planning to pursue, any of the following Honors College minors?</label>
+                <label class="field-label">Are you pursuing, or planning to pursue, any of the following Honors College minors?</label>
                 <p style="margin: 0;">{{ honorsMinors }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you pursuing any other minors? Please list.</label>
+                <label class="field-label">Are you pursuing any other minors? Please list.</label>
                 <p style="margin: 0;">{{ otherMinors }}</p>
               </v-col>
             </v-row>
             <br><p class="font-weight-black text-h7">Other Engagement</p>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of Honors in Community Health (HICH)?</label>
+                <label class="field-label">Are you a member of Honors in Community Health (HICH)?</label>
                 <p style="margin: 0;">{{ this.studentData?.hichInfo?.hichStatus }}</p>
               </v-col>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Have you participated in HICH Projects?</label>
+                <label class="field-label">Have you participated in HICH Projects?</label>
                 <p style="margin: 0;">{{ this.studentData?.hichInfo?.hichHistoryStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Have you had other experience with Community Service?</label>
+                <label class="field-label">Have you had other experience with Community Service?</label>
                 <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</label>
+                <label class="field-label">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</label>
                 <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceHistoryDesc }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of any community organizations outside the University? Please list.</label>
+                <label class="field-label">Are you a member of any community organizations outside the University? Please list.</label>
                 <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceOrgsOutsideUH }}</p>
               </v-col>
             </v-row>
@@ -196,19 +196,19 @@
             <p class="font-weight-black text-h6">Non-UH Students Information</p><br>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Have you had other experience with Community Service?</label>
+                <label class="field-label">Have you had other experience with Community Service?</label>
                 <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus === 'Yes'">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</label>
+                <label class="field-label">Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.</label>
                 <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceHistoryDesc }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus === 'Yes'">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you a member of any community organizations outside the University? Please list.</label>
+                <label class="field-label">Are you a member of any community organizations outside the University? Please list.</label>
                 <p style="margin: 0;">{{ this.studentData.communityServiceInfo.serviceOrgsOutsideUH }}</p>
               </v-col>
             </v-row>
@@ -216,45 +216,45 @@
           <br><p class="font-weight-black text-h6">Graduate/Professional School Goals</p>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</label>
+                <label class="field-label">Do you currently plan to pursue graduate or professional (e.g. medical, law) school?</label>
                 <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.programGradProStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="11" v-if="this.studentData?.graduateProfessionalSchool?.programGradProStatus === 'Yes'">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">If you are planning to pursue graduate school, what type of program?</label>
+                <label class="field-label">If you are planning to pursue graduate school, what type of program?</label>
                 <p style="margin: 0;">{{ programGradProType }}</p>
               </v-col>
             </v-row>
             <v-row v-if="this.studentData?.graduateProfessionalSchool?.programGradProStatus === 'Yes'">
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">PhD Information</label>
+                <label class="field-label">PhD Information</label>
                 <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.phDTextbox }}</p>
               </v-col>
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Master Information</label>
+                <label class="field-label">Master Information</label>
                 <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.masterTextbox }}</p>
               </v-col>
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Professional Schooling Information</label>
+                <label class="field-label">Other Professional Schooling Information</label>
                 <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.otherTextbox }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Are you planning to pursue any other kind of specialized degree / certificate program?</label>
+                <label class="field-label">Are you planning to pursue any other kind of specialized degree / certificate program?</label>
                 <p style="margin: 0;">{{ this.studentData?.specializedDegCert?.specializedDegCertStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col v-if="this.studentData?.specializedDegCert?.specializedDegCertStatus">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Listed Specialized Degree / Certificate Program</label>
+                <label class="field-label">Listed Specialized Degree / Certificate Program</label>
                 <p style="margin: 0;">{{ specializedDCType }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col v-if="this.studentData?.specializedDegCert?.specializedDegCertType.find(other => other.id === 6 && other.checked)">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">Other Specialized Degree / Certificate Program</label>
+                <label class="field-label">Other Specialized Degree / Certificate Program</label>
                 <p style="margin: 0;">{{ this.studentData.specializedDegCert.professionalDesignOther }}</p>
               </v-col>
             </v-row> 
@@ -376,3 +376,13 @@ methods: {
 }
 }
 </script>
+
+<style scoped>
+/* Read-only field labels (was an inline style on every label; light = CSS named grey #808080) */
+.field-label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  font-size: 0.75rem;
+  color: rgb(var(--v-theme-field-label-fg));
+}
+</style>

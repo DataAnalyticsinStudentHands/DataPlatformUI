@@ -29,60 +29,60 @@
         <br><p class="font-weight-black text-h6">{{getTranslation('Basic Information')}}</p>
           <v-row>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('First Name')}}</label>
+              <label class="field-label">{{getTranslation('First Name')}}</label>
               <p style="margin: 0;">{{ this.userData.firstName }}</p>
             </v-col>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Last Name')}}</label>
+              <label class="field-label">{{getTranslation('Last Name')}}</label>
               <p style="margin: 0;">{{ this.userData.lastName }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Email')}}</label>
+              <label class="field-label">{{getTranslation('Email')}}</label>
               <p style="margin: 0;">{{ this.userData.email }}</p>
             </v-col>
             <v-col cols="12" md="4">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Language Preference')}}</label>
+              <label class="field-label">{{getTranslation('Language Preference')}}</label>
               <p style="margin: 0;">{{ getTranslation(languagePreferenceValue) }}</p>
             </v-col>
           </v-row>
         <br><p class="font-weight-black text-h6">{{getTranslation('Demographics Information')}}</p>
         <v-row>
             <v-col cols="12" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Place of Origin')}}</label>
+              <label class="field-label">{{getTranslation('Place of Origin')}}</label>
               <p style="margin: 0;">{{ this.studentData?.cityOrigin }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="4">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Primary Language')}}</label>
+              <label class="field-label">{{getTranslation('Primary Language')}}</label>
               <p style="margin: 0;">{{ this.studentData?.primaryLanguage }}</p>
             </v-col>
             <v-col cols="12" md="4">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Languages')}}</label>
+              <label class="field-label">{{getTranslation('Other Languages')}}</label>
               <p style="margin: 0;">{{ this.studentData?.otherLanguages }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="11" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Pronouns')}}</label>
+              <label class="field-label">{{getTranslation('Pronouns')}}</label>
               <p style="margin: 0;">{{ getTranslation(checkedPronouns) }}</p>
             </v-col>
             <v-col cols="11" md="6">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Pronouns')}}</label>
+              <label class="field-label">{{getTranslation('Other Pronouns')}}</label>
               <p style="margin: 0;">{{ this.studentData?.otherPronouns }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?')}}</label>
+              <label class="field-label">{{getTranslation('Do you have any comments about the way these pronouns are used by faculty/staff in public or private settings?')}}</label>
               <p style="margin: 0;">{{ this.studentData?.commentsByStaff }}</p>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
-              <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?')}}</label>
+              <label class="field-label">{{getTranslation('Are there any issues, concerns, or personal triggers you would like instructors to be aware of when facilitating lessons and meetings?')}}</label>
               <p style="margin: 0;">{{ this.studentData?.issuesConcernsTriggers }}</p>
             </v-col>
           </v-row>
@@ -90,91 +90,91 @@
             <br><p class="font-weight-black text-h6">{{getTranslation("UH Student's Information")}}</p>
             <v-row>
                 <v-col cols="12" md="6">
-                  <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('UH Email')}}</label>
+                  <label class="field-label">{{getTranslation('UH Email')}}</label>
                   <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.uhEmail }}</p>
                 </v-col>
               <v-col cols="12" md="3">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('PeopleSoft ID')}}</label>
+                <label class="field-label">{{getTranslation('PeopleSoft ID')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.peopleSoftID }}</p>
               </v-col>
               <v-col cols="12" md="3">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Expected Graduation Date')}}</label>
+                <label class="field-label">{{getTranslation('Expected Graduation Date')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.expectedGraduationYear }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Do you live on or off campus?')}}</label>
+                <label class="field-label">{{getTranslation('Do you live on or off campus?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.enrolledUHInfo?.livingOnCampus) }}</p>
               </v-col>
             </v-row>
             <br><p class="font-weight-black text-h7">{{getTranslation('Educational Background and Goals')}}</p>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you currently enrolled in a degree program at the University of Houston?')}}</label>
+                <label class="field-label">{{getTranslation('Are you currently enrolled in a degree program at the University of Houston?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.enrolledUHInfo?.uhStatus) }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of the Honors College?')}}</label>
+                <label class="field-label">{{getTranslation('Are you a member of the Honors College?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.enrolledUHInfo?.honorsCollegeStatus) }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="10">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?')}}</label>
+                <label class="field-label">{{getTranslation('Are you affiliated with the Honors College in any other way (other than Data & Society courses, participating in an Honors minor, or HICH)?')}}</label>
                 <p style="margin: 0;">{{ honorsCollegeAffiliated }}</p>
               </v-col>
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Honors College Affiliation Information')}}</label>
+                <label class="field-label">{{getTranslation('Other Honors College Affiliation Information')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.enrolledUHInfo?.honorsCollegeAffiliatedOther }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('What is/are your current major(s)?')}}</label>
+                <label class="field-label">{{getTranslation('What is/are your current major(s)?')}}</label>
                 <p style="margin: 0;">{{ majors }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you pursuing, or planning to pursue, any of the following Honors College minors?')}}</label>
+                <label class="field-label">{{getTranslation('Are you pursuing, or planning to pursue, any of the following Honors College minors?')}}</label>
                 <p style="margin: 0;">{{ honorsMinors }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you pursuing any other minors?')}}</label>
+                <label class="field-label">{{getTranslation('Are you pursuing any other minors?')}}</label>
                 <p style="margin: 0;">{{ otherMinors }}</p>
               </v-col>
             </v-row>
             <br><p class="font-weight-black text-h7">{{getTranslation('Other Engagement')}}</p>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of Honors in Community Health (HICH)?')}}</label>
+                <label class="field-label">{{getTranslation('Are you a member of Honors in Community Health (HICH)?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.hichInfo?.hichStatus) }}</p>
               </v-col>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?')}}</label>
+                <label class="field-label">{{getTranslation('Have you participated in HICH Projects (PEERS, Responsive Resourcing, BREATHE, Creative Care, etc)?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.hichInfo?.hichHistoryStatus) }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Have you had experience with Community Service?')}}</label>
+                <label class="field-label">{{getTranslation('Have you had experience with Community Service?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.communityServiceInfo?.serviceStatus) }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.')}}</label>
+                <label class="field-label">{{getTranslation('Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceHistoryDesc }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of any community organizations outside the University?')}}</label>
+                <label class="field-label">{{getTranslation('Are you a member of any community organizations outside the University?')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceOrgsOutsideUH }}</p>
               </v-col>
             </v-row>
@@ -183,19 +183,19 @@
             <p class="font-weight-black text-h6">{{getTranslation("Non-UH Student's Information")}}</p><br>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Have you had experience with Community Service?')}}</label>
+                <label class="field-label">{{getTranslation('Have you had experience with Community Service?')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceStatus }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus === 'Yes'">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.')}}</label>
+                <label class="field-label">{{getTranslation('Please briefly describe any community service opportunities you were involved in. Include organization and scope of service.')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceHistoryDesc }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" v-if="this.studentData?.communityServiceInfo?.serviceStatus === 'Yes'">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you a member of any community organizations outside the University?')}}</label>
+                <label class="field-label">{{getTranslation('Are you a member of any community organizations outside the University?')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.communityServiceInfo?.serviceOrgsOutsideUH }}</p>
               </v-col>
             </v-row>
@@ -203,45 +203,45 @@
           <br><p class="font-weight-black text-h6">{{getTranslation('Graduate/Professional School Goals')}}</p>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Do you currently plan to pursue graduate or professional (e.g. medical, law) school?')}}</label>
+                <label class="field-label">{{getTranslation('Do you currently plan to pursue graduate or professional (e.g. medical, law) school?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.graduateProfessionalSchool?.programGradProStatus) }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="11" v-if="this.studentData?.graduateProfessionalSchool?.programGradProStatus === 'Yes'">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('If you are planning to pursue graduate school, what type of program?')}}</label>
+                <label class="field-label">{{getTranslation('If you are planning to pursue graduate school, what type of program?')}}</label>
                 <p style="margin: 0;">{{ programGradProType }}</p>
               </v-col>
             </v-row>
             <v-row v-if="this.studentData?.graduateProfessionalSchool?.programGradProStatus === 'Yes'">
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('PhD Information')}}</label>
+                <label class="field-label">{{getTranslation('PhD Information')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.phDTextbox }}</p>
               </v-col>
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation("Master's Information")}}</label>
+                <label class="field-label">{{getTranslation("Master's Information")}}</label>
                 <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.masterTextbox }}</p>
               </v-col>
               <v-col cols="11">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Professional Schooling Information')}}</label>
+                <label class="field-label">{{getTranslation('Other Professional Schooling Information')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.graduateProfessionalSchool?.otherTextbox }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Are you planning to pursue any other kind of specialized degree / certificate program?')}}</label>
+                <label class="field-label">{{getTranslation('Are you planning to pursue any other kind of specialized degree / certificate program?')}}</label>
                 <p style="margin: 0;">{{ getTranslation(this.studentData?.specializedDegCert?.specializedDegCertStatus) }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col v-if="this.studentData?.specializedDegCert?.specializedDegCertStatus">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Listed Specialized Degree / Certificate Program')}}</label>
+                <label class="field-label">{{getTranslation('Listed Specialized Degree / Certificate Program')}}</label>
                 <p style="margin: 0;">{{ specializedDCType }}</p>
               </v-col>
             </v-row>
             <v-row>
               <v-col v-if="this.studentData?.specializedDegCert?.specializedDegCertType.find(other => other.id === 6 && other.checked)">
-                <label style="font-weight: 500; margin-bottom: 5px; font-size: 0.75rem; color: grey;">{{getTranslation('Other Specialized Degree / Certificate Program')}}</label>
+                <label class="field-label">{{getTranslation('Other Specialized Degree / Certificate Program')}}</label>
                 <p style="margin: 0;">{{ this.studentData?.specializedDegCert?.professionalDesignOther }}</p>
               </v-col>
             </v-row> 
@@ -421,3 +421,13 @@ methods: {
 }
 }
 </script>
+
+<style scoped>
+/* Read-only field labels (was an inline style on every label; light = CSS named grey #808080) */
+.field-label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  font-size: 0.75rem;
+  color: rgb(var(--v-theme-field-label-fg));
+}
+</style>
