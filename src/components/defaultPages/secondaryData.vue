@@ -1,7 +1,7 @@
 <template>
   <main>
     <h1
-      class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+      class="font-bold text-4xl text-brand-fg tracking-widest text-center mt-10"
     >
       Client Intake Form
     </h1>
@@ -9,7 +9,7 @@
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 px-10"
     >
       <div
-        class="errorMessage bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+        class="errorMessage bg-tint-caution border-l-4 border-orange-500 text-banner-caution-fg p-4"
         role="alert"
       >
         {{ error }}
@@ -29,7 +29,7 @@
               <span class="text-gray-700">Address Line</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.line1"
               />
               <!-- <span class="text-black" v-if="v$.client.line1.$error">
@@ -49,7 +49,7 @@
               <span class="text-gray-700">Address line 2</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.line2"
               />
               <!-- <span class="text-black" v-if="v$.client.line2.$error">
@@ -70,7 +70,7 @@
               <span class="text-gray-700">City</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.city"
               />
               <!-- <span class="text-black" v-if="v$.client.city.$error">
@@ -92,7 +92,7 @@
               <span class="text-gray-700">County</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.county"
               />
               <!-- <span class="text-black" v-if="v$.client.county.$error">
@@ -112,7 +112,7 @@
               <span class="text-gray-700">Zip Code</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.zip"
               />
               <!-- <span class="text-black" v-if="v$.client.zip.$error">
@@ -129,7 +129,7 @@
           <div></div>
           <!-- submit button -->
           <div class="flex justify-between mt-10 mr-20">
-            <button class="bg-red-700 text-white rounded" type="submit">
+            <button class="bg-primary text-white rounded" type="submit">
               Add Client
             </button>
           </div>

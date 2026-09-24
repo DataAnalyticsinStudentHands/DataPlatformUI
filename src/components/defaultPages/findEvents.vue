@@ -2,7 +2,7 @@
   <main>
     <div>
       <h1
-        class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+        class="font-bold text-4xl text-brand-fg tracking-widest text-center mt-10"
       >
         List of Events
       </h1>
@@ -15,7 +15,7 @@
         <!-- Displays Client Name search field -->
         <div class="flex flex-col">
           <select
-            class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            class="rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
             v-model="searchBy"
           >
             <option value="Event Name">Event Name</option>
@@ -26,7 +26,7 @@
           <label class="block">
             <input
               type="text"
-              class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
               v-model="eventName"
               v-on:keyup.enter="handleSubmitForm"
               placeholder="Enter event name"
@@ -36,7 +36,7 @@
         <!-- Displays event date search field -->
         <div class="flex flex-col" v-if="searchBy === 'Event Date'">
           <input
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
             type="date"
             v-model="eventDate"
             v-on:keyup.enter="handleSubmitForm"
@@ -50,14 +50,14 @@
         <div></div>
         <div class="mt-5 grid-cols-2">
           <button
-            class="mr-10 border border-red-700 bg-white text-red-700 rounded"
+            class="mr-10 border bg-surface rounded"
             @click="clearSearch"
             type="submit"
           >
             Clear Search
           </button>
           <button
-            class="bg-red-700 text-white rounded"
+            class="bg-primary text-white rounded"
             @click="handleSubmitForm"
             type="submit"
           >

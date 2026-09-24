@@ -6,7 +6,7 @@
 <template>
   <div>
     <div v-if="loading" class="text-center py-3">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      <v-progress-circular indeterminate color="brand-fg"></v-progress-circular>
       <p>Loading schedule…</p>
     </div>
 
@@ -46,7 +46,7 @@
       <v-btn
         type="submit"
         variant="outlined"
-        color="primary"
+        color="brand-fg"
         :loading="saving"
         :disabled="saving"
       >

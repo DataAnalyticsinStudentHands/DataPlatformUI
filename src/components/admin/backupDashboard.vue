@@ -226,14 +226,14 @@ export default {
   padding-top: 0;
 }
 .status-success {
-  color: #2e7d32;
+  color: rgb(var(--v-theme-status-success-fg));
   font-weight: 600;
 }
 .status-failed {
-  color: #c62828;
+  color: rgb(var(--v-theme-status-failed-fg));
   font-weight: 600;
 }
 .status-muted {
-  color: #666;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 </style>

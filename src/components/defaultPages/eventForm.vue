@@ -2,7 +2,7 @@
   <main>
     <div>
       <h1
-        class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+        class="font-bold text-4xl text-brand-fg tracking-widest text-center mt-10"
       >
         Create New Event
       </h1>
@@ -23,12 +23,12 @@
               <span style="color: #ff0000">*</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="event.eventName"
               />
-              <span class="text-black" v-if="v$.event.eventName.$error">
+              <span class="text-high-emphasis" v-if="v$.event.eventName.$error">
                 <p
-                  class="text-red-700"
+                  class="text-brand-fg"
                   v-for="error of v$.event.eventName.$errors"
                   :key="error.$uid"
                 >
@@ -44,13 +44,13 @@
               <span class="text-gray-700">Date</span>
               <span style="color: #ff0000">*</span>
               <input
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="event.date"
                 type="date"
               />
-              <span class="text-black" v-if="v$.event.date.$error">
+              <span class="text-high-emphasis" v-if="v$.event.date.$error">
                 <p
-                  class="text-red-700"
+                  class="text-brand-fg"
                   v-for="error of v$.event.date.$errors"
                   :key="error.$uid"
                 >
@@ -67,7 +67,7 @@
             <label class="block">
               <span class="text-gray-700">Description</span>
               <textarea
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 rows="2"
               ></textarea>
             </label>
@@ -86,7 +86,7 @@
                   id="familySupport"
                   value="Family Support"
                   v-model="checkedServices"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
                 <span class="ml-2">Family Support</span>
@@ -99,7 +99,7 @@
                   id="adultEducation"
                   value="Adult Education"
                   v-model="checkedServices"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
                 <span class="ml-2">Adult Education</span>
@@ -112,7 +112,7 @@
                   id="youthServices"
                   value="Youth Services Program"
                   v-model="checkedServices"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
                 <span class="ml-2">Youth Services Program</span>
@@ -125,7 +125,7 @@
                   id="childhoodEducation"
                   value="Early Childhood Education"
                   v-model="checkedServices"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
                 <span class="ml-2">Early Childhood Education</span>
@@ -145,7 +145,7 @@
               <span class="text-gray-700">Address Line 1</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="event.address.line1"
               />
@@ -157,7 +157,7 @@
               <span class="text-gray-700">Address Line 2</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="event.address.line2"
               />
@@ -169,7 +169,7 @@
               <span class="text-gray-700">City</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="event.address.city"
               />
@@ -182,7 +182,7 @@
               <span class="text-gray-700">County</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="event.address.county"
               />
@@ -194,7 +194,7 @@
               <span class="text-gray-700">Zip Code</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="event.address.zip"
               />
@@ -203,7 +203,7 @@
         </div>
 
         <div class="flex justify-between mt-10 mr-20">
-          <button class="bg-red-700 text-white rounded" type="submit">
+          <button class="bg-primary text-white rounded" type="submit">
             Add New Event
           </button>
         </div>

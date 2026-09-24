@@ -2,7 +2,7 @@
   <main>
     <div>
       <h1
-        class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+        class="font-bold text-4xl text-brand-fg tracking-widest text-center mt-10"
       >
         Welcome {{ firstName }} {{ lastName }} {{ this.role }}  {{  res}}
       </h1>

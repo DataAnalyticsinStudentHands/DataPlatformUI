@@ -164,7 +164,7 @@ export default {
 <template>
   <main>
     <h1
-      class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+      class="font-bold text-4xl text-brand-fg tracking-widest text-center mt-10"
     >
       Update Client
     </h1>
@@ -183,13 +183,13 @@ export default {
               <span style="color: #ff0000">*</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="client.firstName"
               />
-              <span class="text-black" v-if="v$.client.firstName.$error">
+              <span class="text-high-emphasis" v-if="v$.client.firstName.$error">
                 <p
-                  class="text-red-700"
+                  class="text-brand-fg"
                   v-for="error of v$.client.firstName.$errors"
                   :key="error.$uid"
                 >
@@ -205,7 +205,7 @@ export default {
               <span class="text-gray-700">Middle Name</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="client.middleName"
               />
@@ -219,13 +219,13 @@ export default {
               <span style="color: #ff0000">*</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 placeholder
                 v-model="client.lastName"
               />
-              <span class="text-black" v-if="v$.client.lastName.$error">
+              <span class="text-high-emphasis" v-if="v$.client.lastName.$error">
                 <p
-                  class="text-red-700"
+                  class="text-brand-fg"
                   v-for="error of v$.client.lastName.$errors"
                   :key="error.$uid"
                 >
@@ -241,13 +241,13 @@ export default {
               <span class="text-gray-700">Email</span>
               <input
                 type="email"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                 v-model="client.email"
               />
-              <span class="text-black" v-if="v$.client.email.$error">
+              <span class="text-high-emphasis" v-if="v$.client.email.$error">
                 <p
-                  class="text-red-700"
+                  class="text-brand-fg"
                   v-for="error of v$.client.email.$errors"
                   :key="error.$uid"
                 >
@@ -263,16 +263,16 @@ export default {
               <span style="color: #ff0000">*</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
                 v-model="client.phoneNumbers[0].primaryPhone"
               />
               <span
-                class="text-black"
+                class="text-high-emphasis"
                 v-if="v$.client.phoneNumbers[0].primaryPhone.$error"
               >
                 <p
-                  class="text-red-700"
+                  class="text-brand-fg"
                   v-for="error of v$.client.phoneNumbers[0].primaryPhone
                     .$errors"
                   :key="error.$uid"
@@ -288,7 +288,7 @@ export default {
               <span class="text-gray-700">Alternative Phone Number</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
                 v-model="client.phoneNumbers[0].secondaryPhone"
               />
@@ -307,7 +307,7 @@ export default {
               <span class="text-gray-700">Address Line 1</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.line1"
               />
             </label>
@@ -318,7 +318,7 @@ export default {
               <span class="text-gray-700">Address Line 2</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.line2"
               />
             </label>
@@ -330,7 +330,7 @@ export default {
               <span style="color: #ff0000">*</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.city"
               />
             </label>
@@ -342,7 +342,7 @@ export default {
               <span class="text-gray-700">County</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.county"
               />
             </label>
@@ -353,7 +353,7 @@ export default {
               <span class="text-gray-700">Zip Code</span>
               <input
                 type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
                 v-model="client.address.zip"
               />
             </label>
@@ -369,7 +369,7 @@ export default {
             <button
               @click="handleClientUpdate"
               type="submit"
-              class="bg-red-700 text-white rounded"
+              class="bg-primary text-white rounded"
             >
               Update Client
             </button>
@@ -377,7 +377,7 @@ export default {
           <div class="flex justify-between mt-10 mr-20">
             <button
               type="reset"
-              class="border border-red-700 bg-white text-red-700 rounded"
+              class="border bg-surface rounded"
               @click="$router.go(-1)"
             >
               Go back
@@ -415,7 +415,7 @@ export default {
           <div class="flex flex-col">
             <label class="typo__label">Select Events to be added</label>
             <VueMultiselect
-              class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-opacity-50"
               v-model="eventsChosen"
               :options="eventData"
               :multiple="true"
@@ -425,7 +425,7 @@ export default {
               <button
                 @click="addToEvent"
                 type="submit"
-                class="mt-5 bg-red-700 text-white rounded"
+                class="mt-5 bg-primary text-white rounded"
               >
                 Add Client to Events
               </button>

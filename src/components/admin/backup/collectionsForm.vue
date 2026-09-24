@@ -6,7 +6,7 @@
 <template>
   <div>
     <div v-if="loading" class="text-center py-3">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      <v-progress-circular indeterminate color="brand-fg"></v-progress-circular>
       <p>Loading…</p>
     </div>
 
@@ -40,7 +40,7 @@
       <!-- Save Collections button -->
       <v-btn
         variant="outlined"
-        color="primary"
+        color="brand-fg"
         :loading="saving"
         :disabled="saving"
         @click="save"
@@ -132,6 +132,6 @@ export default {
 
 <style scoped>
 .scroll-area {
-  background: #f8f9fa;
+  background: rgb(var(--v-theme-page-bg));
 }
 </style>
