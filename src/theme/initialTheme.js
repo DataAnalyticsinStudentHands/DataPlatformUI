@@ -28,7 +28,7 @@ export const FOLLOW_OS_WHEN_UNSET = false;
 //          (showThemeToggle = DARK_MODE_RELEASED || import.meta.env.DEV), so production users can't
 //          reach dark mode.
 //   true:  the toggle shows for everyone. Flip only after the per-role human QA signs off.
-export const DARK_MODE_RELEASED = false;
+export const DARK_MODE_RELEASED = true;
 
 // Class public/theme-init.js puts on <html> when the stored theme is dark; index.html's inline <style>
 // paints it dark until Vuetify takes over. main.js removes it after mount, toggle() if still present.
