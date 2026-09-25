@@ -4,7 +4,7 @@
       <v-col cols="12">
         <h1 class="text-h5 font-weight-bold">Generate Reports</h1>
         <p class="text-body-2">
-          Generate a profile or growth PDF report from session and experience data.
+          Generate a Profile or Growth report for a selected experience instance.
         </p>
       </v-col>
     </v-row>
@@ -27,17 +27,17 @@
 
       <v-col cols="12" md="6">
         <v-select
-          v-model="selectedExperienceId"
-          :items="experienceOptions"
+          v-model="selectedExperienceInstanceId"
+          :items="instanceOptions"
           item-title="label"
           item-value="id"
-          label="Select Experience"
+          label="Select Experience Instance"
           variant="outlined"
           density="comfortable"
           no-data-text="No active experience instances found for this session."
           :loading="loadingExperiences"
           :disabled="!selectedSessionId || loadingExperiences || isGenerating"
-          @update:model-value="onExperienceChange"
+          @update:model-value="onInstanceChange"
         />
       </v-col>
     </v-row>
@@ -109,9 +109,9 @@ export default {
   data() {
     return {
       sessionOptions: [],
-      experienceOptions: [],
+      instanceOptions: [],
       selectedSessionId: "",
-      selectedExperienceId: "",
+      selectedExperienceInstanceId: "",
       instructorNamesText: "",
       selectedReportType: "",
       totalRegisteredStudents: null,
@@ -137,14 +137,6 @@ export default {
     await this.loadSessions();
   },
   methods: {
-    toTitleCase(value) {
-      return String(value || "")
-        .trim()
-        .toLowerCase()
-        .split(/\s+/)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-    },
     async loadSessions() {
       this.loadingSessions = true;
       try {
@@ -166,9 +158,10 @@ export default {
     async onSessionChange() {
       const requestId = ++this.experienceRequestId;
       const sessionId = this.selectedSessionId;
-      this.selectedExperienceId = "";
-      this.experienceOptions = [];
+      this.selectedExperienceInstanceId = "";
+      this.instanceOptions = [];
       this.instructorNamesText = "";
+      this.totalRegisteredStudents = null;
       this.loadingExperiences = false;
       if (!sessionId) return;
 
@@ -179,29 +172,23 @@ export default {
         );
         if (requestId !== this.experienceRequestId) return;
 
-        const experiences = new Map();
-        for (const instance of response?.data?.instancesForSession || []) {
-          const experience = instance.experience;
-          if (!experience?.id) continue;
-          if (!experiences.has(experience.id)) {
-            experiences.set(experience.id, {
-              id: experience.id,
-              label: `${this.toTitleCase(experience.category)}: ${this.toTitleCase(experience.name)}`,
-              instructors: [],
-            });
-          }
-          const instructor = (instance.instructor || "").trim();
-          const option = experiences.get(experience.id);
-          if (instructor && !option.instructors.includes(instructor)) {
-            option.instructors.push(instructor);
-          }
-        }
-        this.experienceOptions = [...experiences.values()].sort((a, b) =>
-          a.label.localeCompare(b.label),
-        );
+        this.instanceOptions = (response?.data?.instancesForSession || [])
+          .map((instance) => {
+            const instructor = (instance.instructor || "").trim();
+            const name = [instance.experience.category, instance.experience.name]
+              .map((value) => (value || "").trim())
+              .filter(Boolean)
+              .join(": ");
+            return {
+              id: instance._id,
+              label: instructor ? `${name} - ${instructor}` : name,
+              instructor,
+            };
+          })
+          .sort((a, b) => a.label.localeCompare(b.label));
       } catch (error) {
         if (requestId !== this.experienceRequestId) return;
-        this.experienceOptions = [];
+        this.instanceOptions = [];
         toast.error("Failed to load experiences.");
       } finally {
         if (requestId === this.experienceRequestId) {
@@ -210,27 +197,22 @@ export default {
       }
     },
 
-    onExperienceChange() {
-      const selectedExperience = this.experienceOptions.find(
-        (experience) => experience.id === this.selectedExperienceId,
+    onInstanceChange() {
+      const selectedInstance = this.instanceOptions.find(
+        (experience) => experience.id === this.selectedExperienceInstanceId,
       );
-      const instructors = [...new Set(selectedExperience?.instructors || [])];
-      // Prefill instructor name(s) if stored in the DB; otherwise allow free input.
-      this.instructorNamesText = instructors.join(", ");
+      this.instructorNamesText = selectedInstance?.instructor || "";
+      this.totalRegisteredStudents = null;
     },
 
     validateInputs() {
       if (!this.selectedSessionId) return "Please select a session first.";
-      if (!this.selectedExperienceId) return "Please select an experience first.";
-      if (!this.parsedInstructorNames.length) {
-        return "Please enter at least one instructor name.";
-      }
+      if (!this.selectedExperienceInstanceId) return "Please select an experience instance first.";
+      if (!this.parsedInstructorNames.length) return "Please enter at least one instructor name.";
       if (!this.selectedReportType) return "Please select a report type.";
 
       const total = Number(this.totalRegisteredStudents);
-      if (!Number.isInteger(total) || total <= 0) {
-        return "Please enter a valid total number of registered students (positive whole number).";
-      }
+      if (!Number.isInteger(total) || total <= 0) return "Please enter a valid total number of registered students (positive whole number).";
 
       return null;
     },
@@ -245,8 +227,8 @@ export default {
       const selectedSession = this.sessionOptions.find(
         (session) => session.id === this.selectedSessionId,
       );
-      const selectedExperience = this.experienceOptions.find(
-        (experience) => experience.id === this.selectedExperienceId,
+      const selectedInstance = this.instanceOptions.find(
+        (experience) => experience.id === this.selectedExperienceInstanceId,
       );
 
       this.isGenerating = true;
@@ -256,9 +238,7 @@ export default {
           {
             reportType: this.selectedReportType,
             sessionId: this.selectedSessionId,
-            sessionLabel: selectedSession?.name || "",
-            experienceId: this.selectedExperienceId,
-            experienceLabel: selectedExperience?.label || "",
+            experienceInstanceId: this.selectedExperienceInstanceId,
             instructorNames: this.parsedInstructorNames,
             totalRegisteredStudents: Number(this.totalRegisteredStudents),
           },
@@ -274,14 +254,14 @@ export default {
         }
 
         const sessionLabel = selectedSession?.name || this.selectedSessionId;
-        const experienceLabel = selectedExperience?.label || this.selectedExperienceId;
+        const experienceLabel = selectedInstance?.label || this.selectedExperienceInstanceId;
         const safeSession = String(sessionLabel || "session")
           .replace(/[^\w\-]+/g, "-")
           .toLowerCase();
         const safeExperience = String(experienceLabel || "experience")
           .replace(/[^\w\-]+/g, "-")
           .toLowerCase();
-        const fileName = `${this.selectedReportType}_${safeSession}_${safeExperience}.pdf`;
+        const fileName = `${this.selectedReportType}_${safeSession}_${safeExperience}_${this.selectedExperienceInstanceId}.pdf`;
 
         // responseType: "blob" already returns a Blob. Reuse it directly.
         const url = window.URL.createObjectURL(response.data);
