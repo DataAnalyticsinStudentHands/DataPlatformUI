@@ -50,8 +50,9 @@
   
   <script>
   import axios from 'axios';
+  import { buildGoalIds, GOAL_ID_COLUMNS } from '@/utils/goalIds';
 
-  
+
   export default {
     data(){
       return{
@@ -165,7 +166,8 @@
     
         // Create the CSV data rows
         const dataRows = jsonData.map((item) => {
-        const values = this.getGoalFormCSVRowValues(item, originalHeader);
+        const itemWithGoalIds = { ...item, ...buildGoalIds(item._id, item.goalForm?.goals) };
+        const values = this.getGoalFormCSVRowValues(itemWithGoalIds, originalHeader);
         return values.join(',');
         });
     
@@ -731,6 +733,8 @@
             "goalForm.goals.goalThree",
             "goalForm.goals.goalFour",
             "goalForm.goals.goalFive",
+            // Per-goal IDs (goal_1_id to goal_5_id), computed at export; already final column names
+            ...GOAL_ID_COLUMNS,
             // HICH Project fields - combined list and individual binary columns
             "hichProject",
             "hichProject_BREATHE",
