@@ -1,7 +1,8 @@
 /**
  * composables/useNotificationPolling.js
  *
- * Polls the notification-count endpoint to detect new project invitations.
+ * Polls the notification-count endpoint to detect new project invitations, and
+ * refreshes the student form checklist (entry/goal/exit form status) on the same tick.
  * Replaces the removed SSE-based notification system.
  */
 
@@ -42,6 +43,10 @@ export function useNotificationPolling() {
       }
 
       previousCount = currentCount;
+
+      // Refresh the form checklist too, so an exit form an instructor just released
+      // (or any other form status change) shows up in the menu and dashboard without re-login
+      await store.checkFormCompletion({ silent: true });
     } catch (err) {
       // 401 = token expired or invalid, stop polling
       if (err.response?.status === 401) {

@@ -254,8 +254,9 @@ export const useLoggedInUserStore = defineStore({
     setLanguagePreference(langPref) {
       this.languagePreference = langPref;
     },
-    // Check student's form completion status
-    async checkFormCompletion() {
+    // Check student's form completion status.
+    // silent: skip the error toast (used by the background poll in useNotificationPolling).
+    async checkFormCompletion({ silent = false } = {}) {
       try {
         const response = await axios.get(`${apiURL}/studentSideData/student-checklist`);
     
@@ -272,7 +273,11 @@ export const useLoggedInUserStore = defineStore({
           this.hasExitFormsToComplete = exitIds.length > 0;
         }
       } catch (error) {
-        this.handleError(error);
+        if (silent) {
+          console.error('Error refreshing form checklist:', error);
+        } else {
+          this.handleError(error);
+        }
       }
     },
     // Fetch project invitation count
