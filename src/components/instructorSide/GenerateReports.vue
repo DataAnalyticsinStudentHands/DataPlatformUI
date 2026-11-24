@@ -1,111 +1,57 @@
 <template>
-  <v-container>
-    <v-row class="mb-2">
-      <v-col cols="12">
-        <h1 class="text-h5 font-weight-bold">Generate Reports</h1>
-        <p class="text-body-2">
-          Generate a Profile or Growth report for a selected experience instance.
-        </p>
-      </v-col>
-    </v-row>
+  <main class="reports-page">
+    <v-container class="py-8 px-6 px-md-10">
+      <div class="page-header mb-6">
+        <div class="d-flex align-center mb-2">
+          <v-btn icon variant="text" size="small" class="mr-2" aria-label="Go back" @click="$router.back()"><v-icon>mdi-arrow-left</v-icon></v-btn>
+          <v-icon color="#c8102e" size="36" class="mr-3">mdi-file-chart-outline</v-icon>
+          <div>
+            <h1 class="text-h4 font-weight-bold">Generate Reports</h1>
+            <p class="text-body-1 text-medium-emphasis mb-0">Explore student profiles and growth</p>
+          </div>
+        </div>
+      </div>
 
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-select
-          v-model="selectedSessionId"
-          :items="sessionOptions"
-          item-title="name"
-          item-value="id"
-          label="Select Session"
-          variant="outlined"
-          density="comfortable"
-          :loading="loadingSessions"
-          :disabled="loadingSessions || isGenerating"
-          @update:model-value="onSessionChange"
-        />
-      </v-col>
-
-      <v-col cols="12" md="6">
-        <v-select
-          v-model="selectedExperienceInstanceId"
-          :items="instanceOptions"
-          item-title="label"
-          item-value="id"
-          label="Select Experience Instance"
-          variant="outlined"
-          density="comfortable"
-          no-data-text="No active experience instances found for this session."
-          :loading="loadingExperiences"
-          :disabled="!selectedSessionId || loadingExperiences || isGenerating"
-          @update:model-value="onInstanceChange"
-        />
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-text-field
-          v-model="instructorNamesText"
-          label="Instructor name(s)"
-          placeholder="e.g. Dr. Jane Doe"
-          hint="Separate multiple instructors with commas"
-          persistent-hint
-          variant="outlined"
-          density="comfortable"
-          :disabled="isGenerating"
-        />
-      </v-col>
-
-      <v-col cols="12" md="6">
-        <v-select
-          v-model="selectedReportType"
-          :items="reportTypeOptions"
-          item-title="label"
-          item-value="value"
-          label="Select Report Type"
-          variant="outlined"
-          density="comfortable"
-          :disabled="isGenerating"
-        />
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-text-field
-          v-model.number="totalRegisteredStudents"
-          label="Total number of registered students"
-          type="number"
-          min="1"
-          step="1"
-          variant="outlined"
-          density="comfortable"
-          :disabled="isGenerating"
-        />
-      </v-col>
-    </v-row>
-
-    <v-row class="mt-2">
-      <v-col cols="12">
-        <v-btn
-          color="primary"
-          :loading="isGenerating"
-          :disabled="isGenerating"
-          @click="generateReport"
-        >
-          Generate Report
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-container>
+      <v-card class="main-card" elevation="2">
+        <div class="section-heading"><v-icon size="22" color="#c8102e">mdi-tune-variant</v-icon><h2 class="text-subtitle-1 font-weight-medium">Report details</h2></div>
+        <v-divider />
+        <v-card-text class="pa-6">
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-select v-model="selectedSessionId" :items="sessionOptions" item-title="name" item-value="id" label="Session" prepend-inner-icon="mdi-calendar-range" variant="outlined" density="comfortable" hide-details="auto" color="#c8102e" :loading="loadingSessions" :disabled="loadingSessions || isBusy" @update:model-value="onSessionChange" />
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-select v-model="selectedExperienceInstanceId" :items="instanceOptions" item-title="label" item-value="id" label="Experience instance" prepend-inner-icon="mdi-school-outline" variant="outlined" density="comfortable" hide-details="auto" color="#c8102e" no-data-text="No active experience instances found." :loading="loadingExperiences" :disabled="!selectedSessionId || loadingExperiences || isBusy" @update:model-value="onInstanceChange" />
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="instructorNamesText" label="Instructor name(s)" placeholder="Separate names with commas" prepend-inner-icon="mdi-account-outline" variant="outlined" density="comfortable" hide-details="auto" color="#c8102e" :disabled="isBusy" />
+            </v-col>
+            <v-col cols="12" sm="6" md="3">
+              <v-select v-model="selectedReportType" :items="reportTypeOptions" item-title="label" item-value="value" label="Report type" variant="outlined" density="comfortable" hide-details="auto" color="#c8102e" :disabled="isBusy" />
+            </v-col>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field v-model.number="totalRegisteredStudents" label="Registered students" type="number" min="1" step="1" variant="outlined" density="comfortable" hide-details="auto" color="#c8102e" :disabled="isBusy" />
+            </v-col>
+          </v-row>
+          <div class="d-flex justify-end mt-6">
+            <v-btn color="#c8102e" class="action-btn" :loading="isBusy" :disabled="isBusy" @click="generateReport"><v-icon start size="20">mdi-file-chart-outline</v-icon>{{ growthDashboard ? 'Regenerate report' : 'Generate report' }}</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+      <v-alert v-if="reportError" type="error" variant="tonal" class="mt-4" role="alert">{{ reportError }}</v-alert>
+      <GrowthDashboard v-if="growthDashboard" :dashboard="growthDashboard" :pdf-url="pdfUrl" :pdf-loading="isDownloading" @download="loadPdf(true)" @preview="loadPdf(false)" />
+    </v-container>
+  </main>
 </template>
 
 <script>
 import axios from "axios";
 import { toast } from "vue3-toastify";
+import GrowthDashboard from "./GrowthDashboard.vue";
 
 export default {
   name: "GenerateReports",
+  components: { GrowthDashboard },
   data() {
     return {
       sessionOptions: [],
@@ -119,6 +65,11 @@ export default {
       loadingExperiences: false,
       experienceRequestId: 0,
       isGenerating: false,
+      isDownloading: false,
+      growthDashboard: null,
+      reportError: "",
+      pdfUrl: "",
+      pdfFileName: "",
       reportTypeOptions: [
         { label: "Profile Report", value: "profile" },
         { label: "Growth Report", value: "growth" },
@@ -126,12 +77,28 @@ export default {
     };
   },
   computed: {
+    isBusy() { return this.isGenerating || this.isDownloading; },
+    reportInputs() {
+      return JSON.stringify({
+        reportType: this.selectedReportType,
+        sessionId: this.selectedSessionId,
+        experienceInstanceId: this.selectedExperienceInstanceId,
+        instructorNames: this.parsedInstructorNames,
+        totalRegisteredStudents: Number(this.totalRegisteredStudents),
+      });
+    },
     parsedInstructorNames() {
       return String(this.instructorNamesText || "")
         .split(",")
         .map((name) => name.trim())
         .filter(Boolean);
     },
+  },
+  watch: {
+    reportInputs() { this.clearResults(); },
+  },
+  beforeUnmount() {
+    if (this.pdfUrl) window.URL.revokeObjectURL(this.pdfUrl);
   },
   async mounted() {
     await this.loadSessions();
@@ -217,74 +184,88 @@ export default {
       return null;
     },
 
+    clearResults() {
+      this.growthDashboard = null;
+      this.reportError = "";
+      if (this.pdfUrl) window.URL.revokeObjectURL(this.pdfUrl);
+      this.pdfUrl = "";
+      this.pdfFileName = "";
+    },
+
     async generateReport() {
+      if (this.isBusy) return;
       const validationError = this.validateInputs();
       if (validationError) {
         toast.error(validationError);
         return;
       }
-
-      const selectedSession = this.sessionOptions.find(
-        (session) => session.id === this.selectedSessionId,
-      );
-      const selectedInstance = this.instanceOptions.find(
-        (experience) => experience.id === this.selectedExperienceInstanceId,
-      );
-
+      this.clearResults();
+      if (this.selectedReportType !== "growth") {
+        await this.loadPdf(true);
+        return;
+      }
+      const inputs = this.reportInputs;
       this.isGenerating = true;
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_ROOT_API}/instructorSideData/reports/generate`,
-          {
-            reportType: this.selectedReportType,
-            sessionId: this.selectedSessionId,
-            experienceInstanceId: this.selectedExperienceInstanceId,
-            instructorNames: this.parsedInstructorNames,
-            totalRegisteredStudents: Number(this.totalRegisteredStudents),
-          },
-          {
-            responseType: "blob",
-          },
+          `${import.meta.env.VITE_ROOT_API}/instructorSideData/reports/growth/dashboard`,
+          JSON.parse(inputs),
         );
-
-        const contentType = response?.headers?.["content-type"] || "";
-        if (!contentType.includes("application/pdf")) {
-          toast.error("Report generation returned a non-PDF response.");
-          return;
-        }
-
-        const sessionLabel = selectedSession?.name || this.selectedSessionId;
-        const experienceLabel = selectedInstance?.label || this.selectedExperienceInstanceId;
-        const safeSession = String(sessionLabel || "session")
-          .replace(/[^\w\-]+/g, "-")
-          .toLowerCase();
-        const safeExperience = String(experienceLabel || "experience")
-          .replace(/[^\w\-]+/g, "-")
-          .toLowerCase();
-        const fileName = `${this.selectedReportType}_${safeSession}_${safeExperience}_${this.selectedExperienceInstanceId}.pdf`;
-
-        // responseType: "blob" already returns a Blob. Reuse it directly.
-        const url = window.URL.createObjectURL(response.data);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        // Avoid revoking immediately; some browsers may fail to read large blobs in time.
-        window.setTimeout(() => window.URL.revokeObjectURL(url), 30000);
-
-        toast.success("Report generated successfully. Download started.", {
-          position: "top-right",
-          toastClassName: "Toastify__toast--create",
-          multiple: false,
-        });
+        if (inputs === this.reportInputs) this.growthDashboard = response.data;
       } catch (error) {
-        toast.error("Error generating report.");
+        this.reportError = error.response?.data?.error || "Unable to generate the dashboard. Please try again.";
       } finally {
         this.isGenerating = false;
       }
     },
+
+    async loadPdf(download) {
+      if (this.isBusy) return;
+      if (this.pdfUrl) {
+        if (download) this.downloadPdf();
+        return;
+      }
+      const inputs = this.reportInputs;
+      this.isDownloading = true;
+      this.reportError = "";
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_ROOT_API}/instructorSideData/reports/generate`,
+          JSON.parse(inputs),
+          { responseType: "blob" },
+        );
+        if (inputs !== this.reportInputs) return;
+        if (!(response.headers?.["content-type"] || "").includes("application/pdf")) {
+          throw new Error("Report generation returned a non-PDF response.");
+        }
+        const disposition = response.headers?.["content-disposition"] || "";
+        this.pdfFileName = disposition.match(/filename="([^"]+)"/)?.[1]
+          || `${this.selectedReportType}_${this.selectedExperienceInstanceId}.pdf`;
+        this.pdfUrl = window.URL.createObjectURL(response.data);
+        if (download) this.downloadPdf();
+      } catch (error) {
+        this.reportError = "Unable to generate the PDF. Please try again.";
+      } finally {
+        this.isDownloading = false;
+      }
+    },
+
+    downloadPdf() {
+      const link = document.createElement("a");
+      link.href = this.pdfUrl;
+      link.download = this.pdfFileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    },
   },
 };
 </script>
+
+<style scoped>
+.reports-page { background-color: #f8f9fa; min-height: 100vh; }
+.page-header { padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
+.main-card { border-radius: 12px; overflow: hidden; }
+.section-heading { display: flex; align-items: center; gap: 10px; padding: 16px 24px; background: #fafafa; }
+.action-btn { text-transform: none; font-weight: 500; font-size: 0.9rem; letter-spacing: 0.25px; }
+</style>
